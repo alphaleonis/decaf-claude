@@ -1,4 +1,4 @@
-# decaf
+# decaf's Claude Plugin
 
 A personalized Claude Code plugin with specialized agents, skills, and conventions for code review, coverage analysis, and structured decision-making.
 
