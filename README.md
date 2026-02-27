@@ -1,8 +1,8 @@
 # decaf
 
-A Claude Code plugin with specialized agents, skills, and conventions for code review, coverage analysis, and structured decision-making.
+A personalized Claude Code plugin with specialized agents, skills, and conventions for code review, coverage analysis, and structured decision-making.
 
-Originally forked from [everything-claude-code](https://github.com/affaan-m/everything-claude-code).
+Originally forked from [everything-claude-code](https://github.com/affaan-m/everything-claude-code).  You probably want that one rather than this one that has been tailored to my own personal workflow.
 
 ## Installation
 
