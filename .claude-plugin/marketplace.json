@@ -1,0 +1,38 @@
+{
+  "name": "decaf-claude-config",
+  "owner": {
+    "name": "Alphaleonis",
+    "email": "alphaleonis@users.noreply.github.com"
+  },
+  "metadata": {
+    "description": "Some useful Claude Code Agents and Skills"
+  },
+  "plugins": [
+    {
+      "name": "decaf",
+      "source": "./",
+      "description": "Some useful Claude Code Agents and Skills",
+      "author": {
+        "name": "Alphaleonis"
+      },
+      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
+      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "license": "MIT",
+      "keywords": [
+        "agents",
+        "skills",
+        "csharp",
+        "code-review",
+        "workflow",
+        "automation"
+      ],
+      "category": "workflow",
+      "tags": [
+        "agents",
+        "skills",
+        "csharp",
+        "code-review"
+      ]
+    }
+  ]
+}
