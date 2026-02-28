@@ -26,7 +26,7 @@ Parse `$ARGUMENTS` to determine:
 
 Look for a `## Coverage` section in the project's CLAUDE.md. Expected format is documented in:
 
-@../conventions/coverage-config.md
+@../../../conventions/coverage-config.md
 
 If no `## Coverage` section is found, inform the user with the setup template from the convention file and exit:
 
@@ -108,7 +108,7 @@ For each file with coverage gaps (below threshold, or with significant uncovered
 
 ### Step 6: Launch Coverage Reviewer Agent
 
-Launch `decaf:coverage-reviewer` via the Task tool with the following prompt structure:
+Launch `decaf-review:coverage-reviewer` via the Task tool with the following prompt structure:
 
 ```
 Review these code coverage gaps for severity and suggest test improvements.
@@ -140,7 +140,7 @@ Review these code coverage gaps for severity and suggest test improvements.
 <any user-provided instructions from $ARGUMENTS>
 ```
 
-**For `full` mode with many gaps** (more than 8 files below threshold): Consider launching 2 `decaf:coverage-reviewer` agents in parallel, splitting the file list roughly in half by priority rank. Merge the results.
+**For `full` mode with many gaps** (more than 8 files below threshold): Consider launching 2 `decaf-review:coverage-reviewer` agents in parallel, splitting the file list roughly in half by priority rank. Merge the results.
 
 ### Step 7: Generate Report
 
@@ -217,8 +217,8 @@ Coverage review complete: .code-reviews/COVERAGE_REVIEW_2026-02-27_14-30-45.md
 ## Example Usage
 
 ```
-/decaf:coverage-review                          # diff mode, changed files
-/decaf:coverage-review full                     # Full project coverage
-/decaf:coverage-review diff src/Payments/       # diff mode, specific path
-/decaf:coverage-review full focus on error paths # Full mode with instructions
+/decaf-review:coverage-review                          # diff mode, changed files
+/decaf-review:coverage-review full                     # Full project coverage
+/decaf-review:coverage-review diff src/Payments/       # diff mode, specific path
+/decaf-review:coverage-review full focus on error paths # Full mode with instructions
 ```

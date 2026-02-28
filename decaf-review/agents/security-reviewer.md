@@ -39,7 +39,7 @@ These 6 categories are handled by code-reviewer RULE 0. Do NOT flag them:
 
 ### Scope Awareness Reference
 
-@../conventions/security.md
+@../../conventions/security.md
 
 ---
 

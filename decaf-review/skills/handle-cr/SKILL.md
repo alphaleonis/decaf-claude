@@ -47,7 +47,7 @@ ls .code-reviews/CODE_REVIEW_*.md 2>/dev/null | sort -r | head -1
 ```
 
 If no code review file exists, inform the user:
-> No code review found. Run `/decaf:code-review` first to generate one.
+> No code review found. Run `/decaf-review:code-review` first to generate one.
 
 ### Step 2: Parse Findings
 
@@ -289,11 +289,11 @@ AskUserQuestion with:
 - question: "Run a quick code review on the modified files to verify fixes?"
 - header: "Re-review"
 - options:
-  - label: "Yes", description: "Run /decaf:code-review quick on modified files"
+  - label: "Yes", description: "Run /decaf-review:code-review quick on modified files"
   - label: "No", description: "Done for now"
 ```
 
-If the user chooses "Yes", invoke `/decaf:code-review quick <modified-files>`.
+If the user chooses "Yes", invoke `/decaf-review:code-review quick <modified-files>`.
 
 ### Step 8: Clean Up Review File
 
