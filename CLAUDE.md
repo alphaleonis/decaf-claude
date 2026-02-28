@@ -78,6 +78,17 @@ decaf-claude-config/
 └── conventions/           # Shared convention files (@file references)
 ```
 
+## Updating the Plugin
+
+After pushing changes to this repo, update the cached marketplace so Claude Code sees the new version:
+
+```bash
+git -C ~/.claude/plugins/marketplaces/decaf-claude-config pull
+claude plugin install decaf@decaf-claude-config
+```
+
+Then restart Claude Code to load the updated plugin.
+
 ## Versioning
 
 This plugin has **no version field** in `plugin.json`. Changes take effect on Claude Code restart (continuous deployment via git commits).
