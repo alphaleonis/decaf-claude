@@ -156,6 +156,14 @@ Apply the consolidation rules:
 
 This step compensates for LLM stochasticity where agents may "reason themselves out of" flagging legitimate issues.
 
+### Step 5.6: Compute Agent Summary Statistics
+
+After consolidation, compute per-agent statistics for the Agent Summary table:
+
+1. **Issues Found**: For each agent, count how many consolidated findings list that agent in the "Found by" field. A shared finding (found by multiple agents) counts toward each agent that found it.
+2. **Unique Issues**: For each agent, count findings where that agent is the **only** finder — i.e., no other agent reported the same issue (after deduplication).
+3. **Total**: Sum of all consolidated findings (each finding counted once regardless of how many agents found it).
+
 ### Step 6: Generate Report
 
 Create a timestamped review file in `.code-reviews/` at the repo root. **Never overwrite existing reviews.**
@@ -223,6 +231,21 @@ FILENAME=".code-reviews/CODE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 
 ### #4 🟢 Low: <issue title>
 ...
+
+---
+
+## Agent Summary
+
+| Agent | Issues Found | Unique Issues |
+|-------|:------------:|:-------------:|
+| <agent1> | X | Y |
+| <agent2> | X | Y |
+| ... | ... | ... |
+| **Total** | **X** | |
+
+Notes:
+- **Issues Found**: Total findings attributed to this agent (including shared findings)
+- **Unique Issues**: Findings reported ONLY by this agent and no other
 
 ---
 
