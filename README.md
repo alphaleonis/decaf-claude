@@ -1,8 +1,17 @@
-# decaf's Claude Plugin
+# decaf's Claude Plugins
 
-A personalized Claude Code plugin with specialized agents, skills, and conventions for code review, coverage analysis, and structured decision-making.
+Personalized Claude Code plugins with specialized agents, skills, and conventions for development and code review.
 
 Originally forked from [everything-claude-code](https://github.com/affaan-m/everything-claude-code).  You probably want that one rather than this one that has been tailored to my own personal workflow.
+
+## Plugins
+
+This repo provides two plugins that can be installed independently:
+
+| Plugin | Description |
+|--------|-------------|
+| **`decaf`** | General-purpose agents and skills (memory, analysis, development) |
+| **`decaf-review`** | Multi-agent code review and coverage analysis |
 
 ## Installation
 
@@ -10,8 +19,9 @@ Originally forked from [everything-claude-code](https://github.com/affaan-m/ever
 # Add as a marketplace
 /plugin marketplace add alphaleonis/decaf-claude-config
 
-# Install the plugin
+# Install one or both plugins
 /plugin install decaf-claude-config@decaf
+/plugin install decaf-claude-config@decaf-review
 ```
 
 Or install from a local clone:
@@ -20,6 +30,7 @@ Or install from a local clone:
 cd /path/to/decaf-claude-config
 /plugin marketplace add ./
 /plugin install decaf-claude-config@decaf
+/plugin install decaf-claude-config@decaf-review
 ```
 
 ### Optional: Memory MCP Server
@@ -40,23 +51,26 @@ claude mcp add --transport stdio memory -- bun x @modelcontextprotocol/server-me
 
 ```
 decaf-claude-config/
-├── .claude-plugin/        # Plugin and marketplace manifests
-├── agents/                # 13 specialized subagents
-├── skills/                # 12 interactive skills and workflows
-├── conventions/           # Shared convention files (@file references)
-└── CLAUDE.md              # Plugin instructions and skill/agent index
+├── .claude-plugin/               # Marketplace manifest
+├── conventions/                  # Shared convention files (@file references)
+├── decaf/                        # Core plugin
+│   ├── .claude-plugin/plugin.json
+│   ├── agents/                   # 6 agents
+│   └── skills/                   # 9 skills
+├── decaf-review/                 # Review plugin
+│   ├── .claude-plugin/plugin.json
+│   ├── agents/                   # 8 agents
+│   └── skills/                   # 4 skills
+├── CLAUDE.md
+└── README.md
 ```
 
-## Skills
+## `decaf` — Core Skills
 
 Skills are invoked as `/decaf:<skill-name>`.
 
 | Skill | Description |
 |-------|-------------|
-| `code-review` | Parallel multi-agent code review with consolidation |
-| `coverage-review` | Run code coverage analysis and review gaps for severity |
-| `handle-cr` | Walk through code review findings interactively |
-| `handle-coverage` | Walk through coverage gaps interactively, writing tests |
 | `decision-critic` | Stress-test decisions through adversarial analysis |
 | `incoherence-detector` | Detect doc/code/spec inconsistencies |
 | `problem-analysis` | Root cause investigation |
@@ -65,25 +79,45 @@ Skills are invoked as `/decaf:<skill-name>`.
 | `recall` | Search the knowledge graph for stored patterns |
 | `add-memory` | Store patterns in knowledge graph (backing for remember) |
 | `pattern-memory` | Auto-query/store knowledge graph (not user-invocable) |
+| `note` | Capture a follow-up task as a bean |
 
-## Agents
+## `decaf` — Core Agents
 
-Agents are used internally by skills or can be referenced via the Task tool as `decaf:<agent-name>`.
+Agents are referenced via the Task tool as `decaf:<agent-name>`.
 
 | Agent | Purpose |
 |-------|---------|
 | `architect` | Feature architecture design |
+| `csharp-developer` | C# implementation with idiomatic patterns |
+| `go-developer` | Go implementation with idiomatic patterns |
+| `debugger` | Systematic debugging with evidence gathering |
+| `planner` | Implementation planning |
+| `technical-writer` | LLM-optimized documentation |
+
+## `decaf-review` — Review Skills
+
+Skills are invoked as `/decaf-review:<skill-name>`.
+
+| Skill | Description |
+|-------|-------------|
+| `code-review` | Parallel multi-agent code review with consolidation |
+| `coverage-review` | Run code coverage analysis and review gaps for severity |
+| `handle-cr` | Walk through code review findings interactively |
+| `handle-coverage` | Walk through coverage gaps interactively, writing tests |
+
+## `decaf-review` — Review Agents
+
+Agents are referenced via the Task tool as `decaf-review:<agent-name>`.
+
+| Agent | Purpose |
+|-------|---------|
 | `code-reviewer-broad` | Broad review across 5 categories with confidence scoring |
 | `code-reviewer-quick` | Fast generalist: bugs, security, code quality, conventions |
 | `code-reviewer-knowledge` | Knowledge preservation, production risks |
 | `coverage-reviewer` | Assess coverage gap severity and suggest tests |
-| `csharp-developer` | C# implementation with enterprise patterns |
-| `debugger` | Systematic debugging with evidence gathering |
 | `design-reviewer` | API contracts, boundaries, concurrency, evolution |
-| `planner` | Implementation planning |
 | `security-reviewer` | Threat modeling, missing controls, architectural gaps |
 | `spec-compliance-reviewer` | Requirement gaps, deviations, scope creep |
-| `technical-writer` | LLM-optimized documentation |
 | `test-reviewer` | Test anti-patterns, silent failures, false positives |
 
 ## Conventions

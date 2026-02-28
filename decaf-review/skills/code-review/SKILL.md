@@ -45,34 +45,34 @@ git diff HEAD~1..HEAD
 #### `quick` mode
 
 Always exactly 2 agents — no triage needed:
-- `decaf:code-reviewer-quick`
-- `decaf:code-reviewer-broad`
+- `decaf-review:code-reviewer-quick`
+- `decaf-review:code-reviewer-broad`
 
 #### `max` mode
 
 Include all agents, subject to guardrails:
-- `decaf:code-reviewer-quick` — always
-- `decaf:code-reviewer-broad` — always
-- `decaf:code-reviewer-knowledge` — always
-- `decaf:design-reviewer` — always
-- `decaf:security-reviewer` — always
-- `decaf:test-reviewer` — only if test files exist in changeset
-- `decaf:spec-compliance-reviewer` — only if `--spec <path>` was provided
+- `decaf-review:code-reviewer-quick` — always
+- `decaf-review:code-reviewer-broad` — always
+- `decaf-review:code-reviewer-knowledge` — always
+- `decaf-review:design-reviewer` — always
+- `decaf-review:security-reviewer` — always
+- `decaf-review:test-reviewer` — only if test files exist in changeset
+- `decaf-review:spec-compliance-reviewer` — only if `--spec <path>` was provided
 
 #### `std` mode (default) — Triage-Based Selection
 
 **Always included:**
-- `decaf:code-reviewer-quick`
-- `decaf:code-reviewer-broad`
+- `decaf-review:code-reviewer-quick`
+- `decaf-review:code-reviewer-broad`
 
 **Default-include (exclude only with stated reason):**
-- `decaf:code-reviewer-knowledge` — exclude only for trivial changes (typos, formatting, single-line fixes, comment-only edits)
-- `decaf:design-reviewer` — exclude only when changes are trivial or confined to a single function's internals with no API/contract/boundary implications
+- `decaf-review:code-reviewer-knowledge` — exclude only for trivial changes (typos, formatting, single-line fixes, comment-only edits)
+- `decaf-review:design-reviewer` — exclude only when changes are trivial or confined to a single function's internals with no API/contract/boundary implications
 
 **Include based on triage judgement:**
-- `decaf:security-reviewer` — include when changes touch anything security-adjacent: authentication, authorization, cryptography, configuration/secrets, user input handling, HTTP/network, file I/O, serialization/deserialization, privilege boundaries. Judge from the diff content, not just filenames.
-- `decaf:test-reviewer` — include when test files are present in the changeset (files matching `*Test*`, `*test*`, `*spec*`, `*.test.*`, `*.spec.*`, or residing in test/tests directories)
-- `decaf:spec-compliance-reviewer` — include only when `--spec <path>` was provided
+- `decaf-review:security-reviewer` — include when changes touch anything security-adjacent: authentication, authorization, cryptography, configuration/secrets, user input handling, HTTP/network, file I/O, serialization/deserialization, privilege boundaries. Judge from the diff content, not just filenames.
+- `decaf-review:test-reviewer` — include when test files are present in the changeset (files matching `*Test*`, `*test*`, `*spec*`, `*.test.*`, `*.spec.*`, or residing in test/tests directories)
+- `decaf-review:spec-compliance-reviewer` — include only when `--spec <path>` was provided
 
 **Triage process:** Before selecting agents, skim the diff to understand:
 1. How many files changed and their nature
@@ -110,13 +110,13 @@ Follow your own output format instructions.
 ```
 
 **Agent-Specific Focus:**
-- `decaf:code-reviewer-quick`: Fast generalist — bugs, logic errors, null safety, security patterns, code quality, convention violations
-- `decaf:code-reviewer-broad`: Comprehensive analysis — confidence scoring, knowledge preservation, production reliability, structural quality, architecture
-- `decaf:code-reviewer-knowledge`: Knowledge preservation (RULE 0), undocumented decisions, implicit assumptions, comprehension risks
-- `decaf:design-reviewer`: System-level design — API contracts, data models, boundary violations, concurrency design, evolution readiness
-- `decaf:security-reviewer`: System-level security — threat modeling, missing controls (crypto, audit, config, dependencies, privileges)
-- `decaf:test-reviewer`: Test quality — anti-patterns, silent failures, false positives, flaky patterns (test files only)
-- `decaf:spec-compliance-reviewer`: Spec compliance — requirement gaps, deviations, partial implementations, scope creep (provide spec document in prompt)
+- `decaf-review:code-reviewer-quick`: Fast generalist — bugs, logic errors, null safety, security patterns, code quality, convention violations
+- `decaf-review:code-reviewer-broad`: Comprehensive analysis — confidence scoring, knowledge preservation, production reliability, structural quality, architecture
+- `decaf-review:code-reviewer-knowledge`: Knowledge preservation (RULE 0), undocumented decisions, implicit assumptions, comprehension risks
+- `decaf-review:design-reviewer`: System-level design — API contracts, data models, boundary violations, concurrency design, evolution readiness
+- `decaf-review:security-reviewer`: System-level security — threat modeling, missing controls (crypto, audit, config, dependencies, privileges)
+- `decaf-review:test-reviewer`: Test quality — anti-patterns, silent failures, false positives, flaky patterns (test files only)
+- `decaf-review:spec-compliance-reviewer`: Spec compliance — requirement gaps, deviations, partial implementations, scope creep (provide spec document in prompt)
 
 **For spec-compliance-reviewer**, append the spec document content to the prompt:
 ```
@@ -132,7 +132,7 @@ Wait for all agents to complete. Each agent returns findings in JSON format.
 
 Apply the consolidation rules:
 
-@../conventions/code-review-consolidation.md
+@../../../conventions/code-review-consolidation.md
 
 1. **Normalize severities** across agents (MUST → Critical, SHOULD → High, etc.)
 2. **Deduplicate** findings with same file + line (within 3 lines) + similar category
@@ -309,12 +309,12 @@ Keep this lightweight — match on file path + category only. Skip this step if 
 ## Example Usage
 
 ```
-/decaf:code-review                              # std mode, uncommitted changes
-/decaf:code-review quick                        # Quick mode (2 agents) - fast feedback
-/decaf:code-review max                          # Max mode - all applicable agents
-/decaf:code-review --spec docs/design.md        # std mode with spec compliance check
-/decaf:code-review max --spec docs/design.md    # Max mode with spec compliance
-/decaf:code-review src/Tools/MyTool.cs          # std mode, specific file
-/decaf:code-review max src/                     # Max mode, directory
-/decaf:code-review focus on null safety         # std mode with custom instructions
+/decaf-review:code-review                              # std mode, uncommitted changes
+/decaf-review:code-review quick                        # Quick mode (2 agents) - fast feedback
+/decaf-review:code-review max                          # Max mode - all applicable agents
+/decaf-review:code-review --spec docs/design.md        # std mode with spec compliance check
+/decaf-review:code-review max --spec docs/design.md    # Max mode with spec compliance
+/decaf-review:code-review src/Tools/MyTool.cs          # std mode, specific file
+/decaf-review:code-review max src/                     # Max mode, directory
+/decaf-review:code-review focus on null safety         # std mode with custom instructions
 ```

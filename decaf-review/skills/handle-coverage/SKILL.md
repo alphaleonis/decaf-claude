@@ -47,7 +47,7 @@ ls .code-reviews/COVERAGE_REVIEW_*.md 2>/dev/null | sort -r | head -1
 ```
 
 If no coverage review file exists, inform the user:
-> No coverage review found. Run `/decaf:coverage-review` first to generate one.
+> No coverage review found. Run `/decaf-review:coverage-review` first to generate one.
 
 ### Step 2: Parse Findings
 
@@ -237,11 +237,11 @@ AskUserQuestion with:
 - question: "Run a coverage review on the modified files to verify improved coverage?"
 - header: "Re-review"
 - options:
-  - label: "Yes", description: "Run /decaf:coverage-review diff on modified files"
+  - label: "Yes", description: "Run /decaf-review:coverage-review diff on modified files"
   - label: "No", description: "Done for now"
 ```
 
-If the user chooses "Yes", invoke `/decaf:coverage-review diff`.
+If the user chooses "Yes", invoke `/decaf-review:coverage-review diff`.
 
 ### Step 8: Clean Up Review File
 

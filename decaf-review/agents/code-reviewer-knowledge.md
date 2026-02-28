@@ -82,19 +82,19 @@ that don't impact comprehension. Other reviewers cover generic code quality.
 The following conventions are inlined for reference during reviews:
 
 ### Structural Quality (RULE 2)
-@../conventions/structural.md
+@../../conventions/structural.md
 
 ### Temporal/Comment Hygiene
-@../conventions/temporal.md
+@../../conventions/temporal.md
 
 ### Severity Definitions
-@../conventions/severity.md
+@../../conventions/severity.md
 
 ### Intent Markers
-@../conventions/intent-markers.md
+@../../conventions/intent-markers.md
 
 ### Documentation Format
-@../conventions/documentation.md
+@../../conventions/documentation.md
 
 ---
 

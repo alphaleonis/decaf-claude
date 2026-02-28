@@ -5,13 +5,13 @@
     "email": "alphaleonis@users.noreply.github.com"
   },
   "metadata": {
-    "description": "Some useful Claude Code Agents and Skills"
+    "description": "Claude Code Agents and Skills for development and code review"
   },
   "plugins": [
     {
       "name": "decaf",
-      "source": "./",
-      "description": "Some useful Claude Code Agents and Skills",
+      "source": "./decaf",
+      "description": "General-purpose agents and skills for Claude Code",
       "author": {
         "name": "Alphaleonis"
       },
@@ -21,17 +21,37 @@
       "keywords": [
         "agents",
         "skills",
-        "csharp",
-        "code-review",
-        "workflow",
-        "automation"
+        "memory",
+        "analysis"
       ],
       "category": "workflow",
       "tags": [
         "agents",
         "skills",
-        "csharp",
-        "code-review"
+        "memory",
+        "analysis"
+      ]
+    },
+    {
+      "name": "decaf-review",
+      "source": "./decaf-review",
+      "description": "Multi-agent code review and coverage analysis for Claude Code",
+      "author": {
+        "name": "Alphaleonis"
+      },
+      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
+      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "license": "MIT",
+      "keywords": [
+        "code-review",
+        "coverage",
+        "quality"
+      ],
+      "category": "workflow",
+      "tags": [
+        "code-review",
+        "coverage",
+        "quality"
       ]
     }
   ]

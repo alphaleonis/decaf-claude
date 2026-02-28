@@ -64,10 +64,10 @@ State your classification before proceeding.
 The following conventions are inlined for reference:
 
 ### Documentation Format (CLAUDE.md/README structure)
-@../conventions/documentation.md
+@../../conventions/documentation.md
 
 ### Comment Hygiene (temporal contamination)
-@../conventions/temporal.md
+@../../conventions/temporal.md
 
 ---
 
