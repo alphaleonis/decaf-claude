@@ -20,6 +20,7 @@ Personal Claude Code configuration plugin with some useful Agents and Skills for
 | `add-memory` | Both | Store patterns in knowledge graph (backing for /remember) |
 | `decision-critic` | Both | Stress-test decisions through adversarial analysis |
 | `incoherence-detector` | Both | Detect doc/code/spec inconsistencies |
+| `note` | Both | Capture a follow-up task as a bean without interrupting current work |
 | `pattern-memory` | Claude only | Auto-query/store knowledge graph |
 | `powershell-expert` | Both | PowerShell development patterns |
 | `problem-analysis` | Both | Root cause investigation |
@@ -33,7 +34,8 @@ Personal Claude Code configuration plugin with some useful Agents and Skills for
 | `code-reviewer-quick` | Fast generalist: bugs, security, code quality, project conventions (sonnet) |
 | `code-reviewer-knowledge` | Knowledge preservation, production risks, RULE 0/1/2 hierarchy |
 | `coverage-reviewer` | Assess coverage gap severity and suggest targeted test improvements |
-| `csharp-developer` | C# implementation with enterprise patterns |
+| `csharp-developer` | C# implementation with idiomatic patterns |
+| `go-developer` | Go implementation with idiomatic patterns |
 | `debugger` | Systematic debugging with evidence gathering |
 | `design-reviewer` | System-level design: API contracts, boundaries, concurrency, evolution |
 | `planner` | Implementation planning |
@@ -71,8 +73,8 @@ decaf-claude-config/
 ├── .claude-plugin/
 │   ├── plugin.json        # Plugin manifest (name: decaf)
 │   └── marketplace.json   # Marketplace metadata
-├── agents/                # Specialized subagents (13)
-├── skills/                # Skills and workflows (12)
+├── agents/                # Specialized subagents (14)
+├── skills/                # Skills and workflows (13)
 └── conventions/           # Shared convention files (@file references)
 ```
 
