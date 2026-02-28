@@ -273,6 +273,9 @@ When all findings are processed or the user stops:
 
 ### Dismissed Findings
 - [List of false positives with reasons, if any]
+
+### Agent Summary
+[Copy the Agent Summary table from the code review file verbatim]
 ```
 
 Delete `.code-reviews/.handle-cr-state.json` when complete.
