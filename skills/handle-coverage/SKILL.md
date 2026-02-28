@@ -243,6 +243,21 @@ AskUserQuestion with:
 
 If the user chooses "Yes", invoke `/decaf:coverage-review diff`.
 
+### Step 8: Clean Up Review File
+
+Ask whether to delete the coverage review file:
+
+```
+AskUserQuestion with:
+- question: "Delete the coverage review file ([filename])?"
+- header: "Clean up"
+- options:
+  - label: "Yes", description: "Delete the review file"
+  - label: "No", description: "Keep the review file"
+```
+
+If the user chooses "Yes", delete the coverage review file.
+
 ## Notes
 
 - Always order groups by severity (Critical -> High -> Medium -> Low)

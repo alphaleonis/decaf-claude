@@ -295,6 +295,21 @@ AskUserQuestion with:
 
 If the user chooses "Yes", invoke `/decaf:code-review quick <modified-files>`.
 
+### Step 8: Clean Up Review File
+
+Ask whether to delete the code review file:
+
+```
+AskUserQuestion with:
+- question: "Delete the code review file ([filename])?"
+- header: "Clean up"
+- options:
+  - label: "Yes", description: "Delete the review file"
+  - label: "No", description: "Keep the review file"
+```
+
+If the user chooses "Yes", delete the code review file.
+
 ## Notes
 
 - Always order findings by severity (Critical → High → Medium → Low)
