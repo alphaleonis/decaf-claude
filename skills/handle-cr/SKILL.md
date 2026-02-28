@@ -43,7 +43,7 @@ Parse `$ARGUMENTS` to determine severity filter and code review file:
 
 **Otherwise, find the latest review:**
 ```bash
-ls -t .code-reviews/CODE_REVIEW_*.md 2>/dev/null | head -1
+ls .code-reviews/CODE_REVIEW_*.md 2>/dev/null | sort -r | head -1
 ```
 
 If no code review file exists, inform the user:
