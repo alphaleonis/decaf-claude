@@ -43,7 +43,7 @@ Parse `$ARGUMENTS` to determine severity filter and coverage review file:
 
 **Otherwise, find the latest review:**
 ```bash
-ls -t .code-reviews/COVERAGE_REVIEW_*.md 2>/dev/null | head -1
+ls .code-reviews/COVERAGE_REVIEW_*.md 2>/dev/null | sort -r | head -1
 ```
 
 If no coverage review file exists, inform the user:
