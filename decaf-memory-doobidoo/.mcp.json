@@ -4,8 +4,7 @@
     "command": "uvx",
     "args": ["--from", "mcp-memory-service", "memory", "server"],
     "env": {
-      "MCP_MEMORY_STORAGE_BACKEND": "sqlite_vec",
-      "UV_PYTHON_PREFERENCE": "only-managed"
+      "MCP_MEMORY_STORAGE_BACKEND": "sqlite_vec"
     }
   }
 }
