@@ -150,10 +150,7 @@ For each agent's "Considered But Not Flagged" section:
 
 Create a timestamped plan file in `.refactoring-plans/` at the repo root. **Never overwrite existing plans.**
 
-```bash
-mkdir -p .refactoring-plans
-FILENAME=".refactoring-plans/REFACTOR_PLAN_$(date '+%Y-%m-%d_%H-%M-%S').md"
-```
+**Filename**: `.refactoring-plans/REFACTOR_PLAN_<YYYY-MM-DD>_<HH-MM-SS>.md` using the current date and time you know from context. Do NOT shell out to `date` — construct the filename directly. Create the `.refactoring-plans/` directory first if it doesn't exist.
 
 **Plan format:**
 
