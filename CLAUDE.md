@@ -35,7 +35,7 @@ General-purpose agents and skills for development workflows.
 
 ### `decaf-review` — Code Review
 
-Multi-agent code review and coverage analysis.
+Multi-agent code review, coverage analysis, and refactoring.
 
 **Skills** (invoked as `/decaf-review:skill-name`):
 
@@ -43,8 +43,10 @@ Multi-agent code review and coverage analysis.
 |-------|------------|---------|
 | `code-review` | Both | Parallel multi-agent code review with consolidation |
 | `coverage-review` | Both | Run code coverage analysis and review gaps for severity |
+| `refactor` | Both | Analyze code for structural improvement opportunities and produce a prioritized plan |
 | `handle-cr` | Both | Walk through code review findings interactively |
 | `handle-coverage` | Both | Walk through coverage gaps interactively, writing tests |
+| `handle-refactoring` | Both | Walk through refactoring opportunities interactively |
 
 **Agents** (referenced as `decaf-review:agent-name`):
 
@@ -53,10 +55,12 @@ Multi-agent code review and coverage analysis.
 | `code-reviewer-broad` | Broad review across 5 categories with confidence scoring |
 | `code-reviewer-quick` | Fast generalist: bugs, security, code quality, project conventions (sonnet) |
 | `code-reviewer-knowledge` | Knowledge preservation, production risks, RULE 0/1/2 hierarchy |
+| `coherence-analyst` | Cross-file structural patterns: duplication, naming consistency, interface drift, module boundaries |
 | `coverage-reviewer` | Assess coverage gap severity and suggest targeted test improvements |
 | `design-reviewer` | System-level design: API contracts, boundaries, concurrency, evolution |
 | `security-reviewer` | System-level security: threat modeling, missing controls, architectural gaps |
 | `spec-compliance-reviewer` | Spec compliance: requirement gaps, deviations, partial implementations, scope creep |
+| `structural-analyst` | Per-file structural quality: naming, composition, complexity, domain modeling, error handling |
 | `test-reviewer` | Test anti-patterns, silent failures, false positives |
 
 ## Installation
@@ -97,8 +101,8 @@ decaf-claude-config/
 ├── decaf-review/                 # Review plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-review"
-│   ├── agents/                   # 8 agents
-│   └── skills/                   # 4 skills
+│   ├── agents/                   # 10 agents
+│   └── skills/                   # 6 skills
 ├── CLAUDE.md
 └── README.md
 ```
