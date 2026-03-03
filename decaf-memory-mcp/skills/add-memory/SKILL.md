@@ -11,10 +11,10 @@ Store a reusable pattern in the knowledge graph.
 ## Usage
 
 ```
-/decaf:add-memory [description of what to remember]
+/decaf-memory-mcp:add-memory [description of what to remember]
 ```
 
-Or invoke via `/decaf:remember` for a guided process.
+Or invoke via `/decaf-memory-mcp:remember` for a guided process.
 
 ## Process
 

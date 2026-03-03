@@ -21,14 +21,12 @@
       "keywords": [
         "agents",
         "skills",
-        "memory",
         "analysis"
       ],
       "category": "workflow",
       "tags": [
         "agents",
         "skills",
-        "memory",
         "analysis"
       ]
     },
@@ -52,6 +50,48 @@
         "code-review",
         "coverage",
         "quality"
+      ]
+    },
+    {
+      "name": "decaf-memory-mcp",
+      "source": "./decaf-memory-mcp",
+      "description": "Memory skills backed by @modelcontextprotocol/server-memory",
+      "author": {
+        "name": "Alphaleonis"
+      },
+      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
+      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "license": "MIT",
+      "keywords": [
+        "memory",
+        "knowledge-graph"
+      ],
+      "category": "workflow",
+      "tags": [
+        "memory",
+        "knowledge-graph"
+      ]
+    },
+    {
+      "name": "decaf-memory-doobidoo",
+      "source": "./decaf-memory-doobidoo",
+      "description": "Memory skills backed by mcp-memory-service (doobidoo)",
+      "author": {
+        "name": "Alphaleonis"
+      },
+      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
+      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "license": "MIT",
+      "keywords": [
+        "memory",
+        "knowledge-graph",
+        "semantic-search"
+      ],
+      "category": "workflow",
+      "tags": [
+        "memory",
+        "knowledge-graph",
+        "semantic-search"
       ]
     }
   ]

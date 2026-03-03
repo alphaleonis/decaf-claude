@@ -11,13 +11,13 @@ Search the knowledge graph for previously stored patterns.
 ## Usage
 
 ```
-/decaf:recall [search query]
+/decaf-memory-mcp:recall [search query]
 ```
 
 Examples:
-- `/decaf:recall HttpClient timeout` - Find patterns related to HttpClient timeouts
-- `/decaf:recall Polly retry` - Find patterns about Polly retry policies
-- `/decaf:recall GitHub MCP` - Find tool preferences or patterns about GitHub
+- `/decaf-memory-mcp:recall HttpClient timeout` - Find patterns related to HttpClient timeouts
+- `/decaf-memory-mcp:recall Polly retry` - Find patterns about Polly retry policies
+- `/decaf-memory-mcp:recall GitHub MCP` - Find tool preferences or patterns about GitHub
 
 ## Process
 
@@ -28,7 +28,7 @@ Examples:
    - Observations (the stored insights)
 3. **If no results**, suggest:
    - Trying different keywords
-   - Using `/decaf:remember` to store a new pattern
+   - Using `/decaf-memory-mcp:remember` to store a new pattern
 
 ## Tools Used
 
