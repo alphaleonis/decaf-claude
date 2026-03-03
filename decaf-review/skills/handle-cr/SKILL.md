@@ -280,7 +280,22 @@ When all findings are processed or the user stops:
 
 Delete `.code-reviews/.handle-cr-state.json` when complete.
 
-### Step 7: Re-review Suggestion
+### Step 7: Clean Up Review File
+
+Ask whether to delete the code review file that was just processed:
+
+```
+AskUserQuestion with:
+- question: "Delete the code review file ([filename])?"
+- header: "Clean up"
+- options:
+  - label: "Yes", description: "Delete the review file"
+  - label: "No", description: "Keep the review file"
+```
+
+If the user chooses "Yes", delete the code review file.
+
+### Step 8: Re-review Suggestion
 
 If any fixes were applied during the session:
 
@@ -297,21 +312,6 @@ AskUserQuestion with:
 ```
 
 If the user chooses "Yes", invoke `/decaf-review:code-review quick <modified-files>`.
-
-### Step 8: Clean Up Review File
-
-Ask whether to delete the code review file:
-
-```
-AskUserQuestion with:
-- question: "Delete the code review file ([filename])?"
-- header: "Clean up"
-- options:
-  - label: "Yes", description: "Delete the review file"
-  - label: "No", description: "Keep the review file"
-```
-
-If the user chooses "Yes", delete the code review file.
 
 ## Notes
 
