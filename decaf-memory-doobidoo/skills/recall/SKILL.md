@@ -21,7 +21,7 @@ Examples:
 
 ## Process
 
-1. **Search the knowledge graph** using `mcp__memory-service__memory_search` with the provided query (mode: `semantic` for best results)
+1. **Search the knowledge graph** using `mcp__memory__memory_search` with the provided query (mode: `semantic` for best results)
 2. **Display matching patterns** with their:
    - Content
    - Tags (pattern type: pattern, library-pattern, bug-pattern, tool-pattern)
@@ -32,8 +32,8 @@ Examples:
 
 ## Tools Used
 
-- `mcp__memory-service__memory_search` - Semantic search for patterns by keyword (default mode)
-- `mcp__memory-service__memory_list` - Browse stored patterns with tag filtering
+- `mcp__memory__memory_search` - Semantic search for patterns by keyword (default mode)
+- `mcp__memory__memory_list` - Browse stored patterns with tag filtering
 
 ## Example Output
 
