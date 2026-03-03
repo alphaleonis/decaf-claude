@@ -18,8 +18,8 @@ Before starting work, search the knowledge graph if the task involves:
 - A problem that feels familiar
 
 **Query tools:**
-- `mcp__memory__memory_search` - Semantic search by topic/keyword (preferred — finds conceptually similar results even with different wording)
-- `mcp__memory__memory_list` - Browse patterns filtered by tags
+- `mcp__plugin_decaf-memory-doobidoo_memory__memory_search` - Semantic search by topic/keyword (preferred — finds conceptually similar results even with different wording)
+- `mcp__plugin_decaf-memory-doobidoo_memory__memory_list` - Browse patterns filtered by tags
 
 ## When to Store
 
@@ -51,7 +51,7 @@ Use these as tags when storing memories:
 When storing memories, structure content clearly and use tags for categorization:
 
 ```
-mcp__memory__memory_store({
+mcp__plugin_decaf-memory-doobidoo_memory__memory_store({
   content: "pattern-name\nKey insight or behavior\nWhen this applies\nThe solution or workaround\nRelated technologies: X, Y, Z",
   metadata: {
     tags: "pattern-type,technology1,technology2",
@@ -65,7 +65,7 @@ mcp__memory__memory_store({
 **Querying:**
 ```
 User: "I need to implement retry logic with Polly"
-→ Search: mcp__memory__memory_search({query: "polly retry"})
+→ Search: mcp__plugin_decaf-memory-doobidoo_memory__memory_search({query: "polly retry"})
 → Found: pattern about polly-retry-with-timeout
 → Apply pattern to current task
 ```
@@ -74,7 +74,7 @@ User: "I need to implement retry logic with Polly"
 ```
 Solved: HttpClient timeout not respected when using Polly retry
 → Store:
-  mcp__memory__memory_store({
+  mcp__plugin_decaf-memory-doobidoo_memory__memory_store({
     content: "polly-httpclient-timeout-interaction\nHttpClient.Timeout is per-attempt, not total\nPolly retry can exceed expected total timeout\nSolution: Use Polly timeout policy wrapping retry policy",
     metadata: {
       tags: "bug-pattern,polly,httpclient,dotnet",
@@ -85,7 +85,7 @@ Solved: HttpClient timeout not respected when using Polly retry
 
 ## Tools Used
 
-- `mcp__memory__memory_search` - Semantic search for patterns
-- `mcp__memory__memory_store` - Create new pattern
-- `mcp__memory__memory_update` - Update existing pattern
-- `mcp__memory__memory_graph` - Explore connections between patterns
+- `mcp__plugin_decaf-memory-doobidoo_memory__memory_search` - Semantic search for patterns
+- `mcp__plugin_decaf-memory-doobidoo_memory__memory_store` - Create new pattern
+- `mcp__plugin_decaf-memory-doobidoo_memory__memory_update` - Update existing pattern
+- `mcp__plugin_decaf-memory-doobidoo_memory__memory_graph` - Explore connections between patterns
