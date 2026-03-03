@@ -39,9 +39,9 @@ Or invoke via `/decaf-memory-doobidoo:remember` for a guided process.
    - When it applies (context)
    - The solution or approach (how)
 
-5. **Check for existing** - Search for similar patterns first using `mcp__memory__memory_search`
-   - If exists: Use `mcp__memory__memory_update` to extend
-   - If new: Use `mcp__memory__memory_store` to create
+5. **Check for existing** - Search for similar patterns first using `mcp__plugin_decaf-memory-doobidoo_memory__memory_search`
+   - If exists: Use `mcp__plugin_decaf-memory-doobidoo_memory__memory_update` to extend
+   - If new: Use `mcp__plugin_decaf-memory-doobidoo_memory__memory_store` to create
 
 6. **Store and confirm** - Save to knowledge graph and report what was stored
 
@@ -50,7 +50,7 @@ Or invoke via `/decaf-memory-doobidoo:remember` for a guided process.
 When storing a memory, use this structure:
 
 ```
-mcp__memory__memory_store({
+mcp__plugin_decaf-memory-doobidoo_memory__memory_store({
   content: "polly-httpclient-timeout-interaction\nHttpClient.Timeout applies per-attempt, not to total operation\nWith Polly retry, total time can far exceed HttpClient.Timeout\nSolution: Wrap retry policy with Polly timeout policy for total timeout control",
   metadata: {
     tags: "bug-pattern,polly,httpclient,dotnet",
@@ -97,7 +97,7 @@ Guide users away from storing:
 
 ## Tools Used
 
-- `mcp__memory__memory_search` - Check for existing patterns (semantic search)
-- `mcp__memory__memory_store` - Create new pattern
-- `mcp__memory__memory_update` - Update existing pattern metadata/tags
-- `mcp__memory__memory_graph` - Explore connections between patterns
+- `mcp__plugin_decaf-memory-doobidoo_memory__memory_search` - Check for existing patterns (semantic search)
+- `mcp__plugin_decaf-memory-doobidoo_memory__memory_store` - Create new pattern
+- `mcp__plugin_decaf-memory-doobidoo_memory__memory_update` - Update existing pattern metadata/tags
+- `mcp__plugin_decaf-memory-doobidoo_memory__memory_graph` - Explore connections between patterns
