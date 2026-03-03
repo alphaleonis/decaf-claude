@@ -81,7 +81,7 @@ Guide users away from storing:
 
 ## Tools Used
 
-- `mcp__memory__search_nodes` - Check for existing patterns
-- `mcp__memory__create_entities` - Create new pattern
-- `mcp__memory__add_observations` - Extend existing pattern
-- `mcp__memory__create_relations` - Link related patterns
+- `mcp__plugin_decaf-memory-mcp_memory__search_nodes` - Check for existing patterns
+- `mcp__plugin_decaf-memory-mcp_memory__create_entities` - Create new pattern
+- `mcp__plugin_decaf-memory-mcp_memory__add_observations` - Extend existing pattern
+- `mcp__plugin_decaf-memory-mcp_memory__create_relations` - Link related patterns

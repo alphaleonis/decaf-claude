@@ -18,9 +18,9 @@ Before starting work, search the knowledge graph if the task involves:
 - A problem that feels familiar
 
 **Query tools:**
-- `mcp__memory__search_nodes` - Search by topic/keyword
-- `mcp__memory__read_graph` - Browse full graph structure
-- `mcp__memory__open_nodes` - Get details on specific entities
+- `mcp__plugin_decaf-memory-mcp_memory__search_nodes` - Search by topic/keyword
+- `mcp__plugin_decaf-memory-mcp_memory__read_graph` - Browse full graph structure
+- `mcp__plugin_decaf-memory-mcp_memory__open_nodes` - Get details on specific entities
 
 ## When to Store
 
@@ -49,9 +49,9 @@ Use these types when creating entities:
 
 ## Storage Tools
 
-- `mcp__memory__create_entities` - Create new pattern entity
-- `mcp__memory__add_observations` - Add details to existing entity
-- `mcp__memory__create_relations` - Link related patterns
+- `mcp__plugin_decaf-memory-mcp_memory__create_entities` - Create new pattern entity
+- `mcp__plugin_decaf-memory-mcp_memory__add_observations` - Add details to existing entity
+- `mcp__plugin_decaf-memory-mcp_memory__create_relations` - Link related patterns
 
 ## Entity Structure
 
@@ -72,7 +72,7 @@ observations:
 **Querying:**
 ```
 User: "I need to implement retry logic with Polly"
-→ Search: mcp__memory__search_nodes({query: "polly retry"})
+→ Search: mcp__plugin_decaf-memory-mcp_memory__search_nodes({query: "polly retry"})
 → Found: "polly-retry-with-timeout" pattern with observations
 → Apply pattern to current task
 ```
