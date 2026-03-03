@@ -21,7 +21,7 @@ Examples:
 
 ## Process
 
-1. **Search the knowledge graph** using `mcp__memory__search_nodes` with the provided query
+1. **Search the knowledge graph** using `mcp__plugin_decaf-memory-mcp_memory__search_nodes` with the provided query
 2. **Display matching patterns** with their:
    - Name
    - Type (pattern, library-pattern, bug-pattern, tool-pattern)
@@ -32,9 +32,9 @@ Examples:
 
 ## Tools Used
 
-- `mcp__memory__search_nodes` - Search for patterns by keyword
-- `mcp__memory__open_nodes` - Get full details of specific patterns
-- `mcp__memory__read_graph` - Browse all stored patterns (use sparingly)
+- `mcp__plugin_decaf-memory-mcp_memory__search_nodes` - Search for patterns by keyword
+- `mcp__plugin_decaf-memory-mcp_memory__open_nodes` - Get full details of specific patterns
+- `mcp__plugin_decaf-memory-mcp_memory__read_graph` - Browse all stored patterns (use sparingly)
 
 ## Example Output
 
