@@ -10,4 +10,4 @@ This skill stores reusable patterns in the knowledge graph.
 
 Invoke the add-memory skill to handle this request:
 
-/decaf:add-memory $ARGUMENTS
+/decaf-memory-doobidoo:add-memory $ARGUMENTS

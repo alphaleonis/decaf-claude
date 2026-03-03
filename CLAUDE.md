@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Personal Claude Code configuration with two plugins: `decaf` (core) and `decaf-review` (code review ecosystem).
+Personal Claude Code configuration with four plugins: `decaf` (core), `decaf-review` (code review ecosystem), and two memory plugins (install one, not both).
 
 ## Plugins
 
@@ -12,13 +12,9 @@ General-purpose agents and skills for development workflows.
 
 | Skill | Invocation | Purpose |
 |-------|------------|---------|
-| `remember` | Both | Store a pattern in the knowledge graph (delegates to add-memory) |
-| `recall` | Both | Search the knowledge graph for stored patterns |
-| `add-memory` | Both | Store patterns in knowledge graph (backing for /remember) |
 | `decision-critic` | Both | Stress-test decisions through adversarial analysis |
 | `incoherence-detector` | Both | Detect doc/code/spec inconsistencies |
 | `note` | Both | Capture a follow-up task as a bean without interrupting current work |
-| `pattern-memory` | Claude only | Auto-query/store knowledge graph |
 | `powershell-expert` | Both | PowerShell development patterns |
 | `problem-analysis` | Both | Root cause investigation |
 
@@ -63,6 +59,23 @@ Multi-agent code review, coverage analysis, and refactoring.
 | `structural-analyst` | Per-file structural quality: naming, composition, complexity, domain modeling, error handling |
 | `test-reviewer` | Test anti-patterns, silent failures, false positives |
 
+### `decaf-memory-mcp` — Memory (server-memory)
+
+Memory skills backed by [@modelcontextprotocol/server-memory](https://github.com/modelcontextprotocol/servers/tree/main/src/memory). Simple JSONL-based knowledge graph with keyword search. Requires the MCP server to be configured separately.
+
+### `decaf-memory-doobidoo` — Memory (mcp-memory-service)
+
+Memory skills backed by [mcp-memory-service](https://github.com/doobidoo/mcp-memory-service). SQLite-vec storage with semantic search via local embeddings (MiniLM-L6-v2), knowledge graph with typed relationships, and autonomous consolidation. Requires the MCP server to be configured separately.
+
+**Install one memory plugin, not both.** Both provide the same skills:
+
+| Skill | Invocation | Purpose |
+|-------|------------|---------|
+| `remember` | Both | Store a pattern in the knowledge graph (delegates to add-memory) |
+| `recall` | Both | Search the knowledge graph for stored patterns |
+| `add-memory` | Both | Store patterns in knowledge graph (backing for /remember) |
+| `pattern-memory` | Claude only | Auto-query/store knowledge graph |
+
 ## Installation
 
 ### As a Local Marketplace
@@ -71,9 +84,10 @@ Multi-agent code review, coverage analysis, and refactoring.
 # 1. From the plugin directory, register as a marketplace
 /plugin marketplace add ./
 
-# 2. Install both plugins
+# 2. Install plugins
 /plugin install decaf-claude-config@decaf
 /plugin install decaf-claude-config@decaf-review
+/plugin install decaf-claude-config@decaf-memory-doobidoo  # or decaf-memory-mcp
 
 # 3. Restart Claude Code to load the plugins
 ```
@@ -91,18 +105,26 @@ Multi-agent code review, coverage analysis, and refactoring.
 ```
 decaf-claude-config/
 ├── .claude-plugin/
-│   └── marketplace.json          # Lists both plugins
+│   └── marketplace.json          # Lists all plugins
 ├── conventions/                  # Shared convention files (@file references)
 ├── decaf/                        # Core plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf"
 │   ├── agents/                   # 6 agents
-│   └── skills/                   # 9 skills
+│   └── skills/                   # 5 skills
 ├── decaf-review/                 # Review plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-review"
 │   ├── agents/                   # 10 agents
 │   └── skills/                   # 6 skills
+├── decaf-memory-mcp/             # Memory plugin (server-memory)
+│   ├── .claude-plugin/
+│   │   └── plugin.json           # name: "decaf-memory-mcp"
+│   └── skills/                   # 4 skills
+├── decaf-memory-doobidoo/        # Memory plugin (mcp-memory-service)
+│   ├── .claude-plugin/
+│   │   └── plugin.json           # name: "decaf-memory-doobidoo"
+│   └── skills/                   # 4 skills
 ├── CLAUDE.md
 └── README.md
 ```
@@ -115,6 +137,7 @@ After pushing changes to this repo, update the cached marketplace so Claude Code
 git -C ~/.claude/plugins/marketplaces/decaf-claude-config pull
 claude plugin install decaf@decaf-claude-config
 claude plugin install decaf-review@decaf-claude-config
+claude plugin install decaf-memory-doobidoo@decaf-claude-config  # or decaf-memory-mcp
 ```
 
 Then restart Claude Code to load the updated plugins.
