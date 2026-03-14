@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Personal Claude Code configuration with four plugins: `decaf` (core), `decaf-review` (code review ecosystem), and two memory plugins (install one, not both).
+Personal Claude Code configuration with five plugins: `decaf` (core), `decaf-review` (code review ecosystem), and three memory plugins (install one).
 
 ## Plugins
 
@@ -63,11 +63,21 @@ Multi-agent code review, coverage analysis, and refactoring.
 
 Memory skills backed by [@modelcontextprotocol/server-memory](https://github.com/modelcontextprotocol/servers/tree/main/src/memory). Simple JSONL-based knowledge graph with keyword search. Requires the MCP server to be configured separately.
 
-### `decaf-memory-doobidoo` — Memory (mcp-memory-service)
+### `decaf-memory-vestige` — Memory (Vestige) **RECOMMENDED**
 
-Memory skills backed by [mcp-memory-service](https://github.com/doobidoo/mcp-memory-service). SQLite-vec storage with semantic search via local embeddings (MiniLM-L6-v2), knowledge graph with typed relationships, and autonomous consolidation. Requires the MCP server to be configured separately.
+Memory skills backed by [Vestige](https://github.com/samvallad33/vestige) ([fork](https://github.com/alphaleonis/vestige)). FSRS-6 spaced repetition, hybrid semantic search (vector + keyword + HyDE), automatic deduplication via prediction error gating, memory decay, and 3D visualization dashboard. Requires the Vestige MCP server (`vestige-mcp`) to be configured separately.
 
-**Install one memory plugin, not both.** Both provide the same skills:
+| Skill | Invocation | Purpose |
+|-------|------------|---------|
+| `remember` | Both | Store a memory via `smart_ingest` (auto-dedup) |
+| `recall` | Both | Search memories via semantic search |
+| `vestige-init` | Claude only | Session startup, proactive memory behaviors, trigger words |
+
+### `decaf-memory-doobidoo` — Memory (mcp-memory-service) **DEPRECATED**
+
+Memory skills backed by mcp-memory-service (doobidoo). The upstream repository has been suspended. Use `decaf-memory-vestige` instead.
+
+**Install one memory plugin.** The legacy plugins (`decaf-memory-mcp`, `decaf-memory-doobidoo`) provide:
 
 | Skill | Invocation | Purpose |
 |-------|------------|---------|
@@ -87,7 +97,7 @@ Memory skills backed by [mcp-memory-service](https://github.com/doobidoo/mcp-mem
 # 2. Install plugins
 /plugin install decaf-claude-config@decaf
 /plugin install decaf-claude-config@decaf-review
-/plugin install decaf-claude-config@decaf-memory-doobidoo  # or decaf-memory-mcp
+/plugin install decaf-claude-config@decaf-memory-vestige   # recommended (or decaf-memory-mcp, decaf-memory-doobidoo)
 
 # 3. Restart Claude Code to load the plugins
 ```
@@ -121,7 +131,11 @@ decaf-claude-config/
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-memory-mcp"
 │   └── skills/                   # 4 skills
-├── decaf-memory-doobidoo/        # Memory plugin (mcp-memory-service)
+├── decaf-memory-vestige/          # Memory plugin (Vestige) — recommended
+│   ├── .claude-plugin/
+│   │   └── plugin.json           # name: "decaf-memory-vestige"
+│   └── skills/                   # 3 skills
+├── decaf-memory-doobidoo/        # Memory plugin (mcp-memory-service) — deprecated
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-memory-doobidoo"
 │   └── skills/                   # 4 skills
@@ -137,7 +151,7 @@ After pushing changes to this repo, update the cached marketplace so Claude Code
 git -C ~/.claude/plugins/marketplaces/decaf-claude-config pull
 claude plugin install decaf@decaf-claude-config
 claude plugin install decaf-review@decaf-claude-config
-claude plugin install decaf-memory-doobidoo@decaf-claude-config  # or decaf-memory-mcp
+claude plugin install decaf-memory-vestige@decaf-claude-config  # recommended (or decaf-memory-mcp, decaf-memory-doobidoo)
 ```
 
 Then restart Claude Code to load the updated plugins.
