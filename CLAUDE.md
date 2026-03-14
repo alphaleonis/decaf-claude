@@ -65,11 +65,12 @@ Memory skills backed by [Vestige](https://github.com/samvallad33/vestige) ([fork
 
 | Skill | Invocation | Purpose |
 |-------|------------|---------|
+| `init-memory` | Both | Manually load Vestige session context (fallback when the hook doesn't trigger the call) |
 | `remember` | Both | Store a memory via `smart_ingest` (auto-dedup) |
 | `recall` | Both | Search memories via semantic search |
 | `memory-dashboard` | Both | Open the Vestige 3D memory dashboard in the browser |
 
-A `SessionStart` hook automatically loads user preferences, project context, and memory protocol on every session start, resume, clear, and context compaction.
+A `SessionStart` hook automatically loads user preferences, project context, and memory protocol on every session start, resume, clear, and context compaction. If the model doesn't act on it, use `/init-memory` as a manual fallback.
 
 ## Installation
 
