@@ -68,7 +68,8 @@ Memory skills backed by [Vestige](https://github.com/samvallad33/vestige) ([fork
 | `remember` | Both | Store a memory via `smart_ingest` (auto-dedup) |
 | `recall` | Both | Search memories via semantic search |
 | `memory-dashboard` | Both | Open the Vestige 3D memory dashboard in the browser |
-| `vestige-init` | Claude only | Session startup, proactive memory behaviors, trigger words |
+
+A `SessionStart` hook automatically loads user preferences, project context, and memory protocol on every session start, resume, clear, and context compaction.
 
 ## Installation
 
