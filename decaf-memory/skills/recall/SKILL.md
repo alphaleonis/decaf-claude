@@ -17,7 +17,7 @@ Check that `mcp__vestige__search` is available in your tools. If not, tell the u
 ## Usage
 
 ```
-/decaf-memory-vestige:recall [search query]
+/decaf-memory:recall [search query]
 ```
 
 Examples:
@@ -44,7 +44,7 @@ Examples:
 
 3. **If no results**, suggest:
    - Trying different keywords
-   - Using `/decaf-memory-vestige:remember` to store something new
+   - Using `/decaf-memory:remember` to store something new
 
 4. **If results are helpful**, promote them:
    ```

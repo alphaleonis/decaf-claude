@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Personal Claude Code configuration with three plugins: `decaf` (core), `decaf-review` (code review ecosystem), and `decaf-memory-vestige` (memory).
+Personal Claude Code configuration with three plugins: `decaf` (core), `decaf-review` (code review ecosystem), and `decaf-memory` (memory).
 
 ## Plugins
 
@@ -59,7 +59,7 @@ Multi-agent code review, coverage analysis, and refactoring.
 | `structural-analyst` | Per-file structural quality: naming, composition, complexity, domain modeling, error handling |
 | `test-reviewer` | Test anti-patterns, silent failures, false positives |
 
-### `decaf-memory-vestige` — Memory (Vestige)
+### `decaf-memory` — Memory (Vestige)
 
 Memory skills backed by [Vestige](https://github.com/samvallad33/vestige) ([fork](https://github.com/alphaleonis/vestige)). FSRS-6 spaced repetition, hybrid semantic search (vector + keyword + HyDE), automatic deduplication via prediction error gating, memory decay, and 3D visualization dashboard. Requires the Vestige MCP server (`vestige-mcp` or `vestige-sync`) to be configured separately.
 
@@ -67,6 +67,7 @@ Memory skills backed by [Vestige](https://github.com/samvallad33/vestige) ([fork
 |-------|------------|---------|
 | `remember` | Both | Store a memory via `smart_ingest` (auto-dedup) |
 | `recall` | Both | Search memories via semantic search |
+| `memory-dashboard` | Both | Open the Vestige 3D memory dashboard in the browser |
 | `vestige-init` | Claude only | Session startup, proactive memory behaviors, trigger words |
 
 ## Installation
@@ -80,7 +81,7 @@ Memory skills backed by [Vestige](https://github.com/samvallad33/vestige) ([fork
 # 2. Install plugins
 /plugin install decaf-claude-config@decaf
 /plugin install decaf-claude-config@decaf-review
-/plugin install decaf-claude-config@decaf-memory-vestige
+/plugin install decaf-claude-config@decaf-memory
 
 # 3. Restart Claude Code to load the plugins
 ```
@@ -110,9 +111,9 @@ decaf-claude-config/
 │   │   └── plugin.json           # name: "decaf-review"
 │   ├── agents/                   # 10 agents
 │   └── skills/                   # 6 skills
-├── decaf-memory-vestige/          # Memory plugin (Vestige)
+├── decaf-memory/          # Memory plugin (Vestige)
 │   ├── .claude-plugin/
-│   │   └── plugin.json           # name: "decaf-memory-vestige"
+│   │   └── plugin.json           # name: "decaf-memory"
 │   └── skills/                   # 3 skills
 ├── CLAUDE.md
 └── README.md
@@ -126,7 +127,7 @@ After pushing changes to this repo, update the cached marketplace so Claude Code
 git -C ~/.claude/plugins/marketplaces/decaf-claude-config pull
 claude plugin install decaf@decaf-claude-config
 claude plugin install decaf-review@decaf-claude-config
-claude plugin install decaf-memory-vestige@decaf-claude-config
+claude plugin install decaf-memory@decaf-claude-config
 ```
 
 Then restart Claude Code to load the updated plugins.
