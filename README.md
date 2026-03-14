@@ -66,15 +66,6 @@ claude mcp add vestige -s user -- vestige-sync \
 
 `vestige-sync` wraps `vestige-mcp` with periodic export/import for syncing between machines. The `--sync-dir` should point to a Syncthing-shared directory.
 
-#### server-memory (simple)
-
-[server-memory](https://github.com/modelcontextprotocol/servers/tree/main/src/memory) is a simple JSONL-based knowledge graph with keyword search. No semantic search.
-
-```bash
-claude mcp add memory -s user -- bun x @modelcontextprotocol/server-memory
-/plugin install decaf-claude-config@decaf-memory-mcp
-```
-
 ## What's Inside
 
 ```
