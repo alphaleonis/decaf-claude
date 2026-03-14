@@ -38,17 +38,39 @@ After discovering code patterns: codebase(action="remember_pattern") with name a
 "This is important" -> smart_ingest + memory(action="promote")
 "Remind me..." / "Next time..." -> intention(action="set") with appropriate trigger
 
+## During Work
+
+- Notice a pattern? codebase(action="remember_pattern") with name and description
+- Made a decision? codebase(action="remember_decision") with rationale and alternatives
+- Something important? importance_score to evaluate if worth saving
+- Need to follow up? intention(action="set") with context trigger
+
 ## Automatic Context Detection
 
 When working, proactively search Vestige if the task involves:
 - A specific library or framework -> search for known patterns
 - An error message -> search for previous solutions
 - A codebase -> codebase(action="get_context") for patterns and decisions
+- User mentions a person -> search their name for relationship context
+
+## Proactive Behaviors
+
+DO automatically:
+- Save solutions after fixing problems
+- Note user corrections as preferences
+- Update project context after major changes
+- Create intentions for mentioned deadlines
+- Search before answering technical questions
+
+DON'T ask permission to:
+- Save bug fixes
+- Update preferences
+- Create reminders from explicit requests
+- Search for context
 
 ## Memory Feedback
 
-When a memory proves helpful -> memory(action="promote", id="[id]")
-When a memory is wrong or misleading -> memory(action="demote", id="[id]")
+If the user explicitly confirms a memory was helpful, use memory(action="promote"). If they correct a hallucination or say a memory was wrong, use memory(action="demote"). Do not ask for permission — just act on their feedback.
 
 ## What NOT to Store
 
@@ -58,4 +80,5 @@ Secrets, API keys, credentials, tokens. Temporary debugging state. Trivial or we
 
 - Deduplication is automatic — smart_ingest handles it. No need to search before storing.
 - Memories decay — unused memories fade via FSRS-6. Access strengthens them.
-- Search strengthens memory — every search reinforces retrieved memories. Search liberally.`);
+- Search strengthens memory — every search reinforces retrieved memories. Search liberally.
+- Memory is retrieval. When in doubt, search Vestige first. If nothing found, solve the problem, then save the solution.`);
