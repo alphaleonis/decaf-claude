@@ -47,7 +47,7 @@ Memory skills (`remember`, `recall`) require an MCP memory server. Three memory 
 claude mcp add vestige vestige-mcp -s user
 
 # Install the plugin
-/plugin install decaf-claude-config@decaf-memory-vestige
+/plugin install decaf-claude-config@decaf-memory
 ```
 
 **With vestige-sync** (multi-machine sync via Syncthing):
@@ -61,7 +61,7 @@ claude mcp add vestige -s user -- vestige-sync \
   --filename "{hostname}-{platform}"
 
 # Install the plugin
-/plugin install decaf-claude-config@decaf-memory-vestige
+/plugin install decaf-claude-config@decaf-memory
 ```
 
 `vestige-sync` wraps `vestige-mcp` with periodic export/import for syncing between machines. The `--sync-dir` should point to a Syncthing-shared directory.

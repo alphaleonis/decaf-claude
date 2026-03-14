@@ -17,7 +17,7 @@ Check that `mcp__vestige__smart_ingest` is available in your tools. If not, tell
 ## Usage
 
 ```
-/decaf-memory-vestige:remember [description of what to remember]
+/decaf-memory:remember [description of what to remember]
 ```
 
 ## Process
