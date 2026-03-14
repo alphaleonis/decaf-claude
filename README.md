@@ -33,18 +33,46 @@ cd /path/to/decaf-claude-config
 /plugin install decaf-claude-config@decaf-review
 ```
 
-### Optional: Memory MCP Server
+### Optional: Memory Plugin
 
-Some skills (`remember`, `recall`, `add-memory`, `pattern-memory`) require the [Memory MCP server](https://github.com/modelcontextprotocol/servers/tree/main/src/memory) for cross-project pattern storage.
+Memory skills (`remember`, `recall`) require an MCP memory server. Three memory plugins are available — install one:
 
+#### Vestige (recommended)
+
+[Vestige](https://github.com/samvallad33/vestige) provides FSRS-6 spaced repetition, semantic search, automatic deduplication, and memory decay. Requires the `vestige-mcp` binary (or `vestige-sync` for multi-machine sync).
+
+**Basic setup** (single machine):
 ```bash
-claude mcp add --transport stdio memory -- bun x @modelcontextprotocol/server-memory
+# Install vestige-mcp (see https://github.com/samvallad33/vestige for options)
+claude mcp add vestige vestige-mcp -s user
+
+# Install the plugin
+/plugin install decaf-claude-config@decaf-memory-vestige
 ```
 
-To configure a persistent storage location:
+**With vestige-sync** (multi-machine sync via Syncthing):
+```bash
+# Install vestige-sync (see https://github.com/alphaleonis/vestige-sync)
+claude mcp add vestige -s user -- vestige-sync \
+  --sync-dir ~/.vestige/vestige-sync \
+  --data-dir ~/.vestige/vestige.db \
+  --export-on-exit \
+  --export-interval 300 \
+  --filename "{hostname}-{platform}"
+
+# Install the plugin
+/plugin install decaf-claude-config@decaf-memory-vestige
+```
+
+`vestige-sync` wraps `vestige-mcp` with periodic export/import for syncing between machines. The `--sync-dir` should point to a Syncthing-shared directory.
+
+#### server-memory (simple)
+
+[server-memory](https://github.com/modelcontextprotocol/servers/tree/main/src/memory) is a simple JSONL-based knowledge graph with keyword search. No semantic search.
 
 ```bash
-claude mcp add --transport stdio memory -- bun x @modelcontextprotocol/server-memory --memory-path ~/.claude/memory.jsonl
+claude mcp add memory -s user -- bun x @modelcontextprotocol/server-memory
+/plugin install decaf-claude-config@decaf-memory-mcp
 ```
 
 ## What's Inside
