@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Run parallel code review agents and consolidate findings into a unified report
-argument-hint: "[quick|std|max] [--spec <path>] [path] [instructions]"
+argument-hint: "[quick|std|max] [--spec <path>] [PR#] [path] [instructions]"
 ---
 
 # Code Review
@@ -13,8 +13,9 @@ This command orchestrates code review agents and consolidates their findings int
 Parse `$ARGUMENTS` to determine:
 1. **Mode**: `quick`, `max`, or `std` (default when no mode keyword given)
 2. **Spec path**: `--spec <path>` — a specification or plan document to verify compliance against
-3. **Scope**: Specific file/directory path, or all uncommitted changes
-4. **Instructions**: Any additional review instructions
+3. **PR number**: A pull request number (e.g., `123`, `PR#123`, `#123`) — review that PR instead of local changes
+4. **Scope**: Specific file/directory path, or all uncommitted changes (ignored when PR number is provided)
+5. **Instructions**: Any additional review instructions
 
 | Mode | Agents | Use Case |
 |------|--------|----------|
@@ -27,6 +28,20 @@ Parse `$ARGUMENTS` to determine:
 ### Step 1: Gather Context
 
 Determine what code to review:
+
+#### PR mode (when a PR number is provided)
+
+Detect the hosting platform from context (git remotes, available MCP tools, or prior conversation):
+
+- **Azure DevOps**: Use `mcp__azure-devops__repo_get_pull_request_by_id` to fetch the PR metadata, then retrieve the diff. List changed files and their diffs via the Azure DevOps MCP tools.
+- **GitHub**: Use `gh pr diff <number>` to get the PR diff.
+
+Include the PR title, description, and author in the context passed to agents so they can evaluate intent.
+
+**IMPORTANT**: Do NOT post comments, reviews, or status updates to the PR. The review output is a local file only. If the user explicitly asks to post comments to the PR, then and only then may you do so.
+
+#### Local mode (default — no PR number)
+
 - If a specific path is provided: Review that file or directory
 - Otherwise: Get uncommitted changes via `git diff HEAD` and `git diff --cached`
 
@@ -184,6 +199,7 @@ FILENAME=".code-reviews/CODE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 # Code Review
 
 **Mode**: <mode> | **Reviewers**: <agent list> | **Date**: <YYYY-MM-DD>
+**Source**: <PR #N — title (platform)> | <local changes> | <last commit>
 **Scope**: N files changed, +X/-Y lines
 
 ## Agent Selection Rationale
@@ -317,4 +333,7 @@ Keep this lightweight — match on file path + category only. Skip this step if 
 /decaf-review:code-review src/Tools/MyTool.cs          # std mode, specific file
 /decaf-review:code-review max src/                     # Max mode, directory
 /decaf-review:code-review focus on null safety         # std mode with custom instructions
+/decaf-review:code-review 42                           # std mode, review PR #42
+/decaf-review:code-review max #42                      # Max mode, review PR #42
+/decaf-review:code-review quick PR#123                 # Quick mode, review PR #123
 ```
