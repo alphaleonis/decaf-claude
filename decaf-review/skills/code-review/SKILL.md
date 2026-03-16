@@ -33,10 +33,12 @@ Determine what code to review:
 
 Detect the hosting platform from context (git remotes, available MCP tools, or prior conversation):
 
-- **Azure DevOps**: Use `mcp__azure-devops__repo_get_pull_request_by_id` to fetch the PR metadata, then retrieve the diff. List changed files and their diffs via the Azure DevOps MCP tools.
-- **GitHub**: Use `gh pr diff <number>` to get the PR diff.
+- **Azure DevOps**: Use `mcp__azure-devops__repo_get_pull_request_by_id` to fetch the PR metadata (title, description, author, source branch, **target branch**), then retrieve the diff. List changed files and their diffs via the Azure DevOps MCP tools.
+- **GitHub**: Use `gh pr view <number> --json title,body,author,baseRefName,headRefName` for metadata, then `gh pr diff <number>` for the diff.
 
-Include the PR title, description, and author in the context passed to agents so they can evaluate intent.
+**Target branch awareness**: The PR's target (base) branch determines the true scope of the review. A PR targeting a feature branch may contain only a few incremental changes, even if the source branch is far ahead of `main`/`develop`. Always identify the target branch and ensure the diff reflects only the changes between source and target — not the cumulative distance from the default branch.
+
+Include the PR title, description, author, source branch, and **target branch** in the context passed to agents so they can evaluate intent and scope correctly.
 
 **IMPORTANT**: Do NOT post comments, reviews, or status updates to the PR. The review output is a local file only. If the user explicitly asks to post comments to the PR, then and only then may you do so.
 
@@ -199,7 +201,7 @@ FILENAME=".code-reviews/CODE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 # Code Review
 
 **Mode**: <mode> | **Reviewers**: <agent list> | **Date**: <YYYY-MM-DD>
-**Source**: <PR #N — title (platform)> | <local changes> | <last commit>
+**Source**: <PR #N — title (platform) [source → target]> | <local changes> | <last commit>
 **Scope**: N files changed, +X/-Y lines
 
 ## Agent Selection Rationale
