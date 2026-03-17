@@ -6,12 +6,14 @@ Originally forked from [everything-claude-code](https://github.com/affaan-m/ever
 
 ## Plugins
 
-This repo provides two plugins that can be installed independently:
+This repo provides four plugins that can be installed independently:
 
 | Plugin | Description |
 |--------|-------------|
-| **`decaf`** | General-purpose agents and skills (memory, analysis, development) |
-| **`decaf-review`** | Multi-agent code review and coverage analysis |
+| **`decaf`** | General-purpose agents and skills (analysis, development) |
+| **`decaf-review`** | Multi-agent code review, coverage analysis, and refactoring |
+| **`decaf-memory`** | Memory skills backed by Vestige (semantic search, spaced repetition) |
+| **`decaf-experimental`** | Experimental skills being tested before promotion to core |
 
 ## Installation
 
@@ -19,9 +21,11 @@ This repo provides two plugins that can be installed independently:
 # Add as a marketplace
 /plugin marketplace add alphaleonis/decaf-claude-config
 
-# Install one or both plugins
+# Install plugins
 /plugin install decaf-claude-config@decaf
 /plugin install decaf-claude-config@decaf-review
+/plugin install decaf-claude-config@decaf-memory
+/plugin install decaf-claude-config@decaf-experimental
 ```
 
 Or install from a local clone:
@@ -31,28 +35,22 @@ cd /path/to/decaf-claude-config
 /plugin marketplace add ./
 /plugin install decaf-claude-config@decaf
 /plugin install decaf-claude-config@decaf-review
+/plugin install decaf-claude-config@decaf-memory
+/plugin install decaf-claude-config@decaf-experimental
 ```
 
-### Optional: Memory Plugin
+### Memory Plugin Setup
 
-Memory skills (`remember`, `recall`) require an MCP memory server. Three memory plugins are available — install one:
-
-#### Vestige (recommended)
-
-[Vestige](https://github.com/samvallad33/vestige) provides FSRS-6 spaced repetition, semantic search, automatic deduplication, and memory decay. Requires the `vestige-mcp` binary (or `vestige-sync` for multi-machine sync).
+Memory skills require the Vestige MCP server. See the [Vestige repo](https://github.com/samvallad33/vestige) for installation options.
 
 **Basic setup** (single machine):
 ```bash
-# Install vestige-mcp (see https://github.com/samvallad33/vestige for options)
 claude mcp add vestige vestige-mcp -s user
-
-# Install the plugin
 /plugin install decaf-claude-config@decaf-memory
 ```
 
 **With vestige-sync** (multi-machine sync via Syncthing):
 ```bash
-# Install vestige-sync (see https://github.com/alphaleonis/vestige-sync)
 claude mcp add vestige -s user -- vestige-sync \
   --sync-dir ~/.vestige/vestige-sync \
   --data-dir ~/.vestige/vestige.db \
@@ -60,11 +58,8 @@ claude mcp add vestige -s user -- vestige-sync \
   --export-interval 300 \
   --filename "{hostname}-{platform}"
 
-# Install the plugin
 /plugin install decaf-claude-config@decaf-memory
 ```
-
-`vestige-sync` wraps `vestige-mcp` with periodic export/import for syncing between machines. The `--sync-dir` should point to a Syncthing-shared directory.
 
 ## What's Inside
 
@@ -75,11 +70,17 @@ decaf-claude-config/
 ├── decaf/                        # Core plugin
 │   ├── .claude-plugin/plugin.json
 │   ├── agents/                   # 6 agents
-│   └── skills/                   # 9 skills
+│   └── skills/                   # 5 skills
 ├── decaf-review/                 # Review plugin
 │   ├── .claude-plugin/plugin.json
-│   ├── agents/                   # 8 agents
+│   ├── agents/                   # 10 agents
+│   └── skills/                   # 6 skills
+├── decaf-memory/                 # Memory plugin (Vestige)
+│   ├── .claude-plugin/plugin.json
 │   └── skills/                   # 4 skills
+├── decaf-experimental/           # Experimental plugin
+│   ├── .claude-plugin/plugin.json
+│   └── skills/                   # 7 skills
 ├── CLAUDE.md
 └── README.md
 ```
@@ -92,13 +93,9 @@ Skills are invoked as `/decaf:<skill-name>`.
 |-------|-------------|
 | `decision-critic` | Stress-test decisions through adversarial analysis |
 | `incoherence-detector` | Detect doc/code/spec inconsistencies |
-| `problem-analysis` | Root cause investigation |
+| `note` | Capture a follow-up task as a bean without interrupting current work |
 | `powershell-expert` | PowerShell development patterns |
-| `remember` | Store a pattern in the knowledge graph |
-| `recall` | Search the knowledge graph for stored patterns |
-| `add-memory` | Store patterns in knowledge graph (backing for remember) |
-| `pattern-memory` | Auto-query/store knowledge graph (not user-invocable) |
-| `note` | Capture a follow-up task as a bean |
+| `problem-analysis` | Root cause investigation |
 
 ## `decaf` — Core Agents
 
@@ -121,8 +118,10 @@ Skills are invoked as `/decaf-review:<skill-name>`.
 |-------|-------------|
 | `code-review` | Parallel multi-agent code review with consolidation |
 | `coverage-review` | Run code coverage analysis and review gaps for severity |
+| `refactor` | Analyze code for structural improvement opportunities and produce a prioritized plan |
 | `handle-cr` | Walk through code review findings interactively |
 | `handle-coverage` | Walk through coverage gaps interactively, writing tests |
+| `handle-refactoring` | Walk through refactoring opportunities interactively |
 
 ## `decaf-review` — Review Agents
 
@@ -131,13 +130,40 @@ Agents are referenced via the Task tool as `decaf-review:<agent-name>`.
 | Agent | Purpose |
 |-------|---------|
 | `code-reviewer-broad` | Broad review across 5 categories with confidence scoring |
-| `code-reviewer-quick` | Fast generalist: bugs, security, code quality, conventions |
-| `code-reviewer-knowledge` | Knowledge preservation, production risks |
-| `coverage-reviewer` | Assess coverage gap severity and suggest tests |
-| `design-reviewer` | API contracts, boundaries, concurrency, evolution |
-| `security-reviewer` | Threat modeling, missing controls, architectural gaps |
-| `spec-compliance-reviewer` | Requirement gaps, deviations, scope creep |
+| `code-reviewer-quick` | Fast generalist: bugs, security, code quality, project conventions |
+| `code-reviewer-knowledge` | Knowledge preservation, production risks, RULE 0/1/2 hierarchy |
+| `coherence-analyst` | Cross-file structural patterns: duplication, naming consistency, interface drift, module boundaries |
+| `coverage-reviewer` | Assess coverage gap severity and suggest targeted test improvements |
+| `design-reviewer` | System-level design: API contracts, boundaries, concurrency, evolution |
+| `security-reviewer` | System-level security: threat modeling, missing controls, architectural gaps |
+| `spec-compliance-reviewer` | Spec compliance: requirement gaps, deviations, partial implementations, scope creep |
+| `structural-analyst` | Per-file structural quality: naming, composition, complexity, domain modeling, error handling |
 | `test-reviewer` | Test anti-patterns, silent failures, false positives |
+
+## `decaf-memory` — Memory Skills
+
+Skills are invoked as `/decaf-memory:<skill-name>`. Requires the Vestige MCP server.
+
+| Skill | Description |
+|-------|-------------|
+| `init-memory` | Manually load Vestige session context (fallback when the hook doesn't trigger) |
+| `remember` | Store a memory via smart_ingest (auto-dedup) |
+| `recall` | Search memories via semantic search |
+| `memory-dashboard` | Open the Vestige 3D memory dashboard in the browser |
+
+## `decaf-experimental` — Experimental Skills
+
+Skills are invoked as `/decaf-experimental:<skill-name>`.
+
+| Skill | Description |
+|-------|-------------|
+| `grill-me` | Stress-test a plan or design through depth-first interviewing with progress tracking |
+| `write-a-prd` | Create a PRD through user interview and codebase exploration |
+| `prd-to-plan` | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
+| `tdd` | Test-driven development with red-green-refactor loop (C#, Go, Rust, and others) |
+| `design-an-interface` | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
+| `improve-codebase-architecture` | Explore codebase for module-deepening opportunities and save candidates |
+| `handle-architecture-improvements` | Walk through architecture improvement candidates interactively, creating RFCs |
 
 ## Conventions
 
@@ -147,6 +173,8 @@ Shared reference files used by skills and agents via `@file` references:
 |------------|---------|
 | `code-review-consolidation.md` | `code-review` skill |
 | `coverage-config.md` | `coverage-review` skill |
+| `refactoring.md` | `refactor` skill |
+| `work-items.md` | `prd-to-plan`, `handle-refactoring`, `handle-architecture-improvements` skills |
 | `severity.md` | Review agents |
 | `security.md` | Security reviewer |
 | `code-quality/` | Code review agents |
