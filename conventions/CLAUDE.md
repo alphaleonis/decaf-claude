@@ -12,6 +12,7 @@ Universal conventions for agents and skills.
 | `structural.md`     | Code quality conventions, testing rules  | QR code review, planner decision audit                  |
 | `refactoring.md`    | Refactoring consolidation rules          | Refactoring skill, merging structural/coherence findings |
 | `temporal.md`       | Timeless present rule for comments       | TW/QR temporal contamination checks, writing comments   |
+| `work-items.md`     | Work item system detection & creation    | Any skill that creates issues, work items, or beans     |
 
 ## Subdirectories
 

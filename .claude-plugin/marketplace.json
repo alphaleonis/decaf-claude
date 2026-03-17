@@ -53,6 +53,26 @@
       ]
     },
     {
+      "name": "decaf-experimental",
+      "source": "./decaf-experimental",
+      "description": "Experimental skills and agents for Claude Code",
+      "author": {
+        "name": "Alphaleonis"
+      },
+      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
+      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "license": "MIT",
+      "keywords": [
+        "experimental",
+        "skills"
+      ],
+      "category": "workflow",
+      "tags": [
+        "experimental",
+        "skills"
+      ]
+    },
+    {
       "name": "decaf-memory",
       "source": "./decaf-memory",
       "description": "Memory skills backed by Vestige cognitive memory system (FSRS-6, semantic search, auto-dedup)",
