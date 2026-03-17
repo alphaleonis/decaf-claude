@@ -130,14 +130,14 @@ decaf-claude-config/
 │   │   └── plugin.json           # name: "decaf-review"
 │   ├── agents/                   # 10 agents
 │   └── skills/                   # 6 skills
-├── decaf-memory/          # Memory plugin (Vestige)
+├── decaf-memory/                 # Memory plugin (Vestige)
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-memory"
-│   └── skills/                   # 3 skills
+│   └── skills/                   # 4 skills
 ├── decaf-experimental/           # Experimental plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-experimental"
-│   └── skills/                   # 6 skills
+│   └── skills/                   # 7 skills
 ├── CLAUDE.md
 └── README.md
 ```
