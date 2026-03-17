@@ -85,7 +85,8 @@ Experimental skills being tested before promotion to core plugins.
 | `prd-to-plan` | Both | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
 | `tdd` | Both | Test-driven development with red-green-refactor loop (C#, Go, Rust, and others) |
 | `design-an-interface` | Both | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
-| `improve-codebase-architecture` | Both | Find module-deepening opportunities and propose refactor RFCs |
+| `improve-codebase-architecture` | Both | Explore codebase for module-deepening opportunities and save candidates |
+| `handle-architecture-improvements` | Both | Walk through architecture improvement candidates interactively, creating RFCs |
 
 ## Installation
 
