@@ -27,73 +27,55 @@ Also identify the project language and its idiomatic interface patterns — desi
 
 ### 2. Present candidates
 
-Present a numbered list of deepening opportunities. For each candidate, show:
+Present a numbered list of deepening opportunities to the user. For each candidate, show:
 
 - **Cluster**: Which modules/concepts are involved
 - **Why they're coupled**: Shared types, call patterns, co-ownership of a concept
 - **Dependency category**: See [REFERENCE.md](REFERENCE.md) for the four categories
 - **Test impact**: What existing tests would be replaced by boundary tests
 
-Do NOT propose interfaces yet. Ask the user: "Which of these would you like to explore?"
+### 3. Save candidates file
 
-### 3. User picks a candidate
+Save the full exploration results to a timestamped file. **Never overwrite existing files.**
 
-Wait for the user to choose before proceeding.
+**Filename**: `.architecture-improvements/CANDIDATES_<YYYY-MM-DD>_<HH-MM-SS>.md` using the current date and time from context. Do NOT shell out to `date`. Create the `.architecture-improvements/` directory first if it doesn't exist.
 
-### 4. Frame the problem space
+**File format:**
 
-Before spawning sub-agents, write a user-facing explanation of the problem space for the chosen candidate:
+```markdown
+# Architecture Improvement Candidates
 
-- The constraints any new interface would need to satisfy
-- The dependencies it would need to rely on
-- A rough illustrative code sketch to make the constraints concrete — this is not a proposal, just a way to ground the constraints
+**Date**: <YYYY-MM-DD>
+**Project language**: <language>
+**Idiomatic patterns**: <summary of interface conventions discovered during exploration>
 
-Show this to the user, then immediately proceed to Step 5. The user reads and thinks about the problem while the sub-agents work in parallel. If the user objects to the framing, stop and reframe before continuing.
+---
 
-### 5. Design multiple interfaces
+## #1 <Cluster name>
 
-Spawn 3+ sub-agents in parallel using the Agent tool. Each must produce a **radically different** interface for the deepened module.
+**Modules**: `path/to/A`, `path/to/B`, `path/to/C`
+**Why coupled**: <explanation of shared types, call patterns, co-ownership>
+**Dependency category**: <In-process | Local-substitutable | Remote but owned | True external>
+**Test impact**: <what existing tests would be replaced by boundary tests>
 
-Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category, what's being hidden, project language). This brief is independent of the user-facing explanation in Step 4. Choose constraints that create the most interesting tension for this specific problem — don't reuse the same axes every time. Examples of constraint axes:
+**Exploration notes**: <additional context from exploration that would help frame the problem space — e.g., key types, call patterns observed, where the friction was felt>
 
-- Minimize the interface — aim for 1-3 entry points max
-- Maximize flexibility — support many use cases and extension
-- Optimize for the most common caller — make the default case trivial
-- Design around the ports & adapters pattern for cross-boundary dependencies
-- Prioritize composability
-- Prioritize safety — make misuse impossible
+---
 
-Each sub-agent outputs:
+## #2 <Cluster name>
+...
+```
 
-1. Interface signature (types, methods, params — in the project language)
-2. Usage example showing how callers use it
-3. What complexity it hides internally
-4. Brief sketch of internal structure (enough to evaluate feasibility)
-5. Dependency strategy (how deps are handled — see [REFERENCE.md](REFERENCE.md))
-6. Trade-offs
+Include ALL candidates — do not filter by quality. The handler skill lets the user decide which to pursue and which to skip.
 
-Present designs sequentially, then compare them in prose.
+### Output Notification
 
-After comparing, give your own recommendation: which design you think is strongest and why. If elements from different designs would combine well, propose a hybrid. Be opinionated — the user wants a strong read, not just a menu.
+After saving the candidates file, inform the user:
 
-### 6. User picks an interface (or accepts recommendation)
+```
+✅ Architecture exploration complete: .architecture-improvements/CANDIDATES_<timestamp>.md
 
-Wait for the user to choose before proceeding.
+Found N deepening opportunities.
 
-### 7. Determine the output target
-
-@../../../../conventions/work-items.md
-
-Detect the available system and confirm with the user.
-
-### 8. Create refactor RFC
-
-Draft the RFC using the issue template in [REFERENCE.md](REFERENCE.md).
-
-**Work item content:**
-- **Title**: descriptive name for the refactor (e.g., "Deepen PaymentProcessing module")
-- **Body**: the RFC content from the REFERENCE.md template — problem, proposed interface, dependency strategy, testing strategy, implementation recommendations
-
-Show the draft to the user for review, then create using the conventions in `work-items.md`.
-
-For markdown output, write to `./plans/<feature-name>-rfc.md`.
+Run /decaf-experimental:handle-architecture-improvements to walk through candidates and create RFCs.
+```
