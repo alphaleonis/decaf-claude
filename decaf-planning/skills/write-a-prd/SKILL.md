@@ -5,7 +5,7 @@ description: Create a PRD through user interview, codebase exploration, and stru
 
 # Write a PRD
 
-Create a Product Requirements Document through user interview and codebase exploration. The PRD captures *what* to build and *why* — implementation planning (modules, phases, vertical slices) is handled separately by `/decaf-experimental:prd-to-plan`.
+Create a Product Requirements Document through user interview and codebase exploration. The PRD captures *what* to build and *why* — implementation planning (modules, phases, vertical slices) is handled separately by `/decaf-planning:prd-to-plan`.
 
 ## Process
 
@@ -23,9 +23,9 @@ Skip this step if the codebase is already in context from prior exploration.
 
 ### 3. Interview the user
 
-Use `/decaf-experimental:grill-me` to interview the user about every aspect of the problem and proposed solution until reaching a shared understanding.
+Use `/decaf-planning:grill-me` to interview the user about every aspect of the problem and proposed solution until reaching a shared understanding.
 
-Skip this step if the user was already grilled on this topic in the current conversation (e.g., a prior `/decaf-experimental:grill-me` session covered the same ground). Use judgement — if the grill-me session was on a related but different aspect, a brief follow-up interview may still be needed to fill gaps specific to the PRD.
+Skip this step if the user was already grilled on this topic in the current conversation (e.g., a prior `/decaf-planning:grill-me` session covered the same ground). Use judgement — if the grill-me session was on a related but different aspect, a brief follow-up interview may still be needed to fill gaps specific to the PRD.
 
 ### 4. Determine the output target
 

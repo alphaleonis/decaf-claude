@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Personal Claude Code configuration with four plugins: `decaf` (core), `decaf-review` (code review ecosystem), `decaf-memory` (memory), and `decaf-experimental` (experimental).
+Personal Claude Code configuration with five plugins: `decaf` (core), `decaf-review` (code review ecosystem), `decaf-planning` (planning), `decaf-memory` (memory), and `decaf-experimental` (experimental).
 
 ## Plugins
 
@@ -72,6 +72,19 @@ Memory skills backed by [Vestige](https://github.com/samvallad33/vestige) ([fork
 
 A `SessionStart` hook automatically loads user preferences, project context, and memory protocol on every session start, resume, clear, and context compaction. If the model doesn't act on it, use `/init-memory` as a manual fallback.
 
+### `decaf-planning` — Planning
+
+Planning skills for PRDs, implementation plans, and phase breakdowns.
+
+**Skills** (invoked as `/decaf-planning:skill-name`):
+
+| Skill | Invocation | Purpose |
+|-------|------------|---------|
+| `grill-me` | Both | Stress-test a plan or design through depth-first interviewing with progress tracking |
+| `write-a-prd` | Both | Create a PRD through user interview and codebase exploration |
+| `prd-to-plan` | Both | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
+| `breakdown-phase` | Both | Break a plan phase (epic) into implementable features with acceptance criteria |
+
 ### `decaf-experimental` — Experimental
 
 Experimental skills being tested before promotion to core plugins.
@@ -80,10 +93,6 @@ Experimental skills being tested before promotion to core plugins.
 
 | Skill | Invocation | Purpose |
 |-------|------------|---------|
-| `grill-me` | Both | Stress-test a plan or design through depth-first interviewing with progress tracking |
-| `write-a-prd` | Both | Create a PRD through user interview and codebase exploration |
-| `prd-to-plan` | Both | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
-| `breakdown-phase` | Both | Break a plan phase (epic) into implementable features with acceptance criteria |
 | `tdd` | Both | Test-driven development with red-green-refactor loop (C#, Go, Rust, and others) |
 | `design-an-interface` | Both | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
 | `improve-codebase-architecture` | Both | Explore codebase for module-deepening opportunities and save candidates |
@@ -100,6 +109,7 @@ Experimental skills being tested before promotion to core plugins.
 # 2. Install plugins
 /plugin install decaf-claude-config@decaf
 /plugin install decaf-claude-config@decaf-review
+/plugin install decaf-claude-config@decaf-planning
 /plugin install decaf-claude-config@decaf-memory
 /plugin install decaf-claude-config@decaf-experimental
 
@@ -131,6 +141,10 @@ decaf-claude-config/
 │   │   └── plugin.json           # name: "decaf-review"
 │   ├── agents/                   # 10 agents
 │   └── skills/                   # 6 skills
+├── decaf-planning/               # Planning plugin
+│   ├── .claude-plugin/
+│   │   └── plugin.json           # name: "decaf-planning"
+│   └── skills/                   # 4 skills
 ├── decaf-memory/                 # Memory plugin (Vestige)
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-memory"
@@ -138,7 +152,7 @@ decaf-claude-config/
 ├── decaf-experimental/           # Experimental plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-experimental"
-│   └── skills/                   # 8 skills
+│   └── skills/                   # 4 skills
 ├── CLAUDE.md
 └── README.md
 ```
@@ -151,6 +165,7 @@ After pushing changes to this repo, update the cached marketplace so Claude Code
 git -C ~/.claude/plugins/marketplaces/decaf-claude-config pull
 claude plugin install decaf@decaf-claude-config
 claude plugin install decaf-review@decaf-claude-config
+claude plugin install decaf-planning@decaf-claude-config
 claude plugin install decaf-memory@decaf-claude-config
 claude plugin install decaf-experimental@decaf-claude-config
 ```
