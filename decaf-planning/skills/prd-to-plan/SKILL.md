@@ -54,7 +54,13 @@ Break the PRD into **tracer bullet** phases. Each phase is a thin vertical slice
 - Prefer many thin slices over few thick ones
 - Do NOT include specific file names, function names, or implementation details that are likely to change as later phases are built
 - DO include durable decisions: route paths, schema shapes, data model names
+- DO include scope boundaries per phase (see below)
 </vertical-slice-rules>
+
+**Scope boundaries per phase:** Each phase should include a brief "Touches" and "Off limits" section. This prevents scope creep during implementation — Claude won't "helpfully" refactor adjacent code or add features that belong to a different phase.
+
+- **Touches**: Areas of the codebase this phase modifies (modules, layers, subsystems — not specific file names)
+- **Off limits**: Areas that are explicitly out of scope for this phase, even if they seem related
 
 ### 6. Quiz the user
 
@@ -80,7 +86,7 @@ Create work items using the target system from step 3 and the conventions in `wo
 
 **One child work item per phase:**
 - **Title**: `Phase N: <Title>`
-- **Body**: "What to build" description (end-to-end behavior, not layer-by-layer) + acceptance criteria as a checklist + user stories covered
+- **Body**: "What to build" description (end-to-end behavior, not layer-by-layer) + acceptance criteria as a checklist + user stories covered + scope boundaries (touches / off limits)
 
 For markdown output, use the template below instead.
 
@@ -114,6 +120,11 @@ A concise description of this vertical slice. Describe the end-to-end behavior, 
 - [ ] Criterion 2
 - [ ] Criterion 3
 
+### Scope boundaries
+
+**Touches**: <modules, layers, or subsystems this phase modifies>
+**Off limits**: <areas explicitly out of scope, even if related>
+
 ---
 
 ## Phase 2: <Title>
@@ -127,6 +138,11 @@ A concise description of this vertical slice. Describe the end-to-end behavior, 
 ### Acceptance criteria
 
 - [ ] ...
+
+### Scope boundaries
+
+**Touches**: ...
+**Off limits**: ...
 
 <!-- Repeat for each phase -->
 </plan-template>

@@ -80,6 +80,7 @@ Planning skills for PRDs, implementation plans, and phase breakdowns.
 
 | Skill | Invocation | Purpose |
 |-------|------------|---------|
+| `research` | Both | Explore an unfamiliar problem space through multi-phase parallel research with synthesis |
 | `grill-me` | Both | Stress-test a plan or design through depth-first interviewing with progress tracking |
 | `write-a-prd` | Both | Create a PRD through user interview and codebase exploration |
 | `prd-to-plan` | Both | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
@@ -144,7 +145,7 @@ decaf-claude-config/
 ├── decaf-planning/               # Planning plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-planning"
-│   └── skills/                   # 4 skills
+│   └── skills/                   # 5 skills
 ├── decaf-memory/                 # Memory plugin (Vestige)
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-memory"
