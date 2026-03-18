@@ -17,7 +17,7 @@ Prefer depth-first: exhaust a branch before moving to the next. Use judgement �
 
 ## Tracking progress
 
-Maintain a running summary in a local file (`./grill-me-session.md`) with two sections:
+Maintain a running summary in a local file (`./.grill-me/<short-descriptive-name>.md`) with two sections:
 
 - **Resolved** — decisions that have been settled, with the conclusion
 - **Open** — branches still to explore
