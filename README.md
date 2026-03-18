@@ -80,7 +80,7 @@ decaf-claude-config/
 │   └── skills/                   # 6 skills
 ├── decaf-planning/               # Planning plugin
 │   ├── .claude-plugin/plugin.json
-│   └── skills/                   # 4 skills
+│   └── skills/                   # 5 skills
 ├── decaf-memory/                 # Memory plugin (Vestige)
 │   ├── .claude-plugin/plugin.json
 │   └── skills/                   # 4 skills
@@ -163,6 +163,7 @@ Skills are invoked as `/decaf-planning:<skill-name>`.
 
 | Skill | Description |
 |-------|-------------|
+| `research` | Explore an unfamiliar problem space through multi-phase parallel research with synthesis |
 | `grill-me` | Stress-test a plan or design through depth-first interviewing with progress tracking |
 | `write-a-prd` | Create a PRD through user interview and codebase exploration |
 | `prd-to-plan` | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
