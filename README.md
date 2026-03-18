@@ -80,7 +80,7 @@ decaf-claude-config/
 │   └── skills/                   # 4 skills
 ├── decaf-experimental/           # Experimental plugin
 │   ├── .claude-plugin/plugin.json
-│   └── skills/                   # 7 skills
+│   └── skills/                   # 8 skills
 ├── CLAUDE.md
 └── README.md
 ```
@@ -160,6 +160,7 @@ Skills are invoked as `/decaf-experimental:<skill-name>`.
 | `grill-me` | Stress-test a plan or design through depth-first interviewing with progress tracking |
 | `write-a-prd` | Create a PRD through user interview and codebase exploration |
 | `prd-to-plan` | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
+| `breakdown-phase` | Break a plan phase (epic) into implementable features with acceptance criteria |
 | `tdd` | Test-driven development with red-green-refactor loop (C#, Go, Rust, and others) |
 | `design-an-interface` | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
 | `improve-codebase-architecture` | Explore codebase for module-deepening opportunities and save candidates |
@@ -174,7 +175,7 @@ Shared reference files used by skills and agents via `@file` references:
 | `code-review-consolidation.md` | `code-review` skill |
 | `coverage-config.md` | `coverage-review` skill |
 | `refactoring.md` | `refactor` skill |
-| `work-items.md` | `prd-to-plan`, `handle-refactoring`, `handle-architecture-improvements` skills |
+| `work-items.md` | `prd-to-plan`, `breakdown-phase`, `handle-refactoring`, `handle-architecture-improvements` skills |
 | `severity.md` | Review agents |
 | `security.md` | Security reviewer |
 | `code-quality/` | Code review agents |

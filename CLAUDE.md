@@ -83,6 +83,7 @@ Experimental skills being tested before promotion to core plugins.
 | `grill-me` | Both | Stress-test a plan or design through depth-first interviewing with progress tracking |
 | `write-a-prd` | Both | Create a PRD through user interview and codebase exploration |
 | `prd-to-plan` | Both | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
+| `breakdown-phase` | Both | Break a plan phase (epic) into implementable features with acceptance criteria |
 | `tdd` | Both | Test-driven development with red-green-refactor loop (C#, Go, Rust, and others) |
 | `design-an-interface` | Both | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
 | `improve-codebase-architecture` | Both | Explore codebase for module-deepening opportunities and save candidates |
@@ -137,7 +138,7 @@ decaf-claude-config/
 ├── decaf-experimental/           # Experimental plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-experimental"
-│   └── skills/                   # 7 skills
+│   └── skills/                   # 8 skills
 ├── CLAUDE.md
 └── README.md
 ```
