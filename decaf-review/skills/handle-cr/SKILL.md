@@ -1,16 +1,22 @@
 ---
 name: handle-cr
-description: Walk through code review findings interactively, addressing each issue
-argument-hint: "[high|medium|all] [file]"
+description: Walk through code review findings interactively, addressing each issue. Use "auto" for autonomous fixing with TDD.
+argument-hint: "[auto] [high|medium|all] [file]"
 ---
 
 # Handle Code Review Findings
 
-Iterate through code review findings one by one, presenting each issue and waiting for user input before proceeding.
+Iterate through code review findings, presenting each issue and resolving it.
+
+**Two modes:**
+- **Interactive** (default): Present one finding at a time, wait for user input.
+- **Auto** (`auto` argument): Ask clarifying questions upfront, then autonomously fix or skip each finding using best judgment. Prefers TDD when test infrastructure is available.
 
 ## Critical Behavior Requirements
 
 **YOU MUST FOLLOW THESE RULES:**
+
+### Interactive Mode (default)
 
 1. **MANDATORY STOP**: You MUST use `AskUserQuestion` to present each finding and wait for the user's choice BEFORE taking ANY action. Do NOT implement fixes autonomously.
 
@@ -18,13 +24,31 @@ Iterate through code review findings one by one, presenting each issue and waiti
 
 3. **NO AUTONOMOUS FIXES**: Never implement a fix without explicit user approval via AskUserQuestion response.
 
-4. **STATE TRACKING**: After presenting the summary, write progress state to `.code-reviews/.handle-cr-state.json`. Update this file after each finding is processed. This enables recovery after context compaction.
+### Auto Mode
+
+1. **UPFRONT QUESTIONS ONLY**: Ask ALL clarifying questions together in a single interaction BEFORE beginning the fix loop. After the user confirms, do NOT stop to ask — proceed autonomously through every finding.
+
+2. **BEST-EFFORT DECISIONS**: For each finding, decide whether and how to fix it based on the [Auto Mode Decision Criteria](#auto-mode-decision-criteria). Apply fixes or skip findings without waiting for user input.
+
+3. **PREFER TDD**: When the project has test infrastructure (test framework configured, existing test files), use the TDD workflow (Red → Green → Refactor) for TDD-eligible findings. Fall back to direct fix when TDD is not feasible.
+
+4. **PROGRESS REPORTING**: Show a brief one-line status after each finding is processed. Do NOT present full finding details — just the finding number, title, and action taken.
+
+5. **STOP ON FAILURE**: If a fix fails to compile or breaks existing tests, revert the change, record the finding as skipped (with reason), and continue to the next finding. Do NOT stop to ask the user.
+
+### Both Modes
+
+- **STATE TRACKING**: After presenting the summary, write progress state to `.code-reviews/.handle-cr-state.json`. Update this file after each finding is processed. This enables recovery after context compaction.
 
 ## Argument Parsing
 
-Parse `$ARGUMENTS` to determine severity filter and code review file:
+Parse `$ARGUMENTS` to determine mode, severity filter, and code review file:
 
-**Severity filter** (first positional argument, optional):
+**Mode** (positional, optional):
+- `auto` — autonomous mode: ask questions upfront, then fix/skip without stopping
+- (omitted) — interactive mode (default)
+
+**Severity filter** (positional, optional):
 - `high` — only Critical + High findings
 - `medium` — Critical + High + Medium findings
 - `all` (default) — all findings
@@ -32,6 +56,8 @@ Parse `$ARGUMENTS` to determine severity filter and code review file:
 **File** (remaining argument, optional):
 - If a file path is provided: Use that specific file
 - Otherwise: Use the most recent `.code-reviews/CODE_REVIEW_*.md` file
+
+Examples: `auto`, `auto high`, `high`, `auto medium myreview.md`, `all myreview.md`
 
 ## Execution Steps
 
@@ -71,6 +97,25 @@ Build a list of findings with:
 
 **Identify similar issues:** Group findings that share the same underlying pattern (e.g., "missing null check", "missing empty collection guard", "undocumented parameter"). Track these groups to enable batch fixing.
 
+### Step 2b: Detect Test Infrastructure (Auto Mode Only)
+
+When in auto mode, detect whether the project has test infrastructure:
+
+1. **Search for test files**: Look for files matching `*.test.*`, `*.spec.*`, `*_test.*`, `*Tests.*`, or directories named `tests`, `__tests__`, `test`
+2. **Search for test framework config**: Look for `jest.config.*`, `pytest.ini`, `pyproject.toml` (with pytest section), `*.csproj` (with test SDK), `go.mod` (with testing), `Cargo.toml` (with dev-dependencies), etc.
+3. **Identify test command**: Determine how to run tests (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
+
+Record in state:
+```json
+{
+  "testInfra": {
+    "available": true|false,
+    "framework": "xunit|jest|pytest|go-test|...",
+    "testCommand": "dotnet test|npm test|..."
+  }
+}
+```
+
 ### Step 3: Check for Existing State
 
 Check if `.code-reviews/.handle-cr-state.json` exists:
@@ -78,6 +123,8 @@ Check if `.code-reviews/.handle-cr-state.json` exists:
 - If no or different file, start fresh
 
 ### Step 4: Present Summary and Initialize State
+
+#### Interactive Mode
 
 Show the user the overall summary:
 
@@ -98,20 +145,78 @@ I'll walk you through each finding ONE AT A TIME. For each one, choose an action
 - **Skip**, Dismiss (false positive), Defer (create work item)
 ```
 
+#### Auto Mode
+
+Show the summary AND the planned action for every finding, then ask for confirmation.
+
+**4a. Build the action plan.** For each finding, apply the [Auto Mode Decision Criteria](#auto-mode-decision-criteria) to determine the planned action: **Fix (TDD)**, **Fix**, **Fix All Similar**, or **Skip**.
+
+**4b. Present the plan:**
+
+```
+## Code Review: [filename] — Auto Mode
+
+| Severity | Count |
+|----------|-------|
+| 🔴 Critical | X |
+| 🟠 High | X |
+| 🟡 Medium | X |
+| 🟢 Low | X |
+
+**Total findings:** N | **Test infrastructure:** [Yes (framework) | No]
+
+### Planned Actions
+
+| # | Severity | Title | File | Planned Action | Reason |
+|---|----------|-------|------|----------------|--------|
+| 1 | 🔴 Critical | Null ref in handler | Foo.cs:42 | Fix (TDD) | Behavioral bug, tests available |
+| 2 | 🟠 High | SQL injection | Bar.cs:17 | Fix | Security, no test seam |
+| 3 | 🟡 Medium | Rename method | Baz.cs:99 | Skip | Naming/cosmetic |
+| ... | ... | ... | ... | ... | ... |
+
+### Questions
+
+[List any findings that need user input — e.g., findings with multiple fix options where the agent can't confidently choose. For each, state the finding number, the options, and what the agent recommends.]
+
+If no questions: "No ambiguous findings — ready to proceed."
+```
+
+**4c. Ask for confirmation:**
+
+```
+AskUserQuestion with:
+- question: "Review the plan above. Should I proceed, or do you want to adjust any items? (You can say things like '#3 fix instead of skip' or 'skip all Low')"
+- header: "Auto Mode Plan"
+```
+
+⚠️ **STOP HERE AND WAIT FOR USER RESPONSE.**
+
+**4d. Process user response:**
+- If the user says "go", "proceed", "yes", "looks good", etc.: begin the fix loop
+- If the user adjusts items: update the plan accordingly, re-display the changed rows, and ask again
+- If the user answers the listed questions: record their choices for use during the fix loop
+
+#### Both Modes — Initialize State
+
 Write initial state to `.code-reviews/.handle-cr-state.json`:
 ```json
 {
+  "mode": "interactive|auto",
   "reviewFile": ".code-reviews/CODE_REVIEW_xxx.md",
   "totalFindings": N,
   "currentIndex": 0,
   "processed": [],
   "actions": { "fixed": 0, "fixedTdd": 0, "fixedBatch": 0, "skipped": 0, "dismissed": 0, "deferred": 0 },
-  "similarGroups": { "pattern-name": [1, 3, 7], ... },
-  "deferSystem": null
+  "similarGroups": { "pattern-name": [1, 3, 7] },
+  "deferSystem": null,
+  "testInfra": { "available": false },
+  "plannedActions": { "1": "fixTdd", "2": "fix", "3": "skip" }
 }
 ```
 
-### Step 5: Process Each Finding (MANDATORY STOP POINT)
+### Step 5: Process Findings
+
+#### Interactive Mode — Process Each Finding (MANDATORY STOP POINT)
 
 For each finding, starting with the highest severity:
 
@@ -207,27 +312,9 @@ AskUserQuestion with:
 
 ⚠️ **STOP HERE AND WAIT FOR USER RESPONSE.**
 
-**5c. Handle the final response:**
+**5c. Handle the final response** (both modes use these action implementations):
 
-- **Apply Fix** (or **Apply Fix (Option N)**): Implement the suggested fix (or specified option), verify it compiles, show the result
-- **Apply Fix (TDD)** / **Fix All Similar (TDD)**: Follow the TDD workflow:
-  1. **Red**: Write test(s) that expose the bug/issue. Run tests and verify they fail for the expected reason.
-  2. **Green**: Implement the fix. Run tests and verify they now pass.
-  3. **Refactor** (optional): Clean up if needed while keeping tests green.
-  4. Show the user the test(s) created and the fix applied.
-- **Fix All Similar**: Apply the same fix pattern to all similar issues:
-  1. List all affected files/locations
-  2. Apply fixes to each location
-  3. Verify compilation
-  4. Mark all related findings as processed
-- **Skip**: Record as skipped, proceed to next
-- **Dismiss**: Record as dismissed. The user may provide a reason via the free-form "Other" option — if so, store it. Otherwise record reason as `"dismissed"`.
-- **Defer**: Create a work item in the project's tracking system:
-  1. **Detect tracking system**: Check project CLAUDE.md for references to tracking systems (Beans, Azure DevOps, GitHub Issues, TODO comments, etc.)
-  2. **First defer**: If no system detected and `deferSystem` is null in state file, ask the user which system to use via AskUserQuestion. Store the choice in state file under `"deferSystem"`.
-  3. **Subsequent defers**: Reuse `deferSystem` from state file.
-  4. **Create work item**: Create the item in the appropriate system (e.g., Beans task, GitHub issue, TODO comment in code). Store the work item reference.
-- **Other** (free-form): Implement whatever the user describes. If user types "Stop", jump to Step 6.
+→ Jump to [Action Implementations](#action-implementations).
 
 **5d. Update state file** after each action:
 ```json
@@ -247,6 +334,50 @@ For batch fixes, add entries for all affected findings to the `processed` array.
 ```
 
 **5f. Return to 5a for next finding.** Do NOT batch - present one finding, wait, process, repeat.
+
+#### Auto Mode — Autonomous Fix Loop
+
+After the user confirms the plan in Step 4, iterate through all findings automatically:
+
+**For each finding**, starting with the highest severity:
+
+1. **Read the planned action** from the confirmed plan (or user-overridden action)
+2. **Execute the action** using the [Action Implementations](#action-implementations)
+3. **Verify**: Run `testCommand` (if available) or verify compilation after each fix. If verification fails:
+   - Revert the change
+   - Record as skipped with reason: `"fix failed: [error summary]"`
+   - Continue to next finding
+4. **Report progress** (one line):
+   ```
+   ✅ #N [Title] — [action taken] | ❌ #N [Title] — skipped: [reason]
+   ```
+5. **Update state file** (same format as interactive mode)
+6. **Process similar findings together**: When reaching a finding that belongs to a similar group and the planned action is "Fix All Similar", process all findings in the group at once, then skip them individually as they come up.
+7. **Continue** to next finding. Do NOT stop.
+
+### Action Implementations
+
+These implementations are shared by both modes.
+
+- **Apply Fix** (or **Apply Fix (Option N)**): Implement the suggested fix (or specified option), verify it compiles, show the result
+- **Apply Fix (TDD)** / **Fix All Similar (TDD)**: Follow the TDD workflow:
+  1. **Red**: Write test(s) that expose the bug/issue. Run tests and verify they fail for the expected reason.
+  2. **Green**: Implement the fix. Run tests and verify they now pass.
+  3. **Refactor** (optional): Clean up if needed while keeping tests green.
+  4. Show the user the test(s) created and the fix applied.
+- **Fix All Similar**: Apply the same fix pattern to all similar issues:
+  1. List all affected files/locations
+  2. Apply fixes to each location
+  3. Verify compilation
+  4. Mark all related findings as processed
+- **Skip**: Record as skipped, proceed to next
+- **Dismiss**: Record as dismissed. In interactive mode, the user may provide a reason via the free-form "Other" option — if so, store it. Otherwise record reason as `"dismissed"`. In auto mode, include the dismissal reason from the decision criteria.
+- **Defer**: Create a work item in the project's tracking system:
+  1. **Detect tracking system**: Check project CLAUDE.md for references to tracking systems (Beans, Azure DevOps, GitHub Issues, TODO comments, etc.)
+  2. **First defer**: If no system detected and `deferSystem` is null in state file, ask the user which system to use via AskUserQuestion. Store the choice in state file under `"deferSystem"`.
+  3. **Subsequent defers**: Reuse `deferSystem` from state file.
+  4. **Create work item**: Create the item in the appropriate system (e.g., Beans task, GitHub issue, TODO comment in code). Store the work item reference.
+- **Other** (free-form, interactive mode only): Implement whatever the user describes. If user types "Stop", jump to Step 6.
 
 ### Step 6: Session Summary
 
@@ -313,11 +444,54 @@ AskUserQuestion with:
 
 If the user chooses "Yes", invoke `/decaf-review:code-review quick <modified-files>`.
 
+## Auto Mode Decision Criteria
+
+Use these rules to decide the planned action for each finding in auto mode.
+
+### Fix (TDD) — preferred when all conditions met:
+- Test infrastructure is available
+- Finding is TDD-eligible (behavioral bug, not a test file, not cosmetic)
+- Confidence >= 60
+
+### Fix (direct) — when TDD not feasible:
+- Severity is Critical or High (always attempt, regardless of confidence)
+- Severity is Medium AND confidence >= 70 AND fix is clear/actionable
+- Finding has a single unambiguous suggested fix
+- Security findings (always attempt)
+
+### Fix All Similar — when pattern group exists:
+- Multiple findings share the same pattern
+- The fix for one applies uniformly to all
+- Apply TDD variant if test infrastructure available and eligible
+
+### Skip — when fix is not appropriate:
+- Severity is Low (unless trivially fixable like removing unused imports)
+- Confidence < 70 for Medium severity
+- Purely cosmetic: naming, formatting, comment style, whitespace
+- Documentation-only findings
+- Fix has multiple conflicting options AND user did not resolve in upfront questions
+- Fix would require significant design decisions beyond the finding's scope
+- Finding is subjective or opinion-based
+
+### Dismiss — when finding is likely a false positive:
+- Confidence < 50
+- Finding contradicts established project conventions (as seen in codebase)
+- Finding is clearly incorrect based on context
+
+### Summary of severity thresholds:
+
+| Severity | Default Action | Override |
+|----------|---------------|----------|
+| 🔴 Critical | Always fix | — |
+| 🟠 High | Always fix | Skip if confidence < 50 |
+| 🟡 Medium | Fix if confidence >= 70 | Skip if cosmetic/subjective |
+| 🟢 Low | Skip | Fix if trivial (unused imports, etc.) |
+
 ## Notes
 
 - Always order findings by severity (Critical → High → Medium → Low)
 - For each fix, verify the change compiles before moving on
-- If a fix fails, offer alternatives or let the user skip
+- If a fix fails, offer alternatives (interactive) or skip with reason (auto)
 - Keep track of all changes for the final summary
 - If context is compacted mid-session, read `.code-reviews/.handle-cr-state.json` to resume
 - Always use literal Unicode emoji characters (🔴🟠🟡🟢), never `:shortcode:` syntax like `:yellow_circle:`
