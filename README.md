@@ -80,7 +80,7 @@ decaf-claude-config/
 │   └── skills/                   # 6 skills
 ├── decaf-planning/               # Planning plugin
 │   ├── .claude-plugin/plugin.json
-│   └── skills/                   # 5 skills
+│   └── skills/                   # 6 skills
 ├── decaf-memory/                 # Memory plugin (Vestige)
 │   ├── .claude-plugin/plugin.json
 │   └── skills/                   # 4 skills
@@ -168,6 +168,7 @@ Skills are invoked as `/decaf-planning:<skill-name>`.
 | `write-a-prd` | Create a PRD through user interview and codebase exploration |
 | `prd-to-plan` | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
 | `breakdown-phase` | Break a plan phase (epic) into implementable features with acceptance criteria |
+| `close-plan` | Reconcile planned vs. actual, record deviations, and close a phase or plan |
 
 ## `decaf-experimental` — Experimental Skills
 
