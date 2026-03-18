@@ -12,6 +12,7 @@ This repo provides four plugins that can be installed independently:
 |--------|-------------|
 | **`decaf`** | General-purpose agents and skills (analysis, development) |
 | **`decaf-review`** | Multi-agent code review, coverage analysis, and refactoring |
+| **`decaf-planning`** | Planning skills for PRDs, implementation plans, and phase breakdowns |
 | **`decaf-memory`** | Memory skills backed by Vestige (semantic search, spaced repetition) |
 | **`decaf-experimental`** | Experimental skills being tested before promotion to core |
 
@@ -24,6 +25,7 @@ This repo provides four plugins that can be installed independently:
 # Install plugins
 /plugin install decaf-claude-config@decaf
 /plugin install decaf-claude-config@decaf-review
+/plugin install decaf-claude-config@decaf-planning
 /plugin install decaf-claude-config@decaf-memory
 /plugin install decaf-claude-config@decaf-experimental
 ```
@@ -35,6 +37,7 @@ cd /path/to/decaf-claude-config
 /plugin marketplace add ./
 /plugin install decaf-claude-config@decaf
 /plugin install decaf-claude-config@decaf-review
+/plugin install decaf-claude-config@decaf-planning
 /plugin install decaf-claude-config@decaf-memory
 /plugin install decaf-claude-config@decaf-experimental
 ```
@@ -75,12 +78,15 @@ decaf-claude-config/
 │   ├── .claude-plugin/plugin.json
 │   ├── agents/                   # 10 agents
 │   └── skills/                   # 6 skills
+├── decaf-planning/               # Planning plugin
+│   ├── .claude-plugin/plugin.json
+│   └── skills/                   # 4 skills
 ├── decaf-memory/                 # Memory plugin (Vestige)
 │   ├── .claude-plugin/plugin.json
 │   └── skills/                   # 4 skills
 ├── decaf-experimental/           # Experimental plugin
 │   ├── .claude-plugin/plugin.json
-│   └── skills/                   # 8 skills
+│   └── skills/                   # 4 skills
 ├── CLAUDE.md
 └── README.md
 ```
@@ -151,9 +157,9 @@ Skills are invoked as `/decaf-memory:<skill-name>`. Requires the Vestige MCP ser
 | `recall` | Search memories via semantic search |
 | `memory-dashboard` | Open the Vestige 3D memory dashboard in the browser |
 
-## `decaf-experimental` — Experimental Skills
+## `decaf-planning` — Planning Skills
 
-Skills are invoked as `/decaf-experimental:<skill-name>`.
+Skills are invoked as `/decaf-planning:<skill-name>`.
 
 | Skill | Description |
 |-------|-------------|
@@ -161,6 +167,13 @@ Skills are invoked as `/decaf-experimental:<skill-name>`.
 | `write-a-prd` | Create a PRD through user interview and codebase exploration |
 | `prd-to-plan` | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
 | `breakdown-phase` | Break a plan phase (epic) into implementable features with acceptance criteria |
+
+## `decaf-experimental` — Experimental Skills
+
+Skills are invoked as `/decaf-experimental:<skill-name>`.
+
+| Skill | Description |
+|-------|-------------|
 | `tdd` | Test-driven development with red-green-refactor loop (C#, Go, Rust, and others) |
 | `design-an-interface` | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
 | `improve-codebase-architecture` | Explore codebase for module-deepening opportunities and save candidates |
@@ -175,7 +188,7 @@ Shared reference files used by skills and agents via `@file` references:
 | `code-review-consolidation.md` | `code-review` skill |
 | `coverage-config.md` | `coverage-review` skill |
 | `refactoring.md` | `refactor` skill |
-| `work-items.md` | `prd-to-plan`, `breakdown-phase`, `handle-refactoring`, `handle-architecture-improvements` skills |
+| `work-items.md` | `prd-to-plan`, `breakdown-phase`, `write-a-prd`, `handle-refactoring`, `handle-architecture-improvements` skills |
 | `severity.md` | Review agents |
 | `security.md` | Security reviewer |
 | `code-quality/` | Code review agents |

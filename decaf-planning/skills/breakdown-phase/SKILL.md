@@ -120,7 +120,7 @@ After creating features, update the parent phase work item (or plan section) to 
 ## Example Usage
 
 ```
-/decaf-experimental:breakdown-phase 2                    # Break down phase 2 from plan in context
-/decaf-experimental:breakdown-phase ./plans/auth.md#3    # Phase 3 from a plan file
-/decaf-experimental:breakdown-phase BEAN-42              # Break down a beans epic
+/decaf-planning:breakdown-phase 2                    # Break down phase 2 from plan in context
+/decaf-planning:breakdown-phase ./plans/auth.md#3    # Phase 3 from a plan file
+/decaf-planning:breakdown-phase BEAN-42              # Break down a beans epic
 ```
