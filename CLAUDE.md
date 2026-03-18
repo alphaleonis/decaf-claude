@@ -85,6 +85,7 @@ Planning skills for PRDs, implementation plans, and phase breakdowns.
 | `write-a-prd` | Both | Create a PRD through user interview and codebase exploration |
 | `prd-to-plan` | Both | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
 | `breakdown-phase` | Both | Break a plan phase (epic) into implementable features with acceptance criteria |
+| `close-plan` | Both | Reconcile planned vs. actual, record deviations, and close a phase or plan |
 
 ### `decaf-experimental` — Experimental
 
@@ -145,7 +146,7 @@ decaf-claude-config/
 ├── decaf-planning/               # Planning plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-planning"
-│   └── skills/                   # 5 skills
+│   └── skills/                   # 6 skills
 ├── decaf-memory/                 # Memory plugin (Vestige)
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-memory"
