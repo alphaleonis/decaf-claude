@@ -40,7 +40,7 @@ Multi-agent code review, coverage analysis, and refactoring.
 | `code-review` | Both | Parallel multi-agent code review with consolidation |
 | `coverage-review` | Both | Run code coverage analysis and review gaps for severity |
 | `refactor` | Both | Analyze code for structural improvement opportunities and produce a prioritized plan |
-| `handle-cr` | Both | Walk through code review findings interactively |
+| `handle-cr` | Both | Walk through code review findings interactively, or use `auto` for autonomous fixing with TDD |
 | `handle-coverage` | Both | Walk through coverage gaps interactively, writing tests |
 | `handle-refactoring` | Both | Walk through refactoring opportunities interactively |
 
