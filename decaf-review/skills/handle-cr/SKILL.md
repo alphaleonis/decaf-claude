@@ -149,7 +149,7 @@ I'll walk you through each finding ONE AT A TIME. For each one, choose an action
 
 Show the summary AND the planned action for every finding, then ask for confirmation.
 
-**4a. Build the action plan.** For each finding, apply the [Auto Mode Decision Criteria](#auto-mode-decision-criteria) to determine the planned action: **Fix (TDD)**, **Fix**, **Fix All Similar**, or **Skip**.
+**4a. Build the action plan.** For each finding, apply the [Auto Mode Decision Criteria](#auto-mode-decision-criteria) to determine the planned action: **Fix (TDD)**, **Fix**, **Fix All Similar**, **Defer**, or **Skip**.
 
 **4b. Present the plan:**
 
@@ -171,7 +171,8 @@ Show the summary AND the planned action for every finding, then ask for confirma
 |---|----------|-------|------|----------------|--------|
 | 1 | 🔴 Critical | Null ref in handler | Foo.cs:42 | Fix (TDD) | Behavioral bug, tests available |
 | 2 | 🟠 High | SQL injection | Bar.cs:17 | Fix | Security, no test seam |
-| 3 | 🟡 Medium | Rename method | Baz.cs:99 | Skip | Naming/cosmetic |
+| 3 | 🟡 Medium | Extract shared logic | Baz.cs:99 | Defer | Requires design decision on abstraction |
+| 4 | 🟡 Medium | Rename method | Qux.cs:12 | Skip | Naming/cosmetic |
 | ... | ... | ... | ... | ... | ... |
 
 ### Questions
@@ -210,7 +211,7 @@ Write initial state to `.code-reviews/.handle-cr-state.json`:
   "similarGroups": { "pattern-name": [1, 3, 7] },
   "deferSystem": null,
   "testInfra": { "available": false },
-  "plannedActions": { "1": "fixTdd", "2": "fix", "3": "skip" }
+  "plannedActions": { "1": "fixTdd", "2": "fix", "3": "defer", "4": "skip" }
 }
 ```
 
@@ -342,14 +343,14 @@ After the user confirms the plan in Step 4, iterate through all findings automat
 **For each finding**, starting with the highest severity:
 
 1. **Read the planned action** from the confirmed plan (or user-overridden action)
-2. **Execute the action** using the [Action Implementations](#action-implementations)
-3. **Verify**: Run `testCommand` (if available) or verify compilation after each fix. If verification fails:
+2. **Execute the action** using the [Action Implementations](#action-implementations). For **Defer** actions: detect or reuse `deferSystem`, create a follow-up work item with finding details, severity, and deferral reason.
+3. **Verify** (fix actions only): Run `testCommand` (if available) or verify compilation after each fix. If verification fails:
    - Revert the change
    - Record as skipped with reason: `"fix failed: [error summary]"`
    - Continue to next finding
 4. **Report progress** (one line):
    ```
-   ✅ #N [Title] — [action taken] | ❌ #N [Title] — skipped: [reason]
+   ✅ #N [Title] — [action taken] | 📋 #N [Title] — deferred: [work item ref] | ❌ #N [Title] — skipped: [reason]
    ```
 5. **Update state file** (same format as interactive mode)
 6. **Process similar findings together**: When reaching a finding that belongs to a similar group and the planned action is "Fix All Similar", process all findings in the group at once, then skip them individually as they come up.
@@ -464,13 +465,19 @@ Use these rules to decide the planned action for each finding in auto mode.
 - The fix for one applies uniformly to all
 - Apply TDD variant if test infrastructure available and eligible
 
+### Defer — when the finding is valid but can't be fixed in this pass:
+- Fix would require significant design decisions beyond the finding's scope
+- Finding is too broad or requires larger architectural changes
+- Fix has multiple conflicting options AND user did not resolve in upfront questions
+- Finding spans multiple subsystems or requires cross-cutting coordination
+
+Create a follow-up work item in the project's issue tracker (using the same `deferSystem` logic as interactive mode). Include the finding details, severity, and why it was deferred.
+
 ### Skip — when fix is not appropriate:
 - Severity is Low (unless trivially fixable like removing unused imports)
 - Confidence < 70 for Medium severity
 - Purely cosmetic: naming, formatting, comment style, whitespace
 - Documentation-only findings
-- Fix has multiple conflicting options AND user did not resolve in upfront questions
-- Fix would require significant design decisions beyond the finding's scope
 - Finding is subjective or opinion-based
 
 ### Dismiss — when finding is likely a false positive:
