@@ -43,6 +43,7 @@ Multi-agent code review, coverage analysis, and refactoring.
 | `handle-cr` | Both | Walk through code review findings interactively, or use `auto` for autonomous fixing with TDD |
 | `handle-coverage` | Both | Walk through coverage gaps interactively, writing tests |
 | `handle-refactoring` | Both | Walk through refactoring opportunities interactively |
+| `auto-review` | Both | Automated review-fix-recheck loop: reviews, triages, fixes via subagent, re-reviews until stable |
 
 **Agents** (referenced as `decaf-review:agent-name`):
 
