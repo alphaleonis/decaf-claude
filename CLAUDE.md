@@ -97,6 +97,7 @@ Experimental skills being tested before promotion to core plugins.
 | Skill | Invocation | Purpose |
 |-------|------------|---------|
 | `tdd` | Both | Test-driven development with red-green-refactor loop (C#, Go, Rust, and others) |
+| `auto-tdd` | Both | TDD-first development with automated review: plan → red-green-refactor → auto-review loop |
 | `design-an-interface` | Both | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
 | `improve-codebase-architecture` | Both | Explore codebase for module-deepening opportunities and save candidates |
 | `handle-architecture-improvements` | Both | Walk through architecture improvement candidates interactively, creating RFCs |
