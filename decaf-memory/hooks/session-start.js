@@ -2,84 +2,77 @@
 // Runs on every session start, resume, clear, and context compaction.
 // Uses Node.js for cross-platform compatibility (Windows + Linux + macOS).
 
-console.log(`# Erinra Memory Protocol
+console.log(`# Erinra Memory Guide
 
-You have access to erinra, a memory MCP server with hybrid semantic search (vector + FTS5 + RRF). Use it proactively.
+You have access to **erinra**, a memory MCP server with hybrid semantic search (vector + FTS5 + RRF). The tools are prefixed \`mcp__erinra__\`.
 
-## Session Start — DO THIS NOW
+If \`mcp__erinra__context\` is not available in your tools, warn the user:
+"Erinra MCP server is not connected. Memory features are unavailable. To set up erinra, run: \`claude mcp add erinra -- erinra serve -s user\` and restart Claude Code."
 
-Load context with a single call:
+## Available Tools
 
-mcp__erinra__context({
-  queries: ["user preferences and instructions", "recent decisions and patterns"],
-  include_taxonomy: true,
-  content_budget: 2000,
-  limit: 10
-})
+| Tool | Purpose |
+|------|---------|
+| \`context\` | Batched retrieval: multi-query search + taxonomy in one call. Use to load session context. |
+| \`store\` | Save a memory. Returns top-3 similar existing memories for dedup. |
+| \`search\` | Hybrid search (vector + keyword via RRF). Natural language queries work best. |
+| \`get\` | Fetch full content of specific memories by ID. |
+| \`list\` | Browse/filter memories without a search query. |
+| \`update\` | Update an existing memory's content or metadata. |
+| \`merge\` | Combine two memories into one. |
+| \`link\` / \`unlink\` | Connect/disconnect related memories (related_to, caused_by, context_for, supersedes). |
+| \`archive\` | Non-destructive removal. Prefer over delete. |
+| \`discover\` | Refresh the full taxonomy (projects, types, tags, relations, stats). |
 
-This returns deduplicated memories across all queries within the content budget, plus the full taxonomy (projects, types, tags, relations, stats).
+## When to Search
 
-If mcp__erinra__context is not available in your tools, warn the user:
-"Erinra MCP server is not connected. Memory features are unavailable. To set up erinra, run: claude mcp add erinra -- erinra serve -s user and restart Claude Code."
+Search erinra **before answering** when the task involves:
+- A specific library, framework, or tool the user has used before
+- An error message that may have been solved previously
+- A codebase with known patterns or decisions
+- A question about user preferences or past decisions
 
-## Automatic Saves — No Permission Needed
+## When to Store
 
-After solving a bug: store with content "BUG FIX: [error] | Root cause: [why] | Solution: [how]", tags: ["bug-fix"], projects: [project-name]
-After learning user preferences: store immediately (coding style, libraries, communication, tools, workflows) with type: "preference"
-After architectural decisions: store with type: "decision", tags describing the domain
-After discovering code patterns: store with type: "pattern", projects: [project-name]
+**After solving a bug:** content "BUG FIX: [error] | Root cause: [why] | Solution: [how]", tags: ["bug-fix"], projects: [project-name]
+**After learning user preferences:** store immediately with type: "preference"
+**After architectural decisions:** store with type: "decision", tags describing the domain
+**After discovering code patterns:** store with type: "pattern", projects: [project-name]
 
-## Trigger Words — Auto-Save When User Says
+### Trigger Words — Auto-Save When User Says
 
-"Remember this" / "Don't forget" -> store immediately
-"I always..." / "I never..." / "I prefer..." -> store as type: "preference"
-"This is important" -> store immediately
-
-## During Work
-
-- Notice a pattern? store with type: "pattern"
-- Made a decision? store with type: "decision"
-- Need to find something? search with relevant query
-- Related memories? use links parameter when storing, or link after the fact
-
-## Automatic Context Detection
-
-When working, proactively search erinra if the task involves:
-- A specific library or framework -> search for known patterns
-- An error message -> search for previous solutions
-- A codebase -> search with projects filter
-
-## Proactive Behaviors
-
-DO automatically:
-- Save solutions after fixing problems
-- Note user corrections as preferences
-- Search before answering technical questions
-
-DON'T ask permission to:
-- Save bug fixes
-- Update preferences
-- Search for context
+- "Remember this" / "Don't forget" → store immediately
+- "I always..." / "I never..." / "I prefer..." → store as type: "preference"
+- "This is important" → store immediately
 
 ## Deduplication
 
-Erinra does NOT deduplicate automatically. The store tool returns the top-3 most similar existing memories. Before storing, check if a similar memory already exists in the response. If so:
-- If the new content supersedes the old: update the existing memory instead of creating a new one
-- If they should be combined: use merge to combine them
+Erinra does NOT deduplicate automatically. The \`store\` tool returns the top-3 most similar existing memories. Before storing, check the response:
+- If the new content supersedes the old: \`update\` the existing memory
+- If they should be combined: \`merge\` them
 - If the existing one is sufficient: skip storing
 
 ## What NOT to Store
 
 Secrets, API keys, credentials, tokens. Temporary debugging state. Trivial or well-documented behavior. Project-specific conventions that belong in CLAUDE.md.
 
-## Key Behaviors
+## Loading Session Context
 
-- Store returns similar memories — use them to decide whether to update, merge, or skip.
-- Search uses hybrid ranking (vector + keyword via RRF). Natural language queries work best.
+When you need broad context (e.g., starting work on a project, or the user asks about past decisions), use the batched \`context\` tool:
+
+\`\`\`
+mcp__erinra__context({
+  queries: ["user preferences and instructions", "recent decisions and patterns"],
+  include_taxonomy: true,
+  content_budget: 2000,
+  limit: 10
+})
+\`\`\`
+
+## Tips
+
+- \`store\` returns similar memories — use them to decide whether to update, merge, or skip.
 - Search strengthens memory — every search updates access_count. Search liberally.
-- Memory is retrieval. When in doubt, search erinra first. If nothing found, solve the problem, then save the solution.
-- Use projects to scope memories to codebases. Use tags for cross-cutting concerns.
-- Use links to connect related memories (related_to, caused_by, context_for, supersedes).
-- Use archive instead of delete — it's non-destructive.
-- Use get to fetch full content of specific memories by ID.
-- Use list to browse/filter memories without a search query.`);
+- Use \`projects\` to scope memories to codebases. Use \`tags\` for cross-cutting concerns.
+- Use \`links\` to connect related memories.
+- Use \`archive\` instead of delete — it's non-destructive.`);
