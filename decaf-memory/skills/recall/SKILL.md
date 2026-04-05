@@ -40,7 +40,7 @@ Examples:
    - Type
    - Tags
    - Projects
-   - Score (relevance)
+   - Score (relevance — note: RRF scores are naturally low, e.g. 0.01–0.05 is normal. Judge results by ranking order, not absolute score value)
    - Links (outgoing and incoming relationships)
 
 3. **If no results**, suggest:
