@@ -13,7 +13,7 @@ This repo provides four plugins that can be installed independently:
 | **`decaf`** | General-purpose agents and skills (analysis, development) |
 | **`decaf-review`** | Multi-agent code review, coverage analysis, and refactoring |
 | **`decaf-planning`** | Planning skills for PRDs, implementation plans, and phase breakdowns |
-| **`decaf-memory`** | Memory skills backed by Vestige (semantic search, spaced repetition) |
+| **`decaf-memory`** | Memory skills backed by [erinra](https://github.com/alphaleonis/erinra-mcp) (hybrid semantic search, knowledge graphs) |
 | **`decaf-experimental`** | Experimental skills being tested before promotion to core |
 
 ## Installation
@@ -44,23 +44,15 @@ cd /path/to/decaf-claude-config
 
 ### Memory Plugin Setup
 
-Memory skills require the Vestige MCP server. See the [Vestige repo](https://github.com/samvallad33/vestige) for installation options.
+Memory skills require the [erinra MCP server](https://github.com/alphaleonis/erinra-mcp). See the erinra repo for installation options.
 
-**Basic setup** (single machine):
 ```bash
-claude mcp add vestige vestige-mcp -s user
-/plugin install decaf-claude-config@decaf-memory
-```
+# Install erinra — see https://github.com/alphaleonis/erinra-mcp#installation
 
-**With vestige-sync** (multi-machine sync via Syncthing):
-```bash
-claude mcp add vestige -s user -- vestige-sync \
-  --sync-dir ~/.vestige/vestige-sync \
-  --data-dir ~/.vestige/vestige.db \
-  --export-on-exit \
-  --export-interval 300 \
-  --filename "{hostname}-{platform}"
+# Register the MCP server
+claude mcp add erinra -- erinra serve -s user
 
+# Install the plugin
 /plugin install decaf-claude-config@decaf-memory
 ```
 
@@ -81,7 +73,7 @@ decaf-claude-config/
 ├── decaf-planning/               # Planning plugin
 │   ├── .claude-plugin/plugin.json
 │   └── skills/                   # 6 skills
-├── decaf-memory/                 # Memory plugin (Vestige)
+├── decaf-memory/                 # Memory plugin (erinra)
 │   ├── .claude-plugin/plugin.json
 │   └── skills/                   # 4 skills
 ├── decaf-experimental/           # Experimental plugin
@@ -148,14 +140,14 @@ Agents are referenced via the Task tool as `decaf-review:<agent-name>`.
 
 ## `decaf-memory` — Memory Skills
 
-Skills are invoked as `/decaf-memory:<skill-name>`. Requires the Vestige MCP server.
+Skills are invoked as `/decaf-memory:<skill-name>`. Requires the [erinra MCP server](https://github.com/alphaleonis/erinra-mcp).
 
 | Skill | Description |
 |-------|-------------|
-| `init-memory` | Manually load Vestige session context (fallback when the hook doesn't trigger) |
-| `remember` | Store a memory via smart_ingest (auto-dedup) |
-| `recall` | Search memories via semantic search |
-| `memory-dashboard` | Open the Vestige 3D memory dashboard in the browser |
+| `init-memory` | Manually load erinra session context (fallback when the hook doesn't trigger) |
+| `remember` | Store a memory via erinra (LLM-driven dedup) |
+| `recall` | Search memories via hybrid semantic search |
+| `memory-dashboard` | Open the erinra memory dashboard in the browser |
 
 ## `decaf-planning` — Planning Skills
 

@@ -1,76 +1,72 @@
-// Vestige session start hook — outputs memory protocol as additionalContext.
+// Erinra session start hook — outputs memory protocol as additionalContext.
 // Runs on every session start, resume, clear, and context compaction.
 // Uses Node.js for cross-platform compatibility (Windows + Linux + macOS).
 
-console.log(`# Vestige Memory Protocol
+console.log(`# Erinra Memory Protocol
 
-You have access to Vestige, a cognitive memory system with semantic search, spaced repetition (FSRS-6), and automatic deduplication. Use it proactively.
+You have access to erinra, a memory MCP server with hybrid semantic search (vector + FTS5 + RRF). Use it proactively.
 
 ## Session Start — DO THIS NOW
 
 Load context with a single call:
 
-mcp__vestige__session_context({
-  queries: ["user preferences", "instructions"],
-  context: {
-    codebase: "[current project name if applicable]",
-    topics: ["[relevant topics from user's first message]"]
-  },
-  include_intentions: true,
-  include_predictions: true,
-  token_budget: 1500
+mcp__erinra__context({
+  queries: ["user preferences and instructions", "recent decisions and patterns"],
+  include_taxonomy: true,
+  content_budget: 2000,
+  limit: 10
 })
 
-If mcp__vestige__session_context is not available in your tools, warn the user:
-"Vestige MCP server is not connected. Memory features are unavailable. To set up Vestige, run: claude mcp add vestige vestige-mcp -s user and restart Claude Code."
+This returns deduplicated memories across all queries within the content budget, plus the full taxonomy (projects, types, tags, relations, stats).
+
+If mcp__erinra__context is not available in your tools, warn the user:
+"Erinra MCP server is not connected. Memory features are unavailable. To set up erinra, run: claude mcp add erinra -- erinra serve -s user and restart Claude Code."
 
 ## Automatic Saves — No Permission Needed
 
-After solving a bug: smart_ingest with content "BUG FIX: [error] | Root cause: [why] | Solution: [how]", tags: ["bug-fix", project-name]
-After learning user preferences: smart_ingest immediately (coding style, libraries, communication, tools, workflows)
-After architectural decisions: codebase(action="remember_decision") with rationale and alternatives
-After discovering code patterns: codebase(action="remember_pattern") with name and description
+After solving a bug: store with content "BUG FIX: [error] | Root cause: [why] | Solution: [how]", tags: ["bug-fix"], projects: [project-name]
+After learning user preferences: store immediately (coding style, libraries, communication, tools, workflows) with type: "preference"
+After architectural decisions: store with type: "decision", tags describing the domain
+After discovering code patterns: store with type: "pattern", projects: [project-name]
 
 ## Trigger Words — Auto-Save When User Says
 
-"Remember this" / "Don't forget" -> smart_ingest immediately
-"I always..." / "I never..." / "I prefer..." -> Save as preference
-"This is important" -> smart_ingest + memory(action="promote")
-"Remind me..." / "Next time..." -> intention(action="set") with appropriate trigger
+"Remember this" / "Don't forget" -> store immediately
+"I always..." / "I never..." / "I prefer..." -> store as type: "preference"
+"This is important" -> store immediately
 
 ## During Work
 
-- Notice a pattern? codebase(action="remember_pattern") with name and description
-- Made a decision? codebase(action="remember_decision") with rationale and alternatives
-- Something important? importance_score to evaluate if worth saving
-- Need to follow up? intention(action="set") with context trigger
+- Notice a pattern? store with type: "pattern"
+- Made a decision? store with type: "decision"
+- Need to find something? search with relevant query
+- Related memories? use links parameter when storing, or link after the fact
 
 ## Automatic Context Detection
 
-When working, proactively search Vestige if the task involves:
+When working, proactively search erinra if the task involves:
 - A specific library or framework -> search for known patterns
 - An error message -> search for previous solutions
-- A codebase -> codebase(action="get_context") for patterns and decisions
-- User mentions a person -> search their name for relationship context
+- A codebase -> search with projects filter
 
 ## Proactive Behaviors
 
 DO automatically:
 - Save solutions after fixing problems
 - Note user corrections as preferences
-- Update project context after major changes
-- Create intentions for mentioned deadlines
 - Search before answering technical questions
 
 DON'T ask permission to:
 - Save bug fixes
 - Update preferences
-- Create reminders from explicit requests
 - Search for context
 
-## Memory Feedback
+## Deduplication
 
-If the user explicitly confirms a memory was helpful, use memory(action="promote"). If they correct a hallucination or say a memory was wrong, use memory(action="demote"). Do not ask for permission — just act on their feedback.
+Erinra does NOT deduplicate automatically. The store tool returns the top-3 most similar existing memories. Before storing, check if a similar memory already exists in the response. If so:
+- If the new content supersedes the old: update the existing memory instead of creating a new one
+- If they should be combined: use merge to combine them
+- If the existing one is sufficient: skip storing
 
 ## What NOT to Store
 
@@ -78,7 +74,12 @@ Secrets, API keys, credentials, tokens. Temporary debugging state. Trivial or we
 
 ## Key Behaviors
 
-- Deduplication is automatic — smart_ingest handles it. No need to search before storing.
-- Memories decay — unused memories fade via FSRS-6. Access strengthens them.
-- Search strengthens memory — every search reinforces retrieved memories. Search liberally.
-- Memory is retrieval. When in doubt, search Vestige first. If nothing found, solve the problem, then save the solution.`);
+- Store returns similar memories — use them to decide whether to update, merge, or skip.
+- Search uses hybrid ranking (vector + keyword via RRF). Natural language queries work best.
+- Search strengthens memory — every search updates access_count. Search liberally.
+- Memory is retrieval. When in doubt, search erinra first. If nothing found, solve the problem, then save the solution.
+- Use projects to scope memories to codebases. Use tags for cross-cutting concerns.
+- Use links to connect related memories (related_to, caused_by, context_for, supersedes).
+- Use archive instead of delete — it's non-destructive.
+- Use get to fetch full content of specific memories by ID.
+- Use list to browse/filter memories without a search query.`);

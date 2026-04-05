@@ -1,18 +1,18 @@
 ---
 name: remember
-description: Store a memory in Vestige for future reference
+description: Store a memory in erinra for future reference
 argument-hint: "[what to remember]"
 ---
 
 # Remember
 
-Store a memory in Vestige's cognitive memory system.
+Store a memory in erinra.
 
 ## Prerequisites
 
-Check that `mcp__vestige__smart_ingest` is available in your tools. If not, tell the user:
+Check that `mcp__erinra__store` is available in your tools. If not, tell the user:
 
-> Vestige MCP server is not connected. Run `claude mcp add vestige vestige-mcp -s user` and restart Claude Code.
+> Erinra MCP server is not connected. Run `claude mcp add erinra -- erinra serve -s user` and restart Claude Code.
 
 ## Usage
 
@@ -24,18 +24,34 @@ Check that `mcp__vestige__smart_ingest` is available in your tools. If not, tell
 
 1. **Clarify if needed** — If the user's input is vague, ask what they want to remember and why it matters.
 
-2. **Classify the memory**:
-   - `fact` — A piece of knowledge or preference
+2. **Classify the memory** — Choose a type:
+   - `preference` — User preference or working style
    - `pattern` — A reusable approach or convention
    - `decision` — An architectural or design choice
-   - `event` — Something that happened (bug fix, incident, etc.)
+   - `bug-fix` — A bug and its solution
+   - `fact` — A piece of factual knowledge
+   - `concept` — A concept or mental model
+   - `note` — A general note
+   - `event` — Something that happened
+   - Or any other descriptive type string
 
-3. **Choose the right tool**:
-   - For code patterns → `mcp__vestige__codebase({ action: "remember_pattern", ... })`
-   - For architectural decisions → `mcp__vestige__codebase({ action: "remember_decision", ... })`
-   - For everything else → `mcp__vestige__smart_ingest({ ... })`
+3. **Store it** using `mcp__erinra__store`:
+   ```
+   mcp__erinra__store({
+     content: "[the memory content]",
+     type: "[type]",
+     projects: ["[project-name if applicable]"],
+     tags: ["[relevant tags]"],
+     links: [{ target_id: "[id]", relation: "[relation]" }]  // optional: link to related memories
+   })
+   ```
 
-4. **Store it** — No need to search first. `smart_ingest` handles deduplication automatically. It will create a new memory, merge with an existing one, or skip if identical content already exists.
+   The `links` parameter is optional. Use it to connect the new memory to existing ones with relations like `related_to`, `caused_by`, `context_for`, or `supersedes`.
+
+4. **Check the response** — `store` returns the top-3 most similar existing memories. If a very similar one exists:
+   - If the new content supersedes it: use `mcp__erinra__update` on the existing memory instead
+   - If they should be combined: use `mcp__erinra__merge` to combine them
+   - If the existing one is already sufficient: tell the user it was already stored
 
 5. **Confirm** — Tell the user what was stored and how it was classified.
 
@@ -51,11 +67,11 @@ I'll store this. Can you clarify:
 
 [After user responds]
 
-Stored as bug-fix pattern:
+Stored as bug-fix:
 - HttpClient.Timeout is per-attempt, not total
 - Polly retry can exceed expected total timeout
 - Solution: Wrap retry policy with Polly timeout policy
-Tags: bug-fix, polly, httpclient, dotnet
+Tags: polly, httpclient, dotnet
 ```
 
 **User:** `/remember I prefer tabs over spaces`
@@ -68,7 +84,7 @@ Stored as preference: "User prefers tabs over spaces for indentation"
 ## What NOT to Store
 
 Guide users away from storing:
-- **Project-specific patterns** → suggest adding to project CLAUDE.md instead
-- **Well-documented behavior** → no need to store what's in the docs
-- **Secrets or credentials** → never store sensitive data
-- **Transient issues** → only store if likely to recur
+- **Project-specific patterns** -> suggest adding to project CLAUDE.md instead
+- **Well-documented behavior** -> no need to store what's in the docs
+- **Secrets or credentials** -> never store sensitive data
+- **Transient issues** -> only store if likely to recur

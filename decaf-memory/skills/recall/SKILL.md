@@ -1,18 +1,18 @@
 ---
 name: recall
-description: Search Vestige for stored memories
+description: Search erinra for stored memories
 argument-hint: "[search query]"
 ---
 
 # Recall
 
-Search Vestige's cognitive memory system for previously stored memories.
+Search erinra for previously stored memories.
 
 ## Prerequisites
 
-Check that `mcp__vestige__search` is available in your tools. If not, tell the user:
+Check that `mcp__erinra__search` is available in your tools. If not, tell the user:
 
-> Vestige MCP server is not connected. Run `claude mcp add vestige vestige-mcp -s user` and restart Claude Code.
+> Erinra MCP server is not connected. Run `claude mcp add erinra -- erinra serve -s user` and restart Claude Code.
 
 ## Usage
 
@@ -27,51 +27,81 @@ Examples:
 
 ## Process
 
-1. **Search** using `mcp__vestige__search` with the user's query:
+1. **Search** using `mcp__erinra__search` with the user's query:
    ```
-   mcp__vestige__search({
+   mcp__erinra__search({
      query: "[user's search terms]",
-     limit: 10,
-     detail_level: "summary"
+     limit: 10
    })
    ```
 
 2. **Display results** showing:
    - Content (the memory itself)
+   - Type
    - Tags
-   - Type (fact, pattern, decision, event)
-   - Retention strength (how well-remembered it is)
+   - Projects
+   - Score (relevance)
+   - Links (outgoing and incoming relationships)
 
 3. **If no results**, suggest:
    - Trying different keywords
    - Using `/decaf-memory:remember` to store something new
 
-4. **If results are helpful**, promote them:
-   ```
-   mcp__vestige__memory({ action: "promote", id: "[memory_id]" })
-   ```
-   This strengthens the memory so it surfaces more easily next time.
+## Filtering
 
-## For Code-Specific Queries
-
-When searching for code patterns or decisions in a specific project, use the codebase tool instead:
+Use filters to narrow results:
 
 ```
-mcp__vestige__codebase({
-  action: "get_context",
-  codebase: "[project-name]",
+mcp__erinra__search({
+  query: "[search terms]",
+  projects: ["project-name"],       // Filter by project (OR across projects)
+  type: "pattern",                  // Filter by exact type
+  tags: ["dotnet", "async"],        // Filter by tags (AND — must have all)
+  include_archived: false,          // Default: false
   limit: 10
 })
 ```
 
-## Exploring Connections
+### Time filters
 
-If the user wants to understand how memories relate to each other:
+Narrow by when memories were created or last updated:
 
 ```
-mcp__vestige__explore_connections({
-  action: "associations",
-  from: "[memory_id]",
-  limit: 10
+mcp__erinra__search({
+  query: "[search terms]",
+  created_max_age_days: 30,         // Created within the last 30 days
+  updated_after: "2025-01-01T00:00:00Z"  // Updated after a specific date
 })
+```
+
+Available time filters: `created_after`, `created_before`, `updated_after`, `updated_before`, `created_max_age_days`, `created_min_age_days`, `updated_max_age_days`, `updated_min_age_days`.
+
+## Browsing (no query)
+
+To browse memories without a search query, use `mcp__erinra__list` instead:
+
+```
+mcp__erinra__list({
+  projects: ["project-name"],
+  type: "decision",
+  limit: 20
+})
+```
+
+This supports the same filters as search but returns paginated results with a total count.
+
+## Fetching Full Content
+
+Search results may truncate long content. To get the full text of a memory:
+
+```
+mcp__erinra__get({ ids: ["[memory-id]"] })
+```
+
+## Exploring Links
+
+Search results include outgoing and incoming links. To follow a link and see the related memory:
+
+```
+mcp__erinra__get({ ids: ["[linked-memory-id]"] })
 ```

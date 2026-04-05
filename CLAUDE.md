@@ -60,18 +60,17 @@ Multi-agent code review, coverage analysis, and refactoring.
 | `structural-analyst` | Per-file structural quality: naming, composition, complexity, domain modeling, error handling |
 | `test-reviewer` | Test anti-patterns, silent failures, false positives |
 
-### `decaf-memory` — Memory (Vestige)
+### `decaf-memory` — Memory (erinra)
 
-Memory skills backed by [Vestige](https://github.com/samvallad33/vestige) ([fork](https://github.com/alphaleonis/vestige)). FSRS-6 spaced repetition, hybrid semantic search (vector + keyword + HyDE), automatic deduplication via prediction error gating, memory decay, and 3D visualization dashboard. Requires the Vestige MCP server (`vestige-mcp` or `vestige-sync`) to be configured separately.
+Memory skills backed by [erinra](https://github.com/alphaleonis/erinra), a memory MCP server for LLM coding assistants. Hybrid semantic search (vector + FTS5 + RRF), non-destructive storage, link-based knowledge graphs. Requires the erinra MCP server to be configured separately (`claude mcp add erinra -- erinra serve -s user`).
 
 | Skill | Invocation | Purpose |
 |-------|------------|---------|
-| `init-memory` | Both | Manually load Vestige session context (fallback when the hook doesn't trigger the call) |
-| `remember` | Both | Store a memory via `smart_ingest` (auto-dedup) |
-| `recall` | Both | Search memories via semantic search |
-| `memory-dashboard` | Both | Open the Vestige 3D memory dashboard in the browser |
+| `init-memory` | Both | Manually load erinra session context (fallback when the hook doesn't trigger the call) |
+| `remember` | Both | Store a memory via `store` (returns similar memories for LLM-driven dedup) |
+| `recall` | Both | Search memories via hybrid search |
 
-A `SessionStart` hook automatically loads user preferences, project context, and memory protocol on every session start, resume, clear, and context compaction. If the model doesn't act on it, use `/init-memory` as a manual fallback.
+A `SessionStart` hook automatically loads the erinra memory protocol on every session start, resume, clear, and context compaction. If the model doesn't act on it, use `/init-memory` as a manual fallback.
 
 ### `decaf-planning` — Planning
 
