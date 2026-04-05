@@ -1,15 +1,12 @@
-// Vestige session end hook — prompts memory capture before the session terminates.
-// Fires on session end events (clear, logout, exit).
+// Erinra session end hook — prompts memory capture before the session terminates.
 // Uses Node.js for cross-platform compatibility (Windows + Linux + macOS).
 
-console.log(`# Vestige Session End Protocol
+console.log(`# Erinra Session End Protocol
 
-Before this session ends, capture any valuable context:
+Before this session ends, quickly capture anything valuable that hasn't been stored yet:
 
-1. **Unfinished work**: If there is work in progress or incomplete tasks, use intention(action="set") to create reminders with appropriate triggers so they surface in the next relevant session.
+1. **Unsaved insights**: If any noteworthy solutions, patterns, or decisions emerged during this session, store them now with appropriate type and tags.
 
-2. **New insights**: If any noteworthy solutions, patterns, or decisions emerged during this session that haven't been saved yet, use smart_ingest to capture them now.
-
-3. **User relationship**: If anything changed about how you understand the user's preferences or working style, save it with smart_ingest as a preference.
+2. **Unfinished work**: If there is work in progress or incomplete tasks, store a note with tags: ["unfinished"] and the relevant project so it surfaces in the next session's search.
 
 Do this quickly and silently — do not ask the user for permission or confirmation.`);

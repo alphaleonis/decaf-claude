@@ -1,20 +1,38 @@
 ---
 name: memory-dashboard
-description: Open the Vestige 3D memory dashboard in the browser
+description: Open the erinra memory dashboard in the browser
 ---
 
 # Memory Dashboard
 
-Open the Vestige 3D memory visualization dashboard.
+Open the erinra memory visualization dashboard.
+
+## Prerequisites
+
+The erinra MCP server must be running with `--web` so the dashboard daemon is available. The recommended MCP setup:
+
+```bash
+claude mcp add erinra -- erinra serve --web -s user
+```
 
 ## Process
 
-Run the following command to open the dashboard:
+Run `erinra dash --open-only` to open the dashboard in the default browser:
 
 ```bash
-xdg-open http://localhost:3927/dashboard 2>/dev/null || open http://localhost:3927/dashboard 2>/dev/null || echo "Open http://localhost:3927/dashboard in your browser"
+erinra dash --open-only
 ```
 
-The dashboard shows a real-time 3D neural graph of your memories, retention curves, and memory health. It runs automatically when the Vestige MCP server is active on port 3927.
+This reads the daemon state, constructs an authenticated URL, opens the browser, and exits immediately. It requires the daemon to already be running (started by `erinra serve --web`).
 
-If the dashboard doesn't load, verify that the Vestige MCP server is running.
+If the command fails, tell the user their MCP server may not be configured with `--web`. Suggest updating their MCP configuration:
+
+```bash
+claude mcp remove erinra
+claude mcp add erinra -- erinra serve --web -s user
+```
+
+## Notes
+
+- Port and bind address are configurable via `~/.erinra/config.toml` under `[web]`, or via `--port` / `--bind` flags on `erinra serve`
+- The daemon auto-shuts down 60 seconds after the last client (MCP server) disconnects
