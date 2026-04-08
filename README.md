@@ -6,7 +6,7 @@ Originally forked from [everything-claude-code](https://github.com/affaan-m/ever
 
 ## Plugins
 
-This repo provides four plugins that can be installed independently:
+This repo provides five plugins that can be installed independently:
 
 | Plugin | Description |
 |--------|-------------|
@@ -14,7 +14,7 @@ This repo provides four plugins that can be installed independently:
 | **`decaf-review`** | Multi-agent code review, coverage analysis, and refactoring |
 | **`decaf-planning`** | Planning skills for PRDs, implementation plans, and phase breakdowns |
 | **`decaf-memory`** | Memory skills backed by [erinra](https://github.com/alphaleonis/erinra-mcp) (hybrid semantic search, knowledge graphs) |
-| **`decaf-experimental`** | Experimental skills being tested before promotion to core |
+| **`decaf-dev`** | Development skills — TDD, automated dev with review |
 
 ## Installation
 
@@ -27,7 +27,7 @@ This repo provides four plugins that can be installed independently:
 /plugin install decaf-claude-config@decaf-review
 /plugin install decaf-claude-config@decaf-planning
 /plugin install decaf-claude-config@decaf-memory
-/plugin install decaf-claude-config@decaf-experimental
+/plugin install decaf-claude-config@decaf-dev
 ```
 
 Or install from a local clone:
@@ -39,7 +39,7 @@ cd /path/to/decaf-claude-config
 /plugin install decaf-claude-config@decaf-review
 /plugin install decaf-claude-config@decaf-planning
 /plugin install decaf-claude-config@decaf-memory
-/plugin install decaf-claude-config@decaf-experimental
+/plugin install decaf-claude-config@decaf-dev
 ```
 
 ### Memory Plugin Setup
@@ -72,13 +72,13 @@ decaf-claude-config/
 │   └── skills/                   # 6 skills
 ├── decaf-planning/               # Planning plugin
 │   ├── .claude-plugin/plugin.json
-│   └── skills/                   # 6 skills
+│   └── skills/                   # 9 skills
 ├── decaf-memory/                 # Memory plugin (erinra)
 │   ├── .claude-plugin/plugin.json
 │   └── skills/                   # 4 skills
-├── decaf-experimental/           # Experimental plugin
+├── decaf-dev/                    # Development plugin
 │   ├── .claude-plugin/plugin.json
-│   └── skills/                   # 4 skills
+│   └── skills/                   # 3 skills
 ├── CLAUDE.md
 └── README.md
 ```
@@ -161,17 +161,19 @@ Skills are invoked as `/decaf-planning:<skill-name>`.
 | `prd-to-plan` | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
 | `breakdown-phase` | Break a plan phase (epic) into implementable features with acceptance criteria |
 | `close-plan` | Reconcile planned vs. actual, record deviations, and close a phase or plan |
+| `design-an-interface` | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
+| `improve-codebase-architecture` | Explore codebase for module-deepening opportunities and save candidates |
+| `handle-architecture-improvements` | Walk through architecture improvement candidates interactively, creating RFCs |
 
-## `decaf-experimental` — Experimental Skills
+## `decaf-dev` — Development Skills
 
-Skills are invoked as `/decaf-experimental:<skill-name>`.
+Skills are invoked as `/decaf-dev:<skill-name>`.
 
 | Skill | Description |
 |-------|-------------|
 | `tdd` | Test-driven development with red-green-refactor loop (C#, Go, Rust, and others) |
-| `design-an-interface` | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
-| `improve-codebase-architecture` | Explore codebase for module-deepening opportunities and save candidates |
-| `handle-architecture-improvements` | Walk through architecture improvement candidates interactively, creating RFCs |
+| `auto-tdd` | TDD-first development with automated review: plan → red-green-refactor → auto-review loop |
+| `auto-dev` | Direct development with automated review: plan → implement → auto-review loop (for non-testable work) |
 
 ## Conventions
 

@@ -88,11 +88,11 @@ Wait for user response. Apply adjustments if any.
 
 ### Step 2: TDD Execution (Subagent)
 
-Launch a **general-purpose subagent** using the Agent tool to execute the approved plan. The subagent runs `/decaf-experimental:tdd` with the plan baked into the prompt so it skips its own planning step.
+Launch a **general-purpose subagent** using the Agent tool to execute the approved plan. The subagent runs `/decaf-dev:tdd` with the plan baked into the prompt so it skips its own planning step.
 
 **Subagent prompt template:**
 
-> Run `/decaf-experimental:tdd` using the Skill tool, with the following arguments containing the pre-approved plan.
+> Run `/decaf-dev:tdd` using the Skill tool, with the following arguments containing the pre-approved plan.
 >
 > **IMPORTANT**: The planning phase (Step 1) has already been completed and approved by the user. Do NOT ask the user for plan approval — go directly to execution (Step 2: Tracer Bullet).
 >

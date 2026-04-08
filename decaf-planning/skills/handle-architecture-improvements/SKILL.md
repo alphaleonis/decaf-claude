@@ -1,6 +1,6 @@
 ---
 name: handle-architecture-improvements
-description: Walk through architecture improvement candidates interactively, designing interfaces and creating RFCs one at a time. Use after running /decaf-experimental:improve-codebase-architecture.
+description: Walk through architecture improvement candidates interactively, designing interfaces and creating RFCs one at a time. Use after running /decaf-planning:improve-codebase-architecture.
 argument-hint: "[file]"
 ---
 
@@ -42,7 +42,7 @@ ls .architecture-improvements/CANDIDATES_*.md 2>/dev/null | sort -r | head -1
 ```
 
 If no candidates file exists, inform the user:
-> No candidates file found. Run `/decaf-experimental:improve-codebase-architecture` first to explore the codebase.
+> No candidates file found. Run `/decaf-planning:improve-codebase-architecture` first to explore the codebase.
 
 ### Step 2: Parse Candidates
 

@@ -75,9 +75,9 @@
       ]
     },
     {
-      "name": "decaf-experimental",
-      "source": "./decaf-experimental",
-      "description": "Experimental skills and agents for Claude Code",
+      "name": "decaf-dev",
+      "source": "./decaf-dev",
+      "description": "Development skills for Claude Code — TDD, automated dev with review",
       "author": {
         "name": "Alphaleonis"
       },
@@ -85,12 +85,14 @@
       "repository": "https://github.com/alphaleonis/decaf-claude-config",
       "license": "MIT",
       "keywords": [
-        "experimental",
+        "development",
+        "tdd",
         "skills"
       ],
       "category": "workflow",
       "tags": [
-        "experimental",
+        "development",
+        "tdd",
         "skills"
       ]
     },
