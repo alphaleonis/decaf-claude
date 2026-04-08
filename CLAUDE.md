@@ -12,6 +12,7 @@ General-purpose agents and skills for development workflows.
 
 | Skill | Invocation | Purpose |
 |-------|------------|---------|
+| `commit` | Both | Stage, commit, and optionally push changes |
 | `decision-critic` | Both | Stress-test decisions through adversarial analysis |
 | `incoherence-detector` | Both | Detect doc/code/spec inconsistencies |
 | `note` | Both | Capture a follow-up task as a bean without interrupting current work |
@@ -139,7 +140,7 @@ decaf-claude-config/
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf"
 │   ├── agents/                   # 6 agents
-│   └── skills/                   # 5 skills
+│   └── skills/                   # 6 skills
 ├── decaf-review/                 # Review plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-review"

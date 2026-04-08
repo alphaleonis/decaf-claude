@@ -65,7 +65,7 @@ decaf-claude-config/
 ├── decaf/                        # Core plugin
 │   ├── .claude-plugin/plugin.json
 │   ├── agents/                   # 6 agents
-│   └── skills/                   # 5 skills
+│   └── skills/                   # 6 skills
 ├── decaf-review/                 # Review plugin
 │   ├── .claude-plugin/plugin.json
 │   ├── agents/                   # 10 agents
@@ -89,6 +89,7 @@ Skills are invoked as `/decaf:<skill-name>`.
 
 | Skill | Description |
 |-------|-------------|
+| `commit` | Stage, commit, and optionally push changes |
 | `decision-critic` | Stress-test decisions through adversarial analysis |
 | `incoherence-detector` | Detect doc/code/spec inconsistencies |
 | `note` | Capture a follow-up task as a bean without interrupting current work |
