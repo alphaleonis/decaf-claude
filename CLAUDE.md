@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Personal Claude Code configuration with five plugins: `decaf` (core), `decaf-review` (code review ecosystem), `decaf-planning` (planning), `decaf-memory` (memory), and `decaf-experimental` (experimental).
+Personal Claude Code configuration with five plugins: `decaf` (core), `decaf-review` (code review ecosystem), `decaf-planning` (planning), `decaf-memory` (memory), and `decaf-dev` (development).
 
 ## Plugins
 
@@ -86,21 +86,21 @@ Planning skills for PRDs, implementation plans, and phase breakdowns.
 | `prd-to-plan` | Both | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
 | `breakdown-phase` | Both | Break a plan phase (epic) into implementable features with acceptance criteria |
 | `close-plan` | Both | Reconcile planned vs. actual, record deviations, and close a phase or plan |
+| `design-an-interface` | Both | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
+| `improve-codebase-architecture` | Both | Explore codebase for module-deepening opportunities and save candidates |
+| `handle-architecture-improvements` | Both | Walk through architecture improvement candidates interactively, creating RFCs |
 
-### `decaf-experimental` — Experimental
+### `decaf-dev` — Development
 
-Experimental skills being tested before promotion to core plugins.
+Development skills for TDD and automated dev workflows.
 
-**Skills** (invoked as `/decaf-experimental:skill-name`):
+**Skills** (invoked as `/decaf-dev:skill-name`):
 
 | Skill | Invocation | Purpose |
 |-------|------------|---------|
 | `tdd` | Both | Test-driven development with red-green-refactor loop (C#, Go, Rust, and others) |
 | `auto-tdd` | Both | TDD-first development with automated review: plan → red-green-refactor → auto-review loop |
 | `auto-dev` | Both | Direct development with automated review: plan → implement → auto-review loop (for non-testable work) |
-| `design-an-interface` | Both | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
-| `improve-codebase-architecture` | Both | Explore codebase for module-deepening opportunities and save candidates |
-| `handle-architecture-improvements` | Both | Walk through architecture improvement candidates interactively, creating RFCs |
 
 ## Installation
 
@@ -115,7 +115,7 @@ Experimental skills being tested before promotion to core plugins.
 /plugin install decaf-claude-config@decaf-review
 /plugin install decaf-claude-config@decaf-planning
 /plugin install decaf-claude-config@decaf-memory
-/plugin install decaf-claude-config@decaf-experimental
+/plugin install decaf-claude-config@decaf-dev
 
 # 3. Restart Claude Code to load the plugins
 ```
@@ -148,15 +148,15 @@ decaf-claude-config/
 ├── decaf-planning/               # Planning plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-planning"
-│   └── skills/                   # 6 skills
+│   └── skills/                   # 9 skills
 ├── decaf-memory/                 # Memory plugin (Vestige)
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-memory"
 │   └── skills/                   # 4 skills
-├── decaf-experimental/           # Experimental plugin
+├── decaf-dev/                    # Development plugin
 │   ├── .claude-plugin/
-│   │   └── plugin.json           # name: "decaf-experimental"
-│   └── skills/                   # 5 skills
+│   │   └── plugin.json           # name: "decaf-dev"
+│   └── skills/                   # 3 skills
 ├── CLAUDE.md
 └── README.md
 ```
@@ -171,7 +171,7 @@ claude plugin install decaf@decaf-claude-config
 claude plugin install decaf-review@decaf-claude-config
 claude plugin install decaf-planning@decaf-claude-config
 claude plugin install decaf-memory@decaf-claude-config
-claude plugin install decaf-experimental@decaf-claude-config
+claude plugin install decaf-dev@decaf-claude-config
 ```
 
 Then restart Claude Code to load the updated plugins.

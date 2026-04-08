@@ -77,5 +77,5 @@ After saving the candidates file, inform the user:
 
 Found N deepening opportunities.
 
-Run /decaf-experimental:handle-architecture-improvements to walk through candidates and create RFCs.
+Run /decaf-planning:handle-architecture-improvements to walk through candidates and create RFCs.
 ```
