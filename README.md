@@ -6,7 +6,7 @@ Originally forked from [everything-claude-code](https://github.com/affaan-m/ever
 
 ## Plugins
 
-This repo provides five plugins that can be installed independently:
+This repo provides six plugins that can be installed independently:
 
 | Plugin | Description |
 |--------|-------------|
@@ -15,6 +15,7 @@ This repo provides five plugins that can be installed independently:
 | **`decaf-planning`** | Planning skills for PRDs, implementation plans, and phase breakdowns |
 | **`decaf-memory`** | Memory skills backed by [erinra](https://github.com/alphaleonis/erinra-mcp) (hybrid semantic search, knowledge graphs) |
 | **`decaf-dev`** | Development skills — TDD, automated dev with review |
+| **`decaf-protection`** | PreToolUse safety hooks — blocks commands that would leak secrets into the session |
 
 ## Installation
 
@@ -28,6 +29,7 @@ This repo provides five plugins that can be installed independently:
 /plugin install decaf-claude-config@decaf-planning
 /plugin install decaf-claude-config@decaf-memory
 /plugin install decaf-claude-config@decaf-dev
+/plugin install decaf-claude-config@decaf-protection
 ```
 
 Or install from a local clone:
@@ -40,6 +42,7 @@ cd /path/to/decaf-claude-config
 /plugin install decaf-claude-config@decaf-planning
 /plugin install decaf-claude-config@decaf-memory
 /plugin install decaf-claude-config@decaf-dev
+/plugin install decaf-claude-config@decaf-protection
 ```
 
 ### Memory Plugin Setup
@@ -79,6 +82,9 @@ decaf-claude-config/
 ├── decaf-dev/                    # Development plugin
 │   ├── .claude-plugin/plugin.json
 │   └── skills/                   # 3 skills
+├── decaf-protection/             # Safety hooks plugin
+│   ├── .claude-plugin/plugin.json
+│   └── hooks/                    # PreToolUse guardrails
 ├── CLAUDE.md
 └── README.md
 ```
@@ -165,6 +171,16 @@ Skills are invoked as `/decaf-planning:<skill-name>`.
 | `design-an-interface` | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
 | `improve-codebase-architecture` | Explore codebase for module-deepening opportunities and save candidates |
 | `handle-architecture-improvements` | Walk through architecture improvement candidates interactively, creating RFCs |
+
+## `decaf-protection` — Safety Hooks
+
+No skills or agents — just PreToolUse hooks. Installs automatically once the plugin is enabled; no configuration required.
+
+| Hook | Event | Description |
+|------|-------|-------------|
+| `block-op-secrets` | `PreToolUse` (Bash) | Blocks 1Password CLI invocations (`op read`, `op item get`, `op inject`, `op run`, `op document get`, `op signin`, …) that may emit secret values into the session. Allowlist: `op --version`, `op --help`, `op whoami`. Uses exit code 2, so the block holds under `--dangerously-skip-permissions`. |
+
+If the operator needs to run `op` (e.g. to prime the 1Password desktop approval before an Ansible run), they should run it themselves in their own shell using the `!` prefix in the Claude Code prompt, e.g. `! op read "op://Vault/Item/field" > /dev/null` — that bypasses the Bash tool entirely and nothing lands in the session transcript.
 
 ## `decaf-dev` — Development Skills
 

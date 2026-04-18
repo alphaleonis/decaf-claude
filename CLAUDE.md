@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Personal Claude Code configuration with five plugins: `decaf` (core), `decaf-review` (code review ecosystem), `decaf-planning` (planning), `decaf-memory` (memory), and `decaf-dev` (development).
+Personal Claude Code configuration with six plugins: `decaf` (core), `decaf-review` (code review ecosystem), `decaf-planning` (planning), `decaf-memory` (memory), `decaf-dev` (development), and `decaf-protection` (safety hooks).
 
 ## Plugins
 
@@ -91,6 +91,14 @@ Planning skills for PRDs, implementation plans, and phase breakdowns.
 | `improve-codebase-architecture` | Both | Explore codebase for module-deepening opportunities and save candidates |
 | `handle-architecture-improvements` | Both | Walk through architecture improvement candidates interactively, creating RFCs |
 
+### `decaf-protection` — Safety Hooks
+
+PreToolUse guardrails that stop the agent from running commands which would leak secrets into the session transcript. No skills or agents — just hooks.
+
+| Hook | Event | Purpose |
+|------|-------|---------|
+| `block-op-secrets.js` | `PreToolUse` (Bash) | Block 1Password CLI invocations (`op read`, `op item get`, `op inject`, `op run`, `op document get`, `op signin`, etc.) that may emit secret values. Allowlist: `op --version`, `op --help`, `op whoami`. Exits with code 2 so the block is enforced even under `--dangerously-skip-permissions`. Operators wanting to prime a 1P approval should run `op` themselves via the `!` prefix in the prompt. |
+
 ### `decaf-dev` — Development
 
 Development skills for TDD and automated dev workflows.
@@ -117,6 +125,7 @@ Development skills for TDD and automated dev workflows.
 /plugin install decaf-claude-config@decaf-planning
 /plugin install decaf-claude-config@decaf-memory
 /plugin install decaf-claude-config@decaf-dev
+/plugin install decaf-claude-config@decaf-protection
 
 # 3. Restart Claude Code to load the plugins
 ```
@@ -158,6 +167,10 @@ decaf-claude-config/
 │   ├── .claude-plugin/
 │   │   └── plugin.json           # name: "decaf-dev"
 │   └── skills/                   # 3 skills
+├── decaf-protection/             # Safety hooks plugin
+│   ├── .claude-plugin/
+│   │   └── plugin.json           # name: "decaf-protection"
+│   └── hooks/                    # PreToolUse guardrails
 ├── CLAUDE.md
 └── README.md
 ```
@@ -173,6 +186,7 @@ claude plugin install decaf-review@decaf-claude-config
 claude plugin install decaf-planning@decaf-claude-config
 claude plugin install decaf-memory@decaf-claude-config
 claude plugin install decaf-dev@decaf-claude-config
+claude plugin install decaf-protection@decaf-claude-config
 ```
 
 Then restart Claude Code to load the updated plugins.

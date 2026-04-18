@@ -119,6 +119,30 @@
         "semantic-search",
         "fsrs"
       ]
+    },
+    {
+      "name": "decaf-protection",
+      "source": "./decaf-protection",
+      "description": "PreToolUse guardrails — blocks 1Password CLI invocations that may surface secrets",
+      "author": {
+        "name": "Alphaleonis"
+      },
+      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
+      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "license": "MIT",
+      "keywords": [
+        "hooks",
+        "safety",
+        "1password",
+        "secrets"
+      ],
+      "category": "workflow",
+      "tags": [
+        "hooks",
+        "safety",
+        "1password",
+        "secrets"
+      ]
     }
   ]
 }
