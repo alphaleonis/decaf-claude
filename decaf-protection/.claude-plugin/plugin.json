@@ -1,0 +1,22 @@
+{
+  "name": "decaf-protection",
+  "description": "PreToolUse guardrails that protect the session from surfacing secrets (blocks 1Password CLI invocations that may emit values)",
+  "author": { "name": "Alphaleonis", "url": "https://github.com/alphaleonis" },
+  "homepage": "https://github.com/alphaleonis/decaf-claude-config",
+  "repository": "https://github.com/alphaleonis/decaf-claude-config",
+  "license": "MIT",
+  "keywords": ["claude-code", "hooks", "safety", "1password", "secrets"],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/block-op-secrets.js"
+          }
+        ]
+      }
+    ]
+  }
+}
