@@ -36,7 +36,7 @@ Parse `$ARGUMENTS`:
    - Search for test framework config: `jest.config.*`, `pytest.ini`, `*.csproj` (test SDK), `go.mod`, `Cargo.toml`, etc.
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
-6. **Detect work item tracking system** from project CLAUDE.md (Beans, Azure DevOps, GitHub Issues, etc.) — store as `deferSystem`
+6. **Detect work item tracking system** from project CLAUDE.md (Nibs, Azure DevOps, GitHub Issues, etc.) — store as `deferSystem`
 7. Inform the user:
 
 ```

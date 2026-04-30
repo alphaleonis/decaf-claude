@@ -174,10 +174,10 @@ AskUserQuestion with:
 - **Skip**: Record as skipped, proceed to next
 - **Dismiss**: Record as dismissed. The user may provide a reason via the free-form "Other" option — if so, store it. Otherwise record reason as `"dismissed"`.
 - **Defer**: Create a work item in the project's tracking system:
-  1. **Detect tracking system**: Check project CLAUDE.md for references to tracking systems (Beans, Azure DevOps, GitHub Issues, TODO comments, etc.)
+  1. **Detect tracking system**: Check project CLAUDE.md for references to tracking systems (Nibs, Azure DevOps, GitHub Issues, TODO comments, etc.)
   2. **First defer**: If no system detected and `deferSystem` is null in state file, ask the user which system to use via AskUserQuestion. Store the choice in state file under `"deferSystem"`.
   3. **Subsequent defers**: Reuse `deferSystem` from state file.
-  4. **Create work item**: Create the item in the appropriate system (e.g., Beans task, GitHub issue, TODO comment in code). Store the work item reference.
+  4. **Create work item**: Create the item in the appropriate system (e.g., Nibs task, GitHub issue, TODO comment in code). Store the work item reference.
 - **Other** (free-form): Implement whatever the user describes. If user types "Stop", jump to Step 6.
 
 **5d. Update state file** after each action:

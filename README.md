@@ -98,7 +98,7 @@ Skills are invoked as `/decaf:<skill-name>`.
 | `commit` | Stage, commit, and optionally push changes |
 | `decision-critic` | Stress-test decisions through adversarial analysis |
 | `incoherence-detector` | Detect doc/code/spec inconsistencies |
-| `note` | Capture a follow-up task as a bean without interrupting current work |
+| `note` | Capture a follow-up task as a nib without interrupting current work |
 | `powershell-expert` | PowerShell development patterns |
 | `problem-analysis` | Root cause investigation |
 
@@ -165,7 +165,7 @@ Skills are invoked as `/decaf-planning:<skill-name>`.
 | `research` | Explore an unfamiliar problem space through multi-phase parallel research with synthesis |
 | `grill-me` | Stress-test a plan or design through depth-first interviewing with progress tracking |
 | `write-a-prd` | Create a PRD through user interview and codebase exploration |
-| `prd-to-plan` | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
+| `prd-to-plan` | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Nibs, or markdown) |
 | `breakdown-phase` | Break a plan phase (epic) into implementable features with acceptance criteria |
 | `close-plan` | Reconcile planned vs. actual, record deviations, and close a phase or plan |
 | `design-an-interface` | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
