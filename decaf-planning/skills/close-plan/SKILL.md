@@ -19,7 +19,7 @@ This skill is the bookkeeping step the AI would otherwise skip.
 ### 1. Identify what to close
 
 The user provides a reference to a phase or plan:
-- A work item ID (beans, GitHub issue, Azure DevOps work item)
+- A work item ID (nibs, GitHub issue, Azure DevOps work item)
 - A phase number or title from a plan in conversation context
 - A path to a plan file
 
@@ -96,7 +96,7 @@ Present the draft summary before making any changes. The user may want to adjust
 
 | System | Close action |
 |--------|-------------|
-| Beans | Append summary to body via `beans edit`, update status to `done` via `beans update --status done` |
+| Nibs | Close in one step via `nibs close <id> --summary "<closure summary>"` (sets status to `completed` and appends the summary; updates the parent's Current Focus and merges Key Decisions automatically) |
 | GitHub Issues | Add summary as a comment, close the issue |
 | Azure DevOps | Append summary to description, update state to Closed/Done |
 | Markdown | Append summary section under the phase in the plan file |
@@ -126,6 +126,6 @@ Closed: <phase/plan reference>
 
 ```
 /decaf-planning:close-plan 3                    # Close phase 3 from plan in context
-/decaf-planning:close-plan BEAN-42              # Close a beans work item
+/decaf-planning:close-plan NIB-42               # Close a nibs work item
 /decaf-planning:close-plan ./plans/auth.md#2    # Close phase 2 in a plan file
 ```

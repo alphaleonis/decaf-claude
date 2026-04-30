@@ -16,7 +16,7 @@ Locate the phase to break down. The user may provide:
 
 - A phase number or title from a plan already in conversation context
 - A path to a plan file (e.g., `./plans/feature-name.md`)
-- A work item ID (beans, GitHub issue, Azure DevOps work item)
+- A work item ID (nibs, GitHub issue, Azure DevOps work item)
 
 If the phase is not clear, ask the user to specify which phase they want to break down.
 
@@ -88,7 +88,7 @@ Create one work item per feature as **children of the phase**.
 
 | System | Phase type | Feature type |
 |--------|-----------|--------------|
-| Beans | `epic` | `feature` |
+| Nibs | `epic` | `feature` |
 | GitHub Issues | Issue (sub-issue of plan) | Sub-issue of phase |
 | Azure DevOps | Epic or Feature | Feature or User Story |
 | Markdown | Section in plan file | Subsection under phase |
@@ -122,5 +122,5 @@ After creating features, update the parent phase work item (or plan section) to 
 ```
 /decaf-planning:breakdown-phase 2                    # Break down phase 2 from plan in context
 /decaf-planning:breakdown-phase ./plans/auth.md#3    # Phase 3 from a plan file
-/decaf-planning:breakdown-phase BEAN-42              # Break down a beans epic
+/decaf-planning:breakdown-phase NIB-42               # Break down a nibs epic
 ```

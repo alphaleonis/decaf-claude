@@ -15,7 +15,7 @@ General-purpose agents and skills for development workflows.
 | `commit` | Both | Stage, commit, and optionally push changes |
 | `decision-critic` | Both | Stress-test decisions through adversarial analysis |
 | `incoherence-detector` | Both | Detect doc/code/spec inconsistencies |
-| `note` | Both | Capture a follow-up task as a bean without interrupting current work |
+| `note` | Both | Capture a follow-up task as a nib without interrupting current work |
 | `powershell-expert` | Both | PowerShell development patterns |
 | `problem-analysis` | Both | Root cause investigation |
 
@@ -84,7 +84,7 @@ Planning skills for PRDs, implementation plans, and phase breakdowns.
 | `research` | Both | Explore an unfamiliar problem space through multi-phase parallel research with synthesis |
 | `grill-me` | Both | Stress-test a plan or design through depth-first interviewing with progress tracking |
 | `write-a-prd` | Both | Create a PRD through user interview and codebase exploration |
-| `prd-to-plan` | Both | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Beans, or markdown) |
+| `prd-to-plan` | Both | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Nibs, or markdown) |
 | `breakdown-phase` | Both | Break a plan phase (epic) into implementable features with acceptance criteria |
 | `close-plan` | Both | Reconcile planned vs. actual, record deviations, and close a phase or plan |
 | `design-an-interface` | Both | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
