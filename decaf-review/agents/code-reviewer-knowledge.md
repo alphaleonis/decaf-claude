@@ -184,10 +184,46 @@ WRONG: "Could this confuse someone?" (confirms the frame)
 WRONG: "Would this cause data loss?" (model agrees regardless)
 </open_questions_rule>
 
+<pre_flag_gates> A missing comment or undocumented decision is a finding ONLY
+when the knowledge is genuinely lost — not merely unwritten. Before flagging any
+RULE 0 missing-knowledge finding (DECISION_LOG_MISSING, ASSUMPTION_UNVALIDATED,
+LLM_COMPREHENSION_RISK, etc.), it must survive ALL THREE gates. If any gate
+fails, do not flag — record it under "Considered But Not Flagged".
+
+1. **Inferability gate** — Is the knowledge derivable from the code itself? Read
+   the names, types, signatures, tests, and surrounding code. If a competent
+   maintainer (or LLM) would reconstruct the intent from these alone, the comment
+   is redundant.
+   - FAILS (do not flag): asking for a comment on `validateEmail()` when the name
+     and body already say what it does.
+   - PASSES: a magic value whose *source* is invisible in code (an upstream SLA,
+     a measured P99).
+
+2. **Not-recorded-elsewhere gate** — Would this knowledge already live where a
+   maintainer naturally looks? Assume every change carries a commit message, a
+   linked work item, and a PR description holding the *why* of the change. "Why
+   this change was made" belongs there, not duplicated in a code comment. Flag
+   only knowledge a maintainer needs while editing THIS file in isolation — i.e.,
+   it must live in the code to be safe.
+   - FAILS (do not flag): demanding a comment that restates the work item or PR
+     rationale.
+   - PASSES: an invariant another file silently depends on, with nothing in code
+     enforcing it.
+
+3. **Durable-relevance gate** — Would the missing "why" change how a FUTURE
+   maintainer edits this code? Flag only forward-relevant rationale: a constraint
+   that, if unknown, leads to a wrong edit.
+   - FAILS (do not flag): ephemeral or historical narrative — what was tried,
+     what was rejected, how the code evolved. Writing that into a comment is
+     itself temporal contamination (see temporal.md).
+   - PASSES: a live constraint a future edit must respect ("sync blocks the event
+     loop here").
+</pre_flag_gates>
+
 After answering each open question with specific observations:
 
-- If answer reveals concrete failure scenario or knowledge loss → Flag finding
-- If answer reveals no failure path or knowledge is preserved → Do not flag
+- If a concrete knowledge loss survives ALL THREE gates → Flag finding
+- If no failure path, knowledge is preserved, OR any gate fails → Do not flag
 
 **Dual-Path Verification for MUST findings:**
 
@@ -321,6 +357,10 @@ Common escalation triggers:
 - [ ] For each RULE 0 finding: I named the specific knowledge loss or
       unrecoverable consequence
 - [ ] For each RULE 0 finding: I used open verification questions (not yes/no)
+- [ ] For each RULE 0 missing-knowledge finding: it passes all three pre-flag
+      gates (not inferable from code, not already in work item/commit/PR,
+      durably relevant to a future edit) — else moved to "Considered But Not
+      Flagged"
 - [ ] For each MUST finding: I verified via dual-path reasoning
 - [ ] For each MUST finding: I used correct category name (DECISION_LOG_MISSING,
       POLICY_UNJUSTIFIED, IK_TRANSFER_FAILURE, TEMPORAL_CONTAMINATION,
@@ -387,6 +427,21 @@ Why wrong: Length alone is not a knowledge issue. Flag only if the function is i
 <example type="INCORRECT" category="generic_bug">
 Finding: "Possible null reference on line 55"
 Why wrong: Bug detection is other reviewers' job (feature-dev, code-reviewer-broad). Only flag if the null path creates a non-obvious silent failure that obscures system behavior.
+</example>
+
+<example type="INCORRECT" category="inferable_from_code">
+Finding: "[ASSUMPTION_UNVALIDATED MUST]: validateEmail() lacks a comment explaining the accepted format"
+Why wrong: The regex and the function name already encode the format. A maintainer reconstructs the intent from the code alone — fails the inferability gate. Flag only values or contracts whose source is invisible in code (e.g., a timeout tied to an upstream SLA), not comments that restate what the code plainly shows.
+</example>
+
+<example type="INCORRECT" category="duplicates_work_item">
+Finding: "[DECISION_LOG_MISSING MUST]: Switch to the batch API has no comment recording why it was chosen"
+Why wrong: "Why this change was made" lives in the commit message, the linked work item, and the PR description — where maintainers look for change history. A code comment restating it is duplication — fails the not-recorded-elsewhere gate. Flag only if a maintainer editing this file in isolation would make a wrong edit without the knowledge, meaning it must live in the code.
+</example>
+
+<example type="INCORRECT" category="historical_narrative">
+Finding: "[DECISION_LOG_MISSING MUST]: No comment records that a sync implementation was tried first and abandoned"
+Why wrong: What was tried and rejected is ephemeral history, not forward-relevant knowledge — fails the durable-relevance gate. Writing it into a comment would itself be temporal contamination (temporal.md). Flag only the live constraint a future edit must respect (e.g., "sync blocks the event loop here"), never the evolution story.
 </example>
 
 <example type="INCORRECT" category="redundant_risk_flag">
