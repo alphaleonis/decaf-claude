@@ -1,0 +1,118 @@
+// Tests for setup-worktree.mjs session-branch topology (vitest, Node project). Uses a throwaway git repo (APP_DIR) + CRM_TMP_ROOT. Tests are ordered and stateful — each observes the state produced by the previous step.
+
+import {
+  mkdtempSync,
+  mkdirSync,
+  writeFileSync,
+  readFileSync,
+  existsSync,
+  rmSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
+import { describe, test, expect, beforeAll, afterAll } from "vitest";
+import { sanitizePath } from "../lib/paths.mjs";
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const HOOK = join(HERE, "..", "setup-worktree.mjs");
+const SESSION_ID = "ab12cd34-1111-2222-3333-444455556666";
+const SS = SESSION_ID.split("-")[0];
+
+let TMP;
+let APP_DIR;
+let WB;
+let env;
+
+const g = (...args) =>
+  spawnSync("git", ["-C", APP_DIR, ...args], { encoding: "utf8" });
+const dispatch = (agentType) =>
+  spawnSync("node", [HOOK], {
+    input: JSON.stringify({ agent_type: agentType, session_id: SESSION_ID }),
+    env,
+    encoding: "utf8",
+  });
+
+beforeAll(() => {
+  TMP = mkdtempSync(join(tmpdir(), "setup-wt-test-"));
+  APP_DIR = join(TMP, "app");
+  mkdirSync(APP_DIR, { recursive: true });
+  g("init", "-q", "-b", "main");
+  g("config", "user.email", "t@t.t");
+  g("config", "user.name", "t");
+  writeFileSync(join(APP_DIR, "seed.txt"), "seed\n");
+  g("add", ".");
+  g("commit", "-q", "-m", "seed");
+  mkdirSync(join(APP_DIR, "node_modules"), { recursive: true });
+
+  const CRM_TMP_ROOT = join(TMP, "scratch");
+  WB = join(CRM_TMP_ROOT, sanitizePath(APP_DIR), SESSION_ID);
+
+  env = { ...process.env, APP_DIR, CRM_TMP_ROOT };
+  delete env.VALIDATE_WORKTREE;
+
+  dispatch("developer-TASK-001");
+});
+
+afterAll(() => {
+  rmSync(TMP, { recursive: true, force: true });
+});
+
+describe("setup-worktree session-branch topology", () => {
+  test("session branch created", () => {
+    expect(
+      g("show-ref", "--verify", "--quiet", `refs/heads/session/${SS}`).status,
+    ).toBe(0);
+  });
+
+  test("session-base anchor created", () => {
+    expect(
+      g("show-ref", "--verify", "--quiet", `refs/heads/session-base/${SS}`)
+        .status,
+    ).toBe(0);
+  });
+
+  test("_session worktree created", () => {
+    expect(existsSync(join(WB, "_session"))).toBe(true);
+  });
+
+  test("task worktree created", () => {
+    expect(existsSync(join(WB, "TASK-001"))).toBe(true);
+  });
+
+  test("task branch forked from session branch", () => {
+    expect(
+      g("merge-base", "--is-ancestor", `session/${SS}`, `${SS}/TASK-001`)
+        .status,
+    ).toBe(0);
+  });
+
+  test("idempotent second run exits 0", () => {
+    expect(dispatch("developer-TASK-001").status).toBe(0);
+  });
+
+  test("stale _session registration survives dir wipe", () => {
+    rmSync(join(WB, "_session"), { recursive: true, force: true });
+    expect(
+      g("worktree", "list", "--porcelain").stdout.includes(
+        join(WB, "_session"),
+      ),
+    ).toBe(true);
+  });
+
+  test("_session recreated after stale-registration wipe", () => {
+    dispatch("developer-TASK-002");
+    expect(existsSync(join(WB, "_session", ".git"))).toBe(true);
+  });
+
+  test("no SESSION-BRANCH FAILED logged", () => {
+    let logTxt = "";
+    try {
+      logTxt = readFileSync(join(WB, "hooks.log"), "utf8");
+    } catch {
+      logTxt = "";
+    }
+    expect(logTxt.includes("SESSION-BRANCH FAILED")).toBe(false);
+  });
+});
