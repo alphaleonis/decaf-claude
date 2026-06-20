@@ -6,7 +6,7 @@ status: todo
 type: task
 priority: normal
 created_at: 2026-06-20T18:33:58Z
-updated_at: 2026-06-20T19:07:55Z
+updated_at: 2026-06-20T19:26:06Z
 parent: dcc-9olo
 blocked_by:
     - dcc-owjh
@@ -20,12 +20,13 @@ Renames (port + rename together):
 - write-a-prd → `draft-spec`
 - prd-to-plan → `draft-plan`
 - design-an-interface → `explore-designs`
-- keep as-is: research, grill-me, breakdown-phase, close-plan
-(architecture-review / resolve-architecture-review are handled in the sibling task #dcc-jje9.)
+- close-plan → `close-out`
+- keep as-is: research, grill-me, breakdown-phase
+(architecture-review / resolve-architecture-review handled in sibling task #dcc-jje9.)
 
 ## Verification
-- [ ] /decaf-plan: has draft-spec, draft-plan, explore-designs, research, grill-me, breakdown-phase, close-plan
-- [ ] no old names remain (write-a-prd, prd-to-plan, design-an-interface)
+- [ ] /decaf-plan: has draft-spec, draft-plan, explore-designs, close-out, research, grill-me, breakdown-phase
+- [ ] no old names remain (write-a-prd, prd-to-plan, design-an-interface, close-plan)
 - [ ] each skill's `description:` rewritten in plain language
 - [ ] shared conventions/work-items.md references intact
 - [ ] no unattended / loop behavior introduced
