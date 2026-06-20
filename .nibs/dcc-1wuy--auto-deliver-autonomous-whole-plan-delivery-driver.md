@@ -2,11 +2,11 @@
 # dcc-1wuy
 version: 1
 title: 'auto-deliver: autonomous whole-plan delivery driver'
-status: todo
+status: completed
 type: feature
 priority: normal
 created_at: 2026-06-20T18:27:56Z
-updated_at: 2026-06-20T19:42:52Z
+updated_at: 2026-06-20T22:21:03Z
 parent: dcc-e4ry
 blocked_by:
     - dcc-c7gu
@@ -31,3 +31,7 @@ The autonomous plan→execute→reflect loop driver (see #dcc-kk29 "Future" sect
 ## Dependencies
 - decaf-quality (inherited via build)
 - decaf-plan (unattended breakdown-phase / close-plan) — not yet started
+
+## Summary
+
+Implemented decaf-build:auto-deliver — the autonomous SELECT→BREAKDOWN→EXECUTE→VERIFY→RECONCILE→LEARN→REPLAN→MERGE loop, per dcc-c7gu exactly. No gate-stops (only plan-complete or escalation exits); tracker-agnostic via the adapter contract; composes breakdown-phase/batch-dev/close-out under --unattended; verify-and-fix/learn/replan as in-skill sub-routines; scope immutable (human-only cuts); driver owns tracker status in the main context. Build now depends on decaf-plan. Shipped in commit 7336757.
