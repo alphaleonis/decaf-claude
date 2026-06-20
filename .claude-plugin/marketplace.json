@@ -53,6 +53,30 @@
         "tdd",
         "build"
       ]
+    },
+    {
+      "name": "decaf-plan",
+      "source": "./decaf-plan",
+      "description": "Decide what and how to build with Claude Code — research, specs, phased plans, design exploration, and architecture review",
+      "author": {
+        "name": "Alphaleonis"
+      },
+      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
+      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "license": "MIT",
+      "keywords": [
+        "planning",
+        "prd",
+        "research",
+        "architecture"
+      ],
+      "category": "workflow",
+      "tags": [
+        "planning",
+        "prd",
+        "research",
+        "architecture"
+      ]
     }
   ]
 }
