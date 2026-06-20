@@ -13,7 +13,7 @@ Three plugins ship from this marketplace and can be installed independently (bui
 | Plugin | Boundary | Description |
 |--------|----------|-------------|
 | **`decaf-quality`** | improve existing code | Multi-agent code review, coverage-gap analysis, refactoring, PR-feedback resolution |
-| **`decaf-build`** | create new behavior | TDD, automated dev-with-review loops, multi-work-item orchestration (**depends on** `decaf-quality`) |
+| **`decaf-build`** | create new behavior | TDD, automated dev-with-review loops, multi-work-item orchestration, autonomous whole-plan delivery (**depends on** `decaf-quality` + `decaf-plan`) |
 | **`decaf-plan`** | decide what/how | Research, specs, phased plans, phase breakdowns, design exploration, architecture review |
 
 Deferred (pending vnext rewrite, currently under `old/`): **`decaf`** (core), **`decaf-memory`**, **`decaf-protection`**.
@@ -105,7 +105,7 @@ Referenced via the Task tool as `decaf-quality:<agent-name>`.
 
 ## `decaf-build` — Skills
 
-Invoked as `/decaf-build:<skill-name>`. `decaf-build` declares a dependency on `decaf-quality`; the automated loops call `/decaf-quality:auto-code-review` for their review gate.
+Invoked as `/decaf-build:<skill-name>`. `decaf-build` declares dependencies on `decaf-quality` and `decaf-plan`; the automated loops call `/decaf-quality:auto-code-review` for their review gate, and `auto-deliver` calls the plan skills.
 
 | Skill | Description |
 |-------|-------------|
@@ -113,6 +113,7 @@ Invoked as `/decaf-build:<skill-name>`. `decaf-build` declares a dependency on `
 | `auto-tdd` | TDD session (plan → red-green-refactor via subagent) then auto-review |
 | `auto-dev` | Direct (non-test-first) work then auto-review — for UI, config, scaffolding, infrastructure |
 | `batch-dev` | Orchestrate **multiple nibs** in one run — cluster, pick the best mechanism per cluster, dispatch behind one approval gate |
+| `auto-deliver` | **Autonomous whole-plan loop** — `SELECT→BREAKDOWN→EXECUTE→VERIFY→RECONCILE→LEARN→REPLAN→MERGE` per phase, no stops at phase boundaries; composes `breakdown-phase`/`batch-dev`/`close-out` (`--unattended`) over the tracker-adapter contract, stops at plan completion |
 
 ## `decaf-plan` — Skills
 

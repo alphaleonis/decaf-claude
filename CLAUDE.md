@@ -35,7 +35,7 @@ Improve existing code without adding behavior: multi-agent code review, coverage
 
 ### `decaf-build` — Build
 
-Create new behavior: TDD, automated dev-with-review loops, and multi-work-item orchestration. **Depends on `decaf-quality`** (its automated loops call the review skills) — installing build pulls quality in automatically.
+Create new behavior: TDD, automated dev-with-review loops, multi-work-item orchestration, and the autonomous whole-plan delivery loop. **Depends on `decaf-quality` and `decaf-plan`** (its loops call the review and planning skills) — installing build pulls both in automatically.
 
 **Skills** (invoked as `/decaf-build:skill-name`):
 
@@ -45,6 +45,7 @@ Create new behavior: TDD, automated dev-with-review loops, and multi-work-item o
 | `auto-tdd` | TDD session (plan → red-green-refactor via subagent) then `/decaf-quality:auto-code-review` |
 | `auto-dev` | Direct (non-test-first) work then auto-review — for UI, config, scaffolding, infrastructure |
 | `batch-dev` | Orchestrate MULTIPLE nibs in one run — cluster, pick the best mechanism per cluster, dispatch behind one gate |
+| `auto-deliver` | Autonomous whole-plan loop: SELECT→BREAKDOWN→EXECUTE→VERIFY→RECONCILE→LEARN→REPLAN→MERGE per phase, no stops at phase boundaries; composes breakdown-phase / batch-dev / close-out (`--unattended`) over the tracker-adapter contract |
 
 ### `decaf-plan` — Plan
 
