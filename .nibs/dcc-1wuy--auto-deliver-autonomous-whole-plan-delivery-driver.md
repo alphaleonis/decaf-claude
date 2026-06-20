@@ -4,9 +4,12 @@ version: 1
 title: 'auto-deliver: autonomous whole-plan delivery driver'
 status: draft
 type: feature
+priority: normal
 created_at: 2026-06-20T18:27:56Z
-updated_at: 2026-06-20T18:27:56Z
+updated_at: 2026-06-20T18:33:59Z
 parent: dcc-s8di
+blocked_by:
+    - dcc-c7gu
 order: az
 ---
 
