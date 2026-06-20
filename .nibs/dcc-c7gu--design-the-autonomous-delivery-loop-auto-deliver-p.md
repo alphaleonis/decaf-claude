@@ -2,11 +2,11 @@
 # dcc-c7gu
 version: 1
 title: Design the autonomous delivery loop (auto-deliver + plan-side machinery)
-status: in-progress
+status: completed
 type: research
 priority: normal
 created_at: 2026-06-20T18:33:58Z
-updated_at: 2026-06-20T19:37:17Z
+updated_at: 2026-06-20T19:42:51Z
 parent: dcc-33j0
 order: as
 ---
@@ -55,3 +55,7 @@ None — ready to break into Face 2 implementation tasks.
   - draft-spec / draft-plan / breakdown-phase → emit `## Acceptance` criteria (runnable-where-possible, `manual`-tagged otherwise).
   - breakdown-phase / batch-dev / close-out → `--unattended` flag.
   - `.auto-deliver/` artifact layout to be specified (run state, per-phase reflection, lessons.md, context logs, verify output).
+
+## Summary
+
+Loop architecture + mechanics resolved (tracker-agnostic adapter contract designed to the weakest backend; on-disk .auto-deliver/ state, no mirror; A+C executable acceptance criteria; verify-and-fix/learn/replan as auto-deliver sub-routines; --unattended flags). Spawned the Face-2 epic + enablement tasks; auto-deliver un-drafted.

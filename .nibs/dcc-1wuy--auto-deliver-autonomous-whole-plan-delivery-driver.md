@@ -2,15 +2,19 @@
 # dcc-1wuy
 version: 1
 title: 'auto-deliver: autonomous whole-plan delivery driver'
-status: draft
+status: todo
 type: feature
 priority: normal
 created_at: 2026-06-20T18:27:56Z
-updated_at: 2026-06-20T18:33:59Z
-parent: dcc-s8di
+updated_at: 2026-06-20T19:42:52Z
+parent: dcc-e4ry
 blocked_by:
     - dcc-c7gu
-order: az
+    - dcc-nh1y
+    - dcc-cwjz
+    - dcc-o89j
+    - dcc-s4zu
+order: aw
 ---
 
 The autonomous plan→execute→reflect loop driver (see #dcc-kk29 "Future" section and vnext.md). Lives in **decaf-build**.
