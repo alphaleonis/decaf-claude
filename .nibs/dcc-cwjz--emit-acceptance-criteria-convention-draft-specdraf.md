@@ -2,11 +2,11 @@
 # dcc-cwjz
 version: 1
 title: 'Emit ## Acceptance criteria (convention + draft-spec/draft-plan/breakdown-phase)'
-status: todo
+status: completed
 type: task
 priority: normal
 created_at: 2026-06-20T19:42:51Z
-updated_at: 2026-06-20T19:44:47Z
+updated_at: 2026-06-20T22:21:03Z
 parent: dcc-e4ry
 blocked_by:
     - dcc-9olo
@@ -20,3 +20,7 @@ Define the structured `## Acceptance` convention (each item a runnable check —
 - [ ] `## Acceptance` format documented (runnable vs `manual`-tagged)
 - [ ] draft-spec / draft-plan / breakdown-phase emit it
 - [ ] criteria land in the work-item body (tracker-agnostic)
+
+## Summary
+
+Added conventions/acceptance-criteria.md defining the A+C hybrid ## Acceptance format ([run] cmd—expect vs [manual] prose). draft-spec, draft-plan, and breakdown-phase now emit it into the work-item body so it travels across trackers; auto-deliver verify reads it.
