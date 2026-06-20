@@ -1,6 +1,6 @@
 # PR Posting Etiquette
 
-Rules for anything decaf-exp writes where other people will read it: PR comments and replies, thread status changes, votes, review submissions. These rules bind every skill and agent in this plugin.
+Rules for anything decaf-review writes where other people will read it: PR comments and replies, thread status changes, votes, review submissions. These rules bind every skill and agent in this plugin.
 
 ## When posting is allowed
 

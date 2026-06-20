@@ -8,7 +8,7 @@ argument-hint: "[low|mid|high|max][N] [--max-iterations N] [--spec <path|work-it
 
 Automated loop: **review → triage → fix → re-review** until stable.
 
-- **Step 2** delegates to `/decaf-exp:code-review` via subagent (context isolation)
+- **Step 2** delegates to `/decaf-review:code-review` via subagent (context isolation)
 - **Step 3** triages findings in the main context using the resolve-code-review auto decision criteria
 - **Step 4** executes the confirmed plan via subagent (context isolation)
 - **Step 5** decides whether to re-review based on change magnitude
@@ -54,7 +54,7 @@ Launch a **general-purpose subagent** using the Agent tool:
 
 **First iteration** — use the user's specified mode and scope:
 
-> Run the `/decaf-exp:code-review {codeReviewArgs}` skill using the Skill tool.
+> Run the `/decaf-review:code-review {codeReviewArgs}` skill using the Skill tool.
 > When complete, report:
 > 1. The path of the generated review file
 > 2. The verdict (APPROVED or NEEDS_CHANGES)
@@ -62,7 +62,7 @@ Launch a **general-purpose subagent** using the Agent tool:
 
 **Subsequent iterations** (iteration > 1) — use `mid` mode, scoped to modified files:
 
-> Run the `/decaf-exp:code-review mid {modifiedFileList}` skill using the Skill tool.
+> Run the `/decaf-review:code-review mid {modifiedFileList}` skill using the Skill tool.
 > Focus the review on regressions and new issues introduced by the previous round of fixes.
 > When complete, report:
 > 1. The path of the generated review file
