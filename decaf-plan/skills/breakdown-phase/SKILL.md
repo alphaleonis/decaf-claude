@@ -1,12 +1,22 @@
 ---
 name: breakdown-phase
 description: Break one phase of a plan into concrete, buildable features, each with a done-checklist. Use when you're about to start a phase and need it decomposed into work items with acceptance criteria.
-argument-hint: "[phase reference or number]"
+argument-hint: "[phase reference or number] [--unattended]"
 ---
 
 # Breakdown Phase
 
 Break a single phase from a plan into implementable features. Each feature is an independently buildable and reviewable chunk of work. Does NOT break features further into tasks — that happens at implementation time.
+
+## Unattended mode (`--unattended`)
+
+When invoked with `--unattended` (the `auto-deliver` loop passes this), run with **no human gates** — proceed on best judgment and record assumptions. Suppress exactly these:
+
+- **Step 1** — no disambiguation prompt; the caller supplies the exact phase work-item ID.
+- **Step 4 (Show the breakdown / ask / iterate)** — skip entirely; proceed with the drafted breakdown.
+- **Step 5** — no target-system confirmation; use the parent phase's tracker (same system the phase work item lives in).
+
+**Unchanged:** codebase exploration (step 2), feature drafting against current reality (step 3), work-item creation with `## Acceptance` (step 6), and the parent-phase update (step 7). The breakdown is still planned against the code earlier phases produced — `--unattended` removes the human pause, not the JIT planning.
 
 ## Process
 
@@ -48,7 +58,7 @@ For each feature, draft:
 
 - **Title**: Short, descriptive
 - **Description**: What to build — describe the end-to-end behavior, not implementation steps
-- **Acceptance criteria**: Checkboxes that define "done" for this feature
+- **Acceptance**: a `## Acceptance` section that defines "done" — runnable `[run]` checks where possible, prose tagged `[manual]` otherwise (see acceptance-criteria.md)
 - **Dependencies**: Other features in this phase that should be built first (if any)
 
 <feature-guidelines>
@@ -93,9 +103,11 @@ Create one work item per feature as **children of the phase**.
 | Azure DevOps | Epic or Feature | Feature or User Story |
 | Markdown | Section in plan file | Subsection under phase |
 
+@../../conventions/acceptance-criteria.md
+
 **Each feature work item contains:**
 - **Title**: `<Feature title>`
-- **Body**: Description + acceptance criteria as checklist + dependencies (referencing sibling work item IDs where applicable)
+- **Body**: Description + a `## Acceptance` section (runnable `[run]` checks where possible, prose tagged `[manual]`) + dependencies (referencing sibling work item IDs where applicable)
 
 **For markdown output**, append features under the phase section in the plan file:
 
@@ -106,11 +118,10 @@ Create one work item per feature as **children of the phase**.
 
 <Description of what to build — end-to-end behavior.>
 
-#### Acceptance criteria
+#### Acceptance
 
-- [ ] Criterion 1
-- [ ] Criterion 2
-- [ ] Criterion 3
+- [ ] [run] `<command>` — expect: <observable result>
+- [ ] [manual] <criterion that cannot be mechanically checked>
 </markdown-template>
 
 ### 7. Update the parent phase

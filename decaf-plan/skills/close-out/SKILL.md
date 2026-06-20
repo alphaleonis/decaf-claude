@@ -1,12 +1,22 @@
 ---
 name: close-out
 description: Reconcile what was built against what was planned, record decisions and deviations, close the item (a single phase or a whole plan), and file follow-ups for deferred work. Use after finishing a phase or plan to keep planned and actual from drifting apart.
-argument-hint: "<phase/plan reference or work item ID>"
+argument-hint: "<phase/plan reference or work item ID> [--unattended]"
 ---
 
 # Close Out
 
 Reconcile what was planned against what was actually built, then close the work item. Prevents orphaned plans and silent drift by forcing explicit closure with a durable summary.
+
+## Unattended mode (`--unattended`)
+
+When invoked with `--unattended` (the `auto-deliver` loop's RECONCILE step passes this), run with **no human gates**:
+
+- **Step 1** — no disambiguation prompt; the caller supplies the exact work-item ID.
+- **Step 4 (Show the summary)** — skip; apply the closure summary directly.
+- **Step 7 (Confirm closure)** — write the confirmation block to the loop's run report instead of a user message.
+
+**Unchanged:** gather what happened (step 2), draft the summary (step 3), update the item + parent (step 5), and **create follow-ups for genuinely deferred work** (step 6). Note the scope split: close-out files follow-ups for deferred/descoped work but does **not** reassess future phases — that **replan** reasoning belongs to `auto-deliver`, which reads these follow-ups.
 
 ## Why This Exists
 
