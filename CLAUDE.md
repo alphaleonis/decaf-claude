@@ -191,6 +191,16 @@ claude plugin install decaf-protection@decaf-claude-config
 
 Then restart Claude Code to load the updated plugins.
 
+## Conventions & shared files (symlinks — IMPORTANT)
+
+Installed plugins can only read files **inside their own directory** — on install, Claude Code copies just that plugin's subtree into the plugin cache, so any `@file` reference that climbs out of the plugin root (e.g. `@../../../conventions/x.md`) resolves in this repo but **silently fails once installed**.
+
+Rules when editing skills/agents:
+
+- Reference conventions only by a **plugin-local** path: `@../../conventions/<file>.md` from `skills/<skill>/SKILL.md` (or `@../conventions/<file>.md` from `agents/<agent>.md`). Never write a path that escapes the plugin root.
+- The single canonical copy of each convention lives at **repo-root `conventions/`**. Each plugin's `conventions/` holds **symlinks** into it (`ln -s ../../conventions/<file>.md <plugin>/conventions/<file>.md`). Claude Code dereferences within-marketplace symlinks into the cache on install. Edit the canonical file at the root; do not create a divergent copy inside a plugin.
+- Full rationale and the doc link are in [README.md](README.md#development-sharing-conventions-across-plugins-symlinks).
+
 ## Versioning
 
 These plugins have **no version field** in their `plugin.json` files. Changes take effect on Claude Code restart (continuous deployment via git commits).

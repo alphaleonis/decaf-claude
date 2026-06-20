@@ -1,12 +1,12 @@
-# QR Severity Taxonomy
+# Severity Taxonomy
 
 ## Severity Levels (MoSCoW)
 
-| Level  | Meaning                  | Progressive De-Escalation |
-| ------ | ------------------------ | ------------------------- |
-| MUST   | Unrecoverable if missed  | All iterations            |
-| SHOULD | Maintainability debt     | Iterations 1-4            |
-| COULD  | Auto-fixable, low impact | Iterations 1-3            |
+| Level  | Meaning                  |
+| ------ | ------------------------ |
+| MUST   | Unrecoverable if missed  |
+| SHOULD | Maintainability debt     |
+| COULD  | Auto-fixable, low impact |
 
 ## Categories by Recoverability
 

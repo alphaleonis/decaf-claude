@@ -210,6 +210,26 @@ Shared reference files used by skills and agents via `@file` references:
 | `documentation.md` | Technical writer |
 | `intent-markers.md` | Code review agents |
 
+### Development: sharing conventions across plugins (symlinks)
+
+**Installed plugins cannot read files outside their own directory.** When a plugin is installed from a marketplace, Claude Code copies *only that plugin's own subtree* into `~/.claude/plugins/cache/<marketplace>/<plugin>/<sha>/` and runs from there — the rest of the repo (including the repo-root `conventions/`) is **not** present. So a skill reference that escapes the plugin root, e.g. `@../../../conventions/work-items.md`, resolves fine when run from this repo but **silently fails once the plugin is installed** (the file simply isn't in the cache). See the docs: [Plugin caching and file resolution](https://code.claude.com/docs/en/plugins-reference#plugin-caching-and-file-resolution).
+
+The fix is the **symlink pattern** (the officially recommended way to share files within a marketplace):
+
+- The repo keeps **one canonical copy** of every convention at repo-root `conventions/`.
+- Each plugin that uses a convention has a `<plugin>/conventions/` directory containing **symlinks** into the repo-root copy — e.g. `decaf-plan/conventions/work-items.md → ../../conventions/work-items.md`. Git stores these as symlinks (no duplicated content).
+- On install, Claude Code **dereferences** symlinks whose target is elsewhere in the same marketplace and copies the real content into the plugin's cache, so the reference resolves at runtime.
+- Skills/agents therefore always reference conventions by the **plugin-local** path: `@../../conventions/<file>.md` from `skills/<skill>/SKILL.md` (or `@../conventions/<file>.md` from `agents/<agent>.md`) — never a path that climbs out of the plugin.
+
+To give a plugin a convention:
+
+```bash
+mkdir -p <plugin>/conventions
+ln -s ../../conventions/<file>.md <plugin>/conventions/<file>.md   # relative; target must stay inside the repo
+```
+
+Edit conventions in **one place** (repo-root `conventions/`); every plugin's symlink sees the change. Caveat: symlinks require `git config core.symlinks true` — automatic on Linux/macOS/WSL; on native Windows it needs Developer Mode or an elevated `git clone -c core.symlinks=true`.
+
 ## License
 
 MIT
