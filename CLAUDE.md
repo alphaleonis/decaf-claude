@@ -1,115 +1,76 @@
 # CLAUDE.md
 
-Personal Claude Code configuration with six plugins: `decaf` (core), `decaf-review` (code review ecosystem), `decaf-planning` (planning), `decaf-memory` (memory), `decaf-dev` (development), and `decaf-protection` (safety hooks).
+Personal Claude Code configuration. This repo is mid-**vnext rewrite** (epic milestone `dcc-33j0`): the plugin suite is being reorganized around what each plugin *does* —
+
+- **`decaf-build`** — create new behavior (features, capabilities)
+- **`decaf-quality`** — improve existing code, behavior-preserving (review, coverage, refactor)
+- **`decaf-plan`** — decide what/how (research, specs, plans, designs, architecture review)
+
+These three ship from the repo root and are listed in `marketplace.json`. The original `decaf` (core), `decaf-memory`, and `decaf-protection` plugins are **deferred** (still under `old/`, pending their own rewrite — they keep their names). The superseded `decaf-dev`/`decaf-review`/`decaf-planning` live under `old/` as reference only.
 
 ## Plugins
 
-### `decaf` — Core
+### `decaf-quality` — Code Quality
 
-General-purpose agents and skills for development workflows.
+Improve existing code without adding behavior: multi-agent code review, coverage-gap analysis, refactoring, and PR-feedback resolution. Standalone (no outward dependencies). Analysis skills produce findings; matching `resolve-*` skills walk them one at a time.
 
-**Skills** (invoked as `/decaf:skill-name`):
+**Skills** (invoked as `/decaf-quality:skill-name`):
 
-| Skill | Invocation | Purpose |
-|-------|------------|---------|
-| `commit` | Both | Stage, commit, and optionally push changes |
-| `decision-critic` | Both | Stress-test decisions through adversarial analysis |
-| `incoherence-detector` | Both | Detect doc/code/spec inconsistencies |
-| `note` | Both | Capture a follow-up task as a nib without interrupting current work |
-| `powershell-expert` | Both | PowerShell development patterns |
-| `problem-analysis` | Both | Root cause investigation |
-
-**Agents** (referenced as `decaf:agent-name`):
-
-| Agent | Purpose |
+| Skill | Purpose |
 |-------|---------|
-| `architect` | Feature architecture design |
-| `csharp-developer` | C# implementation with idiomatic patterns |
-| `go-developer` | Go implementation with idiomatic patterns |
-| `debugger` | Systematic debugging with evidence gathering |
-| `planner` | Implementation planning |
-| `technical-writer` | LLM-optimized documentation |
+| `code-review` | Run parallel review agents and consolidate into a deduplicated report |
+| `auto-code-review` | Automated review → triage → fix (subagent) → re-review loop until stable |
+| `resolve-code-review` | Walk findings one at a time — fix / skip / dismiss / defer (`auto` for autonomous TDD) |
+| `resolve-pr-feedback` | Walk unresolved PR threads (Azure DevOps / GitHub) — fix / reply / decline / escalate |
+| `coverage-review` | Run coverage analysis and review gaps for severity + test suggestions |
+| `resolve-coverage-review` | Walk coverage gaps — write tests / skip / dismiss / defer (`auto` available) |
+| `refactor` | Analyze code for structural improvements → prioritized refactoring plan |
+| `resolve-refactor` | Walk refactoring opportunities — apply / apply incrementally / skip / dismiss / defer |
 
-### `decaf-review` — Code Review
+**Agents** (referenced as `decaf-quality:agent-name`):
 
-Multi-agent code review, coverage analysis, and refactoring.
+- **Review roster** (spawned by `code-review`): `broad-reviewer`, `quick-reviewer`, `adversarial-reviewer`, `consistency-reviewer`, `knowledge-reviewer`, `design-reviewer`, `security-reviewer`, `performance-reviewer`, `spec-compliance-reviewer`, `prior-feedback-reviewer`, `test-reviewer`, `data-migration-reviewer`
+- **Language stack reviewers** (hard-gated by file type): `cpp-reviewer`, `dotnet-reviewer`, `go-reviewer`, `rust-reviewer`, `typescript-reviewer`
+- **Validators & skill specialists**: `finding-validator` (re-verifies a consolidated finding), `pr-thread-resolver` (resolves one PR thread), `coverage-reviewer`, `structural-analyst`, `coherence-analyst`
 
-**Skills** (invoked as `/decaf-review:skill-name`):
+### `decaf-build` — Build
 
-| Skill | Invocation | Purpose |
-|-------|------------|---------|
-| `code-review` | Both | Parallel multi-agent code review with consolidation |
-| `coverage-review` | Both | Run code coverage analysis and review gaps for severity |
-| `refactor` | Both | Analyze code for structural improvement opportunities and produce a prioritized plan |
-| `handle-cr` | Both | Walk through code review findings interactively, or use `auto` for autonomous fixing with TDD |
-| `handle-coverage` | Both | Walk through coverage gaps interactively, writing tests |
-| `handle-refactoring` | Both | Walk through refactoring opportunities interactively |
-| `auto-review` | Both | Automated review-fix-recheck loop: reviews, triages, fixes via subagent, re-reviews until stable |
+Create new behavior: TDD, automated dev-with-review loops, and multi-work-item orchestration. **Depends on `decaf-quality`** (its automated loops call the review skills) — installing build pulls quality in automatically.
 
-**Agents** (referenced as `decaf-review:agent-name`):
+**Skills** (invoked as `/decaf-build:skill-name`):
 
-| Agent | Purpose |
+| Skill | Purpose |
 |-------|---------|
-| `code-reviewer-broad` | Broad review across 5 categories with confidence scoring |
-| `code-reviewer-quick` | Fast generalist: bugs, security, code quality, project conventions (sonnet) |
-| `code-reviewer-knowledge` | Knowledge preservation, production risks, RULE 0/1/2 hierarchy |
-| `coherence-analyst` | Cross-file structural patterns: duplication, naming consistency, interface drift, module boundaries |
-| `coverage-reviewer` | Assess coverage gap severity and suggest targeted test improvements |
-| `design-reviewer` | System-level design: API contracts, boundaries, concurrency, evolution |
-| `security-reviewer` | System-level security: threat modeling, missing controls, architectural gaps |
-| `spec-compliance-reviewer` | Spec compliance: requirement gaps, deviations, partial implementations, scope creep |
-| `structural-analyst` | Per-file structural quality: naming, composition, complexity, domain modeling, error handling |
-| `test-reviewer` | Test anti-patterns, silent failures, false positives |
+| `tdd` | Test-driven development — red → green → refactor, one vertical slice at a time |
+| `auto-tdd` | TDD session (plan → red-green-refactor via subagent) then `/decaf-quality:auto-code-review` |
+| `auto-dev` | Direct (non-test-first) work then auto-review — for UI, config, scaffolding, infrastructure |
+| `batch-dev` | Orchestrate MULTIPLE nibs in one run — cluster, pick the best mechanism per cluster, dispatch behind one gate |
 
-### `decaf-memory` — Memory (erinra)
+### `decaf-plan` — Plan
 
-Memory skills backed by [erinra](https://github.com/alphaleonis/erinra), a memory MCP server for LLM coding assistants. Hybrid semantic search (vector + FTS5 + RRF), non-destructive storage, link-based knowledge graphs. Requires the erinra MCP server to be configured separately (`claude mcp add erinra -- erinra serve -s user`).
+Decide what and how to build; output is plans, RFCs, and decisions, not code. No outward dependencies. Analysis (`architecture-review`) + matching `resolve-architecture-review` follow the same analyze/resolve convention as quality.
 
-| Skill | Invocation | Purpose |
-|-------|------------|---------|
-| `init-memory` | Both | Manually load erinra session context (fallback when the hook doesn't trigger the call) |
-| `remember` | Both | Store a memory via `store` (returns similar memories for LLM-driven dedup) |
-| `recall` | Both | Search memories via hybrid search |
+**Skills** (invoked as `/decaf-plan:skill-name`):
 
-A `SessionStart` hook automatically loads the erinra memory protocol on every session start, resume, clear, and context compaction. If the model doesn't act on it, use `/init-memory` as a manual fallback.
+| Skill | Purpose |
+|-------|---------|
+| `research` | Dig into an unfamiliar problem/tech from several angles; write up findings |
+| `draft-spec` | Interview + read code to write a spec (PRD): what to build and why |
+| `grill-me` | Interview one decision at a time to stress-test a plan/design |
+| `draft-plan` | Turn a spec into an ordered, phased build plan + work-item nibs |
+| `breakdown-phase` | Break one phase into concrete, buildable features with done-checklists |
+| `close-out` | Reconcile built vs. planned, record decisions/deviations, close a phase or whole plan, file follow-ups |
+| `explore-designs` | "Design it twice": generate several radically different designs for a decision and compare |
+| `architecture-review` | Find structural/testability improvements in existing code → recommendations (RFCs), not code |
+| `resolve-architecture-review` | Walk those proposals one at a time → RFCs |
 
-### `decaf-planning` — Planning
+### Deferred — pending vnext rewrite
 
-Planning skills for PRDs, implementation plans, and phase breakdowns.
+Not yet ported to the vnext root (still under `old/`, not in `marketplace.json`):
 
-**Skills** (invoked as `/decaf-planning:skill-name`):
-
-| Skill | Invocation | Purpose |
-|-------|------------|---------|
-| `research` | Both | Explore an unfamiliar problem space through multi-phase parallel research with synthesis |
-| `grill-me` | Both | Stress-test a plan or design through depth-first interviewing with progress tracking |
-| `write-a-prd` | Both | Create a PRD through user interview and codebase exploration |
-| `prd-to-plan` | Both | Break a PRD into phased vertical slices and create work items (GitHub, Azure DevOps, Nibs, or markdown) |
-| `breakdown-phase` | Both | Break a plan phase (epic) into implementable features with acceptance criteria |
-| `close-plan` | Both | Reconcile planned vs. actual, record deviations, and close a phase or plan |
-| `design-an-interface` | Both | Generate multiple radically different interface designs using parallel sub-agents ("Design It Twice") |
-| `improve-codebase-architecture` | Both | Explore codebase for module-deepening opportunities and save candidates |
-| `handle-architecture-improvements` | Both | Walk through architecture improvement candidates interactively, creating RFCs |
-
-### `decaf-protection` — Safety Hooks
-
-PreToolUse guardrails that stop the agent from running commands which would leak secrets into the session transcript. No skills or agents — just hooks.
-
-| Hook | Event | Purpose |
-|------|-------|---------|
-| `block-op-secrets.js` | `PreToolUse` (Bash) | Block 1Password CLI invocations (`op read`, `op item get`, `op inject`, `op run`, `op document get`, `op signin`, etc.) that may emit secret values. Allowlist: `op --version`, `op --help`, `op whoami`. Exits with code 2 so the block is enforced even under `--dangerously-skip-permissions`. Operators wanting to prime a 1P approval should run `op` themselves via the `!` prefix in the prompt. |
-
-### `decaf-dev` — Development
-
-Development skills for TDD and automated dev workflows.
-
-**Skills** (invoked as `/decaf-dev:skill-name`):
-
-| Skill | Invocation | Purpose |
-|-------|------------|---------|
-| `tdd` | Both | Test-driven development with red-green-refactor loop (C#, Go, Rust, and others) |
-| `auto-tdd` | Both | TDD-first development with automated review: plan → red-green-refactor → auto-review loop |
-| `auto-dev` | Both | Direct development with automated review: plan → implement → auto-review loop (for non-testable work) |
+- **`decaf`** (core) — `commit`, `note`, `problem-analysis`, `decision-critic`, `incoherence-detector`, `powershell-expert`; agents `architect`, `csharp-developer`, `go-developer`, `debugger`, `planner`, `technical-writer`
+- **`decaf-memory`** — `remember`, `recall`, `init-memory`, `memory-dashboard` (backed by the [erinra](https://github.com/alphaleonis/erinra) MCP server; `SessionStart` hook)
+- **`decaf-protection`** — PreToolUse hooks only (`block-op-secrets`)
 
 ## Installation
 
@@ -119,13 +80,10 @@ Development skills for TDD and automated dev workflows.
 # 1. From the plugin directory, register as a marketplace
 /plugin marketplace add ./
 
-# 2. Install plugins
-/plugin install decaf-claude-config@decaf
-/plugin install decaf-claude-config@decaf-review
-/plugin install decaf-claude-config@decaf-planning
-/plugin install decaf-claude-config@decaf-memory
-/plugin install decaf-claude-config@decaf-dev
-/plugin install decaf-claude-config@decaf-protection
+# 2. Install plugins (build pulls quality in automatically)
+/plugin install decaf-claude-config@decaf-quality
+/plugin install decaf-claude-config@decaf-build
+/plugin install decaf-claude-config@decaf-plan
 
 # 3. Restart Claude Code to load the plugins
 ```
@@ -143,34 +101,21 @@ Development skills for TDD and automated dev workflows.
 ```
 decaf-claude-config/
 ├── .claude-plugin/
-│   └── marketplace.json          # Lists all plugins
-├── conventions/                  # Shared convention files (@file references)
-├── decaf/                        # Core plugin
-│   ├── .claude-plugin/
-│   │   └── plugin.json           # name: "decaf"
-│   ├── agents/                   # 6 agents
-│   └── skills/                   # 6 skills
-├── decaf-review/                 # Review plugin
-│   ├── .claude-plugin/
-│   │   └── plugin.json           # name: "decaf-review"
-│   ├── agents/                   # 10 agents
-│   └── skills/                   # 6 skills
-├── decaf-planning/               # Planning plugin
-│   ├── .claude-plugin/
-│   │   └── plugin.json           # name: "decaf-planning"
-│   └── skills/                   # 9 skills
-├── decaf-memory/                 # Memory plugin (Vestige)
-│   ├── .claude-plugin/
-│   │   └── plugin.json           # name: "decaf-memory"
-│   └── skills/                   # 4 skills
-├── decaf-dev/                    # Development plugin
-│   ├── .claude-plugin/
-│   │   └── plugin.json           # name: "decaf-dev"
-│   └── skills/                   # 3 skills
-├── decaf-protection/             # Safety hooks plugin
-│   ├── .claude-plugin/
-│   │   └── plugin.json           # name: "decaf-protection"
-│   └── hooks/                    # PreToolUse guardrails
+│   └── marketplace.json          # Lists the shipping plugins (quality, build, plan)
+├── conventions/                  # Canonical shared convention files (see symlinks below)
+├── decaf-quality/                # Code-quality plugin
+│   ├── .claude-plugin/plugin.json
+│   ├── agents/                   # review roster + language + specialist agents
+│   ├── conventions/              # symlinks → ../conventions
+│   └── skills/
+├── decaf-build/                  # Build plugin (depends on decaf-quality)
+│   ├── .claude-plugin/plugin.json
+│   └── skills/
+├── decaf-plan/                   # Planning plugin
+│   ├── .claude-plugin/plugin.json
+│   ├── conventions/              # symlinks → ../conventions
+│   └── skills/
+├── old/                          # Deferred plugins + superseded originals (reference only)
 ├── CLAUDE.md
 └── README.md
 ```
@@ -181,12 +126,9 @@ After pushing changes to this repo, update the cached marketplace so Claude Code
 
 ```bash
 git -C ~/.claude/plugins/marketplaces/decaf-claude-config pull
-claude plugin install decaf@decaf-claude-config
-claude plugin install decaf-review@decaf-claude-config
-claude plugin install decaf-planning@decaf-claude-config
-claude plugin install decaf-memory@decaf-claude-config
-claude plugin install decaf-dev@decaf-claude-config
-claude plugin install decaf-protection@decaf-claude-config
+claude plugin install decaf-quality@decaf-claude-config
+claude plugin install decaf-build@decaf-claude-config
+claude plugin install decaf-plan@decaf-claude-config
 ```
 
 Then restart Claude Code to load the updated plugins.
