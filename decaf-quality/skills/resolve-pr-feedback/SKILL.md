@@ -77,7 +77,7 @@ For each thread:
 
 **3a. Plan.** For each queued thread, determine the likely resolution (fix / reply / decline / needs-human) from the comment and the current code. Present the plan table (thread, file, request summary, planned resolution) and confirm once via AskUserQuestion — same interaction shape as `resolve-code-review` auto. ⚠️ STOP AND WAIT.
 
-**3b. Dispatch `decaf-review:pr-thread-resolver` subagents in parallel** — one per thread, with the thread's full context (platform, PR, comment chain, anchor with iteration/outdated info, diff context, test command).
+**3b. Dispatch `decaf-quality:pr-thread-resolver` subagents in parallel** — one per thread, with the thread's full context (platform, PR, comment chain, anchor with iteration/outdated info, diff context, test command).
 - **File-conflict serialization**: threads touching the same file run sequentially (or one agent handles them in sequence); disjoint threads run in parallel, batched ≤4 at a time.
 - Collect each agent's verdict, reply draft, files changed, and reason.
 

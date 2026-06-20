@@ -123,23 +123,23 @@ Current roster gates (authoritative text lives in each agent's `## Dispatch Gate
 
 | Agent | Gate |
 |-------|------|
-| `decaf-review:quick-reviewer` | Always — review floor |
-| `decaf-review:broad-reviewer` | Always — review floor |
-| `decaf-review:knowledge-reviewer` | Any substantive change; skip only purely mechanical diffs |
-| `decaf-review:consistency-reviewer` | Any substantive change; skip purely mechanical diffs and changes with no sibling code to compare against |
-| `decaf-review:design-reviewer` | Public API/contract, data model, module boundary, or concurrency surface changes |
-| `decaf-review:security-reviewer` | Security-adjacent surface (auth, crypto, user input, network, file I/O, serialization, secrets/config, privileges) — judged from diff content; lean toward spawning when unsure |
-| `decaf-review:test-reviewer` | **Hard gate**: test files present in changeset |
-| `decaf-review:spec-compliance-reviewer` | **Hard gate**: a spec is available — provided via `--spec` or discovered in Step 1.5 |
-| `decaf-review:adversarial-reviewer` | ≥50 changed executable lines, OR high-risk domain (auth, payments, data mutations, external APIs) at any size |
-| `decaf-review:performance-reviewer` | DB/ORM queries, loops with I/O or allocation, async/concurrent code, data pipelines, or caching logic in the diff |
-| `decaf-review:data-migration-reviewer` | **Hard gate**: migration artifacts in the diff (EF `Migrations/*.cs`, ModelSnapshot, `.sql` DDL/backfill scripts) |
-| `decaf-review:dotnet-reviewer` | **Hard gate**: C# files in changeset |
-| `decaf-review:typescript-reviewer` | **Hard gate**: TypeScript/JavaScript files in changeset |
-| `decaf-review:cpp-reviewer` | **Hard gate**: C/C++ files in changeset |
-| `decaf-review:go-reviewer` | **Hard gate**: Go files in changeset |
-| `decaf-review:rust-reviewer` | **Hard gate**: Rust files in changeset |
-| `decaf-review:prior-feedback-reviewer` | **Hard gate**: reviewing a PR AND prior human review threads exist |
+| `decaf-quality:quick-reviewer` | Always — review floor |
+| `decaf-quality:broad-reviewer` | Always — review floor |
+| `decaf-quality:knowledge-reviewer` | Any substantive change; skip only purely mechanical diffs |
+| `decaf-quality:consistency-reviewer` | Any substantive change; skip purely mechanical diffs and changes with no sibling code to compare against |
+| `decaf-quality:design-reviewer` | Public API/contract, data model, module boundary, or concurrency surface changes |
+| `decaf-quality:security-reviewer` | Security-adjacent surface (auth, crypto, user input, network, file I/O, serialization, secrets/config, privileges) — judged from diff content; lean toward spawning when unsure |
+| `decaf-quality:test-reviewer` | **Hard gate**: test files present in changeset |
+| `decaf-quality:spec-compliance-reviewer` | **Hard gate**: a spec is available — provided via `--spec` or discovered in Step 1.5 |
+| `decaf-quality:adversarial-reviewer` | ≥50 changed executable lines, OR high-risk domain (auth, payments, data mutations, external APIs) at any size |
+| `decaf-quality:performance-reviewer` | DB/ORM queries, loops with I/O or allocation, async/concurrent code, data pipelines, or caching logic in the diff |
+| `decaf-quality:data-migration-reviewer` | **Hard gate**: migration artifacts in the diff (EF `Migrations/*.cs`, ModelSnapshot, `.sql` DDL/backfill scripts) |
+| `decaf-quality:dotnet-reviewer` | **Hard gate**: C# files in changeset |
+| `decaf-quality:typescript-reviewer` | **Hard gate**: TypeScript/JavaScript files in changeset |
+| `decaf-quality:cpp-reviewer` | **Hard gate**: C/C++ files in changeset |
+| `decaf-quality:go-reviewer` | **Hard gate**: Go files in changeset |
+| `decaf-quality:rust-reviewer` | **Hard gate**: Rust files in changeset |
+| `decaf-quality:prior-feedback-reviewer` | **Hard gate**: reviewing a PR AND prior human review threads exist |
 
 **Hard negative gates apply in ALL modes, including `max`.** An agent whose domain is absent from the changeset is never spawned — there is no point running the test-reviewer with no tests in the diff, or (once stack-specific agents exist) a C# persona on a Rust project. `max` opens the judgment gates, not the hard ones.
 
@@ -235,23 +235,23 @@ Follow your own output format instructions.
 ```
 
 **Agent-Specific Focus:**
-- `decaf-review:quick-reviewer`: Fast generalist — bugs, logic errors, null safety, security patterns, code quality, convention violations
-- `decaf-review:broad-reviewer`: Comprehensive analysis — confidence scoring, knowledge preservation, production reliability, structural quality, architecture
-- `decaf-review:knowledge-reviewer`: Knowledge preservation (RULE 0), undocumented decisions, implicit assumptions, comprehension risks
-- `decaf-review:consistency-reviewer`: Sibling-consistency — unwritten-convention drift vs. sibling code (naming, canonical helpers, attribute symmetry, leftovers, comment-code mismatch, duplicated literals); every finding quotes its convention source
-- `decaf-review:design-reviewer`: System-level design — API contracts, data models, boundary violations, concurrency design, evolution readiness
-- `decaf-review:security-reviewer`: System-level security — threat modeling, missing controls (crypto, audit, config, dependencies, privileges)
-- `decaf-review:test-reviewer`: Test quality — anti-patterns, silent failures, false positives, flaky patterns (test files only)
-- `decaf-review:spec-compliance-reviewer`: Spec compliance — requirement gaps, deviations, partial implementations, scope creep (provide spec document in prompt)
-- `decaf-review:adversarial-reviewer`: Emergent failure scenarios — assumption violations, composition failures, cascade chains, abuse cases (states its depth tier)
-- `decaf-review:performance-reviewer`: Cost at scale — N+1 queries, hot-path work, memory growth, missing pagination, algorithmic complexity
-- `decaf-review:data-migration-reviewer`: Migration safety — schema drift, data loss, backfills, deploy-window breakage, locking, rollback
-- `decaf-review:dotnet-reviewer`: C#/.NET idiom misuse — async/await, disposal, EF change tracking, LINQ, nullability, threading
-- `decaf-review:typescript-reviewer`: TS/JS idiom misuse — floating promises, type escape hatches, coercion, runtime boundaries, event loop, mutation
-- `decaf-review:cpp-reviewer`: C/C++ idiom misuse — lifetimes, ownership, undefined behavior, exception safety, concurrency
-- `decaf-review:go-reviewer`: Go idiom misuse — goroutines, error discipline, typed nil, channels, context, defer, slice aliasing
-- `decaf-review:rust-reviewer`: Rust idiom misuse — panic paths, unsafe invariants, async hazards, lock discipline, error context
-- `decaf-review:prior-feedback-reviewer`: Diff vs. existing PR feedback — unaddressed requests, partial fixes, regressions of prior fixes (append the fetched threads to its prompt)
+- `decaf-quality:quick-reviewer`: Fast generalist — bugs, logic errors, null safety, security patterns, code quality, convention violations
+- `decaf-quality:broad-reviewer`: Comprehensive analysis — confidence scoring, knowledge preservation, production reliability, structural quality, architecture
+- `decaf-quality:knowledge-reviewer`: Knowledge preservation (RULE 0), undocumented decisions, implicit assumptions, comprehension risks
+- `decaf-quality:consistency-reviewer`: Sibling-consistency — unwritten-convention drift vs. sibling code (naming, canonical helpers, attribute symmetry, leftovers, comment-code mismatch, duplicated literals); every finding quotes its convention source
+- `decaf-quality:design-reviewer`: System-level design — API contracts, data models, boundary violations, concurrency design, evolution readiness
+- `decaf-quality:security-reviewer`: System-level security — threat modeling, missing controls (crypto, audit, config, dependencies, privileges)
+- `decaf-quality:test-reviewer`: Test quality — anti-patterns, silent failures, false positives, flaky patterns (test files only)
+- `decaf-quality:spec-compliance-reviewer`: Spec compliance — requirement gaps, deviations, partial implementations, scope creep (provide spec document in prompt)
+- `decaf-quality:adversarial-reviewer`: Emergent failure scenarios — assumption violations, composition failures, cascade chains, abuse cases (states its depth tier)
+- `decaf-quality:performance-reviewer`: Cost at scale — N+1 queries, hot-path work, memory growth, missing pagination, algorithmic complexity
+- `decaf-quality:data-migration-reviewer`: Migration safety — schema drift, data loss, backfills, deploy-window breakage, locking, rollback
+- `decaf-quality:dotnet-reviewer`: C#/.NET idiom misuse — async/await, disposal, EF change tracking, LINQ, nullability, threading
+- `decaf-quality:typescript-reviewer`: TS/JS idiom misuse — floating promises, type escape hatches, coercion, runtime boundaries, event loop, mutation
+- `decaf-quality:cpp-reviewer`: C/C++ idiom misuse — lifetimes, ownership, undefined behavior, exception safety, concurrency
+- `decaf-quality:go-reviewer`: Go idiom misuse — goroutines, error discipline, typed nil, channels, context, defer, slice aliasing
+- `decaf-quality:rust-reviewer`: Rust idiom misuse — panic paths, unsafe invariants, async hazards, lock discipline, error context
+- `decaf-quality:prior-feedback-reviewer`: Diff vs. existing PR feedback — unaddressed requests, partial fixes, regressions of prior fixes (append the fetched threads to its prompt)
 
 **For spec-compliance-reviewer**, append the spec content and its provenance to the prompt:
 ```
@@ -313,7 +313,7 @@ Independent re-verification of the primary findings that most need it — the co
 
    **Waive** (corroboration is the verification) any non-Critical primary already found by **2+ independent finders including at least one specialist, all at anchor 100** — mark it `corroborated ×N — validation waived` in the report rather than spending a validator to re-confirm what independent agreement already established. Pre-existing and minor-bucket findings are never validated.
 2. **Budget cap — 15 validators.** If more than 15 findings qualify, validate the highest-severity 15 (Critical first, then High, Medium, Low; ties broken by anchor descending), dropping only from the Medium/Low tail. **Never leave a Critical unvalidated** — if Criticals alone exceed 15, raise the cap to include all of them. Record the unvalidated and waived counts.
-3. **Dispatch one `decaf-review:finding-validator` per finding, in parallel** (single message, multiple Task calls). Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. Model follows Step 2d (validators are volume agents — mid-tier `sonnet` in `mid`, the session model in `high`/`max`).
+3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Task calls). Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. Model follows Step 2d (validators are volume agents — mid-tier `sonnet` in `mid`, the session model in `high`/`max`).
 4. **Process verdicts:**
    - `confirmed` — keep the finding; apply any corrections the validator supplied (line, file, pre_existing reattribution — a reattributed finding moves to Pre-existing Issues)
    - `refuted` — remove from findings; record under Considered But Not Flagged as `refuted by validator: <reason>`
@@ -529,19 +529,19 @@ Keep this lightweight — match on file path + category only. Skip this step if 
 ## Example Usage
 
 ```
-/decaf-review:code-review                              # mode chosen interactively (default mid), uncommitted changes
-/decaf-review:code-review low                          # Low mode (2 agents) - fast feedback
-/decaf-review:code-review mid                          # Mid mode - gated roster, cost-aware tiering
-/decaf-review:code-review mid4                         # Mid mode, roster capped at 4 (floor + 2 best-fit specialists)
-/decaf-review:code-review high                         # High mode - gated roster, session model end-to-end
-/decaf-review:code-review high6 src/                   # High mode on a directory, roster capped at 6
-/decaf-review:code-review max                          # Max mode - all applicable agents, session model
-/decaf-review:code-review --spec docs/design.md        # spec compliance check, mode chosen interactively
-/decaf-review:code-review high --spec docs/design.md   # High mode with spec compliance
-/decaf-review:code-review mid src/Tools/MyTool.cs      # Mid mode, specific file
-/decaf-review:code-review max src/                     # Max mode, directory
-/decaf-review:code-review mid focus on null safety     # Mid mode with custom instructions
-/decaf-review:code-review 42                           # review PR #42, mode chosen interactively
-/decaf-review:code-review max #42                      # Max mode, review PR #42
-/decaf-review:code-review low PR#123                   # Low mode, review PR #123
+/decaf-quality:code-review                              # mode chosen interactively (default mid), uncommitted changes
+/decaf-quality:code-review low                          # Low mode (2 agents) - fast feedback
+/decaf-quality:code-review mid                          # Mid mode - gated roster, cost-aware tiering
+/decaf-quality:code-review mid4                         # Mid mode, roster capped at 4 (floor + 2 best-fit specialists)
+/decaf-quality:code-review high                         # High mode - gated roster, session model end-to-end
+/decaf-quality:code-review high6 src/                   # High mode on a directory, roster capped at 6
+/decaf-quality:code-review max                          # Max mode - all applicable agents, session model
+/decaf-quality:code-review --spec docs/design.md        # spec compliance check, mode chosen interactively
+/decaf-quality:code-review high --spec docs/design.md   # High mode with spec compliance
+/decaf-quality:code-review mid src/Tools/MyTool.cs      # Mid mode, specific file
+/decaf-quality:code-review max src/                     # Max mode, directory
+/decaf-quality:code-review mid focus on null safety     # Mid mode with custom instructions
+/decaf-quality:code-review 42                           # review PR #42, mode chosen interactively
+/decaf-quality:code-review max #42                      # Max mode, review PR #42
+/decaf-quality:code-review low PR#123                   # Low mode, review PR #123
 ```

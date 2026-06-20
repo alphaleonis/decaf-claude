@@ -1,6 +1,6 @@
 # Persona Authoring Guide
 
-How to write a reviewer agent ("persona") for decaf-review. Follow this anatomy exactly — uniform structure keeps personas predictable for authors, dispatchable by the orchestrator, and compatible with consolidation.
+How to write a reviewer agent ("persona") for decaf-quality. Follow this anatomy exactly — uniform structure keeps personas predictable for authors, dispatchable by the orchestrator, and compatible with consolidation.
 
 ## File and frontmatter
 
