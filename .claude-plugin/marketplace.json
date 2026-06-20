@@ -11,7 +11,7 @@
     {
       "name": "decaf-quality",
       "source": "./decaf-quality",
-      "description": "Multi-agent code review for Claude Code — parallel reviewer agents with consolidated, deduplicated findings",
+      "description": "Code quality for Claude Code — multi-agent code review, coverage-gap analysis, and refactoring",
       "author": {
         "name": "Alphaleonis"
       },
@@ -20,11 +20,15 @@
       "license": "MIT",
       "keywords": [
         "code-review",
+        "coverage",
+        "refactoring",
         "quality"
       ],
       "category": "workflow",
       "tags": [
         "code-review",
+        "coverage",
+        "refactoring",
         "quality"
       ]
     }
