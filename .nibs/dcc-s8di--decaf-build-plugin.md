@@ -2,11 +2,11 @@
 # dcc-s8di
 version: 1
 title: decaf-build plugin
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-06-20T18:27:55Z
-updated_at: 2026-06-20T18:27:57Z
+updated_at: 2026-06-20T20:33:49Z
 parent: dcc-33j0
 blocked_by:
     - dcc-2ia9
@@ -23,3 +23,7 @@ Rebuild decaf-dev as **decaf-build** (create new behavior): repoint its review c
 
 ## Scope Boundaries
 Touches: decaf-build/ (new), marketplace.json. Source: old/decaf-dev/. Off limits: quality internals, plan/core/memory/protection. auto-deliver implementation deferred (see its draft feature).
+
+## Summary
+
+decaf-build complete: scaffolded from decaf-dev with a dependency on decaf-quality; ported tdd (clean), auto-tdd + auto-dev (review calls repointed to /decaf-quality:auto-code-review), and batch-dev (repointed + generalized off NZBrowse specifics + a Face-2 --unattended stub); README added. The auto-deliver loop driver lives under the Face-2 epic, not here.
