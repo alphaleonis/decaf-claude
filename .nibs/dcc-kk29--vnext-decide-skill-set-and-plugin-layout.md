@@ -6,7 +6,7 @@ status: in-progress
 type: research
 priority: normal
 created_at: 2026-06-20T17:38:27Z
-updated_at: 2026-06-20T18:16:08Z
+updated_at: 2026-06-20T19:07:55Z
 documents:
     - vnext.md
 order: a0
@@ -106,10 +106,18 @@ Short forms `build` / `quality` / `plan` are the domain labels; skills invoke as
 The near-cousin that stays in **plan** is `architecture-review` (was `improve-codebase-architecture`): it analyzes existing code like refactor, but its output is RFCs/design decisions (analyze → *decide*), whereas refactor is analyze → *improve the code*.
 
 ### decaf-plan (was decaf-planning) — decide what/how
-- research, write-a-prd, grill-me, prd-to-plan, breakdown-phase, close-plan, design-an-interface
-- `architecture-review` (← `improve-codebase-architecture`) — analysis → RFCs
-- `resolve-architecture-review` (← `handle-architecture-improvements`)
-- ⚠ prd-to-plan, breakdown-phase, close-plan gain unattended/extended modes for the loop
+Final skill names + plain one-liners (LOCKED):
+- `research` — dig into an unfamiliar problem/tech from several angles; write up findings.
+- `draft-spec` (← write-a-prd) — interview + read code to write a **spec** (PRD): what to build and why.
+- `grill-me` (kept) — relentless decision-by-decision interview to stress-test a plan/design.
+- `draft-plan` (← prd-to-plan) — turn the spec into an ordered, **phased** build plan + work-item nibs.
+- `breakdown-phase` — break one phase into concrete, buildable features with done-checklists.
+- `close-plan` — reconcile built vs planned, record decisions/deviations, close, file follow-ups.
+- `explore-designs` (← design-an-interface) — "Design It Twice": generate several radically different designs/approaches for a decision (a method up to a whole architecture) and compare; writes up the chosen design. Used for module APIs and larger design decisions/docs alike.
+- `architecture-review` (← improve-codebase-architecture) — find structural/testability improvements in existing code; output = recommendations (RFCs), not code.
+- `resolve-architecture-review` (← handle-architecture-improvements) — walk those proposals one at a time → RFCs.
+
+⚠ draft-plan / breakdown-phase / close-plan gain unattended modes for the loop (Face 2 — see #dcc-c7gu). Rewrite each skill's `description:` in this plain language during the port (P3).
 
 ### decaf-build (was decaf-dev) — create new behavior
 - tdd, auto-tdd, auto-dev, batch-dev
