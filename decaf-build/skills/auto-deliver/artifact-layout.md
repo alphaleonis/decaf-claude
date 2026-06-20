@@ -1,12 +1,13 @@
-# `.auto-deliver/` artifact layout
+# `.decaf/auto-deliver/` artifact layout
 
 The on-disk home for `auto-deliver` loop state and artifacts, created in the **target
-project root** when the loop runs (not in this plugin repo). Per the design (`dcc-c7gu`):
-loop **state and artifacts** live on disk here; **work items** live in the tracker. This
-directory holds documents and logs, never tickets.
+project root** when the loop runs (not in this plugin repo). It is the `auto-deliver` subdir
+of the shared `.decaf/` artifact root (see `conventions/artifacts.md`). Per the design
+(`dcc-c7gu`): loop **state and artifacts** live on disk here; **work items** live in the
+tracker. This directory holds documents and logs, never tickets.
 
 The tracker remains the **system of record** for what's done — there is **no local
-mirror** of work items. `.auto-deliver/` records only the loop's own run state and the
+mirror** of work items. `.decaf/auto-deliver/` records only the loop's own run state and the
 narrative/output it produces. On resume, the loop reads `state.json` for the in-flight step,
 then re-derives "what's next" from the tracker (`next-ready`), so a stale breadcrumb can
 never disagree with the tracker about completion.
@@ -14,7 +15,7 @@ never disagree with the tracker about completion.
 ## Layout
 
 ```
-.auto-deliver/
+.decaf/auto-deliver/
 ├── state.json              # current run state — the resume breadcrumb (git-tracked)
 ├── lessons.md              # accumulated lessons from the LEARN step (git-tracked)
 ├── phases/
@@ -77,7 +78,7 @@ Track the **durable** artifacts; ignore the **regenerable** logs. The directory 
 own `.gitignore`:
 
 ```gitignore
-# .auto-deliver/.gitignore
+# .decaf/auto-deliver/.gitignore
 phases/*/verify.log
 phases/*/context.log
 ```

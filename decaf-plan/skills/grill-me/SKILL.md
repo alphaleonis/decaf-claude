@@ -59,7 +59,7 @@ For each area (in the order agreed with the user, or by priority if not specifie
 
 ## Tracking Progress
 
-Maintain a running summary in a local file (`./.grill-me/<short-descriptive-name>.md`) with this structure:
+Maintain a running summary in a local file (`.decaf/grill-me/<short-descriptive-name>.md`) with this structure:
 
 ```markdown
 # Grill Session: <topic>

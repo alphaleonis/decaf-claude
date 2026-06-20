@@ -33,7 +33,7 @@ RECONCILE → LEARN → REPLAN → MERGE` per phase and **does not stop at phase
 only at plan completion (or a genuine blocked/failure escalation). It composes existing
 skills under `--unattended`, talks to the tracker only through the adapter contract
 (`conventions/work-items.md`), verifies against executable `## Acceptance` criteria
-(`conventions/acceptance-criteria.md`), keeps resumable run state in `.auto-deliver/` (see
+(`conventions/acceptance-criteria.md`), keeps resumable run state in `.decaf/auto-deliver/` (see
 [`skills/auto-deliver/artifact-layout.md`](skills/auto-deliver/artifact-layout.md)), and
 fixes in-scope gaps now while filing out-of-scope discoveries as follow-ups. Scope cuts are
 human-only; the loop surfaces the need but never cuts.

@@ -333,14 +333,14 @@ After consolidation and validation, compute per-agent statistics for the Agent S
 
 ### Step 6: Generate Report
 
-Create a timestamped review file in `.code-reviews/` at the repo root. **Never overwrite existing reviews.**
+Create a timestamped review file in `.decaf/code-reviews/` at the repo root. **Never overwrite existing reviews.**
 
 ```bash
 # Ensure directory exists
-mkdir -p .code-reviews
+mkdir -p .decaf/code-reviews
 
-# Creates: .code-reviews/CODE_REVIEW_2025-01-24_14-30-45.md
-FILENAME=".code-reviews/CODE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
+# Creates: .decaf/code-reviews/CODE_REVIEW_2025-01-24_14-30-45.md
+FILENAME=".decaf/code-reviews/CODE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 ```
 
 **Generate diffstat** from `git diff --stat` output for the reviewed changes. Summarize as file count and total insertions/deletions for the `**Scope**` line in the report header.
@@ -509,12 +509,12 @@ gate, with their anchor (e.g., "2 findings suppressed at anchor 50").]
 
 After creating the review file, inform the user:
 ```
-✅ Review complete: .code-reviews/CODE_REVIEW_2025-01-24_14-30-45.md
+✅ Review complete: .decaf/code-reviews/CODE_REVIEW_2025-01-24_14-30-45.md
 ```
 
 ### Step 7: Review History (Recurring Findings)
 
-After writing the report, scan `.code-reviews/CODE_REVIEW_*.md` for previous reviews. If previous reviews exist, check if any findings in the current review match findings from previous reviews (same file path + same category). If recurring findings are found, append a section to the report:
+After writing the report, scan `.decaf/code-reviews/CODE_REVIEW_*.md` for previous reviews. If previous reviews exist, check if any findings in the current review match findings from previous reviews (same file path + same category). If recurring findings are found, append a section to the report:
 
 ```markdown
 ## Recurring Findings
