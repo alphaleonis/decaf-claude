@@ -1,9 +1,12 @@
 # decaf-quality
 
-Multi-agent code review for Claude Code. Runs parallel specialized reviewer agents over a diff (local changes, a path, or an ADO/GitHub PR) and consolidates their findings into a single deduplicated report with severity, confidence, and verdict.
+Code quality for Claude Code: analyze and improve **existing** code without changing its behavior. Three capabilities — **multi-agent code review**, **coverage-gap analysis**, and **refactoring** — each pairing an *analysis* skill with a `resolve-*` skill that walks the results and acts on them. Standalone: declares no dependencies on other plugins.
+
+The code-review engine runs parallel specialized reviewer agents over a diff (local changes, a path, or an ADO/GitHub PR) and consolidates their findings into a single deduplicated report with severity, confidence, and verdict.
 
 ## Skills
 
+### Code review
 | Skill | Purpose |
 |-------|---------|
 | `code-review` | Orchestrate review agents (`low` / `mid` / `high` / `max` modes, plus an optional `modeN` roster cap), consolidate findings, write a timestamped report to `.code-reviews/` |
@@ -31,7 +34,33 @@ Multi-agent code review for Claude Code. Runs parallel specialized reviewer agen
 /decaf-quality:resolve-pr-feedback auto 42 # resolve all feedback on PR 42, drafts approved before posting
 ```
 
-## Reviewer agents
+### Coverage
+| Skill | Purpose |
+|-------|---------|
+| `coverage-review` | Run the project's coverage tools, assess which gaps actually matter, and suggest targeted tests; report to `.code-reviews/`. Reads a `## Coverage` config from the project CLAUDE.md. |
+| `resolve-coverage-review` | Walk the gaps one group at a time and write tests — write / skip / dismiss / defer. `auto` mode writes tests autonomously. |
+
+```
+/decaf-quality:coverage-review             # diff mode, changed files
+/decaf-quality:coverage-review full        # whole project, baseline assessment
+/decaf-quality:resolve-coverage-review     # walk the gaps, write tests
+/decaf-quality:resolve-coverage-review auto high   # autonomously cover Critical+High gaps
+```
+
+### Refactoring
+| Skill | Purpose |
+|-------|---------|
+| `refactor` | Analyze code structure for improvement opportunities and produce a prioritized plan (impact×effort ★ ratings) in `.refactoring-plans/`. Behavior-preserving — no defects, just better structure. |
+| `resolve-refactor` | Walk the opportunities one unit at a time and apply them — apply / apply (incremental) / skip / dismiss / defer. `auto` mode applies autonomously. |
+
+```
+/decaf-quality:refactor                    # deep mode, changed files
+/decaf-quality:refactor full               # whole project (sampled)
+/decaf-quality:resolve-refactor            # walk opportunities, apply one at a time
+/decaf-quality:resolve-refactor auto       # apply autonomously
+```
+
+## Reviewer agents (code-review roster)
 
 | Agent | Focus |
 |-------|-------|
@@ -57,9 +86,24 @@ Multi-agent code review for Claude Code. Runs parallel specialized reviewer agen
 
 The stack reviewers and `data-migration-reviewer`/`spec-compliance-reviewer`/`test-reviewer` carry **hard dispatch gates** — they are never spawned, in any mode, when their domain is absent from the changeset.
 
-Shared conventions (severity taxonomy, consolidation rules, security categories, temporal/intent-marker rules) live in `conventions/`. To add a reviewer persona, follow [`conventions/persona-authoring.md`](./conventions/persona-authoring.md) — it defines the required agent anatomy, the domain ownership matrix, and the integration checklist.
+## Analysis agents (standalone)
 
-## Design decisions
+Invoked directly by the coverage / refactor skills — **not** code-review orchestrator personas, so they are deliberately absent from the Domain Ownership Matrix and the dispatch roster.
+
+| Agent | Focus | Used by |
+|-------|-------|---------|
+| `coverage-reviewer` | Which uncovered paths actually matter + targeted test suggestions (severity × confidence, like the reviewers) | `coverage-review` |
+| `structural-analyst` | Per-file structural improvement opportunities — naming, composition, complexity, domain modeling, error handling | `refactor` |
+| `coherence-analyst` | Cross-file patterns — duplication, validation scattering, interface drift, module boundaries, zombie code | `refactor` |
+
+Shared conventions (severity taxonomy, consolidation rules, security categories, temporal/intent-marker rules, coverage config, refactoring value matrix) live in `conventions/`. To add a reviewer persona, follow [`conventions/persona-authoring.md`](./conventions/persona-authoring.md) — it defines the required agent anatomy, the domain ownership matrix, and the integration checklist.
+
+## How the three capabilities score
+
+- **Code review** and **coverage** share one model: severity (impact, Critical/High/Medium/Low) × five discrete confidence anchors (0/25/50/75/100), with a gate that suppresses sub-75 findings (Critical@50 survives). Code review adds multi-agent consolidation and a validation wave; coverage is single-agent (no consolidation/validation).
+- **Refactoring** is different by design — opportunities are scored by **impact × effort star ratings** (★★★/★★) and consolidated via the value matrix in `conventions/refactoring.md`. Refactorings are improvements, not defects, so they carry no severity.
+
+## Code-review engine — design decisions
 
 1. **Keep-highest severity.** When agents disagree on a duplicate finding's severity, the highest always wins, with dissent recorded — a specialist's Critical is never buried under generalists rating the same issue out of their domain.
 2. **Agreement promotion.** Agreement between independent reviewers is evidence: it promotes confidence one anchor step (50→75, 75→100). Confidence is never averaged. Agreement between only the two generalists (`quick`+`broad`) does not promote — their scopes deliberately overlap, so it isn't independent corroboration.
@@ -76,4 +120,7 @@ Shared conventions (severity taxonomy, consolidation rules, security categories,
 
 ## Output
 
-Reports are written to `.code-reviews/CODE_REVIEW_<timestamp>.md` in the reviewed repo — never posted to a PR unless explicitly requested. Recurring findings across past reviews are tracked by file + category.
+- **Code review** and **coverage** → `.code-reviews/CODE_REVIEW_<timestamp>.md` / `COVERAGE_REVIEW_<timestamp>.md` in the reviewed repo.
+- **Refactoring** → `.refactoring-plans/REFACTOR_PLAN_<timestamp>.md`.
+
+Nothing is posted to a PR unless explicitly requested. Recurring code-review findings across past reviews are tracked by file + category.
