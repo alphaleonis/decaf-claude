@@ -37,6 +37,10 @@ Detect the available system and confirm with the user.
 
 Draft the PRD using the template below. Adapt the sections to the project type — not all projects have routes, schemas, or APIs.
 
+The spec includes a top-level `## Acceptance` section — the behaviors that mean the feature is built, runnable where possible. (Phase- and feature-level acceptance is refined later by `draft-plan` and `breakdown-phase`.)
+
+@../../conventions/acceptance-criteria.md
+
 Show the draft to the user for review before creating the work item. Iterate if the user has feedback.
 
 Create the work item using the conventions in `work-items.md`:
@@ -83,6 +87,13 @@ Do NOT include specific file paths or code snippets — they become outdated qui
 - Which behaviors should be tested (priorities agreed with the user)
 - What constitutes a good test for this feature (test external behavior, not implementation details)
 - Prior art for tests (similar types of tests already in the codebase)
+
+## Acceptance
+
+The top-level checks that mean this feature is built. Runnable where possible; prose tagged `[manual]` otherwise (see acceptance-criteria.md).
+
+- [ ] [run] `<command>` — expect: <observable result>
+- [ ] [manual] <criterion that cannot be mechanically checked>
 
 ## Out of Scope
 

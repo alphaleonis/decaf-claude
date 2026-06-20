@@ -99,13 +99,17 @@ Iterate until the user approves the breakdown.
 
 Create work items using the target system from step 4 and the conventions in `work-items.md`.
 
+Each phase work item carries a `## Acceptance` section in its body, in the format below.
+
+@../../conventions/acceptance-criteria.md
+
 **Root work item:**
 - **Title**: `Plan: <Feature Name>`
 - **Body**: Source PRD reference + architectural decisions from step 5 + checklist of all phases
 
 **One child work item per phase:**
 - **Title**: `Phase N: <Title>`
-- **Body**: "What to build" description (end-to-end behavior, not layer-by-layer) + acceptance criteria as a checklist + user stories covered + scope boundaries (touches / off limits)
+- **Body**: "What to build" description (end-to-end behavior, not layer-by-layer) + a `## Acceptance` section (runnable `[run]` checks where possible, prose tagged `[manual]` otherwise) + user stories covered + scope boundaries (touches / off limits)
 
 For markdown output, use the template below instead.
 
@@ -133,11 +137,13 @@ Durable decisions that apply across all phases:
 
 A concise description of this vertical slice. Describe the end-to-end behavior, not layer-by-layer implementation.
 
-### Acceptance criteria
+### Acceptance
 
-- [ ] Criterion 1
-- [ ] Criterion 2
-- [ ] Criterion 3
+Runnable checks where possible; prose tagged `[manual]` otherwise (see acceptance-criteria.md):
+
+- [ ] [run] `<command>` — expect: <observable result>
+- [ ] [run] `<command>` — expect: <observable result>
+- [ ] [manual] <criterion that cannot be mechanically checked>
 
 ### Scope boundaries
 
@@ -154,9 +160,10 @@ A concise description of this vertical slice. Describe the end-to-end behavior, 
 
 ...
 
-### Acceptance criteria
+### Acceptance
 
-- [ ] ...
+- [ ] [run] `<command>` — expect: <observable result>
+- [ ] [manual] <criterion>
 
 ### Scope boundaries
 

@@ -1,7 +1,7 @@
 ---
 name: batch-dev
 description: Orchestrate execution of MULTIPLE nibs in one run. Selects a queue, understands the nibs collectively (including how they fit together), then chooses the best execution mechanism per cluster — single series agent, parallel fan-out, scripted workflow, or agent team — and dispatches with ONE approval gate. Use when the user wants to work several nibs together (in parallel or series) rather than one at a time. Complements /decaf-build:auto-dev and /decaf-build:auto-tdd (which handle a single nib).
-argument-hint: "<nib-id...> | --filter <expr> | --ready  [--review quick|std|max] [--max-iterations N] [--base-branch <name>]"
+argument-hint: "<nib-id...> | --filter <expr> | --ready  [--review quick|std|max] [--max-iterations N] [--base-branch <name>] [--unattended]"
 ---
 
 # Batch Dev
@@ -45,6 +45,18 @@ Parse `$ARGUMENTS`:
 # Phases
 
 Run the phases in order. Phases 1–5 are planning (interactive where noted). Phase 5 is the single approval gate. Phases 6–8 execute, with check-ins at every cluster boundary.
+
+## Unattended mode (`--unattended`)
+
+When invoked with `--unattended` (the `auto-deliver` loop passes this), batch-dev runs with **no human gates** — it proceeds on its own best judgment and records what it decided. Suppress exactly these:
+
+- **Phase 1** — queue confirmation, the "include this `in-progress` nib?" question, and the build/test-command confirmation. The caller supplies the queue (phase-scoped) and project context; resolve commands from the project CLAUDE.md / build files without asking.
+- **Phase 3 (Clarify)** — do **not** ask the user. Proceed on the most reasonable assumption for each ambiguity and **log the assumption** (to `.auto-deliver/` when run under the loop).
+- **Phase 5 (Approve)** — skip the Approve/Adjust/Cancel gate; proceed with the strategy as planned.
+- **Phase 6 check-ins** — no per-cluster pauses; report progress to the run log instead.
+- **Phase 8** — no merge-to-main / push decision; hand the integration branch back to the caller per the merge protocol (the loop owns the merge decision).
+
+**Unchanged:** mechanism selection (Phase 4), the merge protocol (Phase 7), failure handling, and the review tail. The point of `--unattended` is to remove *human pauses*, not to dumb down the strategy. Manual/visual acceptance criteria that can't be auto-verified are left flagged for the loop's verify step — never silently passed. Because there is no Phase-5 approval, the loop's `--unattended` invocation **is** the explicit opt-in for any `workflow`-mechanism cluster; record that choice in the run log.
 
 ## Phase 1 — Select
 
@@ -132,7 +144,7 @@ Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
 
 **The approved plan naming a `workflow` cluster IS the user's explicit opt-in to run a `Workflow` for that cluster.** Do not launch any workflow before this approval.
 
-> **Future — unattended mode (Face 2, not implemented here):** the `auto-deliver` autonomous loop will call batch-dev non-interactively through a planned `--unattended` flag that suppresses this single approval gate and the per-cluster check-ins. Until that lands, the gate is always interactive.
+> **Under `--unattended`** (the `auto-deliver` loop) this gate is **skipped** — proceed with the strategy without prompting. See [Unattended mode](#unattended-mode---unattended).
 
 ---
 

@@ -12,7 +12,8 @@ Universal conventions for agents and skills.
 | `structural.md`     | Code quality conventions, testing rules  | QR code review, planner decision audit                  |
 | `refactoring.md`    | Refactoring consolidation rules          | Refactoring skill, merging structural/coherence findings |
 | `temporal.md`       | Timeless present rule for comments       | TW/QR temporal contamination checks, writing comments   |
-| `work-items.md`     | Work item system detection & creation    | Any skill that creates issues, work items, or nibs      |
+| `work-items.md`     | Tracker-agnostic work-item adapter contract (create / next-ready / read / set-status / close / create-followup) per backend | Any skill that creates or operates on work items; the auto-deliver loop |
+| `acceptance-criteria.md` | `## Acceptance` format — runnable checks vs. manual-tagged criteria | draft-spec / draft-plan / breakdown-phase (emit it); auto-deliver verify (read it) |
 
 ## Subdirectories
 
