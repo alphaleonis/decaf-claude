@@ -168,7 +168,10 @@ Write initial state to `.code-reviews/.resolve-coverage-state.json`:
   4. Run the tests; ensure they compile and pass (handle a genuine-bug failure per the Verify-First Rule).
   5. [interactive] show the tests created.
 - **Skip / Dismiss**: record (Dismiss may carry a free-form reason).
-- **Defer**: create a work item in the project's tracking system. Detect the system (`@../../conventions/work-items.md`); on first defer with no system in state, ask which to use and store it under `deferSystem`; reuse thereafter.
+- **Defer**: create a work item in the project's tracking system.
+  1. **Detect tracking system**: check the project CLAUDE.md for references to tracking systems (Nibs, Azure DevOps, GitHub Issues, TODO comments, etc.).
+  2. **First defer**: if no system is detected and `deferSystem` is null in state, ask which to use (AskUserQuestion) and store it under `deferSystem`. In auto mode with no detectable system, fall back to a TODO comment / Markdown note.
+  3. **Subsequent defers**: reuse `deferSystem` from the state file.
 
 **5d. Update the state file** after each action (processed group with `findingIds` + `action`; dismissed groups carry a reason; deferred groups carry a work-item reference).
 
