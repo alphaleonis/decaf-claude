@@ -31,7 +31,7 @@ Iterate through the gaps in a coverage review, presenting each grouped gap and r
 
 ### Both Modes
 
-- **STATE TRACKING**: After the summary, write progress to `.code-reviews/.resolve-coverage-state.json`. Update it after each group — this enables recovery after context compaction.
+- **STATE TRACKING**: After the summary, write progress to `.decaf/code-reviews/.resolve-coverage-state.json`. Update it after each group — this enables recovery after context compaction.
 
 ## Verify-First Rule
 
@@ -54,7 +54,7 @@ Parse `$ARGUMENTS`:
 - `medium` — Critical + High + Medium gaps
 - `all` (default) — all gaps
 
-**File** (remaining argument, optional): a specific review file, else the most recent `.code-reviews/COVERAGE_REVIEW_*.md`.
+**File** (remaining argument, optional): a specific review file, else the most recent `.decaf/code-reviews/COVERAGE_REVIEW_*.md`.
 
 Examples: `auto`, `auto high`, `high`, `auto medium myreview.md`.
 
@@ -66,7 +66,7 @@ Examples: `auto`, `auto high`, `high`, `auto medium myreview.md`.
 
 **Otherwise, find the latest review:**
 ```bash
-ls .code-reviews/COVERAGE_REVIEW_*.md 2>/dev/null | sort -r | head -1
+ls .decaf/code-reviews/COVERAGE_REVIEW_*.md 2>/dev/null | sort -r | head -1
 ```
 
 If no coverage review exists, inform the user:
@@ -94,7 +94,7 @@ The user answers once per class (or method cluster), not once per uncovered line
 
 ### Step 3: Check for Existing State
 
-If `.code-reviews/.resolve-coverage-state.json` exists and references the same review file, offer to resume. Otherwise start fresh.
+If `.decaf/code-reviews/.resolve-coverage-state.json` exists and references the same review file, offer to resume. Otherwise start fresh.
 
 ### Step 4: Present Summary and Initialize State
 
@@ -114,10 +114,10 @@ If `.code-reviews/.resolve-coverage-state.json` exists and references the same r
 [auto] I'll write tests for each group autonomously and report results.
 ```
 
-Write initial state to `.code-reviews/.resolve-coverage-state.json`:
+Write initial state to `.decaf/code-reviews/.resolve-coverage-state.json`:
 ```json
 {
-  "reviewFile": ".code-reviews/COVERAGE_REVIEW_xxx.md",
+  "reviewFile": ".decaf/code-reviews/COVERAGE_REVIEW_xxx.md",
   "mode": "interactive|auto",
   "totalFindings": N,
   "totalGroups": M,
@@ -201,7 +201,7 @@ Write initial state to `.code-reviews/.resolve-coverage-state.json`:
 - [stale/false-positive gaps with reasons]
 ```
 
-Delete `.code-reviews/.resolve-coverage-state.json` when complete.
+Delete `.decaf/code-reviews/.resolve-coverage-state.json` when complete.
 
 ### Step 7: Re-review Suggestion
 
@@ -221,5 +221,5 @@ Ask whether to delete the coverage review file (`AskUserQuestion`: Yes / No). De
 - Order groups by severity (Critical → High → Medium → Low).
 - Verify each written test compiles and passes before moving on.
 - Keep all changes tracked for the final summary.
-- If context is compacted mid-session, read `.code-reviews/.resolve-coverage-state.json` to resume.
+- If context is compacted mid-session, read `.decaf/code-reviews/.resolve-coverage-state.json` to resume.
 - Use literal Unicode severity icons (🔴🟠🟡🟢), never `:shortcode:` syntax.

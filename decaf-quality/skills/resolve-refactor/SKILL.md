@@ -31,7 +31,7 @@ Iterate through the refactoring units in a refactoring plan, presenting each uni
 
 ### Both Modes
 
-- **STATE TRACKING**: After the summary, write progress to `.refactoring-plans/.resolve-refactor-state.json`. Update it after each unit — this enables recovery after context compaction.
+- **STATE TRACKING**: After the summary, write progress to `.decaf/refactoring-plans/.resolve-refactor-state.json`. Update it after each unit — this enables recovery after context compaction.
 
 ## Verify-First Rule
 
@@ -51,9 +51,9 @@ Parse `$ARGUMENTS`:
 
 **File** (remaining argument, optional):
 - If a file path is provided: use that specific plan file.
-- Otherwise: use the most recent `.refactoring-plans/REFACTOR_PLAN_*.md` file.
+- Otherwise: use the most recent `.decaf/refactoring-plans/REFACTOR_PLAN_*.md` file.
 
-Examples: `auto`, `auto myplan.md`, `.refactoring-plans/REFACTOR_PLAN_2026-03-03_14-30-45.md`.
+Examples: `auto`, `auto myplan.md`, `.decaf/refactoring-plans/REFACTOR_PLAN_2026-03-03_14-30-45.md`.
 
 ## Execution Steps
 
@@ -63,7 +63,7 @@ Examples: `auto`, `auto myplan.md`, `.refactoring-plans/REFACTOR_PLAN_2026-03-03
 
 **Otherwise, find the latest plan:**
 ```bash
-ls .refactoring-plans/REFACTOR_PLAN_*.md 2>/dev/null | sort -r | head -1
+ls .decaf/refactoring-plans/REFACTOR_PLAN_*.md 2>/dev/null | sort -r | head -1
 ```
 
 If no refactoring plan exists, inform the user:
@@ -80,7 +80,7 @@ Build a list of units with: number (#1, #2, …), star rating (★★★ or ★�
 
 ### Step 3: Check for Existing State
 
-If `.refactoring-plans/.resolve-refactor-state.json` exists and references the same plan file, offer to resume. Otherwise start fresh.
+If `.decaf/refactoring-plans/.resolve-refactor-state.json` exists and references the same plan file, offer to resume. Otherwise start fresh.
 
 ### Step 4: Present Summary and Initialize State
 
@@ -98,10 +98,10 @@ If `.refactoring-plans/.resolve-refactor-state.json` exists and references the s
 [auto] I'll apply each unit autonomously and report results.
 ```
 
-Write initial state to `.refactoring-plans/.resolve-refactor-state.json`:
+Write initial state to `.decaf/refactoring-plans/.resolve-refactor-state.json`:
 ```json
 {
-  "planFile": ".refactoring-plans/REFACTOR_PLAN_xxx.md",
+  "planFile": ".decaf/refactoring-plans/REFACTOR_PLAN_xxx.md",
   "mode": "interactive|auto",
   "totalUnits": N,
   "currentIndex": 0,
@@ -246,7 +246,7 @@ Dismissed units carry a `"reason"`; deferred units carry a `"workItem"` referenc
 - [dismissed items with reasons, if any]
 ```
 
-Delete `.refactoring-plans/.resolve-refactor-state.json` when complete.
+Delete `.decaf/refactoring-plans/.resolve-refactor-state.json` when complete.
 
 ### Step 7: Re-review Suggestion
 
@@ -267,5 +267,5 @@ Ask whether to delete the refactoring plan file (`AskUserQuestion`: Yes / No). D
 - Refactorings preserve behavior — verify each applied unit compiles/builds before moving on.
 - If a refactoring fails to build, revert it; offer alternatives (interactive) or skip with reason (auto).
 - Keep all changes tracked for the final summary.
-- If context is compacted mid-session, read `.refactoring-plans/.resolve-refactor-state.json` to resume.
+- If context is compacted mid-session, read `.decaf/refactoring-plans/.resolve-refactor-state.json` to resume.
 - Use literal Unicode star characters (★), never `:shortcode:` syntax.

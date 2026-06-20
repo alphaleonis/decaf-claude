@@ -148,9 +148,9 @@ For each agent's "Considered But Not Flagged" section:
 
 ### Step 7: Generate Refactoring Plan
 
-Create a timestamped plan file in `.refactoring-plans/` at the repo root. **Never overwrite existing plans.**
+Create a timestamped plan file in `.decaf/refactoring-plans/` at the repo root. **Never overwrite existing plans.**
 
-**Filename**: `.refactoring-plans/REFACTOR_PLAN_<YYYY-MM-DD>_<HH-MM-SS>.md` using the current date and time you know from context. Do NOT shell out to `date` — construct the filename directly. Create the `.refactoring-plans/` directory first if it doesn't exist.
+**Filename**: `.decaf/refactoring-plans/REFACTOR_PLAN_<YYYY-MM-DD>_<HH-MM-SS>.md` using the current date and time you know from context. Do NOT shell out to `date` — construct the filename directly. Create the `.decaf/refactoring-plans/` directory first if it doesn't exist.
 
 **Plan format:**
 
@@ -281,7 +281,7 @@ grouped by agent with rationale.]
 After creating the plan file, inform the user:
 
 ```
-✅ Refactoring plan complete: .refactoring-plans/REFACTOR_PLAN_2026-03-03_14-30-45.md
+✅ Refactoring plan complete: .decaf/refactoring-plans/REFACTOR_PLAN_2026-03-03_14-30-45.md
 
 ★★★ High-value: X opportunities
 ★★  Worthwhile:  Y opportunities

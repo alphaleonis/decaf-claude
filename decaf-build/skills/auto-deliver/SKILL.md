@@ -32,7 +32,7 @@ You **call** these; you do not reimplement them. Each already supports unattende
 
   @../../conventions/acceptance-criteria.md
 
-- **On-disk state/artifacts** in `.auto-deliver/` (in the target project, git-tracked).
+- **On-disk state/artifacts** in `.decaf/auto-deliver/` (in the target project, git-tracked).
 
   @artifact-layout.md
 
@@ -50,8 +50,8 @@ You **call** these; you do not reimplement them. Each already supports unattende
    fresh, work-item-unaware contexts and cannot be trusted to update the tracker. So **you**
    `set-status` → `in-progress` before dispatch and `close` after RECONCILE. Never delegate
    status transitions.
-4. **Tracker is the system of record; `.auto-deliver/` is a breadcrumb, not a mirror.** At
-   each lap re-derive "what's next" from the tracker via `next-ready`; `.auto-deliver/state.json`
+4. **Tracker is the system of record; `.decaf/auto-deliver/` is a breadcrumb, not a mirror.** At
+   each lap re-derive "what's next" from the tracker via `next-ready`; `.decaf/auto-deliver/state.json`
    only resumes the in-flight step.
 
 ## Setup / resume
@@ -61,8 +61,8 @@ You **call** these; you do not reimplement them. Each already supports unattende
 2. Resolve the **integration branch** (`--base-branch`, else the repo's default branch). Create
    or check it out; every phase merges here. Do **not** push to or merge into `main` — that
    stays a human decision.
-3. Read `.auto-deliver/state.json` if it exists: if a `current_phase` + `step` is in flight,
-   **resume at that step**; otherwise start a fresh lap at SELECT. Create `.auto-deliver/`
+3. Read `.decaf/auto-deliver/state.json` if it exists: if a `current_phase` + `step` is in flight,
+   **resume at that step**; otherwise start a fresh lap at SELECT. Create `.decaf/auto-deliver/`
    (with its `.gitignore`) if missing, per @artifact-layout.md.
 
 ## The loop
@@ -103,7 +103,7 @@ protocol. You do not micromanage it.
 - **Out-of-scope discoveries** (real, but not this phase's job) → note them for RECONCILE to
   file as follow-ups; do **not** fix them here and do **not** silently absorb them.
 
-Write raw results to `.auto-deliver/phases/<phase>/verify.log` and begin the phase's
+Write raw results to `.decaf/auto-deliver/phases/<phase>/verify.log` and begin the phase's
 `reflection.md` (acceptance results, fixes applied, manual items held, deviations).
 
 ### 5. RECONCILE
@@ -115,7 +115,7 @@ job, below.) Finish `reflection.md`.
 
 ### 6. LEARN
 
-Append a dated entry to `.auto-deliver/lessons.md`: patterns, gotchas, or conventions
+Append a dated entry to `.decaf/auto-deliver/lessons.md`: patterns, gotchas, or conventions
 discovered this phase that make the next one easier. v1 accumulates on disk only — durable
 promotion to CLAUDE.md / docs / erinra is a **deferred hook**; do not over-promote.
 
@@ -147,7 +147,7 @@ Reached only when SELECT finds **no ready phase**. Emit a final report:
 - phases delivered (with their closure summaries),
 - follow-ups filed and any phases injected,
 - `[manual]` acceptance criteria awaiting human confirmation,
-- accumulated lessons (`.auto-deliver/lessons.md`),
+- accumulated lessons (`.decaf/auto-deliver/lessons.md`),
 - any scope-cut recommendations you surfaced but did not act on.
 
 Leave the **merge-to-main / push** decision and **"which plan next"** to the human. Done.

@@ -51,7 +51,7 @@ Run the phases in order. Phases 1–5 are planning (interactive where noted). Ph
 When invoked with `--unattended` (the `auto-deliver` loop passes this), batch-dev runs with **no human gates** — it proceeds on its own best judgment and records what it decided. Suppress exactly these:
 
 - **Phase 1** — queue confirmation, the "include this `in-progress` nib?" question, and the build/test-command confirmation. The caller supplies the queue (phase-scoped) and project context; resolve commands from the project CLAUDE.md / build files without asking.
-- **Phase 3 (Clarify)** — do **not** ask the user. Proceed on the most reasonable assumption for each ambiguity and **log the assumption** (to `.auto-deliver/` when run under the loop).
+- **Phase 3 (Clarify)** — do **not** ask the user. Proceed on the most reasonable assumption for each ambiguity and **log the assumption** (to `.decaf/auto-deliver/` when run under the loop).
 - **Phase 5 (Approve)** — skip the Approve/Adjust/Cancel gate; proceed with the strategy as planned.
 - **Phase 6 check-ins** — no per-cluster pauses; report progress to the run log instead.
 - **Phase 8** — no merge-to-main / push decision; hand the integration branch back to the caller per the merge protocol (the loop owns the merge decision).

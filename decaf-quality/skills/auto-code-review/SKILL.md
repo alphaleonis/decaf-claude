@@ -282,7 +282,7 @@ Otherwise:
 "⚠️ Reached iteration limit ({N}). Consider running another review."}
 ```
 
-Clean up: delete any `.auto-review-state.json` if used.
+Clean up: delete any `.decaf/auto-review/state.json` if used.
 
 ## Notes
 

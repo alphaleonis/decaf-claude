@@ -18,7 +18,7 @@ Walk through architecture improvement candidates one at a time. For each candida
 
 3. **NO AUTONOMOUS DESIGN**: Never spawn interface-design sub-agents without explicit user approval via AskUserQuestion response.
 
-4. **STATE TRACKING**: After presenting the summary, write progress state to `.architecture-improvements/.handle-state.json`. Update this file after each candidate is processed. This enables recovery after context compaction.
+4. **STATE TRACKING**: After presenting the summary, write progress state to `.decaf/architecture-improvements/.handle-state.json`. Update this file after each candidate is processed. This enables recovery after context compaction.
 
 ## Argument Parsing
 
@@ -26,7 +26,7 @@ Parse `$ARGUMENTS` to determine the candidates file:
 
 **File** (optional):
 - If a file path is provided: Use that specific file
-- Otherwise: Use the most recent `.architecture-improvements/CANDIDATES_*.md` file
+- Otherwise: Use the most recent `.decaf/architecture-improvements/CANDIDATES_*.md` file
 
 ## Execution Steps
 
@@ -38,7 +38,7 @@ Parse `$ARGUMENTS` to determine the candidates file:
 
 **Otherwise, find the latest candidates file:**
 ```bash
-ls .architecture-improvements/CANDIDATES_*.md 2>/dev/null | sort -r | head -1
+ls .decaf/architecture-improvements/CANDIDATES_*.md 2>/dev/null | sort -r | head -1
 ```
 
 If no candidates file exists, inform the user:
@@ -60,7 +60,7 @@ For each candidate, extract:
 
 ### Step 3: Check for Existing State
 
-Check if `.architecture-improvements/.handle-state.json` exists:
+Check if `.decaf/architecture-improvements/.handle-state.json` exists:
 - If yes and it references the same candidates file, offer to resume from where we left off
 - If no or different file, start fresh
 
@@ -79,10 +79,10 @@ I'll walk through each candidate ONE AT A TIME. For each one, choose an action:
 - **Skip**, Dismiss, Defer
 ```
 
-Write initial state to `.architecture-improvements/.handle-state.json`:
+Write initial state to `.decaf/architecture-improvements/.handle-state.json`:
 ```json
 {
-  "candidatesFile": ".architecture-improvements/CANDIDATES_xxx.md",
+  "candidatesFile": ".decaf/architecture-improvements/CANDIDATES_xxx.md",
   "totalCandidates": N,
   "currentIndex": 0,
   "processed": [],
@@ -252,7 +252,7 @@ When all candidates are processed or the user stops:
 - [Dismissed items with reasons, if any]
 ```
 
-Delete `.architecture-improvements/.handle-state.json` when complete.
+Delete `.decaf/architecture-improvements/.handle-state.json` when complete.
 
 ### Step 7: Clean Up
 
@@ -272,6 +272,6 @@ If the user chooses "Yes", delete the candidates file.
 ## Notes
 
 - For each "Explore" action, verify the relevant source files still exist before framing the problem
-- If context is compacted mid-session, read `.architecture-improvements/.handle-state.json` to resume
+- If context is compacted mid-session, read `.decaf/architecture-improvements/.handle-state.json` to resume
 - Always use literal Unicode emoji characters, never `:shortcode:` syntax
 - The dependency categories and RFC issue template are defined in the [reference material](../architecture-review/REFERENCE.md)

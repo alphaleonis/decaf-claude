@@ -143,11 +143,11 @@ Then split the survivors: **pre-existing** gaps (`pre_existing: true` — uncove
 
 ### Step 7: Generate Report
 
-Create a timestamped report file in `.code-reviews/` at the repo root. Never overwrite existing reviews.
+Create a timestamped report file in `.decaf/code-reviews/` at the repo root. Never overwrite existing reviews.
 
 ```bash
-mkdir -p .code-reviews
-FILENAME=".code-reviews/COVERAGE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
+mkdir -p .decaf/code-reviews
+FILENAME=".decaf/code-reviews/COVERAGE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 ```
 
 **Report format:**
@@ -230,7 +230,7 @@ Use literal Unicode severity icons (🔴🟠🟡🟢), never `:shortcode:` synta
 After creating the report file, inform the user:
 
 ```
-Coverage review complete: .code-reviews/COVERAGE_REVIEW_2026-02-27_14-30-45.md
+Coverage review complete: .decaf/code-reviews/COVERAGE_REVIEW_2026-02-27_14-30-45.md
 
 Walk the gaps and write tests with: /decaf-quality:resolve-coverage-review
 ```

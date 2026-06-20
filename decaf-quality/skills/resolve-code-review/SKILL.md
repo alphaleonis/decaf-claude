@@ -40,7 +40,7 @@ Iterate through code review findings, presenting each issue and resolving it. Ev
 
 ### Both Modes
 
-- **STATE TRACKING**: After presenting the summary, write progress state to `.code-reviews/.resolve-state.json`. Update this file after each finding is processed. This enables recovery after context compaction.
+- **STATE TRACKING**: After presenting the summary, write progress state to `.decaf/code-reviews/.resolve-state.json`. Update this file after each finding is processed. This enables recovery after context compaction.
 
 ## Verify-First Rule
 
@@ -72,7 +72,7 @@ Parse `$ARGUMENTS` to determine mode, severity filter, and code review file:
 
 **File** (remaining argument, optional):
 - If a file path is provided: Use that specific file
-- Otherwise: Use the most recent `.code-reviews/CODE_REVIEW_*.md` file
+- Otherwise: Use the most recent `.decaf/code-reviews/CODE_REVIEW_*.md` file
 
 Examples: `auto`, `auto high`, `high`, `auto medium myreview.md`, `all myreview.md`
 
@@ -86,7 +86,7 @@ Examples: `auto`, `auto high`, `high`, `auto medium myreview.md`, `all myreview.
 
 **Otherwise, find the latest review:**
 ```bash
-ls .code-reviews/CODE_REVIEW_*.md 2>/dev/null | sort -r | head -1
+ls .decaf/code-reviews/CODE_REVIEW_*.md 2>/dev/null | sort -r | head -1
 ```
 
 If no code review file exists, inform the user:
@@ -142,7 +142,7 @@ Record in state:
 
 ### Step 3: Check for Existing State
 
-Check if `.code-reviews/.resolve-state.json` exists:
+Check if `.decaf/code-reviews/.resolve-state.json` exists:
 - If yes and it references the same review file, offer to resume from where we left off
 - If no or different file, start fresh
 
@@ -223,11 +223,11 @@ AskUserQuestion with:
 
 #### Both Modes — Initialize State
 
-Write initial state to `.code-reviews/.resolve-state.json`:
+Write initial state to `.decaf/code-reviews/.resolve-state.json`:
 ```json
 {
   "mode": "interactive|auto",
-  "reviewFile": ".code-reviews/CODE_REVIEW_xxx.md",
+  "reviewFile": ".decaf/code-reviews/CODE_REVIEW_xxx.md",
   "totalFindings": 12,
   "currentIndex": 0,
   "processed": [],
@@ -437,7 +437,7 @@ When all findings are processed or the user stops:
 [Copy the Agent Summary table from the code review file verbatim]
 ```
 
-Delete `.code-reviews/.resolve-state.json` when complete.
+Delete `.decaf/code-reviews/.resolve-state.json` when complete.
 
 ### Step 6.5: Offer Pre-existing Issues (Interactive Mode Only)
 
@@ -544,5 +544,5 @@ Create a follow-up work item in the project's issue tracker (using the same `def
 - For each fix, verify the change compiles before moving on
 - If a fix fails, offer alternatives (interactive) or skip with reason (auto)
 - Keep track of all changes for the final summary
-- If context is compacted mid-session, read `.code-reviews/.resolve-state.json` to resume
+- If context is compacted mid-session, read `.decaf/code-reviews/.resolve-state.json` to resume
 - Always use literal Unicode emoji characters (🔴🟠🟡🟢), never `:shortcode:` syntax like `:yellow_circle:`

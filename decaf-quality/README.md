@@ -9,7 +9,7 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 ### Code review
 | Skill | Purpose |
 |-------|---------|
-| `code-review` | Orchestrate review agents (`low` / `mid` / `high` / `max` modes, plus an optional `modeN` roster cap), consolidate findings, write a timestamped report to `.code-reviews/` |
+| `code-review` | Orchestrate review agents (`low` / `mid` / `high` / `max` modes, plus an optional `modeN` roster cap), consolidate findings, write a timestamped report to `.decaf/code-reviews/` |
 | `resolve-code-review` | Walk through the findings one at a time and decide a resolution for each — fix (optionally TDD), skip, dismiss, or defer to a work item. `auto` mode resolves autonomously after one upfront confirmation. |
 | `auto-code-review` | The full loop: review → triage → fix (via subagent) → re-review, iterating until the code stabilizes or the iteration cap is hit |
 | `resolve-pr-feedback` | Walk through unresolved PR review threads (ADO or GitHub) and resolve each — fix, reply, decline with evidence, or escalate. Replies are drafted, batch-approved, signed, and posted with matching thread-status changes. |
@@ -37,7 +37,7 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 ### Coverage
 | Skill | Purpose |
 |-------|---------|
-| `coverage-review` | Run the project's coverage tools, assess which gaps actually matter, and suggest targeted tests; report to `.code-reviews/`. Reads a `## Coverage` config from the project CLAUDE.md. |
+| `coverage-review` | Run the project's coverage tools, assess which gaps actually matter, and suggest targeted tests; report to `.decaf/code-reviews/`. Reads a `## Coverage` config from the project CLAUDE.md. |
 | `resolve-coverage-review` | Walk the gaps one group at a time and write tests — write / skip / dismiss / defer. `auto` mode writes tests autonomously. |
 
 ```
@@ -50,7 +50,7 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 ### Refactoring
 | Skill | Purpose |
 |-------|---------|
-| `refactor` | Analyze code structure for improvement opportunities and produce a prioritized plan (impact×effort ★ ratings) in `.refactoring-plans/`. Behavior-preserving — no defects, just better structure. |
+| `refactor` | Analyze code structure for improvement opportunities and produce a prioritized plan (impact×effort ★ ratings) in `.decaf/refactoring-plans/`. Behavior-preserving — no defects, just better structure. |
 | `resolve-refactor` | Walk the opportunities one unit at a time and apply them — apply / apply (incremental) / skip / dismiss / defer. `auto` mode applies autonomously. |
 
 ```
@@ -120,7 +120,7 @@ Shared conventions (severity taxonomy, consolidation rules, security categories,
 
 ## Output
 
-- **Code review** and **coverage** → `.code-reviews/CODE_REVIEW_<timestamp>.md` / `COVERAGE_REVIEW_<timestamp>.md` in the reviewed repo.
-- **Refactoring** → `.refactoring-plans/REFACTOR_PLAN_<timestamp>.md`.
+- **Code review** and **coverage** → `.decaf/code-reviews/CODE_REVIEW_<timestamp>.md` / `COVERAGE_REVIEW_<timestamp>.md` in the reviewed repo.
+- **Refactoring** → `.decaf/refactoring-plans/REFACTOR_PLAN_<timestamp>.md`.
 
 Nothing is posted to a PR unless explicitly requested. Recurring code-review findings across past reviews are tracked by file + category.

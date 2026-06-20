@@ -61,7 +61,7 @@ tracker without prompting). Markdown is the always-available fallback.
 DevOps) — these are visible to others. For local targets (nibs, Markdown), create directly;
 the user can edit after. Under an unattended loop run these gates are suppressed (see each
 skill's `--unattended` behavior); the loop still records what it created in
-`.auto-deliver/`.
+`.decaf/auto-deliver/`.
 
 ---
 

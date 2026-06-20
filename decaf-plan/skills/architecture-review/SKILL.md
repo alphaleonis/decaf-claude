@@ -38,7 +38,7 @@ Present a numbered list of deepening opportunities to the user. For each candida
 
 Save the full exploration results to a timestamped file. **Never overwrite existing files.**
 
-**Filename**: `.architecture-improvements/CANDIDATES_<YYYY-MM-DD>_<HH-MM-SS>.md` using the current date and time from context. Do NOT shell out to `date`. Create the `.architecture-improvements/` directory first if it doesn't exist.
+**Filename**: `.decaf/architecture-improvements/CANDIDATES_<YYYY-MM-DD>_<HH-MM-SS>.md` using the current date and time from context. Do NOT shell out to `date`. Create the `.decaf/architecture-improvements/` directory first if it doesn't exist.
 
 **File format:**
 
@@ -73,7 +73,7 @@ Include ALL candidates — do not filter by quality. The handler skill lets the 
 After saving the candidates file, inform the user:
 
 ```
-✅ Architecture exploration complete: .architecture-improvements/CANDIDATES_<timestamp>.md
+✅ Architecture exploration complete: .decaf/architecture-improvements/CANDIDATES_<timestamp>.md
 
 Found N deepening opportunities.
 
