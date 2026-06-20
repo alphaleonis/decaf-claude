@@ -2,11 +2,11 @@
 # dcc-but3
 version: 1
 title: Port & align remaining planning skills
-status: todo
+status: completed
 type: task
 priority: normal
 created_at: 2026-06-20T18:33:58Z
-updated_at: 2026-06-20T19:26:06Z
+updated_at: 2026-06-20T21:46:16Z
 parent: dcc-9olo
 blocked_by:
     - dcc-owjh
@@ -30,3 +30,7 @@ Renames (port + rename together):
 - [ ] each skill's `description:` rewritten in plain language
 - [ ] shared conventions/work-items.md references intact
 - [ ] no unattended / loop behavior introduced
+
+## Summary
+
+Ported+renamed write-a-prd->draft-spec, prd-to-plan->draft-plan, design-an-interface->explore-designs, close-plan->close-out; kept research/grill-me/breakdown-phase. All 9 descriptions rewritten in plain language per dcc-kk29; bodies otherwise unchanged; no loop/unattended behavior added. Conventions referenced via plugin-local symlink.

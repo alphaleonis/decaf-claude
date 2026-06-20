@@ -2,10 +2,11 @@
 # dcc-9olo
 version: 1
 title: decaf-plan plugin
-status: todo
+status: completed
 type: epic
+priority: normal
 created_at: 2026-06-20T18:33:58Z
-updated_at: 2026-06-20T18:33:58Z
+updated_at: 2026-06-20T21:46:27Z
 parent: dcc-33j0
 order: aw
 ---
@@ -21,3 +22,7 @@ Bring the planning plugin to parity with build/quality: rename decaf-planning â†
 
 ## Scope Boundaries
 Touches: decaf-plan/ (new, from old/decaf-planning), marketplace.json. Off limits: loop enablement / unattended modes / auto-deliver (owned by #dcc-c7gu), build/quality internals, core/memory/protection.
+
+## Summary
+
+decaf-plan plugin delivered (Face 1). Ported all 9 skills from old/decaf-planning with the analyze/resolve naming convention and plain-language descriptions; added README, plugin.json metadata, and marketplace entry. Cross-cutting decision made during this epic: conventions are shared via symlinks (repo-root conventions/ canonical; each plugin symlinks in) because installed plugins cannot read files outside their own directory â€” documented in README.md + CLAUDE.md. decaf-quality retrofitted to the same pattern. Shipped in 2 commits on vnext: 9927773 (conventions-symlink infra) and 0503de7 (decaf-plan). main retrofit deliberately deferred (vnext supersedes those plugins).
