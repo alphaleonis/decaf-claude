@@ -131,6 +131,16 @@ The agent returns a JSON array of findings (severity Critical/High/Medium/Low, a
 
 **For `full` mode with many gaps** (more than 8 files below threshold): Consider launching 2 `decaf-quality:coverage-reviewer` agents in parallel, splitting the file list roughly in half by priority rank. Merge the results.
 
+### Step 6.5: Apply the Confidence Gate
+
+The agent reports findings at anchor ≥ 50. Apply the same noise floor as `code-review` (the Confidence Gate in `code-review-consolidation.md`), simplified for a single agent — there is no dedup, agreement promotion, or deterministic-claim safety net here:
+
+- **Suppress** findings below anchor **75**.
+- **Critical exception:** Critical findings at anchor 50 survive the gate — mark them as anchor 50 in the report.
+- Record the suppressed count (by anchor) in the report's **Considered But Not Flagged** section, so the drop is visible.
+
+Then split the survivors: **pre-existing** gaps (`pre_existing: true` — uncovered code this change did not touch) route to the **Pre-existing Gaps** section (informational, excluded from the verdict); the rest are the primary Gap Findings.
+
 ### Step 7: Generate Report
 
 Create a timestamped report file in `.code-reviews/` at the repo root. Never overwrite existing reviews.
@@ -194,6 +204,23 @@ FILENAME=".code-reviews/COVERAGE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 | `src/PaymentProcessor.cs` | 45% | 30% | Below | 45-62, 78-85 |
 | `src/UserAuth.cs` | 70% | 55% | Below | 23-30 |
 | `src/Utils.cs` | 95% | 90% | OK | — |
+
+---
+
+## Pre-existing Gaps (informational — excluded from verdict)
+
+Uncovered gaps in code this change did not touch; listed only when Critical/High.
+
+| File | Coverage | Category | Confidence | Why it matters |
+|------|----------|----------|------------|----------------|
+| `src/LegacyExporter.cs:120-145` | 0% | COVERAGE_LOW_VALUE | 60 | Dead-code candidate, retained from v1 |
+
+---
+
+## Considered But Not Flagged
+
+- Suppressed by the confidence gate: N findings below anchor 75 (e.g. 3 at anchor 50, 2 at anchor 25/0).
+- Agent dismissals: <gaps the coverage-reviewer examined and ruled out, with one-line reasons>.
 ```
 
 Use literal Unicode severity icons (🔴🟠🟡🟢), never `:shortcode:` syntax.

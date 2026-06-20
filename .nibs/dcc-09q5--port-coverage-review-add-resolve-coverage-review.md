@@ -6,7 +6,7 @@ status: completed
 type: task
 priority: normal
 created_at: 2026-06-20T18:27:56Z
-updated_at: 2026-06-20T19:56:24Z
+updated_at: 2026-06-20T20:08:26Z
 parent: dcc-2ia9
 blocked_by:
     - dcc-wx8i
@@ -31,3 +31,9 @@ Bring `coverage-review` and the `coverage-reviewer` agent from old/decaf-review 
 Design notes:
 - `coverage-reviewer` is a standalone agent invoked by the coverage-review skill — deliberately NOT added to the code-review orchestrator's Step 2b gate table or the Domain Ownership Matrix (it is not a diff-review persona).
 - README roster update deferred to dcc-bm6k (A4).
+
+
+### Amendment — confidence-gate parity with code-review
+- Added a **Confidence Gate** (Step 6.5) to `coverage-review`: suppress findings below anchor 75 except Critical@50 (drop count recorded in Considered But Not Flagged), matching code-review's noise floor — simplified for a single agent (no dedup / agreement promotion / deterministic-claim net).
+- Wired **pre-existing separation**: `pre_existing` gaps route to a Pre-existing Gaps report section, excluded from the verdict.
+- Result: coverage-review and code-review now report at a consistent bar.
