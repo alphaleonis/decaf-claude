@@ -1,4 +1,4 @@
-# decaf-review
+# decaf-quality
 
 Multi-agent code review for Claude Code. Runs parallel specialized reviewer agents over a diff (local changes, a path, or an ADO/GitHub PR) and consolidates their findings into a single deduplicated report with severity, confidence, and verdict.
 
@@ -12,23 +12,23 @@ Multi-agent code review for Claude Code. Runs parallel specialized reviewer agen
 | `resolve-pr-feedback` | Walk through unresolved PR review threads (ADO or GitHub) and resolve each — fix, reply, decline with evidence, or escalate. Replies are drafted, batch-approved, signed, and posted with matching thread-status changes. |
 
 ```
-/decaf-review:code-review                 # mode chosen interactively (default mid), uncommitted changes
-/decaf-review:code-review low             # 2 generalists, fast feedback
-/decaf-review:code-review mid             # gated roster, cost-aware model tiering
-/decaf-review:code-review high            # gated roster, session model end-to-end
-/decaf-review:code-review max             # all applicable agents, session model
-/decaf-review:code-review mid4            # mid mode, roster capped at 4 (floor + 2 best-fit specialists)
-/decaf-review:code-review 42              # review PR #42
-/decaf-review:code-review --spec docs/design.md
+/decaf-quality:code-review                 # mode chosen interactively (default mid), uncommitted changes
+/decaf-quality:code-review low             # 2 generalists, fast feedback
+/decaf-quality:code-review mid             # gated roster, cost-aware model tiering
+/decaf-quality:code-review high            # gated roster, session model end-to-end
+/decaf-quality:code-review max             # all applicable agents, session model
+/decaf-quality:code-review mid4            # mid mode, roster capped at 4 (floor + 2 best-fit specialists)
+/decaf-quality:code-review 42              # review PR #42
+/decaf-quality:code-review --spec docs/design.md
 
-/decaf-review:resolve-code-review         # walk through the latest review's findings
-/decaf-review:resolve-code-review auto high   # autonomously resolve Critical+High
+/decaf-quality:resolve-code-review         # walk through the latest review's findings
+/decaf-quality:resolve-code-review auto high   # autonomously resolve Critical+High
 
-/decaf-review:auto-code-review            # review-fix-recheck loop until stable
-/decaf-review:auto-code-review max --max-iterations 5
+/decaf-quality:auto-code-review            # review-fix-recheck loop until stable
+/decaf-quality:auto-code-review max --max-iterations 5
 
-/decaf-review:resolve-pr-feedback         # current branch's PR, interactive
-/decaf-review:resolve-pr-feedback auto 42 # resolve all feedback on PR 42, drafts approved before posting
+/decaf-quality:resolve-pr-feedback         # current branch's PR, interactive
+/decaf-quality:resolve-pr-feedback auto 42 # resolve all feedback on PR 42, drafts approved before posting
 ```
 
 ## Reviewer agents
