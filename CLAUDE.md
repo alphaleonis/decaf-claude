@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Personal Claude Code configuration (**vnext** layout). The plugin suite is organized around what each plugin *does* —
+Personal Claude Code configuration — the **`decaf`** marketplace, five plugins organized around what each one *does* (see [README.md](README.md) for per-skill usage and examples):
 
 - **`decaf-build`** — create new behavior (features, capabilities)
 - **`decaf-quality`** — improve existing code, behavior-preserving (review, coverage, refactor, audit, diagnose)
@@ -172,6 +172,14 @@ Rules when editing skills/agents:
 - Reference conventions only by a **plugin-local** path: `@../../conventions/<file>.md` from `skills/<skill>/SKILL.md` (or `@../conventions/<file>.md` from `agents/<agent>.md`). Never write a path that escapes the plugin root.
 - The single canonical copy of each convention lives at **repo-root `conventions/`**. Each plugin's `conventions/` holds **symlinks** into it (`ln -s ../../conventions/<file>.md <plugin>/conventions/<file>.md`). Claude Code dereferences within-marketplace symlinks into the cache on install. Edit the canonical file at the root; do not create a divergent copy inside a plugin.
 - Full rationale and the doc link are in [README.md](README.md#development-sharing-conventions-across-plugins-symlinks).
+
+Generated **artifacts** (review reports, refactor plans, loop state) go under one per-project root, `.decaf/` — see [`conventions/artifacts.md`](conventions/artifacts.md). Not the same as the shared `@`-referenced convention files above.
+
+## Working notes
+
+- **Plugin agents auto-discover** from `<plugin>/agents/` — no `plugin.json` key needed (skills need `"skills": "./skills"`; agents do not). Add an agent by dropping its `.md` in `agents/`.
+- **Marketplace name is `decaf`; the repo/clone is `decaf-claude`** (they intentionally differ): add via `alphaleonis/decaf-claude`, install as `<plugin>@decaf` — the order is `<plugin>@<marketplace>`. The local cache dir is `~/.claude/plugins/marketplaces/decaf` (keyed by marketplace name, not repo name).
+- **Work tracking is nibs** (`.nibs/`, committed alongside the related changes). Gotchas: `nibs update` accepts only one `--body-replace-old`/`--body-replace-new` pair per call (use several calls); a task's parent must be milestone/epic/feature/bug (not `research`); `nibs list --ready` = unblocked, not-started items.
 
 ## Versioning
 
