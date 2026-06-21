@@ -23,12 +23,10 @@ Build **new** functionality with Claude Code: test-driven development, automated
 
 ## Agents
 
-Referenced via the Task tool as `decaf-build:<agent-name>`. These are available specialists — the build skills currently dispatch general-purpose agents, but you can invoke these directly for idiomatic implementation or docs.
+Referenced via the Task tool as `decaf-build:<agent-name>`. The build skills dispatch general-purpose subagents; `technical-writer` is available for documentation work (and is used by `decaf-quality:coherence-audit`).
 
 | Agent | Purpose |
 |-------|---------|
-| `csharp-developer` | Implement C# from a spec with idiomatic .NET patterns |
-| `go-developer` | Implement Go from a spec with idiomatic patterns |
 | `technical-writer` | Produce LLM-optimized documentation for completed work |
 
 ## Dependencies

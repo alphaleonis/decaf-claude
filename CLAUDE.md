@@ -51,7 +51,7 @@ Create new behavior: TDD, automated dev-with-review loops, multi-work-item orche
 | `batch-dev` | Orchestrate MULTIPLE nibs in one run — cluster, pick the best mechanism per cluster, dispatch behind one gate |
 | `auto-deliver` | Autonomous whole-plan loop: SELECT→BREAKDOWN→EXECUTE→VERIFY→RECONCILE→LEARN→REPLAN→MERGE per phase, no stops at phase boundaries; composes breakdown-phase / batch-dev / close-out (`--unattended`) over the tracker-adapter contract |
 
-**Agents** (referenced as `decaf-build:agent-name`): `csharp-developer`, `go-developer` (idiomatic implementers from specs), `technical-writer` (LLM-optimized docs). Available specialists; build skills currently dispatch general-purpose agents.
+**Agents** (referenced as `decaf-build:agent-name`): `technical-writer` (LLM-optimized docs). Build skills dispatch general-purpose subagents for implementation.
 
 ### `decaf-plan` — Plan
 
@@ -91,8 +91,8 @@ The old `decaf` core plugin no longer exists; its contents were absorbed:
 
 - `decision-critic` → `decaf-plan:challenge-decision`; `note` → `decaf-plan:capture`; `architect` → `decaf-plan` agent
 - `incoherence-detector` → `decaf-quality:coherence-audit`; `problem-analysis` → `decaf-quality:diagnose`; `debugger` → `decaf-quality` agent
-- `csharp-developer`, `go-developer`, `technical-writer` → `decaf-build` agents
-- **Dropped**: `commit` (project conventions vary too much), `powershell-expert` (out of scope), `planner` (redundant with `draft-plan` + `breakdown-phase`)
+- `technical-writer` → `decaf-build` agent
+- **Dropped**: `commit` (project conventions vary too much), `powershell-expert` (out of scope), `planner` (redundant with `draft-plan` + `breakdown-phase`); `csharp-developer`, `go-developer` (briefly ported to `decaf-build`, then removed — no skill dispatches them and the spec-executor persona conflicts with the TDD loop)
 
 ## Installation
 
@@ -134,7 +134,7 @@ decaf-claude/
 │   └── skills/
 ├── decaf-build/                  # Build plugin (depends on decaf-quality + decaf-plan)
 │   ├── .claude-plugin/plugin.json
-│   ├── agents/                   # csharp-developer, go-developer, technical-writer
+│   ├── agents/                   # technical-writer
 │   ├── conventions/              # symlinks → ../conventions
 │   └── skills/
 ├── decaf-plan/                   # Planning plugin
