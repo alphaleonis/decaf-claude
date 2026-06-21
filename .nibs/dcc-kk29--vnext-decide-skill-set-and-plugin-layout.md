@@ -2,11 +2,11 @@
 # dcc-kk29
 version: 1
 title: 'vnext: decide skill set and plugin layout'
-status: in-progress
+status: completed
 type: research
 priority: normal
 created_at: 2026-06-20T17:38:27Z
-updated_at: 2026-06-20T19:26:06Z
+updated_at: 2026-06-21T13:30:28Z
 documents:
     - vnext.md
 order: a0
@@ -165,4 +165,12 @@ New pieces it needs: the `auto-deliver` driver skill; executable acceptance crit
 
 ## Follow-ups
 
-_TBD._
+All decisions LOCKED and shipped in the vnext merge (f678c22). Disposition of deferred items, resolved by later work:
+- **core (`decaf`) deferral** → resolved: core was dissolved (#dcc-f5dj). Skills absorbed (decision-critic→challenge-decision, note→capture, incoherence-detector→coherence-audit, problem-analysis→diagnose); agents placed (architect→plan, debugger→quality, technical-writer→build).
+- **Open question #1 `powershell-expert`** → resolved: **dropped** (out of scope), along with `commit` and `planner`.
+- **memory / protection deferral** → resolved: both ship as plugins (`decaf-memory`, `decaf-protection`).
+- `csharp-developer` / `go-developer` were placed in build, then later dropped (#dcc-d6d1) — no skill dispatches them.
+
+## Summary
+
+vnext skill-set and plugin-layout decision research. Outcome: Layout v4 LOCKED — nothing dropped from the skill set; three active plugins renamed by function (decaf-dev→build, decaf-review→quality, decaf-planning→plan) with the crisp boundary test (new behavior→build, behavior-preserving→quality, decide what/how→plan), resolve-<analysis> naming replacing handle-*, and auto-deliver as the whole-plan driver in build. Shipped in the vnext merge (f678c22); all child/referencing nibs completed. Deferred items (core, powershell-expert, memory/protection) resolved by later work — see Follow-ups.
