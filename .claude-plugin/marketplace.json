@@ -77,6 +77,52 @@
         "research",
         "architecture"
       ]
+    },
+    {
+      "name": "decaf-memory",
+      "source": "./decaf-memory",
+      "description": "Memory for Claude Code — store and recall knowledge via the erinra MCP server (hybrid semantic search), with session-start/end hooks",
+      "author": {
+        "name": "Alphaleonis"
+      },
+      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
+      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "license": "MIT",
+      "keywords": [
+        "memory",
+        "erinra",
+        "semantic-search",
+        "hybrid-search"
+      ],
+      "category": "workflow",
+      "tags": [
+        "memory",
+        "erinra",
+        "semantic-search"
+      ]
+    },
+    {
+      "name": "decaf-protection",
+      "source": "./decaf-protection",
+      "description": "Safety hooks for Claude Code — PreToolUse guardrails that block commands which would leak secrets into the session transcript",
+      "author": {
+        "name": "Alphaleonis"
+      },
+      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
+      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "license": "MIT",
+      "keywords": [
+        "hooks",
+        "safety",
+        "1password",
+        "secrets"
+      ],
+      "category": "workflow",
+      "tags": [
+        "hooks",
+        "safety",
+        "secrets"
+      ]
     }
   ]
 }
