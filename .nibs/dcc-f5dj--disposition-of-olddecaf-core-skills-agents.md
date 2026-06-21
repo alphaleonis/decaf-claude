@@ -6,7 +6,7 @@ status: todo
 type: epic
 priority: normal
 created_at: 2026-06-21T09:09:17Z
-updated_at: 2026-06-21T09:55:36Z
+updated_at: 2026-06-21T10:00:13Z
 order: as
 ---
 
@@ -23,7 +23,7 @@ Decide and execute the per-item fate of the old core plugin (old/decaf) — the 
 - DROP powershell-expert (single language-domain skill; out of scope — resolves the kk29 open question).
 - DROP commit (project commit conventions / message formats vary too much to generalize; not ported — Claude can commit on request without a dedicated skill).
 - DROP planner agent (redundant with decaf-plan's draft-plan + breakdown-phase).
-- Agents: skip any not directly dispatched by a skill for now; revisit later (architect, csharp-developer, go-developer, technical-writer, debugger).
+- Agents (triaged): KEEP architect -> decaf-plan; csharp-developer, go-developer, technical-writer -> decaf-build; debugger -> decaf-quality. DROP planner. (Agents auto-discover from agents/ and are invocable via Task even without a dispatching skill.)
 
 ## Context
 
@@ -33,4 +33,5 @@ Follows the closed vnext milestone #dcc-33j0 and layout RFC #dcc-kk29 (which lef
 
 - [ ] [run] `ls decaf-plan/skills/challenge-decision decaf-plan/skills/capture decaf-quality/skills/coherence-audit decaf-quality/skills/diagnose` — expect: all four exist
 - [ ] [run] `ls -d decaf*/skills/commit decaf*/skills/powershell-expert 2>/dev/null` — expect: no output (both dropped, not ported)
-- [ ] [manual] the remaining core agents (architect / debugger / planner / csharp-developer / go-developer / technical-writer) have explicit follow-up decisions captured
+- [ ] [run] `ls decaf-plan/agents/architect.md decaf-build/agents/csharp-developer.md decaf-build/agents/go-developer.md decaf-build/agents/technical-writer.md decaf-quality/agents/debugger.md` — expect: all five exist
+- [ ] [run] `ls -d decaf*/agents/planner.md 2>/dev/null` — expect: no output (planner dropped)
