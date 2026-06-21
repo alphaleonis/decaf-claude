@@ -1,7 +1,7 @@
 # Intent Markers
 
-Markers suppress QR checks for intentional code patterns.
-\
+Markers suppress review checks for intentional code patterns.
+
 ## Format
 
 `:MARKER: [what]; [why]`
@@ -24,9 +24,9 @@ Markers suppress QR checks for intentional code patterns.
 - Valid marker = skip relevant checks for marked code
 - Unmarked code = full scrutiny
 
-## QR Behavior
+## Reviewer Behavior
 
-QR scripts detect markers and:
+Reviewers that encounter a marker:
 
 1. Validate format (structural: has semicolon, non-empty why)
 2. If valid: skip category checks for marked code

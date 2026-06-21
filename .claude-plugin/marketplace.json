@@ -1,5 +1,5 @@
 {
-  "name": "decaf-claude-config",
+  "name": "decaf",
   "owner": {
     "name": "Alphaleonis",
     "email": "alphaleonis@users.noreply.github.com"
@@ -9,126 +9,107 @@
   },
   "plugins": [
     {
-      "name": "decaf",
-      "source": "./decaf",
-      "description": "General-purpose agents and skills for Claude Code",
+      "name": "decaf-quality",
+      "source": "./decaf-quality",
+      "description": "Code quality for Claude Code — multi-agent code review, coverage-gap analysis, and refactoring",
       "author": {
         "name": "Alphaleonis"
       },
-      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
-      "repository": "https://github.com/alphaleonis/decaf-claude-config",
-      "license": "MIT",
-      "keywords": [
-        "agents",
-        "skills",
-        "analysis"
-      ],
-      "category": "workflow",
-      "tags": [
-        "agents",
-        "skills",
-        "analysis"
-      ]
-    },
-    {
-      "name": "decaf-review",
-      "source": "./decaf-review",
-      "description": "Multi-agent code review and coverage analysis for Claude Code",
-      "author": {
-        "name": "Alphaleonis"
-      },
-      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
-      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "homepage": "https://github.com/alphaleonis/decaf-claude",
+      "repository": "https://github.com/alphaleonis/decaf-claude",
       "license": "MIT",
       "keywords": [
         "code-review",
         "coverage",
+        "refactoring",
         "quality"
       ],
       "category": "workflow",
       "tags": [
         "code-review",
         "coverage",
+        "refactoring",
         "quality"
       ]
     },
     {
-      "name": "decaf-planning",
-      "source": "./decaf-planning",
-      "description": "Planning skills for PRDs, implementation plans, and phase breakdowns",
+      "name": "decaf-build",
+      "source": "./decaf-build",
+      "description": "Build new functionality with Claude Code — TDD, automated dev with review, and multi-work-item orchestration",
       "author": {
         "name": "Alphaleonis"
       },
-      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
-      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "homepage": "https://github.com/alphaleonis/decaf-claude",
+      "repository": "https://github.com/alphaleonis/decaf-claude",
       "license": "MIT",
       "keywords": [
-        "planning",
-        "prd",
-        "skills"
+        "development",
+        "tdd",
+        "build"
       ],
       "category": "workflow",
       "tags": [
-        "planning",
-        "prd",
-        "skills"
+        "development",
+        "tdd",
+        "build"
       ]
     },
     {
-      "name": "decaf-dev",
-      "source": "./decaf-dev",
-      "description": "Development skills for Claude Code — TDD, automated dev with review",
+      "name": "decaf-plan",
+      "source": "./decaf-plan",
+      "description": "Decide what and how to build with Claude Code — research, specs, phased plans, design exploration, and architecture review",
       "author": {
         "name": "Alphaleonis"
       },
-      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
-      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "homepage": "https://github.com/alphaleonis/decaf-claude",
+      "repository": "https://github.com/alphaleonis/decaf-claude",
       "license": "MIT",
       "keywords": [
-        "development",
-        "tdd",
-        "skills"
+        "planning",
+        "prd",
+        "research",
+        "architecture"
       ],
       "category": "workflow",
       "tags": [
-        "development",
-        "tdd",
-        "skills"
+        "planning",
+        "prd",
+        "research",
+        "architecture"
       ]
     },
     {
       "name": "decaf-memory",
       "source": "./decaf-memory",
-      "description": "Memory skills backed by Vestige cognitive memory system (FSRS-6, semantic search, auto-dedup)",
+      "description": "Memory for Claude Code — store and recall knowledge via the erinra MCP server (hybrid semantic search), with session-start/end hooks",
       "author": {
         "name": "Alphaleonis"
       },
-      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
-      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "homepage": "https://github.com/alphaleonis/decaf-claude",
+      "repository": "https://github.com/alphaleonis/decaf-claude",
       "license": "MIT",
       "keywords": [
         "memory",
-        "vestige",
+        "erinra",
         "semantic-search",
-        "fsrs"
+        "hybrid-search"
       ],
       "category": "workflow",
       "tags": [
         "memory",
-        "vestige",
-        "semantic-search",
-        "fsrs"
+        "erinra",
+        "semantic-search"
       ]
     },
     {
       "name": "decaf-protection",
       "source": "./decaf-protection",
-      "description": "PreToolUse guardrails — blocks 1Password CLI invocations that may surface secrets",
+      "description": "Safety hooks for Claude Code — PreToolUse guardrails that block commands which would leak secrets into the session transcript",
       "author": {
         "name": "Alphaleonis"
       },
-      "homepage": "https://github.com/alphaleonis/decaf-claude-config",
-      "repository": "https://github.com/alphaleonis/decaf-claude-config",
+      "homepage": "https://github.com/alphaleonis/decaf-claude",
+      "repository": "https://github.com/alphaleonis/decaf-claude",
       "license": "MIT",
       "keywords": [
         "hooks",
@@ -140,27 +121,7 @@
       "tags": [
         "hooks",
         "safety",
-        "1password",
         "secrets"
-      ]
-    },
-    {
-      "name": "decaf-exp",
-      "source": "./decaf-exp",
-      "description": "Experimental",
-      "author": {
-        "name": "Alphaleonis"
-      },
-      "keywords": [
-        "code-review",
-        "quality",
-        "experimental"
-      ],
-      "category": "workflow",
-      "tags": [
-        "code-review",
-        "quality",
-        "experimental"
       ]
     }
   ]
