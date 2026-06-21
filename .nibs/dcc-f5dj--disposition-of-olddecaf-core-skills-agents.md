@@ -4,8 +4,9 @@ version: 1
 title: Disposition of old/decaf (core) skills & agents
 status: todo
 type: epic
+priority: normal
 created_at: 2026-06-21T09:09:17Z
-updated_at: 2026-06-21T09:09:17Z
+updated_at: 2026-06-21T09:43:50Z
 order: as
 ---
 
@@ -15,7 +16,7 @@ Decide and execute the per-item fate of the old core plugin (old/decaf) — the 
 
 ## Decisions (locked)
 
-- decision-critic -> decaf-plan (decision support; sits with grill-me / explore-designs).
+- decision-critic -> decaf-plan, renamed **challenge-decision** (decision support; sits with grill-me / explore-designs).
 - incoherence-detector -> decaf-quality (audits existing docs/code/specs for inconsistencies).
 - problem-analysis -> decaf-quality (keep; pairs with the debugger agent, split roles — agent placement handled in the agents task).
 - DROP powershell-expert (single language-domain skill; out of scope — resolves the kk29 open question).
@@ -29,6 +30,6 @@ Follows the closed vnext milestone #dcc-33j0 and layout RFC #dcc-kk29 (which lef
 
 ## Acceptance
 
-- [ ] [run] `ls decaf-plan/skills/decision-critic decaf-quality/skills/incoherence-detector decaf-quality/skills/problem-analysis` — expect: all three exist
+- [ ] [run] `ls decaf-plan/skills/challenge-decision decaf-quality/skills/incoherence-detector decaf-quality/skills/problem-analysis` — expect: all three exist
 - [ ] [run] `grep -rl powershell-expert decaf-plan decaf-quality decaf-build decaf 2>/dev/null` — expect: no output (dropped)
 - [ ] [manual] commit/note (core) and the remaining agents have explicit follow-up decisions captured
