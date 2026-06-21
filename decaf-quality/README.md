@@ -1,6 +1,6 @@
 # decaf-quality
 
-Code quality for Claude Code: analyze and improve **existing** code without changing its behavior. Three capabilities — **multi-agent code review**, **coverage-gap analysis**, and **refactoring** — each pairing an *analysis* skill with a `resolve-*` skill that walks the results and acts on them. Standalone: declares no dependencies on other plugins.
+Code quality for Claude Code: analyze and improve **existing** code without changing its behavior. Three core capabilities — **multi-agent code review**, **coverage-gap analysis**, and **refactoring** — each pairing an *analysis* skill with a `resolve-*` skill that walks the results and acts on them, plus two standalone analysis skills: **`coherence-audit`** (doc/spec/code consistency) and **`diagnose`** (root-cause investigation). Standalone: declares no dependencies on other plugins.
 
 The code-review engine runs parallel specialized reviewer agents over a diff (local changes, a path, or an ADO/GitHub PR) and consolidates their findings into a single deduplicated report with severity, confidence, and verdict.
 
@@ -60,6 +60,17 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 /decaf-quality:resolve-refactor auto       # apply autonomously
 ```
 
+### Audit & diagnosis
+| Skill | Purpose |
+|-------|---------|
+| `coherence-audit` | Audit a codebase for places where documentation, specs, comments, config, names, or versions disagree with the actual code, then resolve each (update docs / flag code / accept). (From the old core `incoherence-detector`.) |
+| `diagnose` | Root-cause investigation — gate the problem, generate competing hypotheses, gather evidence, report the cause. Diagnoses only; never proposes fixes. Pairs with the `debugger` agent for a delegated deep dive. (From the old core `problem-analysis`.) |
+
+```
+/decaf-quality:coherence-audit             # audit docs/specs/code coherence, resolve each
+/decaf-quality:diagnose "<symptom>"        # root-cause investigation (no fixes)
+```
+
 ## Reviewer agents (code-review roster)
 
 | Agent | Focus |
@@ -95,6 +106,7 @@ Invoked directly by the coverage / refactor skills — **not** code-review orche
 | `coverage-reviewer` | Which uncovered paths actually matter + targeted test suggestions (severity × confidence, like the reviewers) | `coverage-review` |
 | `structural-analyst` | Per-file structural improvement opportunities — naming, composition, complexity, domain modeling, error handling | `refactor` |
 | `coherence-analyst` | Cross-file patterns — duplication, validation scattering, interface drift, module boundaries, zombie code | `refactor` |
+| `debugger` | Delegated root-cause deep dive — systematic evidence-gathering; diagnoses, does not fix | `diagnose`, or direct |
 
 Shared conventions (severity taxonomy, consolidation rules, security categories, temporal/intent-marker rules, coverage config, refactoring value matrix) live in `conventions/`. To add a reviewer persona, follow [`conventions/persona-authoring.md`](./conventions/persona-authoring.md) — it defines the required agent anatomy, the domain ownership matrix, and the integration checklist.
 

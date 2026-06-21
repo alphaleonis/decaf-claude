@@ -21,6 +21,16 @@ Build **new** functionality with Claude Code: test-driven development, automated
 /decaf-build:auto-deliver <plan-id>     # drive a whole plan to completion, unattended
 ```
 
+## Agents
+
+Referenced via the Task tool as `decaf-build:<agent-name>`. These are available specialists — the build skills currently dispatch general-purpose agents, but you can invoke these directly for idiomatic implementation or docs.
+
+| Agent | Purpose |
+|-------|---------|
+| `csharp-developer` | Implement C# from a spec with idiomatic .NET patterns |
+| `go-developer` | Implement Go from a spec with idiomatic patterns |
+| `technical-writer` | Produce LLM-optimized documentation for completed work |
+
 ## Dependencies
 
 `decaf-build` declares dependencies on **`decaf-quality`** and **`decaf-plan`** in its `plugin.json`, so installing build pulls both in automatically (Claude Code resolves plugin dependencies on install/enable). The `auto-*` loops and `batch-dev` call `/decaf-quality:auto-code-review` (and `code-review`) for their review gate; `auto-deliver` additionally calls `/decaf-plan:breakdown-phase` and `/decaf-plan:close-out` (both `--unattended`).
