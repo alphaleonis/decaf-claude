@@ -103,11 +103,11 @@ The old `decaf` core plugin no longer exists; its contents were absorbed:
 /plugin marketplace add ./
 
 # 2. Install plugins (build pulls quality + plan in automatically)
-/plugin install decaf-claude-config@decaf-quality
-/plugin install decaf-claude-config@decaf-build
-/plugin install decaf-claude-config@decaf-plan
-/plugin install decaf-claude-config@decaf-memory       # needs the erinra MCP server
-/plugin install decaf-claude-config@decaf-protection
+/plugin install decaf-quality@decaf
+/plugin install decaf-build@decaf
+/plugin install decaf-plan@decaf
+/plugin install decaf-memory@decaf       # needs the erinra MCP server
+/plugin install decaf-protection@decaf
 
 # 3. Restart Claude Code to load the plugins
 ```
@@ -123,7 +123,7 @@ The old `decaf` core plugin no longer exists; its contents were absorbed:
 ## Directory Structure
 
 ```
-decaf-claude-config/
+decaf-claude/
 ├── .claude-plugin/
 │   └── marketplace.json          # Lists all five plugins
 ├── conventions/                  # Canonical shared convention files (see symlinks below)
@@ -154,12 +154,12 @@ decaf-claude-config/
 After pushing changes to this repo, update the cached marketplace so Claude Code sees the new version:
 
 ```bash
-git -C ~/.claude/plugins/marketplaces/decaf-claude-config pull
-claude plugin install decaf-quality@decaf-claude-config
-claude plugin install decaf-build@decaf-claude-config
-claude plugin install decaf-plan@decaf-claude-config
-claude plugin install decaf-memory@decaf-claude-config
-claude plugin install decaf-protection@decaf-claude-config
+git -C ~/.claude/plugins/marketplaces/decaf pull
+claude plugin install decaf-quality@decaf
+claude plugin install decaf-build@decaf
+claude plugin install decaf-plan@decaf
+claude plugin install decaf-memory@decaf
+claude plugin install decaf-protection@decaf
 ```
 
 Then restart Claude Code to load the updated plugins.

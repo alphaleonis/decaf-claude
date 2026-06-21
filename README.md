@@ -22,32 +22,32 @@ Five plugins ship from this marketplace and can be installed independently (buil
 
 ```bash
 # Add as a marketplace
-/plugin marketplace add alphaleonis/decaf-claude-config
+/plugin marketplace add alphaleonis/decaf-claude
 
-# Install plugins (build pulls quality in automatically)
-/plugin install decaf-claude-config@decaf-quality
-/plugin install decaf-claude-config@decaf-build
-/plugin install decaf-claude-config@decaf-plan
-/plugin install decaf-claude-config@decaf-memory     # requires the erinra MCP server
-/plugin install decaf-claude-config@decaf-protection
+# Install plugins (build pulls quality + plan in automatically)
+/plugin install decaf-quality@decaf
+/plugin install decaf-build@decaf
+/plugin install decaf-plan@decaf
+/plugin install decaf-memory@decaf     # requires the erinra MCP server
+/plugin install decaf-protection@decaf
 ```
 
 Or install from a local clone:
 
 ```bash
-cd /path/to/decaf-claude-config
+cd /path/to/decaf-claude
 /plugin marketplace add ./
-/plugin install decaf-claude-config@decaf-quality
-/plugin install decaf-claude-config@decaf-build
-/plugin install decaf-claude-config@decaf-plan
-/plugin install decaf-claude-config@decaf-memory     # requires the erinra MCP server
-/plugin install decaf-claude-config@decaf-protection
+/plugin install decaf-quality@decaf
+/plugin install decaf-build@decaf
+/plugin install decaf-plan@decaf
+/plugin install decaf-memory@decaf     # requires the erinra MCP server
+/plugin install decaf-protection@decaf
 ```
 
 ## What's Inside
 
 ```
-decaf-claude-config/
+decaf-claude/
 ├── .claude-plugin/               # Marketplace manifest (all five plugins)
 ├── conventions/                  # Canonical shared convention files (see Conventions)
 ├── decaf-quality/                # Code-quality plugin
