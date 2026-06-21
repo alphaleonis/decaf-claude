@@ -2,11 +2,11 @@
 # dcc-u3vq
 version: 1
 title: Port note → capture (decaf-plan)
-status: todo
+status: completed
 type: task
 priority: normal
 created_at: 2026-06-21T09:09:40Z
-updated_at: 2026-06-21T09:55:36Z
+updated_at: 2026-06-21T10:17:13Z
 parent: dcc-f5dj
 order: aw
 ---
@@ -23,3 +23,7 @@ On port: update frontmatter `name`, H1, and self-references to capture; preserve
 [ ] no `note` skill-name references remain in the ported skill
 [ ] behavior preserved (creates a work-item draft without interrupting)
 [ ] listed in decaf-plan/README.md and the top-level docs
+
+## Summary
+
+Ported note → decaf-plan/skills/capture: renamed frontmatter/H1/self-refs, rewrote description, preserved nibs capture behavior + argument-hint/allowed-tools, updated confirm labels to 'Captured'. Listed in docs. No core plugin created. Committed d7adc4c/2eca80a.

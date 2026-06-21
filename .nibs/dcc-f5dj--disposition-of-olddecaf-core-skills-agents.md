@@ -2,11 +2,11 @@
 # dcc-f5dj
 version: 1
 title: Disposition of old/decaf (core) skills & agents
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-06-21T09:09:17Z
-updated_at: 2026-06-21T10:00:13Z
+updated_at: 2026-06-21T10:17:25Z
 order: as
 ---
 
@@ -35,3 +35,11 @@ Follows the closed vnext milestone #dcc-33j0 and layout RFC #dcc-kk29 (which lef
 - [ ] [run] `ls -d decaf*/skills/commit decaf*/skills/powershell-expert 2>/dev/null` — expect: no output (both dropped, not ported)
 - [ ] [run] `ls decaf-plan/agents/architect.md decaf-build/agents/csharp-developer.md decaf-build/agents/go-developer.md decaf-build/agents/technical-writer.md decaf-quality/agents/debugger.md` — expect: all five exist
 - [ ] [run] `ls -d decaf*/agents/planner.md 2>/dev/null` — expect: no output (planner dropped)
+
+## Current Focus
+
+Completed dcc-ts2r: Placed core agents (auto-discovered from agents/): architect→decaf-plan; csharp-developer/go-developer/technical-writer→decaf-build; debugger→decaf-quality. technical-writer convention refs fixed to agent depth (@../conventions/) with documentation.md+temporal.md symlinked into decaf-build/conventions/. planner dropped (not ported). Listed in docs. Committed d7adc4c/2eca80a.
+
+## Summary
+
+Core (old/decaf) disposition executed. Ported 4 skills (decision-critic→decaf-plan:challenge-decision, note→decaf-plan:capture, incoherence-detector→decaf-quality:coherence-audit, problem-analysis→decaf-quality:diagnose) and placed 5 agents (architect→plan; csharp-developer/go-developer/technical-writer→build; debugger→quality). Dropped commit, powershell-expert, and the planner agent. No core plugin created. All shipping docs refreshed (5 plugins; dissolved-core mapping). Shipped on vnext in d7adc4c (skills+agents) and 2eca80a (docs). old/decaf retained for reference until old/ is pruned.

@@ -2,11 +2,11 @@
 # dcc-j1tr
 version: 1
 title: Port incoherence-detector → coherence-audit (decaf-quality)
-status: todo
+status: completed
 type: task
 priority: normal
 created_at: 2026-06-21T09:09:39Z
-updated_at: 2026-06-21T09:48:23Z
+updated_at: 2026-06-21T10:17:13Z
 parent: dcc-f5dj
 order: aV
 ---
@@ -25,3 +25,7 @@ Note: this skill both DETECTS and RESOLVES (Phases 4–5) in one go — unlike c
 [ ] no `incoherence-detector` references remain
 [ ] convention references plugin-local (symlinked), not escaping
 [ ] listed in decaf-quality/README.md and the top-level docs
+
+## Summary
+
+Ported incoherence-detector → decaf-quality/skills/coherence-audit: renamed, rewrote description, repointed cross-refs (challenge-decision, diagnose, technical-writer agent). Self-resolving audit kept as-is (future split optional). Listed in docs. Committed d7adc4c/2eca80a.
