@@ -67,7 +67,6 @@ decaf-claude/
 │   └── skills/
 ├── decaf-memory/                 # Memory plugin (erinra) — skills + session hooks
 ├── decaf-protection/             # Safety hooks (block-op-secrets)
-├── old/                          # Superseded originals + dissolved core (reference only)
 ├── CLAUDE.md
 └── README.md
 ```

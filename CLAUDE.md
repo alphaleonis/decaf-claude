@@ -8,7 +8,7 @@ Personal Claude Code configuration (**vnext** layout). The plugin suite is organ
 - **`decaf-memory`** — store/recall knowledge (erinra MCP server)
 - **`decaf-protection`** — PreToolUse safety hooks
 
-All five ship from the repo root and are listed in `marketplace.json`. The old `decaf` (core) plugin is **dissolved** — its skills/agents were absorbed into build/quality/plan and a few dropped (see [The dissolved core](#the-dissolved-core)). The superseded `decaf-dev`/`decaf-review`/`decaf-planning` and the original core live under `old/` as reference only. Not yet merged to `main`.
+All five ship from the repo root and are listed in `marketplace.json`. The old `decaf` (core) plugin is **dissolved** — its skills/agents were absorbed into build/quality/plan and a few dropped (see [The dissolved core](#the-dissolved-core)). The superseded originals (`decaf-dev`/`decaf-review`/`decaf-planning`) and the old core have been removed; they remain in git history if ever needed. Not yet merged to `main`.
 
 ## Plugins
 
@@ -144,7 +144,6 @@ decaf-claude/
 │   └── skills/
 ├── decaf-memory/                 # Memory plugin (erinra) — skills + session hooks
 ├── decaf-protection/             # Safety hooks (block-op-secrets)
-├── old/                          # Superseded originals + dissolved core (reference only)
 ├── CLAUDE.md
 └── README.md
 ```
