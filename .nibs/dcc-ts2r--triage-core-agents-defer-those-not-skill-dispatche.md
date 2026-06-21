@@ -2,11 +2,11 @@
 # dcc-ts2r
 version: 1
 title: Place core agents (keep 5, drop planner)
-status: todo
+status: completed
 type: task
 priority: deferred
 created_at: 2026-06-21T09:09:40Z
-updated_at: 2026-06-21T10:00:13Z
+updated_at: 2026-06-21T10:17:13Z
 parent: dcc-f5dj
 order: ay
 ---
@@ -35,3 +35,7 @@ On port: fix any references in the kept agents to the dropped planner or to old 
 [ ] planner.md absent from all shipping plugins
 [ ] no references to planner or old plugin names remain in the ported agents
 [ ] agents listed in plugin READMEs + top-level docs
+
+## Summary
+
+Placed core agents (auto-discovered from agents/): architect→decaf-plan; csharp-developer/go-developer/technical-writer→decaf-build; debugger→decaf-quality. technical-writer convention refs fixed to agent depth (@../conventions/) with documentation.md+temporal.md symlinked into decaf-build/conventions/. planner dropped (not ported). Listed in docs. Committed d7adc4c/2eca80a.

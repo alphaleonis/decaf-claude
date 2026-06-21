@@ -2,11 +2,11 @@
 # dcc-mhz3
 version: 1
 title: Port problem-analysis → diagnose (decaf-quality)
-status: todo
+status: completed
 type: task
 priority: normal
 created_at: 2026-06-21T09:09:39Z
-updated_at: 2026-06-21T09:48:23Z
+updated_at: 2026-06-21T10:17:13Z
 parent: dcc-f5dj
 order: ak
 ---
@@ -25,3 +25,7 @@ On port: update frontmatter `name`, H1, and self-references to diagnose; rewrite
 [ ] no `problem-analysis` references remain
 [ ] role split vs the debugger agent noted
 [ ] listed in docs
+
+## Summary
+
+Ported problem-analysis → decaf-quality/skills/diagnose: renamed, rewrote description, added the debugger-agent split note (interactive skill vs delegated deep dive), repointed cross-ref to /decaf-plan:challenge-decision. Listed in docs. Committed d7adc4c/2eca80a.
