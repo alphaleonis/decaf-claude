@@ -4,19 +4,19 @@ Personalized Claude Code plugins with specialized agents, skills, and convention
 
 Originally forked from [everything-claude-code](https://github.com/affaan-m/everything-claude-code). You probably want that one rather than this one, which has been tailored to my own personal workflow.
 
-> **vNext rewrite in progress.** The plugin suite is being reorganized around what each plugin *does*: **build** (create new behavior), **quality** (improve existing code), **plan** (decide what/how). These three ship today. The original **core**, **memory**, and **protection** plugins are deferred (still under `old/`, pending their own rewrite — they keep their names).
+> **vNext rewrite.** The plugin suite is organized around what each plugin *does*: **build** (create new behavior), **quality** (improve existing code), **plan** (decide what/how), plus **memory** and **protection**. The old **core** plugin has been dissolved — its skills/agents were absorbed into build/quality/plan and a few were dropped (see [The dissolved core](#the-dissolved-core)). Not yet merged to `main`.
 
 ## Plugins
 
-Three plugins ship from this marketplace and can be installed independently (build pulls quality in automatically):
+Five plugins ship from this marketplace and can be installed independently (build pulls quality + plan in automatically):
 
 | Plugin | Boundary | Description |
 |--------|----------|-------------|
-| **`decaf-quality`** | improve existing code | Multi-agent code review, coverage-gap analysis, refactoring, PR-feedback resolution |
+| **`decaf-quality`** | improve existing code | Multi-agent code review, coverage-gap analysis, refactoring, PR-feedback resolution, coherence audit, root-cause diagnosis |
 | **`decaf-build`** | create new behavior | TDD, automated dev-with-review loops, multi-work-item orchestration, autonomous whole-plan delivery (**depends on** `decaf-quality` + `decaf-plan`) |
-| **`decaf-plan`** | decide what/how | Research, specs, phased plans, phase breakdowns, design exploration, architecture review |
-
-Deferred (pending vnext rewrite, currently under `old/`): **`decaf`** (core), **`decaf-memory`**, **`decaf-protection`**.
+| **`decaf-plan`** | decide what/how | Research, specs, phased plans, phase breakdowns, design exploration, architecture review, decision stress-testing, quick capture |
+| **`decaf-memory`** | remember | Store/recall knowledge via the erinra MCP server (hybrid semantic search); session hooks |
+| **`decaf-protection`** | safety | PreToolUse hooks that block commands which would leak secrets into the session |
 
 ## Installation
 
@@ -28,6 +28,8 @@ Deferred (pending vnext rewrite, currently under `old/`): **`decaf`** (core), **
 /plugin install decaf-claude-config@decaf-quality
 /plugin install decaf-claude-config@decaf-build
 /plugin install decaf-claude-config@decaf-plan
+/plugin install decaf-claude-config@decaf-memory     # requires the erinra MCP server
+/plugin install decaf-claude-config@decaf-protection
 ```
 
 Or install from a local clone:
@@ -38,27 +40,34 @@ cd /path/to/decaf-claude-config
 /plugin install decaf-claude-config@decaf-quality
 /plugin install decaf-claude-config@decaf-build
 /plugin install decaf-claude-config@decaf-plan
+/plugin install decaf-claude-config@decaf-memory     # requires the erinra MCP server
+/plugin install decaf-claude-config@decaf-protection
 ```
 
 ## What's Inside
 
 ```
 decaf-claude-config/
-├── .claude-plugin/               # Marketplace manifest (quality, build, plan)
+├── .claude-plugin/               # Marketplace manifest (all five plugins)
 ├── conventions/                  # Canonical shared convention files (see Conventions)
 ├── decaf-quality/                # Code-quality plugin
 │   ├── .claude-plugin/plugin.json
 │   ├── agents/                   # review roster + language + specialist agents
 │   ├── conventions/              # symlinks → ../conventions
 │   └── skills/
-├── decaf-build/                  # Build plugin (depends on decaf-quality)
+├── decaf-build/                  # Build plugin (depends on decaf-quality + decaf-plan)
 │   ├── .claude-plugin/plugin.json
+│   ├── agents/                   # csharp-developer, go-developer, technical-writer
+│   ├── conventions/              # symlinks → ../conventions
 │   └── skills/
 ├── decaf-plan/                   # Planning plugin
 │   ├── .claude-plugin/plugin.json
+│   ├── agents/                   # architect
 │   ├── conventions/              # symlinks → ../conventions
 │   └── skills/
-├── old/                          # Deferred plugins + superseded originals (reference only)
+├── decaf-memory/                 # Memory plugin (erinra) — skills + session hooks
+├── decaf-protection/             # Safety hooks (block-op-secrets)
+├── old/                          # Superseded originals + dissolved core (reference only)
 ├── CLAUDE.md
 └── README.md
 ```
@@ -77,6 +86,8 @@ Invoked as `/decaf-quality:<skill-name>`. Analysis skills produce findings; matc
 | `resolve-coverage-review` | Walk coverage gaps — write tests / skip / dismiss / defer (`auto` available) |
 | `refactor` | Analyze code for structural improvements → prioritized refactoring plan |
 | `resolve-refactor` | Walk refactoring opportunities — apply / apply incrementally / skip / dismiss / defer |
+| `coherence-audit` | Audit docs/specs/comments/config/names vs. the actual code; find + resolve inconsistencies |
+| `diagnose` | Root-cause investigation via competing hypotheses + evidence; diagnoses, never proposes fixes |
 
 ## `decaf-quality` — Agents
 
@@ -101,7 +112,7 @@ Referenced via the Task tool as `decaf-quality:<agent-name>`.
 
 **Language stack reviewers** (hard-gated by file type): `cpp-reviewer`, `dotnet-reviewer`, `go-reviewer`, `rust-reviewer`, `typescript-reviewer`.
 
-**Validators & skill specialists**: `finding-validator` (adversarially re-verifies a consolidated finding), `pr-thread-resolver` (resolves a single PR thread), `coverage-reviewer` (assesses gap severity), `structural-analyst` (per-file refactor scoring), `coherence-analyst` (cross-file refactor scoring).
+**Validators & skill specialists**: `finding-validator` (adversarially re-verifies a consolidated finding), `pr-thread-resolver` (resolves a single PR thread), `coverage-reviewer` (assesses gap severity), `structural-analyst` (per-file refactor scoring), `coherence-analyst` (cross-file refactor scoring), `debugger` (delegated root-cause deep dive for `diagnose`).
 
 ## `decaf-build` — Skills
 
@@ -114,6 +125,10 @@ Invoked as `/decaf-build:<skill-name>`. `decaf-build` declares dependencies on `
 | `auto-dev` | Direct (non-test-first) work then auto-review — for UI, config, scaffolding, infrastructure |
 | `batch-dev` | Orchestrate **multiple nibs** in one run — cluster, pick the best mechanism per cluster, dispatch behind one approval gate |
 | `auto-deliver` | **Autonomous whole-plan loop** — `SELECT→BREAKDOWN→EXECUTE→VERIFY→RECONCILE→LEARN→REPLAN→MERGE` per phase, no stops at phase boundaries; composes `breakdown-phase`/`batch-dev`/`close-out` (`--unattended`) over the tracker-adapter contract, stops at plan completion |
+
+### `decaf-build` — Agents
+
+`csharp-developer`, `go-developer` (idiomatic implementers from specs) and `technical-writer` (LLM-optimized docs). Available specialists — the build skills currently dispatch general-purpose agents, but you can invoke these directly.
 
 ## `decaf-plan` — Skills
 
@@ -130,14 +145,36 @@ Invoked as `/decaf-plan:<skill-name>`. Output is plans, RFCs, and decisions — 
 | `explore-designs` | "Design it twice": generate several radically different designs for a decision and compare |
 | `architecture-review` | Find structural/testability improvements in existing code → recommendations (RFCs), not code |
 | `resolve-architecture-review` | Walk `architecture-review` proposals one at a time → RFCs |
+| `challenge-decision` | Stress-test a decision by arguing against it → STAND / REVISE / ESCALATE verdict |
+| `capture` | Jot a follow-up idea/task as a work-item draft (nib) without interrupting current work |
 
-## Deferred plugins (pending vnext rewrite)
+### `decaf-plan` — Agents
 
-These still live under `old/` and are not yet in the marketplace; they will be ported (keeping their names):
+`architect` — design a feature's architecture end-to-end (analyze existing patterns → implementation blueprint). Distinct from `explore-designs` (one decision) and `architecture-review` (improve existing code).
 
-- **`decaf`** (core) — `commit`, `note`, `problem-analysis`, `decision-critic`, `incoherence-detector`, `powershell-expert`; agents `architect`, `csharp-developer`, `go-developer`, `debugger`, `planner`, `technical-writer`.
-- **`decaf-memory`** — `remember`, `recall`, `init-memory`, `memory-dashboard`, backed by the [erinra MCP server](https://github.com/alphaleonis/erinra) (`claude mcp add erinra -- erinra serve -s user`).
-- **`decaf-protection`** — PreToolUse safety hooks only (`block-op-secrets` blocks 1Password CLI invocations that could leak secrets into the session transcript).
+## `decaf-memory` — Skills
+
+Invoked as `/decaf-memory:<skill-name>`. Backed by the [erinra MCP server](https://github.com/alphaleonis/erinra) (`claude mcp add erinra -- erinra serve -s user`); a `SessionStart` hook loads the memory protocol automatically.
+
+| Skill | Description |
+|-------|-------------|
+| `remember` | Store a memory in erinra |
+| `recall` | Search memories via hybrid semantic search |
+| `init-memory` | Manually load erinra session context (fallback if the startup hook doesn't fire) |
+| `memory-dashboard` | Open the erinra memory dashboard in the browser |
+
+## `decaf-protection` — Hooks
+
+No skills or agents — just PreToolUse guardrails. `block-op-secrets` blocks 1Password CLI invocations (`op read`, `op item get`, …) that could emit secret values into the session transcript.
+
+## The dissolved core
+
+The old `decaf` core plugin no longer exists; its skills and agents were absorbed into the workflow plugins:
+
+- `decision-critic` → `decaf-plan:challenge-decision`; `note` → `decaf-plan:capture`; `architect` → `decaf-plan` agent
+- `incoherence-detector` → `decaf-quality:coherence-audit`; `problem-analysis` → `decaf-quality:diagnose`; `debugger` → `decaf-quality` agent
+- `csharp-developer`, `go-developer`, `technical-writer` → `decaf-build` agents
+- **Dropped:** `commit` (project conventions vary too much), `powershell-expert` (out of scope), `planner` agent (redundant with `draft-plan` + `breakdown-phase`)
 
 ## Conventions
 

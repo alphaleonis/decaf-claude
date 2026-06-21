@@ -1,6 +1,6 @@
 # decaf-plan
 
-Decide **what** and **how** to build with Claude Code: research, specs, phased plans, phase breakdowns, design exploration, and architecture review. The third member of the vNext trio alongside [`decaf-build`](../decaf-build) (create new behavior) and [`decaf-quality`](../decaf-quality) (improve existing code) — `decaf-plan` is where you **decide**, and its output is plans, RFCs, and decisions rather than code. It declares no outward dependencies.
+Decide **what** and **how** to build with Claude Code: research, specs, phased plans, phase breakdowns, design exploration, architecture review, decision stress-testing, and quick work-item capture. The third member of the vNext trio alongside [`decaf-build`](../decaf-build) (create new behavior) and [`decaf-quality`](../decaf-quality) (improve existing code) — `decaf-plan` is where you **decide**, and its output is plans, RFCs, and decisions rather than code. It declares no outward dependencies.
 
 ## Skills
 
@@ -15,6 +15,16 @@ Decide **what** and **how** to build with Claude Code: research, specs, phased p
 | `explore-designs` | "Design it twice": generate several radically different designs for a decision — from a single method up to a whole architecture — compare them, and write up the chosen one. (Was `design-an-interface`.) |
 | `architecture-review` | Explore existing code for structural/testability improvements (deepen shallow modules, untangle coupling); output is recommendations (RFCs), not code. (Was `improve-codebase-architecture`.) |
 | `resolve-architecture-review` | Walk `architecture-review` proposals one at a time, designing the interface and writing an RFC for each. (Was `handle-architecture-improvements`.) |
+| `challenge-decision` | Stress-test a decision by arguing against it — decompose into claims/assumptions/constraints, verify each, steel-man the opposite, return a STAND/REVISE/ESCALATE verdict. (Was core `decision-critic`.) |
+| `capture` | Jot a follow-up idea or task as a work-item draft (nib) without interrupting current work. (Was core `note`.) |
+
+## Agents
+
+Referenced via the Task tool as `decaf-plan:<agent-name>`.
+
+| Agent | Purpose |
+|-------|---------|
+| `architect` | Design a feature's architecture end-to-end — analyze existing patterns/conventions, then produce an implementation blueprint (files to create/modify, components, data flow, build sequence). Distinct from `explore-designs` (one decision) and `architecture-review` (improve existing code). (From the old core plugin.) |
 
 ## The planning pipeline
 
@@ -45,6 +55,6 @@ research  →  draft-spec  →  draft-plan  →  breakdown-phase  →  (build)  
 
 The work-item skills (`draft-spec`, `draft-plan`, `breakdown-phase`, `close-out`, `grill-me`, `research`, `resolve-architecture-review`) share `conventions/work-items.md`, which describes how to detect and target the available tracker (GitHub Issues, Azure DevOps, Nibs) or fall back to a local Markdown file. It is bundled with the plugin and referenced as `@../../conventions/work-items.md`.
 
-## Coming in vNext
+## Unattended mode
 
-`draft-plan`, `breakdown-phase`, and `close-out` will gain **unattended modes** so the autonomous delivery loop (`auto-deliver`, living in `decaf-build`) can drive a whole plan to completion. That work is scoped to the loop design — not implemented here.
+`breakdown-phase` and `close-out` support a **`--unattended`** flag that suppresses their interactive gates, so the autonomous delivery loop (`auto-deliver`, in `decaf-build`) can drive a whole plan without prompting. Default (interactive) behavior is unchanged.
