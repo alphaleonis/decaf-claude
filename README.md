@@ -305,7 +305,7 @@ Safety hooks only — no skills or agents. A `PreToolUse` hook, **`block-op-secr
 Agents are referenced via the Task tool as `<plugin>:<agent>`; most are dispatched by skills, but all can be invoked directly. See each plugin's README for full agent docs.
 
 - **decaf-quality** — the `code-review` roster (`broad-reviewer`, `quick-reviewer`, `adversarial-reviewer`, `consistency-reviewer`, `knowledge-reviewer`, `design-reviewer`, `security-reviewer`, `performance-reviewer`, `spec-compliance-reviewer`, `prior-feedback-reviewer`, `test-reviewer`, `data-migration-reviewer`), language stack reviewers (`cpp-`, `dotnet-`, `go-`, `rust-`, `typescript-reviewer`), and specialists (`finding-validator`, `pr-thread-resolver`, `coverage-reviewer`, `structural-analyst`, `coherence-analyst`, `debugger`).
-- **decaf-build** — `csharp-developer`, `go-developer` (idiomatic implementers), `technical-writer` (LLM-optimized docs).
+- **decaf-build** — `technical-writer` (LLM-optimized docs).
 - **decaf-plan** — `architect` (feature-architecture blueprints).
 
 ## Conventions
