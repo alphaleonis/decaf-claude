@@ -194,7 +194,7 @@ This is the audit trail for the gating: when the roster turns out wrong, the sta
 
 #### Step 2d: Model dispatch policy
 
-Agents declare `model: inherit` and stay model-agnostic; the orchestrator decides models at dispatch time via the Task tool's `model` parameter. Two tiers, named by **role**, not model version (update the example model names here when the landscape changes; never hard-pin models in agent frontmatter):
+Agents declare `model: inherit` and stay model-agnostic; the orchestrator decides models at dispatch time via the Agent tool's `model` parameter. Two tiers, named by **role**, not model version (update the example model names here when the landscape changes; never hard-pin models in agent frontmatter):
 
 - **Judgment agents** — `knowledge-reviewer`, `design-reviewer`, `security-reviewer`, `spec-compliance-reviewer`, `adversarial-reviewer` — carry the deep, cross-cutting reasoning.
 - **Volume agents** — `quick-reviewer`, `broad-reviewer`, `consistency-reviewer`, `test-reviewer`, `performance-reviewer`, `data-migration-reviewer`, `prior-feedback-reviewer`, the stack reviewers (`dotnet`, `typescript`, `cpp`, `go`, `rust`), and the Step 5.6 `finding-validator`s — do pattern-matching, sibling comparison, idiom checks, and per-finding verification.
@@ -206,7 +206,7 @@ Apply the split by mode (mid-tier = the platform's mid-tier model, `sonnet`):
 - **`high` (strict quality):** every agent inherits the session model **except** `quick-reviewer` and `consistency-reviewer` (mid-tier — their lanes are cheap pattern matches and quotable facts). Validators inherit the session model. This keeps the deep single-finder catches that ride `broad` and `performance` on the top tier.
 - **`max` (maximum fidelity):** no down-tiering — **every** agent inherits the session model, so a top-tier session reviews end-to-end on the top model.
 - **Never tier *up*:** if the session model is already at or below the mid-tier (e.g., a `sonnet` or `haiku` session), down-tiered agents inherit the session model instead of being forced onto `sonnet`. Tiering only ever lowers cost, never raises it.
-- **Fallback:** if the harness's Task tool exposes no `model` parameter, dispatch without overrides — a working review on the session model beats a broken dispatch.
+- **Fallback:** if the harness's Agent tool exposes no `model` parameter, dispatch without overrides — a working review on the session model beats a broken dispatch.
 
 Tiering is independent of any roster cap (Step 2b.5): the cap decides *which* agents run; tiering decides *which model* each runs on. A `mid4` roster still applies `mid` tiering to its four agents.
 
@@ -214,9 +214,19 @@ Note any tiering applied (which agents ran on which tier) in the team announceme
 
 ### Step 3: Launch Review Agents in Parallel
 
-Based on selection, launch agents using the **Task tool with parallel calls in a single message**.
+#### Step 3.0: Shared pre-flight gates
 
-**CRITICAL**: All agents for the selected mode MUST be launched in a single message with multiple Task tool calls. This ensures true parallel execution.
+Before dispatching, run the project's standard gates **once** (best-effort — discover from project config: Taskfile, Makefile, package.json, solution/test runner): build, lint, test. Summarize the outcome (pass/fail per gate, plus failure excerpts if any) for inclusion in every agent prompt. If no gates are discoverable, skip and record `pre-flight: none`. This replaces each reviewer independently re-running the same suite; reviewers keep doing **targeted** execution (repro probes, race detector, focused test runs) — that is where their execution earns its cost.
+
+#### Dispatch
+
+Based on selection, launch agents using the **Agent tool with parallel calls in a single message, every call with `run_in_background: false`**.
+
+**CRITICAL — synchronous parallel dispatch:**
+
+- All agents for the selected mode MUST be launched in a single message with multiple Agent tool calls. This ensures true parallel execution.
+- Every call MUST set `run_in_background: false`. The Agent tool backgrounds subagents by default, and a backgrounded wave invites the orchestrator to end its turn to "wait" — but when this skill runs inside a subagent, its final message is its return value, so ending the turn returns a useless result while the reviewers' reports broadcast to the main conversation instead of coming back. Synchronous dispatch returns every report directly as a tool result. Never arm a timer/watcher or end the turn to wait for reviewers.
+- Reviewers return their report as their **final message** — that final message IS the tool result you consolidate from. Never instruct a reviewer to send its report via SendMessage or to write it to a file.
 
 #### Agent Prompts
 
@@ -226,9 +236,16 @@ Each agent receives the same base context but with agent-specific focus:
 ```
 Review the following code changes for issues. Focus on your area of expertise.
 Follow your own output format instructions.
+Return your complete report as your final message — it is your return value.
+Do not send it via SendMessage and do not write it to a file.
 
 ## Changes to Review
 <paste git diff or file content here>
+
+## Pre-flight gates
+<shared results from Step 3.0: build/lint/test status + failure excerpts, or "none">
+Do NOT re-run the standard gate suite above — it already ran once for this wave.
+Targeted execution (repro probes, race detector, focused test runs) is still encouraged.
 
 ## Additional Instructions
 <any user-provided instructions from $ARGUMENTS>
@@ -313,7 +330,7 @@ Independent re-verification of the primary findings that most need it — the co
 
    **Waive** (corroboration is the verification) any non-Critical primary already found by **2+ independent finders including at least one specialist, all at anchor 100** — mark it `corroborated ×N — validation waived` in the report rather than spending a validator to re-confirm what independent agreement already established. Pre-existing and minor-bucket findings are never validated.
 2. **Budget cap — 15 validators.** If more than 15 findings qualify, validate the highest-severity 15 (Critical first, then High, Medium, Low; ties broken by anchor descending), dropping only from the Medium/Low tail. **Never leave a Critical unvalidated** — if Criticals alone exceed 15, raise the cap to include all of them. Record the unvalidated and waived counts.
-3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Task calls). Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. Model follows Step 2d (validators are volume agents — mid-tier `sonnet` in `mid`, the session model in `high`/`max`).
+3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Agent calls, every call with `run_in_background: false` — same synchronous-dispatch rule as Step 3; verdicts come back as tool results). Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. Model follows Step 2d (validators are volume agents — mid-tier `sonnet` in `mid`, the session model in `high`/`max`).
 4. **Process verdicts:**
    - `confirmed` — keep the finding; apply any corrections the validator supplied (line, file, pre_existing reattribution — a reattributed finding moves to Pre-existing Issues)
    - `refuted` — remove from findings; record under Considered But Not Flagged as `refuted by validator: <reason>`

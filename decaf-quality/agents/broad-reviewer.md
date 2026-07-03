@@ -139,7 +139,7 @@ For each potential finding:
 
 ## Output Format
 
-Write findings to the specified output file in this exact format:
+Return your findings as your final message in this exact format (your final message is your report — do not write it to a file or send it via SendMessage):
 
 ```markdown
 # Code Review
