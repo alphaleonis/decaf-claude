@@ -17,7 +17,7 @@ Automated loop: **review → triage → fix → re-review** until stable.
 
 Parse `$ARGUMENTS`:
 
-1. **Review mode**: `low`, `mid` (default), `high`, or `max` — passed to `/code-review` for the first iteration. The legacy keywords `quick` and `std` are accepted as aliases for `low` and `mid`. A roster-cap suffix on the mode (`mid4`, `high6`) is accepted and forwarded verbatim to `/code-review` for the first iteration. Always pass the resolved mode explicitly to `/code-review` — the review runs in a subagent, where `/code-review`'s interactive mode selection cannot reach the user. Re-reviews (Step 5) always run uncapped `mid` scoped to modified files.
+1. **Review mode**: `low`, `mid` (default), `high`, or `max` — passed to `/code-review` for the first iteration. The legacy keywords `quick` and `std` are accepted as aliases for `low` and `mid`. A roster-cap suffix on the mode (`mid4`, `high6`) is accepted and forwarded verbatim to `/code-review` for the first iteration. Always pass the resolved mode explicitly to `/code-review` — the review runs in a subagent, where `/code-review`'s interactive mode selection cannot reach the user. Re-reviews (Step 5) run **capped** `mid` scoped to modified files — the cap scales with the fix delta's size and complexity, and third-and-later reviews are minimal (see Step 5.4).
 2. **Max iterations**: `--max-iterations N` (default: 3) — hard cap on review-fix cycles
 3. **Spec**: `--spec <path | work-item-ID>` — passed through to `/code-review`
 4. **Scope**: Specific file/directory path, or all uncommitted changes
@@ -60,16 +60,17 @@ Launch a **general-purpose subagent** using the Agent tool:
 > 2. The verdict (APPROVED or NEEDS_CHANGES)
 > 3. The count of findings by severity
 
-**Subsequent iterations** (iteration > 1) — use `mid` mode, scoped to modified files:
+**Subsequent iterations** (iteration > 1) — use `{reReviewMode}` (computed in Step 5.4), scoped to modified files:
 
-> Run the `/decaf-quality:code-review mid {modifiedFileList}` skill using the Skill tool.
+> Run the `/decaf-quality:code-review {reReviewMode} {modifiedFileList}` skill using the Skill tool.
 > Focus the review on regressions and new issues introduced by the previous round of fixes.
+> For each behavior-changing fix, probe the boundary behavior of the changed decision point (inputs on and *between* the cases its new tests pin), not only the finding it addressed.
 > When complete, report:
 > 1. The path of the generated review file
 > 2. The verdict (APPROVED or NEEDS_CHANGES)
 > 3. The count of findings by severity
 
-Re-reviews use `mid`, not `low`: gated dispatch keeps a small modified-file diff cheap anyway, and `mid` runs the validation wave — an autonomous fixer must not consume unvalidated findings.
+Re-reviews stay in the `mid` family, never `low`: `mid` runs the validation wave, and an autonomous fixer must not consume unvalidated findings. But they run **capped** (`mid3`–`mid6`, per Step 5.4): session evidence shows verdict-driving regressions in fix deltas are caught by the floor plus the best-fitting judgment specialists, while the rest of an uncapped roster re-verifies known-clean territory at full price.
 
 Wait for the subagent to complete.
 
@@ -202,11 +203,13 @@ Launch a **general-purpose subagent** to execute the confirmed plan. Build the s
 >    - Not real (refuted by the code, already fixed, mis-cited)? Report `not-addressing` with the concrete evidence. Do NOT apply a fix to satisfy the finding.
 >    - Real, but the suggested fix would cause harm (breaks behavior, conflicts with a documented decision)? Report `declined`, citing the specific harm.
 >    - Real, but the suggested fix is wrong? Fix it correctly and report `fixed (differently)` with a one-line why.
+>    - Real, and the finding offers **alternative fixes** (e.g. a behavioral change vs. a doc-only clarification)? Default to the **least invasive** option that fully resolves the stated issue at its severity; escalate to the stronger option only when the minimal one leaves the issue unresolved. Note which option you took.
 >    - No performative agreement — the evidence decides, not the reviewer's authority.
 > 3. **Execute based on action:**
 >    - **fixTdd**: Write a failing test that exposes the issue → run `{testCommand}` → verify the test FAILS (RED) → implement the fix → run tests → verify all pass (GREEN) → refactor if needed → verify still GREEN
 >    - **fix**: Apply the suggested fix → run `{testCommand}` to verify (or verify compilation if no test command)
 >    - **fixBatch**: Apply the fix pattern to all findings in the similar group (verify each location first — a pattern real in one file may be guarded in another) → verify
+>    - **Boundary self-check for any behavior-changing fix** (a new or changed predicate, gate, threshold, or normalization): before moving on, enumerate the decision point's boundary inputs — including inputs that fall *between* the cases your new tests pin — and add a test case for each. A gate tested only at `-42 → reject` and `task → accept` ships broken for `task-42`.
 > 4. **Verify**: Run `{testCommand}` after each fix. If verification fails:
 >    - Revert the affected files: `git checkout -- <files>`
 >    - Record as skipped with reason
@@ -245,10 +248,19 @@ After the fix subagent completes:
 If re-review is **not** warranted → go to **Step 6**.
 
 Otherwise:
+
+4. **Set `reReviewMode` — conservative by default.** Classify the fix delta first: count changed **executable production lines** (exclude docs, comments, test files, generated files) and note **complexity signals** (concurrency, API/contract surface, parsing or validation logic, security-adjacent code, data mutations).
+   - **First re-review** (this will be iteration 2):
+     - `mid4` — the delta is docs/comments/tests-only, or small behavioral (< ~25 executable production lines) with no complexity signals
+     - `mid6` — moderate behavioral delta (≥ ~25 executable production lines) **or** any complexity signal present
+     - uncapped `mid` — only for a large delta (≥ ~150 executable production lines) or a high-risk domain (auth, payments/financial, external API integration)
+   - **Later re-reviews** (this will be iteration ≥ 3): always `mid3`, scoped to the newest fix round's delta only. By the third pass the changeset's character is known; a minimal wave is regression insurance on the latest fixes, not fresh discovery. (`/code-review`'s roster cap counts the floor, so `mid3` = floor + the single best-fitting specialist — and gated dispatch picks that specialist to fit the delta.)
+
+Then:
 - Record this iteration's summary in history
 - Increment `iteration`
 - Set `modifiedFileList` to the files modified by fixes
-- Report: `Substantial changes detected ({X} fixes, {Y} lines changed). Re-reviewing modified files...`
+- Report: `Substantial changes detected ({X} fixes, {Y} lines changed). Re-reviewing modified files ({reReviewMode})...`
 - Go to **Step 2**
 
 ### Step 6: Final Summary
@@ -287,7 +299,7 @@ Clean up: delete any `.decaf/auto-review/state.json` if used.
 ## Notes
 
 - Always use literal Unicode emoji characters (🔴🟠🟡🟢), never `:shortcode:` syntax
-- The first code review uses the user's specified mode (default `mid`); all re-reviews use `mid` scoped to modified files (gated dispatch keeps them lean, and the validation wave runs)
+- The first code review uses the user's specified mode (default `mid`); all re-reviews use **capped** `mid` (`mid3`–`mid6` per Step 5.4's fix-delta classification) scoped to modified files — the validation wave still runs
 - Re-reviews scope to only modified files to catch regressions, not re-review unchanged code
 - Subagents get fresh context windows — this enables multiple iterations without context exhaustion
 - The main context stays lean: it only reads review files and builds plans
