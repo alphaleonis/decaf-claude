@@ -14,6 +14,9 @@ their effect shows up in the next reports here.
 |--------|---------|-------------------|
 | `2026-07-03-nibs-sn96-code-review-session/` | Go bug fix (`nibs` repo), `auto-tdd`, 3 × uncapped `mid` | The **"before"** picture — surfaced the structural failures |
 | `2026-07-04-nibs-5a8k-code-review-session/` | Svelte/Tailwind web-UI refactor (`nibs` repo), `auto-dev` | The **"after"** picture — first run on the tuned skills |
+| `2026-07-04-nibs-p07b-code-review-session/` | Svelte non-modal panel re-implementation (interaction/a11y-heavy), `auto-dev` | "After" #2 — first run with **measured** review-child tokens (`--report`); caught a real Escape regression, refuted an over-fix |
+| `2026-07-04-nibs-qj7m-code-review-session/` | Svelte radio-group generalization (small declarative), `auto-dev` | "After" #3 — measured tokens; clean small refactor, 3 Medium evolution-readiness catches |
+| `2026-07-04-cross-session-analysis.md` | Synthesis across all four sessions | Re-scores the parked tuning candidates once `dcc-unre`'s "wait for 2+ more reports" gate is met |
 
 ## What happened so far
 
@@ -36,6 +39,20 @@ their effect shows up in the next reports here.
    automatically, including per-reviewer/validator token usage captured from the tool
    results — the largest [Estimate] in the two manual reports becomes measured data from
    here on. Format and truth discipline: `conventions/session-report.md` on `main`.
+5. **p07b + qj7m (after #2, #3).** The first two auto-generated (`--report`) sessions, both
+   Svelte/TS web-UI on `auto-dev`. Zero manual interventions again (tuning still holds), and — for
+   the first time — **measured** review-child tokens: a single `mid9`-class wave costs ~750k–1M in
+   reviewers+validators (qj7m 749,637), confirming the earlier `[Estimate]`s were conservative.
+   p07b caught a real non-modal-defeating Escape regression and refuted a plausible-but-wrong
+   focus-theft High; qj7m confirmed a clean small refactor + 3 Medium evolution-readiness gaps.
+   p07b also surfaced a **new** signal: adversarial-reviewer failed its first dispatch in both
+   iterations (one injection-looking payload) → nib `dcc-jxya`.
+6. **Cross-session analysis** (`2026-07-04-cross-session-analysis.md`). With p07b + qj7m in, the
+   `dcc-unre` gate is met. Re-scoring over four sessions: **act** on candidate #1 (fix-added tests
+   must prove they can fail — 4 of 5 re-reviewed fix rounds added a fresh defect) and #3
+   (post-APPROVED fixing happened in 4/4 sessions, unmetered in 3/4 — bring it in-loop and metered);
+   **act + expand** #4 (pre-flight must run build/lint, not just record); **keep parked** #2
+   (family-sweep, still a sample of one). New track: `dcc-jxya`.
 
 ## How we continue
 
@@ -48,12 +65,15 @@ their effect shows up in the next reports here.
   roster-cap natural ablation (did any dropped agent's lane produce evidence it was
   missed?), fix-round regression rate, anomalies (zero is a result), wall clock and
   operator interventions.
-- **Tune** only on accumulated evidence: candidates are parked in nib `dcc-unre`
-  (this branch) — currently: fix-added tests must prove they can fail; vendored-family
-  sweep rule; post-APPROVED trivial-residual handling; pre-flight line recorded in every
-  report header. **Gate: hold until 2+ further session reports are in** — a sample of one
-  (or two) sessions has already proven misleading once (quick-reviewer was dry for all of
-  sn96 and then found 5a8k's headline bug).
+- **Tune** only on accumulated evidence: candidates are parked in nib `dcc-unre` (this branch).
+  **The "hold until 2+ further session reports" gate is now met** (p07b + qj7m), and the
+  re-scoring lives in `2026-07-04-cross-session-analysis.md`: act on #1 (fix-added tests must prove
+  they can fail) and #3 (post-APPROVED fix pass, in-loop + metered); act + expand #4 (pre-flight
+  runs the full build/lint/test gate, not just records it); keep #2 (family-sweep) parked at a
+  sample of one. Application of #1/#3/#4 lands on `main`, tracked in `dcc-unre`. A separate track,
+  `dcc-jxya`, covers the adversarial-reviewer dispatch failure. The sample is still four (one
+  pre-tuning) and all post-tuning sessions are Svelte/TS web-UI — keep accumulating before treating
+  any single-session signal as settled.
 
 Skill changes always land on `main`; this branch stays reports + tuning notes only, and is
 periodically compared against — never merged into — the skill history it evaluates.
