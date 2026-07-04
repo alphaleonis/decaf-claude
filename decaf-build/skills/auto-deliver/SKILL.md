@@ -1,7 +1,7 @@
 ---
 name: auto-deliver
 description: Autonomously drive a whole plan to completion — loop SELECT → BREAKDOWN → EXECUTE → VERIFY → RECONCILE → LEARN → REPLAN → MERGE, one phase at a time, WITHOUT stopping at phase boundaries. Use when you have a phased plan (work items in a tracker) and want it built end-to-end unattended. Stops only when the plan is complete (or it genuinely cannot proceed).
-argument-hint: "<plan reference or root work-item id> [--base-branch <name>] [--review quick|std|max] [--tracker nibs|ado|github|markdown]"
+argument-hint: "<plan reference or root work-item id> [--base-branch <name>] [--review quick|std|max] [--report] [--tracker nibs|ado|github|markdown]"
 ---
 
 # Auto-Deliver
@@ -84,9 +84,11 @@ of the phase. JIT: the breakdown is planned against the code earlier phases actu
 ### 3. EXECUTE
 
 `/decaf-build:batch-dev --unattended` scoped to **this phase's feature children only** (pass
-their ids / a phase-scoped filter), forwarding `--review` and `--base-branch <integration
-branch>`. batch-dev selects mechanisms, executes, reviews, and merges its clusters per its own
-protocol. You do not micromanage it.
+their ids / a phase-scoped filter), forwarding `--review`, `--base-branch <integration branch>`,
+and `--report` (if set). batch-dev selects mechanisms, executes, reviews, and merges its clusters
+per its own protocol. You do not micromanage it. With `--report`, each **series** nib emits a
+comparison-grade session report to `.decaf/session-reports/` (batch-dev's fan-out/workflow/team
+clusters self-review inline and produce none — batch-dev's Phase 8 names the uncovered clusters).
 
 ### 4. VERIFY  *(verify-and-fix sub-routine)*
 
@@ -148,7 +150,9 @@ Reached only when SELECT finds **no ready phase**. Emit a final report:
 - follow-ups filed and any phases injected,
 - `[manual]` acceptance criteria awaiting human confirmation,
 - accumulated lessons (`.decaf/auto-deliver/lessons.md`),
-- any scope-cut recommendations you surfaced but did not act on.
+- any scope-cut recommendations you surfaced but did not act on,
+- **with `--report`**: the session reports written across all phases (`.decaf/session-reports/`),
+  and any fan-out/workflow/team clusters left uncovered.
 
 Leave the **merge-to-main / push** decision and **"which plan next"** to the human. Done.
 

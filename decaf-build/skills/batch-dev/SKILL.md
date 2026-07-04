@@ -1,7 +1,7 @@
 ---
 name: batch-dev
 description: Orchestrate execution of MULTIPLE nibs in one run. Selects a queue, understands the nibs collectively (including how they fit together), then chooses the best execution mechanism per cluster — single series agent, parallel fan-out, scripted workflow, or agent team — and dispatches with ONE approval gate. Use when the user wants to work several nibs together (in parallel or series) rather than one at a time. Complements /decaf-build:auto-dev and /decaf-build:auto-tdd (which handle a single nib).
-argument-hint: "<nib-id...> | --filter <expr> | --ready  [--review quick|std|max] [--max-iterations N] [--base-branch <name>] [--unattended]"
+argument-hint: "<nib-id...> | --filter <expr> | --ready  [--review quick|std|max] [--max-iterations N] [--base-branch <name>] [--report] [--unattended]"
 ---
 
 # Batch Dev
@@ -39,6 +39,11 @@ Parse `$ARGUMENTS`:
 2. `--review quick|std|max` (default `std`) — passed to per-nib review.
 3. `--max-iterations N` (default `3`) — review iteration cap.
 4. `--base-branch <name>` — override the batch branch name (default derived in Phase 6).
+5. `--report` — produce a comparison-grade session report for skill tuning. Forwarded to each
+   **series** nib's `/decaf-quality:auto-code-review` (Phase 6a), which writes the report folder to
+   `.decaf/session-reports/`. See `@../../conventions/session-report.md`. **Series clusters only** —
+   fan-out/workflow/team clusters self-review inline and cannot emit a standard report (see the
+   caveat in Phase 6a). `auto-deliver` passes this through.
 
 ---
 
@@ -163,9 +168,11 @@ Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
 For each nib in the cluster, in order. The batch-level plan already covers the per-nib plan, so **do NOT call `/decaf-build:auto-dev` / `/decaf-build:auto-tdd` wholesale** (their interactive Step-1 plan gate would re-prompt and break the unattended run). Instead reuse their **execute + review tail**:
 
 1. Set the nib `in-progress`.
-2. Launch a **general-purpose `Agent`** with the pre-approved-plan prompt pattern (as in `/decaf-build:auto-dev` Step 2 / `/decaf-build:auto-tdd` Step 2 — *"the plan is already approved, do NOT ask for confirmation"*). For `tdd` nibs, instruct a full red-green-refactor loop following the project's test conventions; for `dev` nibs, implement step-by-step verifying the build after each step.
-3. After it reports, run `/decaf-quality:auto-code-review {reviewMode} --max-iterations {maxIterations}` (it auto-detects scope from uncommitted changes and manages its own subagent lifecycle). If a running-app build lock or a trivial change makes the full auto-review impractical, a focused manual review of the diff is an acceptable substitute — note the substitution in the report.
+2. Launch a **general-purpose `Agent`** with the pre-approved-plan prompt pattern (as in `/decaf-build:auto-dev` Step 2 / `/decaf-build:auto-tdd` Step 2 — *"the plan is already approved, do NOT ask for confirmation"*). For `tdd` nibs, instruct a full red-green-refactor loop following the project's test conventions; for `dev` nibs, implement step-by-step verifying the build after each step. **With `--report`**, record this implementation Agent's harness-reported usage from its tool result (tokens / tool calls / duration, verbatim) plus changeset stats (files changed, +/− lines, new files) — this is the nib's implementation-phase record, exactly as `/decaf-build:auto-dev` Step 2 captures.
+3. After it reports, run `/decaf-quality:auto-code-review {reviewMode} --max-iterations {maxIterations} {--report if set}` (it auto-detects scope from uncommitted changes and manages its own subagent lifecycle). **With `--report`**, the Step-2 implementation-phase record is in this context — hand it to auto-review so its session report has full build-side accounting (same contract as auto-dev/auto-tdd). If a running-app build lock or a trivial change makes the full auto-review impractical, a focused manual review of the diff is an acceptable substitute — note the substitution (and, under `--report`, that no session report was produced for this nib).
 4. Commit code + nib; set the nib `completed`.
+
+> **`--report` covers series clusters only.** Phases 6b/6c/6d self-review inline in their worktrees (`/decaf-quality:auto-code-review` runs from the main context and cannot be invoked from a worktree), so they emit no standard session report even when `--report` is set. Note the uncovered clusters in the Phase 8 report rather than implying full coverage.
 
 ### Phase 6b — Fan-out parallel subagents
 
@@ -228,6 +235,7 @@ Applies to any cluster that produced separate branches/worktrees (6b/6c/6d). Ser
 - Run the project's build + tests on the batch branch. **If a running instance of the app locks build outputs** (e.g. a live executable holding its output binaries), close it first — or fall back to building/testing only the affected library/test projects, which avoids producing the locked artifact. Flag that the full build plus any **visual** acceptance criteria need the app closed: purely-visual criteria can't be auto-verified, so leave such nibs `in-progress` until confirmed.
 - Leave the **merge-to-main / push decision to the user** (honors "commit/push only when asked; branch first").
 - Offer follow-up nibs for anything deferred or parked.
+- **With `--report`**: list the session reports written (`.decaf/session-reports/…`, one per series nib) and explicitly name any fan-out/workflow/team clusters that produced none, so coverage isn't overstated.
 
 ---
 
