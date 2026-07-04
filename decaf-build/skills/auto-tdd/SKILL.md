@@ -1,7 +1,7 @@
 ---
 name: auto-tdd
 description: TDD-first development with automated review. Runs a TDD session (plan → red-green-refactor) then auto-review on the result. Use when building features test-first with quality gates.
-argument-hint: "<feature description> [--review quick|std|max] [--max-iterations N] [--spec <path>]"
+argument-hint: "<feature description> [--review quick|std|max] [--max-iterations N] [--spec <path>] [--report]"
 ---
 
 # Auto TDD
@@ -20,6 +20,7 @@ Parse `$ARGUMENTS`:
 2. **Review mode**: `--review quick|std|max` (default: `std`) — passed to auto-review
 3. **Max review iterations**: `--max-iterations N` (default: 3) — passed to auto-review
 4. **Spec path**: `--spec <path>` — passed to auto-review for spec compliance checking
+5. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). When set, this skill contributes the implementation-phase record: the TDD subagent's harness-reported usage (tokens / tool calls / duration, verbatim from the Agent tool result), changeset stats (files changed, +/− lines, new files), and a one-line scope description.
 
 ## Execution Steps
 
@@ -114,7 +115,7 @@ Launch a **general-purpose subagent** using the Agent tool to execute the approv
 > 2. List of all files created or modified
 > 3. Final test results (pass/fail counts)
 
-Wait for the subagent to complete. Record results.
+Wait for the subagent to complete. Record results. With `--report`, also record the subagent's harness-reported usage from the tool result and the changeset stats — this becomes the implementation-phase record for the session report.
 
 Report to the user:
 
@@ -135,10 +136,10 @@ If the TDD subagent reports that it could not implement any behaviors (total fai
 Run `/decaf-quality:auto-code-review` using the Skill tool, passing through the review arguments:
 
 ```
-/decaf-quality:auto-code-review {reviewMode} --max-iterations {maxIterations} {--spec specPath if provided}
+/decaf-quality:auto-code-review {reviewMode} --max-iterations {maxIterations} {--spec specPath if provided} {--report if set}
 ```
 
-Auto-review will automatically detect the scope from uncommitted changes (which includes everything the TDD subagent produced).
+Auto-review will automatically detect the scope from uncommitted changes (which includes everything the TDD subagent produced). With `--report`, the implementation-phase record from Step 2 is in this context — auto-review's session report picks it up for its agent inventory and token accounting.
 
 The auto-review skill manages its own subagent lifecycle — let it run to completion.
 

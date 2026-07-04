@@ -1,7 +1,7 @@
 ---
 name: auto-dev
 description: Direct development with automated review. Plans implementation, executes via subagent, then auto-reviews. Use for work that isn't test-driven (UI, config, styling, infrastructure, scaffolding).
-argument-hint: "<feature description> [--review quick|std|max] [--max-iterations N] [--spec <path>]"
+argument-hint: "<feature description> [--review quick|std|max] [--max-iterations N] [--spec <path>] [--report]"
 ---
 
 # Auto Dev
@@ -22,6 +22,7 @@ Parse `$ARGUMENTS`:
 2. **Review mode**: `--review quick|std|max` (default: `std`) — passed to auto-review
 3. **Max review iterations**: `--max-iterations N` (default: 3) — passed to auto-review
 4. **Spec path**: `--spec <path>` — passed to auto-review for spec compliance checking
+5. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). When set, this skill contributes the implementation-phase record: the implementation subagent's harness-reported usage (tokens / tool calls / duration, verbatim from the Agent tool result), changeset stats (files changed, +/− lines, new files), and a one-line scope description.
 
 ## Execution Steps
 
@@ -120,7 +121,7 @@ Launch a **general-purpose subagent** using the Agent tool to execute the approv
 > 2. List of all files created or modified
 > 3. Build verification result (pass/fail)
 
-Wait for the subagent to complete. Record results.
+Wait for the subagent to complete. Record results. With `--report`, also record the subagent's harness-reported usage from the tool result and the changeset stats — this becomes the implementation-phase record for the session report.
 
 Report to the user:
 
@@ -141,10 +142,10 @@ If the subagent reports that it could not complete any steps (total failure), as
 Run `/decaf-quality:auto-code-review` using the Skill tool, passing through the review arguments:
 
 ```
-/decaf-quality:auto-code-review {reviewMode} --max-iterations {maxIterations} {--spec specPath if provided}
+/decaf-quality:auto-code-review {reviewMode} --max-iterations {maxIterations} {--spec specPath if provided} {--report if set}
 ```
 
-Auto-review will automatically detect the scope from uncommitted changes (which includes everything the implementation subagent produced).
+Auto-review will automatically detect the scope from uncommitted changes (which includes everything the implementation subagent produced). With `--report`, the implementation-phase record from Step 2 is in this context — auto-review's session report picks it up for its agent inventory and token accounting.
 
 The auto-review skill manages its own subagent lifecycle — let it run to completion.
 
