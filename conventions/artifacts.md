@@ -24,6 +24,10 @@ top-level dot-dirs.
 │   └── .handle-state.json
 ├── grill-me/                    # grill-me running summaries
 │   └── <topic>.md
+├── session-reports/             # --report session reports (see session-report.md)
+│   └── <date>-<slug>-code-review-session/
+│       ├── README.md
+│       └── iteration-N-consolidated-review.md
 └── auto-deliver/                # auto-deliver loop state/artifacts
     └── …                        # see the auto-deliver skill's artifact-layout.md
 ```

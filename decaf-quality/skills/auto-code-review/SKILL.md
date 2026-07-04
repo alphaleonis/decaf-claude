@@ -1,7 +1,7 @@
 ---
 name: auto-code-review
 description: Automated review-fix-recheck loop. Runs code review, triages findings, fixes autonomously via subagent, and re-reviews if substantial changes were made. Iterates until code stabilizes.
-argument-hint: "[low|mid|high|max][N] [--max-iterations N] [--spec <path|work-item-ID>] [path] [instructions]"
+argument-hint: "[low|mid|high|max][N] [--max-iterations N] [--spec <path|work-item-ID>] [--report] [path] [instructions]"
 ---
 
 # Auto Code Review
@@ -20,8 +20,9 @@ Parse `$ARGUMENTS`:
 1. **Review mode**: `low`, `mid` (default), `high`, or `max` — passed to `/code-review` for the first iteration. The legacy keywords `quick` and `std` are accepted as aliases for `low` and `mid`. A roster-cap suffix on the mode (`mid4`, `high6`) is accepted and forwarded verbatim to `/code-review` for the first iteration. Always pass the resolved mode explicitly to `/code-review` — the review runs in a subagent, where `/code-review`'s interactive mode selection cannot reach the user. Re-reviews (Step 5) run **capped** `mid` scoped to modified files — the cap scales with the fix delta's size and complexity, and third-and-later reviews are minimal (see Step 5.4).
 2. **Max iterations**: `--max-iterations N` (default: 3) — hard cap on review-fix cycles
 3. **Spec**: `--spec <path | work-item-ID>` — passed through to `/code-review`
-4. **Scope**: Specific file/directory path, or all uncommitted changes
-5. **Instructions**: Any remaining text passed through to `/code-review`
+4. **`--report`**: produce a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). Forward `--report` to **every** `/code-review` invocation (first pass and re-reviews), keep the session ledger through the loop (Steps 1–5), and write the report folder in Step 6.5. Callers (`auto-tdd`/`auto-dev`) may pass an implementation-phase record to include.
+5. **Scope**: Specific file/directory path, or all uncommitted changes
+6. **Instructions**: Any remaining text passed through to `/code-review`
 
 ## Execution Steps
 
@@ -29,7 +30,7 @@ Parse `$ARGUMENTS`:
 
 1. Set `iteration = 1`, `maxIterations` from args (default 3)
 2. Set `reviewMode` from args (default `mid`)
-3. Build `codeReviewArgs` — the full argument string to pass to `/code-review` (mode + spec + scope + instructions); the mode is always present, even when defaulted
+3. Build `codeReviewArgs` — the full argument string to pass to `/code-review` (mode + spec + `--report` if set + scope + instructions); the mode is always present, even when defaulted
 4. Record the initial commit/diff baseline for measuring change magnitude later
 5. **Detect test infrastructure:**
    - Search for test files: `*.test.*`, `*.spec.*`, `*_test.*`, `*Tests.*`, directories `tests`, `__tests__`, `test`
@@ -37,7 +38,8 @@ Parse `$ARGUMENTS`:
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
 6. **Detect work item tracking system** from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.) — store as `deferSystem`
-7. Inform the user:
+7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (mode + cap + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5.4 delta classification + chosen `reReviewMode`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
+8. Inform the user:
 
 ```
 ## Auto Code Review Starting
@@ -62,7 +64,7 @@ Launch a **general-purpose subagent** using the Agent tool:
 
 **Subsequent iterations** (iteration > 1) — use `{reReviewMode}` (computed in Step 5.4), scoped to modified files:
 
-> Run the `/decaf-quality:code-review {reReviewMode} {modifiedFileList}` skill using the Skill tool.
+> Run the `/decaf-quality:code-review {reReviewMode} {--report if set} {modifiedFileList}` skill using the Skill tool.
 > Focus the review on regressions and new issues introduced by the previous round of fixes.
 > For each behavior-changing fix, probe the boundary behavior of the changed decision point (inputs on and *between* the cases its new tests pin), not only the finding it addressed.
 > When complete, report:
@@ -295,6 +297,17 @@ Then:
 ```
 
 Clean up: delete any `.decaf/auto-review/state.json` if used.
+
+### Step 6.5: Session Report (only with `--report`)
+
+Assemble the session report from the ledger, per `@../../conventions/session-report.md`:
+
+1. Create `.decaf/session-reports/<YYYY-MM-DD>-<work-item-or-slug>-code-review-session/` (never overwrite — suffix `-2`, `-3`, … on collision).
+2. **Copy** each iteration's consolidated review file into it as `iteration-N-consolidated-review.md` (byte-identical copies via `cp`, not regeneration).
+3. Write `README.md` in the convention's six-section format: iteration overview, agent inventory, token usage (per-reviewer/validator figures come from each consolidated file's Session Metrics section), process observations (the anomalies ledger — "zero anomalies" is itself a result), timeline, per-agent yield. Apply the truth discipline: harness figures verbatim, `[Estimate]`/`[Inference]`/`[Unverified]` labels, missing data recorded as missing.
+4. Tell the user: `📊 Session report: <path>` after the final summary.
+
+The report records; cross-session comparison and tuning decisions stay with the operator.
 
 ## Notes
 

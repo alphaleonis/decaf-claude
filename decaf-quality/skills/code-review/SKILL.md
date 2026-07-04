@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Run parallel code review agents and consolidate findings into a unified report
-argument-hint: "[low|mid|high|max][N] [--spec <path>] [PR#] [path] [instructions]"
+argument-hint: "[low|mid|high|max][N] [--spec <path>] [--report] [PR#] [path] [instructions]"
 ---
 
 # Code Review
@@ -14,9 +14,10 @@ Parse `$ARGUMENTS` to determine:
 1. **Mode**: `low`, `mid`, `high`, or `max`. The legacy keywords `quick` and `std` are accepted as aliases for `low` and `mid`. When no mode keyword is given, the mode is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `mid`.
    - **Roster cap (optional)**: an integer suffixed directly to the mode keyword — `mid4`, `high6`, `max8` (alias forms `std4` etc.) — caps the **review-wave roster** at that many agents. It applies to `mid`, `high`, and `max`; on `low` it is ignored (the floor is already exactly two agents). The cap **counts the two floor agents** (so `mid4` = floor + the 2 best-fitting specialists) but **not** the Step 5.6 validators, and it does **not** change the mode's model tiering or validation policy. Applied in Step 2b.5.
 2. **Spec**: `--spec <path | work-item-ID>` — a specification/plan document, or an ADO work item ID whose Description and Acceptance Criteria serve as the spec. When omitted, spec discovery (Step 1.5) may find one automatically.
-3. **PR number**: A pull request number (e.g., `123`, `PR#123`, `#123`) — review that PR instead of local changes
-4. **Scope**: Specific file/directory path, or all uncommitted changes (ignored when PR number is provided)
-5. **Instructions**: Any additional review instructions
+3. **`--report`**: collect session metrics for skill-tuning comparisons — record per-agent usage from every reviewer/validator tool result and append a **Session Metrics** section to the consolidated review file (Step 6). See `@../../conventions/session-report.md` for the exact section format and the truth discipline. Orchestrating skills (`auto-code-review`) pass this through; standalone, the enriched consolidated file is the deliverable.
+4. **PR number**: A pull request number (e.g., `123`, `PR#123`, `#123`) — review that PR instead of local changes
+5. **Scope**: Specific file/directory path, or all uncommitted changes (ignored when PR number is provided)
+6. **Instructions**: Any additional review instructions
 
 The mode ladder factors two independent dials — **roster size** (which agents run) and **model assignment** (which tier each agent runs on). Roster grows across the bottom half of the ladder; models upgrade across the top half. A trailing integer (`mid4`, `high6`) is a third, manual dial: it **caps roster size** directly — keeping the floor plus the best-fitting specialists up to that count — without touching model assignment or validation (see Step 2b.5):
 
@@ -227,6 +228,7 @@ Based on selection, launch agents using the **Agent tool with parallel calls in 
 - All agents for the selected mode MUST be launched in a single message with multiple Agent tool calls. This ensures true parallel execution.
 - Every call MUST set `run_in_background: false`. The Agent tool backgrounds subagents by default, and a backgrounded wave invites the orchestrator to end its turn to "wait" — but when this skill runs inside a subagent, its final message is its return value, so ending the turn returns a useless result while the reviewers' reports broadcast to the main conversation instead of coming back. Synchronous dispatch returns every report directly as a tool result. Never arm a timer/watcher or end the turn to wait for reviewers.
 - Reviewers return their report as their **final message** — that final message IS the tool result you consolidate from. Never instruct a reviewer to send its report via SendMessage or to write it to a file.
+- **When `--report` is set**: note the dispatch timestamp, and as each tool result returns, record the agent's harness-reported usage (tokens, tool calls, duration — verbatim; "not reported" if absent) plus its findings count and approximate report size. This data exists only in these tool results — it cannot be recovered later. It feeds the Session Metrics section in Step 6 (`@../../conventions/session-report.md`).
 
 #### Agent Prompts
 
@@ -330,7 +332,7 @@ Independent re-verification of the primary findings that most need it — the co
 
    **Waive** (corroboration is the verification) any non-Critical primary already found by **2+ independent finders including at least one specialist, all at anchor 100** — mark it `corroborated ×N — validation waived` in the report rather than spending a validator to re-confirm what independent agreement already established. Pre-existing and minor-bucket findings are never validated.
 2. **Budget cap — 15 validators.** If more than 15 findings qualify, validate the highest-severity 15 (Critical first, then High, Medium, Low; ties broken by anchor descending), dropping only from the Medium/Low tail. **Never leave a Critical unvalidated** — if Criticals alone exceed 15, raise the cap to include all of them. Record the unvalidated and waived counts.
-3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Agent calls, every call with `run_in_background: false` — same synchronous-dispatch rule as Step 3; verdicts come back as tool results). Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. Model follows Step 2d (validators are volume agents — mid-tier `sonnet` in `mid`, the session model in `high`/`max`).
+3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Agent calls, every call with `run_in_background: false` — same synchronous-dispatch rule as Step 3; verdicts come back as tool results). When `--report` is set, record each validator's usage from its tool result, same as Step 3 reviewers. Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. Model follows Step 2d (validators are volume agents — mid-tier `sonnet` in `mid`, the session model in `high`/`max`).
 4. **Process verdicts:**
    - `confirmed` — keep the finding; apply any corrections the validator supplied (line, file, pre_existing reattribution — a reattributed finding moves to Pre-existing Issues)
    - `refuted` — remove from findings; record under Considered But Not Flagged as `refuted by validator: <reason>`
@@ -499,6 +501,13 @@ Only include sections that agents actually produced.>
 [Consolidated list of items agents examined but did not flag, with reasoning.
 Group by agent for clarity. Include findings suppressed by the confidence
 gate, with their anchor (e.g., "2 findings suppressed at anchor 50").]
+
+## Session Metrics (--report)
+[ONLY when --report is set. The wave-timing line, the per-agent usage table
+(one row per reviewer AND validator: kind, model tier, tokens, tool calls,
+duration, findings submitted — harness figures verbatim, "not reported" where
+absent), the pre-flight gates record, and the anomalies line ("none" counts).
+Exact format and truth discipline: @../../conventions/session-report.md]
 ```
 
 ### Severity Icons (ALWAYS include in finding headers)
