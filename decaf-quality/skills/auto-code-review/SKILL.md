@@ -31,7 +31,7 @@ Parse `$ARGUMENTS`:
 1. Set `iteration = 1`, `maxIterations` from args (default 3)
 2. Set `reviewMode` from args (default `mid`)
 3. Build `codeReviewArgs` — the full argument string to pass to `/code-review` (mode + spec + `--report` if set + scope + instructions); the mode is always present, even when defaulted
-4. Record the initial commit/diff baseline for measuring change magnitude later
+4. Record the initial commit/diff baseline for measuring change magnitude later. **Also establish a recoverable snapshot** before any fix/probe phase mutates the uncommitted tree: `SNAPSHOT=$(git stash create)` — this records a commit object of the current uncommitted state *without* touching the working tree or the stash stack (empty output = tree already clean, so `HEAD` is the restore point). Keep `SNAPSHOT` for the loop; if work is ever lost to a bad revert or probe, restore it with `git checkout <SNAPSHOT> -- <path>` (or `git stash apply <SNAPSHOT>`). Prefer this over auto-committing WIP, so the user keeps control of their commit history.
 5. **Detect test infrastructure:**
    - Search for test files: `*.test.*`, `*.spec.*`, `*_test.*`, `*Tests.*`, directories `tests`, `__tests__`, `test`
    - Search for test framework config: `jest.config.*`, `pytest.ini`, `*.csproj` (test SDK), `go.mod`, `Cargo.toml`, etc.
@@ -207,13 +207,14 @@ Launch a **general-purpose subagent** to execute the confirmed plan. Build the s
 >    - Real, but the suggested fix is wrong? Fix it correctly and report `fixed (differently)` with a one-line why.
 >    - Real, and the finding offers **alternative fixes** (e.g. a behavioral change vs. a doc-only clarification)? Default to the **least invasive** option that fully resolves the stated issue at its severity; escalate to the stronger option only when the minimal one leaves the issue unresolved. Note which option you took.
 >    - No performative agreement — the evidence decides, not the reviewer's authority.
-> 3. **Execute based on action:**
+> 3. **Execute based on action** — but FIRST capture a per-fix restore point so a failed fix can be undone precisely without touching the rest of the uncommitted work: `FIX_SNAPSHOT=$(git stash create)` (records the current state as a commit object; leaves the working tree and stash stack untouched):
 >    - **fixTdd**: Write a failing test that exposes the issue → run `{testCommand}` → verify the test FAILS (RED) → implement the fix → run tests → verify all pass (GREEN) → refactor if needed → verify still GREEN
 >    - **fix**: Apply the suggested fix → run `{testCommand}` to verify (or verify compilation if no test command)
 >    - **fixBatch**: Apply the fix pattern to all findings in the similar group (verify each location first — a pattern real in one file may be guarded in another) → verify
 >    - **Boundary self-check for any behavior-changing fix** (a new or changed predicate, gate, threshold, or normalization): before moving on, enumerate the decision point's boundary inputs — including inputs that fall *between* the cases your new tests pin — and add a test case for each. A gate tested only at `-42 → reject` and `task → accept` ships broken for `task-42`.
-> 4. **Verify**: Run `{testCommand}` after each fix. If verification fails:
->    - Revert the affected files: `git checkout -- <files>`
+> 4. **Verify**: Run `{testCommand}` after each fix. If verification fails, undo ONLY the fix you just applied — never discard the rest of the uncommitted work:
+>    - Restore just the files you edited from the per-fix snapshot: `git checkout $FIX_SNAPSHOT -- <files-you-edited>` (or, if `git stash create` was unavailable, re-edit each file back to its exact pre-fix content).
+>    - **Never `git checkout -- <files>`** (no snapshot ref) — that reverts to HEAD and wipes every uncommitted change in the file, i.e. the whole change under review, not just your failed fix.
 >    - Record as skipped with reason
 >    - Continue to the next finding — do NOT stop
 > 5. **Report one line per finding:**

@@ -169,3 +169,4 @@ After auto-review completes, present a combined summary:
 - Auto-review runs in the main context because it manages its own subagent lifecycle
 - If the user didn't specify `--review`, default to `std` mode — TDD-produced code benefits from a standard review pass
 - The subagent should follow all TDD conventions from the `/tdd` skill (vertical slices, behavior-focused tests, no horizontal slicing)
+- The review phase runs on **uncommitted** changes and may briefly mutate the working tree (a reviewer's non-destructive revert-probe, or a fix that fails verification). `auto-code-review` takes a recoverable snapshot (`git stash create`) before its fix/probe phase so nothing is lost; for a stronger guarantee, commit the TDD work before review.

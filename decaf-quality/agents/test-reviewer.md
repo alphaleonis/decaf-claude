@@ -234,6 +234,21 @@ Common scenarios that should be tested.
 - Cancellation token handling
 - Timeout behavior
 
+## Validating a Regression Guard (Revert-Probe) — Non-Destructively
+
+The strongest evidence that a new regression test is a genuine guard, not a false positive, is that it FAILS when the production fix is removed and PASSES with the fix in place. This is a high-value check — but it mutates code, and the change under review is typically UNCOMMITTED, so it must never put that diff at risk.
+
+**Absolute rule: never `git checkout` / `git restore` / `git reset` a tracked file to do this.** They revert to HEAD and wipe every uncommitted change in the file — the whole fix under review, not the one line you meant to remove. This has caused real near-misses.
+
+**Approved non-destructive revert-probe:**
+1. Record a restore point first — `cp` the production file to a temp path, or note the exact original text of the line(s) you will remove (or `git stash create` for a commit-object snapshot that leaves the tree untouched).
+2. Remove or neutralize ONLY the specific fix line via a precise inline edit (not a git revert).
+3. Run the regression test → confirm it now FAILS (this is what proves the test exercises the fixed behavior).
+4. Restore the file to its EXACT original bytes (re-edit back, or copy the temp file back).
+5. Verify with `git diff --stat` that the tree shows only the original review diff, then re-run the test → confirm it PASSES again.
+
+If you cannot guarantee an exact restore, do NOT run the probe — reason statically about whether the assertion could still pass with the bug reintroduced, and set your confidence accordingly. A revert-probe you cannot safely undo is not worth risking the user's uncommitted work.
+
 ## Confidence Anchors
 
 Rate each finding with exactly one of five discrete anchors — never intermediate values:
