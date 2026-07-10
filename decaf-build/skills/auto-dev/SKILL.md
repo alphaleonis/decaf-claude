@@ -176,3 +176,4 @@ After auto-review completes, present a combined summary:
 - If the user didn't specify `--review`, default to `std` mode
 - This skill does not require TDD — use `/auto-tdd` when test-first development is appropriate
 - Tests are welcome if the code is testable, but not mandatory — no red-green-refactor cycle is enforced
+- The review phase runs on **uncommitted** changes and may briefly mutate the working tree (a reviewer's non-destructive revert-probe, or a fix that fails verification). `auto-code-review` takes a recoverable snapshot (`git stash create`) before its fix/probe phase so nothing is lost; for a stronger guarantee, commit the implementation before review.
