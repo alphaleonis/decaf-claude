@@ -158,6 +158,7 @@ Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
 ### Common rules (apply to every cluster)
 
 - **Batch branch**: before the first cluster, create one branch for the whole run off current HEAD: `git switch -c batch/{slug}` (slug derived from the batch theme or first nib; or `--base-branch`). Never commit straight to `main`. Record the starting branch to return to at the end.
+- **Worktree base ≠ batch branch (critical)**: `isolation: "worktree"` agents do **not** branch from the batch branch or current HEAD — they branch from the repository's default branch (`origin/HEAD`, i.e. `main`) unless the project sets `worktree.baseRef: "head"`. So any parallel/workflow/team cluster (6b/6c/6d) starts from the *wrong* base by default: it misses both the branch the batch was cut from (e.g. `develop`/`integration`) and any prior cluster already merged onto the batch branch. Every worktree-isolated lane MUST re-anchor onto the batch base before working (Phase 6b step 3.0), and Phase 7 MUST verify base ancestry before merging. See the base-branch note in Phase 6b.
 - **Nib status**: set each nib `in-progress` **before** launching its worker; set it `completed` **after** the worker reports success. Subagents/workflows run fresh and will NOT update nibs — you (the conductor, in the main context) own status updates.
 - **Commits**: commit code **and** the nib file together. Keep the nib's todo items checked off as work completes.
 - **Check-ins**: at each cluster boundary, report what finished and what's next, and pause for the user — especially **before launching any parallel/workflow/team cluster** and **after each integration/merge**.
@@ -179,22 +180,23 @@ For each nib in the cluster, in order. The batch-level plan already covers the p
 Only for a cluster of **provably independent** nibs.
 
 1. Set all cluster nibs `in-progress`.
-2. Ensure the batch branch working tree is clean (commit/stash anything pending).
+2. Ensure the batch branch working tree is clean (commit/stash anything pending), then **capture the batch base SHA**: `BASE_SHA=$(git rev-parse HEAD)` while on the batch branch. This is the exact commit every lane must build on top of. Pass `BASE_SHA` verbatim into each agent prompt below.
 3. Launch one `Agent` per nib **in a single message** (multiple `Agent` calls) with `isolation: "worktree"` so each works in its own git worktree without colliding. Each agent prompt must:
+   - **0. Re-anchor onto the batch base FIRST (before anything else).** The worktree was created from `origin/HEAD` (the repo default branch), **not** the batch branch — so its starting tree is the wrong base. As the very first step, re-point the worktree onto the batch base: `git reset --hard {BASE_SHA}`, then confirm `git rev-parse HEAD` equals `{BASE_SHA}`. This is safe: the worktree is fresh with no work yet, and `{BASE_SHA}` is reachable via the shared object store. (If the project has `worktree.baseRef: "head"` set, HEAD may already equal `{BASE_SHA}` and the reset is a harmless no-op.) Do NOT skip this — building on the default-branch base corrupts the Phase 7 merge.
    - **Provision dependencies before building** — a fresh worktree has no installed packages (e.g. `node_modules`), so a plain build can fail its frontend/asset step. If the project has such dependencies, provision them first: symlink/junction the main repo's package directory into the worktree (instant, read-only), or run the project's install command. Skip this entirely when the project has no install step.
    - Implement its nib (tdd/dev per the plan), verify build/tests **inside its worktree**. On Windows, avoid `cd /d` in the Bash tool (it errors); use plain `cd` or the PowerShell tool (its cwd is already the worktree).
    - Self-review its changes inline (focused diff review for correctness + conventions). Do NOT invoke the main-context `/decaf-quality:auto-code-review` from inside a worktree.
    - **Commit code only** (NOT `.nibs/*.md` — the conductor manages nib status) and report: files changed, build/test result, final commit **SHA** (`git rev-parse HEAD`), and branch (`git rev-parse --abbrev-ref HEAD`).
 4. Proceed to Phase 7 to merge — by branch or by reported SHA.
 
-> **Worktree mechanics:** `isolation: "worktree"` creates a worktree at `.claude/worktrees/agent-<id>` on a branch `worktree-agent-<id>`, and the agent result reports both the path and branch. Committed work persists in the shared object store, so the reported branch/SHA merges cleanly in Phase 7; pinning a stable ref (`git branch batch/{slug}/{id} {sha}`) before cleanup is optional insurance, not required. After merging, prune with `git worktree remove --force <path>` + `git branch -D worktree-agent-<id>`.
+> **Worktree mechanics:** `isolation: "worktree"` creates a worktree at `.claude/worktrees/agent-<id>` on a branch `worktree-agent-<id>`, and the agent result reports both the path and branch. **Base branch:** per the Claude Code docs ([worktrees](https://code.claude.com/docs/en/worktrees.md)), the worktree branches from the repository's default branch (`origin/HEAD`) — falling back to local `HEAD` only if no remote is configured — **not** from the parent's current HEAD or the batch branch. It is overridable project-wide via `worktree.baseRef: "head"` in `settings.json`, but the skill must not assume that is set; hence the mandatory re-anchor in step 3.0 above. Once a lane has re-anchored onto `{BASE_SHA}` and committed on top, its committed work persists in the shared object store and the reported branch/SHA merges cleanly in Phase 7 (which re-checks base ancestry first); pinning a stable ref (`git branch batch/{slug}/{id} {sha}`) before cleanup is optional insurance, not required. After merging, prune with `git worktree remove --force <path>` + `git branch -D worktree-agent-<id>`.
 
 ### Phase 6c — Workflow
 
 For a cluster best run as a deterministic pipeline (uniform sub-task over many items).
 
 1. Scout the work-list inline first (e.g. the call sites to change), then author a `Workflow` script that pipelines each item through implement → verify (and adversarial-verify if warranted), returning structured per-item results.
-2. Use `isolation: 'worktree'` on workflow agents if they mutate files in parallel.
+2. Use `isolation: 'worktree'` on workflow agents if they mutate files in parallel. **Same base-branch hazard as 6b**: these worktrees branch from `origin/HEAD`, not the batch branch — capture `BASE_SHA` before launching and have each worktree agent re-anchor onto it (`git reset --hard {BASE_SHA}`) as its first step (see Phase 6b step 3.0).
 3. Set the cluster's nib(s) `in-progress` before launching; the workflow runs in the background and notifies on completion.
 4. On completion, integrate its branch/commits via Phase 7, commit + set nib(s) `completed`.
 
@@ -203,7 +205,7 @@ For a cluster best run as a deterministic pipeline (uniform sub-task over many i
 For an interdependent cluster needing negotiation.
 
 1. Set the cluster nibs `in-progress`.
-2. Spawn named `Agent`s (e.g. a `contract` owner + `consumer` workers), each addressable; coordinate via `SendMessage` as the contract emerges. Use worktrees if they mutate overlapping files in parallel; otherwise serialize the shared parts.
+2. Spawn named `Agent`s (e.g. a `contract` owner + `consumer` workers), each addressable; coordinate via `SendMessage` as the contract emerges. Use worktrees if they mutate overlapping files in parallel; otherwise serialize the shared parts. **If any team member runs with `isolation: "worktree"`, apply the Phase 6b step 3.0 re-anchor** (pass `BASE_SHA`, `git reset --hard {BASE_SHA}` first) — those worktrees also start from `origin/HEAD`, not the batch branch.
 3. Integrate via Phase 7; commit + set nibs `completed`.
 
 ## Phase 7 — Integrate (merge protocol)
@@ -211,10 +213,11 @@ For an interdependent cluster needing negotiation.
 Applies to any cluster that produced separate branches/worktrees (6b/6c/6d). Series clusters (6a) commit directly onto the batch branch and need no merge.
 
 1. **Safety net first**: tag the pre-merge batch-branch state (`git tag batch-{slug}-premerge-{cluster}`) so any bad merge is recoverable.
-2. Merge the cluster's commits into the batch branch **sequentially** — declared-dependency order first, then smallest-diff-first to shrink conflict surface. Merge by branch or by pinned SHA.
-3. **After each merge**, run build (+ tests) so an integration break is attributed to the specific merge that caused it. Fix before the next merge.
-4. **On conflict**: pause at the cluster boundary and surface the conflict to the user. Auto-resolve ONLY trivial/unambiguous cases; never silently force-resolve.
-5. Clean up worktrees/temp branches once merged.
+2. **Verify base before trusting any worktree branch (do not skip on the agent's word).** For each returned branch/SHA, confirm it was built on the batch base and not on the default branch: `git merge-base --is-ancestor {BASE_SHA} <worktree-sha>` must succeed (exit 0). A lane that skipped the step-3.0 re-anchor will fail this — its work sits on `origin/HEAD` and merging it would drag in the default-branch base or fight a phantom conflict. On failure, do **not** merge: rebase that branch onto the batch tip (`git rebase --onto {batch-tip} {BASE_SHA} <worktree-branch>`) and re-verify, or park the nib (Failure handling) — never merge a branch with the wrong base.
+3. Merge the cluster's commits into the batch branch **sequentially** — declared-dependency order first, then smallest-diff-first to shrink conflict surface. Merge by branch or by pinned SHA.
+4. **After each merge**, run build (+ tests) so an integration break is attributed to the specific merge that caused it. Fix before the next merge.
+5. **On conflict**: pause at the cluster boundary and surface the conflict to the user. Auto-resolve ONLY trivial/unambiguous cases; never silently force-resolve.
+6. Clean up worktrees/temp branches once merged.
 
 ## Phase 8 — Report
 

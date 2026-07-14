@@ -4,7 +4,7 @@ version: 1
 title: Place core agents (keep 5, drop planner)
 status: completed
 type: task
-priority: deferred
+priority: low
 created_at: 2026-06-21T09:09:40Z
 updated_at: 2026-06-21T10:17:13Z
 parent: dcc-f5dj
