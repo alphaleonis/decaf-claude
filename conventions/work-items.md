@@ -50,7 +50,9 @@ scope, the acceptance criteria, or that it should be built at all.
 
 **`next-ready` MUST never return a `draft` item, on any backend.** This is the whole
 point of the status — an unrefined item that reaches `auto-deliver` gets built from
-guesses. Refining a draft to `todo` is a deliberate human step.
+guesses. Refining a draft to `todo` is a deliberate human step: `/decaf-plan:refine` is
+the skill that does it (read the code, resolve the open questions with the user, add
+`## Acceptance`, then `set-status` to `todo`).
 
 Only nibs enforces this natively (`--ready` excludes `draft`). The other three backends
 have no draft state, so `draft` is expressed with a **tag/label/marker** and each

@@ -21,7 +21,8 @@ created with contract status **`draft`**, never `todo`.
 This is load-bearing, not cosmetic: `draft` is what keeps unrefined work out of
 `next-ready`, and therefore out of `/decaf-build:auto-deliver` and
 `/decaf-build:batch-dev --ready`. An item you guessed the details of must not get built
-from those guesses. Promoting a draft to `todo` is a deliberate human step.
+from those guesses. Promoting a draft to `todo` is a deliberate human step —
+`/decaf-plan:refine` is the skill that does it.
 
 Create the item through the **`create` operation** in @../../conventions/work-items.md —
 never a backend directly. That file defines `draft` for each backend and how the tag name

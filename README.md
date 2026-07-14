@@ -60,6 +60,7 @@ Skills are invoked as `/<plugin>:<skill>`. Click any skill for details and usage
 - [`resolve-architecture-review`](#resolve-architecture-review) — walk those proposals → RFCs
 - [`challenge-decision`](#challenge-decision) — argue against a decision → STAND/REVISE/ESCALATE verdict
 - [`capture`](#capture) — jot a follow-up as a work-item draft without breaking flow
+- [`refine`](#refine) — take an under-specified work item to actionable → `todo` + acceptance criteria
 
 **decaf-memory** — remember
 - [`remember`](#remember) — store a memory in erinra
@@ -256,11 +257,23 @@ Stress-test a decision you're about to make by arguing *against* it — decompos
 ### capture
 Jot a follow-up idea or task as a work-item draft without interrupting your current work — it picks a sensible parent from context. Works with any tracker in [`work-items.md`](conventions/work-items.md) (nibs, GitHub, Azure DevOps, Markdown).
 
-Captured items are created as **drafts**, because you gave a one-line note and the skill inferred the rest. Drafts are deliberately excluded from ready work, so [`batch-dev --ready`](#batch-dev) and [`auto-deliver`](#auto-deliver) will *not* build them — refine one to `todo` when you've confirmed what it should actually do. (You can still hand a draft to `batch-dev` by naming its id explicitly.)
+Captured items are created as **drafts**, because you gave a one-line note and the skill inferred the rest. Drafts are deliberately excluded from ready work, so [`batch-dev --ready`](#batch-dev) and [`auto-deliver`](#auto-deliver) will *not* build them — run [`refine`](#refine) when you've confirmed what one should actually do. (You can still hand a draft to `batch-dev` by naming its id explicitly.)
 ```
 /decaf-plan:capture "add retry to the upload path"
 /decaf-plan:capture parent:abc1 "tighten the auth error messages"
 ```
+
+### refine
+Take one under-specified work item and make it actionable: read the code, resolve the open questions in a short interview, add `## Acceptance`, and promote it `draft` → `todo`. This is the exit for [`capture`](#capture)'s drafts, but works on any open item too vague to start on.
+
+It reads *first* and interviews from a **proposal** — "`RetryPolicy` is used in five sibling paths, three attempts, exponential; same here?" — rather than from a blank page, so a simple task costs you one question instead of twenty. If the item turns out to be too large it hands off to [`draft-spec`](#draft-spec); if it turns out to hide a real design fork, to [`grill-me`](#grill-me); if the code says it's already done, it proposes scrapping it.
+
+Acceptance criteria come out honestly tagged: `[run]` where a command can check it, `[manual]` (with a stated reason) where only a human can. An item that ends up mostly `[manual]` is still *finished* — it just can't be **verified** autonomously, and refine tells you so rather than quietly handing a loop something it can't check.
+```
+/decaf-plan:refine dcc-pak3
+/decaf-plan:refine            # picks up the item in conversation context
+```
+Related: [`breakdown-phase`](#breakdown-phase) decomposes a decision you already made; refine establishes whether there is a decision at all.
 
 ## decaf-memory
 
