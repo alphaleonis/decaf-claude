@@ -254,7 +254,9 @@ Stress-test a decision you're about to make by arguing *against* it — decompos
 ```
 
 ### capture
-Jot a follow-up idea or task as a work-item draft (a nib) without interrupting your current work — it picks a sensible parent from context. Requires a nibs-based tracker. Captured nibs get built later — e.g. via [`batch-dev`](#batch-dev) or [`auto-deliver`](#auto-deliver).
+Jot a follow-up idea or task as a work-item draft without interrupting your current work — it picks a sensible parent from context. Works with any tracker in [`work-items.md`](conventions/work-items.md) (nibs, GitHub, Azure DevOps, Markdown).
+
+Captured items are created as **drafts**, because you gave a one-line note and the skill inferred the rest. Drafts are deliberately excluded from ready work, so [`batch-dev --ready`](#batch-dev) and [`auto-deliver`](#auto-deliver) will *not* build them — refine one to `todo` when you've confirmed what it should actually do. (You can still hand a draft to `batch-dev` by naming its id explicitly.)
 ```
 /decaf-plan:capture "add retry to the upload path"
 /decaf-plan:capture parent:abc1 "tighten the auth error messages"

@@ -106,7 +106,7 @@ Present the draft summary before making any changes. The user may want to adjust
 
 | System | Close action |
 |--------|-------------|
-| Nibs | Close in one step via `nibs close <id> --summary "<closure summary>"` (sets status to `completed` and appends the summary; updates the parent's Current Focus and merges Key Decisions automatically) |
+| Nibs | Close in one step via `nibs close <id> --summary -` with the summary on stdin — `--summary` takes only `-` or `@FILE`, never inline text. (Sets status to `completed` and appends the summary; updates the parent's Current Focus and merges Key Decisions automatically.) |
 | GitHub Issues | Add summary as a comment, close the issue |
 | Azure DevOps | Append summary to description, update state to Closed/Done |
 | Markdown | Append summary section under the phase in the plan file |

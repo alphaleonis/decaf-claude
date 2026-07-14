@@ -71,7 +71,7 @@ Decide what and how to build; output is plans, RFCs, and decisions, not code. No
 | `architecture-review` | Find structural/testability improvements in existing code → recommendations (RFCs), not code |
 | `resolve-architecture-review` | Walk those proposals one at a time → RFCs |
 | `challenge-decision` | Stress-test a decision by arguing against it → STAND/REVISE/ESCALATE verdict |
-| `capture` | Jot a follow-up idea/task as a work-item draft (nib) without interrupting current work |
+| `capture` | Jot a follow-up idea/task as a work-item draft without interrupting current work (created `draft` — excluded from ready work until refined) |
 
 **Agents** (referenced as `decaf-plan:agent-name`): `architect` — design a feature's architecture end-to-end → implementation blueprint (distinct from `explore-designs` and `architecture-review`).
 

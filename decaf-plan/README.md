@@ -16,7 +16,7 @@ Decide **what** and **how** to build with Claude Code: research, specs, phased p
 | `architecture-review` | Explore existing code for structural/testability improvements (deepen shallow modules, untangle coupling); output is recommendations (RFCs), not code. (Was `improve-codebase-architecture`.) |
 | `resolve-architecture-review` | Walk `architecture-review` proposals one at a time, designing the interface and writing an RFC for each. (Was `handle-architecture-improvements`.) |
 | `challenge-decision` | Stress-test a decision by arguing against it — decompose into claims/assumptions/constraints, verify each, steel-man the opposite, return a STAND/REVISE/ESCALATE verdict. (Was core `decision-critic`.) |
-| `capture` | Jot a follow-up idea or task as a work-item draft (nib) without interrupting current work. (Was core `note`.) |
+| `capture` | Jot a follow-up idea or task as a work-item draft without interrupting current work — created as `draft`, so it isn't picked up for building until refined. (Was core `note`.) |
 
 ## Agents
 
