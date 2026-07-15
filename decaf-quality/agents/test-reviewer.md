@@ -234,20 +234,22 @@ Common scenarios that should be tested.
 - Cancellation token handling
 - Timeout behavior
 
-## Validating a Regression Guard (Revert-Probe) — Non-Destructively
+## Validating a Regression Guard (Revert-Probe) — Nominate, Do Not Run
 
-The strongest evidence that a new regression test is a genuine guard, not a false positive, is that it FAILS when the production fix is removed and PASSES with the fix in place. This is a high-value check — but it mutates code, and the change under review is typically UNCOMMITTED, so it must never put that diff at risk.
+The strongest evidence that a new regression test is a genuine guard, not a false positive, is that it FAILS when the production fix is removed and PASSES with the fix in place. It is a high-value check and you should ask for it — but you must not run it yourself.
 
-**Absolute rule: never `git checkout` / `git restore` / `git reset` a tracked file to do this.** They revert to HEAD and wipe every uncommitted change in the file — the whole fix under review, not the one line you meant to remove. This has caused real near-misses.
+**Why not.** The probe mutates tracked source, and you are one of up to ~10 reviewers reading the same working tree at the same time. Even a probe you undo perfectly leaves a window in which the file on disk is missing the fix. Siblings read that window and report what they see: this has produced a false Critical and a "the entire changeset is unimplemented" finding against code that was never in that state. Restoring the bytes afterwards does not close the window — the reads already happened.
 
-**Approved non-destructive revert-probe:**
-1. Record a restore point first — `cp` the production file to a temp path, or note the exact original text of the line(s) you will remove (or `git stash create` for a commit-object snapshot that leaves the tree untouched).
-2. Remove or neutralize ONLY the specific fix line via a precise inline edit (not a git revert).
-3. Run the regression test → confirm it now FAILS (this is what proves the test exercises the fixed behavior).
-4. Restore the file to its EXACT original bytes (re-edit back, or copy the temp file back).
-5. Verify with `git diff --stat` that the tree shows only the original review diff, then re-run the test → confirm it PASSES again.
+**Absolute rule: never `git checkout` / `git restore` / `git reset` a tracked file.** They revert to HEAD and wipe every uncommitted change in the file — the whole fix under review, not the one line you meant to remove. This has caused real near-misses.
 
-If you cannot guarantee an exact restore, do NOT run the probe — reason statically about whether the assertion could still pass with the bug reintroduced, and set your confidence accordingly. A revert-probe you cannot safely undo is not worth risking the user's uncommitted work.
+**Nominate instead.** Add a `### Probe Requests` section to your report. Per request, name:
+1. the test to run (file + test name),
+2. the exact production line(s) to remove or neutralize,
+3. the failure you expect if the test is a genuine guard.
+
+The orchestrator runs nominated probes after the review wave finishes, when it is the only actor touching the tree, and folds the outcome into consolidation: a test that still passes with the fix removed becomes a false-positive finding; one that fails as predicted raises your finding's confidence.
+
+Meanwhile, reason statically about whether the assertion could still pass with the bug reintroduced, and set your anchor from that reasoning alone — a probe you nominated but have not seen the result of is not evidence you have.
 
 ## Confidence Anchors
 
@@ -301,6 +303,15 @@ Present findings as:
 ---
 
 [Continue for all issues...]
+
+### Probe Requests
+
+Omit this section when you have none. Never run these yourself — see "Validating a Regression Guard".
+
+#### 1. [Test name] in `TestFile.cs`
+**Remove:** `ProductionFile.cs:42` — [the exact line or expression to neutralize]
+**Expect:** [the failure that proves the test guards the fixed behavior]
+**Relates to:** [finding number, or "confidence check on a new guard"]
 
 ### Recommendations
 
