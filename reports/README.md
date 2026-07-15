@@ -17,6 +17,7 @@ their effect shows up in the next reports here.
 | `2026-07-04-nibs-p07b-code-review-session/` | Svelte non-modal panel re-implementation (interaction/a11y-heavy), `auto-dev` | "After" #2 — first run with **measured** review-child tokens (`--report`); caught a real Escape regression, refuted an over-fix |
 | `2026-07-04-nibs-qj7m-code-review-session/` | Svelte radio-group generalization (small declarative), `auto-dev` | "After" #3 — measured tokens; clean small refactor, 3 Medium evolution-readiness catches |
 | `2026-07-04-cross-session-analysis.md` | Synthesis across all four sessions | Re-scores the parked tuning candidates once `dcc-unre`'s "wait for 2+ more reports" gate is met |
+| `2026-07-14-nibs-batch-buffer-safety-code-review-session/` | **First `batch-dev` session** — 3 nibs (2 Svelte/TS + 1 Go), 7 waves, no `--report` | **New defect class**: all 11 Highs were *false comments on correct code*, in both languages. Corroborates + **extends** candidate #1 (fix rounds add fresh defects — here comments, not tests) and #3 (off-loop inline fixing, now 5/5) |
 
 ## What happened so far
 
@@ -47,7 +48,19 @@ their effect shows up in the next reports here.
    focus-theft High; qj7m confirmed a clean small refactor + 3 Medium evolution-readiness gaps.
    p07b also surfaced a **new** signal: adversarial-reviewer failed its first dispatch in both
    iterations (one injection-looking payload) → nib `dcc-jxya`.
-6. **Cross-session analysis** (`2026-07-04-cross-session-analysis.md`). With p07b + qj7m in, the
+6. **batch-dev batch (after #4).** First `/decaf-build:batch-dev` run: 3 unrelated nibs as one series
+   cluster, 7 review waves, 82 subagents, [Estimate] ~6.5M–7.5M all-in (no `--report`, so the
+   reviewer/validator population is unmetered — the report's principal gap). **The result worth
+   tuning on: all 11 High findings across all 7 waves were false claims in comments, on code that
+   was mechanically correct every time** — across Svelte/TS *and* Go, three changesets, three
+   implementation agents. The class reproduced under its own fix (fa69's fix for "`kept` collapses
+   two outcomes" introduced "`stale` collapses two outcomes"), and converged only once the fix brief
+   named the class and demanded per-clause evidence (3 Highs → 1 Medium → APPROVED). Also: the loop's
+   clearest save yet (fa69 #5 — a fix round silently severed a cross-module delegation, leaving a
+   proven-deleted nib with zero user feedback), validators demoted 3 "newly introduced" claims to
+   pre-existing, one orchestrator self-reported **fabricating** a report section, and `quick-reviewer`
+   went 2 found / **0 unique** across all 7 waves.
+7. **Cross-session analysis** (`2026-07-04-cross-session-analysis.md`). With p07b + qj7m in, the
    `dcc-unre` gate is met. Re-scoring over four sessions: **act** on candidate #1 (fix-added tests
    must prove they can fail — 4 of 5 re-reviewed fix rounds added a fresh defect) and #3
    (post-APPROVED fixing happened in 4/4 sessions, unmetered in 3/4 — bring it in-loop and metered);
