@@ -6,7 +6,7 @@ status: todo
 type: bug
 priority: normal
 created_at: 2026-07-04T18:25:45Z
-updated_at: 2026-07-04T18:26:28Z
+updated_at: 2026-07-15T15:42:01Z
 order: z
 ---
 
@@ -50,3 +50,15 @@ part that most needs scrutiny.
 
 Evidence: `reports/2026-07-04-nibs-p07b-code-review-session/README.md` §4 (flagged there as the
 session's highest-value signal) and `reports/2026-07-04-cross-session-analysis.md` §4.
+
+
+## Recurrence watch — updated 2026-07-15
+
+Five code-review sessions have run since p07b. The jxya signature — a silent stub or an injection-looking payload on first dispatch, 0 tool calls — has **not** recurred in any of them:
+
+- **2026-07-05** (0xng, bpyh, e9oz, k3zb) — all four record `Review-tool anomalies: none reported by /code-review`.
+- **2026-07-14** (batch-buffer-safety, 7 review waves) — `adversarial-reviewer` DID fail a first dispatch (fa69 i2) and was re-dispatched, but on a **server-side 529**. The report distinguishes it explicitly: "Related to `dcc-jxya` (adversarial-reviewer dispatch failures, p07b) but a different cause — transient API error, not payload rejection." The retry completed and its report was used. Not a recurrence of this bug.
+
+**Reading:** the evidence now leans p07b-local, which is what the last verification item asked to watch for. This does **not** close the nib — the root cause is still `[Unverified]`, there is still no reproduction, and 2-for-2 within a single session remains unexplained. But the case for treating this as a live, general defect has weakened, and both anomalies actually seen since are unrelated (the 529 above; an orchestrator fabricating a report section, 07-14). If the next couple of sessions stay clean, `deferred` (parked) is more honest than carrying it as an open bug.
+
+**Instrumentation note:** `conventions/session-report.md` carries an **Anomalies** field (`dispatch retries, unusable returns, injected-content flags — or "none"`), added in `1d85efe` on 2026-07-04 at 15:10 UTC — about 3h before this nib was filed. Every session since has reported against it, which is why this watch has clean data rather than silence. Keep it as the recurrence signal.
