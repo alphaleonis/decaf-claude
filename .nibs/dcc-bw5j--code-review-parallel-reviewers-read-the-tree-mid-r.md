@@ -6,7 +6,7 @@ status: completed
 type: bug
 priority: high
 created_at: 2026-07-15T14:52:49Z
-updated_at: 2026-07-15T15:01:24Z
+updated_at: 2026-07-15T15:42:14Z
 order: zy
 ---
 
@@ -60,3 +60,19 @@ Fixed on branch `dcc-bw5j-probe-isolation` (off main). Four files, all guidance 
 Verification: grep confirms no reviewer-facing inline-probe permission survives anywhere in `decaf-quality/`; every remaining `git checkout` is either an explicit never-do-this warning or snapshot-based restore run by a single actor (auto-code-review's fixer — a producer — and the new Step 4.5). The prompt-injection clause is present in both the skill and the validator.
 
 Deliberately not done: worktree isolation (see Notes — evaluated, rejected, recipe recorded).
+
+
+## Prior instance — found in the corpus after the fix landed (2026-07-15)
+
+This class was observed and written off **ten days before** the report that prompted this nib. From `reports/2026-07-05-nibs-bpyh-code-review-session/iteration-1-consolidated-review.md` (Session Metrics → Anomalies), on the `tuning` branch:
+
+> broad-reviewer reported observing a transient file-state flip during review (the working tree briefly showed `clickOutside.ts` at its pre-change content, then reverted), attributed to a concurrent write from the orchestrating session rather than a defect; its final evaluation was against the correct, stable diff. No other anomalies.
+
+That is this bug seen from the sibling's side: a reviewer watching a tracked file blink to its pre-change state and back, during a parallel wave, while the inline revert-probe was still permitted. `test-reviewer` was in that wave (14 tool calls, per the same metrics table).
+
+It was a **near-miss, not a failure** — broad-reviewer noticed, correctly declined to file a finding, and evaluated against the stable diff. The misattribution ("a concurrent write from the orchestrating session") was reasonable given what was known then.
+
+Two things follow:
+
+- **The class has been live since at least 2026-07-05, not 2026-07-15** — three known occurrences across two sessions: one near-miss (bpyh) and two false findings (07-15, reported). This reinforces the fix rather than changing it; no re-work implied.
+- **The `Anomalies` field caught it on its first outing.** It was added in `1d85efe` on 2026-07-04, one day before bpyh. The instrumentation worked; nobody joined the observation to a cause. Worth remembering when reading future anomaly lines: an explanation like "transient", "attributed to a concurrent write", or "the orchestrating session" offered for a tracked file that changed under a reviewer is a red flag — and under the rules this nib installs, it should now be impossible rather than merely rare.
