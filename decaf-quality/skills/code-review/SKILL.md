@@ -168,7 +168,7 @@ The cap bounds the **review-wave roster** — the agents launched in Step 3 — 
 
 #### Step 2c: Announce the review team
 
-Before launching, state the team with a one-line justification per gated decision — both inclusions and exclusions:
+Before launching, state the team with a one-line justification per gated decision — both inclusions and exclusions. "Team" here is prose for the reader: it describes the roster you selected, and carries no implication that the agents are *named* in the harness sense. Do not pass a `name` to any of them — see Step 3.
 
 ```
 Review team:
@@ -221,13 +221,22 @@ Before dispatching, run the project's standard gates **once** (best-effort — d
 
 #### Dispatch
 
-Based on selection, launch agents using the **Agent tool with parallel calls in a single message, every call with `run_in_background: false`**.
+Based on selection, launch agents using the **Agent tool with parallel calls in a single message — every call with `run_in_background: false` and NO `name` parameter**.
 
-**CRITICAL — synchronous parallel dispatch:**
+**CRITICAL — dispatch mode. Read this before writing the calls.**
 
-- All agents for the selected mode MUST be launched in a single message with multiple Agent tool calls. This ensures true parallel execution.
-- Every call MUST set `run_in_background: false`. The Agent tool backgrounds subagents by default, and a backgrounded wave invites the orchestrator to end its turn to "wait" — but when this skill runs inside a subagent, its final message is its return value, so ending the turn returns a useless result while the reviewers' reports broadcast to the main conversation instead of coming back. Synchronous dispatch returns every report directly as a tool result. Never arm a timer/watcher or end the turn to wait for reviewers.
-- Reviewers return their report as their **final message** — that final message IS the tool result you consolidate from. Never instruct a reviewer to send its report via SendMessage or to write it to a file.
+The Agent tool has two execution models, and `name` is what selects between them:
+
+| Dispatch | Model | What the tool result is |
+|----------|-------|-------------------------|
+| **No `name`** | Task — a call that returns | The agent's **final message** — the report you consolidate from |
+| **`name` set** | Teammate — an actor with a mailbox | A spawn acknowledgment. The report **never comes back** |
+
+- **NEVER pass `name` on a review dispatch.** A name is an *address*, and addressability only means anything for a long-lived actor — so asking for one asks for a mailbox instead of a return value. `run_in_background: false` is a parameter of the task model; with `name` set there is no call to block on, so the flag is silently **inert, not overridden**. Verified by controlled experiment: two identical agents, same type, same prompt, both `run_in_background: false` — the unnamed arm returned its answer as the tool result, the named arm returned a spawn ack and its answer was discarded undelivered.
+- All agents for the selected mode MUST be launched in a single message with multiple Agent tool calls. **Parallelism comes from batching calls into one message, not from backgrounding** — a synchronous wave is already fully parallel.
+- Every call MUST set `run_in_background: false`. A backgrounded wave invites the orchestrator to end its turn to "wait" — but this skill runs inside a subagent, whose final message is its return value, so ending the turn returns a useless result to its caller. Never arm a timer/watcher or end the turn to wait for reviewers.
+- **TRIPWIRE — read the first tool result before writing anything else.** If a dispatch returns `Spawned successfully` / "will receive instructions via mailbox" instead of a report, you are in teammate mode and **no report is coming, for any agent in the wave**. Re-dispatch the whole wave without `name` and say so in your report. Do not wait, do not poll, and do not ask reviewers to resend: an unnamed orchestrator has no address, so their replies bounce off the agent *type* label and land in the main conversation where you cannot see them. Left unchecked this failure is silent — the agents run, do real work, and their reports are destroyed.
+- Reviewers return their report as their **final message** — that final message IS the tool result you consolidate from. Never instruct a reviewer to send its report via SendMessage or to write it to a file. **This contract is only safe on the task path.** In teammate mode a final message has no return channel, so the reviewers who obey it lose their reports while the ones who improvise a SendMessage get through. That inversion — compliance punished, deviation rewarded — is why the tripwire above is not optional.
 - **When `--report` is set**: note the dispatch timestamp, and as each tool result returns, record the agent's harness-reported usage (tokens, tool calls, duration — verbatim; "not reported" if absent) plus its findings count and approximate report size. This data exists only in these tool results — it cannot be recovered later. It feeds the Session Metrics section in Step 6 (`@../../conventions/session-report.md`).
 
 #### Agent Prompts
@@ -362,7 +371,7 @@ Independent re-verification of the primary findings that most need it — the co
 
    **Waive** (corroboration is the verification) any non-Critical primary already found by **2+ independent finders including at least one specialist, all at anchor 100** — mark it `corroborated ×N — validation waived` in the report rather than spending a validator to re-confirm what independent agreement already established. Pre-existing and minor-bucket findings are never validated.
 2. **Budget cap — 15 validators.** If more than 15 findings qualify, validate the highest-severity 15 (Critical first, then High, Medium, Low; ties broken by anchor descending), dropping only from the Medium/Low tail. **Never leave a Critical unvalidated** — if Criticals alone exceed 15, raise the cap to include all of them. Record the unvalidated and waived counts.
-3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Agent calls, every call with `run_in_background: false` — same synchronous-dispatch rule as Step 3; verdicts come back as tool results). When `--report` is set, record each validator's usage from its tool result, same as Step 3 reviewers. Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. **Working-tree safety applies to this wave too** — it is a second parallel wave on one shared tree, so validators are bound by the same read-only rule as Step 3 reviewers; `finding-validator` carries it in its own instructions, so do not paste the Step 3 block in (its `### Probe Requests` markdown channel would contradict the validator's JSON-only output). A validator that can only settle a finding by mutating code returns `uncertain` with a `probe_request` instead (see step 4 below). Model follows Step 2d (validators are volume agents — mid-tier `sonnet` in `mid`, the session model in `high`/`max`).
+3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Agent calls, every call with `run_in_background: false` and **no `name`** — the same dispatch contract as Step 3, tripwire included; verdicts come back as tool results). When `--report` is set, record each validator's usage from its tool result, same as Step 3 reviewers. Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. **Working-tree safety applies to this wave too** — it is a second parallel wave on one shared tree, so validators are bound by the same read-only rule as Step 3 reviewers; `finding-validator` carries it in its own instructions, so do not paste the Step 3 block in (its `### Probe Requests` markdown channel would contradict the validator's JSON-only output). A validator that can only settle a finding by mutating code returns `uncertain` with a `probe_request` instead (see step 4 below). Model follows Step 2d (validators are volume agents — mid-tier `sonnet` in `mid`, the session model in `high`/`max`).
 4. **Process verdicts:**
    - `confirmed` — keep the finding; apply any corrections the validator supplied (line, file, pre_existing reattribution — a reattributed finding moves to Pre-existing Issues)
    - `refuted` — remove from findings; record under Considered But Not Flagged as `refuted by validator: <reason>`
