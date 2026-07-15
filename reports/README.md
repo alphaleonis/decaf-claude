@@ -18,6 +18,7 @@ their effect shows up in the next reports here.
 | `2026-07-04-nibs-qj7m-code-review-session/` | Svelte radio-group generalization (small declarative), `auto-dev` | "After" #3 — measured tokens; clean small refactor, 3 Medium evolution-readiness catches |
 | `2026-07-04-cross-session-analysis.md` | Synthesis across all four sessions | Re-scores the parked tuning candidates once `dcc-unre`'s "wait for 2+ more reports" gate is met |
 | `2026-07-14-nibs-batch-buffer-safety-code-review-session/` | **First `batch-dev` session** — 3 nibs (2 Svelte/TS + 1 Go), 7 waves, no `--report` | **New defect class**: all 11 Highs were *false comments on correct code*, in both languages. Corroborates + **extends** candidate #1 (fix rounds add fresh defects — here comments, not tests) and #3 (off-loop inline fixing, now 5/5) |
+| `2026-07-15-nibs-batch-config-and-buffer-fixes-code-review-session/` | **Second `batch-dev`, first with `--report`** — 7 nibs queued (6 of them the prior batch's own follow-ups), 10 waves, **13.3M measured / 135 agents** | **Measures what 07-14 estimated** (conservative). **4 of 7 premises false · 8 decorative guards · 11 false comments** — every refutation from *running*, none from reading. A wave dispatched with `name` **destroyed 5/10 reports and all its telemetry** (the skill already forbade it). `quick-reviewer`: **0 unique across ~20 waves, 3 sessions** |
 
 ## What happened so far
 
@@ -60,7 +61,27 @@ their effect shows up in the next reports here.
    proven-deleted nib with zero user feedback), validators demoted 3 "newly introduced" claims to
    pre-existing, one orchestrator self-reported **fabricating** a report section, and `quick-reviewer`
    went 2 found / **0 unique** across all 7 waves.
-7. **Cross-session analysis** (`2026-07-04-cross-session-analysis.md`). With p07b + qj7m in, the
+7. **batch-dev #2 — the measured one** (`2026-07-15-…-config-and-buffer-fixes/`). First `--report` on a
+   batch: **13,285,815 tokens across 135 metered agents** for 6 shipped nibs. It confirms 07-14's
+   `[Estimate]` was conservative — and that the per-nib rate (~2.2M) was right all along; only the
+   reviewer population had never been metered.
+   **The headline generalizes the 07-14 finding past comments**: of 7 queued nibs, **4 premises were
+   false** (`disabled` blocks selection — refuted in real Chromium; a race detector "fired 3/8" — 80
+   runs say never, and it's structurally impossible; shorthand `#id` mentions don't link — two tests
+   already pinned that they do; archiving removes a nib from the list — the tool's own help says the
+   opposite). **Every refutation came from running something; none from reading.** The one premise that
+   survived came from the operator *using the app*; the other six were themselves products of 07-14's
+   reviews — so reviews producing false premises is partly self-referential here. Also **8 decorative
+   guards** (three sat behind an assert that threw first; one survived deleting the `finally` it
+   protected, passing all 1240 tests), **11 false comments**, and comment-truth findings in **14
+   consecutive reviews** of one file — diagnosed as *claim locality*, not carelessness (`nibs-2sdz`).
+   **New process finding:** a wave dispatched **with `name`** destroyed **5 of 10 reports and all its
+   telemetry** — actor mode discards the final message and makes `run_in_background: false` inert. The
+   5/10 split was **contract compliance**: the reviewers who *violated* "never SendMessage" survived;
+   the compliant ones were lost. The skill **already forbids `name`**; the guidance existed and was not
+   followed. Three later waves, correctly dispatched: 16/16, 6/6, 9/9. The lost five were recovered
+   from disk and yielded two new nibs. `quick-reviewer` is now **0 unique across ~20 waves / 3 sessions**.
+8. **Cross-session analysis** (`2026-07-04-cross-session-analysis.md`). With p07b + qj7m in, the
    `dcc-unre` gate is met. Re-scoring over four sessions: **act** on candidate #1 (fix-added tests
    must prove they can fail — 4 of 5 re-reviewed fix rounds added a fresh defect) and #3
    (post-APPROVED fixing happened in 4/4 sessions, unmetered in 3/4 — bring it in-loop and metered);
