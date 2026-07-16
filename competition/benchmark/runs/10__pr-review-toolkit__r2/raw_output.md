@@ -1,0 +1,36 @@
+The final agent, code-reviewer, has completed. Here are its findings, followed by a consolidated summary of all five.
+
+---
+
+## 🔍 code-reviewer — ✅ COMPLETE
+
+**Reviewed:** the new inner read loop in `line_buffer.rs` `fill()` (416-477), `core.rs` `roll()` `max_context()`→`before_context` (185-213), `glue.rs` byte-count expectations (740, 774), `CHANGELOG.md`, plus supporting context (`lines::preceding`, `Config::max_context`, roll/consume flow, `after_context_by_line`, `DecodeReaderBytes`).
+
+### Verdict: No high-confidence issues. The changes are correct.
+Verified by reasoning **and empirically** — all 77 `grep-searcher` tests pass; also built `rg` and ran differential tests.
+
+**1. `line_buffer.rs` inner read loop (419-437) — correct.** `oldend` captured before the loop; all offset math (binary Quit `self.end = oldend + i` @444, Convert `oldend + i` @462, `last_lineterm = oldend + i + 1` @471) is consistent with `newbytes = &buf[oldend..self.end]` covering the whole batch. `find_byte`/`rfind_byte`/`replace_bytes` over the full batch yield the same first-occurrence/last-terminator result as the old per-read checks. EOF: a first read of 0 → `newbytes.is_empty()` branch (@432) sets `last_lineterm` and returns, matching old semantics. Long lines: full buffer with no terminator → outer loop re-enters `ensure_capacity()` and grows (`buffer_limited_capacity1/2/3`, `big_error_*` still pass). `.as_bytes_mut()` removal is a no-op; error propagation via `?` unchanged.
+
+**2. `core.rs` roll `before_context` (@202) — correct.** After-context doesn't need lines kept across the roll: `match_by_line_fast` flushes after-context greedily up to `buf.len()` (@419) before the next `roll`, remainder carried in `after_context_left`. Whenever after-context is pending at roll time, `last_line_visited == buf.len()`, so `consumed = max(context_start, last_line_visited)` is unaffected by which count `context_start` used. The reduced count only matters when there's no pending after-context — where `before_context` lines is exactly what a future match needs. **Confirmed empirically:** `rg` output byte-identical to GNU grep for `-A999`, `-B999`, `-C999`, `-A99999`, `-B99999`, and identical between file and stdin for `-A/-B/-C` up to `999999`.
+
+**3. `glue.rs` test changes (262146→262142) — correct and consistent.** Confirmed causation in an isolated worktree: reverting `core.rs` alone leaves tests passing (guard short-circuits); reverting the `line_buffer.rs` loop restores the old `262146`. Mechanism: `search_reader` wraps input in `DecodeReaderBytesBuilder` with an 8 KB decode buffer (`searcher/mod.rs:333`), so the reader returns 8 KB chunks even for in-memory input. The old `fill` returned after the first chunk containing a terminator (under-filling the 64 KB buffer); the new loop amortizes reads to fill it. This shifts the buffer boundary where binary data is detected, changing only the reported "bytes searched" by one 4-byte non-matching line. Same match (`0:a`), same binary offset (`262153`) — no match lost. Exactly the intended amortization, and the root of the perf fix.
+
+### Minor observation (below threshold)
+`CHANGELOG.md:11-12` [Unverified/low]: entry links `[PERF #3184](.../pull/3184)`, but #3184 is the issue and #3185 is the PR (cf. PERF #2865 → pull/2865). GitHub redirects `/pull/3184` to the issue so it resolves — trivial cosmetic inconsistency, not worth changing alone. No CLAUDE.md convention violations.
+
+---
+
+# 📋 Consolidated Summary — PR #3185 (all 5 agents complete)
+
+**The PR is correct.** No agent found a functional defect. code-reviewer and silent-failure-hunter independently confirmed correctness (the former also empirically, via differential testing against GNU grep and buffer-boundary bisection). Findings cluster into three non-blocking themes:
+
+| # | Theme | Severity | Raised by | Location |
+|---|-------|----------|-----------|----------|
+| 1 | **Misleading new comment** — "We can skip this step when `before_context==0`" describes a conditional that doesn't exist; `lines::preceding(.., 0)` still runs a (cheaper) reverse scan, it isn't skipped. Invites a wrong future "optimization" that would break the separator case. | 🔴 Highest actionable | comment-analyzer | `core.rs:194-197` |
+| 2 | **Zero new tests for two behavioral changes** — the multi-read amortization loop is never driven by a short-read reader (all tests use `&[u8]` → single read); binary detection across a read boundary untested; no correctness regression test for large `-A/-B` over a pipe. The two changed constants absorb a shift, they don't assert the fix. | 🟡 Coverage risk | pr-test-analyzer | `line_buffer.rs:416-437`, `glue.rs:740/774` |
+| 3 | **Weak-typing smell the bug exposes** — `before_context`/`after_context`/`max_context()` are three interchangeable `usize`s; the wrong one type-checked *and produced correct output*, surfacing only as a perf regression. A before/after swap-guard newtype wouldn't have caught it; only separating "directional retain count" from "sizing bound" would. | 🟡 Design (informational) | type-design-analyzer | `searcher/mod.rs:156-159, 213-215` |
+| 4 | **CHANGELOG links the issue # (3184) as the PR** — `.../pull/3184` redirects but the PR is #3185. | ⚪ Cosmetic nit | code-reviewer, pr-test-analyzer | `CHANGELOG.md:11-12` |
+
+**Pre-existing, unchanged, noted for completeness:** `ErrorKind::Interrupted` is not retried in the read loop (`line_buffer.rs:420`); the sibling loop at `searcher/mod.rs:1005-1027` does retry. The PR neither introduces nor worsens this. (silent-failure-hunter, pr-test-analyzer, type-design-analyzer all touched on it.)
+
+As requested, **nothing was posted** — this is read-only analysis. Note the PR is already **MERGED** upstream.

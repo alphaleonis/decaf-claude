@@ -40,6 +40,18 @@ manifest_start() {
   ) 9>"$LOCK"
 }
 
+# manifest_pending <run_id> — reset a cell to pending (for a clean retry, e.g. after a usage limit)
+manifest_pending() {
+  local rid="$1"
+  ( flock 9
+    local t; t="$(mktemp)"
+    jq -c --arg r "$rid" \
+      'if .run_id==$r then .status="pending" | .started_at=null | .finished_at=null | .out_dir=null | .cost_usd=null | .wall_clock_s=null else . end' \
+      "$MANIFEST" > "$t"
+    mv "$t" "$MANIFEST"
+  ) 9>"$LOCK"
+}
+
 # manifest_finish <run_id> <status> <cost_usd> <wall_s> <out_dir>
 manifest_finish() {
   local rid="$1" st="$2" cost="$3" wall="$4" od="$5"

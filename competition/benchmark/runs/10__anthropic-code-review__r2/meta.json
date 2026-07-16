@@ -1,0 +1,173 @@
+{
+  "run_id": "10__anthropic-code-review__r2",
+  "subject_id": 10,
+  "lang": "rust",
+  "size": "small",
+  "tool": "anthropic-code-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "BurntSushi/ripgrep",
+  "pr": 3185,
+  "merge_sha": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "review_base": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0^1",
+  "review_head": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1779,
+  "duration_ms": "1777676",
+  "duration_api_ms": "5342821",
+  "num_turns": "47",
+  "cost_usd": "22.62188275",
+  "orch_usage": {
+    "input_tokens": "43",
+    "output_tokens": "75728",
+    "cache_creation_tokens": "236730",
+    "cache_read_tokens": "2736987",
+    "total_tokens": 3049488
+  },
+  "session_tokens": {
+    "subagents": 13,
+    "input": 9892,
+    "output": 77087,
+    "cache_creation": 1205535,
+    "cache_read": 9151033,
+    "total": 10443547,
+    "orchestrator": {
+      "output": 75728,
+      "total": 3049488,
+      "duration_s": 1778
+    },
+    "per_subagent": [
+      {
+        "output": 50,
+        "input": 11,
+        "cache_creation": 65893,
+        "cache_read": 270757,
+        "total": 336711,
+        "duration_s": 207,
+        "agent": "agent-a15a22c8a094efead"
+      },
+      {
+        "output": 23,
+        "input": 10,
+        "cache_creation": 48963,
+        "cache_read": 171986,
+        "total": 220982,
+        "duration_s": 169,
+        "agent": "agent-a1cbe06a57bfa321d"
+      },
+      {
+        "output": 50,
+        "input": 18,
+        "cache_creation": 91712,
+        "cache_read": 539127,
+        "total": 630907,
+        "duration_s": 470,
+        "agent": "agent-a28391190129fdfd3"
+      },
+      {
+        "output": 29,
+        "input": 17,
+        "cache_creation": 63722,
+        "cache_read": 391777,
+        "total": 455545,
+        "duration_s": 258,
+        "agent": "agent-a2ec55a7f44574c16"
+      },
+      {
+        "output": 36,
+        "input": 14,
+        "cache_creation": 77418,
+        "cache_read": 416317,
+        "total": 493785,
+        "duration_s": 289,
+        "agent": "agent-a345d4655d351484c"
+      },
+      {
+        "output": 326,
+        "input": 28,
+        "cache_creation": 88639,
+        "cache_read": 934298,
+        "total": 1023291,
+        "duration_s": 515,
+        "agent": "agent-a6e397cebc1ddaf50"
+      },
+      {
+        "output": 75,
+        "input": 11,
+        "cache_creation": 48402,
+        "cache_read": 197462,
+        "total": 245950,
+        "duration_s": 202,
+        "agent": "agent-a74914b6011742c9b"
+      },
+      {
+        "output": 52,
+        "input": 24,
+        "cache_creation": 80654,
+        "cache_read": 772902,
+        "total": 853632,
+        "duration_s": 267,
+        "agent": "agent-a838771faa817f30f"
+      },
+      {
+        "output": 28,
+        "input": 15,
+        "cache_creation": 89897,
+        "cache_read": 491441,
+        "total": 581381,
+        "duration_s": 579,
+        "agent": "agent-a859681943b47654e"
+      },
+      {
+        "output": 33,
+        "input": 9640,
+        "cache_creation": 94577,
+        "cache_read": 304484,
+        "total": 408734,
+        "duration_s": 321,
+        "agent": "agent-a9d0e64cf43dc205a"
+      },
+      {
+        "output": 476,
+        "input": 37,
+        "cache_creation": 105523,
+        "cache_read": 1413865,
+        "total": 1519901,
+        "duration_s": 729,
+        "agent": "agent-adc827f79b3fb8420"
+      },
+      {
+        "output": 155,
+        "input": 11,
+        "cache_creation": 65891,
+        "cache_read": 255975,
+        "total": 322032,
+        "duration_s": 234,
+        "agent": "agent-adef76d072af77272"
+      },
+      {
+        "output": 26,
+        "input": 13,
+        "cache_creation": 47514,
+        "cache_read": 253655,
+        "total": 301208,
+        "duration_s": 110,
+        "agent": "agent-af6804e2793cb527f"
+      }
+    ],
+    "max_subagent_duration_s": 729,
+    "sum_subagent_duration_s": 4350
+  },
+  "input_tokens": "43",
+  "output_tokens": "75728",
+  "cache_creation_tokens": "236730",
+  "cache_read_tokens": "2736987",
+  "total_tokens": 3049488,
+  "session_id": "bb4af284-edaf-4367-a4ea-7e0aa379805c",
+  "findings_lines": 39,
+  "invocation": "Use the /code-review workflow to review pull request #3185 of the GitHub repository BurntSushi/ripgrep. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-16T16:14:16Z"
+}

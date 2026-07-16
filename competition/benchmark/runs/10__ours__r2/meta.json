@@ -1,0 +1,146 @@
+{
+  "run_id": "10__ours__r2",
+  "subject_id": 10,
+  "lang": "rust",
+  "size": "small",
+  "tool": "ours",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "BurntSushi/ripgrep",
+  "pr": 3185,
+  "merge_sha": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "review_base": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0^1",
+  "review_head": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 2589,
+  "duration_ms": "2586883",
+  "duration_api_ms": "4483023",
+  "num_turns": "46",
+  "cost_usd": "18.730287699999984",
+  "orch_usage": {
+    "input_tokens": "7220",
+    "output_tokens": "79287",
+    "cache_creation_tokens": "189256",
+    "cache_read_tokens": "4675970",
+    "total_tokens": 4951733
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 7570,
+    "output": 87219,
+    "cache_creation": 1110444,
+    "cache_read": 17678656,
+    "total": 18883889,
+    "orchestrator": {
+      "output": 79287,
+      "total": 4951733,
+      "duration_s": 2586
+    },
+    "per_subagent": [
+      {
+        "output": 1111,
+        "input": 54,
+        "cache_creation": 63812,
+        "cache_read": 1551389,
+        "total": 1616366,
+        "duration_s": 295,
+        "agent": "agent-a068eb7515a8e3ca1"
+      },
+      {
+        "output": 30,
+        "input": 16,
+        "cache_creation": 79631,
+        "cache_read": 423926,
+        "total": 503603,
+        "duration_s": 344,
+        "agent": "agent-a704884ea5794b33a"
+      },
+      {
+        "output": 324,
+        "input": 28,
+        "cache_creation": 64180,
+        "cache_read": 759941,
+        "total": 824473,
+        "duration_s": 146,
+        "agent": "agent-a880df2aa1bdb50cc"
+      },
+      {
+        "output": 1190,
+        "input": 66,
+        "cache_creation": 103955,
+        "cache_read": 2830043,
+        "total": 2935254,
+        "duration_s": 486,
+        "agent": "agent-a9d5d064299eb77b2"
+      },
+      {
+        "output": 3435,
+        "input": 74,
+        "cache_creation": 125994,
+        "cache_read": 3178345,
+        "total": 3307848,
+        "duration_s": 574,
+        "agent": "agent-ab341ab882a25cf28"
+      },
+      {
+        "output": 26,
+        "input": 10,
+        "cache_creation": 60561,
+        "cache_read": 192177,
+        "total": 252774,
+        "duration_s": 224,
+        "agent": "agent-abb66db32a884be3a"
+      },
+      {
+        "output": 185,
+        "input": 34,
+        "cache_creation": 166973,
+        "cache_read": 1815519,
+        "total": 1982711,
+        "duration_s": 636,
+        "agent": "agent-ace7c309669d036a2"
+      },
+      {
+        "output": 48,
+        "input": 22,
+        "cache_creation": 95104,
+        "cache_read": 850285,
+        "total": 945459,
+        "duration_s": 411,
+        "agent": "agent-ad894572e5c247019"
+      },
+      {
+        "output": 1543,
+        "input": 30,
+        "cache_creation": 90703,
+        "cache_read": 992524,
+        "total": 1084800,
+        "duration_s": 298,
+        "agent": "agent-adbdef5c77be7d605"
+      },
+      {
+        "output": 40,
+        "input": 16,
+        "cache_creation": 70275,
+        "cache_read": 408537,
+        "total": 478868,
+        "duration_s": 186,
+        "agent": "agent-af090586040b61654"
+      }
+    ],
+    "max_subagent_duration_s": 636,
+    "sum_subagent_duration_s": 3600
+  },
+  "input_tokens": "7220",
+  "output_tokens": "79287",
+  "cache_creation_tokens": "189256",
+  "cache_read_tokens": "4675970",
+  "total_tokens": 4951733,
+  "session_id": "68731f04-78ab-49e7-ab12-07e55e2a7c42",
+  "findings_lines": 7,
+  "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report 3185. This reviews pull request #3185 of the GitHub repository BurntSushi/ripgrep (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-07-16T15:11:42Z"
+}

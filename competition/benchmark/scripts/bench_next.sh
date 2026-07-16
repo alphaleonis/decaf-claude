@@ -37,7 +37,14 @@ fi
 echo "Running ${#rids[@]} cell(s): ${rids[*]}"
 echo
 for r in "${rids[@]}"; do
-  bash "$BENCH_DIR/scripts/run_cell.sh" "$r" || echo "[$r] run_cell exited non-zero (recorded as failed)"
+  set +e; bash "$BENCH_DIR/scripts/run_cell.sh" "$r"; rc=$?; set -e
+  if [ "$rc" -eq 75 ]; then
+    echo
+    echo "⛔ Subscription usage/session limit reached — stopping the batch. '$r' and any remaining"
+    echo "   cells are left PENDING; just re-run /bench-run after the limit resets to continue."
+    exit 0
+  fi
+  [ "$rc" -ne 0 ] && echo "[$r] run_cell exited $rc (recorded as failed — see runs/$r/stderr.log)"
   echo
 done
 echo "Done. /bench-status for progress."

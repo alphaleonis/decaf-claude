@@ -1,0 +1,155 @@
+{
+  "run_id": "10__ours__r1",
+  "subject_id": 10,
+  "lang": "rust",
+  "size": "small",
+  "tool": "ours",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "BurntSushi/ripgrep",
+  "pr": 3185,
+  "merge_sha": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "review_base": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0^1",
+  "review_head": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1784,
+  "duration_ms": "1782174",
+  "duration_api_ms": "4226395",
+  "num_turns": "36",
+  "cost_usd": "15.966884149999995",
+  "orch_usage": {
+    "input_tokens": "48",
+    "output_tokens": "80055",
+    "cache_creation_tokens": "176132",
+    "cache_read_tokens": "2754944",
+    "total_tokens": 3011179
+  },
+  "session_tokens": {
+    "subagents": 11,
+    "input": 321,
+    "output": 82439,
+    "cache_creation": 1056967,
+    "cache_read": 11771145,
+    "total": 12910872,
+    "orchestrator": {
+      "output": 80055,
+      "total": 3011179,
+      "duration_s": 1782
+    },
+    "per_subagent": [
+      {
+        "output": 40,
+        "input": 22,
+        "cache_creation": 133000,
+        "cache_read": 855343,
+        "total": 988405,
+        "duration_s": 615,
+        "agent": "agent-a1fced166e359e89a"
+      },
+      {
+        "output": 332,
+        "input": 40,
+        "cache_creation": 87810,
+        "cache_read": 1414117,
+        "total": 1502299,
+        "duration_s": 360,
+        "agent": "agent-a45e910505af937af"
+      },
+      {
+        "output": 38,
+        "input": 17,
+        "cache_creation": 97210,
+        "cache_read": 584525,
+        "total": 681790,
+        "duration_s": 238,
+        "agent": "agent-a4854df96b6ae33f9"
+      },
+      {
+        "output": 1011,
+        "input": 30,
+        "cache_creation": 100720,
+        "cache_read": 1269949,
+        "total": 1371710,
+        "duration_s": 508,
+        "agent": "agent-a4ce009b7f2251b1d"
+      },
+      {
+        "output": 127,
+        "input": 38,
+        "cache_creation": 87381,
+        "cache_read": 1369309,
+        "total": 1456855,
+        "duration_s": 425,
+        "agent": "agent-a631d51976f8ac052"
+      },
+      {
+        "output": 57,
+        "input": 16,
+        "cache_creation": 61909,
+        "cache_read": 422141,
+        "total": 484123,
+        "duration_s": 233,
+        "agent": "agent-a864f67d45d8a2a23"
+      },
+      {
+        "output": 178,
+        "input": 24,
+        "cache_creation": 58205,
+        "cache_read": 546517,
+        "total": 604924,
+        "duration_s": 81,
+        "agent": "agent-a87ddd8e263aa1ac1"
+      },
+      {
+        "output": 455,
+        "input": 22,
+        "cache_creation": 40220,
+        "cache_read": 491809,
+        "total": 532506,
+        "duration_s": 58,
+        "agent": "agent-a880bf4bf625211c2"
+      },
+      {
+        "output": 25,
+        "input": 16,
+        "cache_creation": 48582,
+        "cache_read": 363197,
+        "total": 411820,
+        "duration_s": 238,
+        "agent": "agent-aa116db3581228904"
+      },
+      {
+        "output": 52,
+        "input": 28,
+        "cache_creation": 100846,
+        "cache_read": 1162381,
+        "total": 1263307,
+        "duration_s": 353,
+        "agent": "agent-aaa71b70703f98044"
+      },
+      {
+        "output": 69,
+        "input": 20,
+        "cache_creation": 64952,
+        "cache_read": 536913,
+        "total": 601954,
+        "duration_s": 203,
+        "agent": "agent-afffff54456b87e60"
+      }
+    ],
+    "max_subagent_duration_s": 615,
+    "sum_subagent_duration_s": 3312
+  },
+  "input_tokens": "48",
+  "output_tokens": "80055",
+  "cache_creation_tokens": "176132",
+  "cache_read_tokens": "2754944",
+  "total_tokens": 3011179,
+  "session_id": "8cf95ccb-3f05-479d-b149-64010fe2f857",
+  "findings_lines": 7,
+  "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report 3185. This reviews pull request #3185 of the GitHub repository BurntSushi/ripgrep (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-07-16T14:28:33Z"
+}
