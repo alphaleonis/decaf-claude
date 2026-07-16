@@ -7,22 +7,39 @@
 | review diff | `d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0^1..d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0` (merge d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0) |
 | session model | claude-opus-4-8 |
 | status | done (exit 0, is_error=false, subtype=success) |
-| wall clock (s) | 465 |
-| duration_ms (self) | 462785 |
-| duration_api_ms | 455554 |
+| **total review time — wall (s)** | 465 |
+| longest single subagent (s) | 390 |
+| duration_ms (orchestrator self) | 462785 |
+| duration_api_ms (summed parallel API time, not wall) | 455554 |
 | num_turns | 7 |
 | cost_usd | 2.4232737500000003 |
-| input_tokens | 10 |
-| output_tokens | 5743 |
-| cache_creation_tokens | 44309 |
-| cache_read_tokens | 265060 |
-| total_tokens (sum) | 315122 |
+| input_tokens | n/a |
+| output_tokens | n/a |
+| cache_creation_tokens | n/a |
+| cache_read_tokens | n/a |
+| total_tokens (orchestrator only) | n/a |
+| **subagents** | 1 |
+| **ws output_tokens** | 5931 |
+| ws input_tokens | 34 |
+| ws cache_creation | 142934 |
+| ws cache_read | 1138715 |
+| ws total_tokens | 1287614 |
 | session_id | 38edae6b-e772-4221-ba31-62c197d4fd8c |
 | findings (raw lines) | 37 |
 
-> Token totals come from `claude -p --output-format json`. `cost_usd` is the whole-session cost
-> (includes subagents). Whether the `usage` token breakdown rolls up SUBAGENT tokens is validated
-> on the pilot — see README. Tool-written findings files (if any) are under ./findings/.
+> **ws = whole-session** (orchestrator + every subagent transcript, deduped). The non-ws token
+> rows are the orchestrator session ONLY — they miss subagent tokens for fan-out tools.
+> **`cost_usd` is the authoritative whole-session cost** (Claude Code sums subagents; not an estimate).
+> Caveat: `ws total_tokens` is inflated by prompt-cache re-reads (cache_read counted per turn);
+> `ws output_tokens` is the clean, cache-independent work signal. Findings files under ./findings/.
+
+### Per-subagent (diagnostic)
+
+Subagents run in PARALLEL — the TOTAL review time is the wall clock above (465s), NOT the sum of these.
+
+| agent | output_tokens | total_tokens | duration_s |
+|---|---:|---:|---:|
+| agent-ab5cbe3cfefe6ed52 | 188 | 972492 | 390 |
 
 ## Findings (final result text)
 
