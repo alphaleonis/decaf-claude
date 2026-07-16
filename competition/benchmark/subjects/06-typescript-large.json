@@ -1,0 +1,34 @@
+{
+  "id": 6,
+  "lang": "typescript",
+  "size": "large",
+  "repo": "microsoft/vscode",
+  "pr": 320685,
+  "url": "https://github.com/microsoft/vscode/pull/320685",
+  "base_ref": "main",
+  "head_sha": "6b744d6d73a2ec2a121ccdc1c7225b3bd1652588",
+  "merge_sha": "f9070acd20a269fb07dd15389676bd6875b9db05",
+  "review": {
+    "repo": "microsoft/vscode",
+    "pr_number": 320685,
+    "base": "f9070acd20a269fb07dd15389676bd6875b9db05^1",
+    "head": "f9070acd20a269fb07dd15389676bd6875b9db05",
+    "diff_cmd": "git diff f9070acd20a269fb07dd15389676bd6875b9db05^1 f9070acd20a269fb07dd15389676bd6875b9db05"
+  },
+  "size_stats": {
+    "additions": 688,
+    "deletions": 13,
+    "files": 10
+  },
+  "ground_truth": {
+    "bug_class": "logic-multiple",
+    "summary": "Local/native copy-paste-DND rework introduced multiple regressions (eager temp-file creation blocking copy + /tmp path leak, unfiltered text/uri-list parsing, authority-only proxy routing, hardcoded path-case-sensitivity).",
+    "revert_pr": "https://github.com/microsoft/vscode/pull/321516",
+    "retry_pr": "https://github.com/microsoft/vscode/pull/323490",
+    "human_threads": {
+      "count": 1,
+      "note": "mjbvz: temp-file eager creation / /tmp path leak; +4 Copilot bot threads"
+    },
+    "caveat": "reverted twice for aggregate regressions; no single named bug"
+  }
+}

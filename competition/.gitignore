@@ -1,0 +1,23 @@
+# Vendored competitor SOURCE trees are reconstructable from each dir's PROVENANCE.md
+# (pinned SHA). Keep only the PROVENANCE record — don't commit the third-party source
+# (also avoids ingesting their secret-scanner test fixtures). Re-clone via the SHA if needed.
+/agamm-owasp-security/*
+!/agamm-owasp-security/PROVENANCE.md
+/alirezarezvani-code-reviewer/*
+!/alirezarezvani-code-reviewer/PROVENANCE.md
+/anthropic-code-review/*
+!/anthropic-code-review/PROVENANCE.md
+/anthropic-pr-review-toolkit/*
+!/anthropic-pr-review-toolkit/PROVENANCE.md
+/anthropic-security-guidance/*
+!/anthropic-security-guidance/PROVENANCE.md
+/awesome-skills-code-review/*
+!/awesome-skills-code-review/PROVENANCE.md
+/coderabbit-claude-plugin/*
+!/coderabbit-claude-plugin/PROVENANCE.md
+/obra-superpowers-code-review/*
+!/obra-superpowers-code-review/PROVENANCE.md
+/tag1-comprehensive-review/*
+!/tag1-comprehensive-review/PROVENANCE.md
+/trailofbits-skills/*
+!/trailofbits-skills/PROVENANCE.md

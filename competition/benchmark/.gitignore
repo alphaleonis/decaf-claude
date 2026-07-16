@@ -1,0 +1,6 @@
+# Shallow checkouts of external subject repos, fetched on demand by run_cell.sh.
+# Large, reconstructable from the pinned SHAs in subjects/*.json — do not commit.
+repos/
+
+# Manifest write lock (flock target).
+.manifest.lock

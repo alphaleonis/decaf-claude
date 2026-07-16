@@ -1,0 +1,34 @@
+{
+  "id": 11,
+  "lang": "rust",
+  "size": "medium",
+  "repo": "tokio-rs/tokio",
+  "pr": 7757,
+  "url": "https://github.com/tokio-rs/tokio/pull/7757",
+  "base_ref": "master",
+  "head_sha": "9de7950e59f8acea412600c2102ab592c419483a",
+  "merge_sha": "1604bc335157be9a131e24cfde55cab3c90ebc92",
+  "review": {
+    "repo": "tokio-rs/tokio",
+    "pr_number": 7757,
+    "base": "1604bc335157be9a131e24cfde55cab3c90ebc92^1",
+    "head": "1604bc335157be9a131e24cfde55cab3c90ebc92",
+    "diff_cmd": "git diff 1604bc335157be9a131e24cfde55cab3c90ebc92^1 1604bc335157be9a131e24cfde55cab3c90ebc92"
+  },
+  "size_stats": {
+    "additions": 340,
+    "deletions": 126,
+    "files": 6
+  },
+  "ground_truth": {
+    "bug_class": "logic-memory-ordering",
+    "summary": "The sharded spawn_blocking queue uses Release ordering where AcqRel is needed; programs using spawn_blocking can hang.",
+    "revert_pr": "https://github.com/tokio-rs/tokio/pull/8057",
+    "regression_issue": "https://github.com/tokio-rs/tokio/issues/8056",
+    "human_threads": {
+      "count": 30,
+      "note": "ADD-SP flagged the exact Release-vs-AcqRel ordering during review"
+    },
+    "caveat": "genuine correctness bug (hang); a reviewer identified the exact defect in review"
+  }
+}

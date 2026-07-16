@@ -1,0 +1,193 @@
+[
+  {
+    "id": 1,
+    "lang": "csharp",
+    "size": "small",
+    "ground_truth": {
+      "bug_class": "logic",
+      "summary": "SqliteDataRecord handling of multiple BLOB columns causes an assertion failure / wrong read.",
+      "revert_pr": "https://github.com/dotnet/efcore/pull/32945",
+      "regression_issue": "https://github.com/dotnet/efcore/issues/32944",
+      "human_threads": {
+        "count": 4,
+        "note": "ajcvickers/ErikEJ raised value-tuple + re-add-Assert points"
+      },
+      "caveat": "reverted next day; real product logic bug in SqliteDataRecord.cs"
+    }
+  },
+  {
+    "id": 2,
+    "lang": "csharp",
+    "size": "medium",
+    "ground_truth": {
+      "bug_class": "logic-reflection",
+      "summary": "DeclaredOnly->FlattenHierarchy fallback in TryGetValidatableProperty does not actually fix the AmbiguousMatchException and can silently drop validation attributes depending on which hierarchy level resolves.",
+      "revert_pr": "https://github.com/dotnet/aspnetcore/pull/67712",
+      "human_threads": {
+        "count": 9,
+        "note": "ilonatommy: managing flow by exceptions is not preferred; explore cheaper alternatives"
+      },
+      "caveat": "production change is ~11 lines; the rest of the diff is tests"
+    }
+  },
+  {
+    "id": 3,
+    "lang": "csharp",
+    "size": "large",
+    "ground_truth": {
+      "bug_class": "logic-jit",
+      "summary": "Handling canonical types in casting logic introduces a JIT cast failure (shared_Casts test).",
+      "revert_pr": "https://github.com/dotnet/runtime/pull/127301",
+      "regression_issue": "https://github.com/dotnet/runtime/issues/127259",
+      "human_threads": {
+        "count": 3,
+        "note": "jkotas (principal JIT eng) design questions; +5 Copilot bot threads"
+      },
+      "caveat": "specialized JIT/AOT casting + canonical generics domain; borderline large by real production surface"
+    }
+  },
+  {
+    "id": 4,
+    "lang": "typescript",
+    "size": "small",
+    "ground_truth": {
+      "bug_class": "logic-downstream",
+      "summary": "Using the jsx language variant for jsx file scanning in getChildren causes crashes in downstream consumers (typescript-eslint, eslint-stylistic).",
+      "revert_pr": "https://github.com/microsoft/TypeScript/pull/62423",
+      "regression_issue": "https://github.com/microsoft/TypeScript/issues/62188",
+      "human_threads": {
+        "count": 1,
+        "note": "DanielRosenwasser: declare languageVariant optional in SourceFileLike"
+      },
+      "caveat": "bug manifests mainly downstream, not in TS's own test suite"
+    }
+  },
+  {
+    "id": 5,
+    "lang": "typescript",
+    "size": "medium",
+    "ground_truth": {
+      "bug_class": "logic-timing",
+      "summary": "The stream idle-timeout starts the idle timer before yielding each chunk and leaves it running during consumer processing, so it measures consumer time and kills live streams prematurely.",
+      "revert_pr": "https://github.com/microsoft/vscode/pull/308779",
+      "regression_issue": "https://github.com/microsoft/vscode/issues/308627",
+      "human_threads": {
+        "count": 0,
+        "note": "no human inline threads; a Copilot bot thread named the root cause"
+      },
+      "caveat": "no human review threads (bot only); escaped-bug evidence is excellent"
+    }
+  },
+  {
+    "id": 6,
+    "lang": "typescript",
+    "size": "large",
+    "ground_truth": {
+      "bug_class": "logic-multiple",
+      "summary": "Local/native copy-paste-DND rework introduced multiple regressions (eager temp-file creation blocking copy + /tmp path leak, unfiltered text/uri-list parsing, authority-only proxy routing, hardcoded path-case-sensitivity).",
+      "revert_pr": "https://github.com/microsoft/vscode/pull/321516",
+      "retry_pr": "https://github.com/microsoft/vscode/pull/323490",
+      "human_threads": {
+        "count": 1,
+        "note": "mjbvz: temp-file eager creation / /tmp path leak; +4 Copilot bot threads"
+      },
+      "caveat": "reverted twice for aggregate regressions; no single named bug"
+    }
+  },
+  {
+    "id": 7,
+    "lang": "go",
+    "size": "small",
+    "ground_truth": {
+      "bug_class": "logic-use-after-close",
+      "summary": "Chunked remote read closes the querier too early; the returned iterators can then access memory-mapped files that have already been closed (use-after-close).",
+      "revert_pr": "https://github.com/prometheus/prometheus/pull/14515",
+      "regression_issue": "https://github.com/prometheus/prometheus/issues/14422",
+      "human_threads": {
+        "count": 0,
+        "note": "no inline review comments on the PR"
+      },
+      "caveat": "no human review threads; crispest bug ground truth of the Go-small candidates (named root cause, cross-release backports, dedicated reproducer #14599)"
+    }
+  },
+  {
+    "id": 8,
+    "lang": "go",
+    "size": "medium",
+    "ground_truth": {
+      "bug_class": "logic-race",
+      "summary": "The deletion/add-finalizer race protection causes e2e 'not found' errors when deleting pods (hot-loop / perma-race).",
+      "revert_pr": "https://github.com/kubernetes/kubernetes/pull/133979",
+      "regression_issue": "https://github.com/kubernetes/kubernetes/issues/133976",
+      "human_threads": {
+        "count": 2,
+        "note": "deads2k/liggitt: 'so we can end up perma-racing a hot looping update?'"
+      },
+      "caveat": "merged->reverted in one day; tightly scoped regression"
+    }
+  },
+  {
+    "id": 9,
+    "lang": "go",
+    "size": "large",
+    "ground_truth": {
+      "bug_class": "logic-timeout-backcompat",
+      "summary": "The kube-proxy node manager treats NodeIP-fetch timeouts as non-fatal and breaks backward compatibility (cloud-provider-azure).",
+      "revert_pr": "https://github.com/kubernetes/kubernetes/pull/132958",
+      "retry_pr": "https://github.com/kubernetes/kubernetes/pull/133059",
+      "human_threads": {
+        "count": 30,
+        "note": "danwinship: 'this loses the timeout that the previous version had' — foreshadows the bug"
+      },
+      "caveat": "bare revert body defers the 'why' to the take-2 PR; the reviewer comment foreshadows the regression"
+    }
+  },
+  {
+    "id": 10,
+    "lang": "rust",
+    "size": "small",
+    "ground_truth": {
+      "bug_class": "logic-regression",
+      "summary": "The fix for #3184 regressed --line-buffered by looping read until the caller buffer is full, contrary to line-buffered semantics.",
+      "revert_pr": "https://github.com/BurntSushi/ripgrep/pull/3195",
+      "regression_issue": "https://github.com/BurntSushi/ripgrep/issues/3194",
+      "human_threads": {
+        "count": 0,
+        "note": "solo-maintainer repo; no human inline review"
+      },
+      "caveat": "no human review threads (repo culture); bug isolated to one of the PR's two commits"
+    }
+  },
+  {
+    "id": 11,
+    "lang": "rust",
+    "size": "medium",
+    "ground_truth": {
+      "bug_class": "logic-memory-ordering",
+      "summary": "The sharded spawn_blocking queue uses Release ordering where AcqRel is needed; programs using spawn_blocking can hang.",
+      "revert_pr": "https://github.com/tokio-rs/tokio/pull/8057",
+      "regression_issue": "https://github.com/tokio-rs/tokio/issues/8056",
+      "human_threads": {
+        "count": 30,
+        "note": "ADD-SP flagged the exact Release-vs-AcqRel ordering during review"
+      },
+      "caveat": "genuine correctness bug (hang); a reviewer identified the exact defect in review"
+    }
+  },
+  {
+    "id": 12,
+    "lang": "rust",
+    "size": "large",
+    "ground_truth": {
+      "bug_class": "logic-regression",
+      "summary": "Dropping derive helpers during attribute parsing removes derive helpers from the attrs field in rustdoc JSON (regression 1.95->1.96).",
+      "revert_pr": "https://github.com/rust-lang/rust/pull/157150",
+      "regression_issue": "https://github.com/rust-lang/rust/issues/157107",
+      "human_threads": {
+        "count": 27,
+        "note": "mejrs: the first_item_in_crate parameter is ugly; use the sourcemap"
+      },
+      "caveat": "PARTIAL revert — undoes one commit (29e9273) of a multi-commit PR; ~270 diff lines are .stderr fixtures"
+    }
+  }
+]

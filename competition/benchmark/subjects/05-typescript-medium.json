@@ -1,0 +1,34 @@
+{
+  "id": 5,
+  "lang": "typescript",
+  "size": "medium",
+  "repo": "microsoft/vscode",
+  "pr": 308517,
+  "url": "https://github.com/microsoft/vscode/pull/308517",
+  "base_ref": "main",
+  "head_sha": "4d10215261da24a7e07984df4a4ce8916bae87ba",
+  "merge_sha": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "review": {
+    "repo": "microsoft/vscode",
+    "pr_number": 308517,
+    "base": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9^1",
+    "head": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+    "diff_cmd": "git diff ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9^1 ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9"
+  },
+  "size_stats": {
+    "additions": 270,
+    "deletions": 6,
+    "files": 5
+  },
+  "ground_truth": {
+    "bug_class": "logic-timing",
+    "summary": "The stream idle-timeout starts the idle timer before yielding each chunk and leaves it running during consumer processing, so it measures consumer time and kills live streams prematurely.",
+    "revert_pr": "https://github.com/microsoft/vscode/pull/308779",
+    "regression_issue": "https://github.com/microsoft/vscode/issues/308627",
+    "human_threads": {
+      "count": 0,
+      "note": "no human inline threads; a Copilot bot thread named the root cause"
+    },
+    "caveat": "no human review threads (bot only); escaped-bug evidence is excellent"
+  }
+}
