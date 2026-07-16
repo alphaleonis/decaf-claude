@@ -5,7 +5,7 @@ title: 'Benchmark: controlled cost/quality comparison of code-review tools'
 status: in-progress
 type: feature
 created_at: 2026-07-16T11:47:14Z
-updated_at: 2026-07-16T12:58:59Z
+updated_at: 2026-07-16T18:57:44Z
 order: zzk
 ---
 
@@ -153,3 +153,5 @@ Harness built. Next: (1) operator signs off the 12 subjects (Go-small swap open)
 - 2026-07-16: PERM_FLAGS = `--dangerously-skip-permissions` (operator-approved; read-only/no-post reviews of public PRs in throwaway checkouts).
 - 2026-07-16: Session model = `claude-opus-4-8`; each tool's internal model policy honored (harness sets only the session model; subagent pins/tiering unchanged). Pilot must confirm `--model` does not override subagent model choices.
 - 2026-07-16: Go-small SWAPPED prometheus#15141 → prometheus#13777 (crisper use-after-close bug; 0 human threads). Former #15141 (5 threads, perf bug) is the fallback.
+
+- 2026-07-16: **First results in — 8/120 cells (subject 10, rust/small, both repeats where completed).** Metering validated end-to-end (whole-session tokens via subagent transcripts; total wall vs per-subagent timing; complete findings bundles). Cross-tool cost ranking on Opus (usage proxy, not a bill — operator on subscription): anthropic-code-review $20.4 > ours $17.4 > tag1 $13.3 > pr-review-toolkit $9.2 > superpowers $2.4. **Two pre-run estimates overturned**: Anthropic `/code-review` and Tag1 are both fan-out-tier on Opus (~$13–20), NOT lean — the benchmark's first payoff. `ours` shows real r1/r2 variance (wall 1784→2589s). Hit the subscription usage limit mid-batch → added graceful limit handling (stop batch, leave cells pending). Full matrix projected ~$1,120 floor / likely $2–3k Opus-usage; operator keeping full plan, pacing by hand.
