@@ -1,0 +1,137 @@
+{
+  "run_id": "10__tag1-comprehensive-review__r2",
+  "subject_id": 10,
+  "lang": "rust",
+  "size": "small",
+  "tool": "tag1-comprehensive-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "BurntSushi/ripgrep",
+  "pr": 3185,
+  "merge_sha": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "review_base": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0^1",
+  "review_head": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1299,
+  "duration_ms": "294822",
+  "duration_api_ms": "3135003",
+  "num_turns": "7",
+  "cost_usd": "12.655904749999996",
+  "orch_usage": {
+    "input_tokens": "13",
+    "output_tokens": "22534",
+    "cache_creation_tokens": "25057",
+    "cache_read_tokens": "1279691",
+    "total_tokens": 1327295
+  },
+  "session_tokens": {
+    "subagents": 9,
+    "input": 222,
+    "output": 67174,
+    "cache_creation": 694991,
+    "cache_read": 8491038,
+    "total": 9253425,
+    "orchestrator": {
+      "output": 60759,
+      "total": 4792748,
+      "duration_s": 1297
+    },
+    "per_subagent": [
+      {
+        "output": 322,
+        "input": 32,
+        "cache_creation": 100523,
+        "cache_read": 951315,
+        "total": 1052192,
+        "duration_s": 633,
+        "agent": "agent-a35936c767b79b1db"
+      },
+      {
+        "output": 758,
+        "input": 6,
+        "cache_creation": 42417,
+        "cache_read": 72309,
+        "total": 115490,
+        "duration_s": 18,
+        "agent": "agent-a58d2feeca4192100"
+      },
+      {
+        "output": 190,
+        "input": 32,
+        "cache_creation": 60699,
+        "cache_read": 815784,
+        "total": 876705,
+        "duration_s": 247,
+        "agent": "agent-a77d31d1d2d97e916"
+      },
+      {
+        "output": 392,
+        "input": 28,
+        "cache_creation": 71636,
+        "cache_read": 792187,
+        "total": 864243,
+        "duration_s": 416,
+        "agent": "agent-a8afa88c9cbce1313"
+      },
+      {
+        "output": 5,
+        "input": 2,
+        "cache_creation": 23140,
+        "cache_read": 10440,
+        "total": 33587,
+        "duration_s": 217,
+        "agent": "agent-a90803beccdff50af"
+      },
+      {
+        "output": 4533,
+        "input": 20,
+        "cache_creation": 61590,
+        "cache_read": 483839,
+        "total": 549982,
+        "duration_s": 244,
+        "agent": "agent-adaf5d9c05f893826"
+      },
+      {
+        "output": 22,
+        "input": 10,
+        "cache_creation": 45757,
+        "cache_read": 163963,
+        "total": 209752,
+        "duration_s": 98,
+        "agent": "agent-adbdd874572bdf780"
+      },
+      {
+        "output": 173,
+        "input": 20,
+        "cache_creation": 50681,
+        "cache_read": 440232,
+        "total": 491106,
+        "duration_s": 159,
+        "agent": "agent-aea578d5186fbe56f"
+      },
+      {
+        "output": 20,
+        "input": 12,
+        "cache_creation": 59699,
+        "cache_read": 207889,
+        "total": 267620,
+        "duration_s": 252,
+        "agent": "agent-afa6f6107277c845e"
+      }
+    ],
+    "max_subagent_duration_s": 633,
+    "sum_subagent_duration_s": 2284
+  },
+  "input_tokens": "13",
+  "output_tokens": "22534",
+  "cache_creation_tokens": "25057",
+  "cache_read_tokens": "1279691",
+  "total_tokens": 1327295,
+  "session_id": "4bfae2c9-0245-4965-8cab-41a196945c04",
+  "findings_lines": 51,
+  "invocation": "Run /comprehensive-review --pr 3185 --local --output-file .decaf/tag1-review-3185.md for the GitHub repository BurntSushi/ripgrep. --local means display everything and post NOTHING. When done, print the output-file path and a summary of findings by severity.",
+  "finished_at": "2026-07-16T19:27:30Z"
+}
