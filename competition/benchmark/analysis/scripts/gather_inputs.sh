@@ -30,6 +30,7 @@ echo "subject $SID ($(jq -r .lang "$FIX")/$(jq -r .size "$FIX")) — $(jq -r .re
 echo "done cells: $n   ->  $OUT/costs.json"
 echo "output dir: $OUT"
 echo "ground truth: $FIX  (.ground_truth)"
-echo "review diff:  git -C repos/$SID diff ${merge}^1 ${merge}"
+echo "review diff (FULL PR — canonical, what valid tools reviewed): gh pr diff $(jq -r .pr "$FIX") -R $(jq -r .repo "$FIX")"
+echo "  NOTE: do NOT use merge^1..merge for grading — it only equals the full PR for squash-merges."
 echo "findings bundles (per cell):"
 jq -r '.cells[] | "  \(.tool) r\(.repeat): \(.findings_dir)"' "$OUT/costs.json"

@@ -11,9 +11,10 @@
   "review": {
     "repo": "BurntSushi/ripgrep",
     "pr_number": 3185,
-    "base": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0^1",
-    "head": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
-    "diff_cmd": "git diff d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0^1 d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0"
+    "base": "de2567a4c76fa671005538d6cd841abc44932b9a",
+    "head": "146f78f77ff24e74fccf6da91a5e28ce4c48dfa1",
+    "diff_cmd": "gh pr diff 3185 (FULL PR; rebase-merged, so merge^1..merge is partial)",
+    "note": "rebase-merge: review range is fork..PR-head, not merge^1..merge"
   },
   "size_stats": {
     "additions": 22,

@@ -44,6 +44,7 @@ for r in "${rids[@]}"; do
     echo "   cells are left PENDING; just re-run /bench-run after the limit resets to continue."
     exit 0
   fi
+  if [ "$rc" -eq 76 ]; then echo "[$r] left PENDING — could not reconstruct full-PR review diff (see stderr)"; echo; continue; fi
   [ "$rc" -ne 0 ] && echo "[$r] run_cell exited $rc (recorded as failed — see runs/$r/stderr.log)"
   echo
 done
