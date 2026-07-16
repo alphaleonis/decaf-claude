@@ -113,58 +113,8 @@ jq -n --arg rid "$RID" --argjson sid_ "$subject_id" --arg lang "$lang" --arg siz
     session_id:$sid, findings_lines:'"$findings_lines"', invocation:$cmd, finished_at:"'"$(now_iso)"'"}' \
   > "$outdir/meta.json"
 
-{
-  echo "# Benchmark run: $RID"
-  echo
-  echo "| field | value |"
-  echo "|---|---|"
-  echo "| tool | $tool_id |"
-  echo "| subject | $subject_id ($lang / $size) — $repo#$pr |"
-  echo "| review diff | \`$base..$head\` (merge $merge) |"
-  echo "| session model | $BENCH_MODEL |"
-  echo "| status | $final (exit $rc, is_error=$is_error, subtype=${subtype:-n/a}) |"
-  echo "| **total review time — wall (s)** | $wall |"
-  echo "| longest single subagent (s) | ${ws_maxsub:-n/a} |"
-  echo "| duration_ms (orchestrator self) | ${dur_ms:-n/a} |"
-  echo "| duration_api_ms (summed parallel API time, not wall) | ${dur_api:-n/a} |"
-  echo "| num_turns | ${num_turns:-n/a} |"
-  echo "| cost_usd | ${cost:-n/a} |"
-  echo "| input_tokens | ${in_tok:-n/a} |"
-  echo "| output_tokens | ${out_tok:-n/a} |"
-  echo "| cache_creation_tokens | ${cc_tok:-n/a} |"
-  echo "| cache_read_tokens | ${cr_tok:-n/a} |"
-  echo "| total_tokens (orchestrator only) | $total_tok |"
-  echo "| **subagents** | ${ws_sub:-n/a} |"
-  echo "| **ws output_tokens** | ${ws_out:-n/a} |"
-  echo "| ws input_tokens | ${ws_in:-n/a} |"
-  echo "| ws cache_creation | ${ws_cc:-n/a} |"
-  echo "| ws cache_read | ${ws_cr:-n/a} |"
-  echo "| ws total_tokens | ${ws_total:-n/a} |"
-  echo "| session_id | ${sid:-n/a} |"
-  echo "| findings (raw lines) | $findings_lines |"
-  echo
-  echo "> **ws = whole-session** (orchestrator + every subagent transcript, deduped). The non-ws token"
-  echo "> rows are the orchestrator session ONLY — they miss subagent tokens for fan-out tools."
-  echo "> **\`cost_usd\` is the authoritative whole-session cost** (Claude Code sums subagents; not an estimate)."
-  echo "> Caveat: \`ws total_tokens\` is inflated by prompt-cache re-reads (cache_read counted per turn);"
-  echo "> \`ws output_tokens\` is the clean, cache-independent work signal. Findings files under ./findings/."
-  if [ -n "${sub_rows:-}" ]; then
-    echo
-    echo "### Per-subagent (diagnostic)"
-    echo
-    echo "Subagents run in PARALLEL — the TOTAL review time is the wall clock above (${wall}s), NOT the sum of these."
-    echo
-    echo "| agent | output_tokens | total_tokens | duration_s |"
-    echo "|---|---:|---:|---:|"
-    echo "$sub_rows"
-  fi
-  echo
-  echo "## Findings (final result text)"
-  echo
-  echo '```'
-  cat "$outdir/raw_output.md"
-  echo '```'
-} > "$outdir/run.md"
+# run.md is rendered from meta.json (+ raw_output.md) so it can be regenerated without re-running.
+bash "$BENCH_DIR/scripts/render_run.sh" "$RID" >/dev/null
 
 # metrics.csv is derived from every runs/*/meta.json (source of truth) — rebuild it now.
 bash "$BENCH_DIR/scripts/rebuild_metrics.sh" >/dev/null
