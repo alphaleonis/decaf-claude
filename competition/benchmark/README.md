@@ -7,6 +7,36 @@ Each cell is run in its **own isolated `claude -p` session** so token/cost meter
 uncontaminated. **State lives on disk** (`manifest.jsonl`), so you run a few cells now and resume
 in a fresh session later. Nothing runs automatically — you drive it a cell at a time.
 
+## Subjects
+
+The 12 review subjects — one per (language × size) cell. Each is a **real merged PR that was later
+reverted or fixed for a named regression**, so every cell carries an objective escaped-bug ground
+truth (bug summary + human-review threads in [`subjects/*.json`](./subjects)). The `#N` is the
+**subject id** — use it as `/bench-run --subject <N>`.
+
+| Language ↓ / Size → | Small (<~100 lines) | Medium (~100–500) | Large (>~500) |
+|---|---|---|---|
+| **C#** | #1 [efcore#32770](https://github.com/dotnet/efcore/pull/32770)<br>+63/−9, 2f | #2 [aspnetcore#67075](https://github.com/dotnet/aspnetcore/pull/67075)<br>+168/−1, 2f | #3 [runtime#127146](https://github.com/dotnet/runtime/pull/127146)<br>+417/−7, 13f |
+| **TypeScript** | #4 [TypeScript#61928](https://github.com/microsoft/TypeScript/pull/61928)<br>+21/−16, 7f | #5 [vscode#308517](https://github.com/microsoft/vscode/pull/308517)<br>+270/−6, 5f | #6 [vscode#320685](https://github.com/microsoft/vscode/pull/320685)<br>+688/−13, 10f |
+| **Go** | #7 [prometheus#13777](https://github.com/prometheus/prometheus/pull/13777)<br>+32/−21, 1f | #8 [kubernetes#129768](https://github.com/kubernetes/kubernetes/pull/129768)<br>+326/−91, 5f | #9 [kubernetes#130837](https://github.com/kubernetes/kubernetes/pull/130837)<br>+757/−803, 18f |
+| **Rust** | #10 [ripgrep#3185](https://github.com/BurntSushi/ripgrep/pull/3185)<br>+22/−11, 4f | #11 [tokio#7757](https://github.com/tokio-rs/tokio/pull/7757)<br>+340/−126, 6f | #12 [rust#153540](https://github.com/rust-lang/rust/pull/153540)<br>+383/−328, 18f |
+
+Size buckets are by changed lines (generated files/lockfiles excluded). Diff stats are the PR's raw
+totals — some large-by-line PRs are test/fixture-heavy (e.g. Rust-large is ~270 `.stderr` lines of
+its 711). Full ground truth (the reverting/fixing PR, regression issue, human threads) is in each
+`subjects/NN-*.json`.
+
+## Tools
+
+The 5 tools under test — the **`id`** is what you pass as `/bench-run --tool <id>` (full invocation
+templates + model policy in [`tools.json`](./tools.json)):
+
+- **`ours`** — `decaf-quality:code-review` (mid mode, `--report`)
+- **`anthropic-code-review`** — Anthropic `/code-review`
+- **`pr-review-toolkit`** — Anthropic PR Review Toolkit (comprehensive run of all 6 agents)
+- **`tag1-comprehensive-review`** — Tag1 `/comprehensive-review` (full, `--local`)
+- **`superpowers`** — obra/superpowers `requesting-code-review`
+
 ## Quick start
 
 ```
