@@ -1,0 +1,776 @@
+{
+  "subject_id": 10,
+  "lang": "rust",
+  "size": "small",
+  "repo": "BurntSushi/ripgrep",
+  "pr": 3185,
+  "judge_model": "claude-opus-4-8",
+  "answer_key": {
+    "subject_id": 10,
+    "lang": "rust",
+    "size": "small",
+    "repo": "BurntSushi/ripgrep",
+    "pr": 3185,
+    "review_diff": "gh pr diff 3185 — full PR: CHANGELOG.md, crates/searcher/src/line_buffer.rs, crates/searcher/src/searcher/core.rs, crates/searcher/src/searcher/glue.rs",
+    "primary_bug": {
+      "id": "primary",
+      "summary": "The new fill loop in LineBuffer::fill reads repeatedly until the caller's buffer is full (`while !self.free_buffer().is_empty() { let readlen = rdr.read(...)?; if readlen==0 { break } self.end += readlen; }`), which breaks --line-buffered / streaming: line-buffered mode must yield what it can read immediately, not block waiting for a full buffer. Regressed real streaming use such as `journalctl -f | rg --line-buffered`.",
+      "file": "crates/searcher/src/line_buffer.rs",
+      "locus": "fill(): the added inner `while !self.free_buffer().is_empty()` read-until-full loop (~L416-421)",
+      "must_flag": "A reviewer catches this if it flags that packing the whole buffer across multiple reads defeats --line-buffered / prompt streaming (or otherwise identifies the read-loop as changing streaming/latency behavior).",
+      "source": "revert PR #3195 ('searcher: fix regression with --line-buffered flag'), regression issue #3194 ('Line buffering appears broken in 15.0.0')",
+      "difficulty": "subtle — requires reasoning about line-buffered/streaming semantics; the maintainer himself merged it and reverted only after a user bug report. Expect low recall; a genuine catch here is a strong signal."
+    },
+    "human_issues": [],
+    "known_safe": [
+      {
+        "id": "safe-core",
+        "summary": "core.rs: changing lines::preceding's 3rd arg from self.config.max_context() to self.config.before_context. This is the CORRECT fix (kept by the revert; it is what actually fixes #3184's -A/--after-context perf bug). Flagging it as incorrect/buggy is a FALSE POSITIVE.",
+        "file": "crates/searcher/src/searcher/core.rs"
+      },
+      {
+        "id": "safe-glue",
+        "summary": "glue.rs: test-expectation byte counts 262146 -> 262142. Expected consequence of the buffering change (fewer bytes searched before binary detection), not a defect.",
+        "file": "crates/searcher/src/searcher/glue.rs"
+      }
+    ],
+    "notes": "ripgrep is solo-maintained (Andrew Gallant self-merges) -> PR #3185 has no human review threads, so human_issues is empty. Score cells on: (1) primary_bug recall, (2) false-positive discipline (esp. NOT flagging the correct core.rs change), (3) any valid-other real defects, (4) noise."
+  },
+  "clusters": [
+    {
+      "cluster_id": "c1",
+      "summary": "fill()'s new inner read loop reads until the buffer is full or EOF instead of returning after a usable line is available, regressing streaming/interactive/line-buffered latency (tail -f, journalctl -f).",
+      "file": "line_buffer.rs",
+      "line": 419,
+      "category": "logic",
+      "reported_by": [
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-a1fced166e359e89a"
+        },
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-a631d51976f8ac052"
+        },
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-a864f67d45d8a2a23"
+        },
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-a87ddd8e263aa1ac1"
+        },
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": "agent-a704884ea5794b33a"
+        },
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": "agent-a880df2aa1bdb50cc"
+        },
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": "agent-ace7c309669d036a2"
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": null
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": "agent-a4dcda786f63e7b0c"
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": "agent-a7331ee0b4e5b7842"
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 2,
+          "subagent": null
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 2,
+          "subagent": "agent-a9d0e64cf43dc205a"
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 2,
+          "subagent": "agent-adc827f79b3fb8420"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 1,
+          "subagent": "agent-a2b66c7f9b67e2100"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 1,
+          "subagent": "agent-a27a0d3e50c69a2e5"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 1,
+          "subagent": "agent-a9acc3f1c3e84e225"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 2,
+          "subagent": "agent-a77d31d1d2d97e916"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 2,
+          "subagent": "agent-a35936c767b79b1db"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 2,
+          "subagent": "agent-a90803beccdff50af"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 2,
+          "subagent": "agent-afa6f6107277c845e"
+        },
+        {
+          "tool": "superpowers",
+          "repeat": 1,
+          "subagent": "agent-a583893d07ba2c2dd"
+        },
+        {
+          "tool": "superpowers",
+          "repeat": 2,
+          "subagent": "agent-ae0e30873a6731490"
+        }
+      ],
+      "verdict": "TP-primary",
+      "matches": "primary",
+      "judged_severity": "high",
+      "confidence": 92,
+      "rationale": "Correctly identifies the new inner while-loop that reads until the buffer is full/EOF rather than returning after a usable read — the --line-buffered/streaming latency regression reverted in #3195."
+    },
+    {
+      "cluster_id": "c2",
+      "summary": "CHANGELOG links issue #3184 with a /pull/ URL though #3184 is the issue (PR is #3185).",
+      "file": "CHANGELOG.md",
+      "line": 11,
+      "category": "doc",
+      "reported_by": [
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": null
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": null
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": "agent-afae6437d9aaf0202"
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 2,
+          "subagent": null
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 1,
+          "subagent": "agent-aa4646d4b49c20458"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 2,
+          "subagent": "agent-a2d78549a4f11d588"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 1,
+          "subagent": "agent-aaaa158259a8c99ac"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 2,
+          "subagent": null
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "nit",
+      "confidence": 55,
+      "rationale": "GitHub redirects /pull/N<->/issues/N so the link works; trivial doc quibble."
+    },
+    {
+      "cluster_id": "c3",
+      "summary": "fill() inner loop's fill-to-capacity rationale not documented in code (only the commit message), so a maintainer could simplify it and reintroduce #3184.",
+      "file": "line_buffer.rs",
+      "line": 419,
+      "category": "doc",
+      "reported_by": [
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-a4854df96b6ae33f9"
+        },
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": "agent-a068eb7515a8e3ca1"
+        },
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": "agent-abb66db32a884be3a"
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": null
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": "agent-a1a38ee098bffb6e3"
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 2,
+          "subagent": null
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "nit",
+      "confidence": 60,
+      "rationale": "Missing-comment/maintainability note on the fill loop; the loop it wants documented is itself the escaped bug."
+    },
+    {
+      "cluster_id": "c4",
+      "summary": "No test exercises fill()'s new multi-short-read amortization / incremental-read accumulation path.",
+      "file": "line_buffer.rs",
+      "line": 419,
+      "category": "test",
+      "reported_by": [
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-a45e910505af937af"
+        },
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-a631d51976f8ac052"
+        },
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": "agent-ab341ab882a25cf28"
+        },
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": "agent-ace7c309669d036a2"
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": "agent-a53ed4e2fa05dda5b"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 1,
+          "subagent": "agent-a05b2537f0eec312c"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 2,
+          "subagent": "agent-a280460d51bb6c4d0"
+        }
+      ],
+      "verdict": "valid-other",
+      "matches": "none",
+      "judged_severity": "low",
+      "confidence": 62,
+      "rationale": "Genuine coverage gap: the new multi-read accumulation path in fill() is not exercised by any single-read test."
+    },
+    {
+      "cluster_id": "c5",
+      "summary": "No regression test covers the roll() before_context-vs-max_context change across a buffer roll with large -A.",
+      "file": "core.rs",
+      "line": 198,
+      "category": "test",
+      "reported_by": [
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": null
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 2,
+          "subagent": null
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 2,
+          "subagent": "agent-a6e397cebc1ddaf50"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 1,
+          "subagent": "agent-a05b2537f0eec312c"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 2,
+          "subagent": "agent-a280460d51bb6c4d0"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 1,
+          "subagent": "agent-a27a0d3e50c69a2e5"
+        },
+        {
+          "tool": "superpowers",
+          "repeat": 1,
+          "subagent": "agent-a583893d07ba2c2dd"
+        }
+      ],
+      "verdict": "valid-other",
+      "matches": "none",
+      "judged_severity": "low",
+      "confidence": 60,
+      "rationale": "The correct max_context->before_context fix has no guarding test — reverting core.rs leaves the suite green."
+    },
+    {
+      "cluster_id": "c6",
+      "summary": "roll() comment 'skip this step when before_context==0' does not match the code (preceding() is called unconditionally).",
+      "file": "core.rs",
+      "line": 195,
+      "category": "doc",
+      "reported_by": [
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": null
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 1,
+          "subagent": "agent-a98de0a6942a2c716"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 2,
+          "subagent": "agent-ab75267c82095c9f0"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 1,
+          "subagent": "agent-a9acc3f1c3e84e225"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 1,
+          "subagent": "agent-aff9c396233e335be"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 2,
+          "subagent": "agent-aea578d5186fbe56f"
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "nit",
+      "confidence": 50,
+      "rationale": "The comment describes that the costly backward scan is effectively skipped when before_context==0; reading it as a literal call-elision mismatch is pedantic."
+    },
+    {
+      "cluster_id": "c7",
+      "summary": "Changed glue.rs golden byte-count constants (262146->262142) are undocumented magic numbers / unexplained --stats shift.",
+      "file": "glue.rs",
+      "line": 740,
+      "category": "doc",
+      "reported_by": [
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-a45e910505af937af"
+        },
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": "agent-ab341ab882a25cf28"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 1,
+          "subagent": "agent-a05b2537f0eec312c"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 1,
+          "subagent": "agent-a27a0d3e50c69a2e5"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 2,
+          "subagent": "agent-a90803beccdff50af"
+        },
+        {
+          "tool": "superpowers",
+          "repeat": 2,
+          "subagent": "agent-ae0e30873a6731490"
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "nit",
+      "confidence": 60,
+      "rationale": "The 262146->262142 constants are the known-safe expected consequence of the buffering change."
+    },
+    {
+      "cluster_id": "c8",
+      "summary": "Narrowing roll() lookback to before_context leaves correctness on an implicit, unguarded invariant (no debug_assert).",
+      "file": "core.rs",
+      "line": 198,
+      "category": "design",
+      "reported_by": [
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-a4854df96b6ae33f9"
+        },
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-a880bf4bf625211c2"
+        },
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": "agent-abb66db32a884be3a"
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": null
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": "agent-adc1e07166791dc36"
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "low",
+      "confidence": 50,
+      "rationale": "before_context is the correct revert-kept fix; a speculative debug_assert suggestion casting unwarranted doubt on a known-safe change."
+    },
+    {
+      "cluster_id": "c9",
+      "summary": "Inner read loop propagates ErrorKind::Interrupted via ? instead of retrying (noted pre-existing).",
+      "file": "line_buffer.rs",
+      "line": 420,
+      "category": "logic",
+      "reported_by": [
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-aaa71b70703f98044"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 1,
+          "subagent": "agent-a2b66c7f9b67e2100"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 2,
+          "subagent": "agent-a84628f238e48ed35"
+        },
+        {
+          "tool": "superpowers",
+          "repeat": 1,
+          "subagent": "agent-a583893d07ba2c2dd"
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "low",
+      "confidence": 55,
+      "rationale": "Propagating Interrupted via ? is pre-existing (original single read did the same), negligible impact."
+    },
+    {
+      "cluster_id": "c10",
+      "summary": "CHANGELOG wording 'performance of large values with -A' reads awkwardly.",
+      "file": "CHANGELOG.md",
+      "line": 11,
+      "category": "doc",
+      "reported_by": [
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 2,
+          "subagent": null
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 2,
+          "subagent": "agent-aea578d5186fbe56f"
+        },
+        {
+          "tool": "superpowers",
+          "repeat": 2,
+          "subagent": "agent-ae0e30873a6731490"
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "nit",
+      "confidence": 70,
+      "rationale": "Pure CHANGELOG wording preference, no technical content."
+    },
+    {
+      "cluster_id": "c11",
+      "summary": "In Quit binary mode the loop drains the buffer before binary detection, over-reading past a NUL by up to a buffer's worth.",
+      "file": "line_buffer.rs",
+      "line": 419,
+      "category": "perf",
+      "reported_by": [
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-a4ce009b7f2251b1d"
+        },
+        {
+          "tool": "ours",
+          "repeat": 1,
+          "subagent": "agent-aa116db3581228904"
+        },
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": "agent-ace7c309669d036a2"
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "low",
+      "confidence": 50,
+      "rationale": "Quit-mode over-read is bounded by buffer size and is the accepted consequence in the known-safe glue.rs change, not a defect."
+    },
+    {
+      "cluster_id": "c12",
+      "summary": "Read result bound to readlen; every other manual read loop in the crate names it nread.",
+      "file": "line_buffer.rs",
+      "line": 420,
+      "category": "style",
+      "reported_by": [
+        {
+          "tool": "ours",
+          "repeat": 2,
+          "subagent": "agent-a9d5d064299eb77b2"
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": null
+        },
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 2,
+          "subagent": null
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "nit",
+      "confidence": 72,
+      "rationale": "Naming style, and 'readlen' is pre-existing in the original code."
+    },
+    {
+      "cluster_id": "c13",
+      "summary": "Inner loop advances self.end after each read, so a later read error in the same pass discards already-read bytes.",
+      "file": "line_buffer.rs",
+      "line": 418,
+      "category": "bug",
+      "reported_by": [
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 1,
+          "subagent": "agent-a40e39c82fa6d69de"
+        },
+        {
+          "tool": "tag1-comprehensive-review",
+          "repeat": 2,
+          "subagent": "agent-a35936c767b79b1db"
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "low",
+      "confidence": 50,
+      "rationale": "Dropping in-flight bytes on a mid-pass I/O error is normal abort behavior; negligible."
+    },
+    {
+      "cluster_id": "c14",
+      "summary": "before/after/max_context() are three interchangeable bare usize (weak typing behind the regression).",
+      "file": "mod.rs",
+      "line": 213,
+      "category": "design",
+      "reported_by": [
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 1,
+          "subagent": "agent-af7dd0177ea7a1046"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 2,
+          "subagent": "agent-a648384ad162f9549"
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "low",
+      "confidence": 48,
+      "rationale": "Newtype/type-safety musing that misattributes the regression to the context-value swap (the correct fix), not diff-verifiable."
+    },
+    {
+      "cluster_id": "c15",
+      "summary": "LineBuffer ordering/bound invariants expressed only in prose over bare usize fields, not type-enforced.",
+      "file": "line_buffer.rs",
+      "line": 299,
+      "category": "design",
+      "reported_by": [
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 1,
+          "subagent": "agent-af7dd0177ea7a1046"
+        },
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 2,
+          "subagent": "agent-a648384ad162f9549"
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "nit",
+      "confidence": 55,
+      "rationale": "Broad architecture observation about invariants not being type-enforced; not a defect in the diff."
+    },
+    {
+      "cluster_id": "c16",
+      "summary": "Binary detection spanning a read boundary is untested.",
+      "file": "line_buffer.rs",
+      "line": 431,
+      "category": "test",
+      "reported_by": [
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 2,
+          "subagent": "agent-a280460d51bb6c4d0"
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "nit",
+      "confidence": 50,
+      "rationale": "Detection runs over the full contiguous newbytes range, so a NUL cannot be split across reads — no real risk."
+    },
+    {
+      "cluster_id": "c17",
+      "summary": "EOF or error mid-accumulation inside the new inner loop is untested.",
+      "file": "line_buffer.rs",
+      "line": 419,
+      "category": "test",
+      "reported_by": [
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 2,
+          "subagent": "agent-a280460d51bb6c4d0"
+        }
+      ],
+      "verdict": "valid-other",
+      "matches": "none",
+      "judged_severity": "low",
+      "confidence": 56,
+      "rationale": "Reasonable coverage gap: the new inner loop's EOF/error mid-accumulation break paths are new and untested."
+    },
+    {
+      "cluster_id": "c18",
+      "summary": "A transient Ok(0) then more data with no line terminator asserted to accumulate the whole stream (OOM).",
+      "file": "line_buffer.rs",
+      "line": 419,
+      "category": "bug",
+      "reported_by": [
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 2,
+          "subagent": "agent-a859681943b47654e"
+        }
+      ],
+      "verdict": "false-positive",
+      "matches": "none",
+      "judged_severity": "low",
+      "confidence": 60,
+      "rationale": "A transient Ok(0) hits `if readlen==0 { break }` and ends the pass; unbounded growth on a terminator-less line is pre-existing by design, not the asserted new OOM."
+    },
+    {
+      "cluster_id": "c19",
+      "summary": "core.rs redundant same-name rebind (pre-existing).",
+      "file": "core.rs",
+      "line": 203,
+      "category": "style",
+      "reported_by": [
+        {
+          "tool": "anthropic-code-review",
+          "repeat": 1,
+          "subagent": null
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "nit",
+      "confidence": 58,
+      "rationale": "Self-admitted pre-existing style rebind unrelated to the change."
+    },
+    {
+      "cluster_id": "c20",
+      "summary": "self.last_lineterm = self.end has no explanatory comment.",
+      "file": "line_buffer.rs",
+      "line": 433,
+      "category": "doc",
+      "reported_by": [
+        {
+          "tool": "pr-review-toolkit",
+          "repeat": 1,
+          "subagent": "agent-a98de0a6942a2c716"
+        }
+      ],
+      "verdict": "nitpick",
+      "matches": "none",
+      "judged_severity": "nit",
+      "confidence": 63,
+      "rationale": "Missing-comment nit on a line that already existed in the original code, merely relocated."
+    }
+  ]
+}
