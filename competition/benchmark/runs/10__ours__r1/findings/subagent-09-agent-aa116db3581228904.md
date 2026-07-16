@@ -1,0 +1,9 @@
+# subagent agent-aa116db3581228904
+
+```json
+{
+  "finding": "#1",
+  "verdict": "confirmed",
+  "reason": "Direct code inspection of crates/searcher/src/line_buffer.rs lines 416-437 confirms the exact structure described: the inner `while !self.free_buffer().is_empty()` loop (line 419) repeatedly calls `rdr.read()` until the entire free buffer region is filled or EOF is hit, and only after that loop exits does the `match self.config.binary { BinaryDetection::Quit(byte) => ... }` check run on the full `newbytes` slice (lines 440-453). Because `ensure_capacity()` (lines 504-527) doubles the buffer whenever it's exhausted, and this capacity persists/grows across `fill()` calls via `roll()` (needed to retain unconsumed `-A` context), the free buffer can legitimately reach many MB before a `fill()` call, so the worst-case over-read before a `Quit` byte is caught is bounded by the buffer size, not by a single `read()` call. This is corroborated by the introducing commit's own message (8c6595c): 'We fix this by putting `read` into an inner loop that ensures our buffer gets filled up,' and its explicit finding that `read` on stdin 'never seems to fill the buffer with more than 64K' -- meaning pre-fix, a per-read binary check on stdin was genuinely bounded to ~64K, while post-fix that bound is removed for stdin/pipe-like readers whose individual reads don't fill the whole buffer. (Note: for plain regular-file reads specifically, the commit's own text says a single `read()` 'pretty reliably fills the caller's buffer' already, so for that narrow case the old code may have exhibited similar magnitude over-reads too -- but this doesn't refute the finding, since the structural claim and the stdin/pipe regression are both real and verifiable from the code and the commit's own reasoning.) Citation is exact: line 419 is precisely `while !self.free_buffer().is_empty() {`."
+}
+```

@@ -1,0 +1,101 @@
+{
+  "run_id": "10__pr-review-toolkit__r2",
+  "subject_id": 10,
+  "lang": "rust",
+  "size": "small",
+  "tool": "pr-review-toolkit",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "BurntSushi/ripgrep",
+  "pr": 3185,
+  "merge_sha": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "review_base": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0^1",
+  "review_head": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 907,
+  "duration_ms": "27968",
+  "duration_api_ms": "1953532",
+  "num_turns": "1",
+  "cost_usd": "9.615019250000001",
+  "orch_usage": {
+    "input_tokens": "2",
+    "output_tokens": "2340",
+    "cache_creation_tokens": "4209",
+    "cache_read_tokens": "86352",
+    "total_tokens": 92903
+  },
+  "session_tokens": {
+    "subagents": 5,
+    "input": 159,
+    "output": 20876,
+    "cache_creation": 477319,
+    "cache_read": 5654906,
+    "total": 6153260,
+    "orchestrator": {
+      "output": 18931,
+      "total": 728124,
+      "duration_s": 906
+    },
+    "per_subagent": [
+      {
+        "output": 34,
+        "input": 20,
+        "cache_creation": 92539,
+        "cache_read": 657877,
+        "total": 750470,
+        "duration_s": 285,
+        "agent": "agent-a280460d51bb6c4d0"
+      },
+      {
+        "output": 1363,
+        "input": 62,
+        "cache_creation": 137802,
+        "cache_read": 2971201,
+        "total": 3110428,
+        "duration_s": 823,
+        "agent": "agent-a2d78549a4f11d588"
+      },
+      {
+        "output": 369,
+        "input": 32,
+        "cache_creation": 78494,
+        "cache_read": 983285,
+        "total": 1062180,
+        "duration_s": 276,
+        "agent": "agent-a648384ad162f9549"
+      },
+      {
+        "output": 18,
+        "input": 10,
+        "cache_creation": 46413,
+        "cache_read": 151712,
+        "total": 198153,
+        "duration_s": 182,
+        "agent": "agent-a84628f238e48ed35"
+      },
+      {
+        "output": 161,
+        "input": 14,
+        "cache_creation": 48797,
+        "cache_read": 254933,
+        "total": 303905,
+        "duration_s": 168,
+        "agent": "agent-ab75267c82095c9f0"
+      }
+    ],
+    "max_subagent_duration_s": 823,
+    "sum_subagent_duration_s": 1734
+  },
+  "input_tokens": "2",
+  "output_tokens": "2340",
+  "cache_creation_tokens": "4209",
+  "cache_read_tokens": "86352",
+  "total_tokens": 92903,
+  "session_id": "976100be-3f2f-45a2-b47d-ad6f7eaed6f5",
+  "findings_lines": 36,
+  "invocation": "Comprehensively review pull request #3185 of the GitHub repository BurntSushi/ripgrep using the pr-review-toolkit agents: run code-reviewer, silent-failure-hunter, pr-test-analyzer, comment-analyzer, and type-design-analyzer against the PR's diff (fetch it with gh pr diff 3185). Do NOT post anything. Output each agent's complete findings with file:line references.",
+  "finished_at": "2026-07-16T16:29:23Z"
+}

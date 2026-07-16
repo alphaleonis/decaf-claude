@@ -65,6 +65,16 @@ cc_tok="$(jm '.usage.cache_creation_input_tokens')"; cr_tok="$(jm '.usage.cache_
 num_turns="$(jm '.num_turns')"; dur_ms="$(jm '.duration_ms')"; dur_api="$(jm '.duration_api_ms')"
 sid="$(jm '.session_id')"
 
+# Subscription usage/session limit hit: this is not a real result. Don't record a partial cell —
+# drop its artifacts, reset it to pending, and signal the driver (exit 75) to stop the batch so we
+# don't churn the remaining queue against a limit. Resume after the limit resets.
+if [ "$is_error" = "true" ] && jq -r '.result // ""' "$M" | grep -qiE 'session limit|usage limit|hit your (session|usage|weekly) limit|reached your .* limit'; then
+  echo "[$RID] SESSION/USAGE LIMIT reached ($(jq -r '.result // ""' "$M" | head -1)) — not recording; reset to pending."
+  rm -rf "$outdir"
+  manifest_pending "$RID"
+  exit 75
+fi
+
 # findings: the final result text, always
 jq -r '.result // ""' "$M" > "$outdir/raw_output.md" 2>/dev/null || : > "$outdir/raw_output.md"
 # plus any tool-written report file inside the subject repo
