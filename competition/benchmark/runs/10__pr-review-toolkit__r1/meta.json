@@ -1,0 +1,94 @@
+{
+  "run_id": "10__pr-review-toolkit__r1",
+  "subject_id": 10,
+  "lang": "rust",
+  "size": "small",
+  "tool": "pr-review-toolkit",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "BurntSushi/ripgrep",
+  "pr": 3185,
+  "merge_sha": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "review_base": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0^1",
+  "review_head": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 739,
+  "duration_ms": "736362",
+  "duration_api_ms": "1975197",
+  "num_turns": "9",
+  "cost_usd": "8.805166999999997",
+  "input_tokens": "9",
+  "output_tokens": "17811",
+  "cache_creation_tokens": "60197",
+  "cache_read_tokens": "207941",
+  "total_tokens": 285958,
+  "session_id": "dd1cd8e7-5129-409b-94a1-d43fb14fe68a",
+  "findings_lines": 120,
+  "invocation": "Comprehensively review pull request #3185 of the GitHub repository BurntSushi/ripgrep using the pr-review-toolkit agents: run code-reviewer, silent-failure-hunter, pr-test-analyzer, comment-analyzer, and type-design-analyzer against the PR's diff (fetch it with gh pr diff 3185). Do NOT post anything. Output each agent's complete findings with file:line references.",
+  "finished_at": "2026-07-16T13:29:18Z",
+  "session_tokens": {
+    "subagents": 5,
+    "input": 123,
+    "output": 18440,
+    "cache_creation": 471161,
+    "cache_read": 4195714,
+    "total": 4685438,
+    "orchestrator": {
+      "output": 17811,
+      "total": 285958,
+      "duration_s": 737
+    },
+    "per_subagent": [
+      {
+        "output": 212,
+        "input": 41,
+        "cache_creation": 127675,
+        "cache_read": 1976417,
+        "total": 2104345,
+        "duration_s": 556,
+        "agent": "agent-a05b2537f0eec312c"
+      },
+      {
+        "output": 31,
+        "input": 11,
+        "cache_creation": 52114,
+        "cache_read": 221925,
+        "total": 274081,
+        "duration_s": 213,
+        "agent": "agent-a2b66c7f9b67e2100"
+      },
+      {
+        "output": 200,
+        "input": 22,
+        "cache_creation": 52024,
+        "cache_read": 536088,
+        "total": 588334,
+        "duration_s": 252,
+        "agent": "agent-a98de0a6942a2c716"
+      },
+      {
+        "output": 49,
+        "input": 19,
+        "cache_creation": 98967,
+        "cache_read": 576039,
+        "total": 675074,
+        "duration_s": 465,
+        "agent": "agent-aa4646d4b49c20458"
+      },
+      {
+        "output": 137,
+        "input": 21,
+        "cache_creation": 80184,
+        "cache_read": 677304,
+        "total": 757646,
+        "duration_s": 285,
+        "agent": "agent-af7dd0177ea7a1046"
+      }
+    ],
+    "max_subagent_duration_s": 556,
+    "sum_subagent_duration_s": 1771
+  }
+}

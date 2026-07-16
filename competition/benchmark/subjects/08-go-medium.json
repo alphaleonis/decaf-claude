@@ -1,0 +1,34 @@
+{
+  "id": 8,
+  "lang": "go",
+  "size": "medium",
+  "repo": "kubernetes/kubernetes",
+  "pr": 129768,
+  "url": "https://github.com/kubernetes/kubernetes/pull/129768",
+  "base_ref": "master",
+  "head_sha": "1dd33c8e6de2428bb0bb50142518158764fbb942",
+  "merge_sha": "a3fcc7070ef93aa33c7d5fa330f989f0ff66244d",
+  "review": {
+    "repo": "kubernetes/kubernetes",
+    "pr_number": 129768,
+    "base": "a3fcc7070ef93aa33c7d5fa330f989f0ff66244d^1",
+    "head": "a3fcc7070ef93aa33c7d5fa330f989f0ff66244d",
+    "diff_cmd": "git diff a3fcc7070ef93aa33c7d5fa330f989f0ff66244d^1 a3fcc7070ef93aa33c7d5fa330f989f0ff66244d"
+  },
+  "size_stats": {
+    "additions": 326,
+    "deletions": 91,
+    "files": 5
+  },
+  "ground_truth": {
+    "bug_class": "logic-race",
+    "summary": "The deletion/add-finalizer race protection causes e2e 'not found' errors when deleting pods (hot-loop / perma-race).",
+    "revert_pr": "https://github.com/kubernetes/kubernetes/pull/133979",
+    "regression_issue": "https://github.com/kubernetes/kubernetes/issues/133976",
+    "human_threads": {
+      "count": 2,
+      "note": "deads2k/liggitt: 'so we can end up perma-racing a hot looping update?'"
+    },
+    "caveat": "merged->reverted in one day; tightly scoped regression"
+  }
+}

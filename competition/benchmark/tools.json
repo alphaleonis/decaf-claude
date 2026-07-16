@@ -1,0 +1,47 @@
+[
+  {
+    "id": "ours",
+    "name": "decaf-quality:code-review (mid, --report)",
+    "requires_plugin": "decaf-quality",
+    "install_hint": "claude plugin marketplace add <path-to-this-repo>; claude plugin install decaf-quality@decaf",
+    "model_policy": "tiers off the session model: judgment agents on session model, volume agents + validators mid-tier",
+    "findings_file": ".decaf/code-reviews/CODE_REVIEW_*.md",
+    "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report {PR}. This reviews pull request #{PR} of the GitHub repository {REPO} (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity."
+  },
+  {
+    "id": "anthropic-code-review",
+    "name": "Anthropic /code-review",
+    "requires_plugin": "code-review",
+    "install_hint": "claude plugin install code-review@claude-plugins-official",
+    "model_policy": "hard-pins haiku (triage) / sonnet (CLAUDE.md compliance + summary) / opus (bug agents + validators) by role, independent of session model",
+    "findings_file": "",
+    "invocation": "Use the /code-review workflow to review pull request #{PR} of the GitHub repository {REPO}. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references."
+  },
+  {
+    "id": "pr-review-toolkit",
+    "name": "Anthropic PR Review Toolkit (comprehensive)",
+    "requires_plugin": "pr-review-toolkit",
+    "install_hint": "claude plugin install pr-review-toolkit@claude-plugins-official",
+    "model_policy": "session model, no internal tiering",
+    "findings_file": "",
+    "invocation": "Comprehensively review pull request #{PR} of the GitHub repository {REPO} using the pr-review-toolkit agents: run code-reviewer, silent-failure-hunter, pr-test-analyzer, comment-analyzer, and type-design-analyzer against the PR's diff (fetch it with gh pr diff {PR}). Do NOT post anything. Output each agent's complete findings with file:line references."
+  },
+  {
+    "id": "tag1-comprehensive-review",
+    "name": "Tag1 /comprehensive-review (full, --local)",
+    "requires_plugin": "comprehensive-review",
+    "install_hint": "claude plugin marketplace add tag1consulting/claude-plugins; claude plugin install comprehensive-review@tag1consulting; claude plugin install pr-review-toolkit@claude-plugins-official",
+    "model_policy": "Sonnet orchestrator + 2 pinned Opus agents (architecture-reviewer, security-reviewer); other agents Sonnet/Haiku",
+    "findings_file": ".decaf/tag1-review-*.md",
+    "invocation": "Run /comprehensive-review --pr {PR} --local --output-file .decaf/tag1-review-{PR}.md for the GitHub repository {REPO}. --local means display everything and post NOTHING. When done, print the output-file path and a summary of findings by severity."
+  },
+  {
+    "id": "superpowers",
+    "name": "obra/superpowers requesting-code-review",
+    "requires_plugin": "superpowers",
+    "install_hint": "claude plugin install superpowers@claude-plugins-official",
+    "model_policy": "session model; one general-purpose reviewer subagent",
+    "findings_file": "",
+    "invocation": "Using the superpowers requesting-code-review skill and its code-reviewer.md prompt template, dispatch ONE general-purpose subagent to review the code changes in this repository from commit {BASE} to commit {HEAD} (i.e. `git diff {BASE} {HEAD}`). Give it the PR title and the diff range as context. Return the reviewer subagent's full report verbatim (Strengths / Critical / Important / Minor / Assessment)."
+  }
+]

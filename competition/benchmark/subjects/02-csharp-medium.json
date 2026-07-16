@@ -1,0 +1,33 @@
+{
+  "id": 2,
+  "lang": "csharp",
+  "size": "medium",
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "url": "https://github.com/dotnet/aspnetcore/pull/67075",
+  "base_ref": "main",
+  "head_sha": "b9231fa71a15f5f608da22e04386fa08ca435a0b",
+  "merge_sha": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "review": {
+    "repo": "dotnet/aspnetcore",
+    "pr_number": 67075,
+    "base": "3b00cfcae37cd1866de43205059039c1576404ff^1",
+    "head": "3b00cfcae37cd1866de43205059039c1576404ff",
+    "diff_cmd": "git diff 3b00cfcae37cd1866de43205059039c1576404ff^1 3b00cfcae37cd1866de43205059039c1576404ff"
+  },
+  "size_stats": {
+    "additions": 168,
+    "deletions": 1,
+    "files": 2
+  },
+  "ground_truth": {
+    "bug_class": "logic-reflection",
+    "summary": "DeclaredOnly->FlattenHierarchy fallback in TryGetValidatableProperty does not actually fix the AmbiguousMatchException and can silently drop validation attributes depending on which hierarchy level resolves.",
+    "revert_pr": "https://github.com/dotnet/aspnetcore/pull/67712",
+    "human_threads": {
+      "count": 9,
+      "note": "ilonatommy: managing flow by exceptions is not preferred; explore cheaper alternatives"
+    },
+    "caveat": "production change is ~11 lines; the rest of the diff is tests"
+  }
+}

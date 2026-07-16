@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Run the next pending cell(s), or a specific one.
+# Usage: bench_next.sh [--count N] [--tool <id>] [--subject <id>] [<run_id>]
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+
+[ -f "$MANIFEST" ] || { echo "No manifest. Run /bench-init first."; exit 1; }
+
+COUNT=1; TOOL=""; SUBJECT=""; EXPLICIT=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --count)   COUNT="$2"; shift 2;;
+    --tool)    TOOL="$2"; shift 2;;
+    --subject) SUBJECT="$2"; shift 2;;
+    --*)       echo "unknown flag: $1"; exit 2;;
+    *)         EXPLICIT="$1"; shift;;
+  esac
+done
+
+if [ -n "$EXPLICIT" ]; then
+  bash "$BENCH_DIR/scripts/run_cell.sh" "$EXPLICIT"
+  exit $?
+fi
+
+mapfile -t rids < <(
+  jq -r --arg t "$TOOL" --arg s "$SUBJECT" \
+    'select(.status=="pending")
+     | select($t=="" or .tool==$t)
+     | select($s=="" or (.subject_id|tostring)==$s)
+     | .run_id' "$MANIFEST" | head -n "$COUNT"
+)
+
+if [ "${#rids[@]}" -eq 0 ]; then
+  echo "No pending cells match (tool='${TOOL:-any}' subject='${SUBJECT:-any}')."
+  exit 0
+fi
+
+echo "Running ${#rids[@]} cell(s): ${rids[*]}"
+echo
+for r in "${rids[@]}"; do
+  bash "$BENCH_DIR/scripts/run_cell.sh" "$r" || echo "[$r] run_cell exited non-zero (recorded as failed)"
+  echo
+done
+echo "Done. /bench-status for progress."

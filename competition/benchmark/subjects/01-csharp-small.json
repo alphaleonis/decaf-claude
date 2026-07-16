@@ -1,0 +1,34 @@
+{
+  "id": 1,
+  "lang": "csharp",
+  "size": "small",
+  "repo": "dotnet/efcore",
+  "pr": 32770,
+  "url": "https://github.com/dotnet/efcore/pull/32770",
+  "base_ref": "main",
+  "head_sha": "f08c4cfc564c23176ab79d1bb1e7e0ee14827cd0",
+  "merge_sha": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "review": {
+    "repo": "dotnet/efcore",
+    "pr_number": 32770,
+    "base": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455^1",
+    "head": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+    "diff_cmd": "git diff 9e69b85b90e0d490fa46dbf25ffac0c3f7747455^1 9e69b85b90e0d490fa46dbf25ffac0c3f7747455"
+  },
+  "size_stats": {
+    "additions": 63,
+    "deletions": 9,
+    "files": 2
+  },
+  "ground_truth": {
+    "bug_class": "logic",
+    "summary": "SqliteDataRecord handling of multiple BLOB columns causes an assertion failure / wrong read.",
+    "revert_pr": "https://github.com/dotnet/efcore/pull/32945",
+    "regression_issue": "https://github.com/dotnet/efcore/issues/32944",
+    "human_threads": {
+      "count": 4,
+      "note": "ajcvickers/ErikEJ raised value-tuple + re-add-Assert points"
+    },
+    "caveat": "reverted next day; real product logic bug in SqliteDataRecord.cs"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": 9,
+  "lang": "go",
+  "size": "large",
+  "repo": "kubernetes/kubernetes",
+  "pr": 130837,
+  "url": "https://github.com/kubernetes/kubernetes/pull/130837",
+  "base_ref": "master",
+  "head_sha": "46e2c22fd76643bc985f7e77c99e97c6b7d078fc",
+  "merge_sha": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "review": {
+    "repo": "kubernetes/kubernetes",
+    "pr_number": 130837,
+    "base": "0872760763d5877707b018a4eea870d1fc02e6a4^1",
+    "head": "0872760763d5877707b018a4eea870d1fc02e6a4",
+    "diff_cmd": "git diff 0872760763d5877707b018a4eea870d1fc02e6a4^1 0872760763d5877707b018a4eea870d1fc02e6a4"
+  },
+  "size_stats": {
+    "additions": 757,
+    "deletions": 803,
+    "files": 18
+  },
+  "ground_truth": {
+    "bug_class": "logic-timeout-backcompat",
+    "summary": "The kube-proxy node manager treats NodeIP-fetch timeouts as non-fatal and breaks backward compatibility (cloud-provider-azure).",
+    "revert_pr": "https://github.com/kubernetes/kubernetes/pull/132958",
+    "retry_pr": "https://github.com/kubernetes/kubernetes/pull/133059",
+    "human_threads": {
+      "count": 30,
+      "note": "danwinship: 'this loses the timeout that the previous version had' — foreshadows the bug"
+    },
+    "caveat": "bare revert body defers the 'why' to the take-2 PR; the reviewer comment foreshadows the regression"
+  }
+}

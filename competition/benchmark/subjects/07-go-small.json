@@ -1,0 +1,34 @@
+{
+  "id": 7,
+  "lang": "go",
+  "size": "small",
+  "repo": "prometheus/prometheus",
+  "pr": 13777,
+  "url": "https://github.com/prometheus/prometheus/pull/13777",
+  "base_ref": "main",
+  "head_sha": "53091126c28f518c154c365a47d617c9ee7634de",
+  "merge_sha": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "review": {
+    "repo": "prometheus/prometheus",
+    "pr_number": 13777,
+    "base": "d1abc3f2557660728dc6a34eb2da1f32461b6665^1",
+    "head": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+    "diff_cmd": "git diff d1abc3f2557660728dc6a34eb2da1f32461b6665^1 d1abc3f2557660728dc6a34eb2da1f32461b6665"
+  },
+  "size_stats": {
+    "additions": 32,
+    "deletions": 21,
+    "files": 1
+  },
+  "ground_truth": {
+    "bug_class": "logic-use-after-close",
+    "summary": "Chunked remote read closes the querier too early; the returned iterators can then access memory-mapped files that have already been closed (use-after-close).",
+    "revert_pr": "https://github.com/prometheus/prometheus/pull/14515",
+    "regression_issue": "https://github.com/prometheus/prometheus/issues/14422",
+    "human_threads": {
+      "count": 0,
+      "note": "no inline review comments on the PR"
+    },
+    "caveat": "no human review threads; crispest bug ground truth of the Go-small candidates (named root cause, cross-release backports, dedicated reproducer #14599)"
+  }
+}
