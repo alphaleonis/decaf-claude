@@ -1,56 +1,66 @@
-The reviewer subagent completed its review. Here is its full report, verbatim:
+Below is the reviewer subagent's full report, verbatim.
 
 ---
 
-## Code Review: `searcher: fix a performance bug with -A/--after-context`
+# Code Review: searcher — fix a performance bug with `-A/--after-context`
 
-### What the change does
+## Context
 
-In `crates/searcher/src/searcher/core.rs`, the `roll()` function decides how many bytes to drop from the front of the streaming buffer and how many trailing bytes to retain as context before the next `read`. The one-line change swaps the retention target from `max_context()` (= `max(before_context, after_context)`) to `before_context`:
+The change comprises two commits by the ripgrep author (BurntSushi, upstream PR #3184), both targeting the same performance pathology where search time grew super-linearly with large `-A/--after-context` values:
+
+1. **`8bf6f0a2`** (`line_buffer.rs`) — wraps `rdr.read()` in an inner loop that fills the whole free buffer before doing binary detection / line-terminator search. Fixes the stdin-specific case where `read` returns ≤64K per call and the buffer was under-filled, defeating the amortization that the capacity-growth logic assumes.
+2. **`146f78f7`** (`core.rs`) — in `roll`, changes the `preceding()` line-scan count from `max_context()` to `before_context`, so the potentially expensive backward line scan retains only the lines actually needed (before-context), not `max(before, after)`.
+
+Plus the matching CHANGELOG entry and two `glue.rs` test-expectation updates.
+
+## Strengths
+
+- **Correct root-cause fix, not a workaround.** The `core.rs` change is grounded in the actual data-retention requirement. I traced the after-context path: it is emitted *forward* via the persistent `after_context_left` counter (`core.rs:281-308`, `after_context_by_line`), which `roll` does not reset — only `last_line_counted`/`last_line_visited` are cleared. So after-context genuinely does not need retained backward buffer data, and retaining only `before_context` lines is sufficient. The change is sound.
+- **The `before_context == 0, after_context > 0` corner case is preserved.** `roll` still enters the else-branch because its guard is `max_context() == 0`, and `preceding(buf, term, 0)` returns the start of the last line, giving the "previous line visited" reference the context-separator logic needs. The added comment documents exactly this.
+- **Good test coverage already exists and passes.** `SearcherTester` runs each case through *both* the streaming line-buffer reader and the slice reader and compares — so any output divergence introduced by the fill/roll changes would fail. All 77 `grep-searcher` unit tests + doctest pass, including `context_*`, `big1`, `binary3`, `binary4`.
+- **EOF/termination logic in the rewritten `fill` is correct.** `oldend` is captured before the inner loop; `newbytes.is_empty()` after the loop correctly detects "read 0 immediately" as EOF, and a partial-then-EOF read still processes the bytes and terminates on the next outer iteration.
+- Clear, honest commit messages with reproduced benchmarks; CHANGELOG placed correctly under "Performance improvements."
+
+## Issues
+
+### Critical (Must Fix)
+None.
+
+### Important (Should Fix)
+
+**1. Input latency regression for slow/interactive streams — `crates/searcher/src/line_buffer.rs:419-425`**
+
+The new inner loop reads until the free buffer (64 KB by default, larger under big `-A`) is *full* or EOF:
 
 ```rust
-let context_start = lines::preceding(
-    buf,
-    self.config.line_term.as_byte(),
--   self.config.max_context(),
-+   self.config.before_context,
-);
-let consumed = std::cmp::max(context_start, self.last_line_visited);
+while !self.free_buffer().is_empty() {
+    let readlen = rdr.read(self.free_buffer())?;
+    if readlen == 0 { break; }
+    self.end += readlen;
+}
 ```
 
-The insight is correct: `roll` retains *preceding* lines, which are only needed to satisfy `before_context` for a hypothetical future match at the start of the next chunk. After-context needs no preceding retention — it is emitted forward, and its cross-buffer state is carried entirely by `after_context_left` and `last_line_visited` (the latter preserved by the unchanged `max(context_start, self.last_line_visited)`). Retaining `after_context` preceding lines was pure dead weight that, for large `-A`, kept the buffer nearly full each roll, so each `read` advanced by very little — the quadratic-ish slowdown.
+The previous code returned from `fill()` as soon as a single `read()` produced a chunk containing a line terminator. [Inference — based on standard POSIX pipe `read()` semantics, not empirically measured here; this is expected behavior, not guaranteed] For a producer that emits complete lines but slowly with pauses (e.g. `tail -f access.log | rg ERROR`), `read` returns the available line, the loop sees remaining free space and calls `read` again, which blocks until the writer sends more. Net effect: matches are withheld until ~64 KB accumulates or the stream closes, whereas before they surfaced per newline-containing chunk.
 
-### Strengths
+Why it matters: it's a user-visible responsiveness change for live-filter usage. It does not affect correctness or bulk-throughput cases (`cat file | rg`, files), which is exactly where the perf win lands. Given the upstream author authored this tradeoff deliberately, it is most likely an accepted one — but it should be a conscious decision. Recommend confirming intent and, if line-latency matters, considering a bounded fill (e.g. stop the inner loop once a line terminator has been read rather than only when the buffer is full).
 
-- **Minimal and surgical.** One functional line plus an explanatory comment; no API or structural churn.
-- **Sound reasoning, well-documented.** The added comment explains *why* the after-context term is unnecessary, and the pre-existing comment about needing `last_line_visited` for the context separator remains accurate (that need is still met by the `max(...)`).
-- **Behavior-preserving — verified.** I built the parent commit in a separate worktree and compared it against HEAD. Output is **byte-identical** across a broad matrix on stdin: `-A` only (0/5/50/5000/999999), `-B` only, mixed `-A>-B` and `-A<-B`, `-C`, `-v/--invert`, `--passthru`, and `--context-separator`. Line-numbered output matched too, confirming the `count_lines`/`absolute_byte_offset` accounting in `roll` (which now consumes more per roll) stays consistent.
-- **Cross-path consistency — verified.** For HEAD, the changed streaming paths (stdin and `--no-mmap`) produce identical output to the mmap path for all `-A` values tested.
-- **Performance goal met, dramatically.** On a ~250MB stdin input in a debug build: parent `-A999` = **117.8s** vs HEAD `-A999` = **1.0s**; HEAD stays roughly flat as `-A` grows (1.0s at `-A999` → ~1.5s at `-A999999`). Direction and magnitude match the commit's premise. (Memory was not separately measured, but the logic retains strictly *less* than before, consistent with the "no memory increase" claim.)
-- **Existing tests pass and cover the changed path.** All 77 `grep-searcher` tests pass. The `SearcherTester` auto-heap-limit configs force frequent buffer rolling, and the after-context-only sub-tests (`before_context == 0`, `after_context ∈ {1,2,3}`) exercise exactly the `before_context < after_context` scenario this change alters.
+### Minor (Nice to Have)
 
-### Issues
+**2. `--stats` "bytes searched" shifts in the binary-quit streaming edge case — `crates/searcher/src/searcher/glue.rs:740,774`**
 
-#### Critical (Must Fix)
-None.
+The updated expectations (`262146 → 262142`, a single `zzz\n`) are correct and consistent: with the fuller buffer, the line-buffer reader hits the binary-quit boundary 4 bytes earlier *in reported byte count*. The slice-reader value (`262153`) and the actual match output (`0:a`) are unchanged, so this is a benign statistic shift, not a masked bug. Worth being aware that `--stats` byte counts can differ slightly for streaming reads that terminate on binary detection. No action required beyond awareness.
 
-#### Important (Should Fix)
-None.
+**3. CHANGELOG wording — `CHANGELOG.md:12`**
 
-#### Minor (Nice to Have)
+"Improve performance of large values with `-A/--after-context`" reads awkwardly; "Improve performance with large values of `-A/--after-context`" is clearer. Trivial.
 
-- **`core.rs:194-197` — comment wording slightly overstates.** "We can skip this ... step when `before_context==0`" — the `lines::preceding` call is not actually skipped; it still runs with `count == 0`, which just makes it cheap (one `rfind` to the last line boundary instead of scanning back N lines). The *effect* is correct, but "skip" reads as if the call is bypassed. Consider "...this step becomes cheap (no backward scan) when `before_context==0`." Purely cosmetic.
-- **No dedicated regression test for the perf-sensitive scenario.** Correctness of large-`-A` + multi-buffer rolling is covered only indirectly (small `-A` + minimal heap limit forces rolling; the logic is size-invariant). This matches ripgrep's usual practice of not adding timing-based tests, so it's acceptable — noting it only for completeness.
-- **CHANGELOG:** No new entry, which is correct — the existing `PERF #3184` entry (added by the parent commit) already covers "Improve performance of large values with `-A/--after-context`." No gap.
+## Recommendations
 
-### Recommendations
+- Confirm the streaming-latency tradeoff (Issue 1) is intentional; if this is a faithful upstream port, note that upstream accepted it and no change is needed.
+- No test gap for the fix itself — the dual-reader `SearcherTester` harness is the right guard and already exercises the changed paths. If you want belt-and-suspenders coverage for the *stdin*-specific pathology, an integration test asserting output equivalence for a large `-A` value across file vs. piped-stdin input would lock in the fixed behavior, but it's optional given existing coverage.
 
-Ship as-is. Optionally tweak the "skip" wording in the comment. No other changes warranted.
+## Assessment
 
-### Assessment
+**Ready to merge?** With fixes — really "with confirmation." The code is correct and well-tested; there are no correctness defects. The only substantive item is confirming that the intentional input-latency change (Issue 1) is acceptable.
 
-**Ready to merge?** Yes.
-
-**Reasoning:** The change is a correct, minimal, and well-reasoned fix; I verified it is byte-for-byte behavior-preserving against the pre-fix binary across a wide flag/size matrix (and consistent across the mmap/stdin/`--no-mmap` paths), while delivering the intended large, `-A`-invariant speedup. The only notes are cosmetic.
-
-**Read-only compliance:** The main checkout was not mutated (HEAD still at `d4b77a8d`; only the pre-existing untracked `.decaf/` remains). The parent build was done in a temporary worktree at `/tmp/review-parent`, which has been removed, along with all temp test files.
+**Reasoning:** Both fixes address the real root cause (under-filled reads defeating amortization; over-broad backward line scanning), the after-context-forward-emission invariant that makes the `before_context`-only retention safe holds up under tracing, and the full existing dual-reader test suite passes — the sole caveat is a deliberate streaming-responsiveness tradeoff worth an explicit sign-off.

@@ -1,52 +1,4 @@
-# Benchmark run: 10__superpowers__r2
-
-| field | value |
-|---|---|
-| tool | superpowers |
-| subject | 10 (rust / small) — BurntSushi/ripgrep#3185 |
-| review diff | `de2567a4c76fa671005538d6cd841abc44932b9a..146f78f77ff24e74fccf6da91a5e28ce4c48dfa1` (merge d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0) |
-| session model | claude-opus-4-8 |
-| status | done (exit 0, is_error=false, subtype=success) |
-| **total review time — wall (s)** | 435 |
-| longest single subagent (s) | 368 |
-| duration_ms (orchestrator self) | 432956 |
-| duration_api_ms (summed parallel API time, not wall) | 431064 |
-| num_turns | 6 |
-| cost_usd | 1.9401335 |
-| input_tokens | 7 |
-| output_tokens | 4944 |
-| cache_creation_tokens | 11151 |
-| cache_read_tokens | 186388 |
-| total_tokens (orchestrator only) | 202490 |
-| **subagents** | 1 |
-| **ws output_tokens** | 5287 |
-| ws input_tokens | 42 |
-| ws cache_creation | 90633 |
-| ws cache_read | 1240102 |
-| ws total_tokens | 1336064 |
-| session_id | 963e1b78-7403-4f7a-946e-b91d4a49d1c2 |
-| findings (raw lines) | 66 |
-
-> **ws = whole-session** (orchestrator + every subagent transcript, deduped). The non-ws token
-> rows are the orchestrator session ONLY — they miss subagent tokens for fan-out tools.
-> **`cost_usd` is the authoritative whole-session cost** (Claude Code sums subagents; not an estimate).
-> Caveat: `ws total_tokens` is inflated by prompt-cache re-reads (cache_read counted per turn);
-> `ws output_tokens` is the clean, cache-independent work signal. Findings files under ./findings/.
-
-### Per-subagent (diagnostic)
-
-Subagents run in PARALLEL — the TOTAL review time is the wall clock above (435s), NOT the sum of these.
-
-| agent | output_tokens | total_tokens | duration_s |
-|---|---:|---:|---:|
-| agent-ae0e30873a6731490 | 343 | 1133574 | 368 |
-
-## Findings (final result text)
-
-```
-Below is the reviewer subagent's full report, verbatim.
-
----
+# subagent agent-ae0e30873a6731490
 
 # Code Review: searcher — fix a performance bug with `-A/--after-context`
 
@@ -110,4 +62,3 @@ The updated expectations (`262146 → 262142`, a single `zzz\n`) are correct and
 **Ready to merge?** With fixes — really "with confirmation." The code is correct and well-tested; there are no correctness defects. The only substantive item is confirming that the intentional input-latency change (Issue 1) is acceptable.
 
 **Reasoning:** Both fixes address the real root cause (under-filled reads defeating amortization; over-broad backward line scanning), the after-context-forward-emission invariant that makes the `before_context`-only retention safe holds up under tracing, and the full existing dual-reader test suite passes — the sole caveat is a deliberate streaming-responsiveness tradeoff worth an explicit sign-off.
-```

@@ -1,37 +1,48 @@
-The reviewer subagent has completed its review. Here is its full report verbatim:
+The reviewer subagent has completed its review. Here is its full report, verbatim:
 
 ---
 
+## Code Review: `searcher: fix a performance bug with -A/--after-context`
+
+I reviewed both commits in the range (`8bf6f0a2` line-buffer read-loop + glue test expectations; `146f78f7` the `core.rs` `preceding` optimization), read the full `fill`/`roll`/`ensure_capacity`/`preceding` logic in context, and verified behavior by running the searcher unit tests (77 passed) and the integration context tests (20 passed).
+
 ### Strengths
 
-- **Correct, minimal, and well-scoped.** The change is a one-line functional edit (`max_context()` → `before_context`) plus an explanatory comment, confined to the single place it matters (`Core::roll` in `crates/searcher/src/searcher/core.rs:198-202`). It matches the actual upstream ripgrep fix (BurntSushi, follow-up to #3184) verbatim.
-- **The guard was correctly left alone.** `roll` still branches on `if self.config.max_context() == 0` (core.rs:186), *not* `before_context == 0`. This is the subtle, load-bearing detail: with `before_context==0 && after_context>0` the code must still enter the `else` branch so that `preceding(buf, 0)` retains the last line as the reference point for the context separator. Had the author "simplified" the guard too, they would have broken the separator. They didn't.
-- **The reasoning that after-context doesn't need `context_start` is sound.** `context_start` governs only how much *trailing* buffer is retained as before-context for a future boundary match. After-context is emitted forward and is driven by `last_line_visited` (which clamps `consumed = max(context_start, last_line_visited)`), not by `context_start`. So dropping `after_context` from this computation cannot drop lines that after-context still needs.
-- **Output-preserving, provably.** The retained-tail is empty iff `last_line_visited == buf.len()`, and that condition is identical before and after the change (because `preceding(...)` always returns an offset `< buf.len()` for a non-empty buffer). So the separator's gap test (`is_gap = last_line_visited < start_of_line`, core.rs:650) yields the same result in both versions — no spurious or missing `--` separators, no changed `absolute_byte_offset`/line-number accounting (the consumed bytes are simply counted now-vs-later, netting the same totals).
-- **Passthru is inert to this change.** `SearcherBuilder::build` forces `before_context = after_context = 0` under passthru (mod.rs:317-319), so `max_context() == 0` and `roll` never reaches the edited branch. Confirmed no interaction.
-- **Good comment.** The added comment explains *why* (before-context is all that's needed; the walk-back is costly for large N) rather than narrating a change.
+- **Correct, minimal, well-targeted.** The core change wraps `read` in an inner `while !self.free_buffer().is_empty()` loop so a call to `fill` amortizes work by filling the current free space before doing binary detection and the line-terminator scan. This directly addresses the root cause (short `read`s on `stdin` defeating buffer-capacity amortization).
+- **Edge cases are handled cleanly.** I traced them all:
+  - *Empty input / EOF on first read* → inner loop breaks with `end` unchanged, `newbytes` empty → sets `last_lineterm = end`, returns `Ok(!buffer().is_empty())` = `Ok(false)`. Matches old behavior.
+  - *Input with no trailing newline* → first outer iteration reads everything, finds no terminator, loops; second iteration reads 0 → `newbytes` empty → returns the partial line searchable. Correct, and terminates (no spin).
+  - *Buffer exactly full / oversized single line* → `ensure_capacity` grows only in the outer loop; `big_error_*` heap-limit tests confirm this path is intact.
+- **Guaranteed termination — no busy-loop risk.** The inner loop exits on `read == 0` (EOF) or a full buffer. `ensure_capacity` asserts non-empty free space (`line_buffer.rs:525`) or errors at the heap limit, so every outer iteration makes progress (reads ≥1 byte, grows, or errors).
+- **No memory regression.** Capacity growth is still gated by the outer loop (grow only when a full buffer yields no complete line); benchmarks in the commit messages confirm maxmem is unchanged (~30 MB).
+- **The `core.rs` change is a sound, separate optimization**, not incidental. Switching `lines::preceding(buf, term, max_context())` → `before_context` is correct: `preceding` here decides how many trailing lines to *keep for before-context*; after-context is produced going forward via the persistent `after_context_left` counter and never needs already-searched lines retained. For the common `-A N` case (`before_context == 0`), `preceding(buf, term, 0)` does a single `rfind_byte` instead of scanning the whole buffer backward counting up to N terminators on every roll — that O(buffer)-per-roll scan was a real part of the slowdown. The `max(context_start, last_line_visited)` guard is preserved, so nothing still-needed is discarded. The explanatory comment is accurate and useful.
+- **Test expectations updated thoughtfully.** The `glue.rs` `byte count` deltas (262146 → 262142, one `zzz\n` line) are the expected consequence of binary detection now running on a fuller buffer; the *binary offset* (actual detection point) is unchanged, and the slice-reader expectations are untouched. The change is documented in the surrounding comment.
+- CHANGELOG entry is accurate.
 
 ### Issues
 
 #### Critical (Must Fix)
-None.
+None. No correctness bug found; all unit and integration tests pass.
 
 #### Important (Should Fix)
-None.
+
+**1. Streaming/interactive latency is a real behavior change — confirm it's intended.**
+`crates/searcher/src/line_buffer.rs:419-425`. Previously `fill` returned as soon as a single `read` produced a line terminator. Now it keeps calling `read` until the current buffer (initially `DEFAULT_BUFFER_CAPACITY` = 64 KB, `line_buffer.rs:6`) is full or `read` returns 0. For a slow/trickling source that isn't at EOF (e.g. `(echo hi; sleep 10; …) | rg .`, a `tail -f` pipe, or interactive typing into `rg` on a tty), matches now surface only after ~64 KB accumulates or the stream closes, whereas before they appeared roughly per-read. This is inherent to the fix and ripgrep makes no `--line-buffered` guarantee, so it's very likely an accepted tradeoff (the maintainer authored it) — but it's a genuine regression in streaming responsiveness that should be acknowledged explicitly rather than land silently. *Why it matters:* it changes observable output timing for pipe/interactive users.
+
+**2. No regression test for the fixed path — and the change lends itself to one.**
+The PR adjusts existing expectations but adds no new test. In particular, the `core.rs` change alters the `before_context == 0 && after_context > 0` roll path, yet no test exercises **after-context-only crossing a buffer roll**: the `context_sherlock1..6` unit tests always set `before_context` *and* `after_context` together (so only the `before_context > 0` branch of `preceding` is hit under `auto_heap_limit` rolling), and the `after_context` integration test (`tests/misc.rs:448`) fits in a single buffer (no roll). A `SearcherTester` case with `after_context(N)`, `before_context(0)`, and a haystack large enough (or heap-limited) to force several rolls would directly cover the branch that changed. A pure *performance* regression test is admittedly hard, but a *correctness* test for the after-only roll path is cheap and valuable here.
 
 #### Minor (Nice to Have)
 
-- **`core.rs:196-197` — comment says "skip this step when `before_context==0`", but it isn't literally skipped.** With `before_context==0`, `lines::preceding(buf, term, 0)` still runs; it just reduces to a single backward `rfind_byte` over the last line (O(one line)) instead of walking back N lines. The effect (removing the `-A`-proportional cost) is real, but "skip" slightly overstates it. Consider "…this becomes cheap (a single line lookback) when `before_context==0`." Purely wording; not blocking.
-
-- **No regression test accompanies the fix (test-coverage gap).** The head commit adds no test. This is defensible — it's a performance fix, and performance is benchmark-, not unit-testable, and the upstream commit likewise added none. Behavior *is* guarded indirectly: `SearcherTester` re-runs every context case a second time under `heap_limit(minimal_heap_limit)` (testutil.rs:547-557), which forces buffer rolls, and it cross-checks the rolling reader's output byte-for-byte against the non-rolling slice reader. The after-context-only cases that this change most affects (e.g. `context_sherlock6`'s `.after_context(3)` sub-case with `before_context==0`, glue.rs:1249) are among those cross-validated, and all 77 tests pass. The residual gap is that SHERLOCK is only 6 lines, so the "match, exhaust after-context, then many trailing non-matching lines, then a buffer boundary, then another match" scenario isn't hit with a *large* N. A small unit test asserting output invariance for `before_context=0` + large `after_context` across a forced roll would close that gap cheaply. Nice-to-have, not required to merge.
+**3. Interrupted reads are propagated, not retried.**
+`line_buffer.rs:420` — `rdr.read(self.free_buffer())?` forwards `ErrorKind::Interrupted` as an error. This is unchanged from the old code (which did the same), so it's not introduced by this PR; noting only for completeness since the inner loop is a natural place one might otherwise expect `Interrupted` handling.
 
 ### Recommendations
-
-- Optionally tighten the comment wording per the Minor note.
-- Optionally add one focused rolling-buffer regression test for `before_context=0, after_context=large` to lock in the output-invariance that this change relies on (the existing harness makes this easy: build a haystack with a match followed by many non-matching lines and a size that forces a roll, then compare read-vs-slice output). Not a blocker.
+- Add the after-context-only-across-a-roll `SearcherTester` case described in Issue 2; it pins the exact `core.rs` behavior being changed.
+- If the streaming-latency tradeoff (Issue 1) matters to any known use case, a one-line note in the changelog/commit ("search of slowly-produced stdin may now buffer up to the read buffer size before emitting matches") would set expectations. No code change needed if the tradeoff is accepted.
 
 ### Assessment
 
-**Ready to merge?** Yes.
+**Ready to merge?** Yes (with the two follow-ups recommended, neither blocking).
 
-**Reasoning:** This is a clean, minimal, provably output-preserving performance fix that correctly narrows the buffer-retention computation to `before_context` while leaving the separator-preserving `max_context()==0` guard intact; the full searcher test suite (77 tests, including after-context-only cases under forced buffer rolling) passes, and the only notes are cosmetic/nice-to-have.
+**Reasoning:** The read-loop and `preceding` changes are correct, terminate safely, preserve memory characteristics, and pass the full searcher unit suite plus the integration context tests; the only substantive gaps are an intentional streaming-latency tradeoff worth acknowledging and a missing correctness regression test for the after-context-only roll path that the change specifically touches.

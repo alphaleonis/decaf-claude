@@ -1,0 +1,307 @@
+{
+  "subject_id": 10,
+  "lang": "rust",
+  "size": "small",
+  "repo": "BurntSushi/ripgrep",
+  "pr": 3185,
+  "judge_model": "claude-opus-4-8",
+  "n_clusters": 20,
+  "n_tp_primary_clusters": 1,
+  "has_human_issues": false,
+  "tools": {
+    "anthropic-code-review": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 9,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 2,
+          "false_positive": 0,
+          "nitpick": 6,
+          "precision": 0.33,
+          "cost_usd": 18.10540079999999,
+          "wall_s": 1515,
+          "ws_output": 81693,
+          "subagents": 9
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 7,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 1,
+          "false_positive": 1,
+          "nitpick": 4,
+          "precision": 0.29,
+          "cost_usd": 22.62188275,
+          "wall_s": 1779,
+          "ws_output": 77087,
+          "subagents": 13
+        }
+      ],
+      "bug_catch_repeats": 2,
+      "n_repeats": 2,
+      "bug_catch_rate": 1.0,
+      "precision_mean": 0.31,
+      "fp_per_cell": 0.5,
+      "valid_other_mean": 1.5,
+      "nitpick_per_cell": 5.0,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 20.36,
+      "cost_per_bug_caught": 20.36,
+      "cost_per_true_finding": 8.15,
+      "subagent_distinctness": 0.46,
+      "mean_subagents": 11.0
+    },
+    "ours": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 7,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 1,
+          "false_positive": 0,
+          "nitpick": 5,
+          "precision": 0.29,
+          "cost_usd": 15.966884149999995,
+          "wall_s": 1784,
+          "ws_output": 82439,
+          "subagents": 11
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 8,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 1,
+          "false_positive": 0,
+          "nitpick": 6,
+          "precision": 0.25,
+          "cost_usd": 18.730287699999984,
+          "wall_s": 2589,
+          "ws_output": 87219,
+          "subagents": 10
+        }
+      ],
+      "bug_catch_repeats": 2,
+      "n_repeats": 2,
+      "bug_catch_rate": 1.0,
+      "precision_mean": 0.27,
+      "fp_per_cell": 0.0,
+      "valid_other_mean": 1.0,
+      "nitpick_per_cell": 5.5,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 17.35,
+      "cost_per_bug_caught": 17.35,
+      "cost_per_true_finding": 8.67,
+      "subagent_distinctness": 0.36,
+      "mean_subagents": 10.5
+    },
+    "pr-review-toolkit": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 10,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 2,
+          "false_positive": 0,
+          "nitpick": 7,
+          "precision": 0.3,
+          "cost_usd": 8.805166999999997,
+          "wall_s": 739,
+          "ws_output": 18440,
+          "subagents": 5
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 9,
+          "tp_primary": false,
+          "tp_human": 0,
+          "valid_other": 3,
+          "false_positive": 0,
+          "nitpick": 6,
+          "precision": 0.33,
+          "cost_usd": 9.615019250000001,
+          "wall_s": 907,
+          "ws_output": 20876,
+          "subagents": 5
+        }
+      ],
+      "bug_catch_repeats": 1,
+      "n_repeats": 2,
+      "bug_catch_rate": 0.5,
+      "precision_mean": 0.32,
+      "fp_per_cell": 0.0,
+      "valid_other_mean": 2.5,
+      "nitpick_per_cell": 6.5,
+      "unique_true": [
+        "c17"
+      ],
+      "unique_true_n": 1,
+      "mean_cost_usd": 9.21,
+      "cost_per_bug_caught": 18.42,
+      "cost_per_true_finding": 3.07,
+      "subagent_distinctness": 0.63,
+      "mean_subagents": 5.0
+    },
+    "superpowers": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 3,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 1,
+          "false_positive": 0,
+          "nitpick": 1,
+          "precision": 0.67,
+          "cost_usd": 2.4232737500000003,
+          "wall_s": 465,
+          "ws_output": 5931,
+          "subagents": 1
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 3,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 0,
+          "false_positive": 0,
+          "nitpick": 2,
+          "precision": 0.33,
+          "cost_usd": 2.9926987500000006,
+          "wall_s": 694,
+          "ws_output": 5817,
+          "subagents": 1
+        }
+      ],
+      "bug_catch_repeats": 2,
+      "n_repeats": 2,
+      "bug_catch_rate": 1.0,
+      "precision_mean": 0.5,
+      "fp_per_cell": 0.0,
+      "valid_other_mean": 0.5,
+      "nitpick_per_cell": 1.5,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 2.71,
+      "cost_per_bug_caught": 2.71,
+      "cost_per_true_finding": 1.81,
+      "subagent_distinctness": null,
+      "mean_subagents": 1.0
+    },
+    "tag1-comprehensive-review": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 6,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 1,
+          "false_positive": 0,
+          "nitpick": 4,
+          "precision": 0.33,
+          "cost_usd": 13.322125300000002,
+          "wall_s": 1226,
+          "ws_output": 87028,
+          "subagents": 9
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 6,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 0,
+          "false_positive": 0,
+          "nitpick": 5,
+          "precision": 0.17,
+          "cost_usd": 12.655904749999996,
+          "wall_s": 1299,
+          "ws_output": 67174,
+          "subagents": 9
+        }
+      ],
+      "bug_catch_repeats": 2,
+      "n_repeats": 2,
+      "bug_catch_rate": 1.0,
+      "precision_mean": 0.25,
+      "fp_per_cell": 0.0,
+      "valid_other_mean": 0.5,
+      "nitpick_per_cell": 4.5,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 12.99,
+      "cost_per_bug_caught": 12.99,
+      "cost_per_true_finding": 8.66,
+      "subagent_distinctness": 0.41,
+      "mean_subagents": 9.0
+    }
+  },
+  "overlap": [
+    {
+      "a": "anthropic-code-review",
+      "b": "ours",
+      "jaccard": 0.67,
+      "shared": 2
+    },
+    {
+      "a": "anthropic-code-review",
+      "b": "pr-review-toolkit",
+      "jaccard": 0.75,
+      "shared": 3
+    },
+    {
+      "a": "anthropic-code-review",
+      "b": "superpowers",
+      "jaccard": 0.67,
+      "shared": 2
+    },
+    {
+      "a": "anthropic-code-review",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 0.67,
+      "shared": 2
+    },
+    {
+      "a": "ours",
+      "b": "pr-review-toolkit",
+      "jaccard": 0.5,
+      "shared": 2
+    },
+    {
+      "a": "ours",
+      "b": "superpowers",
+      "jaccard": 0.33,
+      "shared": 1
+    },
+    {
+      "a": "ours",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 0.33,
+      "shared": 1
+    },
+    {
+      "a": "pr-review-toolkit",
+      "b": "superpowers",
+      "jaccard": 0.5,
+      "shared": 2
+    },
+    {
+      "a": "pr-review-toolkit",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 0.5,
+      "shared": 2
+    },
+    {
+      "a": "superpowers",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 1.0,
+      "shared": 2
+    }
+  ]
+}
