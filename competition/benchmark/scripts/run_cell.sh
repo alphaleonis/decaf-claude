@@ -37,6 +37,30 @@ ensure_repo() {
 }
 ensure_repo
 
+# Full-PR review range for LOCAL-diff tools. `merge^1..merge` equals the full PR only for
+# SQUASH-merges; for a rebase-merge the merge_sha is just the LAST commit, so the local diff is
+# partial. Verify against `gh pr diff` and, on mismatch, switch to the PR head range (fork..head).
+# PR-mode tools ignore base/head (they fetch the PR by number), so this only matters for local_diff.
+if [ "$(jq -r '.local_diff // false' <<<"$T")" = "true" ]; then
+  full_n="$(gh pr diff "$pr" -R "$repo" 2>/dev/null | grep -c '^diff --git' || echo 0)"
+  loc_n="$(git -C "$repo_dir" diff --name-only "$base" "$head" 2>/dev/null | wc -l | tr -d ' ')"
+  if [ "$full_n" -gt 0 ] && [ "$full_n" != "$loc_n" ]; then
+    echo "[$RID] local diff=$loc_n files != full PR=$full_n files — correcting to PR head range"
+    head_sha="$(jq -r '.head_sha' <<<"$S")"; base_ref="$(jq -r '.base_ref' <<<"$S")"
+    fork="$(gh api "repos/$repo/compare/$base_ref...$head_sha" --jq '.merge_base_commit.sha' 2>/dev/null || true)"
+    git -C "$repo_dir" fetch -q --depth 50 origin "$head_sha" 2>/dev/null || true
+    [ -n "$fork" ] && git -C "$repo_dir" fetch -q --depth 1 origin "$fork" 2>/dev/null || true
+    corr_n="$( [ -n "$fork" ] && git -C "$repo_dir" diff --name-only "$fork" "$head_sha" 2>/dev/null | wc -l | tr -d ' ' || echo -1 )"
+    if [ "$corr_n" = "$full_n" ]; then
+      base="$fork"; head="$head_sha"
+      echo "[$RID] corrected review range: ${fork:0:12}..${head_sha:0:12} ($corr_n files = full PR)"
+    else
+      echo "[$RID] REFUSING: cannot reconstruct full-PR range ($corr_n vs $full_n) — left pending"
+      manifest_pending "$RID"; exit 76
+    fi
+  fi
+fi
+
 # build the prompt
 prompt="$invocation_tmpl"
 for kv in "REPO=$repo" "PR=$pr" "BASE=$base" "HEAD=$head" "MERGE=$merge" "REPO_DIR=$repo_dir"; do
