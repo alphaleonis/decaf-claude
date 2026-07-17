@@ -1,0 +1,12 @@
+# subagent agent-a71ecf7d705b4daf4
+
+```json
+{
+  "finding": "#H3",
+  "verdict": "confirmed",
+  "reason": "Read directly from pkg/proxy/node.go: OnNodeChange (lines 140-172) locks the mutex, computes oldNodeIPs from the CURRENT n.node, then unconditionally executes `n.node = node` and unlocks (lines 142-146) BEFORE calling `utilnode.GetNodeHostIPs(node)` at line 159 to validate the new node's IPs. If that call errs (e.g. node has no NodeInternalIP/NodeExternalIP addresses), the function logs and returns at line 162 — but n.node has already been overwritten with the IP-less node, so the next OnNodeChange call's `oldNodeIPs, _ := utilnode.GetNodeHostIPs(n.node)` (line 143) silently swallows the error and yields `oldNodeIPs = nil`, causing a spurious reflect.DeepEqual mismatch and `n.exitFunc(1)` even though the net NodeIP is unchanged (X→∅→X). This exactly matches the orchestrator's probe result. node_test.go's TestNodeManagerOnNodeChange (lines 231-294) only covers same/changed-IP and PodCIDR cases, never an interleaved no-address update, so nothing catches this. On trigger realism: I traced both real address-writers in this tree — cloud-provider's updateNodeAddress (staging/src/k8s.io/cloud-provider/controllers/node/node_controller.go:367-371, `if len(nodeAddresses) == 0 { ...; return }`) and kubelet's nodestatus.NodeAddress setter (pkg/kubelet/nodestatus/setters.go:180-183, returns an error instead of writing empty addresses) — and both are deliberately defensive against ever patching Status.Addresses to empty once real IPs exist, so the well-behaved in-tree control loops won't naturally reproduce X→∅→X on a steady-state node. The trigger therefore needs an atypical actor (a less-defensive out-of-tree/custom cloud provider, a stale full-object Update/replace by a third-party controller or webhook, or an SSA field-manager conflict) rather than routine kubelet/CCM reconciliation — narrowing but not eliminating real-world likelihood. Given the code explicitly anticipates and gracefully handles a GetNodeHostIPs error on the new node (log + early return, no crash) rather than treating it as impossible, the author clearly expected such events could occur; the bug is that the graceful path still corrupts internal state for the next event. The correctness defect is real and independently re-derived from source; I'm not adjusting the assigned High severity.",
+  "corrections": {
+    "line": 145
+  }
+}
+```

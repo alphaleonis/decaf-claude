@@ -1,0 +1,322 @@
+{
+  "subject_id": 9,
+  "lang": "go",
+  "size": "large",
+  "repo": "kubernetes/kubernetes",
+  "pr": 130837,
+  "judge_model": "claude-opus-4-8",
+  "n_clusters": 56,
+  "n_tp_primary_clusters": 2,
+  "has_human_issues": true,
+  "tools": {
+    "anthropic-code-review": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 28,
+          "valid_findings": 8,
+          "tp_primary": true,
+          "tp_human": 2,
+          "valid_other": 5,
+          "false_positive": 0,
+          "nitpick": 20,
+          "precision": 0.29,
+          "cost_usd": 24.592749350000002,
+          "wall_s": 1760,
+          "ws_output": 91300,
+          "subagents": 13
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 23,
+          "valid_findings": 8,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 5,
+          "false_positive": 0,
+          "nitpick": 15,
+          "precision": 0.35,
+          "cost_usd": 23.87515505,
+          "wall_s": 1757,
+          "ws_output": 103089,
+          "subagents": 13
+        }
+      ],
+      "bug_catch_repeats": 2,
+      "n_repeats": 2,
+      "bug_catch_rate": 1.0,
+      "precision_mean": 0.32,
+      "valid_per_cell": 8.0,
+      "fp_per_cell": 0.0,
+      "valid_other_mean": 5.0,
+      "nitpick_per_cell": 17.5,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 24.23,
+      "cost_per_bug_caught": 24.23,
+      "cost_per_true_finding": 3.23,
+      "subagent_distinctness": 0.3,
+      "mean_subagents": 13.0
+    },
+    "ours": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 31,
+          "valid_findings": 8,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 5,
+          "false_positive": 1,
+          "nitpick": 22,
+          "precision": 0.26,
+          "cost_usd": 34.88032064999999,
+          "wall_s": 2452,
+          "ws_output": 112425,
+          "subagents": 20
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 31,
+          "valid_findings": 8,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 6,
+          "false_positive": 1,
+          "nitpick": 22,
+          "precision": 0.26,
+          "cost_usd": 29.326507099999993,
+          "wall_s": 2685,
+          "ws_output": 108878,
+          "subagents": 18
+        }
+      ],
+      "bug_catch_repeats": 2,
+      "n_repeats": 2,
+      "bug_catch_rate": 1.0,
+      "precision_mean": 0.26,
+      "valid_per_cell": 8.0,
+      "fp_per_cell": 1.0,
+      "valid_other_mean": 5.5,
+      "nitpick_per_cell": 22.0,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 32.1,
+      "cost_per_bug_caught": 32.1,
+      "cost_per_true_finding": 4.28,
+      "subagent_distinctness": 0.23,
+      "mean_subagents": 19.0
+    },
+    "pr-review-toolkit": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 32,
+          "valid_findings": 4,
+          "tp_primary": false,
+          "tp_human": 0,
+          "valid_other": 4,
+          "false_positive": 0,
+          "nitpick": 28,
+          "precision": 0.12,
+          "cost_usd": 9.25743975,
+          "wall_s": 682,
+          "ws_output": 19856,
+          "subagents": 5
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 35,
+          "valid_findings": 5,
+          "tp_primary": false,
+          "tp_human": 1,
+          "valid_other": 4,
+          "false_positive": 0,
+          "nitpick": 30,
+          "precision": 0.14,
+          "cost_usd": 10.681641750000002,
+          "wall_s": 731,
+          "ws_output": 25989,
+          "subagents": 5
+        }
+      ],
+      "bug_catch_repeats": 0,
+      "n_repeats": 2,
+      "bug_catch_rate": 0.0,
+      "precision_mean": 0.13,
+      "valid_per_cell": 4.5,
+      "fp_per_cell": 0.0,
+      "valid_other_mean": 4.0,
+      "nitpick_per_cell": 29.0,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 9.97,
+      "cost_per_bug_caught": null,
+      "cost_per_true_finding": 2.22,
+      "subagent_distinctness": 0.33,
+      "mean_subagents": 5.0
+    },
+    "superpowers": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 6,
+          "valid_findings": 2,
+          "tp_primary": false,
+          "tp_human": 0,
+          "valid_other": 2,
+          "false_positive": 0,
+          "nitpick": 4,
+          "precision": 0.33,
+          "cost_usd": 3.2293285000000003,
+          "wall_s": 685,
+          "ws_output": 8992,
+          "subagents": 1
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 8,
+          "valid_findings": 3,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 2,
+          "false_positive": 0,
+          "nitpick": 5,
+          "precision": 0.38,
+          "cost_usd": 3.20022675,
+          "wall_s": 609,
+          "ws_output": 6938,
+          "subagents": 1
+        }
+      ],
+      "bug_catch_repeats": 1,
+      "n_repeats": 2,
+      "bug_catch_rate": 0.5,
+      "precision_mean": 0.35,
+      "valid_per_cell": 2.5,
+      "fp_per_cell": 0.0,
+      "valid_other_mean": 2.0,
+      "nitpick_per_cell": 4.5,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 3.21,
+      "cost_per_bug_caught": 6.43,
+      "cost_per_true_finding": 1.29,
+      "subagent_distinctness": null,
+      "mean_subagents": 1.0
+    },
+    "tag1-comprehensive-review": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 24,
+          "valid_findings": 8,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 6,
+          "false_positive": 0,
+          "nitpick": 16,
+          "precision": 0.33,
+          "cost_usd": 20.25029445,
+          "wall_s": 1340,
+          "ws_output": 59205,
+          "subagents": 11
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 27,
+          "valid_findings": 5,
+          "tp_primary": false,
+          "tp_human": 0,
+          "valid_other": 5,
+          "false_positive": 1,
+          "nitpick": 21,
+          "precision": 0.19,
+          "cost_usd": 22.11465895,
+          "wall_s": 1284,
+          "ws_output": 75220,
+          "subagents": 11
+        }
+      ],
+      "bug_catch_repeats": 1,
+      "n_repeats": 2,
+      "bug_catch_rate": 0.5,
+      "precision_mean": 0.26,
+      "valid_per_cell": 6.5,
+      "fp_per_cell": 0.5,
+      "valid_other_mean": 5.5,
+      "nitpick_per_cell": 18.5,
+      "unique_true": [
+        "c59"
+      ],
+      "unique_true_n": 1,
+      "mean_cost_usd": 21.18,
+      "cost_per_bug_caught": 42.36,
+      "cost_per_true_finding": 3.53,
+      "subagent_distinctness": 0.29,
+      "mean_subagents": 11.0
+    }
+  },
+  "overlap": [
+    {
+      "a": "anthropic-code-review",
+      "b": "ours",
+      "jaccard": 0.9,
+      "shared": 9
+    },
+    {
+      "a": "anthropic-code-review",
+      "b": "pr-review-toolkit",
+      "jaccard": 0.5,
+      "shared": 5
+    },
+    {
+      "a": "anthropic-code-review",
+      "b": "superpowers",
+      "jaccard": 0.4,
+      "shared": 4
+    },
+    {
+      "a": "anthropic-code-review",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 0.73,
+      "shared": 8
+    },
+    {
+      "a": "ours",
+      "b": "pr-review-toolkit",
+      "jaccard": 0.4,
+      "shared": 4
+    },
+    {
+      "a": "ours",
+      "b": "superpowers",
+      "jaccard": 0.44,
+      "shared": 4
+    },
+    {
+      "a": "ours",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 0.8,
+      "shared": 8
+    },
+    {
+      "a": "pr-review-toolkit",
+      "b": "superpowers",
+      "jaccard": 0.29,
+      "shared": 2
+    },
+    {
+      "a": "pr-review-toolkit",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 0.4,
+      "shared": 4
+    },
+    {
+      "a": "superpowers",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 0.44,
+      "shared": 4
+    }
+  ]
+}

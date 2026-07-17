@@ -1,0 +1,155 @@
+{
+  "run_id": "9__tag1-comprehensive-review__r1",
+  "subject_id": 9,
+  "lang": "go",
+  "size": "large",
+  "tool": "tag1-comprehensive-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "kubernetes/kubernetes",
+  "pr": 130837,
+  "merge_sha": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "review_base": "0872760763d5877707b018a4eea870d1fc02e6a4^1",
+  "review_head": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1340,
+  "duration_ms": "1338616",
+  "duration_api_ms": "4600350",
+  "num_turns": "29",
+  "cost_usd": "20.25029445",
+  "orch_usage": {
+    "input_tokens": "32",
+    "output_tokens": "54225",
+    "cache_creation_tokens": "310206",
+    "cache_read_tokens": "2035873",
+    "total_tokens": 2400336
+  },
+  "session_tokens": {
+    "subagents": 11,
+    "input": 242,
+    "output": 59205,
+    "cache_creation": 1653839,
+    "cache_read": 11070223,
+    "total": 12783509,
+    "orchestrator": {
+      "output": 54225,
+      "total": 2400336,
+      "duration_s": 1339
+    },
+    "per_subagent": [
+      {
+        "output": 151,
+        "input": 20,
+        "cache_creation": 87811,
+        "cache_read": 706705,
+        "total": 794687,
+        "duration_s": 264,
+        "agent": "agent-a512029cf31d57a6a"
+      },
+      {
+        "output": 177,
+        "input": 18,
+        "cache_creation": 110725,
+        "cache_read": 758321,
+        "total": 869241,
+        "duration_s": 320,
+        "agent": "agent-a58d1ff8b5eb4deca"
+      },
+      {
+        "output": 37,
+        "input": 20,
+        "cache_creation": 115578,
+        "cache_read": 870884,
+        "total": 986519,
+        "duration_s": 330,
+        "agent": "agent-a7a4a97193460d09b"
+      },
+      {
+        "output": 199,
+        "input": 28,
+        "cache_creation": 122200,
+        "cache_read": 1390041,
+        "total": 1512468,
+        "duration_s": 541,
+        "agent": "agent-a85c2e102f4d6fde2"
+      },
+      {
+        "output": 314,
+        "input": 19,
+        "cache_creation": 114803,
+        "cache_read": 806654,
+        "total": 921790,
+        "duration_s": 389,
+        "agent": "agent-a8a71d21c09a76783"
+      },
+      {
+        "output": 315,
+        "input": 44,
+        "cache_creation": 145725,
+        "cache_read": 2428752,
+        "total": 2574836,
+        "duration_s": 668,
+        "agent": "agent-a906e444994f385b4"
+      },
+      {
+        "output": 13,
+        "input": 6,
+        "cache_creation": 88964,
+        "cache_read": 97463,
+        "total": 186446,
+        "duration_s": 41,
+        "agent": "agent-ab8f5f055930ee315"
+      },
+      {
+        "output": 127,
+        "input": 26,
+        "cache_creation": 128399,
+        "cache_read": 1230139,
+        "total": 1358691,
+        "duration_s": 493,
+        "agent": "agent-abc2605935bf70ba2"
+      },
+      {
+        "output": 25,
+        "input": 11,
+        "cache_creation": 100411,
+        "cache_read": 397540,
+        "total": 497987,
+        "duration_s": 207,
+        "agent": "agent-aea7d0e5cb7f542c4"
+      },
+      {
+        "output": 12,
+        "input": 8,
+        "cache_creation": 105140,
+        "cache_read": 179572,
+        "total": 284732,
+        "duration_s": 260,
+        "agent": "agent-aef15d6c80d79a878"
+      },
+      {
+        "output": 3610,
+        "input": 10,
+        "cache_creation": 223877,
+        "cache_read": 168279,
+        "total": 395776,
+        "duration_s": 600,
+        "agent": "agent-af6c4475074550cfc"
+      }
+    ],
+    "max_subagent_duration_s": 668,
+    "sum_subagent_duration_s": 4113
+  },
+  "input_tokens": "32",
+  "output_tokens": "54225",
+  "cache_creation_tokens": "310206",
+  "cache_read_tokens": "2035873",
+  "total_tokens": 2400336,
+  "session_id": "d5c17aa4-fd9f-4db9-baf8-d113fb1da45b",
+  "findings_lines": 45,
+  "invocation": "Run /comprehensive-review --pr 130837 --local --output-file .decaf/tag1-review-130837.md for the GitHub repository kubernetes/kubernetes. --local means display everything and post NOTHING. When done, print the output-file path and a summary of findings by severity.",
+  "finished_at": "2026-07-17T13:18:45Z"
+}

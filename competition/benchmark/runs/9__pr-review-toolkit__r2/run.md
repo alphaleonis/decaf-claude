@@ -1,0 +1,277 @@
+# Benchmark run: 9__pr-review-toolkit__r2
+
+| field | value |
+|---|---|
+| tool | pr-review-toolkit |
+| subject | 9 (go / large) — kubernetes/kubernetes#130837 |
+| review diff | `0872760763d5877707b018a4eea870d1fc02e6a4^1..0872760763d5877707b018a4eea870d1fc02e6a4` (merge 0872760763d5877707b018a4eea870d1fc02e6a4) |
+| session model | claude-opus-4-8 |
+| status | done (exit 0, is_error=false, subtype=success) |
+| **total review time — wall (s)** | 731 |
+| longest single subagent (s) | 481 |
+| duration_ms (orchestrator self) | 730047 |
+| duration_api_ms (summed parallel API time, not wall) | 2187949 |
+| num_turns | 11 |
+| cost_usd | 10.681641750000002 |
+| input_tokens | 11 |
+| output_tokens | 25429 |
+| cache_creation_tokens | 120756 |
+| cache_read_tokens | 380169 |
+| total_tokens (orchestrator only) | 526365 |
+| **subagents** | 5 |
+| **ws output_tokens** | 25989 |
+| ws input_tokens | 100 |
+| ws cache_creation | 658727 |
+| ws cache_read | 3981876 |
+| ws total_tokens | 4666692 |
+| session_id | f8f3c3e6-945e-4f9f-bc50-08cce47a410b |
+| findings (raw lines) | 226 |
+
+> **ws = whole-session** (orchestrator + every subagent transcript, deduped). The non-ws token
+> rows are the orchestrator session ONLY — they miss subagent tokens for fan-out tools.
+> **`cost_usd` is the authoritative whole-session cost** (Claude Code sums subagents; not an estimate).
+> Caveat: `ws total_tokens` is inflated by prompt-cache re-reads (cache_read counted per turn);
+> `ws output_tokens` is the clean, cache-independent work signal. Findings files under ./findings/.
+
+### Per-subagent (diagnostic)
+
+Subagents run in PARALLEL — the TOTAL review time is the wall clock above (731s), NOT the sum of these.
+
+| agent | output_tokens | total_tokens | duration_s |
+|---|---:|---:|---:|
+| agent-a0857f7cc068acdd7 | 42 | 1329221 | 481 |
+| agent-a38656505f9e319e2 | 30 | 707549 | 410 |
+| agent-a57426f3e9a578d07 | 439 | 983123 | 318 |
+| agent-a9b163dfbcb9e98e1 | 29 | 657428 | 330 |
+| agent-adf4f6286ea599924 | 20 | 463006 | 361 |
+
+## Findings (final result text)
+
+```
+All five agents completed. I posted nothing — this is a read-only review. Below are each agent's complete findings.
+
+First, a note on **cross-agent convergence** — four independent agents flagged the same two issues, which is a strong signal:
+
+- **`OnNodeChange` NodeIP-loss escapes the crash guard** (`pkg/proxy/node.go:159-163`) — flagged by code-reviewer (L6), silent-failure-hunter (#1, HIGH), pr-test-analyzer (#1), and type-design-analyzer (C1). The `n.node = node` write happens before IP validation; on a `GetNodeHostIPs` error the function returns early, skipping the NodeIP-change exit check.
+- **`newNodeManager` can return `(nil, nil)` on poll timeout** (`pkg/proxy/node.go:107-108`) — flagged by code-reviewer (L5) and silent-failure-hunter (#2), risking a startup nil-panic in `server.go`.
+
+Note the code-reviewer rates these lower (benign in production today) while silent-failure-hunter rates #1 HIGH; the disagreement is about *reachability*, not about the code fact. Full findings follow.
+
+---
+
+# 1. code-reviewer
+
+**Bottom line:** No confirmed Critical/High correctness bug. The design (poll a baseline, then detect subsequent changes via informer Update events and crash) is sound. Reportable items are lower-severity.
+
+### L1 — Dead, unreachable tombstone branch in `handleChangeNode` (confirmed)
+`pkg/proxy/config/config.go:320-333` (branch 322-332). `handleChangeNode` is wired **only** as `UpdateFunc` (`config.go:290`); no `AddFunc`, and `DeleteFunc` routes to `handleDeleteNode`. An informer never delivers `cache.DeletedFinalStateUnknown` to `UpdateFunc` — tombstones only appear in delete notifications. The tombstone fallback is unreachable dead code (copy-pasted from `handleDeleteNode`). **Fix:** reduce to the single `node, ok := obj.(*v1.Node)` assertion.
+
+### L2 — `NodeEligible()` takes a write lock and deep-copies the whole Node on every probe (confirmed; perf/lock-hygiene)
+`pkg/proxy/healthcheck/proxy_health.go:176-189` (write lock :177, `hs.nodeManager.Node()` :180). `NodeEligible()` no longer mutates any `hs` field, yet acquires full `hs.lock.Lock()` (write). The only state it touches is `hs.nodeManager` (immutable) and `nodeManager.Node()` which internally returns a **full `Node.DeepCopy()`**. The `hs.lock` protects nothing here — it needlessly serializes `/healthz` and `/livez` — and the deep copy of a potentially large Node happens on every probe when only `DeletionTimestamp` and `Spec.Taints` are needed. No deadlock (verified no reverse lock acquisition). **Fix:** drop the `hs.lock` acquisition (or use `RLock`), and add a lighter accessor on `NodeManager`.
+
+### L3 — `NodeEligible()` unconditionally dereferences `hs.nodeManager` with no nil guard (confirmed smell; not currently reachable)
+`pkg/proxy/healthcheck/proxy_health.go:180`. If `hs.nodeManager` were nil, this panics on every `/healthz`. Verified the only production constructor (`cmd/kube-proxy/app/server.go:244`) always passes a non-nil `s.NodeManager` (NewNodeManager failure returns early), and the hollow-proxy path leaves both nil (guarded by `serveHealthz`). Not reachable today, but a fragile invariant. **Fix:** guard with `if hs.nodeManager == nil { return true }` or assert non-nil at construction.
+
+### L4 — Missing `return` after the PodCIDR-change `exitFunc(1)` (confirmed; benign in prod)
+`pkg/proxy/node.go:150-156`. After detecting a PodCIDR change, code logs and calls `n.exitFunc(1)` but does not `return`; falls through to the NodeIP check. In prod `exitFunc == os.Exit` (never returns), so harmless. But `exitFunc` is injected to be non-exiting in tests, and with a non-exiting func a single event changing both PodCIDRs and NodeIPs calls `exitFunc(1)` twice. **Fix:** `return` immediately after the PodCIDR exit.
+
+### L5 — `newNodeManager` returns `(nil, err)` relying on `err` being non-nil (confirmed; fragile)
+`pkg/proxy/node.go:107-108` — `if pollErr != nil { return nil, err }`. On timeout it discards `pollErr` (the actual `DeadlineExceeded`) and returns the closure's last `err`. Currently safe (with `immediate=true` every `return false, nil` path sets `err`), but implicit — if `err` were ever nil, `NewNodeManager` returns `(nil, nil)` and `server.go:217` nil-panics. **Fix:** `if pollErr != nil { if err != nil { return nil, err }; return nil, pollErr }`.
+
+### L6 — NodeIP *removal* is not treated as a change (speculative/edge; [Inference])
+`pkg/proxy/node.go:159-163`. If an update leaves the Node with no usable host IPs, `GetNodeHostIPs` errors and `OnNodeChange` returns *before* the NodeIP comparison — kube-proxy does **not** crash even though effective NodeIPs changed (valid → none). Largely self-healing and not a regression (pre-PR never crashed on NodeIP changes). Flagged as an intentional-looking gap. **Fix (if desired):** treat non-empty→error transition as a change worth exiting on.
+
+### Reviewed and found SAFE (brief's flagged concerns)
+- **`NodeConfig` has only `UpdateFunc`, no `AddFunc`** (config.go:288-292): intended. Baseline captured by the poll; informer replays existing objects as Add events (correctly dropped). A change in the poll↔registration window is self-healing within one `ConfigSyncPeriod` via informer resync (delivered as Update).
+- **`NodeTopologyConfig` never `Run()`/synced-waited** (server.go:610-611): safe — no Run by design; underlying informer already started/synced in `newNodeManager`, so `RegisterEventHandler` triggers replay as an Add.
+- **`NodeTopologyConfig` DeleteFunc no-op** (config.go:499): safe — node deletion simultaneously hits `NodeConfig`'s DeleteFunc → `OnNodeDelete` → `exitFunc(1)`, so retained labels are moot.
+- **Proxiers no longer check `node.Name == proxier.nodeName`:** safe — informer is field-selected to this node.
+- **`OnTopologyChange` map sharing:** safe — `handleNodeEvent` allocates a fresh map per event and never mutates a handed-out map.
+- **`Node()` deep-copy + `OnNodeChange` locking:** correct; events for a single registration are delivered serially.
+- **`NodeEligible` ↔ `NodeManager` lock ordering:** no deadlock.
+
+---
+
+# 2. silent-failure-hunter
+
+### Finding 1 — HIGH — `OnNodeChange` stores the new node *before* validating its IPs, swallows the IP error, returns early
+`pkg/proxy/node.go:140-173` (`:143`, `:145`, `:159-163`). `n.node = node` (:145) runs before validation; when `GetNodeHostIPs(node)` fails (:159) it logs and returns, leaving an IP-less/invalid node persisted, skipping the `oldNodeIPs != nodeIPs` exit check (:167). Also `oldNodeIPs, _ :=` (:143) drops the error.
+- **Spurious crash scenario:** stored node has `10.0.0.5`; an update momentarily lacks a usable IP → stored, error, return, no exit. Later update restores `10.0.0.5` → `oldNodeIPs` from the invalid stored node errors → `nil`; `nodeIPs = [10.0.0.5]`; `!DeepEqual(nil, [10.0.0.5])` → `exitFunc(1)`. **kube-proxy restarts even though the NodeIP never actually changed.**
+- **Missed restart scenario:** node genuinely keeps invalid IP → transition swallowed with one error log; kube-proxy keeps stale rules. **Fix:** compute/validate the new node's IPs before mutating `n.node`; don't swallow the `oldNodeIPs` error; treat "had IPs, now can't retrieve" as a change.
+
+### Finding 2 — MEDIUM — `newNodeManager` discards the real poll error and can return `(nil, nil)`
+`pkg/proxy/node.go:87-108`. `pollErr` (e.g. `context deadline exceeded`) thrown away at :108; the comment "we return the actual error in case of poll timeout" is misleading. `(nil, nil)` possible if the loop terminates with `pollErr != nil` while `err == nil` ([Inference] parent ctx canceled). Caller `server.go` then sees nil err, proceeds, and `s.NodeManager.NodeIPs()` nil-panics. **Fix:** wrap and always return non-nil error when manager is nil.
+
+### Finding 3 — MEDIUM — `NewNodeConfig` registers no `AddFunc`; initial node replay to NodeManager handler silently dropped
+`pkg/proxy/config/config.go:288-294`. Old code had `AddFunc: result.handleAddNode`, now gone. Sibling `newNodeTopologyConfig` (:487) *does* register `AddFunc` — an asymmetry that looks like an oversight. [Inference] shared informer delivers cached objects to a newly-registered handler as Add notifications; with no AddFunc that initial reconciliation is discarded. A change in the poll↔registration window is caught only at next Update or resync (`ConfigSyncPeriod`, minutes); a delete in that window may never fire `OnNodeDelete`'s `exitFunc(1)`. **Fix:** add `AddFunc: func(obj interface{}) { result.handleChangeNode(obj) }`.
+
+*(Note: code-reviewer analyzed this same asymmetry and judged it safe due to resync re-delivery as Update events within one ConfigSyncPeriod; silent-failure-hunter treats the resulting delay/window as a MEDIUM weakening of the "crash promptly" contract. Both agree the initial Add is dropped — they differ on whether the resync fallback makes it acceptable.)*
+
+### Finding 4 — MEDIUM — `NodeEligible()` unconditionally dereferences `nodeManager`/`node`; constructor accepts nil without validation
+`pkg/proxy/healthcheck/proxy_health.go:172-189` (deref :177), constructor :86-99. Production path currently safe, but latent: invariant is undocumented/unenforced and `NodeEligible()` runs on every `/healthz`. **Fix:** require the manager or guard the read.
+
+### Finding 5 — LOW/MEDIUM — `NodeTopologyConfig` `DeleteFunc` no-op silently drops deletes; comment claims it handles deletes
+`pkg/proxy/config/config.go:499` (no-op DeleteFunc), comment :513-514 ("handle Add, Update and Delete"). On delete, `n.topologyLabels` and every proxier's `topologyLabels` retain the last zone forever; masked only because `OnNodeDelete` kills the process. Code/comment contradiction; tombstones also discarded here. **Fix:** correct the comment / clear labels on delete.
+
+### Finding 6 — LOW/MEDIUM — `AddEventHandlerWithResyncPeriod` registration error discarded, then result dereferenced
+`pkg/proxy/config/config.go:485-503` (new NodeTopologyConfig) and :288-296 (NodeConfig). `handlerRegistration, _ :=` swallows the error; possibly-nil `handlerRegistration` is immediately dereferenced for `.HasSynced`. New code in this PR repeats the anti-pattern. [Inference] unlikely at normal startup, but would surface as opaque nil-panic. **Fix:** capture and return/log the error.
+
+### Finding 7 — LOW — Dead tombstone branch in `handleChangeNode`
+`pkg/proxy/config/config.go:320-337`. (Same as code-reviewer L1.) Update-only handler; tombstone branch (322-332) never executes. **Fix:** reduce to `!ok → HandleError; return`.
+
+### Finding 8 — LOW — `NodeIPs()` drops the IP error and caller logs "Successfully retrieved NodeIPs" unconditionally
+`pkg/proxy/node.go:120-124`; caller `cmd/kube-proxy/app/server.go`. `nodeIPs, _ := utilnode.GetNodeHostIPs(n.node)` drops error, returns nil silently; `server.go` logs success with no check on empty `rawNodeIPs`. Safe at startup (poll guarantees IPs), but if the invariant breaks (Finding 1), returns nil while the log claims success. **Fix:** return the error or log conditionally.
+
+### Finding 9 — LOW (test hygiene) — `NewNodeManager` error ignored in tests → nil-panic instead of clear failure
+`pkg/proxy/healthcheck/healthcheck_test.go` (`nodeManager, _ := proxy.NewNodeManager(...)`, two sites) and server tests. Compounds Finding 2. **Fix:** `require.NoError(t, err)` at construction.
+
+**Agent's insist-before-merge picks:** #1 and #2.
+
+---
+
+# 3. pr-test-analyzer
+
+**Summary:** New happy paths reasonably covered; **weak on negative/error branches** — a problem because this module's job is conditional crash decisions and conditional "don't notify" decisions. (Agent noted the prompt conflated two tests: the `callback`/`invoked` channel belongs to `TestNewNodeTopologyConfig`, which is deterministic and *not* flaky; the `time.Sleep` ordering belongs to `TestNewNodeManager`, which *is* timing-dependent.)
+
+### Critical/High gaps
+
+**1 (pri 8) — `OnNodeChange` `GetNodeHostIPs`-error early-return is completely untested**
+`pkg/proxy/node.go:159-162`. Every `TestNodeManagerOnNodeChange` case (`pkg/proxy/node_test.go:231-292`) passes an updated node with valid IPs, so the `err != nil` early return is never exercised. This branch returns before the NodeIP-change comparison (:171) — silently not crashing when NodeIPs disappear. **Suggested test:** add a case with `initialNodeIPs: ["192.168.1.1"]` then `OnNodeChange(makeNode())` (no IPs) and assert the intended `expectedExitCode` — forcing a decision on the behavior.
+
+**2 (pri 7) — `TestNewNodeTopologyConfig` negative assertions cannot detect a spurious notification**
+`pkg/proxy/config/config_test.go:525, 540, 595` vs filter at `config.go:528`. The mock (`config_test.go:463-466`) only stores the last map, no invocation counter. Steps 1/2 assert `require.Empty` — a wrongful invocation with an empty map still passes. Step 5 asserts `require.Len(..., 1)` — a spurious re-invocation with the same map still yields Len==1 → passes. A regression dropping the `reflect.DeepEqual` skip (a full-resync storm across the cluster) **would still pass this test.** **Suggested test:** add an `invocations` counter; assert it does not advance on no-change events.
+
+### Important (pri 4-6)
+
+**3 (pri 5) — `NodeTopologyConfig` `DeleteFunc` no-op never exercised** — `config.go:499`; test issues only `fakeWatch.Add`. **Test:** `fakeWatch.Delete` + assert no notification/unchanged labels.
+
+**4 (pri 5) — "Zone label removed" transition untested** — `config.go:523-524`. Progression never removes an existing zone (`{zone:x}` → `{}`), which should fire one notification with an empty map. **Test:** re-Add same node with zone removed; assert one notification, `require.Empty`.
+
+**5 (pri 4) — No concurrency/`-race` test for `OnNodeChange` vs `Node()`/`NodeIPs()`/`PodCIDRs()`** — `node.go:140,120,128,186`. In prod the informer goroutine and health HTTP handler are genuinely concurrent; `TestNodeManagerNode` (`node_test.go:311-325`) is strictly sequential. **Test:** hammer with N goroutines under `go test -race`.
+
+**6 (pri 4, test-quality) — `TestNewNodeManager` synchronization is wall-clock-sleep-based** — `node_test.go` update goroutine (`Sleep(100ms)` setup, `Sleep(15ms)` between updates) vs `pollInterval=10ms`, `pollTimeout=1s`. [Inference] a loaded CI runner could deschedule the goroutine past the 1s timeout → spurious "not found"/"host IP unknown" failure; error cases each burn the full ~1s. Intermediate "node doesn't exist" no-op steps add no coverage. Contrast the deterministic `invoked`-channel pattern in `TestNewNodeTopologyConfig`. **Fix:** drive via `watch.FakeWatcher` with per-event signaling, or drop dead intermediate steps.
+
+**7 (pri 4) — Coverage regression from deleting `TestProxyServer_platformSetup`** — the podCIDR fetch moved to `newProxyServer` (`server.go:36`, `s.podCIDRs = s.NodeManager.PodCIDRs()`). Accessor is covered, but the *wiring* isn't: `PodCIDRs()` returns `n.node.Spec.PodCIDRs` regardless of `watchPodCIDRs`, so ClusterCIDR mode can now populate `s.podCIDRs` (old code left it nil) — benign but unverified. No unit test for `newProxyServer` at all.
+
+### Lower-priority (2-3)
+- **8 (pri 3)** — Combined `watchPodCIDRs` PodCIDR-change AND NodeIP-change in one event untested (`node.go:150-156` + :171).
+- **9 (pri 3)** — `OnTopologyChange` in proxiers untested; grep confirms no `*_test.go` references it. Most notable: `metaProxier.OnTopologyChange` fan-out to ipv4+ipv6 — a dropped ipv6 delegation would go unnoticed. Also: setters now store the map **by reference** (previously a defensive copy); aliasing safe only because `handleNodeEvent` reassigns a fresh map — that contract is untested.
+- **10 (pri 2)** — `newNodeManager` cache-sync-failure branch untested (`node.go:77`).
+- **11 (pri 3)** — Deleted `Test_getNodeIPs` malformed-IP retry subcase (`node2 = "invalid-ip"`) not replicated.
+- **12 (pri 3, test-robustness landmine)** — `healthcheck_test.go:479, 559` call the *exported* `NewNodeManager` (real `os.Exit`). Works only because every `makeNode()` keeps `192.168.0.1`; a future health test calling `OnNodeChange` with a different IP would `os.Exit(1)` the test binary. Use the unexported `newNodeManager(..., func(int){}, ...)` seam.
+
+**Positives:** `newNodeManager` error propagation thoroughly covered (all three poll-failure branches with precise messages); `NodeEligible()` refactor well covered indirectly via `TestHealthzServer` HTTP assertions; zone-vs-region distinction explicitly tested; `OnNodeDelete` and `Node()` accessor covered.
+
+**Highest-value additions, in order:** (1) `OnNodeChange` with no-IP node; (2) invocation counter + DeleteFunc case; (3) zone-removal case; (4) make `TestNewNodeManager` deterministic + combined PodCIDR+NodeIP case.
+
+---
+
+# 4. comment-analyzer
+
+(Searches confirmed zero remaining references to removed `NodePodCIDRHandler`/`NoopNodeHandler`/`NodeEligibleHandler` anywhere in the repo — no dangling references survive.)
+
+### Critical (factually incorrect or highly misleading)
+
+**1 — `pkg/proxy/config/config.go:513-514` — `handleNodeEvent` claims it handles Delete events, but never does**
+```go
+// handleNodeEvent is a helper function to handle Add, Update and Delete
+// events on Node objects and call downstream event handlers.
+```
+`handleNodeEvent` is wired only into `AddFunc`/`UpdateFunc` (485-502); `DeleteFunc` is an explicit no-op (`DeleteFunc: func(_ interface{}) {}`). Looks copy-pasted from `handleServiceCIDREvent` (:417). **Fix:** "...handle Add and Update events... Delete events are intentionally ignored (node deletion is handled by NodeManager, which exits the process)."
+
+**2 — `pkg/proxy/node.go:119` and `:127` — `NodeIPs()`/`PodCIDRs()` doc says "polled in NewNodeManager()" but they read the live, mutated `n.node`**
+Both lock `n.mu` and read from `n.node`, which is reassigned on every `OnNodeChange` (:143). "polled" implies a one-time construction snapshot. With `watchPodCIDRs == false`, a PodCIDR change doesn't exit, so `PodCIDRs()` returns the new value — contradicting the doc. **Fix:** "returns the NodeIPs/PodCIDRs of the current node object."
+
+**3 — `pkg/proxy/config/config.go:263-265` — `OnNodeChange` doc says "creation or modification," but creation is never delivered**
+Only `UpdateFunc`/`DeleteFunc` registered (288-294), no `AddFunc`. The pre-existing node is replayed as a dropped Add. Fires on modification only. **Fix:** "called whenever a modification of the node object is observed" (or wire an `AddFunc` if creation delivery is intended).
+
+**4 — `pkg/proxy/winkernel/proxier.go:1098-1103` — TODO names a nonexistent method and sits above the doc comment**
+```go
+// TODO(imroc): implement OnTopologyChanged for winkernel proxier.
+// OnTopologyChange is called whenever node topology labels are changed.
+...
+func (proxier *Proxier) OnTopologyChange(topologyLabels map[string]string) {}
+```
+Two defects: (a) TODO says `OnTopologyChanged` (past tense) — no such symbol exists; the method is `OnTopologyChange`; (b) the TODO as the first line makes godoc render the doc starting with "TODO(imroc)..." instead of the method name. **Fix:** put the doc comment first, TODO after, corrected to `OnTopologyChange`.
+
+### Improvement opportunities
+
+**5 — `pkg/proxy/node.go:41-43` — `NodeManager` struct doc is a run-on sentence and omits the delete-crash behavior**
+"...based on the NodeIPs and PodCIDRs handles node watch events..." fuses two clauses (missing break). Also omits that `OnNodeDelete` (175-179) calls `exitFunc(1)` **unconditionally** — node deletion always crashes, independent of `watchPodCIDRs`. **Fix:** "...exits kube-proxy on any change to NodeIPs, on deletion of the node, and (when watchPodCIDRs is true) on any change to PodCIDRs."
+
+**6 — `pkg/proxy/node.go:182` — `OnNodeSynced` comment overstates what was reported, drops the period**
+"all pre-existing Nodes have been reported" — the informer selects a single node via field selector (at most one), and with no `AddFunc` the node is **not** reported to `OnNodeChange` before `OnNodeSynced` fires. **Fix:** "OnNodeSynced is called by NodeConfig once the node informer cache has synced. It is a no-op for NodeManager, which already obtained the initial node in NewNodeManager."
+
+**7 — `pkg/proxy/topology.go:46` — double-space typo and imprecise wording in the new cross-reference Note**
+Cross-reference `NodeTopologyConfig.handleNodeEvent (pkg/proxy/config)` is correct (config.go:515). But "the logic over here to  watch" has a double space, and "watch other endpoint types or labels" is imprecise (`CategorizeEndpoints` doesn't "watch"; the coupling is about topology labels — currently only `LabelTopologyZone`). **Fix:** "If you change this function to consult additional node topology labels, update the label filtering in NodeTopologyConfig.handleNodeEvent accordingly."
+
+**8 — `pkg/proxy/config/config.go:459-461` — "provides the observed change" describes a delta, but the full label set is passed**
+`topologyLabels` is the complete current set (`n.topologyLabels` after replacement at :532), not a diff. **Fix:** "...and provides the complete current set of proxy-relevant topology labels."
+
+**9 — Lost rationale: removal of the `https://issues.k8s.io/111321` reference**
+The deleted `NodePodCIDRHandler` carried this link documenting *why* kube-proxy must restart on PodCIDR change under `LocalModeNodeCIDR`. New doc captures the *what*, not the *why*. (Given your convention discouraging bare issue IDs, agent suggests a one-line rationale rather than re-adding the link.) Minor.
+
+**Out-of-scope note (not modified by this PR):** `config.go:275` still reads `// It accepts "set", "add" and "remove" operations of node via channels` on `NodeConfig` — stale (it's informer-driven, not channels). Low-cost fix while nearby.
+
+**Positives:** `config.go:527` skip-comment, `node.go:52-54` `NewNodeManager` doc, reworked `NodeEligible()` doc, and both new `server.go` inline comments (:210, :606) are accurate.
+
+---
+
+# 5. type-design-analyzer
+
+Ratings are 1-10 per axis (Encapsulation / Invariant Expression / Usefulness / Enforcement). References to post-merge files at ref `46e2c22`.
+
+### `NodeManager` (`pkg/proxy/node.go:44-190`) — **6 / 4 / 8 / 5**
+Invariants: (I1) post-construction `node != nil`, has host IPs, and iff `watchPodCIDRs` ≥1 PodCIDR (enforced by poll loop 87-109); (I2) NodeIPs never change during process lifetime, "enforced" by crashing; (I3) `node` single source of truth under `mu`.
+- **C1 — asymmetric ordering lets NodeIP loss slip past the crash guard** (`node.go:140-173`). `n.node = node` (:145) unconditional; on IP-less node, `GetNodeHostIPs` errors, returns at 159-163 **before** the IP-change check (:167). `NodeIPs()` then returns nil, I1/I2 silently broken while the process runs. PodCIDR check (150-157) runs *before* IP retrieval; IP check runs *after* — invariants enforced in order-dependent positions.
+- **C2 — `PodCIDRs()` slice aliasing leak** (`node.go:131`). Returns internal slice under lock; alias escapes the lock. `Node()` deep-copies; `PodCIDRs()` should `slices.Clone`.
+- **C3 — responsibility conflation (SRP).** Five hats: informer factory/owner, one-shot startup poller, live snapshot provider (for healthcheck), crash-on-change watchdog, and `config.NodeHandler`. The generic "Manager" name is itself a smell.
+- **C4 — doc/behavior mismatch** (`node.go:119,127`) — "polled in NewNodeManager()" vs live reads (same as comment-analyzer #2).
+- **C5 — dead field** `nodeLister` (`node.go:48`) only used in the constructor poll loop (:88); could be a local.
+- **Keep:** `NewNodeManager`/`newNodeManager` (:56-117) is a clean idiomatic seam injecting `exitFunc`/`pollInterval`/`pollTimeout`.
+
+### `NodeHandler` / `NodeTopologyHandler` / `NodeTopologyConfig` (`pkg/proxy/config/config.go`) — **5 / 4 / 8 / 5**
+- **C1 — shared mutable `map[string]string` across a package boundary** (`config.go:461,532,535`). `handleNodeEvent` publishes its internal map reference; proxiers store it directly under their own lock without copying (e.g. iptables `OnTopologyChange: proxier.topologyLabels = topologyLabels`). Config and every proxier alias the same instance. Safe only via the unwritten copy-on-write convention (:522,532). Proxiers read `topologyLabels` under `proxier.mu` in `syncProxyRules` on a different goroutine — a future in-place mutation introduces a data race. The old per-proxier code defensively deep-copied `node.Labels`; this PR drops that. **Harden:** return a copy, wrap in a read-only type, or document the callee contract.
+- **C2 — dead `listerSynced`** (`config.go:466`, assigned :503, never read). `NodeTopologyConfig` has no `Run()`/sync-wait; field is vestigial.
+- **C3 — no mutex on `NodeTopologyConfig`** (:465-470). `topologyLabels` read/written in `handleNodeEvent` with no lock, relying on the informer's single-threaded dispatch. Correct but undocumented.
+- **C4 — cross-package comment-only invariant.** "Proxy-relevant" label set duplicated implicitly: `CategorizeEndpoints` reads `LabelTopologyZone` (topology.go) and `handleNodeEvent` filters exactly `LabelTopologyZone` (:523), bound only by the Note comment. Knowledge-preservation risk.
+- **C5 — adjacent smell:** dead tombstone branch in `handleChangeNode` (:320-337, wired only to UpdateFunc) + dropped `AddFunc` (coupling to `NodeManager`'s constructor poll is coherent but unexpressed).
+- Usefulness win: splitting node-lifecycle from topology-labels is genuine ISP; collapsing `OnNodeAdd`+`OnNodeUpdate`; removing `NoopNodeHandler` (which existed only to let proxiers opt out of an invariant) is strictly good.
+
+### `Provider` embeds `config.NodeTopologyHandler` (`pkg/proxy/types.go:28-31`) — **9 / 8 / 9 / 8**
+The cleanest change in the PR. Previously embedded `config.NodeHandler` (four methods) forcing every proxier into node-name matching + lifecycle boilerplate it mostly ignored; winkernel/hollow had to embed `NoopNodeHandler` to opt out. Now a single `OnTopologyChange` stating exactly what a proxier needs. Textbook interface segregation — narrower, more honest, compiler-enforced. Only inherited caveat is the map-mutability concern above.
+
+### `ProxyHealthServer` gains `*proxy.NodeManager`, drops `nodeEligible bool` (`pkg/proxy/healthcheck/proxy_health.go`) — **6 / 5 / 7 / 5**
+- **C1 — fat dependency for a thin need** (`proxy_health.go:28,74`). `healthcheck` now imports the whole `k8s.io/kubernetes/pkg/proxy` and depends on concrete `*proxy.NodeManager` solely to call `Node() *v1.Node`. A narrow local interface (`type nodeProvider interface { Node() *v1.Node }`) would invert the dependency, decouple the packages, and make the seam unit-testable without a fake clientset + real `NewNodeManager`. This also *flips* the historical layering (node.go used to import healthcheck; now the reverse). Primary design smell here.
+- **C2 — nil-safety regression** (`proxy_health.go:180`). Old design defaulted `nodeEligible: true` (safe during startup); now unconditionally dereferences `hs.nodeManager.Node()` on every `/healthz`. Non-nil-ness guaranteed only by convention.
+- **C3 — lock-scope smell** (`proxy_health.go:177`). Takes exclusive `hs.lock.Lock()` (RWMutex guarding `lastUpdatedMap`/`oldestPendingQueuedMap`) but reads neither — leftover from when it read `hs.nodeEligible`. Serializes the `/healthz` hot path against `Health()`/`Updated()`/`QueuedUpdate()` for no reason. Should take no `hs.lock`.
+- Usefulness: push→pull model (compute on demand from the shared snapshot) is sound; an entire adapter type (`NodeEligibleHandler` + `SyncNode`) disappears.
+
+### Cross-cutting design smells (agent's priority order)
+1. [Correctness] NodeIP-loss escapes the crash guard — `node.go:159-163`.
+2. [Encapsulation] Shared mutable map across the `OnTopologyChange` boundary — `config.go:535`.
+3. [Coupling] `healthcheck` depends on concrete `*proxy.NodeManager` — `proxy_health.go:74`; should be a narrow role interface.
+4. [Encapsulation] `PodCIDRs()` leaks an internal slice — `node.go:131`.
+5. [Robustness] `NodeEligible()` nil-panic + pointless exclusive lock — `proxy_health.go:177,180`.
+6. [SRP] `NodeManager` conflates five roles — `node.go:44-51`.
+7. [Dead code] `NodeTopologyConfig.listerSynced` (`config.go:466`); unreachable tombstone branch in `handleChangeNode` (`config.go:323-331`).
+
+**Positives to preserve:** the `NewX`/`newX` constructor seams, `exitFunc` injection, the `Provider` narrowing + `NoopNodeHandler` removal, and the single-source-of-truth eligibility model.
+
+---
+
+## Consolidated priorities across all five agents
+
+| Rank | Issue | Location | Flagged by |
+|------|-------|----------|-----------|
+| 1 | `OnNodeChange` stores node before IP validation; error early-return skips NodeIP-change exit (spurious restart / missed restart) | `pkg/proxy/node.go:145,159-163` | code-reviewer, silent-failure, pr-test, type-design |
+| 2 | `newNodeManager` discards `pollErr`, can return `(nil,nil)` → startup nil-panic | `pkg/proxy/node.go:107-108` | code-reviewer, silent-failure |
+| 3 | `NodeEligible()` nil-`nodeManager` deref + unnecessary exclusive write lock + full DeepCopy on every probe | `pkg/proxy/healthcheck/proxy_health.go:177,180` | code-reviewer, silent-failure, type-design |
+| 4 | Dropped `AddFunc` in `NewNodeConfig` (initial replay dropped) — **disputed**: safe (resync) vs MEDIUM weakening | `pkg/proxy/config/config.go:288-294` | silent-failure (MEDIUM), code-reviewer (safe) |
+| 5 | Shared mutable topology map across `OnTopologyChange` boundary (defensive copy dropped) | `config.go:535` + proxiers | type-design, pr-test |
+| 6 | Comment inaccuracies: `handleNodeEvent` "Delete", `NodeIPs/PodCIDRs` "polled", `OnNodeChange` "creation", winkernel `OnTopologyChanged` TODO | config.go:513, node.go:119/127, config.go:263, winkernel:1098 | comment-analyzer |
+| 7 | Test gaps: no-IP `OnNodeChange` case, vacuous topology negative assertions, no `-race` test, sleep-based `TestNewNodeManager` | node_test.go, config_test.go | pr-test |
+| 8 | Dead code: tombstone branch in `handleChangeNode`, `listerSynced`, `nodeLister` field | config.go:320-337/466, node.go:48 | code-reviewer, silent-failure, type-design |
+
+The PR is a merged, well-structured cleanup — the `Provider`/`NodeTopologyHandler` interface narrowing is genuinely praised by multiple agents. The one item worth real scrutiny is **#1** (the NodeIP-loss / node-stored-before-validation ordering in `OnNodeChange`), which four agents reached independently; **#2** and **#3** are the next tier. Nothing was posted to GitHub.
+```
