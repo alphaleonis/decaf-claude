@@ -66,21 +66,39 @@ def main():
     order = sorted(tools, key=lambda t: (-(tools[t]["bug_catch_rate"] or 0),
                                          tools[t]["mean_cost_usd"] or 9e9))
 
-    # leaderboard
-    cols = [("bug-catch", lambda m: pct(m["bug_catch_rate"])),
+    # leaderboard — plain-language columns (see glossary card below)
+    def valid_pc(m):
+        v = m.get("valid_per_cell")
+        return "—" if v is None else f"{v:,.1f}"
+    cols = [("escaped bug", lambda m: pct(m["bug_catch_rate"])),
+            ("valid /run", valid_pc),
+            ("unique valid", lambda m: num(m["unique_true_n"])),
+            ("noise /run", lambda m: num(m["nitpick_per_cell"])),
+            ("invalid /run", lambda m: num(m["fp_per_cell"])),
             ("precision", lambda m: pct(m["precision_mean"])),
-            ("FP/cell", lambda m: num(m["fp_per_cell"])),
-            ("nitpick/cell", lambda m: num(m["nitpick_per_cell"])),
-            ("unique-true", lambda m: num(m["unique_true_n"])),
             ("subagent distinct.", lambda m: pct(m["subagent_distinctness"])),
-            ("mean cost", lambda m: money(m["mean_cost_usd"])),
-            ("cost / bug", lambda m: money(m["cost_per_bug_caught"])),
+            ("cost /run", lambda m: money(m["mean_cost_usd"])),
             ("~agents", lambda m: num(m["mean_subagents"]))]
     lb = ["<table><thead><tr><th>tool</th>" + "".join(f"<th>{esc(c)}</th>" for c,_ in cols) + "</tr></thead><tbody>"]
     for t in order:
         m = tools[t]
         lb.append(f"<tr><td class='tool'>{esc(t)}</td>" + "".join(f"<td>{f(m)}</td>" for _,f in cols) + "</tr>")
     lb.append("</tbody></table>")
+
+    # glossary — plain-language definitions of every column / term used
+    glossary = """<div class="card glossary"><h3>How to read this</h3><dl>
+<dt>run (cell)</dt><dd>one review = one tool running once. Each tool reviewed this PR twice, so 2 runs per tool; "/run" numbers are averaged across the two.</dd>
+<dt>finding (issue)</dt><dd>one distinct problem a review raised. The same issue restated by many sub-agents / worded differently is collapsed into a single issue before counting.</dd>
+<dt>escaped bug</dt><dd>the real defect that was bad enough to be reverted in a follow-up PR — the one a reviewer <em>must</em> catch. The column is the % of runs that caught it.</dd>
+<dt>valid /run</dt><dd>real, worth-acting-on findings per run — the escaped bug plus any other genuine defects (excludes trivia and mistakes).</dd>
+<dt>unique valid</dt><dd>valid findings that <em>only this tool</em> caught (nobody else did).</dd>
+<dt>noise /run</dt><dd>nitpicks per run — real but trivial (naming, formatting, style, out-of-scope). Safe to ignore.</dd>
+<dt>invalid /run</dt><dd>false positives per run — findings asserting a problem that isn't real (refuted against the code). Actively misleading.</dd>
+<dt>precision</dt><dd>of everything the tool reported, the share that was valid = valid ÷ (valid + noise + invalid). Higher = less junk per real finding.</dd>
+<dt>subagent distinct.</dt><dd>for multi-agent tools, distinct issues ÷ total sub-agent findings. Low = many agents re-finding the same things.</dd>
+<dt>Jaccard (overlap, below)</dt><dd>how similar two tools' valid-finding sets are: shared ÷ combined. 1.00 = identical, 0.00 = no overlap.</dd>
+<dt>verdict labels</dt><dd>each issue in the drill-down is graded: <strong>TP-primary</strong> = caught the escaped bug; <strong>valid-other</strong> = a different real defect; <strong>nitpick</strong> = trivial/noise; <strong>false-positive</strong> = not real. ("TP" = true positive; "valid" findings = TP-primary + valid-other.)</dd>
+</dl></div>"""
 
     # overlap matrix
     tl = order
@@ -133,14 +151,17 @@ svg .ax{{stroke:var(--muted)}} svg .grid{{stroke:var(--line)}} svg .pt{{fill:var
 svg .lbl{{fill:var(--fg);font-size:11px}} svg .tick,svg .axl{{fill:var(--muted);font-size:11px}}
 .wrap>section{{overflow-x:auto}} code{{background:var(--card);padding:1px 4px;border-radius:4px;font-size:12.5px}}
 .legend{{color:var(--muted);font-size:12px;margin-top:4px}}
+.glossary dl{{margin:6px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}}
+.glossary dt{{font-weight:600;white-space:nowrap}} .glossary dd{{margin:0;color:var(--muted);font-size:13px}}
+.glossary h3{{margin:0 0 8px}} @media(max-width:560px){{.glossary dl{{grid-template-columns:1fr}}.glossary dd{{margin:0 0 6px}}}}
 </style></head><body><div class="wrap">
 <h1>{esc(title)}</h1>
 <p class="sub">{esc(M['repo'])}#{esc(M['pr'])} · judge: <code>{esc(M['judge_model'])}</code> ·
 {M['n_clusters']} distinct issues · {'human threads present' if M['has_human_issues'] else 'no human threads (bug + FP discipline only)'}</p>
 
 <section><h2>Leaderboard</h2>{''.join(lb)}
-<p class="legend">bug-catch = fraction of repeats that flagged the escaped bug · precision = (TP+valid)/reported ·
-unique-true = valid issues only this tool found · subagent distinct. = distinct issues ÷ subagent-findings (fan-out efficiency).</p></section>
+<p class="legend">Every tool reviewed the PR twice; "/run" columns are averaged across the two runs. Definitions below.</p>
+{glossary}</section>
 
 <section><h2>Cost vs. bug-catch</h2><div class="card">{scatter(tools)}</div>
 <p class="legend">Upper-left = efficient (catches the bug cheaply). The benchmark's core question: does the fan-out premium buy the catch?</p></section>
