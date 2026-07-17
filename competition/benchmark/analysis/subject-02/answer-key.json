@@ -1,0 +1,36 @@
+{
+  "subject_id": 2,
+  "lang": "csharp",
+  "size": "medium",
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "review_diff": "gh pr diff 67075 -R dotnet/aspnetcore — full PR: src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs (~11 production lines) + src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs (7 new tests + model classes). Saved at subject-02/review.diff.",
+  "primary_bug": {
+    "id": "primary",
+    "summary": "TryGetValidatableProperty's new two-step lookup — GetProperty(name, Public|Instance|DeclaredOnly) first, then a GetProperty(name, Public|Instance|FlattenHierarchy) fallback when the first returns null — does NOT actually fix the AmbiguousMatchException it targets, and introduces a silent-validation-drop. FlattenHierarchy does not flatten INSTANCE members, so when the runtime model type does not itself declare the property but an intermediate base type hides an ancestor's property with `new`, the fallback call still finds >1 matching instance property and throws AmbiguousMatchException. Separately, DeclaredOnly-first resolves to whichever property the most-derived level declares, so a `new` shadow that omits the validation attribute (present on the base) causes the base attribute to be silently dropped with no diagnostic — a behavior the added test SkipsValidationWhenDerivedShadowHasNoAttributes enshrines as 'expected'.",
+    "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+    "locus": "TryGetValidatableProperty ~L370-383: the added `GetProperty(FieldName, DeclaredOnly)` then `if (propertyInfo is null) GetProperty(FieldName, FlattenHierarchy)` fallback.",
+    "must_flag": "A reviewer catches the primary bug if it flags EITHER facet against the diff: (a) the DeclaredOnly->FlattenHierarchy fallback does not actually eliminate AmbiguousMatchException — FlattenHierarchy does not flatten instance members, so hiding at an intermediate base type (model type inherits a property that is `new`-shadowed at an ancestor level) still throws; OR (b) the lookup silently drops validation attributes / resolves the wrong property depending on which hierarchy level matches (esp. an unattributed `new` shadow suppressing a base attribute), including flagging that SkipsValidationWhenDerivedShadowHasNoAttributes bakes in incorrect silent-drop behavior. The strongest catch names the still-throws-on-intermediate-hiding facet. Merely praising or restating that the fix 'handles hidden members' does NOT count.",
+    "source": "revert PR #67712 ('Revert #67075') which reverted TryGetValidatableProperty to the single GetProperty(FieldName) lookup; the revert body states verbatim that FlattenHierarchy 'doesn't flatten instance members, so hiding at an intermediate base type still throws' and that it 'silently drops validation attributes depending on which hierarchy level resolves.' Also corroborated by human reviewer Youssef1313 in an UNRESOLVED review thread on the fallback line: 'FlattenHierarchy is only relevant for statics IIRC. And this code can still throw if the previous call returned null and we get into here with some shadowing member in a base type.'",
+    "difficulty": "subtle — requires knowing that BindingFlags.FlattenHierarchy affects only static-member surfacing, not instance-property ambiguity; the maintainers merged it and reverted only later. A human reviewer (Youssef1313) did flag it pre-merge but it was merged anyway. Expect low-to-moderate recall; a genuine catch is a strong signal."
+  },
+  "human_issues": [],
+  "known_safe": [
+    {
+      "id": "safe-static-skip",
+      "summary": "Both lookups use BindingFlags.Instance, so static properties are never resolved and are silently not validated (test IgnoresStaticProperty asserts this). DataAnnotations validation targets instance properties; skipping statics is intended/correct behavior, not a defect. Flagging 'static properties are silently skipped' as a bug is a false positive.",
+      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs"
+    },
+    {
+      "id": "safe-cache-lockfree",
+      "summary": "The `_propertyInfoCache[cacheKey] = propertyInfo` write with no lock is PRE-EXISTING and unchanged by this PR (the 'No need to lock, because it doesn't matter if we write the same value twice' comment predates the diff). Attributing a new thread-safety/race defect to this PR is out of scope / a false positive; the diff neither introduces nor worsens the cache write.",
+      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs"
+    },
+    {
+      "id": "safe-two-reflection-calls",
+      "summary": "The fallback makes up to two GetProperty reflection calls instead of one. The result is memoized in _propertyInfoCache per (ModelType, FieldName), so the cost is one-time per field, not per-validation. Flagging this as a meaningful performance regression is a low-value nitpick, not a real defect.",
+      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs"
+    }
+  ],
+  "notes": "The fixture recorded human_threads.count=9; the GitHub API returns 4 review threads (9+ individual comments). Of those threads: (1) ilonatommy 'managing flow by exceptions is not preferred' is OUTDATED — it targeted an earlier try/catch approach that was replaced by the merged DeclaredOnly/FlattenHierarchy code, so it does not apply to this diff; (2) & (3) ilonatommy's test-coverage / test-naming requests were RESOLVED by adding the tests that are now IN the diff, so there is nothing left for a reviewer of the final diff to 'catch'; (4) Youssef1313's unresolved comment IS the primary bug. Therefore human_issues is intentionally EMPTY — the one substantive live human issue coincides with primary_bug (a cluster matching it should be graded TP-primary, not TP-human), and the rest are superseded or already-addressed. Score cells on: (1) primary_bug recall, (2) false-positive discipline (esp. NOT inventing a race in the pre-existing cache write, NOT calling static-skip a bug), (3) any valid-other real defects, (4) noise."
+}

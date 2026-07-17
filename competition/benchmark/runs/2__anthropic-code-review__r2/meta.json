@@ -1,0 +1,119 @@
+{
+  "run_id": "2__anthropic-code-review__r2",
+  "subject_id": 2,
+  "lang": "csharp",
+  "size": "medium",
+  "tool": "anthropic-code-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "merge_sha": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "review_base": "3b00cfcae37cd1866de43205059039c1576404ff^1",
+  "review_head": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1127,
+  "duration_ms": "1124987",
+  "duration_api_ms": "2299920",
+  "num_turns": "19",
+  "cost_usd": "8.848248899999998",
+  "orch_usage": {
+    "input_tokens": "13",
+    "output_tokens": "48153",
+    "cache_creation_tokens": "84750",
+    "cache_read_tokens": "532678",
+    "total_tokens": 665594
+  },
+  "session_tokens": {
+    "subagents": 7,
+    "input": 121,
+    "output": 54667,
+    "cache_creation": 509476,
+    "cache_read": 3373323,
+    "total": 3937587,
+    "orchestrator": {
+      "output": 48153,
+      "total": 665594,
+      "duration_s": 1126
+    },
+    "per_subagent": [
+      {
+        "output": 6150,
+        "input": 30,
+        "cache_creation": 87590,
+        "cache_read": 1091808,
+        "total": 1185578,
+        "duration_s": 511,
+        "agent": "agent-a143e8406ffd94925"
+      },
+      {
+        "output": 22,
+        "input": 11,
+        "cache_creation": 59635,
+        "cache_read": 229650,
+        "total": 289318,
+        "duration_s": 237,
+        "agent": "agent-a4e9b0892a7eca4f4"
+      },
+      {
+        "output": 14,
+        "input": 6,
+        "cache_creation": 63058,
+        "cache_read": 85713,
+        "total": 148791,
+        "duration_s": 176,
+        "agent": "agent-a73f9876d5388cc0e"
+      },
+      {
+        "output": 19,
+        "input": 8,
+        "cache_creation": 49147,
+        "cache_read": 142303,
+        "total": 191477,
+        "duration_s": 142,
+        "agent": "agent-a75e87562018cb89d"
+      },
+      {
+        "output": 201,
+        "input": 28,
+        "cache_creation": 58633,
+        "cache_read": 712885,
+        "total": 771747,
+        "duration_s": 197,
+        "agent": "agent-a96cb5dcbeffd8b11"
+      },
+      {
+        "output": 28,
+        "input": 15,
+        "cache_creation": 61396,
+        "cache_read": 398307,
+        "total": 459746,
+        "duration_s": 235,
+        "agent": "agent-a9b6b158a4acbd1c8"
+      },
+      {
+        "output": 80,
+        "input": 10,
+        "cache_creation": 45267,
+        "cache_read": 179979,
+        "total": 225336,
+        "duration_s": 209,
+        "agent": "agent-a9f5c8b406f60e81b"
+      }
+    ],
+    "max_subagent_duration_s": 511,
+    "sum_subagent_duration_s": 1707
+  },
+  "input_tokens": "13",
+  "output_tokens": "48153",
+  "cache_creation_tokens": "84750",
+  "cache_read_tokens": "532678",
+  "total_tokens": 665594,
+  "session_id": "b4a6b93a-374a-44c2-8e8f-b59cb47ebe27",
+  "findings_lines": 195,
+  "invocation": "Use the /code-review workflow to review pull request #67075 of the GitHub repository dotnet/aspnetcore. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-16T23:39:37Z"
+}

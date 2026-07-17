@@ -1,0 +1,101 @@
+{
+  "run_id": "2__pr-review-toolkit__r1",
+  "subject_id": 2,
+  "lang": "csharp",
+  "size": "medium",
+  "tool": "pr-review-toolkit",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "merge_sha": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "review_base": "3b00cfcae37cd1866de43205059039c1576404ff^1",
+  "review_head": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 627,
+  "duration_ms": "625680",
+  "duration_api_ms": "1449170",
+  "num_turns": "11",
+  "cost_usd": "5.6783865",
+  "orch_usage": {
+    "input_tokens": "16095",
+    "output_tokens": "21385",
+    "cache_creation_tokens": "50498",
+    "cache_read_tokens": "310072",
+    "total_tokens": 398050
+  },
+  "session_tokens": {
+    "subagents": 5,
+    "input": 16145,
+    "output": 21901,
+    "cache_creation": 325044,
+    "cache_read": 1294938,
+    "total": 1658028,
+    "orchestrator": {
+      "output": 21385,
+      "total": 398050,
+      "duration_s": 626
+    },
+    "per_subagent": [
+      {
+        "output": 402,
+        "input": 19,
+        "cache_creation": 68946,
+        "cache_read": 453555,
+        "total": 522922,
+        "duration_s": 423,
+        "agent": "agent-a47759a771cd80f3d"
+      },
+      {
+        "output": 24,
+        "input": 10,
+        "cache_creation": 47181,
+        "cache_read": 170096,
+        "total": 217311,
+        "duration_s": 133,
+        "agent": "agent-a6a12fb2c65cec1c1"
+      },
+      {
+        "output": 17,
+        "input": 6,
+        "cache_creation": 62118,
+        "cache_read": 84064,
+        "total": 146205,
+        "duration_s": 321,
+        "agent": "agent-a71c15a4b96655a69"
+      },
+      {
+        "output": 15,
+        "input": 4,
+        "cache_creation": 46148,
+        "cache_read": 33605,
+        "total": 79772,
+        "duration_s": 207,
+        "agent": "agent-ae438ae3a0fc88a35"
+      },
+      {
+        "output": 58,
+        "input": 11,
+        "cache_creation": 50153,
+        "cache_read": 243546,
+        "total": 293768,
+        "duration_s": 229,
+        "agent": "agent-ae7f9075913eec193"
+      }
+    ],
+    "max_subagent_duration_s": 423,
+    "sum_subagent_duration_s": 1313
+  },
+  "input_tokens": "16095",
+  "output_tokens": "21385",
+  "cache_creation_tokens": "50498",
+  "cache_read_tokens": "310072",
+  "total_tokens": 398050,
+  "session_id": "909ae516-9b3d-4957-a4f4-3f880b3fbd99",
+  "findings_lines": 179,
+  "invocation": "Comprehensively review pull request #67075 of the GitHub repository dotnet/aspnetcore using the pr-review-toolkit agents: run code-reviewer, silent-failure-hunter, pr-test-analyzer, comment-analyzer, and type-design-analyzer against the PR's diff (fetch it with gh pr diff 67075). Do NOT post anything. Output each agent's complete findings with file:line references.",
+  "finished_at": "2026-07-16T23:50:04Z"
+}

@@ -1,0 +1,65 @@
+{
+  "run_id": "2__superpowers__r2",
+  "subject_id": 2,
+  "lang": "csharp",
+  "size": "medium",
+  "tool": "superpowers",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "merge_sha": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "review_base": "3b00cfcae37cd1866de43205059039c1576404ff^1",
+  "review_head": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 317,
+  "duration_ms": "315182",
+  "duration_api_ms": "312470",
+  "num_turns": "6",
+  "cost_usd": "1.5896499999999998",
+  "orch_usage": {
+    "input_tokens": "7",
+    "output_tokens": "4770",
+    "cache_creation_tokens": "37892",
+    "cache_read_tokens": "158811",
+    "total_tokens": 201480
+  },
+  "session_tokens": {
+    "subagents": 1,
+    "input": 26,
+    "output": 4797,
+    "cache_creation": 93666,
+    "cache_read": 593225,
+    "total": 691714,
+    "orchestrator": {
+      "output": 4770,
+      "total": 201480,
+      "duration_s": 315
+    },
+    "per_subagent": [
+      {
+        "output": 27,
+        "input": 19,
+        "cache_creation": 55774,
+        "cache_read": 434414,
+        "total": 490234,
+        "duration_s": 256,
+        "agent": "agent-a02b6c8522ffe52c1"
+      }
+    ],
+    "max_subagent_duration_s": 256,
+    "sum_subagent_duration_s": 256
+  },
+  "input_tokens": "7",
+  "output_tokens": "4770",
+  "cache_creation_tokens": "37892",
+  "cache_read_tokens": "158811",
+  "total_tokens": 201480,
+  "session_id": "7168ddb7-0bc1-478a-b2b2-738380812eec",
+  "findings_lines": 75,
+  "invocation": "Using the superpowers requesting-code-review skill and its code-reviewer.md prompt template, dispatch ONE general-purpose subagent to review the code changes in this repository from commit 3b00cfcae37cd1866de43205059039c1576404ff^1 to commit 3b00cfcae37cd1866de43205059039c1576404ff (i.e. `git diff 3b00cfcae37cd1866de43205059039c1576404ff^1 3b00cfcae37cd1866de43205059039c1576404ff`). Give it the PR title and the diff range as context. Return the reviewer subagent's full report verbatim (Strengths / Critical / Important / Minor / Assessment).",
+  "finished_at": "2026-07-17T06:21:50Z"
+}

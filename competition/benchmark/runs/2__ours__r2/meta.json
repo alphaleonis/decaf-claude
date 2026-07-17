@@ -1,0 +1,137 @@
+{
+  "run_id": "2__ours__r2",
+  "subject_id": 2,
+  "lang": "csharp",
+  "size": "medium",
+  "tool": "ours",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "merge_sha": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "review_base": "3b00cfcae37cd1866de43205059039c1576404ff^1",
+  "review_head": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1265,
+  "duration_ms": "1263971",
+  "duration_api_ms": "2969223",
+  "num_turns": "27",
+  "cost_usd": "10.4234238",
+  "orch_usage": {
+    "input_tokens": "28",
+    "output_tokens": "61730",
+    "cache_creation_tokens": "152841",
+    "cache_read_tokens": "1739685",
+    "total_tokens": 1954284
+  },
+  "session_tokens": {
+    "subagents": 9,
+    "input": 330,
+    "output": 62082,
+    "cache_creation": 727063,
+    "cache_read": 4191297,
+    "total": 4980772,
+    "orchestrator": {
+      "output": 61730,
+      "total": 1954284,
+      "duration_s": 1265
+    },
+    "per_subagent": [
+      {
+        "output": 8,
+        "input": 6,
+        "cache_creation": 62997,
+        "cache_read": 104948,
+        "total": 167959,
+        "duration_s": 342,
+        "agent": "agent-a0573731f335be28a"
+      },
+      {
+        "output": 182,
+        "input": 18,
+        "cache_creation": 74971,
+        "cache_read": 509025,
+        "total": 584196,
+        "duration_s": 394,
+        "agent": "agent-a38e065e13752fb40"
+      },
+      {
+        "output": 32,
+        "input": 10,
+        "cache_creation": 66841,
+        "cache_read": 211679,
+        "total": 278562,
+        "duration_s": 124,
+        "agent": "agent-a3c992e7e54194bc9"
+      },
+      {
+        "output": 31,
+        "input": 224,
+        "cache_creation": 81788,
+        "cache_read": 643291,
+        "total": 725334,
+        "duration_s": 259,
+        "agent": "agent-a735ccb9b58598b7d"
+      },
+      {
+        "output": 10,
+        "input": 4,
+        "cache_creation": 39060,
+        "cache_read": 45788,
+        "total": 84862,
+        "duration_s": 73,
+        "agent": "agent-a79550f65d9b4873a"
+      },
+      {
+        "output": 18,
+        "input": 6,
+        "cache_creation": 59005,
+        "cache_read": 85436,
+        "total": 144465,
+        "duration_s": 173,
+        "agent": "agent-ac388da07005a1c2a"
+      },
+      {
+        "output": 29,
+        "input": 18,
+        "cache_creation": 82049,
+        "cache_read": 553189,
+        "total": 635285,
+        "duration_s": 274,
+        "agent": "agent-ad6aec6ad1cdbe3af"
+      },
+      {
+        "output": 12,
+        "input": 6,
+        "cache_creation": 58729,
+        "cache_read": 88415,
+        "total": 147162,
+        "duration_s": 263,
+        "agent": "agent-aea472b30baeb321f"
+      },
+      {
+        "output": 30,
+        "input": 10,
+        "cache_creation": 48782,
+        "cache_read": 209841,
+        "total": 258663,
+        "duration_s": 281,
+        "agent": "agent-afae3de342e274ce7"
+      }
+    ],
+    "max_subagent_duration_s": 394,
+    "sum_subagent_duration_s": 2183
+  },
+  "input_tokens": "28",
+  "output_tokens": "61730",
+  "cache_creation_tokens": "152841",
+  "cache_read_tokens": "1739685",
+  "total_tokens": 1954284,
+  "session_id": "86d7d46c-41ca-406c-823f-abd03dd49a25",
+  "findings_lines": 9,
+  "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report 67075. This reviews pull request #67075 of the GitHub repository dotnet/aspnetcore (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-07-16T23:02:07Z"
+}
