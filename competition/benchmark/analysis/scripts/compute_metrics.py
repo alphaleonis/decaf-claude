@@ -64,20 +64,21 @@ def main():
         rep_rows = []
         bug_hits = 0
         precisions = []; fps = []; valids = []; nits = []
+        valid_counts = []
         for r in reps:
             vs = found.get((t, r), [])
             nfound = len(vs)
             cnt = lambda k: sum(1 for v in vs if v == k)
             tp_primary = cnt("TP-primary") > 0
             bug_hits += 1 if tp_primary else 0
-            pos = sum(1 for v in vs if v in POS)
+            pos = sum(1 for v in vs if v in POS)   # distinct valid (worth-acting-on) findings this cell reported
             fp = cnt("false-positive"); nit = cnt("nitpick")
             prec = (pos / nfound) if nfound else None
             precisions.append(prec if prec is not None else 0.0)
-            fps.append(fp); valids.append(cnt("valid-other")); nits.append(nit)
+            fps.append(fp); valids.append(cnt("valid-other")); nits.append(nit); valid_counts.append(pos)
             cc = cost.get((t, r), {})
             rep_rows.append({
-                "repeat": r, "clusters_found": nfound,
+                "repeat": r, "clusters_found": nfound, "valid_findings": pos,
                 "tp_primary": tp_primary, "tp_human": cnt("TP-human"),
                 "valid_other": cnt("valid-other"), "false_positive": fp, "nitpick": nit,
                 "precision": rnd(prec), "cost_usd": cc.get("cost_usd"),
@@ -99,6 +100,7 @@ def main():
             "bug_catch_repeats": bug_hits, "n_repeats": len(reps),
             "bug_catch_rate": rnd(bug_hits / nrep),
             "precision_mean": rnd(_mean(precisions)),
+            "valid_per_cell": rnd(_mean(valid_counts)),   # distinct valid (TP+valid-other) findings / cell
             "fp_per_cell": rnd(_mean(fps)),
             "valid_other_mean": rnd(_mean(valids)),
             "nitpick_per_cell": rnd(_mean(nits)),
