@@ -1,0 +1,10 @@
+# subagent agent-a923091b21ffb2092
+
+```json
+{
+  "finding": "#M2",
+  "verdict": "confirmed",
+  "reason": "Directly verified all four claims against the code and git history. (1) Current pkg/proxy/node.go:128-132 `PodCIDRs()` returns `n.node.Spec.PodCIDRs` with no reference to `watchPodCIDRs`; server.go:218 `s.podCIDRs = s.NodeManager.PodCIDRs()` runs unconditionally in `newProxyServer`, not gated by `DetectLocalMode`. (2) `git show 7a31dd60:cmd/kube-proxy/app/server_linux.go` confirms pre-PR `s.podCIDRs = node.Spec.PodCIDRs` was set only inside `if s.Config.DetectLocalMode == proxyconfigapi.LocalModeNodeCIDR` in `platformSetup`; in every other mode `s.podCIDRs` stayed nil (zero value). (3) `checkBadConfig` (server.go:293, `s.podCIDRs` in the anyDualStackConfig scan) and `checkBadIPConfig` (server.go:343, `badCIDRs(s.podCIDRs, badFamily)`) are both invoked unconditionally in `newProxyServer` (lines 252, 268) — previously these evaluated against a guaranteed-nil slice outside NodeCIDR mode (so `badCIDRs` short-circuited via `len(cidrs)==0`), now they evaluate the node's real `Spec.PodCIDRs` in every mode. (4) The field comment at server.go:175 `// only used for LocalModeNodeCIDR` is stale — it was accurate pre-PR but not post-PR. The diff also shows the intermediate commit (patch 3/5) actually preserved the old semantics (a cached `podCIDRs` field populated only when `watchPodCIDRs`), and it was patch 4/5 that switched `PodCIDRs()` to unconditionally derive from the stored node — an explicit, git-visible behavioral change, not a misread. `TestProxyServer_platformSetup` (deleted, /tmp/pr130837.diff line ~1650) explicitly asserted `wantPodCIDRs: nil` for `LocalModeClusterCIDR`, and no replacement test in `TestNewNodeManager`/`TestNodeManagerOnNodeChange` covers the `watchPodCIDRs=false` + populated `Spec.PodCIDRs` case, confirming the lost invariant coverage. The fatal-error gates in `checkBadIPConfig` remain correctly restricted to `LocalModeNodeCIDR` (lines 337, 345), so the change is non-fatal (new log lines only), consistent with the finding's own severity characterization.",
+  "corrections": null
+}
+```

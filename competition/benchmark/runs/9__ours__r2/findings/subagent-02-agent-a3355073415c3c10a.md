@@ -1,0 +1,9 @@
+# subagent agent-a3355073415c3c10a
+
+```json
+{
+  "finding": "#F7",
+  "verdict": "confirmed",
+  "reason": "Read pkg/proxy/healthcheck/proxy_health.go:176-190 directly: NodeEligible() takes hs.lock.Lock() (exclusive) and its body only calls hs.nodeManager.Node() then inspects the returned copy's DeletionTimestamp/Spec.Taints — no access to hs.lastUpdatedMap or hs.oldestPendingQueuedMap. hs.lock is sync.RWMutex (line 79), and Updated()/QueuedUpdate() (lines 105-124) take the same hs.lock.Lock() to guard those two maps, while Health() (line 132) takes hs.lock.RLock(). pkg/proxy/node.go:186-190 confirms NodeManager.Node() has its own independent n.mu and does `return n.node.DeepCopy()` on every call. `git diff 7a31dd60 08727607 -- pkg/proxy/healthcheck/proxy_health.go` shows this PR is exactly what introduced the regression: the old NodeEligible() did `hs.lock.RLock()` and returned a cached `hs.nodeEligible bool` field (cheap, shared-lock, no allocation), updated only on node-change events by a separate SyncNode() method taking hs.lock.Lock(). The new code moved the exclusive lock + a per-call DeepCopy onto the hot /healthz request path itself, so the finding's core claims — vestigial exclusive lock, needless serialization against the sync loop, and a new per-request allocation — are all independently re-derivable and are a genuine regression introduced by this exact PR. One minor overstatement in the finding: livezHandler.ServeHTTP (line 248) does NOT call NodeEligible(), only healthzHandler does (line 218), so the impact is /healthz-only, not /healthz+/livez — this doesn't change the verdict, just narrows the blast radius slightly. Medium severity is reasonable: healthz is typically polled by external LBs/kubelet at low frequency (not a per-packet hot path), so the DeepCopy + exclusive-lock contention is real but bounded."
+}
+```

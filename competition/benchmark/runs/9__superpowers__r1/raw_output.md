@@ -1,0 +1,65 @@
+Below is the reviewer subagent's full report, verbatim.
+
+---
+
+### Strengths
+
+- **Genuine consolidation, as the PR title promises.** ~800 lines of duplicated per-proxier node handling (`OnNodeAdd/OnNodeUpdate/OnNodeDelete/OnNodeSynced` in iptables/ipvs/nftables) plus two separate server-side startup mechanisms (`getNodeIPs` exponential backoff in `server.go` and `waitForPodCIDR` watch in `server_linux.go`) collapse into one `NodeManager` (`pkg/proxy/node.go`) and a focused `NodeTopologyConfig` (`pkg/proxy/config/config.go`). The `Provider` interface change (`config.NodeHandler` → `config.NodeTopologyHandler`, `pkg/proxy/types.go:31`) correctly narrows what proxiers must implement.
+- **The topology filter is a real behavioral improvement, not just a move.** The old proxier code stored *all* node labels and triggered a full resync on *any* label change (`reflect.DeepEqual(proxier.nodeLabels, node.Labels)`). `NodeTopologyConfig.handleNodeEvent` (config.go:515) now extracts only `LabelTopologyZone` and short-circuits via `reflect.DeepEqual` on the filtered set, so churn on instance-type/region/OS labels no longer forces `needFullSync`. That's a legitimate efficiency win.
+- **Good cross-reference discipline.** The comment added to `CategorizeEndpoints` (`topology.go:44-47`) explicitly points at the filter in `NodeTopologyConfig` so the two stay in sync — exactly the kind of coupling that otherwise rots.
+- **Testability designed in.** `newNodeManager` injects `exitFunc`, `pollInterval`, `pollTimeout`; `newNodeTopologyConfig` injects a completion `callback`. The `NodeManager` table tests (`node_test.go`) cover the poll-for-node / poll-for-PodCIDR / exit-on-change matrix well, and tombstone (`DeletedFinalStateUnknown`) handling was added to `handleChangeNode`/`handleDeleteNode`.
+- **Build + tests pass.** `go build ./pkg/proxy/... ./cmd/kube-proxy/...` clean; `go vet` clean; `go test -race` green for `pkg/proxy/config` (Node/NodeTopology), `pkg/proxy` (NodeManager), and `pkg/proxy/healthcheck` (Healthz/Livez).
+
+---
+
+### Issues
+
+#### Critical (Must Fix)
+None that are guaranteed to fail. The item below is the closest and I'd want it resolved before merge.
+
+#### Important (Should Fix)
+
+**1. Unsynchronized `eventHandlers` + possible lost initial topology notification — `config.go:509`/`515` wired at `server.go:610-611`**
+
+`NodeTopologyConfig` (and `NodeConfig`) register their informer callbacks in the constructor, but the *downstream* handlers are appended later by `RegisterEventHandler` with no lock:
+- `handleNodeEvent` reads `n.eventHandlers` on the informer's listener goroutine.
+- `RegisterEventHandler` appends to `n.eventHandlers` on the main goroutine.
+- There is no mutex on `NodeTopologyConfig`/`NodeConfig` guarding that slice.
+
+Why this is reachable here specifically: the informer is **already started and cache-synced** inside `NewNodeManager` (`node.go`, `thisNodeInformerFactory.Start` + `WaitForNamedCacheSync`) *before* `server.go:610` calls `NewNodeTopologyConfig`. I confirmed against the vendored client-go (`staging/src/k8s.io/client-go/tools/cache/shared_informer.go:696-720` + `addListener:833`): when a handler is added to an already-started informer, `addListener` immediately starts the listener's `run`/`pop` goroutines and the pre-existing node is enqueued as a synthetic `Add`, delivered **asynchronously**. So `handleNodeEvent` can run concurrently with the very next line, `nodeTopologyConfig.RegisterEventHandler(s.Proxier)` (server.go:611).
+
+Two consequences:
+- **Data race** on the `eventHandlers` slice (undefined behavior; `go test -race` would flag it — the existing tests don't, because they `RegisterEventHandler` *before* `sharedInformers.Start`, i.e. they don't reproduce the production ordering — see `config_test.go` `TestNewNodeTopologyConfig`).
+- **Functional regression if the replay wins the race:** `handleNodeEvent` sets `n.topologyLabels = {zone:X}` against an empty handler list, so the proxier is never called; then the proxier registers, but the `reflect.DeepEqual` guard means no future event (including informer resync, which re-sends the same labels) will re-notify it. The proxier starts with `topologyLabels == nil`, silently disabling topology-aware routing for this node until the zone label actually *changes*.
+
+The old code avoided exactly this: it started the node informer factory (`currentNodeInformerFactory.Start`) *after* all `RegisterEventHandler` calls, with the explicit comment "This has to start after the calls to NewNodeConfig because that must configure the shared informer event handler first." That ordering guarantee was dropped when the informer moved into `NewNodeManager`.
+
+Fix options: guard `eventHandlers` with a mutex (matching `ServiceCIDRConfig`'s pattern); or accept the handler at construction; or, after `RegisterEventHandler`, synthetically deliver the current node to the newly registered handler; or restore "register-before-informer-starts" ordering. In practice the main goroutine almost always wins the race, which is likely why this merged — but "almost always" plus a real data race is worth closing.
+
+**2. Behavior change: node *deletion* now crashes kube-proxy — `node.go:176-180`**
+
+`NodeManager.OnNodeDelete` calls `n.exitFunc(1)` (→ `os.Exit(1)` in production). Previously, deletion of this node's object was handled by `NodeEligibleHandler.OnNodeDelete` → `SyncNode` → `nodeEligible = false` (proxy keeps running, reports 503 so the load balancer drains it) and `NodePodCIDRHandler.OnNodeDelete` merely logged. The new code turns a previously *graceful* signal into a process exit. That may well be intended (a deleted Node object usually means the node is gone), but it's a real semantic change that isn't stated in the PR title/description — please confirm it's deliberate, and consider the crash-loop shape if a Node object is deleted while the pod/kubelet keeps restarting kube-proxy. The `DeletionTimestamp`-set (graceful drain) path still works via `OnNodeChange` → `NodeEligible()`, so only the hard-delete case changed.
+
+#### Minor (Nice to Have)
+
+- **`NodeEligible()` lock is heavier than needed and lacks a nil guard — `proxy_health.go:176-180`.** It now takes `hs.lock.Lock()` (write) though it mutates nothing (the cached `nodeEligible` bool it used to update is gone); `RLock` — or no `hs.lock` at all, since `hs.nodeManager` is immutable after construction and `Node()` has its own lock — would suffice. Also, `hs.nodeManager.Node()` is dereferenced without a nil check; safe today (production and tests always pass a non-nil manager) but a nil manager would panic rather than fail gracefully. `Node()` returning a `DeepCopy()` per health probe is fine given probe frequency.
+- **`OnNodeChange` can invoke `exitFunc` twice in one call — `node.go:155` and `node.go:171`.** Harmless with `os.Exit` (first call never returns), but with an injected test `exitFunc` both branches run; the tests only assert the final code so it's masked. A `return` after the PodCIDR-change exit would make intent explicit.
+- **Healthcheck tests use the real `os.Exit` — `healthcheck_test.go:479,559`.** They construct via `proxy.NewNodeManager` (which wires `os.Exit`) and rely on every `OnNodeChange` keeping `NodeInternalIP` at `192.168.0.1`. If a future edit changes an IP in a tweak, the test *process* is killed instead of failing cleanly. Prefer `newNodeManager` with an injected no-op/recording `exitFunc`, as `node_test.go` does.
+- **`OnNodeChange` stores the informer-owned `*v1.Node` directly in `n.node` (node.go:143) without a `DeepCopy`.** Safe under the current invariant (kube-proxy only reads it, and informers replace rather than mutate objects), and `Node()` deep-copies for external callers — but it's an implicit assumption worth a one-line comment.
+- **Lost integration coverage.** `Test_getNodeIPs`, `Test_waitForPodCIDR`, `TestProxyServer_platformSetup` were removed appropriately (their code is gone), and `TestNewNodeManager` replaces the unit-level behavior. But nothing now covers the `server.Run()` wiring where issue #1 lives — a test that registers handlers on an *already-synced* informer (production ordering) run under `-race` would catch it.
+
+---
+
+### Recommendations
+
+1. Serialize `eventHandlers` access in `NodeTopologyConfig`/`NodeConfig` (mutex, or pass handlers at construction, or re-establish register-before-start ordering) and add a `-race` test that mirrors the real startup sequence (informer synced first, then `RegisterEventHandler`). This is the one change I'd gate merge on.
+2. Confirm the crash-on-hard-delete semantics are intended and document them (a code comment on `OnNodeDelete` and/or the PR body).
+3. Downgrade `NodeEligible()` to `RLock`/no lock and add a nil-manager guard; switch the healthcheck tests to an injected `exitFunc`.
+
+---
+
+### Assessment
+
+**Ready to merge?** With fixes.
+
+**Reasoning:** The refactor is well-structured, preserves the topology/PodCIDR/health semantics it set out to, builds, and passes the touched tests under `-race`; but registering downstream handlers on an already-started shared informer introduces an unsynchronized `eventHandlers` access (confirmed data race) with a plausible startup path that silently drops the proxier's initial topology labels, and node hard-deletion now exits the process where it previously drained gracefully — both should be resolved or explicitly signed off before merge.

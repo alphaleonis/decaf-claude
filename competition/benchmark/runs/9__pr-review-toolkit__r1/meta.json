@@ -1,0 +1,101 @@
+{
+  "run_id": "9__pr-review-toolkit__r1",
+  "subject_id": 9,
+  "lang": "go",
+  "size": "large",
+  "tool": "pr-review-toolkit",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "kubernetes/kubernetes",
+  "pr": 130837,
+  "merge_sha": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "review_base": "0872760763d5877707b018a4eea870d1fc02e6a4^1",
+  "review_head": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 682,
+  "duration_ms": "139959",
+  "duration_api_ms": "1882361",
+  "num_turns": "1",
+  "cost_usd": "9.25743975",
+  "orch_usage": {
+    "input_tokens": "2",
+    "output_tokens": "12636",
+    "cache_creation_tokens": "3875",
+    "cache_read_tokens": "81666",
+    "total_tokens": 98179
+  },
+  "session_tokens": {
+    "subagents": 5,
+    "input": 89,
+    "output": 19856,
+    "cache_creation": 635739,
+    "cache_read": 3177252,
+    "total": 3832936,
+    "orchestrator": {
+      "output": 19628,
+      "total": 593291,
+      "duration_s": 681
+    },
+    "per_subagent": [
+      {
+        "output": 17,
+        "input": 10,
+        "cache_creation": 103410,
+        "cache_read": 292482,
+        "total": 395919,
+        "duration_s": 279,
+        "agent": "agent-a65e1c4201cd79e1b"
+      },
+      {
+        "output": 32,
+        "input": 18,
+        "cache_creation": 125358,
+        "cache_read": 758308,
+        "total": 883716,
+        "duration_s": 361,
+        "agent": "agent-acc4816d5f3a55d7c"
+      },
+      {
+        "output": 22,
+        "input": 12,
+        "cache_creation": 110903,
+        "cache_read": 413602,
+        "total": 524539,
+        "duration_s": 275,
+        "agent": "agent-adec4c2f957ece7b7"
+      },
+      {
+        "output": 130,
+        "input": 22,
+        "cache_creation": 134975,
+        "cache_read": 939015,
+        "total": 1074142,
+        "duration_s": 496,
+        "agent": "agent-ae86c8bb9aaa387e7"
+      },
+      {
+        "output": 27,
+        "input": 10,
+        "cache_creation": 92953,
+        "cache_read": 268339,
+        "total": 361329,
+        "duration_s": 228,
+        "agent": "agent-af1254d2c88bc2cfb"
+      }
+    ],
+    "max_subagent_duration_s": 496,
+    "sum_subagent_duration_s": 1639
+  },
+  "input_tokens": "2",
+  "output_tokens": "12636",
+  "cache_creation_tokens": "3875",
+  "cache_read_tokens": "81666",
+  "total_tokens": 98179,
+  "session_id": "e8114b18-9e57-41f9-a408-abc69bf50da3",
+  "findings_lines": 173,
+  "invocation": "Comprehensively review pull request #130837 of the GitHub repository kubernetes/kubernetes using the pr-review-toolkit agents: run code-reviewer, silent-failure-hunter, pr-test-analyzer, comment-analyzer, and type-design-analyzer against the PR's diff (fetch it with gh pr diff 130837). Do NOT post anything. Output each agent's complete findings with file:line references.",
+  "finished_at": "2026-07-17T12:44:13Z"
+}

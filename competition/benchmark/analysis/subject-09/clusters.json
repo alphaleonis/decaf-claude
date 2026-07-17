@@ -1,0 +1,3842 @@
+[
+  {
+    "cluster_id": "c1",
+    "summary": "newNodeManager returns an error on NodeIP-fetch timeout (up to 5 min) and newProxyServer propagates it, ABORTING kube-proxy startup when the node has no NodeIPs \u2014 removing the previous non-fatal ~30-63s backoff + localhost/BindAddress fallback that let kube-proxy start degraded. Backward-compat regression for cloud-provider environments (e.g. azure) where NodeIPs are populated late.",
+    "file": "pkg/proxy/node.go",
+    "line": 60,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a60ab087bdbca2cc8",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a5949c07f34e91309",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-acdd388138fe3fddb",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-acec8f703bd69abb1",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad7503cdb6c847d9f",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a615f11926bfe232b",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a9d031d68951b9a06",
+        "severity": "medium"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-a0f238d5cd8e37509",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a8a71d21c09a76783",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-aef15d6c80d79a878",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c2",
+    "summary": "kube-proxy now os.Exit(1)s on ANY NodeIP change and on node deletion in ALL DetectLocalMode configs (previously IP changes were ignored and node-delete only marked ineligible/503); the crash contract is wired externally in server.go rather than self-enforced, with no debounce.",
+    "file": "pkg/proxy/node.go",
+    "line": 41,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a36ca9f7950ce7a9c",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a60ab087bdbca2cc8",
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a30561459c4a59373",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a4d040cc0d7cc76d4",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-ae83b0889b7590c51",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a9e948b4f8822e985",
+        "severity": "critical"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-acec8f703bd69abb1",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad7503cdb6c847d9f",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a8d9ce6be77f3e736",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-af1254d2c88bc2cfb",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a57426f3e9a578d07",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a52267656d120472e",
+        "severity": "high"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-a0f238d5cd8e37509",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a8a71d21c09a76783",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-aef15d6c80d79a878",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-af6c4475074550cfc",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a830ab31abe33c4d4",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a8ac9599babe6f5d5",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ac91707868d69fe86",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-afa2a321f3058c9cd",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c3",
+    "summary": "The exit-on-NodeIP-change uses order-sensitive reflect.DeepEqual over derived IPs with no debounce/normalization, so a benign address reorder or the normal bringup sequence (kubelet sets IPv4, CCM adds IPv6 later) triggers a spurious os.Exit(1) -> CrashLoopBackOff during cluster bringup / fleet-wide flaps.",
+    "file": "pkg/proxy/node.go",
+    "line": 167,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "critical"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a1aa06b035fb682a8",
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a81070ca7f51d3753",
+        "severity": "critical"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a3c181b0bb0257926",
+        "severity": "critical"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad76af6736a658b1b",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a615f11926bfe232b",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a7a4a97193460d09b",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a8a71d21c09a76783",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a7297716e3f47fda8",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c4",
+    "summary": "OnNodeChange assigns n.node = node BEFORE validating the new node's IPs; a transient address-less update stores the IP-less node and early-returns (only logging), poisoning the baseline so a later update restoring the original IPs is seen as a change and triggers a spurious exit \u2014 and the error early-return skips the NodeIP-change crash check (missed crash).",
+    "file": "pkg/proxy/node.go",
+    "line": 145,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a1aa06b035fb682a8",
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ad1e959d758027e67",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a3c181b0bb0257926",
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-af0c3080ade240c6b",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a71ecf7d705b4daf4",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-acec8f703bd69abb1",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a4eafcb248c452ee1",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a615f11926bfe232b",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-acc4816d5f3a55d7c",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a0857f7cc068acdd7",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a38656505f9e319e2",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a9b163dfbcb9e98e1",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a58d1ff8b5eb4deca",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a85c2e102f4d6fde2",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a8a71d21c09a76783",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a7297716e3f47fda8",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a8a974ba8206f4493",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-abb5ef48f932f931f",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ac91707868d69fe86",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c5",
+    "summary": "All three NodeManager exit sites use klog.Flush()+exitFunc(os.Exit) instead of the prior klog.FlushAndExit(ExitFlushTimeout,1); plain Flush() is unbounded/synchronous, so a stalled log sink can drop the exit-reason log or delay os.Exit. Reported post-merge as breaking cluster creation with no crash-reason logged.",
+    "file": "pkg/proxy/node.go",
+    "line": 154,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a1aa06b035fb682a8",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a5388135f8423836a",
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a60ab087bdbca2cc8",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a5949c07f34e91309",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a926e3d346496e3f1",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-aa26acd8c6dc58357",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-acec8f703bd69abb1",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad7503cdb6c847d9f",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-af8978449572321b8",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-afa401b0b7a7a1b4f",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a615f11926bfe232b",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ad9c93f5b8a55f3ea",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-adaea04be898c4df0",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-af5a92aa4ea383ed8",
+        "severity": "high"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c6",
+    "summary": "The new self-induced os.Exit(1) paths (NodeIP change, PodCIDR change, node delete) emit no metric and no Kubernetes Event, only a klog line, so a fleet-wide correlated crashloop is operationally invisible.",
+    "file": "pkg/proxy/node.go",
+    "line": 155,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a7297716e3f47fda8",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c7",
+    "summary": "NewNodeConfig registers only UpdateFunc/DeleteFunc (no AddFunc), so the informer's synthetic Add-replay to the late-registered handler is silently dropped; a NodeIP/PodCIDR change in the startup-window gap (between NewNodeManager's poll and handler registration in Run()) bypasses NodeManager's crash-on-drift safety net. Also contradicts the OnNodeChange doc promising creation events.",
+    "file": "pkg/proxy/config/config.go",
+    "line": 288,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a1aa06b035fb682a8",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a36ca9f7950ce7a9c",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a7434753dde68cacc",
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a3c181b0bb0257926",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a4d040cc0d7cc76d4",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a519741ac4e13b22a",
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a5949c07f34e91309",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a1b5ce791f76e3161",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a7d88819347c69277",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a9e948b4f8822e985",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad76af6736a658b1b",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-af8978449572321b8",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-afa401b0b7a7a1b4f",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a0869cd8ed6476a93",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a615f11926bfe232b",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a8d9ce6be77f3e736",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a9ed31da8b35dd723",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-aa5c5e78490e7310e",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a65e1c4201cd79e1b",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-af1254d2c88bc2cfb",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a0857f7cc068acdd7",
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a38656505f9e319e2",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a57426f3e9a578d07",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a9b163dfbcb9e98e1",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a512029cf31d57a6a",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a7a4a97193460d09b",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a85c2e102f4d6fde2",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a906e444994f385b4",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-abc2605935bf70ba2",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-aef15d6c80d79a878",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a7297716e3f47fda8",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a7baae155c1f9e858",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a830ab31abe33c4d4",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a8a974ba8206f4493",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a8ac9599babe6f5d5",
+        "severity": "info"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-abb5ef48f932f931f",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ada7ed9d5ab82de3c",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-adc74a567afb693f3",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-afa2a321f3058c9cd",
+        "severity": "high"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c8",
+    "summary": "NodeConfig/NodeTopologyConfig register handlers on the shared node informer that NewNodeManager ALREADY started+synced, racing the caller's RegisterEventHandler append to the unsynchronized eventHandlers slice (go test -race detectable); the async synthetic-Add replay can also be processed with zero handlers registered, permanently losing initial topology.",
+    "file": "pkg/proxy/config/config.go",
+    "line": 607,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a1e05ea3082126826",
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ab345483f1048ec92",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a9bf149929d2bb194",
+        "severity": "critical"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ac4293237d8735a28",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a65e1c4201cd79e1b",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-ae86c8bb9aaa387e7",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a38656505f9e319e2",
+        "severity": "medium"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a52267656d120472e",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a8a974ba8206f4493",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ac91707868d69fe86",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c9",
+    "summary": "handleChangeNode (wired only to UpdateFunc) contains an unreachable cache.DeletedFinalStateUnknown tombstone branch copied from the delete handler; tombstones are only delivered on the delete path, so it is dead/misleading code.",
+    "file": "pkg/proxy/config/config.go",
+    "line": 320,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a7434753dde68cacc",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ad3d58cea38fa309e",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a4d040cc0d7cc76d4",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a5949c07f34e91309",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-aa4188c6ab688479a",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a1b5ce791f76e3161",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-af8978449572321b8",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-aa5c5e78490e7310e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a65e1c4201cd79e1b",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-acc4816d5f3a55d7c",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-ae86c8bb9aaa387e7",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-af1254d2c88bc2cfb",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a0857f7cc068acdd7",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a38656505f9e319e2",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-a0f238d5cd8e37509",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a8a71d21c09a76783",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-aef15d6c80d79a878",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-af6c4475074550cfc",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a7297716e3f47fda8",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a8ac9599babe6f5d5",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-abb5ef48f932f931f",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c10",
+    "summary": "NodeTopologyConfig's DeleteFunc is a no-op (topology labels never cleared on node delete) while handleNodeEvent's doc claims it handles Delete; the stale zone routing is masked only because NodeManager.OnNodeDelete crashes the process first.",
+    "file": "pkg/proxy/config/config.go",
+    "line": 513,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a8d9ce6be77f3e736",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ab43060934ff15562",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a65e1c4201cd79e1b",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-acc4816d5f3a55d7c",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-af1254d2c88bc2cfb",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a38656505f9e319e2",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a57426f3e9a578d07",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ada7ed9d5ab82de3c",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c11",
+    "summary": "NodeTopologyConfig.listerSynced is assigned but never read \u2014 the type has no Run()/sync-wait method (unlike sibling NodeConfig), so it is dead state implying a sync barrier that doesn't exist.",
+    "file": "pkg/proxy/config/config.go",
+    "line": 503,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a36ca9f7950ce7a9c",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a65e1c4201cd79e1b",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a9b163dfbcb9e98e1",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-a0f238d5cd8e37509",
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a8a71d21c09a76783",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-af6c4475074550cfc",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a8a974ba8206f4493",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c12",
+    "summary": "NodeTopologyConfig.handleNodeEvent publishes its internal topologyLabels map by reference to every proxier (and topologyLabels is read/written without a lock), with no defensive copy or ownership contract \u2014 safe only by an unwritten never-mutate-after-publish convention.",
+    "file": "pkg/proxy/config/config.go",
+    "line": 535,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a36ca9f7950ce7a9c",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a9b163dfbcb9e98e1",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a85c2e102f4d6fde2",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c13",
+    "summary": "The set of proxy-relevant topology labels is split across two packages \u2014 producer filter (handleNodeEvent, hardcoded LabelTopologyZone) and consumer (CategorizeEndpoints) \u2014 coupled only by a one-directional prose comment, risking silent mis-routing if they drift.",
+    "file": "pkg/proxy/config/config.go",
+    "line": 44,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a36ca9f7950ce7a9c",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a4d040cc0d7cc76d4",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-ae83b0889b7590c51",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a1b5ce791f76e3161",
+        "severity": "info"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad7503cdb6c847d9f",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-af1254d2c88bc2cfb",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a57426f3e9a578d07",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a9b163dfbcb9e98e1",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a830ab31abe33c4d4",
+        "severity": "info"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c14",
+    "summary": "config.NodeConfig's informer->handler dispatch (handleChangeNode/handleDeleteNode/Run) has ZERO unit-test coverage before or after this PR, despite the PR changing it non-trivially (merged Add/Update, dropped AddFunc).",
+    "file": "pkg/proxy/config/config.go",
+    "line": 288,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-adec4c2f957ece7b7",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-afa2a321f3058c9cd",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c15",
+    "summary": "NodeConfig's struct doc comment describes a channel-based set/add/remove API that no longer exists (informer-driven now); pre-existing but sits above the rewritten code.",
+    "file": "pkg/proxy/config/config.go",
+    "line": 274,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ad3d58cea38fa309e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-af1254d2c88bc2cfb",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a57426f3e9a578d07",
+        "severity": "nit"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c16",
+    "summary": "PodCIDRs() (and OnNodeChange storing the informer-owned *v1.Node without a DeepCopy) return/hold live references into the shared informer-cache object, while Node() DeepCopy()s and NodeIPs() allocates fresh \u2014 asymmetric encapsulation / latent aliasing of client-go's read-only cache.",
+    "file": "pkg/proxy/node.go",
+    "line": 131,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a1add794e81c0e78d",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ad3d58cea38fa309e",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-aa4188c6ab688479a",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a9e948b4f8822e985",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-afa401b0b7a7a1b4f",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a0869cd8ed6476a93",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ad3d5d21c73392f61",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ad9c93f5b8a55f3ea",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-adaea04be898c4df0",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a65e1c4201cd79e1b",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a9b163dfbcb9e98e1",
+        "severity": "medium"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a52267656d120472e",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-a0f238d5cd8e37509",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a85c2e102f4d6fde2",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-aef15d6c80d79a878",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a7baae155c1f9e858",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c17",
+    "summary": "newNodeManager discards the poll's own pollErr and returns a side-channel domain err, relying on the implicit invariant that err is non-nil on timeout (true today via immediate=true); a future poll-branch could return (nil, nil), nil-panicking the caller. On context cancellation it also surfaces a misleading domain error instead of the cancellation.",
+    "file": "pkg/proxy/node.go",
+    "line": 107,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a08452e440656ef82",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a926e3d346496e3f1",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad7503cdb6c847d9f",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-afa401b0b7a7a1b4f",
+        "severity": "info"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-adaea04be898c4df0",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-acc4816d5f3a55d7c",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-ae86c8bb9aaa387e7",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a0857f7cc068acdd7",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a38656505f9e319e2",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a58d1ff8b5eb4deca",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c18",
+    "summary": "newNodeManager calls thisNodeInformerFactory.Start(wait.NeverStop) before its error returns and never stores/stops it, so on either error-return path the reflector/watch goroutines leak (bounded only by process exit; also accumulates across the ~13 test constructions).",
+    "file": "pkg/proxy/node.go",
+    "line": 76,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a1add794e81c0e78d",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5ee7b94e58355396",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-af8978449572321b8",
+        "severity": "info"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-afa401b0b7a7a1b4f",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a78028136ab66f456",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c19",
+    "summary": "The '5 minutes for PodCIDR allocation' comment now understates scope: the same timeout also fatally bounds waiting for node existence and NodeIP readiness in ALL modes (previously a ~30-60s non-fatal wait).",
+    "file": "pkg/proxy/node.go",
+    "line": 59,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a4d040cc0d7cc76d4",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a926e3d346496e3f1",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-aaf88a2854de307ef",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a512029cf31d57a6a",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c20",
+    "summary": "The NodeManager type doc comment is a grammatically garbled run-on (duplicated 'handles' verb, merge artifact) and omits that node deletion also unconditionally crashes kube-proxy.",
+    "file": "pkg/proxy/node.go",
+    "line": 41,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a65e1c4201cd79e1b",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a57426f3e9a578d07",
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a9b163dfbcb9e98e1",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-a0f238d5cd8e37509",
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a512029cf31d57a6a",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c21",
+    "summary": "NodeManager takes a ctx in newNodeManager but logs via package-global klog.InfoS/ErrorS instead of a ctx-scoped logger, unlike every sibling config.*Config type added in this PR, dropping contextual keys.",
+    "file": "pkg/proxy/node.go",
+    "line": 152,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a4537faa1378db6b1",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-aa4188c6ab688479a",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-afa401b0b7a7a1b4f",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ab43060934ff15562",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c22",
+    "summary": "The issues.k8s.io/111321 reference explaining why a PodCIDR change forces a full process restart was deleted with no replacement, and the new crash triggers (NodeIP change, node deletion) carry no rationale.",
+    "file": "pkg/proxy/node.go",
+    "line": 60,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a60ab087bdbca2cc8",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a9bf149929d2bb194",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a57426f3e9a578d07",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c23",
+    "summary": "OnNodeChange has no return after the PodCIDR-change exitFunc(1), so execution falls through to the NodeIP check and can call exitFunc(1) twice in one event \u2014 inert in production (os.Exit never returns) but wrong with an injected/test exitFunc.",
+    "file": "pkg/proxy/node.go",
+    "line": 150,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a5949c07f34e91309",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5ee7b94e58355396",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-aa5c5e78490e7310e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a65e1c4201cd79e1b",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-acc4816d5f3a55d7c",
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a0857f7cc068acdd7",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a52267656d120472e",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a8a71d21c09a76783",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a7baae155c1f9e858",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a8a974ba8206f4493",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c24",
+    "summary": "NodeIPs() and OnNodeChange's oldNodeIPs both discard the GetNodeHostIPs error via `_`, unlike the file's other call sites that check it, conflating 'no IPs' with 'lookup failed'.",
+    "file": "pkg/proxy/node.go",
+    "line": 123,
+    "category": "bug",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ad3d58cea38fa309e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-acc4816d5f3a55d7c",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c25",
+    "summary": "OnNodeSynced's doc comment claims 'all pre-existing Nodes have been reported' but the informer is field-selected to a single node and OnNodeChange never receives an Add (no AddFunc); it also breaks the sibling 'X is a handler for Node Y' phrasing.",
+    "file": "pkg/proxy/node.go",
+    "line": 182,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ad3d58cea38fa309e",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ada7ed9d5ab82de3c",
+        "severity": "nit"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c26",
+    "summary": "NodeIPs()/PodCIDRs() doc comments say values were 'polled in NewNodeManager()' implying a one-time snapshot, but OnNodeChange overwrites n.node so both actually return the current, live-mutated node's values.",
+    "file": "pkg/proxy/node.go",
+    "line": 119,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-af1254d2c88bc2cfb",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c27",
+    "summary": "No concurrency/-race test exercises NodeManager's shared n.node field (written by the informer goroutine, read by the healthz handler) or OnNodeChange concurrently with the accessors.",
+    "file": "pkg/proxy/node_test.go",
+    "line": 207,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5ee7b94e58355396",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-adec4c2f957ece7b7",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c28",
+    "summary": "newNodeManager's 'can not sync node informer' (WaitForNamedCacheSync failure) branch is not exercised by any test.",
+    "file": "pkg/proxy/node.go",
+    "line": 77,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a7a4a97193460d09b",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c29",
+    "summary": "OnNodeChange's transient GetNodeHostIPs-error early-return path ('node loses all NodeIPs') is untested \u2014 every TestNodeManagerOnNodeChange case supplies a valid-IP updated node.",
+    "file": "pkg/proxy/node.go",
+    "line": 159,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-adec4c2f957ece7b7",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a7a4a97193460d09b",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c30",
+    "summary": "NodeEligible() (invoked on every /healthz + liveness probe) acquires an exclusive hs.lock.Lock() (upgraded from RLock) that no longer guards any field it accesses \u2014 needlessly serializing against the proxier sync loop \u2014 and deep-copies the entire v1.Node via Node() to read only DeletionTimestamp/Taints.",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 176,
+    "category": "perf",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a1e05ea3082126826",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a36ca9f7950ce7a9c",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a7434753dde68cacc",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ad3d58cea38fa309e",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a519741ac4e13b22a",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a5949c07f34e91309",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-ae83b0889b7590c51",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a9e948b4f8822e985",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ab9dde3dda3573f00",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-acec8f703bd69abb1",
+        "severity": "info"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad76af6736a658b1b",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-af1c8e279476ec781",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-af8978449572321b8",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a0869cd8ed6476a93",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a3355073415c3c10a",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a9bf149929d2bb194",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a65e1c4201cd79e1b",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-ae86c8bb9aaa387e7",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a0857f7cc068acdd7",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a9b163dfbcb9e98e1",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a52267656d120472e",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-a0f238d5cd8e37509",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a85c2e102f4d6fde2",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-aef15d6c80d79a878",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-af6c4475074550cfc",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a7297716e3f47fda8",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a8a974ba8206f4493",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c31",
+    "summary": "NodeEligible()/Node() unconditionally dereference hs.nodeManager with no nil guard, replacing the old nil-safe default-eligible bool; a nil-deref landmine (non-nil only by construction today).",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 180,
+    "category": "bug",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a36ca9f7950ce7a9c",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a9b4a0fe004da7e10",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad7503cdb6c847d9f",
+        "severity": "info"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad76af6736a658b1b",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-af8978449572321b8",
+        "severity": "info"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-acc4816d5f3a55d7c",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a38656505f9e319e2",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-af6c4475074550cfc",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a7297716e3f47fda8",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c32",
+    "summary": "ProxyHealthServer now depends on the concrete, process-killing *proxy.NodeManager solely to call Node(), inverting the previous proxy->healthcheck dependency direction and adding a healthcheck->proxy import edge, instead of a narrow one-method interface.",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 74,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-ae83b0889b7590c51",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a0869cd8ed6476a93",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a65e1c4201cd79e1b",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a9b163dfbcb9e98e1",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-aef15d6c80d79a878",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a830ab31abe33c4d4",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c33",
+    "summary": "ProxyHealthServer's type doc item 3 still describes the removed SyncNode push model, but this PR deletes SyncNode in favor of on-demand NodeEligible() pulling from nodeManager.Node().",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 62,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad7503cdb6c847d9f",
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-af1254d2c88bc2cfb",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ada7ed9d5ab82de3c",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c34",
+    "summary": "s.podCIDRs is now populated for ALL DetectLocalMode values (previously gated to LocalModeNodeCIDR), reactivating checkBadConfig/checkBadIPConfig podCIDR IP-family warnings for modes where the field was previously nil; the '// only used for LocalModeNodeCIDR' comment is now stale.",
+    "file": "cmd/kube-proxy/app/server.go",
+    "line": 218,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a923091b21ffb2092",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a9e948b4f8822e985",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a5fdda109247e6456",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a81f441ea4e73fb37",
+        "severity": "high"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-a0f238d5cd8e37509",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a906e444994f385b4",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c35",
+    "summary": "server.go logs 'Successfully retrieved NodeIPs' unconditionally even when rawNodeIPs is empty, with no warning for the degraded/empty case \u2014 danwinship's request for coherent warn-on-empty logging was only partially addressed.",
+    "file": "cmd/kube-proxy/app/server.go",
+    "line": 219,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a5388135f8423836a",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a38656505f9e319e2",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c36",
+    "summary": "The comment claiming handlers must be registered before starting the informer 'or we'll lose events' is factually incorrect (informers replay to late-registered handlers); danwinship flagged it and it remains.",
+    "file": "cmd/kube-proxy/app/server.go",
+    "line": 579,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a926e3d346496e3f1",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ad9c93f5b8a55f3ea",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a7297716e3f47fda8",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c38",
+    "summary": "winkernel's TODO comment says 'implement OnTopologyChanged' but the actual interface method is OnTopologyChange (no trailing 'd'); placement also makes godoc render the TODO as the method doc.",
+    "file": "pkg/proxy/iptables/proxier.go",
+    "line": 1098,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ad3d58cea38fa309e",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a4537faa1378db6b1",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a519741ac4e13b22a",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a1b5ce791f76e3161",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ab43060934ff15562",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-af1254d2c88bc2cfb",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a57426f3e9a578d07",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a8a974ba8206f4493",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ada7ed9d5ab82de3c",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c39",
+    "summary": "metaproxier/winkernel OnTopologyChange doc comments use different (third) wording than the verbatim-identical comments on iptables/ipvs/nftables; one also says it 'provides the observed change' implying a delta when it's the full current label set.",
+    "file": "pkg/proxy/iptables/proxier.go",
+    "line": 131,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ad3d58cea38fa309e",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a1b5ce791f76e3161",
+        "severity": "info"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ab43060934ff15562",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a57426f3e9a578d07",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c40",
+    "summary": "The new cross-reference comment in topology.go has a double-space typo and imprecise wording ('watch other endpoint types or labels').",
+    "file": "pkg/proxy/topology.go",
+    "line": 46,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a1b5ce791f76e3161",
+        "severity": "info"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ad7503cdb6c847d9f",
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ada7ed9d5ab82de3c",
+        "severity": "nit"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c42",
+    "summary": "OnTopologyChange is untested across the proxiers; metaProxier's ipv4/ipv6 fan-out \u2014 the one implementation with real logic \u2014 has no dedicated test.",
+    "file": "pkg/proxy/iptables/proxier.go",
+    "line": null,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a9e948b4f8822e985",
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-abb5ef48f932f931f",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c43",
+    "summary": "TestNewNodeTopologyConfig's mock records only the last topologyLabels value with no invocation counter, so its 'no notification' negative assertions are vacuous \u2014 deleting the reflect.DeepEqual dedup guard it exists to test would not fail any assertion; a final case also asserts only require.Len(...,1).",
+    "file": "pkg/proxy/config/config_test.go",
+    "line": 464,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-abaca72f007cb94ea",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5ee7b94e58355396",
+        "severity": "critical"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a9ef0e6d070a9851f",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a81f441ea4e73fb37",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-adec4c2f957ece7b7",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "high"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c44",
+    "summary": "healthcheck_test.go constructs NodeManager via the exported NewNodeManager (hard-wired to real os.Exit) and discards its error, so a future makeNode change touching addresses could kill the test binary, and a construction failure becomes a confusing nil-deref instead of a clear failure.",
+    "file": "pkg/proxy/healthcheck/healthcheck_test.go",
+    "line": 481,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-abaca72f007cb94ea",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a000913e0be88c1ec",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5ee7b94e58355396",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-afa401b0b7a7a1b4f",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-adec4c2f957ece7b7",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a38656505f9e319e2",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a52267656d120472e",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-af6c4475074550cfc",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a8a974ba8206f4493",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c45",
+    "summary": "TestNewNodeManager synchronizes its update-injecting goroutine with the poll loop via time.Sleep handoffs racing the 10ms poll interval / 1s timeout \u2014 a wall-clock coordination anti-pattern that is a latent CI-flake risk.",
+    "file": "pkg/proxy/node_test.go",
+    "line": 207,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-abaca72f007cb94ea",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-afa401b0b7a7a1b4f",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a81f441ea4e73fb37",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c46",
+    "summary": "No test exercises watchPodCIDRs=false with an actual PodCIDR change (the crash-suppression gate); if the `if n.watchPodCIDRs` guard were dropped/inverted, every non-LocalModeNodeCIDR proxy would crashloop and no test would catch it.",
+    "file": "pkg/proxy/node_test.go",
+    "line": 231,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a81f441ea4e73fb37",
+        "severity": "critical"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-adec4c2f957ece7b7",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a7a4a97193460d09b",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-abb5ef48f932f931f",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c48",
+    "summary": "TestNodeManagerNode re-asserts the stale constructor err via require.NoError after the void OnNodeChange call \u2014 a tautological/misleading assertion.",
+    "file": "pkg/proxy/node_test.go",
+    "line": 325,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-abaca72f007cb94ea",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a000913e0be88c1ec",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c49",
+    "summary": "node_test.go / healthcheck_test.go helpers discard Create/Update/constructor errors via `_, _ =`, so a silent setup failure yields a confusing downstream error (diagnostic-quality only).",
+    "file": "pkg/proxy/node_test.go",
+    "line": 97,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a000913e0be88c1ec",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5ee7b94e58355396",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c50",
+    "summary": "The deleted Test_getNodeIPs exercised a malformed 'invalid-ip' address (a distinct GetNodeHostIPs error path) that is no longer covered by TestNewNodeManager.",
+    "file": "pkg/proxy/node_test.go",
+    "line": 74,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5ee7b94e58355396",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-adec4c2f957ece7b7",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c51",
+    "summary": "Deleting TestProxyServer_platformSetup removed the only guard that s.podCIDRs stays nil outside LocalModeNodeCIDR (ties to the unconditional-podCIDRs change) and dropped the dual-stack two-CIDR case; the new wiring is untested.",
+    "file": "pkg/proxy/node_test.go",
+    "line": 146,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5ee7b94e58355396",
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a7a4a97193460d09b",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c52",
+    "summary": "A TestNewNodeTopologyConfig case commented as 'region-only change -> no notification' actually also changes the zone label, so OnTopologyChange does fire; there is no real region-only-ignored case.",
+    "file": "pkg/proxy/config/config_test.go",
+    "line": 561,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a81f441ea4e73fb37",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "info"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c53",
+    "summary": "TestNewNodeTopologyConfig registers the handler BEFORE Start(), the reverse of production ordering, so it never exercises the informer-registration race (masks it).",
+    "file": "pkg/proxy/config/config_test.go",
+    "line": null,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c54",
+    "summary": "The zone-label removal transition ({zone:X} -> {}) is untested in NodeTopologyConfig; tests only add/change the zone label, never remove it (should still fire OnTopologyChange with an empty map).",
+    "file": "pkg/proxy/config/config.go",
+    "line": 515,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-adec4c2f957ece7b7",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-adf4f6286ea599924",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-abb5ef48f932f931f",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c55",
+    "summary": "TestCategorizeEndpoints still uses the field name nodeLabels after this PR renamed the exercised parameter to topologyLabels (test file not in the diff; pre-existing).",
+    "file": "pkg/proxy/topology_test.go",
+    "line": 53,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": "agent-a4537faa1378db6b1",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c56",
+    "summary": "TestNodeManagerNode passes time.Nanosecond poll interval/timeout but the pre-populated node makes immediate=true's first check always succeed, so the polling path is never actually exercised.",
+    "file": "pkg/proxy/node_test.go",
+    "line": 311,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5ee7b94e58355396",
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c57",
+    "summary": "NodeManager.nodeLister is written at construction but never read afterward (only used inside the constructor's poll loop) \u2014 it could be a local variable, not struct state.",
+    "file": "pkg/proxy/node.go",
+    "line": 48,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a9b163dfbcb9e98e1",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a85c2e102f4d6fde2",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c58",
+    "summary": "NodeManager conflates five responsibilities (informer owner, startup poller, live snapshot provider, crash watchdog, config.NodeHandler) behind one type, and 'the current node' now lives in two places (NodeManager.node and NodeTopologyConfig.topologyLabels).",
+    "file": "pkg/proxy/node.go",
+    "line": 44,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a65e1c4201cd79e1b",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a9b163dfbcb9e98e1",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c59",
+    "summary": "The new startup poll loop retries silently with zero per-attempt diagnostic logging (the deleted getNodeIPs logged each failure), so a multi-minute startup stall gives operators no visibility.",
+    "file": "pkg/proxy/node.go",
+    "line": 90,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a58d1ff8b5eb4deca",
+        "severity": "medium"
+      }
+    ]
+  }
+]
