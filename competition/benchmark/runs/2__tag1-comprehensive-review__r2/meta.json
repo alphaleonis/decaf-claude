@@ -1,0 +1,146 @@
+{
+  "run_id": "2__tag1-comprehensive-review__r2",
+  "subject_id": 2,
+  "lang": "csharp",
+  "size": "medium",
+  "tool": "tag1-comprehensive-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "merge_sha": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "review_base": "3b00cfcae37cd1866de43205059039c1576404ff^1",
+  "review_head": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1140,
+  "duration_ms": "1138453",
+  "duration_api_ms": "2634670",
+  "num_turns": "33",
+  "cost_usd": "11.836483399999999",
+  "orch_usage": {
+    "input_tokens": "28",
+    "output_tokens": "60039",
+    "cache_creation_tokens": "286897",
+    "cache_read_tokens": "2143139",
+    "total_tokens": 2490103
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 196,
+    "output": 75464,
+    "cache_creation": 787567,
+    "cache_read": 6301440,
+    "total": 7164667,
+    "orchestrator": {
+      "output": 60039,
+      "total": 2490103,
+      "duration_s": 1138
+    },
+    "per_subagent": [
+      {
+        "output": 937,
+        "input": 6,
+        "cache_creation": 45312,
+        "cache_read": 75509,
+        "total": 121764,
+        "duration_s": 17,
+        "agent": "agent-a04392e8dbf518f87"
+      },
+      {
+        "output": 210,
+        "input": 20,
+        "cache_creation": 55857,
+        "cache_read": 466495,
+        "total": 522582,
+        "duration_s": 243,
+        "agent": "agent-a17c938dfe20f773f"
+      },
+      {
+        "output": 27,
+        "input": 11,
+        "cache_creation": 47953,
+        "cache_read": 202970,
+        "total": 250961,
+        "duration_s": 230,
+        "agent": "agent-a21c8c726256f58fa"
+      },
+      {
+        "output": 10640,
+        "input": 28,
+        "cache_creation": 55042,
+        "cache_read": 738777,
+        "total": 804487,
+        "duration_s": 268,
+        "agent": "agent-a33219f0e17c71b1a"
+      },
+      {
+        "output": 19,
+        "input": 13,
+        "cache_creation": 65231,
+        "cache_read": 305929,
+        "total": 371192,
+        "duration_s": 226,
+        "agent": "agent-a50d0ddf8942020bb"
+      },
+      {
+        "output": 12,
+        "input": 6,
+        "cache_creation": 43785,
+        "cache_read": 77999,
+        "total": 121802,
+        "duration_s": 92,
+        "agent": "agent-a83aa656b1dea683d"
+      },
+      {
+        "output": 46,
+        "input": 20,
+        "cache_creation": 51688,
+        "cache_read": 448052,
+        "total": 499806,
+        "duration_s": 177,
+        "agent": "agent-a890db2796321a00b"
+      },
+      {
+        "output": 169,
+        "input": 12,
+        "cache_creation": 35912,
+        "cache_read": 212709,
+        "total": 248802,
+        "duration_s": 90,
+        "agent": "agent-ab18b8329e2f15ca0"
+      },
+      {
+        "output": 3362,
+        "input": 50,
+        "cache_creation": 76110,
+        "cache_read": 1618589,
+        "total": 1698111,
+        "duration_s": 379,
+        "agent": "agent-ad91e03ff01681f2c"
+      },
+      {
+        "output": 3,
+        "input": 2,
+        "cache_creation": 23780,
+        "cache_read": 11272,
+        "total": 35057,
+        "duration_s": 188,
+        "agent": "agent-afdbb3d631386f6af"
+      }
+    ],
+    "max_subagent_duration_s": 379,
+    "sum_subagent_duration_s": 1910
+  },
+  "input_tokens": "28",
+  "output_tokens": "60039",
+  "cache_creation_tokens": "286897",
+  "cache_read_tokens": "2143139",
+  "total_tokens": 2490103,
+  "session_id": "6153bd0d-0659-4969-bd29-e59ce4f9cb90",
+  "findings_lines": 37,
+  "invocation": "Run /comprehensive-review --pr 67075 --local --output-file .decaf/tag1-review-67075.md for the GitHub repository dotnet/aspnetcore. --local means display everything and post NOTHING. When done, print the output-file path and a summary of findings by severity.",
+  "finished_at": "2026-07-17T06:10:09Z"
+}

@@ -1,0 +1,290 @@
+[
+  {
+    "cluster_id": "c1",
+    "verdict": "TP-primary",
+    "matches": "primary",
+    "judged_severity": "high",
+    "confidence": 95,
+    "rationale": "Textbook catch of facet (a): DeclaredOnly->FlattenHierarchy still throws AmbiguousMatchException when a property is new-hidden at an intermediate ancestor and the leaf does not redeclare it, because FlattenHierarchy does not flatten instance members."
+  },
+  {
+    "cluster_id": "c2",
+    "verdict": "TP-primary",
+    "matches": "primary",
+    "judged_severity": "high",
+    "confidence": 82,
+    "rationale": "Correctly reasons DeepDerivedModel redeclares Tag so DeclaredOnly succeeds (fallback never hit) and MidLevelModelWithShadow is never the leaf, so the still-throwing FlattenHierarchy-ambiguity path has zero coverage; names the still-throws-on-intermediate-hiding facet."
+  },
+  {
+    "cluster_id": "c4",
+    "verdict": "TP-primary",
+    "matches": "primary",
+    "judged_severity": "high",
+    "confidence": 65,
+    "rationale": "Identifies the exact mechanism of the primary bug: FlattenHierarchy is inert for an instance-only lookup (affects only static surfacing) and does not provide the hierarchy-safe traversal the fix appears to intend, i.e. the fallback does not actually solve the ambiguity."
+  },
+  {
+    "cluster_id": "c3",
+    "verdict": "valid-other",
+    "matches": "none",
+    "judged_severity": "high",
+    "confidence": 45,
+    "rationale": "Plausible latent twin bug: sibling DefaultClientValidationService using the same plain GetProperty(name) would throw the same AmbiguousMatchException; file is NOT in the diff so unverifiable here — graded on plausibility of the pattern transfer."
+  },
+  {
+    "cluster_id": "c16",
+    "verdict": "valid-other",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 52,
+    "rationale": "Real vacuous-pass risk for SkipsValidationWhenDerivedShadowHasNoAttributes (Assert.Empty cannot distinguish resolved-with-nothing-to-fail from never-found, masking the silent-drop facet); weaker on IgnoresStaticProperty, which actually does discriminate vs reverted code."
+  },
+  {
+    "cluster_id": "c6",
+    "verdict": "false-positive",
+    "matches": "safe-static-skip",
+    "judged_severity": "low",
+    "confidence": 68,
+    "rationale": "Flags the intended static-skip (known_safe safe-static-skip) as a silent undocumented regression; dropping BindingFlags.Static is correct since DataAnnotations validates instance properties, so this is a refutable non-defect."
+  },
+  {
+    "cluster_id": "c17b",
+    "verdict": "false-positive",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 90,
+    "rationale": "Refuted: on reverted code default flags include Static, so StaticValue(=0) is found and fails Range(1,100) -> a message -> Assert.Empty FAILS; the test is NOT tautological and does distinguish fixed from reverted code."
+  },
+  {
+    "cluster_id": "c17",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 70,
+    "rationale": "Test-naming/quality nit; also mischaracterizes the intended static-skip as an incidental side effect. Low value, no code defect."
+  },
+  {
+    "cluster_id": "c31",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 65,
+    "rationale": "The first NotifyFieldChanged before model.OrderID=50 has no intervening assertion, but it does re-exercise the field path with an invalid value; a minor clarity nit, not dead code."
+  },
+  {
+    "cluster_id": "c22",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 85,
+    "rationale": "Pure style: literal \"OrderID\" instead of nameof(...); trivial."
+  },
+  {
+    "cluster_id": "c38",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 80,
+    "rationale": "Naming-vocabulary consistency across fixtures; pure style."
+  },
+  {
+    "cluster_id": "c9",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 72,
+    "rationale": "Self-admittedly pre-existing (both-null caches null, silent skip, no error handling) and unchanged by this PR; out-of-scope and not the shadow-drop facet."
+  },
+  {
+    "cluster_id": "c7",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 75,
+    "rationale": "Documentation-of-PR-body: the description's stale try/catch narrative vs the merged BindingFlags code; not a defect in the diff."
+  },
+  {
+    "cluster_id": "c18",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 78,
+    "rationale": "Accurate but trivial test-hygiene: ModelWithStaticProperty.Value and DerivedModelWithInheritedOnly.Description are set-but-unasserted, MidLevelModelWithShadow.Tag never exercised as a leaf."
+  },
+  {
+    "cluster_id": "c29",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 75,
+    "rationale": "Convention nit: new FieldIdentifier(...) vs an editContext.Field(...) helper; style only."
+  },
+  {
+    "cluster_id": "c30",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 62,
+    "rationale": "Real but low-value coverage gap: no test where both base and derived carry attributes (most-derived-wins); the benign direction, doesn't mask the primary bug."
+  },
+  {
+    "cluster_id": "c34",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 60,
+    "rationale": "Theoretical test-robustness point: no guard that fixtures actually retain shadowing; low value and does not identify a live defect."
+  },
+  {
+    "cluster_id": "c21",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 75,
+    "rationale": "Style: bare class vs private sealed class like sibling fixtures; trivial."
+  },
+  {
+    "cluster_id": "c5",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 65,
+    "rationale": "Missing-rationale-comment suggestion; maintainability nit, not a defect (and the underlying fix it would document is itself incomplete)."
+  },
+  {
+    "cluster_id": "c27",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 68,
+    "rationale": "Fixture-cohesion critique (ModelWithHiddenBaseProperty serves OrderID and Tag families); test-design style nit."
+  },
+  {
+    "cluster_id": "c10",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 70,
+    "rationale": "Real but trivial: the cache-null comment is now separated from the null-cache write by the inserted fallback block; comment-proximity nit."
+  },
+  {
+    "cluster_id": "c12",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 66,
+    "rationale": "Case-sensitivity is pre-existing (original GetProperty(name) was also case-sensitive) and field names come from nameof; untested-but-not-a-defect, out of scope."
+  },
+  {
+    "cluster_id": "c14",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 68,
+    "rationale": "True that ValidatesHiddenPropertiesWithPropertyCaching asserts only messages, but it does traverse the cached path; verifying cache internals needs private state — low-value naming/assertion nit."
+  },
+  {
+    "cluster_id": "c32",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 72,
+    "rationale": "orderIdIdentifier is ordinary camelCase; the claimed casing divergence is trivial/dubious style."
+  },
+  {
+    "cluster_id": "c20",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 78,
+    "rationale": "Pure formatting: attribute on its own line vs single-line pre-existing attributed properties."
+  },
+  {
+    "cluster_id": "c28",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 62,
+    "rationale": "Undocumented object-typed base members / shadow intent; a missing-comment robustness nit, not a defect."
+  },
+  {
+    "cluster_id": "c36",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 65,
+    "rationale": "Hot-reload/ClearCache/negative-caching path is pre-existing and not in this diff; out-of-scope coverage complaint."
+  },
+  {
+    "cluster_id": "c25",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 58,
+    "rationale": "Plausible test-isolation observation (static cache persists so only the first (type,field) test hits reflection), but cached values are deterministic/correct so no flakiness or masked bug; low value."
+  },
+  {
+    "cluster_id": "c40",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 60,
+    "rationale": "Accurate that Assert.False(Validate()) exercises whole-form validation rather than the field-level lookup, but the same test also calls NotifyFieldChanged; low-value precision nit."
+  },
+  {
+    "cluster_id": "c39",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 66,
+    "rationale": "Missing explanatory comments on fixtures; documentation nit (overlaps c28)."
+  },
+  {
+    "cluster_id": "c8",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 45,
+    "rationale": "Suggests reusing a hierarchy-aware helper (MemberAssignment.GetPropertiesIncludingInherited) not shown in the diff; unverifiable existence/applicability, so a low-confidence design suggestion rather than a verified defect."
+  },
+  {
+    "cluster_id": "c15",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 70,
+    "rationale": "Largely true that MatchesPropertyByExactName overlaps ValidatesHiddenPropertiesWithoutAmbiguousMatchException; redundant/misnamed test is a hygiene nit."
+  },
+  {
+    "cluster_id": "c37",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 62,
+    "rationale": "Accurate that ValidatesInheritedPropertyFromBaseClass (BaseName never shadowed) passes pre-fix and only guards the fallback for plain inheritance; a fair test-scope characterization, not a defect."
+  },
+  {
+    "cluster_id": "c13",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 55,
+    "rationale": "Enumerates mostly out-of-scope exotic shapes (protected/private aren't public; indexers; explicit interface impls); speculative missing-test list, low value."
+  },
+  {
+    "cluster_id": "c19",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 74,
+    "rationale": "Class-declaration ordering (derived-before-base) style nit."
+  },
+  {
+    "cluster_id": "c23",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 72,
+    "rationale": "Near-anagram fixture names (ModelWithNamedBase vs ModelWithBaseName) is a real but trivial naming/readability nit."
+  }
+]

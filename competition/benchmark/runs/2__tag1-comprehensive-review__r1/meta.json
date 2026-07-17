@@ -1,0 +1,164 @@
+{
+  "run_id": "2__tag1-comprehensive-review__r1",
+  "subject_id": 2,
+  "lang": "csharp",
+  "size": "medium",
+  "tool": "tag1-comprehensive-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "merge_sha": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "review_base": "3b00cfcae37cd1866de43205059039c1576404ff^1",
+  "review_head": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 989,
+  "duration_ms": "987271",
+  "duration_api_ms": "2929806",
+  "num_turns": "27",
+  "cost_usd": "13.234754699999998",
+  "orch_usage": {
+    "input_tokens": "21",
+    "output_tokens": "47454",
+    "cache_creation_tokens": "282788",
+    "cache_read_tokens": "1267751",
+    "total_tokens": 1598014
+  },
+  "session_tokens": {
+    "subagents": 12,
+    "input": 198,
+    "output": 52659,
+    "cache_creation": 866312,
+    "cache_read": 5108529,
+    "total": 6027698,
+    "orchestrator": {
+      "output": 47454,
+      "total": 1598014,
+      "duration_s": 987
+    },
+    "per_subagent": [
+      {
+        "output": 528,
+        "input": 44,
+        "cache_creation": 65481,
+        "cache_read": 1223720,
+        "total": 1289773,
+        "duration_s": 274,
+        "agent": "agent-a1b4c87cf9ad5ed54"
+      },
+      {
+        "output": 2522,
+        "input": 21,
+        "cache_creation": 54089,
+        "cache_read": 454883,
+        "total": 511515,
+        "duration_s": 247,
+        "agent": "agent-a316649fcc0391bb2"
+      },
+      {
+        "output": 1342,
+        "input": 21,
+        "cache_creation": 55362,
+        "cache_read": 498586,
+        "total": 555311,
+        "duration_s": 226,
+        "agent": "agent-a56585c7f6a20db28"
+      },
+      {
+        "output": 19,
+        "input": 8,
+        "cache_creation": 44470,
+        "cache_read": 118226,
+        "total": 162723,
+        "duration_s": 130,
+        "agent": "agent-a69b4a73805ca52e4"
+      },
+      {
+        "output": 23,
+        "input": 10,
+        "cache_creation": 43452,
+        "cache_read": 144402,
+        "total": 187887,
+        "duration_s": 176,
+        "agent": "agent-a6aba2dc483cfadc8"
+      },
+      {
+        "output": 18,
+        "input": 6,
+        "cache_creation": 41269,
+        "cache_read": 76394,
+        "total": 117687,
+        "duration_s": 180,
+        "agent": "agent-a6b9b3dcdf837dea6"
+      },
+      {
+        "output": 65,
+        "input": 11,
+        "cache_creation": 43760,
+        "cache_read": 206688,
+        "total": 250524,
+        "duration_s": 192,
+        "agent": "agent-a7eef1fab7661abcf"
+      },
+      {
+        "output": 163,
+        "input": 10,
+        "cache_creation": 52177,
+        "cache_read": 231251,
+        "total": 283601,
+        "duration_s": 396,
+        "agent": "agent-a87e7c7bcce0a2119"
+      },
+      {
+        "output": 174,
+        "input": 13,
+        "cache_creation": 52717,
+        "cache_read": 263244,
+        "total": 316148,
+        "duration_s": 247,
+        "agent": "agent-a8b0318a5bc323290"
+      },
+      {
+        "output": 329,
+        "input": 23,
+        "cache_creation": 56042,
+        "cache_read": 518291,
+        "total": 574685,
+        "duration_s": 304,
+        "agent": "agent-ac3b4c65f3ba3862b"
+      },
+      {
+        "output": 10,
+        "input": 6,
+        "cache_creation": 43986,
+        "cache_read": 72803,
+        "total": 116805,
+        "duration_s": 21,
+        "agent": "agent-ad5b97b0ba22b1f2d"
+      },
+      {
+        "output": 12,
+        "input": 4,
+        "cache_creation": 30719,
+        "cache_read": 32290,
+        "total": 63025,
+        "duration_s": 50,
+        "agent": "agent-af780ae236f5af2ae"
+      }
+    ],
+    "max_subagent_duration_s": 396,
+    "sum_subagent_duration_s": 2443
+  },
+  "input_tokens": "21",
+  "output_tokens": "47454",
+  "cache_creation_tokens": "282788",
+  "cache_read_tokens": "1267751",
+  "total_tokens": 1598014,
+  "session_id": "4c227079-a4c2-4b5c-836e-1c4a42853192",
+  "findings_lines": 40,
+  "invocation": "Run /comprehensive-review --pr 67075 --local --output-file .decaf/tag1-review-67075.md for the GitHub repository dotnet/aspnetcore. --local means display everything and post NOTHING. When done, print the output-file path and a summary of findings by severity.",
+  "finished_at": "2026-07-17T05:51:09Z"
+}

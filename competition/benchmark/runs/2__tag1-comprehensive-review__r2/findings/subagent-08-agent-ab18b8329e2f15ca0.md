@@ -1,0 +1,17 @@
+# subagent agent-ab18b8329e2f15ca0
+
+## Comment Accuracy Analysis — PR #67075 (dotnet/aspnetcore)
+
+**Scope**: `src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs`, `TryGetValidatableProperty` (lines 362–386). The diff replaces a single `GetProperty(name)` call with a `DeclaredOnly`-first lookup and a `FlattenHierarchy` fallback, to fix an `AmbiguousMatchException` thrown when a derived class hides a base-class property via `new` (confirmed by the added test `ValidatesHiddenPropertiesWithoutAmbiguousMatchException` and siblings in `EditContextDataAnnotationsExtensionsTest.cs`, and by the PR title itself). None of the three pre-existing comments were touched by this PR.
+
+**Finding: missing rationale for the two-step lookup (comment omission / under-explanation)**
+- Location: `src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:370-379`
+- Issue: The new code is non-obvious — a reader has no way to tell from the comments why the lookup is split into a `BindingFlags.DeclaredOnly` attempt (line 370-372) followed by a `BindingFlags.FlattenHierarchy` fallback (line 376-378) instead of a single call. The two nearby comments don't cover this: `// DataAnnotations only validates public properties, so that's all we'll look for` (line 368) only explains the `Public` flag, and `// If we can't find it, cache 'null' so we don't have to try again next time` (line 369) only explains the caching behavior. Neither says anything about *why* the search is now two-step. Without that context, a future maintainer could plausibly "simplify" this back to one `GetProperty` call (or reorder/merge the flags), silently reintroducing the `AmbiguousMatchException` for hidden/shadowed properties that this PR exists to fix.
+- Suggestion: Add a short comment above line 370 explaining the rationale, e.g.: `// Look for the property declared directly on this type first. This avoids AmbiguousMatchException when a derived type hides a base property via 'new' (both would match a hierarchy-wide search).` and above line 374: `// Not declared on this type directly, so it must be a plain inherited property with no hiding — safe to search the full hierarchy.`
+
+**Assessment of the three unchanged comments**
+- `src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:368` — "DataAnnotations only validates public properties, so that's all we'll look for": still factually accurate; both `GetProperty` calls retain `BindingFlags.Public`. No rot.
+- `src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:369` — "If we can't find it, cache 'null' so we don't have to try again next time": still accurate as a description of the overall block's outcome (null is cached only if *both* lookups fail), but it now sits 13 lines above the actual cache write at line 382, with an unrelated conditional fallback block in between. Not incorrect, just weaker as a signpost than before — worth relocating or leaving as-is since the "No need to lock" comment at line 381 already sits right next to the actual write.
+- `src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:381` — "No need to lock, because it doesn't matter if we write the same value twice": unaffected by this change and still accurate — the final `propertyInfo` value (from either lookup, or null) is what gets written, same as before.
+
+Only one comment issue is concrete enough to flag: the absence of a "why" comment for the `DeclaredOnly`/`FlattenHierarchy` split at `src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:370-379`.

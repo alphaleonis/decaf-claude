@@ -1,0 +1,155 @@
+{
+  "run_id": "2__ours__r1",
+  "subject_id": 2,
+  "lang": "csharp",
+  "size": "medium",
+  "tool": "ours",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "merge_sha": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "review_base": "3b00cfcae37cd1866de43205059039c1576404ff^1",
+  "review_head": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1467,
+  "duration_ms": "1465465",
+  "duration_api_ms": "3528354",
+  "num_turns": "24",
+  "cost_usd": "12.077872400000002",
+  "orch_usage": {
+    "input_tokens": "22",
+    "output_tokens": "66746",
+    "cache_creation_tokens": "160223",
+    "cache_read_tokens": "1318921",
+    "total_tokens": 1545912
+  },
+  "session_tokens": {
+    "subagents": 11,
+    "input": 179,
+    "output": 67758,
+    "cache_creation": 795067,
+    "cache_read": 5090376,
+    "total": 5953380,
+    "orchestrator": {
+      "output": 66746,
+      "total": 1545912,
+      "duration_s": 1465
+    },
+    "per_subagent": [
+      {
+        "output": 19,
+        "input": 8,
+        "cache_creation": 51549,
+        "cache_read": 119647,
+        "total": 171223,
+        "duration_s": 185,
+        "agent": "agent-a1be82669646a5b1d"
+      },
+      {
+        "output": 20,
+        "input": 6,
+        "cache_creation": 52771,
+        "cache_read": 95116,
+        "total": 147913,
+        "duration_s": 299,
+        "agent": "agent-a5420e4ff0e3100bb"
+      },
+      {
+        "output": 102,
+        "input": 14,
+        "cache_creation": 44494,
+        "cache_read": 280679,
+        "total": 325289,
+        "duration_s": 120,
+        "agent": "agent-a6605db7be41c2f56"
+      },
+      {
+        "output": 180,
+        "input": 14,
+        "cache_creation": 35091,
+        "cache_read": 273751,
+        "total": 309036,
+        "duration_s": 216,
+        "agent": "agent-a6baef9a0a2d61e04"
+      },
+      {
+        "output": 148,
+        "input": 28,
+        "cache_creation": 90796,
+        "cache_read": 946460,
+        "total": 1037432,
+        "duration_s": 446,
+        "agent": "agent-a728ce101b51b528b"
+      },
+      {
+        "output": 176,
+        "input": 15,
+        "cache_creation": 48527,
+        "cache_read": 310171,
+        "total": 358889,
+        "duration_s": 241,
+        "agent": "agent-a7629e1dbdf807bbc"
+      },
+      {
+        "output": 91,
+        "input": 18,
+        "cache_creation": 63347,
+        "cache_read": 511302,
+        "total": 574758,
+        "duration_s": 271,
+        "agent": "agent-a88e97446a386ea47"
+      },
+      {
+        "output": 17,
+        "input": 8,
+        "cache_creation": 57834,
+        "cache_read": 138949,
+        "total": 196808,
+        "duration_s": 149,
+        "agent": "agent-aa8dad0533d791dc3"
+      },
+      {
+        "output": 25,
+        "input": 12,
+        "cache_creation": 46093,
+        "cache_read": 239116,
+        "total": 285246,
+        "duration_s": 147,
+        "agent": "agent-aabac3611a96e1be9"
+      },
+      {
+        "output": 199,
+        "input": 20,
+        "cache_creation": 81416,
+        "cache_read": 529398,
+        "total": 611033,
+        "duration_s": 506,
+        "agent": "agent-ab4574df069b6fbea"
+      },
+      {
+        "output": 35,
+        "input": 14,
+        "cache_creation": 62926,
+        "cache_read": 326866,
+        "total": 389841,
+        "duration_s": 250,
+        "agent": "agent-ae2caa46073a59956"
+      }
+    ],
+    "max_subagent_duration_s": 506,
+    "sum_subagent_duration_s": 2830
+  },
+  "input_tokens": "22",
+  "output_tokens": "66746",
+  "cache_creation_tokens": "160223",
+  "cache_read_tokens": "1318921",
+  "total_tokens": 1545912,
+  "session_id": "f7e5b392-cf4c-48a4-ade6-7ae6177bbcbf",
+  "findings_lines": 9,
+  "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report 67075. This reviews pull request #67075 of the GitHub repository dotnet/aspnetcore (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-07-16T22:04:42Z"
+}

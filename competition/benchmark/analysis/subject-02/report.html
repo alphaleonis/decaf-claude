@@ -1,0 +1,203 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Benchmark analysis — subject 2 (csharp/medium)</title>
+<style>
+:root{--bg:#fff;--fg:#18181b;--muted:#71717a;--line:#e4e4e7;--card:#fafafa;--accent:#0ea5e9}
+@media(prefers-color-scheme:dark){:root{--bg:#0b0b0f;--fg:#e4e4e7;--muted:#a1a1aa;--line:#27272a;--card:#141418}}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:34px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+h3{font-size:15px;margin:20px 0 6px} .sub{color:var(--muted);margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:6px 0}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:right} th{background:var(--card);font-weight:600}
+td:first-child,th:first-child,.tool{text-align:left} .tool{font-weight:600}
+.matrix td{text-align:center} .matrix .diag{background:var(--card)}
+.mono,.clusters .mono{font-family:ui-monospace,monospace;font-size:12px}
+.clusters td{text-align:left} .verdict{color:#fff;padding:2px 7px;border-radius:10px;font-size:11px;white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
+svg .ax{stroke:var(--muted)} svg .grid{stroke:var(--line)} svg .pt{fill:var(--accent)}
+svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);font-size:11px}
+.wrap>section{overflow-x:auto} code{background:var(--card);padding:1px 4px;border-radius:4px;font-size:12.5px}
+.legend{color:var(--muted);font-size:12px;margin-top:4px}
+.glossary dl{margin:6px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.glossary dt{font-weight:600;white-space:nowrap} .glossary dd{margin:0;color:var(--muted);font-size:13px}
+.glossary h3{margin:0 0 8px} @media(max-width:560px){.glossary dl{grid-template-columns:1fr}.glossary dd{margin:0 0 6px}}
+</style></head><body><div class="wrap">
+<h1>Benchmark analysis — subject 2 (csharp/medium)</h1>
+<p class="sub">dotnet/aspnetcore#67075 · judge: <code>claude-opus-4-8</code> ·
+36 distinct issues · no human threads (bug + FP discipline only)</p>
+
+<section><h2>Leaderboard</h2><table><thead><tr><th>tool</th><th>escaped bug</th><th>valid /run</th><th>unique valid</th><th>noise /run</th><th>invalid /run</th><th>precision</th><th>subagent distinct.</th><th>cost /run</th><th>~agents</th></tr></thead><tbody><tr><td class='tool'>superpowers</td><td>100%</td><td>1.0</td><td>0</td><td>1</td><td>1</td><td>33%</td><td>—</td><td>$1.72</td><td>1</td></tr><tr><td class='tool'>pr-review-toolkit</td><td>100%</td><td>3.5</td><td>0</td><td>17</td><td>1</td><td>16%</td><td>28%</td><td>$5.64</td><td>5</td></tr><tr><td class='tool'>anthropic-code-review</td><td>100%</td><td>4.5</td><td>0</td><td>8</td><td>2</td><td>31%</td><td>31%</td><td>$10.28</td><td>8</td></tr><tr><td class='tool'>ours</td><td>100%</td><td>4.5</td><td>0</td><td>6</td><td>1</td><td>41%</td><td>25%</td><td>$11.25</td><td>10</td></tr><tr><td class='tool'>tag1-comprehensive-review</td><td>100%</td><td>4.5</td><td>0</td><td>6</td><td>1</td><td>38%</td><td>29%</td><td>$12.54</td><td>11</td></tr></tbody></table>
+<p class="legend">Every tool reviewed the PR twice; "/run" columns are averaged across the two runs. Definitions below.</p>
+<div class="card glossary"><h3>How to read this</h3><dl>
+<dt>run (cell)</dt><dd>one review = one tool running once. Each tool reviewed this PR twice, so 2 runs per tool; "/run" numbers are averaged across the two.</dd>
+<dt>finding (issue)</dt><dd>one distinct problem a review raised. The same issue restated by many sub-agents / worded differently is collapsed into a single issue before counting.</dd>
+<dt>escaped bug</dt><dd>the real defect that was bad enough to be reverted in a follow-up PR — the one a reviewer <em>must</em> catch. The column is the % of runs that caught it.</dd>
+<dt>valid /run</dt><dd>real, worth-acting-on findings per run — the escaped bug plus any other genuine defects (excludes trivia and mistakes).</dd>
+<dt>unique valid</dt><dd>valid findings that <em>only this tool</em> caught (nobody else did).</dd>
+<dt>noise /run</dt><dd>nitpicks per run — real but trivial (naming, formatting, style, out-of-scope). Safe to ignore.</dd>
+<dt>invalid /run</dt><dd>false positives per run — findings asserting a problem that isn't real (refuted against the code). Actively misleading.</dd>
+<dt>precision</dt><dd>of everything the tool reported, the share that was valid = valid ÷ (valid + noise + invalid). Higher = less junk per real finding.</dd>
+<dt>subagent distinct.</dt><dd>for multi-agent tools, distinct issues ÷ total sub-agent findings. Low = many agents re-finding the same things.</dd>
+<dt>Jaccard (overlap, below)</dt><dd>how similar two tools' valid-finding sets are: shared ÷ combined. 1.00 = identical, 0.00 = no overlap.</dd>
+<dt>verdict labels</dt><dd>each issue in the drill-down is graded: <strong>TP-primary</strong> = caught the escaped bug; <strong>valid-other</strong> = a different real defect; <strong>nitpick</strong> = trivial/noise; <strong>false-positive</strong> = not real. ("TP" = true positive; "valid" findings = TP-primary + valid-other.)</dd>
+</dl></div></section>
+
+<section><h2>Cost vs. bug-catch</h2><div class="card"><svg viewBox="0 0 560 300" width="100%" role="img" aria-label="cost vs bug-catch">
+<line x1="48" y1="252" x2="512" y2="252" class="ax"/>
+<line x1="48" y1="48" x2="48" y2="252" class="ax"/>
+<text x="40" y="256" text-anchor="end" class="tick">0%</text>
+<line x1="48" y1="252" x2="512" y2="252" class="grid"/>
+<text x="40" y="154.0" text-anchor="end" class="tick">50%</text>
+<line x1="48" y1="150.0" x2="512" y2="150.0" class="grid"/>
+<text x="40" y="52" text-anchor="end" class="tick">100%</text>
+<line x1="48" y1="48" x2="512" y2="48" class="grid"/>
+<circle cx="378.8" cy="48.0" r="6" class="pt"/>
+<text x="387.8" y="52.0" class="lbl">anthropic-code-review</text>
+<circle cx="410.0" cy="48.0" r="6" class="pt"/>
+<text x="419.0" y="52.0" class="lbl">ours</text>
+<circle cx="229.5" cy="48.0" r="6" class="pt"/>
+<text x="238.5" y="52.0" class="lbl">pr-review-toolkit</text>
+<circle cx="103.3" cy="48.0" r="6" class="pt"/>
+<text x="112.3" y="52.0" class="lbl">superpowers</text>
+<circle cx="451.5" cy="48.0" r="6" class="pt"/>
+<text x="460.5" y="52.0" class="lbl">tag1-comprehensive-review</text>
+<text x="280.0" y="292" text-anchor="middle" class="axl">mean cost / cell (usage $) →</text>
+<text x="14" y="150.0" transform="rotate(-90 14 150.0)" text-anchor="middle" class="axl">bug-catch rate ↑</text>
+</svg></div>
+<p class="legend">Upper-left = efficient (catches the bug cheaply). The benchmark's core question: does the fan-out premium buy the catch?</p></section>
+
+<section><h2>Inter-tool overlap (Jaccard, true/valid findings)</h2><table class='matrix'><thead><tr><th></th><th>superpowers</th><th>pr-review-toolkit</th><th>anthropic-code-review</th><th>ours</th><th>tag1-comprehensive-review</th></tr></thead><tbody><tr><th>superpowers</th><td class='diag'></td><td style='background:rgba(14,165,233,0.25)'>0.25</td><td style='background:rgba(14,165,233,0.20)'>0.20</td><td style='background:rgba(14,165,233,0.20)'>0.20</td><td style='background:rgba(14,165,233,0.20)'>0.20</td></tr><tr><th>pr-review-toolkit</th><td style='background:rgba(14,165,233,0.25)'>0.25</td><td class='diag'></td><td style='background:rgba(14,165,233,0.80)'>0.80</td><td style='background:rgba(14,165,233,0.80)'>0.80</td><td style='background:rgba(14,165,233,0.80)'>0.80</td></tr><tr><th>anthropic-code-review</th><td style='background:rgba(14,165,233,0.20)'>0.20</td><td style='background:rgba(14,165,233,0.80)'>0.80</td><td class='diag'></td><td style='background:rgba(14,165,233,1.00)'>1.00</td><td style='background:rgba(14,165,233,1.00)'>1.00</td></tr><tr><th>ours</th><td style='background:rgba(14,165,233,0.20)'>0.20</td><td style='background:rgba(14,165,233,0.80)'>0.80</td><td style='background:rgba(14,165,233,1.00)'>1.00</td><td class='diag'></td><td style='background:rgba(14,165,233,1.00)'>1.00</td></tr><tr><th>tag1-comprehensive-review</th><td style='background:rgba(14,165,233,0.20)'>0.20</td><td style='background:rgba(14,165,233,0.80)'>0.80</td><td style='background:rgba(14,165,233,1.00)'>1.00</td><td style='background:rgba(14,165,233,1.00)'>1.00</td><td class='diag'></td></tr></tbody></table>
+<p class="legend">1.00 = identical valid findings · 0.00 = fully complementary.</p></section>
+
+<section><h2>Narrative</h2><h1>Subject 2 — findings-quality analysis</h1>
+<p><strong>dotnet/aspnetcore#67075</strong> (csharp / medium) — a Blazor <code>DataAnnotationsValidator</code> fix whose escaped</p>
+<p>bug was that <code>TryGetValidatableProperty</code>&#x27;s new <code>DeclaredOnly → FlattenHierarchy</code> fallback **does not</p>
+<p>actually fix** the <code>AmbiguousMatchException</code> it targets (<code>FlattenHierarchy</code> doesn&#x27;t flatten *instance*</p>
+<p>members, so <code>new</code>-hiding at an intermediate base still throws) and can silently drop validation</p>
+<p>attributes — later reverted wholesale in #67712. The production change is ~11 lines; the rest of the</p>
+<p>diff is tests. Judge: <code>claude-opus-4-8</code>, blind. 36 distinct issue-clusters graded: **3 TP-primary, 2</p>
+<p>valid-other, 2 false-positive, 29 nitpick.** Human review threads were thin and either superseded (the</p>
+<p>&quot;exception-flow&quot; thread targeted an earlier try/catch draft that was replaced) or already resolved</p>
+<p>in-diff, so <code>human_issues</code> is empty — the one substantive live human comment (Youssef1313) *is* the</p>
+<p>primary bug.</p>
+<h2>Did they catch the bug?</h2>
+<p><strong>Yes — universally. Bug-catch is 1.0 for all five tools, in both repeats.</strong> Every cell flagged that the</p>
+<p><code>FlattenHierarchy</code> fallback still throws <code>AmbiguousMatchException</code> for an intermediate-level <code>new</code>-hide</p>
+<p>that the leaf type doesn&#x27;t redeclare. That is a strong result on a genuinely subtle defect: the</p>
+<p>maintainers merged this PR (a human reviewer, Youssef1313, raised exactly this concern in an</p>
+<p>*unresolved* thread) and only reverted it later. Several tools went further and reproduced it</p>
+<p>empirically against the .NET SDK. So on <strong>recall, the tools are indistinguishable here</strong> — the escaped</p>
+<p>bug was not hard for any of them once pointed at the diff. The differentiation is entirely in **what</p>
+<p>else they said around it.**</p>
+<h2>The story is noise and secondary yield, not the headline catch</h2>
+<p>Because everyone caught the primary bug, the interesting axes are precision, the valuable *secondary*</p>
+<p>findings, and how much junk each buried them in.</p>
+<ul>
+<li><strong>Precision</strong> (TP + valid ÷ all clusters): **<code>ours</code> 0.41, <code>tag1</code> 0.38, <code>superpowers</code> 0.33,</li>
+</ul>
+<p>  <code>anthropic</code> 0.31, <code>pr-review-toolkit</code> 0.16.<strong> <code>pr-review-toolkit</code> is the outlier — it emitted </strong>17</p>
+<p>  nitpicks per cell** (naming, formatting, sealed-vs-class, near-anagram fixture names, declaration</p>
+<p>  ordering, exotic untested shapes), swamping its real findings. <code>superpowers</code> is the cleanest thorough</p>
+<p>  reviewer by ratio only because it says so little (1 nitpick/cell).</p>
+<ul>
+<li><strong>Secondary valid findings</strong> (<code>valid_other_mean</code>): **<code>ours</code> 2.0, <code>tag1</code> 2.0, <code>anthropic</code> 1.5,</li>
+</ul>
+<p>  <code>pr-review-toolkit</code> 0.5, <code>superpowers</code> 0.0.** This is where the fan-out premium actually paid off.</p>
+<p>  The thorough reviewers surfaced two genuinely useful non-primary issues that <code>superpowers</code> missed</p>
+<p>  entirely: the <strong>sibling call site</strong> <code>DefaultClientValidationService.BuildMetadata</code>, which still uses</p>
+<p>  the un-fixed <code>GetProperty(name)</code> and carries the identical latent bug (c3 — found by <code>ours</code>,</p>
+<p>  <code>anthropic</code>, <code>tag1</code>, never by <code>superpowers</code> or <code>pr-review-toolkit</code>), and the **weak/vacuous</p>
+<p>  <code>Assert.Empty</code> test assertions<strong> (c16). The escaped bug&#x27;s own </strong>test-coverage gap** — the added</p>
+<p>  <code>ValidatesPropertyHiddenAtMultipleInheritanceLevels</code> doesn&#x27;t actually exercise the still-throwing path</p>
+<p>  because <code>DeepDerivedModel</code> redeclares <code>Tag</code> — was caught by everyone except <code>superpowers</code>.</p>
+<p>So <code>superpowers</code> bought a decisive, cheap catch of the *headline* bug and almost nothing else;</p>
+<p><code>ours</code>/<code>tag1</code>/<code>anthropic</code> bought the sibling latent bug and the coverage gap on top, at ~6–7× the cost</p>
+<p>and with far more noise.</p>
+<h2>Nobody found anything unique</h2>
+<p><strong>Unique-true is 0 for all five tools.</strong> Every TP/valid cluster was corroborated by at least two tools;</p>
+<p>no reviewer surfaced a real finding that the others all missed. The overlap matrix is stark:</p>
+<p><code>ours</code>, <code>anthropic</code>, and <code>tag1</code> have <strong>identical valid sets</strong> (pairwise Jaccard 1.0 — the same five</p>
+<p>clusters c1/c2/c3/c4/c16), <code>pr-review-toolkit</code> sits at 0.8 (it missed the sibling-file bug c3), and</p>
+<p><code>superpowers</code> at 0.2 (its entire positive set is just the primary bug). The real signal on this PR is</p>
+<p>small and heavily shared; the tools differ in noise, not in unique insight.</p>
+<h2>False positives — one shared-and-debatable, one genuinely wrong</h2>
+<p>Two clusters graded false-positive:</p>
+<ul>
+<li>**c6 — &quot;dropping <code>BindingFlags.Static</code> silently stops validating static properties&quot; — flagged by all</li>
+</ul>
+<p>  five tools.** The judge refuted it against <code>known_safe</code>: DataAnnotations validates *instance*</p>
+<p>  properties, so excluding statics is intended (and locked in by the <code>IgnoresStaticProperty</code> test). This</p>
+<p>  is the honest caveat of the subject: most tools framed it softly as an &quot;undocumented behavior change&quot;</p>
+<p>  (nitpick-flavored), and the judge graded the *cluster* as a false-positive because asserting it as a</p>
+<p>  regression is refutable. It lands on <strong>every</strong> cell equally, so it doesn&#x27;t move the ranking — but it</p>
+<p>  is the single most debatable verdict here (see spot-check).</p>
+<ul>
+<li>**c17b — &quot;<code>IgnoresStaticProperty</code> is tautological / passes even on reverted code&quot; — <code>anthropic</code> r2</li>
+</ul>
+<p>  only (confidence 90).** This one is *genuinely wrong*: on reverted code <code>GetProperty(name)</code>&#x27;s default</p>
+<p>  flags include <code>Static</code>, so the static <code>[Range(1,100)]</code> property (value 0) *is* found and fails</p>
+<p>  validation → a message → <code>Assert.Empty</code> <strong>fails</strong>. The test is not tautological. This is the only</p>
+<p>  finding in the whole subject that is factually incorrect about the diff, and it gives <code>anthropic</code> the</p>
+<p>  only above-floor FP rate (<strong>1.5/cell</strong> vs 1.0 for everyone else).</p>
+<h2>Fan-out efficiency (subagent redundancy)</h2>
+<p>The multi-agent tools spend most of their agents re-finding the same handful of issues.</p>
+<p>**Subagent-distinctness: <code>ours</code> 0.25 (most redundant), <code>pr-review-toolkit</code> 0.28, <code>tag1</code> 0.29,</p>
+<p><code>anthropic</code> 0.31**; <code>superpowers</code> is single-agent (n/a). <code>ours</code> ran ~10 subagents that collapsed to ~5</p>
+<p>distinct clusters — roughly three-quarters of its subagent-findings are the primary bug and the</p>
+<p>Static-drop restated by agent after agent. On a small-surface PR (11 production lines), the extra</p>
+<p>agents corroborate rather than expand.</p>
+<h2>Cost vs. catch</h2>
+<p>Since bug-catch is 1.0 everywhere, **cost-per-bug is just mean cost per cell: <code>superpowers</code> $1.72,</p>
+<p><code>pr-review-toolkit</code> $5.64, <code>anthropic</code> $10.28, <code>ours</code> $11.25, <code>tag1</code> $12.54.** <code>superpowers</code> caught the</p>
+<p>same escaped bug at <strong>~1/7th</strong> the cost of the priciest fan-out reviewer, with the least noise — but</p>
+<p>found none of the secondary issues. If you weight by *all* true findings rather than just the headline,</p>
+<p>the gap narrows (<code>cost_per_true_finding</code>: <code>superpowers</code> $1.72, <code>ours</code> $3.75, <code>pr-review-toolkit</code> $3.76,</p>
+<p><code>anthropic</code> $4.11, <code>tag1</code> $4.18) because the pricier tools have 4–5 true clusters per cell to <code>superpowers</code>&#x27;</p>
+<p>one. The verdict for this subject: **if you only need the escaped bug, the cheap single-agent reviewer</p>
+<p>wins outright; if you want the sibling latent bug and the test-coverage gap too, <code>ours</code>/<code>tag1</code> deliver</p>
+<p>them with the best precision among the thorough tools — but at a large cost and noise premium, and with</p>
+<p>nothing uniquely their own.**</p>
+<h2>Caveats (don&#x27;t over-generalize from one subject)</h2>
+<ul>
+<li><strong>A single medium PR dominated by one subtle bug and a lot of test scaffolding.</strong> That rewards a tool</li>
+</ul>
+<p>  that nails the one bug and stops (<code>superpowers</code>) and punishes tools that comprehensively critique the</p>
+<p>  test fixtures (<code>pr-review-toolkit</code>&#x27;s 17 nitpicks/cell). A larger multi-defect PR would test the</p>
+<p>  fan-out depth very differently.</p>
+<ul>
+<li><strong>The <code>c6</code> Static-drop FP is a genuine FP-vs-nitpick boundary call</strong> that hits every cell; if regraded</li>
+</ul>
+<p>  as a nitpick, precision rises for all five and the only surviving false positive is <code>anthropic</code>&#x27;s c17b.</p>
+<ul>
+<li><strong><code>c2</code> and <code>c4</code> were graded TP-primary</strong> (they identify the *coverage* and *mechanism* of the escaped</li>
+</ul>
+<p>  bug), which is a defensible-but-arguable widening of &quot;caught the primary.&quot; It does not change</p>
+<p>  bug-catch (c1 alone already gives every cell the catch).</p>
+<ul>
+<li><strong>Thin human threads</strong> → no human-issue recall dimension on this subject.</li>
+<li><strong>Single judge</strong> (<code>claude-opus-4-8</code>); the calls flagged below are the ones to eyeball.</li>
+</ul>
+<h2>Human spot-check queue (bias control)</h2>
+<ul>
+<li><strong>Every TP-primary:</strong> <code>c1</code> (conf 95 — the core catch, solid), <code>c2</code> (82 — test-gap-as-primary), and</li>
+</ul>
+<p>  especially **<code>c4</code> (65 — &quot;FlattenHierarchy is inert for instance members&quot; graded as *catching* the</p>
+<p>  primary rather than a design nit)** — the most arguable TP-primary.</p>
+<ul>
+<li><strong>The shared false-positive <code>c6</code> (68):</strong> confirm whether &quot;static-skip flagged as a regression&quot; should</li>
+</ul>
+<p>  be false-positive (as graded) or a nitpick — it moves every tool&#x27;s precision and FP/cell.</p>
+<ul>
+<li><strong>The unique false-positive <code>c17b</code> (90):</strong> confirm the reverted-code reasoning that refutes</li>
+</ul>
+<p>  <code>anthropic</code>&#x27;s &quot;tautological test&quot; claim.</p>
+<ul>
+<li><strong>Low-confidence clusters (&lt;60):</strong> <code>c3</code> (45, valid-other, sibling file is *out of the diff* so</li>
+</ul>
+<p>  unverifiable here), <code>c8</code> (45), <code>c25</code> (58), <code>c16</code> (52), <code>c13</code> (55) — mostly valid-other/nitpick</p>
+<p>  boundary calls.</p>
+<p>*Outputs are committed-local under <code>analysis/subject-02/</code>. Nothing was posted anywhere; analysis is</p>
+<p>read-only over <code>runs/</code>.*</p></section>
+
+<section><h2>Findings drill-down (auditable)</h2><table class='clusters'><thead><tr><th>issue</th><th>file:line</th><th>verdict</th><th>found by</th></tr></thead><tbody><tr><td>TryGetValidatableProperty&#x27;s DeclaredOnly-&gt;FlattenHierarchy fallback still throws AmbiguousMatchException when a property is `new`-hidden at an INTERMEDIATE ancestor and the leaf/runtime model type does not redeclare it (FlattenHierarchy does not flatten instance members) — the fix is incomplete for multi-level hiding.</td><td class='mono'>src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:376</td><td><span class='verdict' style='background:#16a34a'>TP-primary</span></td><td>anthropic-code-review, ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>No test exercises the still-throwing intermediate-hiding fallback path: ValidatesPropertyHiddenAtMultipleInheritanceLevels uses DeepDerivedModel which redeclares Tag (so DeclaredOnly succeeds), and MidLevelModelWithShadow is never instantiated as the leaf under test, so the dangerous FlattenHierarchy-ambiguity path has zero coverage.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:240</td><td><span class='verdict' style='background:#16a34a'>TP-primary</span></td><td>anthropic-code-review, ours, pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>The BindingFlags.FlattenHierarchy flag on the fallback GetProperty call is inert/no-op for an instance-only lookup (it only affects static-member surfacing) and is misleading — it suggests hierarchy-safe traversal it does not provide, and is inconsistent with the repo&#x27;s other FlattenHierarchy usages.</td><td class='mono'>src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:378</td><td><span class='verdict' style='background:#16a34a'>TP-primary</span></td><td>anthropic-code-review, ours, pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>Both new GetProperty calls omit BindingFlags.Static (present in the original default flags), so a public static property matching a field name is now silently no longer validated — an undocumented behavior change (locked in only by the IgnoresStaticProperty test).</td><td class='mono'>src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:370</td><td><span class='verdict' style='background:#dc2626'>false-positive</span></td><td>anthropic-code-review, ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>IgnoresStaticProperty is tautological: Assert.Empty(GetValidationMessages()) supposedly passes under BOTH the fixed code and the reverted pre-fix code, so it allegedly proves nothing about the fix.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:268</td><td><span class='verdict' style='background:#dc2626'>false-positive</span></td><td>anthropic-code-review</td></tr><tr><td>The two-step DeclaredOnly-&gt;FlattenHierarchy lookup has no rationale comment explaining the AmbiguousMatchException it works around, so a future maintainer could &#x27;simplify&#x27; it back to a single GetProperty call and silently reintroduce the bug.</td><td class='mono'>src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:368</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review, ours, pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>The PR description claims a try/catch(AmbiguousMatchException)-with-retry fix, but the merged code contains no try/catch (it uses BindingFlags instead) — stale/divergent narrative vs. implementation.</td><td class='mono'>src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review, tag1-comprehensive-review</td></tr><tr><td>The change adds a third property-resolution policy inconsistent with the codebase&#x27;s existing hidden-member-aware helpers (e.g. MemberAssignment.GetPropertiesIncludingInherited&#x27;s hierarchy walk); an existing helper could have been reused instead.</td><td class='mono'>src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review, tag1-comprehensive-review</td></tr><tr><td>When both lookups return null the property is cached as null and validation is silently skipped with no diagnostic/log, and the reflection lookups have no error handling (pre-existing behavior, not introduced by this PR).</td><td class='mono'>src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:382</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>The &#x27;// If we can&#x27;t find it, cache null&#x27; comment now sits ~13 lines above the actual null-cache write (an unrelated conditional block was inserted between), weakening comment-to-code mapping.</td><td class='mono'>src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:369</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>The new lookups are case-sensitive (no BindingFlags.IgnoreCase) and this is untested — a wrong-case field name silently resolves to null and is not validated, despite MatchesPropertyByExactName&#x27;s name.</td><td class='mono'>src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:370</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>Several exotic reflection shapes are untested: protected/private shadowing of a public base member, constructed-generic-base shadowing, null FieldName, indexers/explicit interface implementations, static/instance name collisions.</td><td class='mono'>src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:370</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit</td></tr><tr><td>ValidatesHiddenPropertiesWithPropertyCaching does not actually verify caching — it asserts only validation messages, which are identical whether the PropertyInfo is cached or re-resolved, so it would pass with or without the _propertyInfoCache.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:193</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review, pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>MatchesPropertyByExactName is redundant/misnamed — it duplicates ValidatesHiddenPropertiesWithoutAmbiguousMatchException (same model/field/assertion) and verifies nothing distinct about exact-name matching; tests 1/2/3 overlap heavily.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:212</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review, ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>IgnoresStaticProperty is misnamed/weak — it frames an incidental side effect (the dropped BindingFlags.Static) as intended behavior, and the instance Value=0 field is misleading noise.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:268</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>ours, pr-review-toolkit</td></tr><tr><td>Inert fixture members set but never read/asserted — ModelWithStaticProperty.Value and DerivedModelWithInheritedOnly.Description are assigned but never validated, and MidLevelModelWithShadow.Tag is never exercised as its own runtime type.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:445</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review, pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>Three of four new test-model hierarchies declare the derived class before its base class, contrary to the base-then-derived convention used by sibling fixtures.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:405</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>ours, pr-review-toolkit</td></tr><tr><td>New attributed test-model properties split the validation attribute and the property declaration across two lines, unlike every pre-existing attributed property in the file (single-line).</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:407</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>ours</td></tr><tr><td>New leaf test-model classes are declared as bare `class` (implicit private) rather than `private sealed class` like recently-added sibling fixtures (AsyncTestModel/AsyncThrowingModel).</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:405</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review, pr-review-toolkit</td></tr><tr><td>MatchesPropertyByExactName hardcodes the literal &quot;OrderID&quot; instead of nameof(...), diverging from every other reference to that property in the file.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:219</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review, ours, pr-review-toolkit</td></tr><tr><td>Fixture names ModelWithNamedBase and ModelWithBaseName are near-anagrams for two unrelated scenarios (a mix-up hazard); some fixture names (DeepDerivedModel) don&#x27;t convey what they hide.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:434</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit</td></tr><tr><td>The static _propertyInfoCache is never reset between tests, so only the first of the three tests keying on (DerivedModelWithHiddenProperty, OrderID) actually exercises the reflection path; tests are not isolated and could become order-dependent.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:177</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review, ours, pr-review-toolkit</td></tr><tr><td>ModelWithHiddenBaseProperty has low cohesion — it serves two unrelated scenario families (the OrderID two-level hide and the Tag three-level hide) on one base type.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:411</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit</td></tr><tr><td>The load-bearing base members typed `object` (the object-vs-int mismatch that creates the distinct shadowed reflection member driving the repro) and the multi-level Tag shadow intent are undocumented; a maintainer could &#x27;align&#x27; the types and silently break the repro.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:411</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit</td></tr><tr><td>All new tests construct `new FieldIdentifier(model, nameof(...))` directly instead of the sibling-canonical `editContext.Field(nameof(...))` helper.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:186</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review</td></tr><tr><td>No test proves that the most-derived attributes win when BOTH a base and a derived shadow carry validation attributes (only the base-dropped / unattributed-shadow direction is covered).</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:256</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit</td></tr><tr><td>In ValidatesHiddenPropertiesWithoutAmbiguousMatchException the first NotifyFieldChanged fires with no intervening assertion before the state changes again — a confusing/dead call.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:187</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review, tag1-comprehensive-review</td></tr><tr><td>The orderIdIdentifier local variable&#x27;s casing diverges from the file&#x27;s existing variable-casing convention.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:186</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review</td></tr><tr><td>The structural invariant that each fixture actually contains shadowing/ambiguity is unguarded — a future edit dropping `new` or the base property would silently neuter a test; no guard asserts the fallback lookup genuinely throws.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:405</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit</td></tr><tr><td>The cache invalidation / hot-reload path (ClearCache, MetadataUpdater.IsSupported gating, negative-result caching) is entirely untested.</td><td class='mono'>src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:388</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit, superpowers</td></tr><tr><td>ValidatesInheritedPropertyFromBaseClass does not exercise hiding/ambiguity (BaseName is declared once, never shadowed) so it passes on pre-fix code too — it guards the step-2 fallback for plain inheritance, not the ambiguity fix.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:224</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>anthropic-code-review, ours, pr-review-toolkit</td></tr><tr><td>Fixtures mix &#x27;Hidden&#x27;, &#x27;Shadow&#x27;, and plain &#x27;new&#x27; vocabulary for the same concept, and DeepDerivedModel is the only leaf name that doesn&#x27;t say what it hides — inconsistent naming.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:423</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit</td></tr><tr><td>New test model classes encode subtle reflection scenarios (object-vs-int shadowing, static exclusion, three-level shadow) via class shape alone, with no explanatory comments.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:405</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>pr-review-toolkit</td></tr><tr><td>Assert.False(editContext.Validate()) in a hidden-property test exercises the whole-form Validator.TryValidateObject path rather than the TryGetValidatableProperty two-step lookup under test.</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:183</td><td><span class='verdict' style='background:#a1a1aa'>nitpick</span></td><td>tag1-comprehensive-review</td></tr><tr><td>Sibling call site DefaultClientValidationService.BuildMetadata resolves a validatable property with the same plain GetProperty(name) pattern and is left unfixed by this PR, so client-side validation still throws AmbiguousMatchException on the same hidden-member models. (This file is NOT part of the PR diff.)</td><td class='mono'>src/Components/Forms/src/DefaultClientValidationService.cs:283</td><td><span class='verdict' style='background:#0ea5e9'>valid-other</span></td><td>anthropic-code-review, ours, tag1-comprehensive-review</td></tr><tr><td>Weak Assert.Empty-only assertions in SkipsValidationWhenDerivedShadowHasNoAttributes and IgnoresStaticProperty cannot distinguish &#x27;property correctly resolved with nothing to fail&#x27; from &#x27;property never found at all&#x27; — vacuous-pass risk (no positive control).</td><td class='mono'>src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs:256</td><td><span class='verdict' style='background:#0ea5e9'>valid-other</span></td><td>anthropic-code-review, ours, pr-review-toolkit, tag1-comprehensive-review</td></tr></tbody></table></section>
+</div></body></html>

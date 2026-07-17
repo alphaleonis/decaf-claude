@@ -1,0 +1,146 @@
+{
+  "run_id": "2__anthropic-code-review__r1",
+  "subject_id": 2,
+  "lang": "csharp",
+  "size": "medium",
+  "tool": "anthropic-code-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "merge_sha": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "review_base": "3b00cfcae37cd1866de43205059039c1576404ff^1",
+  "review_head": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1123,
+  "duration_ms": "1121565",
+  "duration_api_ms": "2858245",
+  "num_turns": "24",
+  "cost_usd": "11.703953300000002",
+  "orch_usage": {
+    "input_tokens": "17",
+    "output_tokens": "61566",
+    "cache_creation_tokens": "220049",
+    "cache_read_tokens": "766973",
+    "total_tokens": 1048605
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 128,
+    "output": 64174,
+    "cache_creation": 766319,
+    "cache_read": 3301541,
+    "total": 4132162,
+    "orchestrator": {
+      "output": 61566,
+      "total": 1048605,
+      "duration_s": 1122
+    },
+    "per_subagent": [
+      {
+        "output": 24,
+        "input": 10,
+        "cache_creation": 40082,
+        "cache_read": 158688,
+        "total": 198804,
+        "duration_s": 167,
+        "agent": "agent-a02849f12b9034bb8"
+      },
+      {
+        "output": 6,
+        "input": 4,
+        "cache_creation": 38836,
+        "cache_read": 34590,
+        "total": 73436,
+        "duration_s": 56,
+        "agent": "agent-a4007a8b7039f3e6d"
+      },
+      {
+        "output": 10,
+        "input": 4,
+        "cache_creation": 53675,
+        "cache_read": 29807,
+        "total": 83496,
+        "duration_s": 239,
+        "agent": "agent-a5b13fb86c6ea5be6"
+      },
+      {
+        "output": 34,
+        "input": 11,
+        "cache_creation": 56866,
+        "cache_read": 254265,
+        "total": 311176,
+        "duration_s": 302,
+        "agent": "agent-a719d703c9e296316"
+      },
+      {
+        "output": 2443,
+        "input": 42,
+        "cache_creation": 83341,
+        "cache_read": 1351053,
+        "total": 1436879,
+        "duration_s": 360,
+        "agent": "agent-a7d803a1282a2edeb"
+      },
+      {
+        "output": 13,
+        "input": 6,
+        "cache_creation": 38584,
+        "cache_read": 77227,
+        "total": 115830,
+        "duration_s": 145,
+        "agent": "agent-a94d65fae336e5542"
+      },
+      {
+        "output": 29,
+        "input": 12,
+        "cache_creation": 64120,
+        "cache_read": 272793,
+        "total": 336954,
+        "duration_s": 210,
+        "agent": "agent-a9a8fe93ec11c2b4c"
+      },
+      {
+        "output": 17,
+        "input": 6,
+        "cache_creation": 47594,
+        "cache_read": 84062,
+        "total": 131679,
+        "duration_s": 137,
+        "agent": "agent-a9bf95685577afd4e"
+      },
+      {
+        "output": 18,
+        "input": 10,
+        "cache_creation": 54956,
+        "cache_read": 178002,
+        "total": 232986,
+        "duration_s": 188,
+        "agent": "agent-aa1e5d1b2e0cd1f13"
+      },
+      {
+        "output": 14,
+        "input": 6,
+        "cache_creation": 68216,
+        "cache_read": 94081,
+        "total": 162317,
+        "duration_s": 295,
+        "agent": "agent-ab61407c2b21944e8"
+      }
+    ],
+    "max_subagent_duration_s": 360,
+    "sum_subagent_duration_s": 2099
+  },
+  "input_tokens": "17",
+  "output_tokens": "61566",
+  "cache_creation_tokens": "220049",
+  "cache_read_tokens": "766973",
+  "total_tokens": 1048605,
+  "session_id": "df10cdb7-3052-4421-b4e8-28363b6bcc71",
+  "findings_lines": 107,
+  "invocation": "Use the /code-review workflow to review pull request #67075 of the GitHub repository dotnet/aspnetcore. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-16T23:20:50Z"
+}
