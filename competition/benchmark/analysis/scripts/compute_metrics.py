@@ -16,7 +16,10 @@ import json, sys, argparse
 from collections import defaultdict
 
 TP = {"TP-primary", "TP-human", "valid-other"}          # counts as a "good" finding
-POS = {"TP-primary", "TP-human", "valid-other"}          # true/valid for precision
+POS = {"TP-primary", "TP-human", "valid-other"}          # true/valid for (substantive) precision
+MINOR = {"valid-minor"}                                   # correct improvement suggestions
+TRIVIA = {"trivia", "nitpick"}                            # attention noise (legacy 'nitpick' folds here)
+SEV_RANK = {"critical": 5, "high": 4, "medium": 3, "low": 2, "nit": 1, "info": 0}
 
 def rnd(x, n=2):
     return None if x is None else round(x, n)
@@ -64,7 +67,7 @@ def main():
         rep_rows = []
         bug_hits = 0
         precisions = []; fps = []; valids = []; nits = []
-        valid_counts = []
+        valid_counts = []; minors = []
         for r in reps:
             vs = found.get((t, r), [])
             nfound = len(vs)
@@ -72,15 +75,19 @@ def main():
             tp_primary = cnt("TP-primary") > 0
             bug_hits += 1 if tp_primary else 0
             pos = sum(1 for v in vs if v in POS)   # distinct valid (worth-acting-on) findings this cell reported
-            fp = cnt("false-positive"); nit = cnt("nitpick")
+            fp = cnt("false-positive")
+            minor = sum(1 for v in vs if v in MINOR)
+            nit = sum(1 for v in vs if v in TRIVIA)
             prec = (pos / nfound) if nfound else None
             precisions.append(prec if prec is not None else 0.0)
             fps.append(fp); valids.append(cnt("valid-other")); nits.append(nit); valid_counts.append(pos)
+            minors.append(minor)
             cc = cost.get((t, r), {})
             rep_rows.append({
                 "repeat": r, "clusters_found": nfound, "valid_findings": pos,
                 "tp_primary": tp_primary, "tp_human": cnt("TP-human"),
-                "valid_other": cnt("valid-other"), "false_positive": fp, "nitpick": nit,
+                "valid_other": cnt("valid-other"), "false_positive": fp,
+                "valid_minor": minor, "trivia": nit,
                 "precision": rnd(prec), "cost_usd": cc.get("cost_usd"),
                 "wall_s": cc.get("wall"), "ws_output": cc.get("ws_output"),
                 "subagents": cc.get("subagents"),
@@ -101,9 +108,12 @@ def main():
             "bug_catch_rate": rnd(bug_hits / nrep),
             "precision_mean": rnd(_mean(precisions)),
             "valid_per_cell": rnd(_mean(valid_counts)),   # distinct valid (TP+valid-other) findings / cell
+            "valid_minor_per_cell": rnd(_mean(minors)),   # suggestion yield: correct improvement suggestions / cell
             "fp_per_cell": rnd(_mean(fps)),
             "valid_other_mean": rnd(_mean(valids)),
-            "nitpick_per_cell": rnd(_mean(nits)),
+            "trivia_per_cell": rnd(_mean(nits)),
+            "nitpick_per_cell": rnd(_mean(nits)),         # legacy alias of trivia_per_cell
+            "severity_calibration": _calibration(t, clusters),
             "unique_true": unique_true, "unique_true_n": len(unique_true),
             "mean_cost_usd": rnd(mean_cost),
             "cost_per_bug_caught": rnd(mean_cost / (bug_hits / nrep)) if bug_hits else None,
@@ -136,6 +146,20 @@ def main():
         print(f"wrote {a.out}")
     else:
         print(js)
+
+def _calibration(tool, clusters):
+    """P(judged substantive | tool's own max severity for the cluster was critical/high)."""
+    flagged = 0; substantive = 0
+    for c in clusters:
+        sevs = [SEV_RANK.get((rb.get("severity") or "").lower(), 0)
+                for rb in c.get("reported_by", []) if rb.get("tool") == tool]
+        if not sevs or max(sevs) < SEV_RANK["high"]:
+            continue
+        flagged += 1
+        if c.get("verdict") in POS:
+            substantive += 1
+    return rnd(substantive / flagged) if flagged else None
+
 
 def _mean(xs):
     xs = [x for x in xs if x is not None]

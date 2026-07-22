@@ -79,9 +79,15 @@ structure yields **all** overlap/uniqueness/redundancy metrics.
 |---|---|
 | **TP-primary** | matches the escaped bug — the key catch |
 | **TP-human** | matches a human-raised issue |
-| **valid-other** | a real, diff-verifiable defect not in the answer key (bonus signal) |
+| **valid-other** | a real, diff-verifiable defect not in the answer key (bonus signal) — a concrete behavioral consequence or a protection that doesn't protect |
+| **valid-minor** | a correct **improvement suggestion**: verifiably true; a specific one-shot fix at a specific location; anchored in something finite and in-repo (the file's own conventions, repo tooling, objective doc/comment/spelling correctness, a documented contract); plausibly accepted by *these* maintainers as a patch without debate. The class converges under a fix-and-rerun loop. |
+| **trivia** | true but valueless for attention: taste-only (no in-repo anchor); speculative with no concrete pathway; pre-existing/out-of-scope code the diff didn't touch; duplicative restatement; an unbounded suggestion class that would regenerate forever; meta/process commentary. **Borderline → trivia** (default-down: attention is the scarce resource). |
 | **false-positive** | asserts a problem the judge refutes against the code |
-| **nitpick** | real but trivial/style/out-of-scope (low value) |
+
+(`nitpick` is the legacy name for the union of valid-minor + trivia; old analyses may carry it and it
+is folded into trivia by the metrics script. The valid-minor/trivia boundary is deliberately graded
+against the subject repo's *own demonstrated bar* — its conventions, lint/analyzer config, and what its
+maintainers merged or dismissed in review threads — not against an abstract taste standard.)
 
 Judge also records: judged severity, confidence (0–100), one-line rationale. Blind = tool labels
 stripped and clusters shuffled before grading.
@@ -92,9 +98,15 @@ stripped and clusters shuffled before grading.
 - **Bug-catch rate** *(headline)* = fraction of a tool's subjects with a `TP-primary`. "Did it catch
   the real bug?"
 - **Human-issue recall** = `TP-human / |human_issues|` (subjects with threads).
-- **Precision** = `(TP-primary + TP-human + valid-other) / all findings`.
+- **Precision** (substantive) = `(TP-primary + TP-human + valid-other) / all findings`. valid-minor does
+  NOT count toward precision — it is reported separately so the substantive number stays comparable.
+- **Suggestion yield** = valid-minor clusters per cell — correct, actionable improvement suggestions
+  (conventions, naming, doc fixes, coverage nits a maintainer would take).
+- **Trivia rate** = trivia clusters per cell (replaces the old nitpick/noise rate).
 - **FP rate** = false-positives per cell; **FP share** = `FP / all findings`.
 - **Signal density** = `(TP + valid-other) / all findings`.
+- **Severity calibration** = P(judged substantive | the tool flagged the cluster critical/high) — "can
+  you trust the tool's top-of-list and stop reading?" Uses the tool's own max severity per cluster.
 
 **Overlap & uniqueness:**
 - **Unique-true** = TP/valid clusters found by **only this tool**.
