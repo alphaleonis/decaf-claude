@@ -7,6 +7,7 @@ Usage: render_report.py <metrics.json> <report.md> <analysis.json> -o report.htm
 import json, sys, argparse, html, re
 
 VERDICT_COLOR = {"TP-primary": "#16a34a", "TP-human": "#22c55e", "valid-other": "#0ea5e9",
+                 "valid-minor": "#8b5cf6", "trivia": "#a1a1aa",
                  "false-positive": "#dc2626", "nitpick": "#a1a1aa"}
 
 def esc(s): return html.escape(str(s if s is not None else ""))
@@ -70,12 +71,17 @@ def main():
     def valid_pc(m):
         v = m.get("valid_per_cell")
         return "—" if v is None else f"{v:,.1f}"
+    def minor_pc(m):
+        v = m.get("valid_minor_per_cell")
+        return "—" if v is None else f"{v:,.1f}"
     cols = [("escaped bug", lambda m: pct(m["bug_catch_rate"])),
             ("valid /run", valid_pc),
+            ("suggestions /run", minor_pc),
             ("unique valid", lambda m: num(m["unique_true_n"])),
-            ("noise /run", lambda m: num(m["nitpick_per_cell"])),
+            ("trivia /run", lambda m: num(m.get("trivia_per_cell", m.get("nitpick_per_cell")))),
             ("invalid /run", lambda m: num(m["fp_per_cell"])),
             ("precision", lambda m: pct(m["precision_mean"])),
+            ("sev. calibration", lambda m: pct(m.get("severity_calibration"))),
             ("subagent distinct.", lambda m: pct(m["subagent_distinctness"])),
             ("cost /run", lambda m: money(m["mean_cost_usd"])),
             ("~agents", lambda m: num(m["mean_subagents"]))]
@@ -92,12 +98,14 @@ def main():
 <dt>escaped bug</dt><dd>the real defect that was bad enough to be reverted in a follow-up PR — the one a reviewer <em>must</em> catch. The column is the % of runs that caught it.</dd>
 <dt>valid /run</dt><dd>real, worth-acting-on findings per run — the escaped bug plus any other genuine defects (excludes trivia and mistakes).</dd>
 <dt>unique valid</dt><dd>valid findings that <em>only this tool</em> caught (nobody else did).</dd>
-<dt>noise /run</dt><dd>nitpicks per run — real but trivial (naming, formatting, style, out-of-scope). Safe to ignore.</dd>
+<dt>suggestions /run</dt><dd>correct improvement suggestions per run (valid-minor) — true, one-shot-fixable, anchored in the repo's own conventions or objective doc/spelling correctness; a maintainer would plausibly take them as a patch. Not counted in precision.</dd>
+<dt>trivia /run</dt><dd>true-but-valueless findings per run — taste-only, speculative, out-of-scope, duplicative, or an unbounded suggestion class. The attention tax.</dd>
 <dt>invalid /run</dt><dd>false positives per run — findings asserting a problem that isn't real (refuted against the code). Actively misleading.</dd>
-<dt>precision</dt><dd>of everything the tool reported, the share that was valid = valid ÷ (valid + noise + invalid). Higher = less junk per real finding.</dd>
+<dt>precision</dt><dd>substantive precision: valid ÷ everything reported (suggestions and trivia both count against it). Higher = less to read per real defect.</dd>
+<dt>sev. calibration</dt><dd>when the tool itself labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop.</dd>
 <dt>subagent distinct.</dt><dd>for multi-agent tools, distinct issues ÷ total sub-agent findings. Low = many agents re-finding the same things.</dd>
 <dt>Jaccard (overlap, below)</dt><dd>how similar two tools' valid-finding sets are: shared ÷ combined. 1.00 = identical, 0.00 = no overlap.</dd>
-<dt>verdict labels</dt><dd>each issue in the drill-down is graded: <strong>TP-primary</strong> = caught the escaped bug; <strong>valid-other</strong> = a different real defect; <strong>nitpick</strong> = trivial/noise; <strong>false-positive</strong> = not real. ("TP" = true positive; "valid" findings = TP-primary + valid-other.)</dd>
+<dt>verdict labels</dt><dd>each issue in the drill-down is graded: <strong>TP-primary</strong> = caught the escaped bug; <strong>TP-human</strong> = matched a human review thread; <strong>valid-other</strong> = a different real defect; <strong>valid-minor</strong> = correct improvement suggestion; <strong>trivia</strong> = true but not worth attention; <strong>false-positive</strong> = not real. ("valid" findings = TP-primary + TP-human + valid-other.)</dd>
 </dl></div>"""
 
     # overlap matrix
