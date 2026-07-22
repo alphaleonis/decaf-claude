@@ -1,0 +1,266 @@
+[
+  {
+    "cluster_id": "c30",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 60,
+    "rationale": "RootingHelpers.cs is pre-existing code outside the diff; an empty dependency list when CheckConstraints fails is the intended dataflow design (invalid shapes deliberately not rooted) — out-of-scope."
+  },
+  {
+    "cluster_id": "c21",
+    "verdict": "valid-other",
+    "matches": "none",
+    "judged_severity": "medium",
+    "confidence": 70,
+    "rationale": "Verified against the constraint loop: composite canon value-type shapes (MyStruct<string> vs MyStruct<__Canon>) fall past CanCastToConstraintWithCanon (which only handles canon definition types) into the pre-existing value-type prefilter, which returns false before CanCastTo/IsCanonEquivalent could match — conservative under-match in the #126604 class."
+  },
+  {
+    "cluster_id": "c11",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 70,
+    "rationale": "The Length==0 early-return vs doc asymmetry is real, but every call site ORs IsCanonEquivalent with IsEquivalentTo (or checks == first), so identical non-generic pairs are already handled — doc-precision only."
+  },
+  {
+    "cluster_id": "c12",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 65,
+    "rationale": "Equal arity is guaranteed by HasSameTypeDefinition and == on interned TypeDescs is the codebase idiom; missing Debug.Assert is a defensive-style note."
+  },
+  {
+    "cluster_id": "c16",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 80,
+    "rationale": "True — IsSpecialTypeMeetingConstraint has no doc comment in the diff — but a missing doc comment is trivial."
+  },
+  {
+    "cluster_id": "c3",
+    "verdict": "TP-primary",
+    "matches": "primary",
+    "judged_severity": "high",
+    "confidence": 85,
+    "rationale": "Matches must_flag (a)/(c): names OTHER consumers of the widened shared CanCastTo (devirtualization guards, DIM/static-virtual resolution, covariant returns, crossgen2 TypeValidationChecker, downstream projects) inheriting the optimistic semantics unaudited and untested — the blast-radius that caused the revert."
+  },
+  {
+    "cluster_id": "c28",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 75,
+    "rationale": "Method-local vs field fixture placement is a pure style inconsistency."
+  },
+  {
+    "cluster_id": "c20",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 85,
+    "rationale": "Verified in diff: CastingHelper.Canon.cs spliced into the Common block of ILCompiler.TypeSystem.csproj, and the new <Link> in ILVerification.projitems uses 8-space indent vs 6 — pure style."
+  },
+  {
+    "cluster_id": "c27",
+    "verdict": "valid-other",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 55,
+    "rationale": "True that the smoke test's only signal is did-not-throw (.ToString()) and it exercises the wildcard-param branch with no negative case; real test-quality gap, though did-not-throw is the standard pattern in this smoke-test file."
+  },
+  {
+    "cluster_id": "c14",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 60,
+    "rationale": "Cluster itself concedes the mutual recursion is structurally decreasing (finite type trees), so no live bug — consistency/defensive note about the missing StackOverflowProtect."
+  },
+  {
+    "cluster_id": "c19",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 90,
+    "rationale": "Verified: TypeSystemConstraintsHelpers.NonCanon.cs keeps 'using System.Diagnostics;' that its false-returning stubs never use — trivial cleanup miss."
+  },
+  {
+    "cluster_id": "c6",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 70,
+    "rationale": "Verified doc mismatches: the pointers/byrefs/fnptr sentence in IsCanonicalCastTarget has no corresponding code check (Universal branch returns true unconditionally) and IsCanonicalTypeArgMatch's summary omits its structural/recursive half — doc-level."
+  },
+  {
+    "cluster_id": "c2",
+    "verdict": "TP-human",
+    "matches": "h1",
+    "judged_severity": "high",
+    "confidence": 95,
+    "rationale": "Exactly the jkotas thread: System.Private.TypeLoader.csproj gets the REAL CastingHelper.Canon.cs (diff lines 9-11), silently changing runtime type-loader CanCastTo semantics with no test and only the 'include all .Canon.cs files' rule as justification."
+  },
+  {
+    "cluster_id": "c24",
+    "verdict": "valid-other",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 60,
+    "rationale": "Verifiable against the test diff: no covariant (out T) fixture appears in the new tests, and the base-chain canon match (ComplexGenericConstraint2) is only hit at zero-hop — real shallow-coverage gaps on the casting integration points."
+  },
+  {
+    "cluster_id": "c8",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 45,
+    "rationale": "The diff's own doc comment declares pointers/byrefs/function pointers invalid as instantiation arguments, so the direct delegate*<__Canon,...> arg scenario cannot arise; any residual nested case fails conservatively (returns false = pre-PR behavior), not unsoundly."
+  },
+  {
+    "cluster_id": "c5",
+    "verdict": "TP-primary",
+    "matches": "primary",
+    "judged_severity": "high",
+    "confidence": 80,
+    "rationale": "Matches must_flag (c): the broadened CanCastTo has zero coverage outside constraint checking and none for compareTypesForCast/devirtualization consumers with canonical inputs; traced the tests — CanCastToConstraintWithCanon intercepts canon-target cases before IsCanonicalCastTarget, so its true-arms plausibly never execute."
+  },
+  {
+    "cluster_id": "c29",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 80,
+    "rationale": "Fixture placement/naming quibbles in the test assembly — pure style."
+  },
+  {
+    "cluster_id": "c15",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 60,
+    "rationale": "Cluster self-refutes live impact: the new checks are additive short-circuits, so IsGCPointer being false for a constrained GenericParameterDesc just falls through to pre-existing logic (pre-PR behavior) — consistency note."
+  },
+  {
+    "cluster_id": "c10",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 70,
+    "rationale": "Verified: the Universal->true / Specific->IsGCPointer kernel is re-encoded in IsCanonicalCastTarget, CanCastToConstraintWithCanon, and IsCanonicalTypeArgMatch — real DRY/drift concern, but structural/maintainability, not a defect."
+  },
+  {
+    "cluster_id": "c1",
+    "verdict": "TP-primary",
+    "matches": "primary",
+    "judged_severity": "critical",
+    "confidence": 98,
+    "rationale": "The precise primary mechanism: optimistic canon-widened CanCastTo answers flow through CorInfoImpl.compareTypesForCast as TypeCompareState.Must (its own table says May), so JIT/crossgen2 folds required runtime casts — the exact type-safety miscompile that produced #127259 and the revert."
+  },
+  {
+    "cluster_id": "c25",
+    "verdict": "valid-other",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 70,
+    "rationale": "Spot-verified: __Canon is a GC pointer so the class-constraint Assert.True passes via the pre-existing IsGCPointer short-circuit, and the contravariant IGen cases pass via ordinary variance (__Canon.CanCastTo(object) is true pre-PR) — assertions vacuously credit the new code."
+  },
+  {
+    "cluster_id": "c33",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 85,
+    "rationale": "Explicitly concedes the semicolon body declarations are valid at this LangVersion (correctly avoids the safe-bodyless-types false positive); remaining claim is file-local style only."
+  },
+  {
+    "cluster_id": "c26",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 80,
+    "rationale": "Verified in the test diff: the block calls IGen<in T> contravariant then says 'invariant arg position', and the 'Parameterized canonical types (__Canon[])' header's body never constructs __Canon[] (uses int[]+canon, duplicating an earlier case) — wrong comments, but comment-level."
+  },
+  {
+    "cluster_id": "c7",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 50,
+    "rationale": "The UC<->Canon cross-form disjuncts are consistent with the PR's intended optimistic 'castable for SOME instantiation' semantics (UC may stand for a ref type); 'unexplained' is a documentation note, not a distinct defect."
+  },
+  {
+    "cluster_id": "c32",
+    "verdict": "false-positive",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 85,
+    "rationale": "Refuted: System.Private.TypeLoader does not compile TypeSystemConstraintsHelpers.cs at all (a missing partial flavor would be a compile error and the project builds), so no Canon/NonCanon pairing is required — the exact 'missing matching pair' FP named in the brief."
+  },
+  {
+    "cluster_id": "c4",
+    "verdict": "valid-other",
+    "matches": "none",
+    "judged_severity": "medium",
+    "confidence": 65,
+    "rationale": "Verified in diff: only MakeGenericTypeSite receives NormalizeInstantiation(); the parallel MakeGenericMethod dataflow path is left checking constraints on denormalized shapes — plausible incomplete-fix asymmetry, untested, though downstream canonicalization may mitigate."
+  },
+  {
+    "cluster_id": "c17",
+    "verdict": "valid-other",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 55,
+    "rationale": "If __UniversalCanon.IsValueType (which is how the UC struct-constraint test passes through the caller guard), the (!IsValueType || IsNullable) gate is false for UC and the NotNullableValueTypeConstraint arm can never fire — dead arm in new code, minor impact."
+  },
+  {
+    "cluster_id": "c23",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 70,
+    "rationale": "Doc-phrasing issues only: the summary reads as a caller precondition though the method is invoked unconditionally (and correctly returns false otherwise); the runtime-validation claim is a comment assertion."
+  },
+  {
+    "cluster_id": "c18",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "nit",
+    "confidence": 80,
+    "rationale": "Naming-drift observations (type vs thisType, IsCanonEquivalent short form, Check* convention) — pure style."
+  },
+  {
+    "cluster_id": "c31",
+    "verdict": "valid-other",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 60,
+    "rationale": "Verified: every new test calls CheckConstraints() with no InstantiationContext while the production caller in HandleCallAction.cs passes new InstantiationContext(typeInst, methodInst) — real, narrow coverage gap."
+  },
+  {
+    "cluster_id": "c22",
+    "verdict": "nitpick",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 65,
+    "rationale": "The orderings are genuinely load-bearing (CanCastToConstraintWithCanon before the value-type check saves UC from the IsValueType prefilter; IsCanonicalCastTarget before the category switch), but the ask is comments — doc-level."
+  },
+  {
+    "cluster_id": "c9",
+    "verdict": "valid-other",
+    "matches": "none",
+    "judged_severity": "medium",
+    "confidence": 70,
+    "rationale": "Real design gap: flavor selection is undocumented and silent-on-wrong-choice (compile errors only catch missing/double includes) — the mechanism that actually bit — but stated abstractly, naming neither definite-decision consumers (not primary) nor a specific over-broad project (not h1)."
+  },
+  {
+    "cluster_id": "c13",
+    "verdict": "valid-other",
+    "matches": "none",
+    "judged_severity": "low",
+    "confidence": 70,
+    "rationale": "Verified against the test diff: no multi-rank array test, no canon-on-the-left case, no mixed equal+canon multi-arg instantiation, and no negative array test (int[] vs __Canon[]) — real dark branches in the new code."
+  }
+]

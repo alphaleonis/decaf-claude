@@ -1,0 +1,347 @@
+{
+  "subject_id": 3,
+  "lang": "csharp",
+  "size": "large",
+  "repo": "dotnet/runtime",
+  "pr": 127146,
+  "judge_model": "claude-opus-4-8",
+  "n_clusters": 33,
+  "n_tp_primary_clusters": 3,
+  "has_human_issues": true,
+  "tools": {
+    "anthropic-code-review": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 17,
+          "valid_findings": 7,
+          "tp_primary": true,
+          "tp_human": 0,
+          "valid_other": 5,
+          "false_positive": 0,
+          "valid_minor": 3,
+          "trivia": 7,
+          "precision": 0.41,
+          "cost_usd": 32.25244019999999,
+          "wall_s": 2259,
+          "ws_output": 84639,
+          "subagents": 18
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 7,
+          "valid_findings": 4,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 1,
+          "false_positive": 0,
+          "valid_minor": 1,
+          "trivia": 2,
+          "precision": 0.57,
+          "cost_usd": 3.4066555,
+          "wall_s": 641,
+          "ws_output": 47514,
+          "subagents": 0
+        }
+      ],
+      "bug_catch_repeats": 2,
+      "n_repeats": 2,
+      "bug_catch_rate": 1.0,
+      "precision_mean": 0.49,
+      "valid_per_cell": 5.5,
+      "valid_minor_per_cell": 2.0,
+      "fp_per_cell": 0.0,
+      "valid_other_mean": 3.0,
+      "trivia_per_cell": 4.5,
+      "nitpick_per_cell": 4.5,
+      "severity_calibration": 1.0,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 17.83,
+      "cost_per_bug_caught": 17.83,
+      "cost_per_true_finding": 3.96,
+      "subagent_distinctness": 0.37,
+      "mean_subagents": 9.0
+    },
+    "ours": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 14,
+          "valid_findings": 8,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 4,
+          "false_positive": 0,
+          "valid_minor": 4,
+          "trivia": 2,
+          "precision": 0.57,
+          "cost_usd": 27.914608199999996,
+          "wall_s": 1949,
+          "ws_output": 84487,
+          "subagents": 14
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 12,
+          "valid_findings": 6,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 4,
+          "false_positive": 0,
+          "valid_minor": 3,
+          "trivia": 3,
+          "precision": 0.5,
+          "cost_usd": 28.0319399,
+          "wall_s": 2635,
+          "ws_output": 122076,
+          "subagents": 15
+        }
+      ],
+      "bug_catch_repeats": 2,
+      "n_repeats": 2,
+      "bug_catch_rate": 1.0,
+      "precision_mean": 0.54,
+      "valid_per_cell": 7.0,
+      "valid_minor_per_cell": 3.5,
+      "fp_per_cell": 0.0,
+      "valid_other_mean": 4.0,
+      "trivia_per_cell": 2.5,
+      "nitpick_per_cell": 2.5,
+      "severity_calibration": 1.0,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 27.97,
+      "cost_per_bug_caught": 27.97,
+      "cost_per_true_finding": 4.66,
+      "subagent_distinctness": 0.26,
+      "mean_subagents": 14.5
+    },
+    "pr-review-toolkit": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 25,
+          "valid_findings": 11,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 7,
+          "false_positive": 0,
+          "valid_minor": 5,
+          "trivia": 9,
+          "precision": 0.44,
+          "cost_usd": 14.709220250000005,
+          "wall_s": 1143,
+          "ws_output": 50023,
+          "subagents": 5
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 23,
+          "valid_findings": 10,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 6,
+          "false_positive": 0,
+          "valid_minor": 4,
+          "trivia": 9,
+          "precision": 0.43,
+          "cost_usd": 14.869831250000004,
+          "wall_s": 1000,
+          "ws_output": 33071,
+          "subagents": 5
+        }
+      ],
+      "bug_catch_repeats": 2,
+      "n_repeats": 2,
+      "bug_catch_rate": 1.0,
+      "precision_mean": 0.44,
+      "valid_per_cell": 10.5,
+      "valid_minor_per_cell": 4.5,
+      "fp_per_cell": 0.0,
+      "valid_other_mean": 6.5,
+      "trivia_per_cell": 9.0,
+      "nitpick_per_cell": 9.0,
+      "severity_calibration": 1.0,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 14.79,
+      "cost_per_bug_caught": 14.79,
+      "cost_per_true_finding": 1.74,
+      "subagent_distinctness": 0.24,
+      "mean_subagents": 5.0
+    },
+    "superpowers": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 6,
+          "valid_findings": 4,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 0,
+          "false_positive": 0,
+          "valid_minor": 1,
+          "trivia": 1,
+          "precision": 0.67,
+          "cost_usd": 3.74667625,
+          "wall_s": 801,
+          "ws_output": 8168,
+          "subagents": 1
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 6,
+          "valid_findings": 3,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 1,
+          "false_positive": 0,
+          "valid_minor": 2,
+          "trivia": 1,
+          "precision": 0.5,
+          "cost_usd": 2.51642525,
+          "wall_s": 471,
+          "ws_output": 8169,
+          "subagents": 1
+        }
+      ],
+      "bug_catch_repeats": 2,
+      "n_repeats": 2,
+      "bug_catch_rate": 1.0,
+      "precision_mean": 0.58,
+      "valid_per_cell": 3.5,
+      "valid_minor_per_cell": 1.5,
+      "fp_per_cell": 0.0,
+      "valid_other_mean": 0.5,
+      "trivia_per_cell": 1.0,
+      "nitpick_per_cell": 1.0,
+      "severity_calibration": 1.0,
+      "unique_true": [],
+      "unique_true_n": 0,
+      "mean_cost_usd": 3.13,
+      "cost_per_bug_caught": 3.13,
+      "cost_per_true_finding": 1.25,
+      "subagent_distinctness": null,
+      "mean_subagents": 1.0
+    },
+    "tag1-comprehensive-review": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "clusters_found": 18,
+          "valid_findings": 9,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 6,
+          "false_positive": 1,
+          "valid_minor": 4,
+          "trivia": 4,
+          "precision": 0.5,
+          "cost_usd": 25.139839649999995,
+          "wall_s": 1355,
+          "ws_output": 73275,
+          "subagents": 10
+        },
+        {
+          "repeat": 2,
+          "clusters_found": 23,
+          "valid_findings": 12,
+          "tp_primary": true,
+          "tp_human": 1,
+          "valid_other": 8,
+          "false_positive": 1,
+          "valid_minor": 4,
+          "trivia": 6,
+          "precision": 0.52,
+          "cost_usd": 23.57335120000001,
+          "wall_s": 1500,
+          "ws_output": 96768,
+          "subagents": 10
+        }
+      ],
+      "bug_catch_repeats": 2,
+      "n_repeats": 2,
+      "bug_catch_rate": 1.0,
+      "precision_mean": 0.51,
+      "valid_per_cell": 10.5,
+      "valid_minor_per_cell": 4.0,
+      "fp_per_cell": 1.0,
+      "valid_other_mean": 7.0,
+      "trivia_per_cell": 5.0,
+      "nitpick_per_cell": 5.0,
+      "severity_calibration": 0.67,
+      "unique_true": [
+        "c31"
+      ],
+      "unique_true_n": 1,
+      "mean_cost_usd": 24.36,
+      "cost_per_bug_caught": 24.36,
+      "cost_per_true_finding": 2.71,
+      "subagent_distinctness": 0.36,
+      "mean_subagents": 10.0
+    }
+  },
+  "overlap": [
+    {
+      "a": "anthropic-code-review",
+      "b": "ours",
+      "jaccard": 0.7,
+      "shared": 7
+    },
+    {
+      "a": "anthropic-code-review",
+      "b": "pr-review-toolkit",
+      "jaccard": 0.67,
+      "shared": 8
+    },
+    {
+      "a": "anthropic-code-review",
+      "b": "superpowers",
+      "jaccard": 0.44,
+      "shared": 4
+    },
+    {
+      "a": "anthropic-code-review",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 0.62,
+      "shared": 8
+    },
+    {
+      "a": "ours",
+      "b": "pr-review-toolkit",
+      "jaccard": 0.75,
+      "shared": 9
+    },
+    {
+      "a": "ours",
+      "b": "superpowers",
+      "jaccard": 0.56,
+      "shared": 5
+    },
+    {
+      "a": "ours",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 0.69,
+      "shared": 9
+    },
+    {
+      "a": "pr-review-toolkit",
+      "b": "superpowers",
+      "jaccard": 0.42,
+      "shared": 5
+    },
+    {
+      "a": "pr-review-toolkit",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 0.92,
+      "shared": 12
+    },
+    {
+      "a": "superpowers",
+      "b": "tag1-comprehensive-review",
+      "jaccard": 0.38,
+      "shared": 5
+    }
+  ]
+}

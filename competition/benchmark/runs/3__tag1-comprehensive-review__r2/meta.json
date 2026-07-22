@@ -1,0 +1,146 @@
+{
+  "run_id": "3__tag1-comprehensive-review__r2",
+  "subject_id": 3,
+  "lang": "csharp",
+  "size": "large",
+  "tool": "tag1-comprehensive-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/runtime",
+  "pr": 127146,
+  "merge_sha": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "review_base": "7bba2205c2a75e4364dc32dc79cc91fae13791af^1",
+  "review_head": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1500,
+  "duration_ms": "356428",
+  "duration_api_ms": "5287830",
+  "num_turns": "8",
+  "cost_usd": "23.57335120000001",
+  "orch_usage": {
+    "input_tokens": "15",
+    "output_tokens": "29983",
+    "cache_creation_tokens": "35614",
+    "cache_read_tokens": "1755694",
+    "total_tokens": 1821306
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 445,
+    "output": 96768,
+    "cache_creation": 1390994,
+    "cache_read": 18919659,
+    "total": 20407866,
+    "orchestrator": {
+      "output": 74725,
+      "total": 4671408,
+      "duration_s": 1498
+    },
+    "per_subagent": [
+      {
+        "output": 11486,
+        "input": 68,
+        "cache_creation": 123953,
+        "cache_read": 2759911,
+        "total": 2895418,
+        "duration_s": 629,
+        "agent": "agent-a280bdac803fffc8a"
+      },
+      {
+        "output": 310,
+        "input": 52,
+        "cache_creation": 100535,
+        "cache_read": 1861388,
+        "total": 1962285,
+        "duration_s": 387,
+        "agent": "agent-a39ed4ffd00f12668"
+      },
+      {
+        "output": 1044,
+        "input": 72,
+        "cache_creation": 115853,
+        "cache_read": 2541764,
+        "total": 2658733,
+        "duration_s": 562,
+        "agent": "agent-a50a72e7977ba641d"
+      },
+      {
+        "output": 31,
+        "input": 16,
+        "cache_creation": 117262,
+        "cache_read": 289385,
+        "total": 406694,
+        "duration_s": 364,
+        "agent": "agent-a52d45c137b374860"
+      },
+      {
+        "output": 2577,
+        "input": 10,
+        "cache_creation": 47825,
+        "cache_read": 165745,
+        "total": 216157,
+        "duration_s": 38,
+        "agent": "agent-a77e7f7d3e8ff8b5b"
+      },
+      {
+        "output": 13,
+        "input": 10,
+        "cache_creation": 55364,
+        "cache_read": 200798,
+        "total": 256185,
+        "duration_s": 307,
+        "agent": "agent-a9a7f341eba0a6021"
+      },
+      {
+        "output": 5067,
+        "input": 16,
+        "cache_creation": 59354,
+        "cache_read": 339177,
+        "total": 403614,
+        "duration_s": 242,
+        "agent": "agent-aa8b2ca7ad5565688"
+      },
+      {
+        "output": 444,
+        "input": 46,
+        "cache_creation": 132371,
+        "cache_read": 2001986,
+        "total": 2134847,
+        "duration_s": 589,
+        "agent": "agent-aad7f283128079381"
+      },
+      {
+        "output": 1033,
+        "input": 86,
+        "cache_creation": 159434,
+        "cache_read": 4086147,
+        "total": 4246700,
+        "duration_s": 850,
+        "agent": "agent-aadaf42dee3549a3b"
+      },
+      {
+        "output": 38,
+        "input": 20,
+        "cache_creation": 124201,
+        "cache_read": 431566,
+        "total": 555825,
+        "duration_s": 501,
+        "agent": "agent-ab08b078f4d6ed808"
+      }
+    ],
+    "max_subagent_duration_s": 850,
+    "sum_subagent_duration_s": 4469
+  },
+  "input_tokens": "15",
+  "output_tokens": "29983",
+  "cache_creation_tokens": "35614",
+  "cache_read_tokens": "1755694",
+  "total_tokens": 1821306,
+  "session_id": "bf8a2276-22cd-4147-aa03-6da04261a3da",
+  "findings_lines": 21,
+  "invocation": "Run /comprehensive-review --pr 127146 --local --output-file .decaf/tag1-review-127146.md for the GitHub repository dotnet/runtime. --local means display everything and post NOTHING. When done, print the output-file path and a summary of findings by severity.",
+  "finished_at": "2026-07-22T14:49:54Z"
+}

@@ -1,0 +1,43 @@
+{
+  "subject_id": 3,
+  "lang": "csharp",
+  "size": "large",
+  "repo": "dotnet/runtime",
+  "pr": 127146,
+  "review_diff": "gh pr diff 127146 -R dotnet/runtime — 13 files, +417/-7. Core: new Canon/NonCanon partial implementations of CastingHelper and TypeSystemConstraintsHelpers (src/coreclr/tools/Common/TypeSystem/), canonical-aware hooks wired into the shared CanCastToInternal/CanCastToClass/CanCastToNonVariantInterface/CanCastByVarianceToInterfaceOrDelegate, project-file wiring picking Canon vs NonCanon per consumer (ILCompiler.TypeSystem.csproj + System.Private.TypeLoader.csproj get Canon; ILVerification gets NonCanon), a NormalizeInstantiation() fix in HandleCallAction.cs, plus TypeSystem unit tests and a NativeAOT smoke test. Saved at subject-03/review.diff.",
+  "primary_bug": {
+    "id": "primary",
+    "summary": "The optimistic canonical-cast semantics are wired into the SHARED CanCastTo used by consumers beyond the intended dataflow/constraint-validation path, and they are unsound for definite cast decisions. CastingHelper.cs's CanCastToInternal now early-returns TRUE when the target is a canonical type (IsCanonicalCastTarget: __Canon accepts any GC pointer, __UniversalCanon accepts anything), and CanCastToClass/CanCastToNonVariantInterface/variance checks accept canon-equivalent matches (IsCanonEquivalent/IsCanonicalTypeArgMatch). These 'would be castable for SOME runtime instantiation' wildcard answers are correct for the PR's goal (constraint validation during ILC dataflow analysis) but WRONG wherever CanCastTo's answer is used as a definite 'this cast always succeeds/fails' — and the Canon flavor is compiled into ILCompiler.TypeSystem, which crossgen2 (ReadyToRun) also consumes for its compile-time cast optimization queries on shared-generics (canonical) types. Result: R2R-CG2 compiled casts incorrectly (folded/elided based on unsound answers), producing wrong runtime results — the JIT/opt/Casts/shared_Casts test regressed (Expected: 100, Actual: 0) on every R2R-CG2 platform, and the PR was reverted wholesale.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+    "locus": "IsCanonicalCastTarget / IsCanonEquivalent / IsCanonicalTypeArgMatch (CastingHelper.Canon.cs) + their call sites added in Common/CastingHelper.cs (CanCastToInternal early return ~L173, CanCastToClass, CanCastToNonVariantInterface, CanCastByVarianceToInterfaceOrDelegate) + the project wiring in ILCompiler.TypeSystem.csproj that gives this behavior to every ILCompiler.TypeSystem consumer (including crossgen2).",
+    "must_flag": "A reviewer catches the primary bug if it flags ANY of: (a) the canonical-cast semantics are injected into the SHARED CanCastTo, changing behavior for OTHER consumers of the common type system (crossgen2/ReadyToRun, or 'other CanCastTo callers' generally) that were not the PR's target — i.e., the change is not scoped to the constraint-validation/dataflow path; (b) the new wildcard answers ('__Canon accepts any reference type') are optimistic MAY-cast semantics, unsound where CanCastTo is used for definite compile-time cast decisions/optimization (a canonical type stands for an UNKNOWN concrete type, so 'castable for some instantiation' must not be treated as 'castable for all'); (c) concretely, that R2R/crossgen2 cast optimization or non-dataflow CanCastTo callers get an untested behavior change (the added tests cover only constraint validation, not casting consumers). Vague 'this is complex/risky' or style notes about the partial-file pattern do NOT count; the catch must connect the shared/optimistic semantics to a wrong-answer risk for a definite-decision consumer.",
+    "source": "Reverted by #127301 ('Revert Handle canonical types in casting logic', resolves #127259). Regression issue #127259: JIT/opt/Casts/shared_Casts fails (Assert.Equal Expected: 100, Actual: 0) on ALL R2R-CG2 configurations (windows/linux/osx, x86/x64/arm64) — crossgen2-compiled shared-generics casts produced wrong results. Foreshadowed in review by jkotas questioning the over-broad Canon-flavor inclusion (thread on System.Private.TypeLoader.csproj), with the author replying the rule was 'if you include .Canon.cs file, you include .Canon.cs files' and 'we can fix the bug if this ever becomes a bug.'",
+    "difficulty": "very hard — deep JIT/AOT canonical-generics domain. Requires knowing that ILCompiler.TypeSystem is shared with crossgen2 and that CanCastTo feeds definite compile-time cast folding there. Authored by a principal NativeAOT engineer, reviewed by the .NET type-system architect (jkotas), and it still escaped, discovered only by outerloop R2R test runs. Expect very low recall; even a partial catch (flagging the shared-consumer blast radius or the may-vs-must semantics conflation) is a strong signal."
+  },
+  "human_issues": [
+    {
+      "id": "h1",
+      "summary": "Over-broad inclusion of the real Canon casting behavior: System.Private.TypeLoader.csproj (the runtime type loader) is given CastingHelper.Canon.cs although it likely does not need canonical cast semantics — the author's rule 'if you include .Canon.cs, you include all .Canon.cs files' widens the behavior change beyond where it is required, acknowledged with 'we can fix the bug if this ever becomes a bug.' A reviewer should question which consumers actually need the Canon flavor.",
+      "loc": "src/coreclr/nativeaot/System.Private.TypeLoader/src/System.Private.TypeLoader.csproj (the added CastingHelper.Canon.cs include)",
+      "thread": "jkotas: 'Do we actually need the real CastingHelper.Canon.cs in the runtime type loader?' — MichalStrehovsky: 'Probably not right now... It felt like an easier rule... I can make it include .NonCanon.cs here and we can fix the bug if this ever becomes a bug.' — jkotas: 'ok' (resolved, merged as-is)"
+    }
+  ],
+  "known_safe": [
+    {
+      "id": "safe-bodyless-types",
+      "summary": "The smoke test's body-less type declarations (`struct Atom;`, `class Gen<T, U, V> where U : IFoo, new();`, `interface IFoo;`, `class Foo : IFoo;` in Dataflow.cs) ARE valid modern C# (semicolon class bodies) and compile fine — the Copilot bot's claim that they 'will fail to compile' was wrong and was dismissed. A tool flagging these as syntax errors / non-compiling is a FALSE POSITIVE.",
+      "loc": "src/tests/nativeaot/SmokeTests/TrimmingBehaviors/Dataflow.cs TestMakeGenericConstrainedDataflow"
+    },
+    {
+      "id": "safe-noncanon-stubs",
+      "summary": "The NonCanon partial files (CastingHelper.NonCanon.cs, TypeSystemConstraintsHelpers.NonCanon.cs) with methods stubbed to `false` are the intentional no-op flavor of the partial-class pattern — projects that don't model canonical types include them so the shared code compiles with canonical handling disabled. Flagging them as dead/pointless code is a false positive; questioning WHICH projects get which flavor is the primary bug's territory.",
+      "loc": "src/coreclr/tools/Common/TypeSystem/Common/*.NonCanon.cs"
+    },
+    {
+      "id": "safe-normalize",
+      "summary": "The added `instantiatedType.NormalizeInstantiation()` in HandleCallAction.MakeGenericTypeSite is a deliberate fix for denormalized shapes (Foo<object, __Canon>) produced by InstantiateSignature, with an explanatory comment. Flagging the normalization itself as a bug is a false positive.",
+      "loc": "src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/Dataflow/HandleCallAction.cs ~L786"
+    }
+  ],
+  "notes": "Fixture records human_threads count=3 (jkotas) + 5 Copilot bot threads; the API returns 6 threads total — 5 from the Copilot bot (all trivial build nits, one factually wrong about C# syntax → see safe-bodyless-types) and 1 substantive jkotas thread (h1), which foreshadows the primary bug's mechanism (over-broad Canon inclusion) though it targeted the TypeLoader project specifically. Bot threads are NOT counted as human issues. Score cells on: (1) primary_bug recall (the shared/optimistic canonical-cast semantics leaking to definite-decision consumers, i.e. crossgen2), (2) h1 recall (questioning the Canon-flavor scoping), (3) valid-other real defects, (4) FP discipline (esp. NOT calling the body-less C# types a syntax error, NOT calling the NonCanon stubs dead code), (5) noise. Expect very low primary recall given the domain depth."
+}

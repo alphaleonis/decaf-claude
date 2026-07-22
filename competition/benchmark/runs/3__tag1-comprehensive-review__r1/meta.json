@@ -1,0 +1,146 @@
+{
+  "run_id": "3__tag1-comprehensive-review__r1",
+  "subject_id": 3,
+  "lang": "csharp",
+  "size": "large",
+  "tool": "tag1-comprehensive-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/runtime",
+  "pr": 127146,
+  "merge_sha": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "review_base": "7bba2205c2a75e4364dc32dc79cc91fae13791af^1",
+  "review_head": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1355,
+  "duration_ms": "220898",
+  "duration_api_ms": "5441390",
+  "num_turns": "5",
+  "cost_usd": "25.139839649999995",
+  "orch_usage": {
+    "input_tokens": "9",
+    "output_tokens": "17880",
+    "cache_creation_tokens": "23104",
+    "cache_read_tokens": "979720",
+    "total_tokens": 1020713
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 2624,
+    "output": 73275,
+    "cache_creation": 1640833,
+    "cache_read": 18665625,
+    "total": 20382357,
+    "orchestrator": {
+      "output": 50209,
+      "total": 4364525,
+      "duration_s": 1354
+    },
+    "per_subagent": [
+      {
+        "output": 1899,
+        "input": 18,
+        "cache_creation": 66729,
+        "cache_read": 405749,
+        "total": 474395,
+        "duration_s": 289,
+        "agent": "agent-a0fad53fc629a5a7f"
+      },
+      {
+        "output": 28,
+        "input": 10,
+        "cache_creation": 119378,
+        "cache_read": 161253,
+        "total": 280669,
+        "duration_s": 400,
+        "agent": "agent-a3f499d94de44e88d"
+      },
+      {
+        "output": 334,
+        "input": 36,
+        "cache_creation": 111311,
+        "cache_read": 1281624,
+        "total": 1393305,
+        "duration_s": 459,
+        "agent": "agent-a51dad180c927693d"
+      },
+      {
+        "output": 292,
+        "input": 46,
+        "cache_creation": 232214,
+        "cache_read": 1259897,
+        "total": 1492449,
+        "duration_s": 543,
+        "agent": "agent-a540c0c0b9215b7a0"
+      },
+      {
+        "output": 12,
+        "input": 6,
+        "cache_creation": 48930,
+        "cache_read": 61164,
+        "total": 110112,
+        "duration_s": 46,
+        "agent": "agent-a85ae4f31d607f57f"
+      },
+      {
+        "output": 616,
+        "input": 2243,
+        "cache_creation": 139724,
+        "cache_read": 2576732,
+        "total": 2719315,
+        "duration_s": 838,
+        "agent": "agent-aa8de551f373593e7"
+      },
+      {
+        "output": 249,
+        "input": 14,
+        "cache_creation": 64623,
+        "cache_read": 269685,
+        "total": 334571,
+        "duration_s": 304,
+        "agent": "agent-ac58632eefd053eb0"
+      },
+      {
+        "output": 612,
+        "input": 84,
+        "cache_creation": 150078,
+        "cache_read": 3951944,
+        "total": 4102718,
+        "duration_s": 744,
+        "agent": "agent-ad1733d06a15796c4"
+      },
+      {
+        "output": 5238,
+        "input": 40,
+        "cache_creation": 103511,
+        "cache_read": 1501460,
+        "total": 1610249,
+        "duration_s": 401,
+        "agent": "agent-add448fe40119f95d"
+      },
+      {
+        "output": 13786,
+        "input": 76,
+        "cache_creation": 144631,
+        "cache_read": 3341556,
+        "total": 3500049,
+        "duration_s": 812,
+        "agent": "agent-ade3bc2496a285019"
+      }
+    ],
+    "max_subagent_duration_s": 838,
+    "sum_subagent_duration_s": 4836
+  },
+  "input_tokens": "9",
+  "output_tokens": "17880",
+  "cache_creation_tokens": "23104",
+  "cache_read_tokens": "979720",
+  "total_tokens": 1020713,
+  "session_id": "089baf6c-eaf6-4056-a893-d0a2e0c62728",
+  "findings_lines": 27,
+  "invocation": "Run /comprehensive-review --pr 127146 --local --output-file .decaf/tag1-review-127146.md for the GitHub repository dotnet/runtime. --local means display everything and post NOTHING. When done, print the output-file path and a summary of findings by severity.",
+  "finished_at": "2026-07-22T14:24:54Z"
+}
