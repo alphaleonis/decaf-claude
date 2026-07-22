@@ -65,3 +65,12 @@ unique true finding came from the mid-priced `pr-review-toolkit`, not the pricie
 - **The false-positive:** `c18` (OOM claim, confidence 60) — confirm the `Ok(0)` break refutes it.
 - **Low-confidence / debatable:** `c6` (50), `c8` (50), `c11` (50), `c14` (48), `c16` (50) — mostly
   nitpick-vs-valid boundary calls on design/perf/test observations.
+
+## Addendum — suggestion-tier regrade (valid-minor vs trivia)
+
+The 15 nitpick clusters were blind-regraded under the suggestion-tier rubric: **2 valid-minor, 13
+trivia** — on a 4-file diff by a famously opinionated solo maintainer, almost none of the style tail
+clears the "would be taken as a patch without debate" bar. Suggestion yield: `anthropic` 2.0/run,
+`ours` 1.5, `tag1`/`pr-review-toolkit` 1.0, `superpowers` 0.0. Severity calibration is **not
+computable for this subject** — the pilot-era clusters lack per-tool severity attribution in
+`reported_by`; later subjects carry it. No regrades fell below confidence 60.

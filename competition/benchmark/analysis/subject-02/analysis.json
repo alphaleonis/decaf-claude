@@ -739,7 +739,7 @@
       "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
       "line": 368,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 65,
@@ -793,7 +793,10 @@
           "subagent": null,
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 65,
+      "regrade_rationale": "The adjacent comment in the same method already explains its reflection rationale (public-only), and the new two-step lookup genuinely looks redundant without a note on the AmbiguousMatchException it avoids \u2014 one bounded comment at one location, converges, plausibly accepted."
     },
     {
       "cluster_id": "c6",
@@ -1025,7 +1028,7 @@
       "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
       "line": null,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 75,
@@ -1055,7 +1058,10 @@
           "subagent": null,
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 75,
+      "regrade_rationale": "PR-description-vs-code drift is meta/process commentary \u2014 not an in-repo artifact fixable by a patch to the codebase."
     },
     {
       "cluster_id": "c8",
@@ -1063,7 +1069,7 @@
       "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
       "line": null,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 45,
@@ -1081,7 +1087,10 @@
           "subagent": "agent-a50d0ddf8942020bb",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 80,
+      "regrade_rationale": "Reuse-a-different-helper is a design redesign with different semantics, not a one-shot patch mergeable without debate."
     },
     {
       "cluster_id": "c9",
@@ -1089,7 +1098,7 @@
       "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
       "line": 382,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 72,
@@ -1125,7 +1134,10 @@
           "subagent": "agent-af780ae236f5af2ae",
           "severity": "info"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 90,
+      "regrade_rationale": "Self-admittedly pre-existing behavior (null-cache/silent-skip predates the diff); out-of-scope code the diff didn't introduce."
     },
     {
       "cluster_id": "c10",
@@ -1133,7 +1145,7 @@
       "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
       "line": 369,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 70,
@@ -1169,7 +1181,10 @@
           "subagent": "agent-ab18b8329e2f15ca0",
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "Not genuinely misleading in situ \u2014 the comment paragraph is a coherent preamble to the lookup+cache block and the null-cache write is still the block's last statement."
     },
     {
       "cluster_id": "c12",
@@ -1177,7 +1192,7 @@
       "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
       "line": 370,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 66,
@@ -1219,7 +1234,10 @@
           "subagent": "agent-a56585c7f6a20db28",
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 80,
+      "regrade_rationale": "Case-sensitivity is unchanged from the old default GetProperty (also no IgnoreCase) \u2014 not a path the diff introduced, and the test ask is the unbounded shapes class."
     },
     {
       "cluster_id": "c13",
@@ -1227,7 +1245,7 @@
       "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
       "line": 370,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 55,
@@ -1245,7 +1263,10 @@
           "subagent": "agent-a71c15a4b96655a69",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 95,
+      "regrade_rationale": "Explicitly the unbounded exotic-shape test class (protected shadowing, generic bases, indexers, null names) \u2014 none introduced as load-bearing by the diff."
     },
     {
       "cluster_id": "c14",
@@ -1253,7 +1274,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 193,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 68,
@@ -1313,7 +1334,10 @@
           "subagent": "agent-ad91e03ff01681f2c",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 60,
+      "regrade_rationale": "True that the test can't fail without the cache, but a transparent cache is unobservable from behavior; the only 'fix' is asserting private statics or a rename \u2014 no clean patch maintainers would take without debate."
     },
     {
       "cluster_id": "c15",
@@ -1321,7 +1345,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 212,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 70,
@@ -1423,7 +1447,10 @@
           "subagent": "agent-ad91e03ff01681f2c",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 55,
+      "regrade_rationale": "The redundancy is real (test 3 is a subset of test 1's per-field flow), but deleting/merging harmless tests is exactly the 'extra coverage is cheap' debate \u2014 not accepted without discussion."
     },
     {
       "cluster_id": "c16",
@@ -1529,7 +1556,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 268,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 70,
@@ -1553,7 +1580,10 @@
           "subagent": "agent-a2ab99685389ff7b5",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 75,
+      "regrade_rationale": "The static exclusion is arguably intentional in the new Public|Instance flags and pinning it is legitimate; 'misnamed/weak framing' is contestable meta-commentary, not a patch."
     },
     {
       "cluster_id": "c17b",
@@ -1581,7 +1611,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 445,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 78,
@@ -1629,7 +1659,10 @@
           "subagent": "agent-a890db2796321a00b",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 55,
+      "regrade_rationale": "The inert assignments (Value = 0, Description = \"x\") are unflagged test-data filler, and the bundle includes an unbounded ask (exercise MidLevel Tag as its own runtime type) \u2014 not an unused-using-grade objective removal."
     },
     {
       "cluster_id": "c19",
@@ -1637,7 +1670,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 405,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 74,
@@ -1679,7 +1712,10 @@
           "subagent": "agent-a909c00677471f3d9",
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "No pre-existing file-local base/derived fixture pairs exist to anchor a base-then-derived convention; declaration order is compile-irrelevant taste."
     },
     {
       "cluster_id": "c20",
@@ -1687,7 +1723,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 407,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 78,
@@ -1705,7 +1741,10 @@
           "subagent": "agent-a88e97446a386ea47",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 55,
+      "regrade_rationale": "File precedent (all pre-existing attributed properties single-line) is real, but the 'fix' direction contradicts the dominant attribute-on-own-line C#/dotnet style, so the patch would be debated, not accepted outright."
     },
     {
       "cluster_id": "c21",
@@ -1713,7 +1752,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 405,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 75,
@@ -1749,7 +1788,10 @@
           "subagent": "agent-a909c00677471f3d9",
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 60,
+      "regrade_rationale": "File demonstrates both styles \u2014 the immediately adjacent pre-existing TestModel is bare 'class' \u2014 so the private-sealed anchor is ambiguous; new fixtures match their nearest sibling."
     },
     {
       "cluster_id": "c22",
@@ -1757,7 +1799,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 219,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 85,
@@ -1805,7 +1847,10 @@
           "subagent": null,
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 60,
+      "regrade_rationale": "Verified: line 219 hardcodes \"OrderID\" while every other FieldIdentifier reference in the file (pre-existing 107-108 and all new tests) uses nameof \u2014 file-demonstrated convention, one-shot, converges."
     },
     {
       "cluster_id": "c23",
@@ -1813,7 +1858,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 434,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 72,
@@ -1843,7 +1888,10 @@
           "subagent": "agent-a909c00677471f3d9",
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 90,
+      "regrade_rationale": "Naming-aesthetics complaint (near-anagram fixture names) \u2014 taste, and renames are an unbounded regenerating class."
     },
     {
       "cluster_id": "c25",
@@ -1851,7 +1899,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 177,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 58,
@@ -1899,7 +1947,10 @@
           "subagent": "agent-a71c15a4b96655a69",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "All three tests expect the same outcome cached or not, so no actual order-dependence ('could become' is speculative), and the fix needs cache-reset machinery \u2014 not a one-shot accepted patch."
     },
     {
       "cluster_id": "c27",
@@ -1907,7 +1958,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 411,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 68,
@@ -1937,7 +1988,10 @@
           "subagent": "agent-a909c00677471f3d9",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 90,
+      "regrade_rationale": "Fixture 'cohesion' is taste-only design commentary on test scaffolding with no in-repo anchor."
     },
     {
       "cluster_id": "c28",
@@ -1945,7 +1999,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 411,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -1975,7 +2029,10 @@
           "subagent": "agent-a909c00677471f3d9",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 60,
+      "regrade_rationale": "Comment-add on test fixtures with zero in-file precedent (the file's demonstrated convention is self-documenting fixture names, not comments), motivated by a speculative future 'alignment' edit; default down."
     },
     {
       "cluster_id": "c29",
@@ -1983,7 +2040,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 186,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 75,
@@ -2001,7 +2058,10 @@
           "subagent": "agent-a7d803a1282a2edeb",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 80,
+      "regrade_rationale": "Anchor is false: pre-existing tests use both patterns \u2014 lines 107-108 construct new FieldIdentifier(model, nameof(...)) directly \u2014 so editContext.Field is not sibling-canonical."
     },
     {
       "cluster_id": "c30",
@@ -2009,7 +2069,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 256,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -2027,7 +2087,10 @@
           "subagent": "agent-a2ab99685389ff7b5",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 75,
+      "regrade_rationale": "Derived-wins is already proven (base OrderID has no attributes, so the derived Range firing proves which PropertyInfo won); the both-attributed variant is the unbounded more-shapes test class."
     },
     {
       "cluster_id": "c31",
@@ -2035,7 +2098,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 187,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 65,
@@ -2059,7 +2122,10 @@
           "subagent": "agent-ad91e03ff01681f2c",
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 75,
+      "regrade_rationale": "An assertion-free intermediate NotifyFieldChanged is harmless setup noise; 'confusing' is taste with no convention anchor."
     },
     {
       "cluster_id": "c32",
@@ -2067,7 +2133,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 186,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 72,
@@ -2079,7 +2145,10 @@
           "subagent": "agent-a96cb5dcbeffd8b11",
           "severity": "info"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 85,
+      "regrade_rationale": "orderIdIdentifier is ordinary camelCase matching the requiredStringIdentifier pattern; the only 'divergence' is ID-vs-Id acronym casing, which follows standard .NET naming anyway \u2014 no objective violation."
     },
     {
       "cluster_id": "c34",
@@ -2087,7 +2156,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 405,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 60,
@@ -2105,7 +2174,10 @@
           "subagent": "agent-a909c00677471f3d9",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 80,
+      "regrade_rationale": "Textbook speculative robustness ('a future edit could neuter the test') \u2014 guard-the-guards meta with no concrete pathway."
     },
     {
       "cluster_id": "c36",
@@ -2113,7 +2185,7 @@
       "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
       "line": 388,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 65,
@@ -2143,7 +2215,10 @@
           "subagent": "agent-a02b6c8522ffe52c1",
           "severity": "info"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 85,
+      "regrade_rationale": "ClearCache/hot-reload path is pre-existing code the diff didn't touch, plus an unbounded more-tests ask."
     },
     {
       "cluster_id": "c37",
@@ -2151,7 +2226,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 224,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -2193,7 +2268,10 @@
           "subagent": "agent-a71c15a4b96655a69",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 65,
+      "regrade_rationale": "Observation without an actionable fix \u2014 the test legitimately guards the step-2 FlattenHierarchy fallback the diff itself introduced, so 'passes pre-fix' is not a defect to patch."
     },
     {
       "cluster_id": "c38",
@@ -2201,7 +2279,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 423,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 80,
@@ -2219,7 +2297,10 @@
           "subagent": "agent-ae7f9075913eec193",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 90,
+      "regrade_rationale": "Vocabulary-consistency taste (Hidden vs Shadow vs new) \u2014 unbounded rename class, no objective anchor."
     },
     {
       "cluster_id": "c39",
@@ -2227,7 +2308,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 405,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 66,
@@ -2239,7 +2320,10 @@
           "subagent": null,
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 75,
+      "regrade_rationale": "Duplicative restatement of c28 and the unbounded 'more comments on fixtures' class with no in-file comment precedent."
     },
     {
       "cluster_id": "c40",
@@ -2247,7 +2331,7 @@
       "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
       "line": 183,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 60,
@@ -2259,7 +2343,10 @@
           "subagent": "agent-ad91e03ff01681f2c",
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "Partial/inaccurate critique: the same test exercises the per-field TryGetValidatableProperty path immediately after the whole-form Validate() call, so the extra coverage is additive, not a defect."
     }
   ]
 }
