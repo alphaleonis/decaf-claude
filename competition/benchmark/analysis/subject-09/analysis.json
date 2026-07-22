@@ -164,7 +164,7 @@
       "file": "pkg/proxy/node.go",
       "line": 41,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "safe-exit-on-change",
       "judged_severity": "nit",
       "confidence": 60,
@@ -332,7 +332,10 @@
           "subagent": "agent-afa2a321f3058c9cd",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 85,
+      "regrade_rationale": "Restating the PR's intended crash-on-change contract plus debounce/wiring opinions is design commentary with no one-shot in-repo fix."
     },
     {
       "cluster_id": "c3",
@@ -712,7 +715,7 @@
       "file": "pkg/proxy/node.go",
       "line": 155,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -730,7 +733,10 @@
           "subagent": "agent-a7297716e3f47fda8",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 85,
+      "regrade_rationale": "'Emit a metric/Event on self-exit' is an operational-observability opinion with no in-repo anchor; unbounded suggestion class."
     },
     {
       "cluster_id": "c7",
@@ -1138,7 +1144,7 @@
       "file": "pkg/proxy/config/config.go",
       "line": 320,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 72,
@@ -1324,7 +1330,10 @@
           "subagent": "agent-abb5ef48f932f931f",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 60,
+      "regrade_rationale": "Verified: handleChangeNode is wired only to UpdateFunc, where client-go's documented contract never delivers DeletedFinalStateUnknown; the tombstone branch added by this PR is unreachable dead code, one-shot removal."
     },
     {
       "cluster_id": "c10",
@@ -1332,7 +1341,7 @@
       "file": "pkg/proxy/config/config.go",
       "line": 513,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 66,
@@ -1416,7 +1425,10 @@
           "subagent": "agent-ada7ed9d5ab82de3c",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "Verified: handleNodeEvent's new doc says it handles 'Add, Update and Delete' but DeleteFunc is a no-op that never calls it; objective doc/code mismatch on new code, one-shot doc fix."
     },
     {
       "cluster_id": "c11",
@@ -1424,7 +1436,7 @@
       "file": "pkg/proxy/config/config.go",
       "line": 503,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 74,
@@ -1502,7 +1514,10 @@
           "subagent": "agent-a8a974ba8206f4493",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "Verified: listerSynced is assigned from HasSynced and never read (NodeTopologyConfig has no Run/sync-wait); dead state introduced by the PR implying a barrier that doesn't exist, one-shot removal."
     },
     {
       "cluster_id": "c12",
@@ -1510,7 +1525,7 @@
       "file": "pkg/proxy/config/config.go",
       "line": 535,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -1558,7 +1573,10 @@
           "subagent": "agent-a85c2e102f4d6fde2",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "handleNodeEvent allocates a fresh map per event and never mutates after publish; the missing-ownership-contract concern is speculative with no concrete race pathway."
     },
     {
       "cluster_id": "c13",
@@ -1566,7 +1584,7 @@
       "file": "pkg/proxy/config/config.go",
       "line": 44,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -1650,7 +1668,10 @@
           "subagent": "agent-a830ab31abe33c4d4",
           "severity": "info"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 85,
+      "regrade_rationale": "Cross-package coupling risk is an architecture opinion with no one-shot fix; the diff itself added the prose cross-reference as its mitigation."
     },
     {
       "cluster_id": "c14",
@@ -1658,7 +1679,7 @@
       "file": "pkg/proxy/config/config.go",
       "line": 288,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -1682,7 +1703,10 @@
           "subagent": "agent-afa2a321f3058c9cd",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 75,
+      "regrade_rationale": "'Zero coverage for NodeConfig dispatch' is an unbounded add-tests-for-this-component ask, not a specific one-shot case for load-bearing new behavior."
     },
     {
       "cluster_id": "c15",
@@ -1690,7 +1714,7 @@
       "file": "pkg/proxy/config/config.go",
       "line": 274,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 70,
@@ -1726,7 +1750,10 @@
           "subagent": "agent-a57426f3e9a578d07",
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 60,
+      "regrade_rationale": "NodeConfig's channels-based doc was already false before this PR and the doc line itself is untouched context; pre-existing doc rot, not diff-caused."
     },
     {
       "cluster_id": "c16",
@@ -1734,7 +1761,7 @@
       "file": "pkg/proxy/node.go",
       "line": 131,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -1884,7 +1911,10 @@
           "subagent": "agent-a7baae155c1f9e858",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 75,
+      "regrade_rationale": "Speculative aliasing of client-go cache objects with no concrete mutation pathway; nothing mutates the shared node, so this is design taste."
     },
     {
       "cluster_id": "c17",
@@ -1892,7 +1922,7 @@
       "file": "pkg/proxy/node.go",
       "line": 107,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 70,
@@ -1994,7 +2024,10 @@
           "subagent": "agent-a58d1ff8b5eb4deca",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "Self-admits err is always non-nil today (immediate=true); 'a future poll-branch could return nil,nil' is speculative robustness with no concrete pathway."
     },
     {
       "cluster_id": "c18",
@@ -2002,7 +2035,7 @@
       "file": "pkg/proxy/node.go",
       "line": 76,
       "category": "logic",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 58,
@@ -2056,7 +2089,10 @@
           "subagent": "agent-a78028136ab66f456",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 55,
+      "regrade_rationale": "The error-path informer goroutine leak is inert in production (fatal error exits the process) and Start(wait.NeverStop) is the surrounding idiom (server.go does the same); a lifecycle fix would invite debate."
     },
     {
       "cluster_id": "c19",
@@ -2114,7 +2150,7 @@
       "file": "pkg/proxy/node.go",
       "line": 41,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 78,
@@ -2174,7 +2210,10 @@
           "subagent": null,
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 85,
+      "regrade_rationale": "Verified: 'based on the NodeIPs and PodCIDRs handles node watch events' is an objectively garbled run-on with a duplicated verb (calibration: broken grammar qualifies)."
     },
     {
       "cluster_id": "c21",
@@ -2182,7 +2221,7 @@
       "file": "pkg/proxy/node.go",
       "line": 152,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 70,
@@ -2230,7 +2269,10 @@
           "subagent": "agent-ab43060934ff15562",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 85,
+      "regrade_rationale": "Verified: NodeManager logs via package-global klog.InfoS/ErrorS while NodeTopologyConfig (added in this PR) and NodeConfig use ctx-derived loggers; the PR's own sibling convention (calibration example)."
     },
     {
       "cluster_id": "c22",
@@ -2238,7 +2280,7 @@
       "file": "pkg/proxy/node.go",
       "line": 60,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 72,
@@ -2262,7 +2304,10 @@
           "subagent": "agent-a57426f3e9a578d07",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 55,
+      "regrade_rationale": "Verified: both issues.k8s.io/111321 references are deleted and no rationale replaces them; re-adding the link to NodeManager's doc is a finite one-shot knowledge-preservation fix anchored in the file's own deleted text."
     },
     {
       "cluster_id": "c23",
@@ -2270,7 +2315,7 @@
       "file": "pkg/proxy/node.go",
       "line": 150,
       "category": "logic",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 78,
@@ -2372,7 +2417,10 @@
           "subagent": "agent-a8a974ba8206f4493",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 60,
+      "regrade_rationale": "Verified fall-through after exitFunc(1) in the PodCIDR branch; with the PR's own injected-exitFunc contract execution continues past 'exit' (possible double-exit/spurious error log); single 'return' fix maintainers would take."
     },
     {
       "cluster_id": "c24",
@@ -2380,7 +2428,7 @@
       "file": "pkg/proxy/node.go",
       "line": 123,
       "category": "bug",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 66,
@@ -2410,7 +2458,10 @@
           "subagent": "agent-acc4816d5f3a55d7c",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 60,
+      "regrade_rationale": "The '_' discards are internally consistent (error treated as no-IPs) and any fix (log? return error? change API) invites maintainer debate rather than a debate-free one-shot patch."
     },
     {
       "cluster_id": "c25",
@@ -2418,7 +2469,7 @@
       "file": "pkg/proxy/node.go",
       "line": 182,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 66,
@@ -2442,7 +2493,10 @@
           "subagent": "agent-ada7ed9d5ab82de3c",
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 60,
+      "regrade_rationale": "New OnNodeSynced doc claims 'all pre-existing Nodes have been reported' but the informer is single-node field-selected and NodeConfig dropped AddFunc so nothing is reported; objectively inaccurate new doc, one-shot reword."
     },
     {
       "cluster_id": "c26",
@@ -2450,7 +2504,7 @@
       "file": "pkg/proxy/node.go",
       "line": 119,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 74,
@@ -2468,7 +2522,10 @@
           "subagent": "agent-af1254d2c88bc2cfb",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 90,
+      "regrade_rationale": "Verified: NodeIPs()/PodCIDRs() docs say 'polled in NewNodeManager()' while OnNodeChange overwrites n.node; objective doc/code mismatch on new code (calibration example)."
     },
     {
       "cluster_id": "c27",
@@ -2476,7 +2533,7 @@
       "file": "pkg/proxy/node_test.go",
       "line": 207,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 60,
@@ -2524,7 +2581,10 @@
           "subagent": "agent-adf4f6286ea599924",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 90,
+      "regrade_rationale": "'No -race/concurrency test' is the calibration's explicit trivia example; unbounded test-ask class."
     },
     {
       "cluster_id": "c28",
@@ -2532,7 +2592,7 @@
       "file": "pkg/proxy/node.go",
       "line": 77,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 66,
@@ -2556,7 +2616,10 @@
           "subagent": "agent-a7a4a97193460d09b",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 90,
+      "regrade_rationale": "'Cache-sync failure branch untested' is the calibration's explicit trivia example; not load-bearing behavior."
     },
     {
       "cluster_id": "c29",
@@ -2564,7 +2627,7 @@
       "file": "pkg/proxy/node.go",
       "line": 159,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 64,
@@ -2594,7 +2657,10 @@
           "subagent": "agent-a7a4a97193460d09b",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 80,
+      "regrade_rationale": "Untested transient error-path (log+return) is the untested-branch class, not load-bearing behavior; unbounded add-a-case ask."
     },
     {
       "cluster_id": "c30",
@@ -2838,7 +2904,7 @@
       "file": "pkg/proxy/healthcheck/proxy_health.go",
       "line": 180,
       "category": "bug",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 66,
@@ -2922,7 +2988,10 @@
           "subagent": "agent-a7297716e3f47fda8",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 80,
+      "regrade_rationale": "Nil-deref 'landmine' concedes nodeManager is non-nil by construction on every real path; speculative robustness with no concrete pathway."
     },
     {
       "cluster_id": "c32",
@@ -2930,7 +2999,7 @@
       "file": "pkg/proxy/healthcheck/proxy_health.go",
       "line": 74,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -3002,7 +3071,10 @@
           "subagent": "agent-a830ab31abe33c4d4",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 80,
+      "regrade_rationale": "Concrete-type-vs-interface and dependency-direction concerns are architecture opinions that invite debate; no debate-free one-shot patch."
     },
     {
       "cluster_id": "c33",
@@ -3010,7 +3082,7 @@
       "file": "pkg/proxy/healthcheck/proxy_health.go",
       "line": 62,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 52,
@@ -3046,7 +3118,10 @@
           "subagent": "agent-ada7ed9d5ab82de3c",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 65,
+      "regrade_rationale": "PR deletes SyncNode from proxy_health.go but leaves the type doc's 'sync node status' item untouched; diff-caused doc/code mismatch, one-shot doc fix."
     },
     {
       "cluster_id": "c34",
@@ -3210,7 +3285,7 @@
       "file": "pkg/proxy/iptables/proxier.go",
       "line": 1098,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 82,
@@ -3306,7 +3381,10 @@
           "subagent": "agent-ada7ed9d5ab82de3c",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 95,
+      "regrade_rationale": "Verified in winkernel/proxier.go: TODO says 'OnTopologyChanged' but the method is OnTopologyChange; objective identifier mismatch, one-shot (calibration example)."
     },
     {
       "cluster_id": "c39",
@@ -3314,7 +3392,7 @@
       "file": "pkg/proxy/iptables/proxier.go",
       "line": 131,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 70,
@@ -3362,7 +3440,10 @@
           "subagent": "agent-a57426f3e9a578d07",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 65,
+      "regrade_rationale": "Comment-wording harmonization across proxiers is taste; unlike the klog sibling case there is no functional divergence, and the fix is churn that invites debate."
     },
     {
       "cluster_id": "c40",
@@ -3370,7 +3451,7 @@
       "file": "pkg/proxy/topology.go",
       "line": 46,
       "category": "doc",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 82,
@@ -3412,7 +3493,10 @@
           "subagent": "agent-ada7ed9d5ab82de3c",
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 85,
+      "regrade_rationale": "Confirmed 'to  watch' double-space in the new topology.go comment; objective typo in new code, converges (calibration example)."
     },
     {
       "cluster_id": "c42",
@@ -3420,7 +3504,7 @@
       "file": "pkg/proxy/iptables/proxier.go",
       "line": null,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 60,
@@ -3450,7 +3534,10 @@
           "subagent": "agent-abb5ef48f932f931f",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 85,
+      "regrade_rationale": "'OnTopologyChange untested across proxiers' is coverage-ask class; metaProxier's fan-out is trivial two-line delegation, not load-bearing logic."
     },
     {
       "cluster_id": "c43",
@@ -3458,7 +3545,7 @@
       "file": "pkg/proxy/config/config_test.go",
       "line": 464,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 66,
@@ -3530,7 +3617,10 @@
           "subagent": "agent-adf4f6286ea599924",
           "severity": "high"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 65,
+      "regrade_rationale": "Verified by tracing every case: deleting the reflect.DeepEqual dedup guard fails no assertion (mock records only the last value), so the new test's negative assertions are vacuous for the exact feature it exists to test; one-shot fix is an invocation counter."
     },
     {
       "cluster_id": "c44",
@@ -3538,7 +3628,7 @@
       "file": "pkg/proxy/healthcheck/healthcheck_test.go",
       "line": 481,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -3646,7 +3736,10 @@
           "subagent": "agent-a8a974ba8206f4493",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "'A future makeNode change could kill the test binary' is speculative test robustness; today's construction succeeds and the discarded error is inert."
     },
     {
       "cluster_id": "c45",
@@ -3654,7 +3747,7 @@
       "file": "pkg/proxy/node_test.go",
       "line": 207,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -3702,7 +3795,10 @@
           "subagent": "agent-adf4f6286ea599924",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "Wall-clock sleep coordination is a latent-flake speculation; restructuring the goroutine handoff is not a specific one-shot fix."
     },
     {
       "cluster_id": "c46",
@@ -3710,7 +3806,7 @@
       "file": "pkg/proxy/node_test.go",
       "line": 231,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -3770,7 +3866,10 @@
           "subagent": "agent-abb5ef48f932f931f",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 55,
+      "regrade_rationale": "The watchPodCIDRs=false crash-suppression gate is load-bearing new behavior (every non-NodeCIDR proxy crashloops if it regresses) and the fix is one specific table row in the existing TestNodeManagerOnNodeChange."
     },
     {
       "cluster_id": "c48",
@@ -3778,7 +3877,7 @@
       "file": "pkg/proxy/node_test.go",
       "line": 325,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 74,
@@ -3808,7 +3907,10 @@
           "subagent": "agent-a000913e0be88c1ec",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 75,
+      "regrade_rationale": "Verified in TestNodeManagerNode: require.NoError(t, err) re-asserts the already-checked constructor error after the void OnNodeChange call; objective copy-paste artifact, one-shot deletion."
     },
     {
       "cluster_id": "c49",
@@ -3816,7 +3918,7 @@
       "file": "pkg/proxy/node_test.go",
       "line": 97,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 68,
@@ -3852,7 +3954,10 @@
           "subagent": null,
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 80,
+      "regrade_rationale": "'_, _ =' error discards in test helpers are an unbounded diagnostic-quality class that would regenerate across every setup site; self-described as diagnostic-only."
     },
     {
       "cluster_id": "c50",
@@ -3860,7 +3965,7 @@
       "file": "pkg/proxy/node_test.go",
       "line": 74,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 66,
@@ -3890,7 +3995,10 @@
           "subagent": "agent-adf4f6286ea599924",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 65,
+      "regrade_rationale": "Lost-coverage ask for a pre-existing utility's (GetNodeHostIPs) error path, not load-bearing behavior the diff introduced; unbounded add-a-case class."
     },
     {
       "cluster_id": "c51",
@@ -3898,7 +4006,7 @@
       "file": "pkg/proxy/node_test.go",
       "line": 146,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -3928,7 +4036,10 @@
           "subagent": "agent-a7a4a97193460d09b",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "The deleted test guarded behavior the PR intentionally changed (podCIDRs now unconditionally populated); the rest is an unbounded new-wiring-untested coverage ask."
     },
     {
       "cluster_id": "c52",
@@ -3936,7 +4047,7 @@
       "file": "pkg/proxy/config/config_test.go",
       "line": 561,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 70,
@@ -3966,7 +4077,10 @@
           "subagent": "agent-adf4f6286ea599924",
           "severity": "info"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 80,
+      "regrade_rationale": "Verified: the 'region-only change -> no notification' case also changes zone us-west-2a->us-east-1b, so OnTopologyChange does fire (assertion even checks the new value); objective comment/code mismatch in new test, one-shot fix."
     },
     {
       "cluster_id": "c53",
@@ -3974,7 +4088,7 @@
       "file": "pkg/proxy/config/config_test.go",
       "line": null,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 62,
@@ -3986,7 +4100,10 @@
           "subagent": null,
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "Register-before-Start ordering is meta commentary on test fidelity; no demonstrated defect and no crisp one-shot fix, speculative race-masking."
     },
     {
       "cluster_id": "c54",
@@ -3994,7 +4111,7 @@
       "file": "pkg/proxy/config/config.go",
       "line": 515,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 66,
@@ -4024,7 +4141,10 @@
           "subagent": "agent-abb5ef48f932f931f",
           "severity": "medium"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 60,
+      "regrade_rationale": "Zone-label-removal transition untested is the add-another-shape coverage class; not load-bearing behavior distinct from the already-tested change path."
     },
     {
       "cluster_id": "c55",
@@ -4032,7 +4152,7 @@
       "file": "pkg/proxy/topology_test.go",
       "line": 53,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 72,
@@ -4050,7 +4170,10 @@
           "subagent": "agent-a4537faa1378db6b1",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 55,
+      "regrade_rationale": "The stale field name lives in topology_test.go, a file the diff didn't touch; per rubric, out-of-scope code the diff didn't modify defaults down."
     },
     {
       "cluster_id": "c56",
@@ -4058,7 +4181,7 @@
       "file": "pkg/proxy/node_test.go",
       "line": 311,
       "category": "test",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 68,
@@ -4082,7 +4205,10 @@
           "subagent": null,
           "severity": "nit"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 75,
+      "regrade_rationale": "Observation that the nanosecond-poll path is never exercised is meta commentary; the test is correct as written and there is nothing concrete to fix."
     },
     {
       "cluster_id": "c57",
@@ -4090,7 +4216,7 @@
       "file": "pkg/proxy/node.go",
       "line": 48,
       "category": "style",
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 72,
@@ -4114,7 +4240,10 @@
           "subagent": "agent-a85c2e102f4d6fde2",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 65,
+      "regrade_rationale": "Verified: n.nodeLister is stored at construction and read by no method (poll loop uses the local); dead struct field introduced by the PR, one-shot removal."
     },
     {
       "cluster_id": "c58",
@@ -4122,7 +4251,7 @@
       "file": "pkg/proxy/node.go",
       "line": 44,
       "category": "design",
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 60,
@@ -4140,7 +4269,10 @@
           "subagent": "agent-a9b163dfbcb9e98e1",
           "severity": "low"
         }
-      ]
+      ],
+      "regraded_from": "nitpick",
+      "regrade_confidence": 95,
+      "regrade_rationale": "'NodeManager conflates five responsibilities' is the calibration's explicit taste/architecture trivia example."
     },
     {
       "cluster_id": "c59",

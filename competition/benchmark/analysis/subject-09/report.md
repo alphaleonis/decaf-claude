@@ -115,3 +115,16 @@ tools' savings came with a real recall cost (`pr-review-toolkit` 0%, `superpower
 
 *Outputs are committed-local under `analysis/subject-09/`. Nothing was posted anywhere; analysis is
 read-only over `runs/`.*
+
+## Addendum — suggestion-tier regrade (valid-minor vs trivia)
+
+The 44 nitpick clusters were blind-regraded under the suggestion-tier rubric: **17 valid-minor, 27
+trivia** — the richest suggestion harvest of the four subjects, fitting an 18-file refactor full of
+objective doc/code mismatches (the "polled in NewNodeManager" docs, the garbled type comment, the
+`OnTopologyChanged` TODO typo, the double-space typo, the removed #111321 rationale link, the
+ctx-logger convention the PR itself established then broke). Suggestion yield: `pr-review-toolkit`
+11.0/run, `ours` 8.0, `tag1` 8.0, `anthropic` 7.5, `superpowers` 2.0. Even with suggestions credited,
+`pr-review-toolkit` still carries 18 trivia/run. Severity calibration: `tag1` 80%, `anthropic` 71%,
+`ours` 64%, `pr-review-toolkit` 43%, **`superpowers` 0%** — on the one subject where its confident
+labels mattered, they pointed at non-substantive findings (and its r1 missed the primary). Low-confidence
+regrades: `c22` (→ valid-minor, 55), `c46` (→ valid-minor, 55), `c18` (→ trivia, 55), `c55` (→ trivia, 55).

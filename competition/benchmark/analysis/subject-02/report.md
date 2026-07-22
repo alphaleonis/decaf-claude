@@ -124,3 +124,14 @@ nothing uniquely their own.**
 
 *Outputs are committed-local under `analysis/subject-02/`. Nothing was posted anywhere; analysis is
 read-only over `runs/`.*
+
+## Addendum — suggestion-tier regrade (valid-minor vs trivia)
+
+The 29 nitpick clusters were blind-regraded under the suggestion-tier rubric (METHODOLOGY, Stage C):
+**2 valid-minor, 27 trivia** — the harshest split of the four subjects, confirming this diff's nitpick
+tail was mostly test-fixture taste (naming, ordering, sealed-ness) with no in-repo anchor. The two
+surviving suggestions are the hardcoded `"OrderID"` literal vs the file's own `nameof` convention and
+the missing rationale comment on the two-step lookup (whose absence invites re-simplification). Severity calibration (new): `anthropic`/`tag1`/`superpowers` 100%,
+`pr-review-toolkit` 67%, **`ours` 50%** — half of ours' critical/high-labeled clusters here were not
+substantive (its high-severity doc findings over-claimed). Low-confidence regrades for the human queue:
+`c15`, `c18`, `c20` (all → trivia, conf 55).

@@ -11,7 +11,7 @@
     "size": "small",
     "repo": "BurntSushi/ripgrep",
     "pr": 3185,
-    "review_diff": "gh pr diff 3185 — full PR: CHANGELOG.md, crates/searcher/src/line_buffer.rs, crates/searcher/src/searcher/core.rs, crates/searcher/src/searcher/glue.rs",
+    "review_diff": "gh pr diff 3185 \u2014 full PR: CHANGELOG.md, crates/searcher/src/line_buffer.rs, crates/searcher/src/searcher/core.rs, crates/searcher/src/searcher/glue.rs",
     "primary_bug": {
       "id": "primary",
       "summary": "The new fill loop in LineBuffer::fill reads repeatedly until the caller's buffer is full (`while !self.free_buffer().is_empty() { let readlen = rdr.read(...)?; if readlen==0 { break } self.end += readlen; }`), which breaks --line-buffered / streaming: line-buffered mode must yield what it can read immediately, not block waiting for a full buffer. Regressed real streaming use such as `journalctl -f | rg --line-buffered`.",
@@ -19,7 +19,7 @@
       "locus": "fill(): the added inner `while !self.free_buffer().is_empty()` read-until-full loop (~L416-421)",
       "must_flag": "A reviewer catches this if it flags that packing the whole buffer across multiple reads defeats --line-buffered / prompt streaming (or otherwise identifies the read-loop as changing streaming/latency behavior).",
       "source": "revert PR #3195 ('searcher: fix regression with --line-buffered flag'), regression issue #3194 ('Line buffering appears broken in 15.0.0')",
-      "difficulty": "subtle — requires reasoning about line-buffered/streaming semantics; the maintainer himself merged it and reverted only after a user bug report. Expect low recall; a genuine catch here is a strong signal."
+      "difficulty": "subtle \u2014 requires reasoning about line-buffered/streaming semantics; the maintainer himself merged it and reverted only after a user bug report. Expect low recall; a genuine catch here is a strong signal."
     },
     "human_issues": [],
     "known_safe": [
@@ -159,7 +159,7 @@
       "matches": "primary",
       "judged_severity": "high",
       "confidence": 92,
-      "rationale": "Correctly identifies the new inner while-loop that reads until the buffer is full/EOF rather than returning after a usable read — the --line-buffered/streaming latency regression reverted in #3195."
+      "rationale": "Correctly identifies the new inner while-loop that reads until the buffer is full/EOF rather than returning after a usable read \u2014 the --line-buffered/streaming latency regression reverted in #3195."
     },
     {
       "cluster_id": "c2",
@@ -209,11 +209,14 @@
           "subagent": null
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 55,
-      "rationale": "GitHub redirects /pull/N<->/issues/N so the link works; trivial doc quibble."
+      "rationale": "GitHub redirects /pull/N<->/issues/N so the link works; trivial doc quibble.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 90,
+      "regrade_rationale": "Verified via GitHub API: #3184 is an issue (PR is #3185), so the /pull/3184 URL is objectively wrong against the file's own convention of matching number to referent type (PERF #2111 -> /issues/, PERF #2865 -> /pull/); one-shot s|pull|issues| fix."
     },
     {
       "cluster_id": "c3",
@@ -253,11 +256,14 @@
           "subagent": null
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "valid-minor",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 60,
-      "rationale": "Missing-comment/maintainability note on the fill loop; the loop it wants documented is itself the escaped bug."
+      "rationale": "Missing-comment/maintainability note on the fill loop; the loop it wants documented is itself the escaped bug.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "Verified: new fill-to-capacity loop (line_buffer.rs:419-425) has zero comment while every other step in this densely-commented function is explained, and the same diff added a rationale comment for the core.rs half of the fix; the loop is load-bearing (simplifying it stays correct but reintroduces #3184) \u2014 one-shot comment fix that converges."
     },
     {
       "cluster_id": "c4",
@@ -355,7 +361,7 @@
       "matches": "none",
       "judged_severity": "low",
       "confidence": 60,
-      "rationale": "The correct max_context->before_context fix has no guarding test — reverting core.rs leaves the suite green."
+      "rationale": "The correct max_context->before_context fix has no guarding test \u2014 reverting core.rs leaves the suite green."
     },
     {
       "cluster_id": "c6",
@@ -395,11 +401,14 @@
           "subagent": "agent-aea578d5186fbe56f"
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 50,
-      "rationale": "The comment describes that the costly backward scan is effectively skipped when before_context==0; reading it as a literal call-elision mismatch is pedantic."
+      "rationale": "The comment describes that the costly backward scan is effectively skipped when before_context==0; reading it as a literal call-elision mismatch is pedantic.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 85,
+      "regrade_rationale": "Pedantic reading: the 'step' is finding N preceding lines, and lines.rs:163 doc confirms preceding(_,_,0) finds zero preceding lines (returns current line start) \u2014 the costly-for-large-N work is skipped as the comment says."
     },
     {
       "cluster_id": "c7",
@@ -439,11 +448,14 @@
           "subagent": "agent-ae0e30873a6731490"
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 60,
-      "rationale": "The 262146->262142 constants are the known-safe expected consequence of the buffering change."
+      "rationale": "The 262146->262142 constants are the known-safe expected consequence of the buffering change.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 90,
+      "regrade_rationale": "Golden test constants per the magic-number calibration: surrounding prose comments already explain the byte-count semantics, and the 262146->262142 shift follows from the fill change \u2014 commit-message territory."
     },
     {
       "cluster_id": "c8",
@@ -478,11 +490,14 @@
           "subagent": "agent-adc1e07166791dc36"
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "low",
       "confidence": 50,
-      "rationale": "before_context is the correct revert-kept fix; a speculative debug_assert suggestion casting unwarranted doubt on a known-safe change."
+      "rationale": "before_context is the correct revert-kept fix; a speculative debug_assert suggestion casting unwarranted doubt on a known-safe change.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 95,
+      "regrade_rationale": "Matches the calibration example exactly: debug_assert suggestion on a correct change is speculative robustness with no concrete failure pathway."
     },
     {
       "cluster_id": "c9",
@@ -512,11 +527,14 @@
           "subagent": "agent-a583893d07ba2c2dd"
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "low",
       "confidence": 55,
-      "rationale": "Propagating Interrupted via ? is pre-existing (original single read did the same), negligible impact."
+      "rationale": "Propagating Interrupted via ? is pre-existing (original single read did the same), negligible impact.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 90,
+      "regrade_rationale": "Self-noted pre-existing: the removed line used the same `?` on rdr.read; changing EINTR semantics is a behavior debate, not an accept-without-debate patch."
     },
     {
       "cluster_id": "c10",
@@ -541,11 +559,14 @@
           "subagent": "agent-ae0e30873a6731490"
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 70,
-      "rationale": "Pure CHANGELOG wording preference, no technical content."
+      "rationale": "Pure CHANGELOG wording preference, no technical content.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 75,
+      "regrade_rationale": "Self-described as 'reads awkwardly' \u2014 comprehensible sentence, taste-level rewording; calibration limits CHANGELOG nits to objectively broken/wrong links."
     },
     {
       "cluster_id": "c11",
@@ -570,11 +591,14 @@
           "subagent": "agent-ace7c309669d036a2"
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "low",
       "confidence": 50,
-      "rationale": "Quit-mode over-read is bounded by buffer size and is the accepted consequence in the known-safe glue.rs change, not a defect."
+      "rationale": "Quit-mode over-read is bounded by buffer size and is the accepted consequence in the known-safe glue.rs change, not a defect.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 75,
+      "regrade_rationale": "True but a bounded (one buffer) deliberate consequence of the PR's fill-completely design; no one-shot fix exists \u2014 per-read detection would defeat the fix, so it's tradeoff commentary the maintainer would debate."
     },
     {
       "cluster_id": "c12",
@@ -599,11 +623,14 @@
           "subagent": null
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 72,
-      "rationale": "Naming style, and 'readlen' is pre-existing in the original code."
+      "rationale": "Naming style, and 'readlen' is pre-existing in the original code.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 90,
+      "regrade_rationale": "The file's own removed line used `readlen` (diff preserves local precedent); 'every other manual read loop' is one loop (mod.rs:1005) \u2014 rename is taste churn against in-file convention."
     },
     {
       "cluster_id": "c13",
@@ -623,11 +650,14 @@
           "subagent": "agent-a35936c767b79b1db"
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "low",
       "confidence": 50,
-      "rationale": "Dropping in-flight bytes on a mid-pass I/O error is normal abort behavior; negligible."
+      "rationale": "Dropping in-flight bytes on a mid-pass I/O error is normal abort behavior; negligible.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 70,
+      "regrade_rationale": "Error-path behavior nuance with no accept-without-debate one-shot fix: on a read error the searcher aborts the file anyway, and surfacing partial data before the error is a semantic design change."
     },
     {
       "cluster_id": "c14",
@@ -647,11 +677,14 @@
           "subagent": "agent-a648384ad162f9549"
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "low",
       "confidence": 48,
-      "rationale": "Newtype/type-safety musing that misattributes the regression to the context-value swap (the correct fix), not diff-verifiable."
+      "rationale": "Newtype/type-safety musing that misattributes the regression to the context-value swap (the correct fix), not diff-verifiable.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 95,
+      "regrade_rationale": "Taste-only newtype design suggestion with no in-repo anchor (crate uses bare usize throughout); unbounded suggestion class."
     },
     {
       "cluster_id": "c15",
@@ -671,11 +704,14 @@
           "subagent": "agent-a648384ad162f9549"
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 55,
-      "rationale": "Broad architecture observation about invariants not being type-enforced; not a defect in the diff."
+      "rationale": "Broad architecture observation about invariants not being type-enforced; not a defect in the diff.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 95,
+      "regrade_rationale": "Pre-existing struct fields (line_buffer.rs:299) untouched by the diff; type-enforcement of invariants is a taste-level unbounded redesign."
     },
     {
       "cluster_id": "c16",
@@ -690,11 +726,14 @@
           "subagent": "agent-a280460d51bb6c4d0"
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 50,
-      "rationale": "Detection runs over the full contiguous newbytes range, so a NUL cannot be split across reads — no real risk."
+      "rationale": "Detection runs over the full contiguous newbytes range, so a NUL cannot be split across reads \u2014 no real risk.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 80,
+      "regrade_rationale": "Unbounded add-a-test class; the glue.rs golden tests were updated for exactly the multi-read binary-detection behavior change, and 'untested' is not verifiably established."
     },
     {
       "cluster_id": "c17",
@@ -747,11 +786,14 @@
           "subagent": null
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 58,
-      "rationale": "Self-admitted pre-existing style rebind unrelated to the change."
+      "rationale": "Self-admitted pre-existing style rebind unrelated to the change.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 95,
+      "regrade_rationale": "Verified pre-existing: `let consumed = ...; consumed` is an unchanged context line in the diff \u2014 out-of-scope code the diff didn't touch."
     },
     {
       "cluster_id": "c20",
@@ -766,11 +808,14 @@
           "subagent": "agent-a98de0a6942a2c716"
         }
       ],
-      "verdict": "nitpick",
+      "verdict": "trivia",
       "matches": "none",
       "judged_severity": "nit",
       "confidence": 63,
-      "rationale": "Missing-comment nit on a line that already existed in the original code, merely relocated."
+      "rationale": "Missing-comment nit on a line that already existed in the original code, merely relocated.",
+      "regraded_from": "nitpick",
+      "regrade_confidence": 80,
+      "regrade_rationale": "Comment-absence nit on a moved line whose adjacent comment predates the diff and never explained the assignment; no objective comment/code mismatch, just missing-comment taste."
     }
   ]
 }
