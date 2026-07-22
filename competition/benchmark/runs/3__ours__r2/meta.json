@@ -1,0 +1,191 @@
+{
+  "run_id": "3__ours__r2",
+  "subject_id": 3,
+  "lang": "csharp",
+  "size": "large",
+  "tool": "ours",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/runtime",
+  "pr": 127146,
+  "merge_sha": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "review_base": "7bba2205c2a75e4364dc32dc79cc91fae13791af^1",
+  "review_head": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 2635,
+  "duration_ms": "2633936",
+  "duration_api_ms": "6411880",
+  "num_turns": "38",
+  "cost_usd": "28.0319399",
+  "orch_usage": {
+    "input_tokens": "35",
+    "output_tokens": "106858",
+    "cache_creation_tokens": "305095",
+    "cache_read_tokens": "2805342",
+    "total_tokens": 3217330
+  },
+  "session_tokens": {
+    "subagents": 15,
+    "input": 1345,
+    "output": 122076,
+    "cache_creation": 1733141,
+    "cache_read": 22754968,
+    "total": 24611530,
+    "orchestrator": {
+      "output": 106858,
+      "total": 3217330,
+      "duration_s": 2634
+    },
+    "per_subagent": [
+      {
+        "output": 920,
+        "input": 52,
+        "cache_creation": 75960,
+        "cache_read": 1546331,
+        "total": 1623263,
+        "duration_s": 378,
+        "agent": "agent-a18d52eb934f41f10"
+      },
+      {
+        "output": 211,
+        "input": 40,
+        "cache_creation": 64949,
+        "cache_read": 1156556,
+        "total": 1221756,
+        "duration_s": 154,
+        "agent": "agent-a30ba55d29570a856"
+      },
+      {
+        "output": 988,
+        "input": 24,
+        "cache_creation": 66486,
+        "cache_read": 681074,
+        "total": 748572,
+        "duration_s": 114,
+        "agent": "agent-a336607078a50e3e7"
+      },
+      {
+        "output": 39,
+        "input": 18,
+        "cache_creation": 75984,
+        "cache_read": 519350,
+        "total": 595391,
+        "duration_s": 382,
+        "agent": "agent-a48ae4ff844ae14ff"
+      },
+      {
+        "output": 481,
+        "input": 28,
+        "cache_creation": 85143,
+        "cache_read": 860298,
+        "total": 945950,
+        "duration_s": 314,
+        "agent": "agent-a4ab34e72c27cdaf8"
+      },
+      {
+        "output": 480,
+        "input": 32,
+        "cache_creation": 70918,
+        "cache_read": 971346,
+        "total": 1042776,
+        "duration_s": 202,
+        "agent": "agent-a5ae4073d934654f2"
+      },
+      {
+        "output": 646,
+        "input": 38,
+        "cache_creation": 72609,
+        "cache_read": 1039769,
+        "total": 1113062,
+        "duration_s": 125,
+        "agent": "agent-a6693d8989b742205"
+      },
+      {
+        "output": 28,
+        "input": 13,
+        "cache_creation": 74370,
+        "cache_read": 349655,
+        "total": 424066,
+        "duration_s": 254,
+        "agent": "agent-aa0d41abae0cd07de"
+      },
+      {
+        "output": 56,
+        "input": 26,
+        "cache_creation": 95211,
+        "cache_read": 889409,
+        "total": 984702,
+        "duration_s": 414,
+        "agent": "agent-aa48cfa24485878d7"
+      },
+      {
+        "output": 73,
+        "input": 17,
+        "cache_creation": 95476,
+        "cache_read": 544561,
+        "total": 640127,
+        "duration_s": 401,
+        "agent": "agent-ab9d32150b06c10b6"
+      },
+      {
+        "output": 3698,
+        "input": 62,
+        "cache_creation": 144572,
+        "cache_read": 3102348,
+        "total": 3250680,
+        "duration_s": 553,
+        "agent": "agent-abb8a566a10e4fd6a"
+      },
+      {
+        "output": 53,
+        "input": 800,
+        "cache_creation": 90376,
+        "cache_read": 1043682,
+        "total": 1134911,
+        "duration_s": 220,
+        "agent": "agent-ace8c845e73518418"
+      },
+      {
+        "output": 472,
+        "input": 52,
+        "cache_creation": 134405,
+        "cache_read": 2248720,
+        "total": 2383649,
+        "duration_s": 575,
+        "agent": "agent-ad25bd5351c186a18"
+      },
+      {
+        "output": 444,
+        "input": 48,
+        "cache_creation": 146946,
+        "cache_read": 2268817,
+        "total": 2416255,
+        "duration_s": 652,
+        "agent": "agent-ae003021f0a4a4cce"
+      },
+      {
+        "output": 6629,
+        "input": 60,
+        "cache_creation": 134641,
+        "cache_read": 2727710,
+        "total": 2869040,
+        "duration_s": 465,
+        "agent": "agent-afe7671cf4706f0e3"
+      }
+    ],
+    "max_subagent_duration_s": 652,
+    "sum_subagent_duration_s": 5203
+  },
+  "input_tokens": "35",
+  "output_tokens": "106858",
+  "cache_creation_tokens": "305095",
+  "cache_read_tokens": "2805342",
+  "total_tokens": 3217330,
+  "session_id": "b6198c85-7109-477f-b04c-f129e4b9a659",
+  "findings_lines": 12,
+  "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report 127146. This reviews pull request #127146 of the GitHub repository dotnet/runtime (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-07-17T18:10:53Z"
+}

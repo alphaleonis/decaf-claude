@@ -1,0 +1,101 @@
+{
+  "run_id": "3__pr-review-toolkit__r1",
+  "subject_id": 3,
+  "lang": "csharp",
+  "size": "large",
+  "tool": "pr-review-toolkit",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/runtime",
+  "pr": 127146,
+  "merge_sha": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "review_base": "7bba2205c2a75e4364dc32dc79cc91fae13791af^1",
+  "review_head": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1143,
+  "duration_ms": "207697",
+  "duration_api_ms": "3424980",
+  "num_turns": "1",
+  "cost_usd": "14.709220250000005",
+  "orch_usage": {
+    "input_tokens": "2",
+    "output_tokens": "20860",
+    "cache_creation_tokens": "10419",
+    "cache_read_tokens": "105318",
+    "total_tokens": 136599
+  },
+  "session_tokens": {
+    "subagents": 5,
+    "input": 212,
+    "output": 50023,
+    "cache_creation": 641358,
+    "cache_read": 7487648,
+    "total": 8179241,
+    "orchestrator": {
+      "output": 31785,
+      "total": 816413,
+      "duration_s": 1141
+    },
+    "per_subagent": [
+      {
+        "output": 198,
+        "input": 34,
+        "cache_creation": 106994,
+        "cache_read": 1135165,
+        "total": 1242391,
+        "duration_s": 534,
+        "agent": "agent-a2c32fa6c7bf3962f"
+      },
+      {
+        "output": 12139,
+        "input": 32,
+        "cache_creation": 82732,
+        "cache_read": 885102,
+        "total": 980005,
+        "duration_s": 396,
+        "agent": "agent-a2f7eac49dfaae04e"
+      },
+      {
+        "output": 1204,
+        "input": 64,
+        "cache_creation": 124936,
+        "cache_read": 2493430,
+        "total": 2619634,
+        "duration_s": 864,
+        "agent": "agent-a364aece58ee3039e"
+      },
+      {
+        "output": 4658,
+        "input": 42,
+        "cache_creation": 124079,
+        "cache_read": 1530825,
+        "total": 1659604,
+        "duration_s": 720,
+        "agent": "agent-a620053a003369dbf"
+      },
+      {
+        "output": 39,
+        "input": 22,
+        "cache_creation": 104244,
+        "cache_read": 756889,
+        "total": 861194,
+        "duration_s": 564,
+        "agent": "agent-a70b37b140f1777bf"
+      }
+    ],
+    "max_subagent_duration_s": 864,
+    "sum_subagent_duration_s": 3078
+  },
+  "input_tokens": "2",
+  "output_tokens": "20860",
+  "cache_creation_tokens": "10419",
+  "cache_read_tokens": "105318",
+  "total_tokens": 136599,
+  "session_id": "ea0c6e31-b95b-4ecd-bfe3-c107e55ae5a2",
+  "findings_lines": 297,
+  "invocation": "Comprehensively review pull request #127146 of the GitHub repository dotnet/runtime using the pr-review-toolkit agents: run code-reviewer, silent-failure-hunter, pr-test-analyzer, comment-analyzer, and type-design-analyzer against the PR's diff (fetch it with gh pr diff 127146). Do NOT post anything. Output each agent's complete findings with file:line references.",
+  "finished_at": "2026-07-22T13:06:41Z"
+}

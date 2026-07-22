@@ -1,0 +1,21 @@
+# subagent agent-a233dff3539817eda
+
+## Verdict
+
+```json
+{
+  "finding": "MakeGenericMethodSite.InstantiateDependencies missing NormalizeInstantiation()",
+  "verdict": "confirmed",
+  "reason": "The refutation conflates two distinct concerns. TryGetDependenciesForReflectedMethod's internal GetCanonMethodTarget(Specific) call (RootingHelpers.cs:189) does fix the dependency-NODE-IDENTITY problem, but that call only runs AFTER the CheckConstraints gate at HandleCallAction.cs:770 has already executed on the un-normalized instantiatedMethod.OwningType. MethodDesc.InstantiateSignature (MethodDesc.cs:759-760) computes the owning type via the identical TypeDesc.InstantiateSignature() primitive the type site uses, so it is equally exposed to the denormalized-shape risk. TypeSystemConstraintsHelpers.cs:210 then runs method.OwningType.CheckConstraints on that denormalized type, and TypeSystemConstraintsHelpers.Canon.cs's CanCastToConstraintWithCanon (added by the very commit that fixed the type site, 7bba2205) only grants the 'wildcard, checked-at-runtime' pass-through when the instantiation param IS a canonical definition type (line 35: IsCanonicalDefinitionType(instantiationParam, Any)) -- a concrete stand-in like `object` left in place because normalization never ran gets no such exemption and is checked structurally via CanCastTo, which can genuinely fail an interface/type constraint that __Canon would have trivially passed. So a denormalized owning type CAN make CheckConstraints spuriously reject an instantiation that should be accepted, which skips RootingHelpers entirely (the internal canonicalization never gets a chance to run) -- reproducing exactly the 'missing native code or metadata' class the commit was fixing, but via MethodInfo.MakeGenericMethod. Confirming evidence: commit 7bba2205's own message states the bug is specifically that 'constraint checking... was treating this a class __Canon : object case, but this is not that' -- a constraint-correctness bug, not merely a node-shape bug -- and the commit's own new smoke test (TestMakeGenericConstrainedDataflow in src/tests/nativeaot/SmokeTests/TrimmingBehaviors/Dataflow.cs) exercises only Type.MakeGenericType with a constrained new()/interface generic parameter; no analogous MethodInfo.MakeGenericMethod test was added, consistent with the method site being an overlooked twin rather than a deliberate asymmetry.",
+  "corrections": {}
+}
+```
+
+Key evidence locations:
+- `/home/decaf/code/decaf-claude/competition/benchmark/repos/3/src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/Dataflow/HandleCallAction.cs:769-771` (method site, no normalization) vs `:784-791` (type site, normalized before `CheckConstraints`)
+- `/home/decaf/code/decaf-claude/competition/benchmark/repos/3/src/coreclr/tools/Common/TypeSystem/Common/MethodDesc.cs:759-763` (`InstantiateSignature` reuses `TypeDesc.InstantiateSignature` on the owning type, same denormalization risk as the type site)
+- `/home/decaf/code/decaf-claude/competition/benchmark/repos/3/src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.cs:208-211` (`CheckConstraints(MethodDesc)` checks `method.OwningType.CheckConstraints` first, before any canonicalization)
+- `/home/decaf/code/decaf-claude/competition/benchmark/repos/3/src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs:29-46` (`CanCastToConstraintWithCanon` wildcard only for genuinely-canonical instantiation params, not for concrete stand-ins)
+- `/home/decaf/code/decaf-claude/competition/benchmark/repos/3/src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/RootingHelpers.cs:189` (internal `GetCanonMethodTarget` canonicalization happens too late to rescue a `CheckConstraints` rejection made upstream)
+- `/home/decaf/code/decaf-claude/competition/benchmark/repos/3/src/coreclr/tools/Common/TypeSystem/Canon/MethodForInstantiatedType.Canon.cs:14-21` (shows `GetCanonMethodTarget` == `OwningType.ConvertToCanonForm`, the same primitive `NormalizeInstantiation` wraps)
+- Commit `7bba2205` ("Handle canonical types in casting logic (#127146)", fixes #126604) — commit message, diff limited to the type site in `HandleCallAction.cs`, and the added smoke test `TestMakeGenericConstrainedDataflow` in `src/tests/nativeaot/SmokeTests/TrimmingBehaviors/Dataflow.cs` covering only `Type.MakeGenericType`.

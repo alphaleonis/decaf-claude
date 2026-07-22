@@ -1,0 +1,12 @@
+# subagent agent-a336607078a50e3e7
+
+All confirmed: ordinary `private static` methods (not `static partial` method declarations) defined once each in `Common/*.cs` (host `static partial class`) and once in the paired `.Canon.cs`/`.NonCanon.cs` file. Verdict is confirmed.
+
+```json
+{
+  "finding": "#(unspecified)",
+  "verdict": "confirmed",
+  "reason": "Independently re-derived every claim. (1) The methods are ordinary `private static bool` members inside `public static partial class CastingHelper`/`TypeSystemConstraintsHelpers`, not `static partial void` methods — contrast with the genuine partial method `static partial void IsEquivalentTo(...)` in CastingHelper.cs line 168, which the finding correctly distinguishes. Omitting both variant files leaves the callers in CastingHelper.cs (lines 176, 426, 433, 477, 552) and TypeSystemConstraintsHelpers.cs (lines 33, 42, 51, 68) referencing an undefined method (compile error); including both is a duplicate-member compile error (CS0111). (2) CastingHelper.NonCanon.cs and TypeSystemConstraintsHelpers.NonCanon.cs are unconditional `=> false;` stubs with zero comments and no `Debug.Assert`/precondition. (3) No XML comment exists at any of the three `<Compile Include>` sites (System.Private.TypeLoader.csproj, ILCompiler.TypeSystem.csproj, ILVerification.projitems) nor at the CastingHelper.cs/TypeSystemConstraintsHelpers.cs call sites explaining the 'compile exactly one variant, chosen per-project' rule. (4) The silent-miswiring risk is real and asymmetric: `IsCanonicalDefinitionType` (the API the Canon variants depend on) is defined only in TypeSystemContext.Canon.cs, which ILVerification does not compile — so wiring the *wrong-direction* mistake (Canon into a project lacking canonical-type support) would hard-fail to compile. But the NonCanon.cs stubs reference no Canon-specific API at all, so wiring NonCanon.cs into a project that DOES process canonical types compiles cleanly and silently under-approximates (returns false where it should return true) — exactly the bug class this PR fixes per its own commit message (Fixes #126604). (5) Verified this is a brand-new pattern: `git log --all -- '**/*.NonCanon.cs'` shows only this PR's commit, so there is no established prior convention a maintainer could infer from; Medium severity (forward-looking maintainability/latent-risk finding, not a present bug — current wiring is correct) is a reasonable, defensible consolidation and not overstated.",
+  "corrections": null
+}
+```

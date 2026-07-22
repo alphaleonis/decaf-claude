@@ -1,0 +1,2309 @@
+[
+  {
+    "cluster_id": "c1",
+    "summary": "The canon-widened shared CanCastTo violates the JIT-EE compareTypesForCast contract: IsCanonicalCastTarget/IsCanonEquivalent make e.g. IFoo<__Canon>.CanCastTo(IFoo<string>) return TRUE ('castable for SOME instantiation'), but CorInfoImpl.compareTypesForCast passes positive results through as TypeCompareState.Must \u2014 its own comment table documents this case as May. The JIT/crossgen2 then folds/elides required runtime casts for shared generics, a type-safety miscompile (both ILC and R2R; the READYTORUN sanitizer only converts MustNot, not the new wrong Must).",
+    "file": "src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.cs",
+    "line": 2946,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a2b7b77eb773b0822",
+        "severity": "critical"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a402a103d157af15c",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ac42ffde79af49496",
+        "severity": "critical"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ad3f773c4357a2a82",
+        "severity": "critical"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "critical"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a0a1784dfb1d9789e",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5b7549ac7d6346f5",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5be5217b76f61de6",
+        "severity": "critical"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ab33669e1527debac",
+        "severity": "critical"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "critical"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a48ae4ff844ae14ff",
+        "severity": "critical"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "critical"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "critical"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a620053a003369dbf",
+        "severity": "critical"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a41f82d21e9db0007",
+        "severity": "critical"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a48f7a107a109a66d",
+        "severity": "critical"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "critical"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a276fdd1f98000242",
+        "severity": "critical"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-aa46f1d0d0dd441fa",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "critical"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a540c0c0b9215b7a0",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-ac58632eefd053eb0",
+        "severity": "critical"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a52d45c137b374860",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ab08b078f4d6ed808",
+        "severity": "high"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c2",
+    "summary": "System.Private.TypeLoader.csproj is given the REAL CastingHelper.Canon.cs (not the behavior-preserving NonCanon stub), silently changing the runtime type loader's CanCastTo semantics used by variant GVM dispatch resolution \u2014 a runtime behavior change with no test and no PR-visible justification (the 'include all .Canon.cs files' rule).",
+    "file": "project files (ILCompiler.TypeSystem.csproj / System.Private.TypeLoader.csproj / ILVerification.projitems)",
+    "line": 120,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a4cc927fd1f18d0ab",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5b7549ac7d6346f5",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-aa48cfa24485878d7",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ace8c845e73518418",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a620053a003369dbf",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a23e4315672c4cc15",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a48f7a107a109a66d",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a276fdd1f98000242",
+        "severity": "high"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-aa46f1d0d0dd441fa",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a540c0c0b9215b7a0",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a52d45c137b374860",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c3",
+    "summary": "Every other consumer of the widened CanCastTo inherits the new optimistic semantics unaudited: DevirtualizationManager's guards, MetadataVirtualMethodAlgorithm's DIM/static-virtual variant resolution, MethodDesc covariant-return compatibility, TypeExtensions.MergeTypesToCommonParent/TryResolveConstraintMethodApprox, crossgen2's TypeValidationChecker/UnsafeAccessors, and ~10 downstream projects referencing ILCompiler.TypeSystem \u2014 none adjusted or tested by the PR.",
+    "file": "src/coreclr/tools/Common/Compiler/DevirtualizationManager.cs",
+    "line": 97,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a2b7b77eb773b0822",
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-ad3f773c4357a2a82",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-af131e7de9ee228d6",
+        "severity": "info"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5be5217b76f61de6",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a620053a003369dbf",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a41f82d21e9db0007",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a48f7a107a109a66d",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a87fdea4187125032",
+        "severity": "info"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a276fdd1f98000242",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "info"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aadaf42dee3549a3b",
+        "severity": "info"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c4",
+    "summary": "MakeGenericMethodSite.InstantiateDependencies did NOT receive the NormalizeInstantiation() fix its structural twin MakeGenericTypeSite got, so MakeGenericMethod dataflow still checks constraints on (and roots) denormalized shapes \u2014 the same hazard class (#126604) on the method path, untested. (Some reviewers argue it is defensible via downstream GetCanonMethodTarget canonicalization.)",
+    "file": "src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/Dataflow/HandleCallAction.cs",
+    "line": 769,
+    "category": "logic",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a402a103d157af15c",
+        "severity": "info"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a6f0845f9b6201e74",
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a7e2cb3fc439ff9a1",
+        "severity": "high"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a0a231c1deed09f32",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a233dff3539817eda",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5b7549ac7d6346f5",
+        "severity": "critical"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a6693d8989b742205",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-abb8a566a10e4fd6a",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2c32fa6c7bf3962f",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a70b37b140f1777bf",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a23e4315672c4cc15",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a41f82d21e9db0007",
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a48f7a107a109a66d",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a5b3d86926d937b5a",
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-aa46f1d0d0dd441fa",
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-ac58632eefd053eb0",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-ad1733d06a15796c4",
+        "severity": "info"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a50a72e7977ba641d",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a52d45c137b374860",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aad7f283128079381",
+        "severity": "critical"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aadaf42dee3549a3b",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ab08b078f4d6ed808",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c5",
+    "summary": "The new canonical branches of the real CanCastTo surface are essentially untested: IsCanonicalCastTarget's true-returning arms never execute in any test (deleting the hook leaves the suite green), no test exercises the broadened CanCastTo outside constraint checking, and there is zero coverage of compareTypesForCast/devirtualization/variance consumers with canonical inputs.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+    "line": 33,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a2fcae13f41450638",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a5b7549ac7d6346f5",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a70b37b140f1777bf",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a23e4315672c4cc15",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a276fdd1f98000242",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-add448fe40119f95d",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aad7f283128079381",
+        "severity": "critical"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c6",
+    "summary": "Doc/code mismatches in the new helpers: the 'pointers/byrefs/function pointers are not valid instantiation arguments' comment corresponds to no code check (the __UniversalCanon branch returns true unconditionally for them), IsCanonicalCastTarget's deliberate one-directional asymmetry is undocumented, and IsCanonicalTypeArgMatch's summary omits the structural/recursive half.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+    "line": 17,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a2b7b77eb773b0822",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2c32fa6c7bf3962f",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a48f7a107a109a66d",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a5b3d86926d937b5a",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a87fdea4187125032",
+        "severity": "low"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a276fdd1f98000242",
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-aa46f1d0d0dd441fa",
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a50a72e7977ba641d",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c7",
+    "summary": "The __UniversalCanon<->__Canon cross-form matching (the '|| IsCanonicalDefinitionType(..., Any)' disjuncts) is unexplained and arguably over-permissive \u2014 __UniversalCanon also stands for value types that __Canon cannot represent.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+    "line": 57,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a23e4315672c4cc15",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a41f82d21e9db0007",
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a5b3d86926d937b5a",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a50a72e7977ba641d",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c8",
+    "summary": "Function-pointer canon shapes (e.g. delegate*<string,void> vs delegate*<__Canon,void>) hit no case in IsCanonicalTypeArgMatch and silently return false, reproducing #126604's bug class for function-pointer generics.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+    "line": 30,
+    "category": "bug",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a48f7a107a109a66d",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c9",
+    "summary": "The Canon/NonCanon partial-file selection contract is entirely undocumented and only half-enforced: compile errors catch a missing/double include, but a WRONG choice is silent (a project picking NonCanon silently resurrects #126604; picking Canon silently widens semantics). C#9 extended partial methods (permitted at this LangVersion) would declare the seam; the stubs carry zero explanatory comments.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.NonCanon.cs",
+    "line": 8,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a863d9700e3c03df5",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a4cc927fd1f18d0ab",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-abb7900cd8dfe6b94",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a336607078a50e3e7",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a4ab34e72c27cdaf8",
+        "severity": "high"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-aa48cfa24485878d7",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ae003021f0a4a4cce",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2f7eac49dfaae04e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a70b37b140f1777bf",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a5b3d86926d937b5a",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a87fdea4187125032",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-ac58632eefd053eb0",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a39ed4ffd00f12668",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ab08b078f4d6ed808",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c10",
+    "summary": "The canon-wildcard kernel rule is re-encoded in three/four places (CanCastToConstraintWithCanon duplicates IsCanonicalCastTarget verbatim; IsSpecialTypeMeetingConstraint re-derives it), inviting silent drift between copies.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs",
+    "line": 159,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-afe7671cf4706f0e3",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a87fdea4187125032",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-ac58632eefd053eb0",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c11",
+    "summary": "IsCanonEquivalent's doc ('same type definition with all type arguments equal or canon-compatible') contradicts the code: the Length==0 early-return makes identical NON-generic pairs return false, an unexplained asymmetry.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+    "line": 78,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a863d9700e3c03df5",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a2fcae13f41450638",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a3c3475725cb07e8c",
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2c32fa6c7bf3962f",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a5b3d86926d937b5a",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a87fdea4187125032",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-ab08b078f4d6ed808",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c12",
+    "summary": "IsCanonEquivalent's equal-arity invariant is implicit (no Debug.Assert unlike the sibling with identical logic), and the per-arg loop uses reference equality (==) instead of IsEquivalentTo.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+    "line": 70,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2f7eac49dfaae04e",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a87fdea4187125032",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c13",
+    "summary": "Multiple new-code branches are untested: array rank/category mismatches (only rank-1 SzArrays covered), canon-on-the-left branches (C/D) of IsCanonicalTypeArgMatch, the mixed equal+canon instantiation path of IsCanonEquivalent (the actual #126604 shape), and no negative array test (int[] vs __Canon[]).",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+    "line": 60,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a2fcae13f41450638",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a70b37b140f1777bf",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a23e4315672c4cc15",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-add448fe40119f95d",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aad7f283128079381",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c14",
+    "summary": "The IsCanonicalTypeArgMatch/IsCanonEquivalent mutual recursion carries no StackOverflowProtect/cycle guard, unlike every other recursive walk in the file (validators note the recursion is structurally decreasing, so this is a consistency/defensive concern, not a live bug).",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+    "line": 30,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a97103d31d0a728f7",
+        "severity": "info"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-ac2f3619dad441bec",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2f7eac49dfaae04e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a41f82d21e9db0007",
+        "severity": "info"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-aa8de551f373593e7",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c15",
+    "summary": "The new helpers use TypeDesc.IsGCPointer, which is false for GenericParameterDesc even under a 'where T : class' constraint, unlike sibling code using HasReferenceTypeConstraint \u2014 an under-match concern (validators largely refuted a live impact since the checks are additive short-circuits).",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+    "line": null,
+    "category": "bug",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a2aeb8d4420f2e32f",
+        "severity": "info"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a97103d31d0a728f7",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c16",
+    "summary": "IsSpecialTypeMeetingConstraint has no doc comment despite encoding the least-obvious policy of the five new helpers (why __Canon meets class/new() but not struct).",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs",
+    "line": 10,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2c32fa6c7bf3962f",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-aa8de551f373593e7",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c17",
+    "summary": "IsSpecialTypeMeetingConstraint's NotNullableValueTypeConstraint arm appears to be dead code \u2014 the caller's guard is already false for __UniversalCanon (the only type that could match), so the arm can never fire.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs",
+    "line": 18,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a5d5543af9cc90088",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a70b37b140f1777bf",
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aad7f283128079381",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c18",
+    "summary": "Naming drift in the new code: parameter 'type' vs sibling convention 'thisType'; 'IsCanonEquivalent' short-form vs sibling 'Canonical'; IsSpecialTypeMeetingConstraint breaks the file's Check* convention; NonVariantGenImpl breaks the ArgN fixture convention.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+    "line": 30,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a7e2cb3fc439ff9a1",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-afe7671cf4706f0e3",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2f7eac49dfaae04e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a87fdea4187125032",
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a39ed4ffd00f12668",
+        "severity": "nit"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c19",
+    "summary": "Unused `using System.Diagnostics;` left in TypeSystemConstraintsHelpers.NonCanon.cs \u2014 the Copilot bot flagged unused usings and the cleanup removed only one of the two (the Canon sibling genuinely needs it; the stub does not).",
+    "file": "src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.NonCanon.cs",
+    "line": 4,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a188810becfda9685",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a3ae90a0eae3bd600",
+        "severity": "info"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a7e2cb3fc439ff9a1",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a0a231c1deed09f32",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a3206f3cdb4164e9c",
+        "severity": "info"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a5ae4073d934654f2",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-abb8a566a10e4fd6a",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-afe7671cf4706f0e3",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2f7eac49dfaae04e",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a620053a003369dbf",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a41f82d21e9db0007",
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 1,
+        "subagent": "agent-a276fdd1f98000242",
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-aa46f1d0d0dd441fa",
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a3f499d94de44e88d",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a9a7f341eba0a6021",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c20",
+    "summary": "Project-file style inconsistencies: CastingHelper.Canon.cs entries spliced into the alphabetized Common block instead of the dedicated Canon block (two csproj files), and the new <Link> element uses 8-space indentation vs the file's 6-space convention.",
+    "file": "project files (ILCompiler.TypeSystem.csproj / System.Private.TypeLoader.csproj / ILVerification.projitems)",
+    "line": 379,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a7e2cb3fc439ff9a1",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-abb7900cd8dfe6b94",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ae003021f0a4a4cce",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-afe7671cf4706f0e3",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a620053a003369dbf",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a41f82d21e9db0007",
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "superpowers",
+        "repeat": 2,
+        "subagent": "agent-aa46f1d0d0dd441fa",
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a3f499d94de44e88d",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a540c0c0b9215b7a0",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a9a7f341eba0a6021",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aadaf42dee3549a3b",
+        "severity": "nit"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c21",
+    "summary": "The pre-existing value-type prefilter fires before any canon-awareness, so e.g. 'where T : U' with T=MyStruct<string>, U=MyStruct<__Canon> returns false even though the canon logic would match \u2014 canonical value-type generic shapes are shadowed.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.cs",
+    "line": 73,
+    "category": "bug",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a41f82d21e9db0007",
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aadaf42dee3549a3b",
+        "severity": "nit"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c22",
+    "summary": "Undocumented ordering dependencies: CanCastToConstraintWithCanon must run before the value-type short-circuit (because __UniversalCanon.IsValueType), and IsCanonicalCastTarget's early return must precede the category switch \u2014 neither load-bearing placement is commented.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.cs",
+    "line": 176,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2c32fa6c7bf3962f",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a23e4315672c4cc15",
+        "severity": "info"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a5b3d86926d937b5a",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-aa8de551f373593e7",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c23",
+    "summary": "Comment-contract mismatches in the constraints helper: CanCastToConstraintWithCanon's doc reads as a caller precondition but it is invoked unconditionally, and the 'any concrete type substituted at runtime will be validated then' claim is an absolute runtime guarantee not verifiable from this diff.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs",
+    "line": 33,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2c32fa6c7bf3962f",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a5b3d86926d937b5a",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a50a72e7977ba641d",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c24",
+    "summary": "Variance/base-chain integration points are only shallowly tested: no covariant (out T) fixture at all, CanCastToClass's base-walk canon match only exercised at zero-hop depth, the self-interface IsCanonEquivalent check never covered, and no negative variance-path test.",
+    "file": "src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.cs",
+    "line": 426,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a70b37b140f1777bf",
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a23e4315672c4cc15",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aad7f283128079381",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c25",
+    "summary": "Several new test assertions are vacuous/non-load-bearing: five Assert.True cases pass via pre-existing short-circuits (IsGCPointer etc.) before reaching the new canon code their comments credit, and two 'canonical variance' assertions pass via the ordinary variance path.",
+    "file": "src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs",
+    "line": 425,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a59309ec3433949b1",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a5d5543af9cc90088",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a8d3a550aa1d8139b",
+        "severity": "info"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-aa4dc6971868b2d11",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-a18d52eb934f41f10",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ad25bd5351c186a18",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "high"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a70b37b140f1777bf",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a23e4315672c4cc15",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a5b3d86926d937b5a",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a50a72e7977ba641d",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aa8b2ca7ad5565688",
+        "severity": "info"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aad7f283128079381",
+        "severity": "info"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c26",
+    "summary": "Factually wrong/self-contradictory test comments: a block calls IGen<in T> contravariant then labels the same slot 'invariant arg position'; 'U=int[] stays' contradicts array canonicalization; and the 'Parameterized canonical types (__Canon[] ...)' block header promises a scenario its body never constructs (duplicate of an earlier case).",
+    "file": "src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs",
+    "line": 454,
+    "category": "doc",
+    "reported_by": [
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a2fcae13f41450638",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-ad25bd5351c186a18",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a2c32fa6c7bf3962f",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a70b37b140f1777bf",
+        "severity": "medium"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a41f82d21e9db0007",
+        "severity": "nit"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 2,
+        "subagent": "agent-a5b3d86926d937b5a",
+        "severity": "nit"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a51dad180c927693d",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a50a72e7977ba641d",
+        "severity": "critical"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aad7f283128079381",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c27",
+    "summary": "The end-to-end smoke test is a weaker proxy for #126604: it exercises the wildcard-param branch rather than the structural interface match of the reported repro, has no negative case, and its only 'assertion' is .ToString() (did-not-throw).",
+    "file": "src/tests/nativeaot/SmokeTests/TrimmingBehaviors/Dataflow.cs",
+    "line": 702,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a402a103d157af15c",
+        "severity": "medium"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a59309ec3433949b1",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a2fcae13f41450638",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 1,
+        "subagent": "agent-a3c3475725cb07e8c",
+        "severity": "low"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-aa0d41abae0cd07de",
+        "severity": "low"
+      },
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a70b37b140f1777bf",
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-add448fe40119f95d",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-aad7f283128079381",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c28",
+    "summary": "The two new fixture types are fetched as method-locals inside the new [Fact], inconsistent with the class's 20+ constructor-initialized field fixtures.",
+    "file": "src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs",
+    "line": 367,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a7e2cb3fc439ff9a1",
+        "severity": "medium"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": null,
+        "severity": "nit"
+      },
+      {
+        "tool": "ours",
+        "repeat": 2,
+        "subagent": "agent-afe7671cf4706f0e3",
+        "severity": "low"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a39ed4ffd00f12668",
+        "severity": "nit"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c29",
+    "summary": "Test-assembly fixture placement/naming quibbles: new types appended after the unrelated GenericMethods class rather than grouped with variant counterparts; NonVariantGenImpl diverges from the ArgN implementer naming.",
+    "file": ".../CoreTestAssembly/GenericConstraints.cs",
+    "line": 72,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a7e2cb3fc439ff9a1",
+        "severity": "info"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-aa8de551f373593e7",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c30",
+    "summary": "RootingHelpers swallows all TypeSystemException from CheckCanGenerateMethod and returns false silently; when CheckConstraints fails the dependency list is silently empty with no diagnostic.",
+    "file": "src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/RootingHelpers.cs",
+    "line": 178,
+    "category": "design",
+    "reported_by": [
+      {
+        "tool": "pr-review-toolkit",
+        "repeat": 1,
+        "subagent": "agent-a364aece58ee3039e",
+        "severity": "low"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c31",
+    "summary": "No test exercises the canonical constraint logic with a non-null InstantiationContext, unlike the real production caller.",
+    "file": "src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs",
+    "line": null,
+    "category": "test",
+    "reported_by": [
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": null,
+        "severity": "medium"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-add448fe40119f95d",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c32",
+    "summary": "Claim that System.Private.TypeLoader.csproj adds CastingHelper.Canon.cs but is missing the matching TypeSystemConstraintsHelpers Canon/NonCanon pair, unlike sibling projects. (Note: that project does not compile TypeSystemConstraintsHelpers.cs at all, so no pairing is required.)",
+    "file": "project files (ILCompiler.TypeSystem.csproj / System.Private.TypeLoader.csproj / ILVerification.projitems)",
+    "line": 9,
+    "category": "bug",
+    "reported_by": [
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 1,
+        "subagent": "agent-a3f499d94de44e88d",
+        "severity": "high"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a9a7f341eba0a6021",
+        "severity": "medium"
+      }
+    ]
+  },
+  {
+    "cluster_id": "c33",
+    "summary": "The new smoke-test types use C# semicolon (empty-body) declarations, a style not used elsewhere in this particular file though established in sibling test files and fully valid at this LangVersion.",
+    "file": "src/tests/nativeaot/SmokeTests/TrimmingBehaviors/Dataflow.cs",
+    "line": 709,
+    "category": "style",
+    "reported_by": [
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a188810becfda9685",
+        "severity": "info"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a59309ec3433949b1",
+        "severity": "low"
+      },
+      {
+        "tool": "anthropic-code-review",
+        "repeat": 1,
+        "subagent": "agent-a7e2cb3fc439ff9a1",
+        "severity": "info"
+      },
+      {
+        "tool": "tag1-comprehensive-review",
+        "repeat": 2,
+        "subagent": "agent-a39ed4ffd00f12668",
+        "severity": "nit"
+      }
+    ]
+  }
+]

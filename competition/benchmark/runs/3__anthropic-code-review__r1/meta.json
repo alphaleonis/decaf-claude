@@ -1,0 +1,218 @@
+{
+  "run_id": "3__anthropic-code-review__r1",
+  "subject_id": 3,
+  "lang": "csharp",
+  "size": "large",
+  "tool": "anthropic-code-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/runtime",
+  "pr": 127146,
+  "merge_sha": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "review_base": "7bba2205c2a75e4364dc32dc79cc91fae13791af^1",
+  "review_head": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 2259,
+  "duration_ms": "2257608",
+  "duration_api_ms": "6988695",
+  "num_turns": "30",
+  "cost_usd": "32.25244019999999",
+  "orch_usage": {
+    "input_tokens": "18",
+    "output_tokens": "77870",
+    "cache_creation_tokens": "288754",
+    "cache_read_tokens": "1192770",
+    "total_tokens": 1559412
+  },
+  "session_tokens": {
+    "subagents": 18,
+    "input": 460,
+    "output": 84639,
+    "cache_creation": 1854428,
+    "cache_read": 17615180,
+    "total": 19554707,
+    "orchestrator": {
+      "output": 77870,
+      "total": 1559412,
+      "duration_s": 2257
+    },
+    "per_subagent": [
+      {
+        "output": 148,
+        "input": 2,
+        "cache_creation": 23137,
+        "cache_read": 5733,
+        "total": 29020,
+        "duration_s": 9,
+        "agent": "agent-a0adf6e923489285e"
+      },
+      {
+        "output": 37,
+        "input": 16,
+        "cache_creation": 62113,
+        "cache_read": 382689,
+        "total": 444855,
+        "duration_s": 248,
+        "agent": "agent-a188810becfda9685"
+      },
+      {
+        "output": 141,
+        "input": 22,
+        "cache_creation": 55142,
+        "cache_read": 528522,
+        "total": 583827,
+        "duration_s": 279,
+        "agent": "agent-a2aeb8d4420f2e32f"
+      },
+      {
+        "output": 37,
+        "input": 20,
+        "cache_creation": 121747,
+        "cache_read": 852411,
+        "total": 974215,
+        "duration_s": 458,
+        "agent": "agent-a2b7b77eb773b0822"
+      },
+      {
+        "output": 28,
+        "input": 14,
+        "cache_creation": 84564,
+        "cache_read": 490375,
+        "total": 574981,
+        "duration_s": 272,
+        "agent": "agent-a3ae90a0eae3bd600"
+      },
+      {
+        "output": 16,
+        "input": 6,
+        "cache_creation": 63302,
+        "cache_read": 100124,
+        "total": 163448,
+        "duration_s": 198,
+        "agent": "agent-a402a103d157af15c"
+      },
+      {
+        "output": 83,
+        "input": 18,
+        "cache_creation": 109467,
+        "cache_read": 796838,
+        "total": 906406,
+        "duration_s": 447,
+        "agent": "agent-a59309ec3433949b1"
+      },
+      {
+        "output": 207,
+        "input": 20,
+        "cache_creation": 76739,
+        "cache_read": 637186,
+        "total": 714152,
+        "duration_s": 288,
+        "agent": "agent-a5d5543af9cc90088"
+      },
+      {
+        "output": 33,
+        "input": 17,
+        "cache_creation": 48061,
+        "cache_read": 352297,
+        "total": 400408,
+        "duration_s": 162,
+        "agent": "agent-a6f0845f9b6201e74"
+      },
+      {
+        "output": 446,
+        "input": 56,
+        "cache_creation": 123116,
+        "cache_read": 2736333,
+        "total": 2859951,
+        "duration_s": 351,
+        "agent": "agent-a7e2cb3fc439ff9a1"
+      },
+      {
+        "output": 661,
+        "input": 53,
+        "cache_creation": 97575,
+        "cache_read": 1927262,
+        "total": 2025551,
+        "duration_s": 544,
+        "agent": "agent-a85dc83c3b11765f3"
+      },
+      {
+        "output": 399,
+        "input": 19,
+        "cache_creation": 89055,
+        "cache_read": 602640,
+        "total": 692113,
+        "duration_s": 332,
+        "agent": "agent-a863d9700e3c03df5"
+      },
+      {
+        "output": 453,
+        "input": 27,
+        "cache_creation": 87147,
+        "cache_read": 957524,
+        "total": 1045151,
+        "duration_s": 217,
+        "agent": "agent-a8d3a550aa1d8139b"
+      },
+      {
+        "output": 2433,
+        "input": 40,
+        "cache_creation": 165655,
+        "cache_read": 2084281,
+        "total": 2252409,
+        "duration_s": 592,
+        "agent": "agent-a97103d31d0a728f7"
+      },
+      {
+        "output": 23,
+        "input": 13,
+        "cache_creation": 56961,
+        "cache_read": 275744,
+        "total": 332741,
+        "duration_s": 166,
+        "agent": "agent-aa4dc6971868b2d11"
+      },
+      {
+        "output": 414,
+        "input": 22,
+        "cache_creation": 66064,
+        "cache_read": 628486,
+        "total": 694986,
+        "duration_s": 237,
+        "agent": "agent-ac42ffde79af49496"
+      },
+      {
+        "output": 57,
+        "input": 27,
+        "cache_creation": 151301,
+        "cache_read": 1372050,
+        "total": 1523435,
+        "duration_s": 818,
+        "agent": "agent-ad3f773c4357a2a82"
+      },
+      {
+        "output": 1153,
+        "input": 50,
+        "cache_creation": 84528,
+        "cache_read": 1691915,
+        "total": 1777646,
+        "duration_s": 393,
+        "agent": "agent-af131e7de9ee228d6"
+      }
+    ],
+    "max_subagent_duration_s": 818,
+    "sum_subagent_duration_s": 6011
+  },
+  "input_tokens": "18",
+  "output_tokens": "77870",
+  "cache_creation_tokens": "288754",
+  "cache_read_tokens": "1192770",
+  "total_tokens": 1559412,
+  "session_id": "4009dd1b-8c9a-406b-84fb-99a2432ecc6a",
+  "findings_lines": 117,
+  "invocation": "Use the /code-review workflow to review pull request #127146 of the GitHub repository dotnet/runtime. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-17T18:48:32Z"
+}
