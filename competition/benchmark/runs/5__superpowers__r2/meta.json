@@ -1,0 +1,65 @@
+{
+  "run_id": "5__superpowers__r2",
+  "subject_id": 5,
+  "lang": "typescript",
+  "size": "medium",
+  "tool": "superpowers",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/vscode",
+  "pr": 308517,
+  "merge_sha": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "review_base": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9^1",
+  "review_head": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 407,
+  "duration_ms": "405206",
+  "duration_api_ms": "403920",
+  "num_turns": "8",
+  "cost_usd": "1.6283355000000002",
+  "orch_usage": {
+    "input_tokens": "7",
+    "output_tokens": "5305",
+    "cache_creation_tokens": "11673",
+    "cache_read_tokens": "185607",
+    "total_tokens": 202592
+  },
+  "session_tokens": {
+    "subagents": 1,
+    "input": 37,
+    "output": 5688,
+    "cache_creation": 69667,
+    "cache_read": 904666,
+    "total": 980058,
+    "orchestrator": {
+      "output": 5305,
+      "total": 202592,
+      "duration_s": 405
+    },
+    "per_subagent": [
+      {
+        "output": 383,
+        "input": 30,
+        "cache_creation": 57994,
+        "cache_read": 719059,
+        "total": 777466,
+        "duration_s": 340,
+        "agent": "agent-ab54e9894497372af"
+      }
+    ],
+    "max_subagent_duration_s": 340,
+    "sum_subagent_duration_s": 340
+  },
+  "input_tokens": "7",
+  "output_tokens": "5305",
+  "cache_creation_tokens": "11673",
+  "cache_read_tokens": "185607",
+  "total_tokens": 202592,
+  "session_id": "d783f5b2-e030-4ef1-aff5-07b6a32dd8de",
+  "findings_lines": 53,
+  "invocation": "Using the superpowers requesting-code-review skill and its code-reviewer.md prompt template, dispatch ONE general-purpose subagent to review the code changes in this repository from commit ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9^1 to commit ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9 (i.e. `git diff ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9^1 ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9`). Give it the PR title and the diff range as context. Return the reviewer subagent's full report verbatim (Strengths / Critical / Important / Minor / Assessment).",
+  "finished_at": "2026-07-23T19:59:15Z"
+}
