@@ -1,0 +1,146 @@
+{
+  "run_id": "1__tag1-comprehensive-review__r2",
+  "subject_id": 1,
+  "lang": "csharp",
+  "size": "small",
+  "tool": "tag1-comprehensive-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/efcore",
+  "pr": 32770,
+  "merge_sha": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "review_base": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455^1",
+  "review_head": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1082,
+  "duration_ms": "258068",
+  "duration_api_ms": "2865284",
+  "num_turns": "5",
+  "cost_usd": "11.83241125",
+  "orch_usage": {
+    "input_tokens": "7",
+    "output_tokens": "22361",
+    "cache_creation_tokens": "33030",
+    "cache_read_tokens": "898155",
+    "total_tokens": 953553
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 462,
+    "output": 110844,
+    "cache_creation": 671512,
+    "cache_read": 6783089,
+    "total": 7565907,
+    "orchestrator": {
+      "output": 81960,
+      "total": 3454320,
+      "duration_s": 1081
+    },
+    "per_subagent": [
+      {
+        "output": 12082,
+        "input": 8,
+        "cache_creation": 49639,
+        "cache_read": 118357,
+        "total": 180086,
+        "duration_s": 294,
+        "agent": "agent-a01f3510a5db6ae96"
+      },
+      {
+        "output": 344,
+        "input": 286,
+        "cache_creation": 56027,
+        "cache_read": 935132,
+        "total": 991789,
+        "duration_s": 273,
+        "agent": "agent-a107ffc5dad408172"
+      },
+      {
+        "output": 52,
+        "input": 22,
+        "cache_creation": 52594,
+        "cache_read": 441999,
+        "total": 494667,
+        "duration_s": 242,
+        "agent": "agent-a272a7de4e1c0c5ce"
+      },
+      {
+        "output": 6119,
+        "input": 26,
+        "cache_creation": 71197,
+        "cache_read": 708669,
+        "total": 786011,
+        "duration_s": 360,
+        "agent": "agent-a38292914a8211f0d"
+      },
+      {
+        "output": 6270,
+        "input": 16,
+        "cache_creation": 42685,
+        "cache_read": 289192,
+        "total": 338163,
+        "duration_s": 173,
+        "agent": "agent-a5925f1a1957ae016"
+      },
+      {
+        "output": 7,
+        "input": 4,
+        "cache_creation": 37185,
+        "cache_read": 30364,
+        "total": 67560,
+        "duration_s": 135,
+        "agent": "agent-a62c7e138b88de64e"
+      },
+      {
+        "output": 7,
+        "input": 4,
+        "cache_creation": 35181,
+        "cache_read": 35727,
+        "total": 70919,
+        "duration_s": 118,
+        "agent": "agent-a830a049f2ebdcfe7"
+      },
+      {
+        "output": 47,
+        "input": 22,
+        "cache_creation": 50161,
+        "cache_read": 434353,
+        "total": 484583,
+        "duration_s": 228,
+        "agent": "agent-aaf93608716bde5a7"
+      },
+      {
+        "output": 3950,
+        "input": 32,
+        "cache_creation": 40886,
+        "cache_read": 589366,
+        "total": 634234,
+        "duration_s": 209,
+        "agent": "agent-abf9765872817f59c"
+      },
+      {
+        "output": 6,
+        "input": 4,
+        "cache_creation": 32596,
+        "cache_read": 30969,
+        "total": 63575,
+        "duration_s": 19,
+        "agent": "agent-acee981a453454ea8"
+      }
+    ],
+    "max_subagent_duration_s": 360,
+    "sum_subagent_duration_s": 2051
+  },
+  "input_tokens": "7",
+  "output_tokens": "22361",
+  "cache_creation_tokens": "33030",
+  "cache_read_tokens": "898155",
+  "total_tokens": 953553,
+  "session_id": "b3a0d356-ea1a-4f0f-9cdc-0d9cdde4282d",
+  "findings_lines": 35,
+  "invocation": "Run /comprehensive-review --pr 32770 --local --output-file .decaf/tag1-review-32770.md for the GitHub repository dotnet/efcore. --local means display everything and post NOTHING. When done, print the output-file path and a summary of findings by severity.",
+  "finished_at": "2026-07-22T18:50:39Z"
+}

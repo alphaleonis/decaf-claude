@@ -1,0 +1,3200 @@
+[
+ {
+  "cluster_id": "c1",
+  "summary": "Debug.Assert(rowIdForOrdinal != null) after the scan loop asserts a false invariant: 'no rowid found for the blob's (database, table)' is a legitimate, reachable outcome (expression columns with no table, PK not selected, composite-PK / WITHOUT ROWID tables) that the null-check fallback two lines below explicitly handles, so the assert fires and terminates the process in Debug builds; the old code's -1 sentinel made the equivalent assert vacuously true.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 393,
+  "category": "bug",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a014b7d8318e820c2/validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a2286be883002c61a/comment-guidance",
+    "severity": "info"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a32dbeff85d0a9b4d/historical-git-context",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a37613387483d4068",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a6ad794b54d9a53e2/prior-pr-feedback",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a0322f3a4fae9b7e1",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a2dcffe00f7d17c96/prior-pr-feedback-review",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a83e96479bbb89abc",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-aa7ea59fe907f1355",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-ad0d553890d3d18cb",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1c261732fa59f0cd/broad-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a3702648b6f48ddf3/adversarial-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a398fe565f34590fe/quick-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6de901b06125c508/knowledge-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a8a610b4b056474dd/spec-compliance-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-aacf09d73dd5fadfb/dotnet-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-adfb55d24bfe173e2/finding-validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a477302690c252161/finding-validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a5f121249957945b0/quick-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aa5bca5ca3f486877/dotnet-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-abc11083af48e7160/adversarial-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-acf40905ad1373137/knowledge-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aed43da0e9353cf1a/broad-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aefecdbf3b67029dc/spec-compliance-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a437cb76b69caba96/silent-failure-hunter",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a890e2eb92eccffd3/type-design-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-adb46c22573382988/comment-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a15066e7e83c17a7f/comment-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a3e6cc2c8321c33bf/type-design-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a52f01b8029ba9393/silent-failure-hunter",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a173cc02e3a287532",
+    "severity": "critical"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "critical"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a136e3e753d7bd788/code-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a3176b000cbcfe8c4/pr-test-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a33e959fa99cf0bfa/security-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4732dca67a17b08f/adversarial-general",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4f4c5fa5e378060c/blind-hunter",
+    "severity": "critical"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a7fec4f51f6916911/architecture-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a897dab7f0a39cfb8/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-acb430f34fffe4855/edge-case-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a01f3510a5db6ae96/adversarial-general",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a107ffc5dad408172/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a38292914a8211f0d/edge-case-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a5925f1a1957ae016/blind-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a830a049f2ebdcfe7/security-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-aaf93608716bde5a7/comment-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-abf9765872817f59c/type-design-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c2",
+  "summary": "The 'searched, not found' outcome is never stored in the RowIds dictionary (only found branches call Add), so every subsequent GetStream/GetBytes/GetChars/GetTextReader call on a no-rowid table re-runs the full O(FieldCount) metadata scan plus a fresh pragma_table_info SQL query \u2014 a regression vs. the old -1 sentinel which memoized the negative result.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 329,
+  "category": "perf",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a32dbeff85d0a9b4d/historical-git-context",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a37613387483d4068",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-aa94ba3c6615e8c75/validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a050441cee2a59915",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a83e96479bbb89abc",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-ad0d553890d3d18cb",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a3702648b6f48ddf3/adversarial-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a398fe565f34590fe/quick-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6bf896aa04ef41fc/finding-validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6de901b06125c508/knowledge-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-aaf30ea46d101470e/performance-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a14d01510dab7f46e/performance-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a8c1d62b3f23e526c/finding-validator",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-abc11083af48e7160/adversarial-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-acf40905ad1373137/knowledge-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aed43da0e9353cf1a/broad-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a437cb76b69caba96/silent-failure-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a890e2eb92eccffd3/type-design-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a3e6cc2c8321c33bf/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a3e6cc2c8321c33bf/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a52f01b8029ba9393/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a173cc02e3a287532",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a136e3e753d7bd788/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a3176b000cbcfe8c4/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a33e959fa99cf0bfa/security-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4732dca67a17b08f/adversarial-general",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4f4c5fa5e378060c/blind-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a7fec4f51f6916911/architecture-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a897dab7f0a39cfb8/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-acb430f34fffe4855/edge-case-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a01f3510a5db6ae96/adversarial-general",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a107ffc5dad408172/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a5925f1a1957ae016/blind-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a62c7e138b88de64e/architecture-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a830a049f2ebdcfe7/security-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-aaf93608716bde5a7/comment-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-abf9765872817f59c/type-design-analyzer",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c3",
+  "summary": "The cache key $\"{blobDatabaseName}_{blobTableName}\" is built by naive '_' concatenation and is not injective \u2014 distinct (database, table) pairs whose names contain underscores (e.g. ATTACHed databases) can collide, silently reusing the wrong table's cached rowid ordinal (wrong row's blob bytes or a spurious error).",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 328,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a37613387483d4068",
+    "severity": "low"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-ae99d5f86765687c4/validator",
+    "severity": "low"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a2dcffe00f7d17c96/prior-pr-feedback-review",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-aa7ea59fe907f1355",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-aaaed5b271da5e62a",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1534d8c3135a83b9/finding-validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1c261732fa59f0cd/broad-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a3702648b6f48ddf3/adversarial-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a398fe565f34590fe/quick-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6de901b06125c508/knowledge-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a8a610b4b056474dd/spec-compliance-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a5f121249957945b0/quick-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-abc11083af48e7160/adversarial-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-acf40905ad1373137/knowledge-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aed43da0e9353cf1a/broad-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aefecdbf3b67029dc/spec-compliance-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-affda34ce0c398dec/finding-validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a437cb76b69caba96/silent-failure-hunter",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a890e2eb92eccffd3/type-design-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a3e6cc2c8321c33bf/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a52f01b8029ba9393/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a173cc02e3a287532",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a136e3e753d7bd788/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a3176b000cbcfe8c4/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a33e959fa99cf0bfa/security-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4732dca67a17b08f/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4f4c5fa5e378060c/blind-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a7fec4f51f6916911/architecture-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a897dab7f0a39cfb8/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-acb430f34fffe4855/edge-case-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a01f3510a5db6ae96/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a107ffc5dad408172/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a38292914a8211f0d/edge-case-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a5925f1a1957ae016/blind-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a62c7e138b88de64e/architecture-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a830a049f2ebdcfe7/security-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-abf9765872817f59c/type-design-analyzer",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c4",
+  "summary": "Self-join: sqlite3_column_table_name returns the origin table name, not the SQL alias, so two aliases of the same table share one cache key and the second alias's blob is resolved with the first alias's rowid ordinal \u2014 silently the wrong row's blob; the PR's per-table fix does not cover this degenerate case (pre-existing in kind) and no test exercises it.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 328,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-ae8fc424011b38a03/test-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a198ed6247b1b2bfa/finding-validator",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-abc11083af48e7160/adversarial-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aed43da0e9353cf1a/broad-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aefecdbf3b67029dc/spec-compliance-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a52f01b8029ba9393/silent-failure-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a173cc02e3a287532",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a3176b000cbcfe8c4/pr-test-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a33e959fa99cf0bfa/security-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4732dca67a17b08f/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a7fec4f51f6916911/architecture-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-acb430f34fffe4855/edge-case-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a01f3510a5db6ae96/adversarial-general",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a38292914a8211f0d/edge-case-hunter",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c5",
+  "summary": "The RowIdInfo nested class is over-designed: TableName is assigned at both construction sites but never read (dead state), both properties have public setters though set exactly once, internal visibility is wider than needed, and the type reduces to an int (or a tuple/record per repo idiom).",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 20,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a1583eb16cb6c9777",
+    "severity": "nit"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a2dcffe00f7d17c96/prior-pr-feedback-review",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1c261732fa59f0cd/broad-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1c261732fa59f0cd/broad-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a398fe565f34590fe/quick-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6710f840608091fc/consistency-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6de901b06125c508/knowledge-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a8a610b4b056474dd/spec-compliance-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-aacf09d73dd5fadfb/dotnet-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a5f121249957945b0/quick-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a90fd317f2204d0be/consistency-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aa5bca5ca3f486877/dotnet-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-acf40905ad1373137/knowledge-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aed43da0e9353cf1a/broad-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a437cb76b69caba96/silent-failure-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a890e2eb92eccffd3/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a890e2eb92eccffd3/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a890e2eb92eccffd3/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a890e2eb92eccffd3/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a890e2eb92eccffd3/type-design-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a3e6cc2c8321c33bf/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a3e6cc2c8321c33bf/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a173cc02e3a287532",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a136e3e753d7bd788/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4732dca67a17b08f/adversarial-general",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4f4c5fa5e378060c/blind-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a7fec4f51f6916911/architecture-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a897dab7f0a39cfb8/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a897dab7f0a39cfb8/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a107ffc5dad408172/code-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a62c7e138b88de64e/architecture-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-abf9765872817f59c/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-abf9765872817f59c/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-abf9765872817f59c/type-design-analyzer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c6",
+  "summary": "The new RowIds field violates the file's field conventions: PascalCase with no explicit access modifier where every sibling private field is 'private' + _camelCase (per .editorconfig).",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 39,
+  "category": "style",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1c261732fa59f0cd/broad-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6710f840608091fc/consistency-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-aacf09d73dd5fadfb/dotnet-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a5f121249957945b0/quick-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a90fd317f2204d0be/consistency-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aa5bca5ca3f486877/dotnet-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aed43da0e9353cf1a/broad-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a437cb76b69caba96/silent-failure-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a890e2eb92eccffd3/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-adb46c22573382988/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a3e6cc2c8321c33bf/type-design-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a173cc02e3a287532",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a136e3e753d7bd788/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a33e959fa99cf0bfa/security-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4f4c5fa5e378060c/blind-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a897dab7f0a39cfb8/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a01f3510a5db6ae96/adversarial-general",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a107ffc5dad408172/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a5925f1a1957ae016/blind-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-abf9765872817f59c/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-acee981a453454ea8/pr-summarizer",
+    "severity": "nit"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c7",
+  "summary": "Local variable 'rowidkey' is an unbroken lowercase run, deviating from the camelCase convention of every other multi-word local in the method (should be rowIdKey, and var per file usage).",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 328,
+  "category": "style",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6710f840608091fc/consistency-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a90fd317f2204d0be/consistency-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a3e6cc2c8321c33bf/type-design-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4f4c5fa5e378060c/blind-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a107ffc5dad408172/code-reviewer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c8",
+  "summary": "Debug.Assert(rowIdForOrdinal!=null) is missing spaces around the != operator, contrary to the .editorconfig binary-operator spacing rule.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 393,
+  "category": "style",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aed43da0e9353cf1a/broad-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a3e6cc2c8321c33bf/type-design-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a173cc02e3a287532",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c9",
+  "summary": "RowIdInfo? rowIdForOrdinal = null; is a redundant pre-declaration before the TryGetValue out argument \u2014 the codebase idiom is inline 'out var'.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 327,
+  "category": "style",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6710f840608091fc/consistency-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a173cc02e3a287532",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-acee981a453454ea8/pr-summarizer",
+    "severity": "nit"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c10",
+  "summary": "Whitespace churn introduced by the diff: a stray whitespace-only line after the namespace opening brace, a stray blank line splitting the field block, and a removed blank line after 'var pkColumns = -1L;' (trim_trailing_whitespace violations).",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 17,
+  "category": "style",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6710f840608091fc/consistency-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a5f121249957945b0/quick-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a90fd317f2204d0be/consistency-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aed43da0e9353cf1a/broad-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a437cb76b69caba96/silent-failure-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a890e2eb92eccffd3/type-design-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a15066e7e83c17a7f/comment-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a3e6cc2c8321c33bf/type-design-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4732dca67a17b08f/adversarial-general",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-abf9765872817f59c/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-acee981a453454ea8/pr-summarizer",
+    "severity": "nit"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c11",
+  "summary": "The new test verifies the joined non-blob columns only via Console.WriteLine \u2014 xUnit does not capture console output and nothing is asserted, so wrong GetInt32 values would pass silently; should be Assert.Equal.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 171,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6710f840608091fc/consistency-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-ae8fc424011b38a03/test-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a90fd317f2204d0be/consistency-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aa1b1268a87b5abfa/test-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-acf40905ad1373137/knowledge-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aed43da0e9353cf1a/broad-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a437cb76b69caba96/silent-failure-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a15066e7e83c17a7f/comment-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a52f01b8029ba9393/silent-failure-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a173cc02e3a287532",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a3176b000cbcfe8c4/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a107ffc5dad408172/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c12",
+  "summary": "The new test discards the GetBytes return values instead of asserting them (sibling tests assert the returned count).",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 175,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c13",
+  "summary": "The new test's comments are defective: '//this was failing. now should be fixed' narrates change history, '//get len of abuff' misdescribes the adjacent code (nothing obtains a length), the '//reading fields...' comment has a grammar error, and the test lacks the file's '[Fact] // Issue #NNNNN' provenance idiom.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 173,
+  "category": "doc",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a58ef1d27d0b027d4",
+    "severity": "nit"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-ad0d553890d3d18cb",
+    "severity": "nit"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a2b8567c5a8776087/finding-validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6710f840608091fc/consistency-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6de901b06125c508/knowledge-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-ae8fc424011b38a03/test-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a90fd317f2204d0be/consistency-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a97ed5071b82568fd/finding-validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aa1b1268a87b5abfa/test-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-acf40905ad1373137/knowledge-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aed43da0e9353cf1a/broad-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a437cb76b69caba96/silent-failure-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-adb46c22573382988/comment-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-adb46c22573382988/comment-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-adb46c22573382988/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a15066e7e83c17a7f/comment-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a15066e7e83c17a7f/comment-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a15066e7e83c17a7f/comment-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a304a56b4f3776bb1/comment-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a304a56b4f3776bb1/comment-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a304a56b4f3776bb1/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a3176b000cbcfe8c4/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-aaf93608716bde5a7/comment-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-aaf93608716bde5a7/comment-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-aaf93608716bde5a7/comment-analyzer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c14",
+  "summary": "Test-coverage gaps around the new caching mechanism: no join-with-fallback-table case, no reverse/interleaved read order, no multi-row iteration over the cached path, no ATTACH/database-name coverage, no WITHOUT ROWID or aliased-rowid-projection cases, no single-row pin \u2014 the new test covers only the happy two-table path.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 149,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a2dcffe00f7d17c96/prior-pr-feedback-review",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aa1b1268a87b5abfa/test-reviewer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4732dca67a17b08f/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a01f3510a5db6ae96/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c15",
+  "summary": "The dictionary cache-hit branch (TryGetValue returning true) is executed by zero tests \u2014 a wrong stored ordinal or stale entry would be invisible to the suite.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 329,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "critical"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c16",
+  "summary": "The new test asserts only byte content and never the stream type, so it cannot distinguish true SqliteBlob streaming from the MemoryStream fallback \u2014 a silent regression to the buffered path would still pass; sibling tests use Assert.IsType<SqliteBlob>.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 174,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a437cb76b69caba96/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a173cc02e3a287532",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a3176b000cbcfe8c4/pr-test-analyzer",
+    "severity": "nit"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c17",
+  "summary": "The new caching scheme is undocumented: the RowIds key format (underscore join, null-name sentinel), the cache's changed semantics (only successes cached), and RowIdInfo's purpose carry no comments despite the file's // NB: idiom.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 39,
+  "category": "doc",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-adb46c22573382988/comment-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-adb46c22573382988/comment-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-adb46c22573382988/comment-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a15066e7e83c17a7f/comment-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a15066e7e83c17a7f/comment-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a15066e7e83c17a7f/comment-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a304a56b4f3776bb1/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a304a56b4f3776bb1/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a304a56b4f3776bb1/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-aaf93608716bde5a7/comment-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-aaf93608716bde5a7/comment-analyzer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c18",
+  "summary": "RowIdInfo.TableName is declared non-nullable string but is assigned from sqlite3_column_table_name(...).utf8_to_string(), which the same file treats as nullable and which returns null for expression columns \u2014 the annotation is unenforced.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 23,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a3e6cc2c8321c33bf/type-design-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c19",
+  "summary": "The RowIds dictionary is eagerly allocated in every SqliteDataRecord construction, unlike every sibling cache in the class which is nullable and lazily initialized.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 39,
+  "category": "perf",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1c261732fa59f0cd/broad-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-ac97fd019531728ba/finding-validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a86223129d3bfdf41/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a4732dca67a17b08f/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a62c7e138b88de64e/architecture-reviewer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c20",
+  "summary": "A new interpolated key string is allocated on every GetStream call, including cache hits (per chunk during chunked blob reads), where the pre-change code did a zero-allocation check.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 328,
+  "category": "perf",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-aaf30ea46d101470e/performance-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-ae222173ca73c8dcc/finding-validator",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c21",
+  "summary": "Under multithreaded misuse (outside DbDataReader's contract) RowIds.Add can throw ArgumentException on a duplicate key or corrupt the dictionary, where the old int? field raced benignly; the indexer would be idempotent.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 355,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a437cb76b69caba96/silent-failure-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a52f01b8029ba9393/silent-failure-hunter",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c22",
+  "summary": "Test formatting drift: trailing whitespace inside the verbatim SQL literal, multi-line SQL diverging from the file's compact single-line convention, a stray blank line before the closing brace, and abuff/bbuff naming vs the sibling 'buffer' convention.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 158,
+  "category": "style",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a90fd317f2204d0be/consistency-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a576b1c41bc6f12da/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a74c339b162c06040/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-a7ba309d5c5b37203",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a3176b000cbcfe8c4/pr-test-analyzer",
+    "severity": "nit"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c23",
+  "summary": "The choice B.ID=1000 in the new test is load-bearing (had B.ID been 1, the stale-rowid bug would coincidentally pass) and is documented nowhere in the test.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 156,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aeaf10a27839c5403/pr-test-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c24",
+  "summary": "Pre-existing, adjacent to the diff: the pragma_table_info($table) query is not schema-qualified, so it resolves against schema search order rather than the column's databaseName \u2014 an ATTACHed table sharing a name with a main table can yield a wrong pkColumns count.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 377,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "info"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a33e959fa99cf0bfa/security-reviewer",
+    "severity": "info"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c25",
+  "summary": "Pre-existing, adjacent to the diff: a single-column INTEGER PK on a WITHOUT ROWID table satisfies the pkColumns==1 branch and is treated as a rowid alias, but sqlite3_blob_open would fail at runtime; untested.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 384,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a3176b000cbcfe8c4/pr-test-analyzer",
+    "severity": "info"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c26",
+  "summary": "Expression/computed blob columns (empty database/table name) all map to the sentinel key '_'; two expression-derived blob columns would share one cache entry \u2014 unexercised by tests.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 324,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a272a7de4e1c0c5ce/pr-test-analyzer",
+    "severity": "low"
+   }
+  ]
+ }
+]

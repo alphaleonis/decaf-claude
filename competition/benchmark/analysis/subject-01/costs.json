@@ -1,0 +1,120 @@
+{
+  "subject_id": 1,
+  "lang": "csharp",
+  "size": "small",
+  "repo": "dotnet/efcore",
+  "pr": 32770,
+  "merge_sha": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "cells": [
+    {
+      "tool": "anthropic-code-review",
+      "repeat": 1,
+      "cost_usd": 4.837181749999999,
+      "wall": 631,
+      "ws_output": 24223,
+      "subagents": 10,
+      "max_subagent_s": 389,
+      "session_id": "a2f839c6-7907-4048-96c2-b4ec1ebff968",
+      "findings_dir": "runs/1__anthropic-code-review__r1/findings"
+    },
+    {
+      "tool": "anthropic-code-review",
+      "repeat": 2,
+      "cost_usd": 4.420492699999999,
+      "wall": 626,
+      "ws_output": 24973,
+      "subagents": 13,
+      "max_subagent_s": 257,
+      "session_id": "a668f82b-be97-4fda-9ef5-7dba145fee5f",
+      "findings_dir": "runs/1__anthropic-code-review__r2/findings"
+    },
+    {
+      "tool": "ours",
+      "repeat": 1,
+      "cost_usd": 14.608814899999992,
+      "wall": 1451,
+      "ws_output": 107045,
+      "subagents": 16,
+      "max_subagent_s": 437,
+      "session_id": "32b5d379-5295-4dbb-aade-bb657d179f33",
+      "findings_dir": "runs/1__ours__r1/findings"
+    },
+    {
+      "tool": "ours",
+      "repeat": 2,
+      "cost_usd": 14.784600500000009,
+      "wall": 1512,
+      "ws_output": 94609,
+      "subagents": 15,
+      "max_subagent_s": 504,
+      "session_id": "5eeb9883-6e5c-409a-a5aa-2fdd0c47ae15",
+      "findings_dir": "runs/1__ours__r2/findings"
+    },
+    {
+      "tool": "pr-review-toolkit",
+      "repeat": 1,
+      "cost_usd": 6.642055,
+      "wall": 670,
+      "ws_output": 21049,
+      "subagents": 5,
+      "max_subagent_s": 474,
+      "session_id": "374873f3-fecf-4335-91f9-f7986b6efbbf",
+      "findings_dir": "runs/1__pr-review-toolkit__r1/findings"
+    },
+    {
+      "tool": "pr-review-toolkit",
+      "repeat": 2,
+      "cost_usd": 7.078499999999999,
+      "wall": 644,
+      "ws_output": 41516,
+      "subagents": 5,
+      "max_subagent_s": 345,
+      "session_id": "56f24b06-186b-4990-b800-827e27fc9e27",
+      "findings_dir": "runs/1__pr-review-toolkit__r2/findings"
+    },
+    {
+      "tool": "superpowers",
+      "repeat": 1,
+      "cost_usd": 1.8083949999999998,
+      "wall": 377,
+      "ws_output": 6444,
+      "subagents": 1,
+      "max_subagent_s": 316,
+      "session_id": "6997c1f5-dc1d-470a-9cd6-d7e63093b685",
+      "findings_dir": "runs/1__superpowers__r1/findings"
+    },
+    {
+      "tool": "superpowers",
+      "repeat": 2,
+      "cost_usd": 1.51213,
+      "wall": 360,
+      "ws_output": 11031,
+      "subagents": 1,
+      "max_subagent_s": 293,
+      "session_id": "e4a8bfa0-b08a-4043-898f-6f2778dd9f3e",
+      "findings_dir": "runs/1__superpowers__r2/findings"
+    },
+    {
+      "tool": "tag1-comprehensive-review",
+      "repeat": 1,
+      "cost_usd": 11.526926150000005,
+      "wall": 931,
+      "ws_output": 51793,
+      "subagents": 10,
+      "max_subagent_s": 399,
+      "session_id": "ca423abe-31f0-48f5-9477-619c347bee84",
+      "findings_dir": "runs/1__tag1-comprehensive-review__r1/findings"
+    },
+    {
+      "tool": "tag1-comprehensive-review",
+      "repeat": 2,
+      "cost_usd": 11.83241125,
+      "wall": 1082,
+      "ws_output": 110844,
+      "subagents": 10,
+      "max_subagent_s": 360,
+      "session_id": "b3a0d356-ea1a-4f0f-9cdc-0d9cdde4282d",
+      "findings_dir": "runs/1__tag1-comprehensive-review__r2/findings"
+    }
+  ]
+}

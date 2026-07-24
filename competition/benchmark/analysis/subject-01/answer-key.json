@@ -1,0 +1,43 @@
+{
+  "subject_id": 1,
+  "lang": "csharp",
+  "size": "small",
+  "repo": "dotnet/efcore",
+  "pr": 32770,
+  "review_diff": "gh pr diff 32770 -R dotnet/efcore — full PR: src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs (~40 production lines: replace single _rowidOrdinal int? cache with per-(database,table) Dictionary<string,RowIdInfo>) + test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs (1 new JOIN test). Saved at subject-01/review.diff.",
+  "primary_bug": {
+    "id": "primary",
+    "summary": "The rewrite loses the old 'searched, not found' sentinel, making the re-added Debug.Assert a wrong invariant that terminates debug-build processes. Old code initialized `_rowidOrdinal = -1` before the scan, so `Debug.Assert(_rowidOrdinal.HasValue)` was vacuously true and the not-found case flowed to the `< 0` MemoryStream fallback. New code leaves `rowIdForOrdinal` null when the scan finds no rowid column for the blob's (database, table) — expression columns with no backing table (e.g. `SELECT 'test'`), queries that don't select the table's INTEGER PK/rowid, composite-PK or WITHOUT ROWID tables — and then `Debug.Assert(rowIdForOrdinal != null)` FIRES, killing the process in Debug builds (xUnit run: 'Process terminated. Assertion failed.' at SqliteDataRecord.cs:393, test GetFieldValue_of_TextReader_works doing `SELECT 'test'`, via GetTextReader → GetStream). In Release the assert compiles out and the null correctly falls back to MemoryStream, so the defect is the assertion itself asserting a state that is legitimately reachable.",
+    "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+    "locus": "GetStream ~L326-395: `if (!RowIds.TryGetValue(rowidkey, out rowIdForOrdinal)) { ...scan... Debug.Assert(rowIdForOrdinal!=null); }` — the assert after the scan loop.",
+    "must_flag": "A reviewer catches the primary bug if it flags that `Debug.Assert(rowIdForOrdinal != null)` can fire — i.e., that 'no rowid column found' is a legitimate, reachable outcome of the scan (expression/computed columns with no table, PK not in the select list, WITHOUT ROWID or composite-PK tables) and the new code asserts it cannot happen, crashing Debug builds / the test suite, whereas the old `-1` sentinel encoded not-found as a valid asserted state. Equivalent formulations count: 'the assert is no longer vacuously true / the invariant is wrong', 'null is a legal post-loop state so the assert will fail on non-table columns', 'Debug.Assert semantics changed from HasValue (always true) to found (not always true)'. Merely noting the null-fallback branch exists, or that the not-found result is never cached (perf), does NOT count — the crash-on-assert facet must be named.",
+    "source": "revert PR #32945 ('Revert ... due to test failures', reverts merge 9e69b85) + regression issue #32944 (stack: Process terminated, Assertion failed at SqliteDataRecord.cs:393 in GetStream, from GetFieldValue_of_TextReader_works). Verified against the checkout at the merge SHA: the failing test runs `SELECT 'test';` — single expression column, scan loop skips i==ordinal, ends with rowIdForOrdinal == null, assert fires.",
+    "difficulty": "moderate — the assert is visibly reachable from the diff alone (the null-check fallback two lines below it admits null is possible, so the assert and the fallback contradict each other). But it hides in plain sight: ErikEJ's review comment 'Re-add Assert' caused the author to re-add it, and maintainers merged it. A reviewer must reason about what the loop guarantees rather than trust the assert."
+  },
+  "human_issues": [
+    {
+      "id": "h1",
+      "summary": "ajcvickers: 'Any reason not to use a value tuple for this?' — the RowIdInfo nested class (mutable, public setters, TableName never read) could be a value tuple/record; author answered 'It was only for readability' and kept the class. Live minor style/design point against the final diff: a cluster suggesting RowIdInfo be a tuple/record/readonly struct, or noting its TableName field is never used, matches this.",
+      "loc": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs — RowIdInfo nested class (~L17-28)",
+      "thread": "PR 32770 review comment by ajcvickers at SqliteDataRecord.cs:20: 'Any reason not to use a value tuple for this?' / author: 'It was only for readability'"
+    }
+  ],
+  "known_safe": [
+    {
+      "id": "safe-null-fallback",
+      "summary": "The `if (rowIdForOrdinal == null) return new MemoryStream(GetCachedBlob(ordinal), false);` branch means there is NO null-dereference at `rowIdForOrdinal.Ordinal` — claiming an NRE on the later use is refuted; null is checked before use. (The defect is the Debug.Assert above it, not a missing null check below.)",
+      "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs"
+    },
+    {
+      "id": "safe-table-filter",
+      "summary": "The scan loop DOES filter candidate columns by database name and table name (pre-existing `if (databaseName != blobDatabaseName) continue;` and `if (tableName != blobTableName) continue;` lines, unchanged by the diff) before the rowid/PK checks — claiming 'another table's rowid/PK could be picked for this blob' is refuted. The pkColumns memoization is also safe: every column reaching it belongs to blobTableName.",
+      "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs"
+    },
+    {
+      "id": "safe-instance-dictionary",
+      "summary": "RowIds is a readonly INSTANCE field on SqliteDataRecord (one per query execution), not static — claims of cross-query cache poisoning, unbounded growth across statements, or thread-shared state are refuted. It lives and dies with the data record.",
+      "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs"
+    }
+  ],
+  "notes": "Fixture human_threads.count=4 = 4 review comments forming 2 threads. Thread A (ajcvickers value-tuple) is live-but-minor → h1. Thread B (ErikEJ 'Re-add Assert' → author re-added it) is RESOLVED in the final diff — the assert is present — so it is not a live human issue; ironically the re-added assert IS the crash vector, but a cluster about the assert firing grades TP-primary, not TP-human. Legit valid-other/valid-minor candidates a grader may see: (a) the not-found result is never cached in RowIds, so every GetStream on a no-rowid column re-scans all columns and may re-run the pragma COUNT query — a real perf/behavior regression vs the old `-1` sentinel cache, distinct from the crash; (b) the `$\"{database}_{table}\"` string key is collision-prone in principle (underscore join, no separator escaping) — real but contrived, valid-minor at best; (c) RowIdInfo.TableName assigned but never read / mutable public setters (overlaps h1); (d) repo-convention violations: `RowIds` field is PascalCase with no access modifier and no leading underscore vs the file's `_camelCase` privates, `rowidkey` naming, `Debug.Assert(rowIdForOrdinal!=null)` missing spaces, stray blank line after the namespace opening, Console.WriteLine left in the new test — valid-minor/trivia per the suggestion-tier rubric. The new test only covers the happy JOIN path; noting the missing not-found-path coverage is valid-minor unless the finding names the assert-crash consequence, in which case it folds into TP-primary. Score cells on: (1) primary recall, (2) FP discipline (esp. the three known_safe traps), (3) valid-other yield, (4) noise."
+}

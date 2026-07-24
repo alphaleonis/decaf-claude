@@ -1,0 +1,101 @@
+{
+  "run_id": "1__pr-review-toolkit__r1",
+  "subject_id": 1,
+  "lang": "csharp",
+  "size": "small",
+  "tool": "pr-review-toolkit",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/efcore",
+  "pr": 32770,
+  "merge_sha": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "review_base": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455^1",
+  "review_head": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 670,
+  "duration_ms": "668784",
+  "duration_api_ms": "1684703",
+  "num_turns": "11",
+  "cost_usd": "6.642055",
+  "orch_usage": {
+    "input_tokens": "8",
+    "output_tokens": "20284",
+    "cache_creation_tokens": "68068",
+    "cache_read_tokens": "210122",
+    "total_tokens": 298482
+  },
+  "session_tokens": {
+    "subagents": 5,
+    "input": 99,
+    "output": 21049,
+    "cache_creation": 331912,
+    "cache_read": 2205560,
+    "total": 2558620,
+    "orchestrator": {
+      "output": 20284,
+      "total": 298482,
+      "duration_s": 669
+    },
+    "per_subagent": [
+      {
+        "output": 464,
+        "input": 30,
+        "cache_creation": 70850,
+        "cache_read": 852114,
+        "total": 923458,
+        "duration_s": 474,
+        "agent": "agent-a437cb76b69caba96"
+      },
+      {
+        "output": 43,
+        "input": 17,
+        "cache_creation": 60342,
+        "cache_read": 346933,
+        "total": 407335,
+        "duration_s": 324,
+        "agent": "agent-a576b1c41bc6f12da"
+      },
+      {
+        "output": 27,
+        "input": 12,
+        "cache_creation": 41722,
+        "cache_read": 193807,
+        "total": 235568,
+        "duration_s": 208,
+        "agent": "agent-a890e2eb92eccffd3"
+      },
+      {
+        "output": 33,
+        "input": 13,
+        "cache_creation": 40185,
+        "cache_read": 219246,
+        "total": 259477,
+        "duration_s": 173,
+        "agent": "agent-adb46c22573382988"
+      },
+      {
+        "output": 198,
+        "input": 19,
+        "cache_creation": 50745,
+        "cache_read": 383338,
+        "total": 434300,
+        "duration_s": 284,
+        "agent": "agent-aeaf10a27839c5403"
+      }
+    ],
+    "max_subagent_duration_s": 474,
+    "sum_subagent_duration_s": 1463
+  },
+  "input_tokens": "8",
+  "output_tokens": "20284",
+  "cache_creation_tokens": "68068",
+  "cache_read_tokens": "210122",
+  "total_tokens": 298482,
+  "session_id": "374873f3-fecf-4335-91f9-f7986b6efbbf",
+  "findings_lines": 228,
+  "invocation": "Comprehensively review pull request #32770 of the GitHub repository dotnet/efcore using the pr-review-toolkit agents: run code-reviewer, silent-failure-hunter, pr-test-analyzer, comment-analyzer, and type-design-analyzer against the PR's diff (fetch it with gh pr diff 32770). Do NOT post anything. Output each agent's complete findings with file:line references.",
+  "finished_at": "2026-07-22T18:05:34Z"
+}
