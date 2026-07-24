@@ -1,0 +1,210 @@
+[
+ {
+  "cluster_id": "c17",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 75,
+  "rationale": "The file's '// NB:' comments (SqliteDataRecord.cs:111,129,177,308,485) are a narrow 'message provided by framework' idiom, not a documentation-density convention; demanding comments for the key format/cache semantics is taste-level doc appetite with no in-repo anchor, and maintainers merged without requesting any."
+ },
+ {
+  "cluster_id": "c13",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 65,
+  "rationale": "Verified: '//get len of abuff' (test line 173) objectively misdescribes the adjacent code (GetBytes reads bytes, nothing obtains a length), and '//this was failing. now should be fixed' narrates change history; the '[Fact] // Issue #NNNNN' idiom exists at lines 2264/2321. Objective comment incorrectness is a one-shot, in-repo-anchored fix."
+ },
+ {
+  "cluster_id": "c10",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 80,
+  "rationale": "Verified: SqliteDataRecord.cs:17 is a whitespace-only line with 4 trailing spaces (cat -A shows '    $'), violating .editorconfig's trim_trailing_whitespace = true (line 10); the stray blank line after RowIds and the removed blank after pkColumns are also in the diff. Anchored in .editorconfig, one-shot, converges."
+ },
+ {
+  "cluster_id": "c26",
+  "verdict": "false-positive",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 75,
+  "rationale": "The claimed shared cache entry cannot exist: RowIds.Add is only called in the two found branches (lines 355, 387), and no entry can ever be created under the '_' key because expression columns have null origin names (never == \"rowid\") and the metadata path cannot yield a PK match for a null table. Not-found is never cached, so each expression blob column independently falls to the MemoryStream branch; nothing is shared."
+ },
+ {
+  "cluster_id": "c20",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 70,
+  "rationale": "True (line 328 allocates the interpolated key on every GetStream, and GetBytes calls GetStream per call at line 276), but the same path already allocates two utf8_to_string strings (lines 324-325, pre-existing) and opens a SqliteBlob per chunk; the added allocation is a micro-optimization with no meaningful consequence and no one-shot fix short of restructuring the key."
+ },
+ {
+  "cluster_id": "c7",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 85,
+  "rationale": "Verified: 'rowidkey' sits beside rowIdForOrdinal/blobDatabaseName/pkColumns in the same method; .editorconfig binds locals to camel_case_style (everything_else_naming) and csharp_style_var_for_built_in_types = true (line 88) makes the explicit 'string' also off-idiom. One-shot rename anchored in file + .editorconfig conventions."
+ },
+ {
+  "cluster_id": "c6",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 85,
+  "rationale": "Verified: all 12 sibling private fields in the file are 'private _camelCase'; RowIds (line 39) is PascalCase with no access modifier, violating dotnet_style_require_accessibility_modifiers = always (.editorconfig line 59) and the file's uniform field convention (the _camelCase naming style is defined at .editorconfig 194-195). One-shot, anchored fix."
+ },
+ {
+  "cluster_id": "c11",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 80,
+  "rationale": "Verified at test line 171: the GetInt32 results go only to Console.WriteLine (xUnit does not capture Console), so wrong join values would pass; the accompanying comment states intent to verify these reads. Sibling tests assert values (e.g. lines 114-115). One-shot Assert.Equal fix anchored in sibling idiom."
+ },
+ {
+  "cluster_id": "c16",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 75,
+  "rationale": "Verified: sibling GetStream tests assert the stream type (Assert.IsType<SqliteBlob> at lines 478, 505, 561; IsType<MemoryStream> at 385, 533), while the new test named 'works_streaming_join' asserts only bytes via GetBytes — a regression to the MemoryStream fallback would return identical bytes and pass. One-shot fix anchored in sibling idiom."
+ },
+ {
+  "cluster_id": "c23",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 65,
+  "rationale": "The observation is correct (with B.ID=1, the old stale-rowid code would open B's row 1 and coincidentally return correct bytes; B.ID=1000 forces the failure), but the ask is a missing explanatory comment guarding a hypothetical future edit — meta test-design commentary, not an incorrect artifact; no in-repo anchor compels it."
+ },
+ {
+  "cluster_id": "c12",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 85,
+  "rationale": "Verified: sibling tests assert the GetBytes return count (lines 114-115, 198-200, 218-219) while the new test discards both return values (lines 175, 179). One-shot addition anchored in the file's own convention."
+ },
+ {
+  "cluster_id": "c19",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 75,
+  "rationale": "Verified: every sibling cache in the field block (_blobCache, _typeCache, _columnNameOrdinalCache, _columnNameCache, lines 34-37) is nullable and lazily initialized, while RowIds (line 39) allocates a Dictionary in every data-record construction even when no blob is ever read. Mechanical one-shot fix anchored in the adjacent convention."
+ },
+ {
+  "cluster_id": "c2",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 85,
+  "rationale": "Verified: RowIds.Add appears only in the two found branches (lines 355, 387), so a not-found (db,table) is rescanned on every GetStream — and GetBytes calls GetStream per call (line 276), so chunked reads on a no-rowid column repeat the O(FieldCount) metadata scan and can re-run the pragma_table_info query (line 377) each time; the old code memoized not-found as -1 once per record. Real Release-build perf/behavior regression distinct from the assert crash."
+ },
+ {
+  "cluster_id": "c15",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "Verified across the component's test suite: the only tests calling GetStream twice on one record (GetStream_works and the _with_text/_int/_float variants) use expression columns whose not-found result is never cached, and every table-backed test (GetStream_Blob_works, _when_long_pk, _composite_pk_and_rowid, GetBytes/GetChars/GetTextReader streaming, the new JOIN test) makes exactly one read per key — so TryGetValue never returns true. A targeted, bounded test for the PR's core mechanism."
+ },
+ {
+  "cluster_id": "c24",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 75,
+  "rationale": "The pragma_table_info($table) query (line 377) is pre-existing context, unchanged by the diff, and the ATTACH same-name collision scenario is contrived; the diff does not make it worse (the old code cached the resulting ordinal for the same record lifetime). Pre-existing and outside the PR's change surface."
+ },
+ {
+  "cluster_id": "c14",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 80,
+  "rationale": "An open-ended 'more tests' list (six-plus scenarios: fallback-in-join, read order, multi-row, ATTACH, WITHOUT ROWID, aliased projection) — exactly the unbounded suggestion class the rubric defaults to trivia; it never names the assert-crash consequence that would have elevated the not-found-path item."
+ },
+ {
+  "cluster_id": "c3",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "True in principle: $\"{db}_{table}\" (line 328) is not injective when names contain underscores (requires ATTACHed databases with adversarial names plus blob reads from both colliding pairs in one query — contrived), and a collision would reuse the wrong table's cached ordinal. One-shot fix (tuple key), but the scenario is remote; valid-minor at best."
+ },
+ {
+  "cluster_id": "c18",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 70,
+  "rationale": "The premise checks out (the file treats utf8_to_string() as nullable at lines 126 and 184; TableName is declared non-nullable string), but at both construction sites tableName is provably non-null in practice (columnName == \"rowid\" implies a table-backed column; the metadata call would throw first), and TableName is never read anyway — an unenforced annotation with zero behavioral consequence."
+ },
+ {
+  "cluster_id": "c25",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "True in principle (a WITHOUT ROWID table's single INTEGER PK satisfies the pkColumns==1 branch and sqlite3_blob_open cannot open WITHOUT ROWID tables), but the detection logic is pre-existing — the diff only changed what gets assigned in that branch, not the classification — and the scenario is orthogonal to the PR's per-table-caching purpose."
+ },
+ {
+  "cluster_id": "c5",
+  "verdict": "TP-human",
+  "matches": "h1",
+  "judged_severity": "low",
+  "confidence": 90,
+  "rationale": "Matches h1 exactly: RowIdInfo (lines 20-30) has TableName assigned at both construction sites (354, 386) but never read, mutable public setters set exactly once, and reduces to an int/tuple — ajcvickers' live review comment ('Any reason not to use a value tuple for this?') is precisely this finding."
+ },
+ {
+  "cluster_id": "c22",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 60,
+  "rationale": "Verified: test lines 158 and 163 end in trailing whitespace inside the verbatim SQL, violating trim_trailing_whitespace = true (.editorconfig line 10); the stray blank line before the closing brace (line 181) and abuff/bbuff vs the sibling 'buffer' convention are also real. Anchored, one-shot cleanup, though the multi-line-SQL item is taste."
+ },
+ {
+  "cluster_id": "c8",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 90,
+  "rationale": "Verified: line 393 reads 'rowIdForOrdinal!=null' and .editorconfig line 157 sets csharp_space_around_binary_operators = before_and_after. Direct, one-shot, .editorconfig-anchored violation."
+ },
+ {
+  "cluster_id": "c9",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 80,
+  "rationale": "Verified: lines 327-329 pre-declare and null-initialize before TryGetValue assigns via out; the file itself uses inline 'out var' (line 150, lines 364-368) and .editorconfig line 106 sets csharp_style_inlined_variable_declaration = true. The out-var form remains in scope for the later null check, so the rewrite is a safe one-shot fix."
+ },
+ {
+  "cluster_id": "c1",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "high",
+  "confidence": 95,
+  "rationale": "Meets every must_flag facet: names the assert (line 393) firing and terminating the process in Debug builds, identifies 'no rowid found' as a legitimate reachable scan outcome (expression columns, unselected PK, composite-PK/WITHOUT ROWID), notes the contradiction with the null fallback two lines below, and contrasts with the old -1 sentinel that made the assert vacuously true. This is the defect that got the PR reverted (#32945, issue #32944)."
+ },
+ {
+  "cluster_id": "c4",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Verified mechanics: sqlite3_column_table_name yields the origin table for both aliases of a self-join, so both VALUE columns share key 'main_A'; the first read caches the first alias's PK ordinal (via the pkColumns==1 path) and the second alias's blob is opened with the first alias's rowid — silently wrong bytes. Pre-existing in kind (the old single _rowidOrdinal failed the same way), but self-joins sit squarely inside this PR's stated multi-blob-JOIN purpose, so a maintainer reviewing it should know the fix's boundary."
+ },
+ {
+  "cluster_id": "c21",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 80,
+  "rationale": "Self-conceded to be outside DbDataReader's documented single-threaded contract; RowIds is an instance field scoped to one query execution (answer-key known_safe confirms no shared state), so the duplicate-key Add throw requires misuse with no concrete in-contract pathway — speculative hardening."
+ }
+]
