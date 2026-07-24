@@ -1,0 +1,101 @@
+{
+  "run_id": "5__pr-review-toolkit__r1",
+  "subject_id": 5,
+  "lang": "typescript",
+  "size": "medium",
+  "tool": "pr-review-toolkit",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/vscode",
+  "pr": 308517,
+  "merge_sha": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "review_base": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9^1",
+  "review_head": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 633,
+  "duration_ms": "78400",
+  "duration_api_ms": "1838584",
+  "num_turns": "1",
+  "cost_usd": "7.261765750000001",
+  "orch_usage": {
+    "input_tokens": "2",
+    "output_tokens": "6506",
+    "cache_creation_tokens": "2623",
+    "cache_read_tokens": "84507",
+    "total_tokens": 93638
+  },
+  "session_tokens": {
+    "subagents": 5,
+    "input": 139,
+    "output": 14929,
+    "cache_creation": 348910,
+    "cache_read": 2992979,
+    "total": 3356957,
+    "orchestrator": {
+      "output": 14176,
+      "total": 612509,
+      "duration_s": 631
+    },
+    "per_subagent": [
+      {
+        "output": 21,
+        "input": 10,
+        "cache_creation": 40954,
+        "cache_read": 138858,
+        "total": 179843,
+        "duration_s": 168,
+        "agent": "agent-a5eae520761e0f197"
+      },
+      {
+        "output": 257,
+        "input": 30,
+        "cache_creation": 64789,
+        "cache_read": 647845,
+        "total": 712921,
+        "duration_s": 414,
+        "agent": "agent-a6765ac04d7f77749"
+      },
+      {
+        "output": 37,
+        "input": 18,
+        "cache_creation": 39106,
+        "cache_read": 280938,
+        "total": 320099,
+        "duration_s": 201,
+        "agent": "agent-a796f632562b5fe08"
+      },
+      {
+        "output": 43,
+        "input": 24,
+        "cache_creation": 56729,
+        "cache_read": 461738,
+        "total": 518534,
+        "duration_s": 377,
+        "agent": "agent-acfd2475050ef1f9d"
+      },
+      {
+        "output": 395,
+        "input": 40,
+        "cache_creation": 77607,
+        "cache_read": 935009,
+        "total": 1013051,
+        "duration_s": 508,
+        "agent": "agent-ae2f860ebb4b90b54"
+      }
+    ],
+    "max_subagent_duration_s": 508,
+    "sum_subagent_duration_s": 1668
+  },
+  "input_tokens": "2",
+  "output_tokens": "6506",
+  "cache_creation_tokens": "2623",
+  "cache_read_tokens": "84507",
+  "total_tokens": 93638,
+  "session_id": "b14ef335-f777-4418-80e9-29a98a65972c",
+  "findings_lines": 105,
+  "invocation": "Comprehensively review pull request #308517 of the GitHub repository microsoft/vscode using the pr-review-toolkit agents: run code-reviewer, silent-failure-hunter, pr-test-analyzer, comment-analyzer, and type-design-analyzer against the PR's diff (fetch it with gh pr diff 308517). Do NOT post anything. Output each agent's complete findings with file:line references.",
+  "finished_at": "2026-07-23T18:52:04Z"
+}

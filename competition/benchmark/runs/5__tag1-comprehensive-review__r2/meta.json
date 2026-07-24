@@ -1,0 +1,155 @@
+{
+  "run_id": "5__tag1-comprehensive-review__r2",
+  "subject_id": 5,
+  "lang": "typescript",
+  "size": "medium",
+  "tool": "tag1-comprehensive-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/vscode",
+  "pr": 308517,
+  "merge_sha": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "review_base": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9^1",
+  "review_head": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1425,
+  "duration_ms": "1423415",
+  "duration_api_ms": "4194871",
+  "num_turns": "31",
+  "cost_usd": "17.4216931",
+  "orch_usage": {
+    "input_tokens": "36",
+    "output_tokens": "65410",
+    "cache_creation_tokens": "279665",
+    "cache_read_tokens": "2679174",
+    "total_tokens": 3024285
+  },
+  "session_tokens": {
+    "subagents": 11,
+    "input": 416,
+    "output": 77016,
+    "cache_creation": 982325,
+    "cache_read": 13912173,
+    "total": 14971930,
+    "orchestrator": {
+      "output": 65410,
+      "total": 3024285,
+      "duration_s": 1424
+    },
+    "per_subagent": [
+      {
+        "output": 473,
+        "input": 47,
+        "cache_creation": 98254,
+        "cache_read": 1676237,
+        "total": 1775011,
+        "duration_s": 568,
+        "agent": "agent-a3ad3c2f45cdf5120"
+      },
+      {
+        "output": 1324,
+        "input": 92,
+        "cache_creation": 95740,
+        "cache_read": 3321635,
+        "total": 3418791,
+        "duration_s": 504,
+        "agent": "agent-a48caab6a23fa5cb0"
+      },
+      {
+        "output": 13,
+        "input": 4,
+        "cache_creation": 30012,
+        "cache_read": 38736,
+        "total": 68765,
+        "duration_s": 320,
+        "agent": "agent-a4c244fe84a387172"
+      },
+      {
+        "output": 1418,
+        "input": 76,
+        "cache_creation": 81270,
+        "cache_read": 2289537,
+        "total": 2372301,
+        "duration_s": 359,
+        "agent": "agent-a842bda29bea58d59"
+      },
+      {
+        "output": 6367,
+        "input": 36,
+        "cache_creation": 76126,
+        "cache_read": 1097027,
+        "total": 1179556,
+        "duration_s": 458,
+        "agent": "agent-a8a45ccc3efc07c74"
+      },
+      {
+        "output": 357,
+        "input": 20,
+        "cache_creation": 42368,
+        "cache_read": 394066,
+        "total": 436811,
+        "duration_s": 157,
+        "agent": "agent-a8e3e8bc0e57ea65d"
+      },
+      {
+        "output": 1235,
+        "input": 10,
+        "cache_creation": 40050,
+        "cache_read": 140311,
+        "total": 181606,
+        "duration_s": 26,
+        "agent": "agent-a95b44e64f5a1ec06"
+      },
+      {
+        "output": 321,
+        "input": 50,
+        "cache_creation": 72681,
+        "cache_read": 1291724,
+        "total": 1364776,
+        "duration_s": 356,
+        "agent": "agent-aa92506a2c75a9283"
+      },
+      {
+        "output": 34,
+        "input": 13,
+        "cache_creation": 60578,
+        "cache_read": 275316,
+        "total": 335941,
+        "duration_s": 157,
+        "agent": "agent-ac0d6c7404c097eb9"
+      },
+      {
+        "output": 47,
+        "input": 26,
+        "cache_creation": 66863,
+        "cache_read": 633816,
+        "total": 700752,
+        "duration_s": 378,
+        "agent": "agent-adfe87cfb39449dc0"
+      },
+      {
+        "output": 17,
+        "input": 6,
+        "cache_creation": 38718,
+        "cache_read": 74594,
+        "total": 113335,
+        "duration_s": 84,
+        "agent": "agent-afd199a959c250843"
+      }
+    ],
+    "max_subagent_duration_s": 568,
+    "sum_subagent_duration_s": 3367
+  },
+  "input_tokens": "36",
+  "output_tokens": "65410",
+  "cache_creation_tokens": "279665",
+  "cache_read_tokens": "2679174",
+  "total_tokens": 3024285,
+  "session_id": "922f6953-8eb7-474b-b48e-783872bb0456",
+  "findings_lines": 26,
+  "invocation": "Run /comprehensive-review --pr 308517 --local --output-file .decaf/tag1-review-308517.md for the GitHub repository microsoft/vscode. --local means display everything and post NOTHING. When done, print the output-file path and a summary of findings by severity.",
+  "finished_at": "2026-07-23T19:43:41Z"
+}

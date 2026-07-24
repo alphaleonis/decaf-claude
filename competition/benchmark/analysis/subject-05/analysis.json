@@ -1,0 +1,2534 @@
+{
+ "subject_id": 5,
+ "lang": "typescript",
+ "size": "medium",
+ "repo": "microsoft/vscode",
+ "pr": 308517,
+ "judge_model": "claude-opus-4-8",
+ "notes": "336 findings from 10 cells; 334 clustered into 35 clusters; 2 excluded (anthropic-code-review r2 event-loop-race candidates the tool itself scored 25 and rejected). Blind grading: clusters shuffled (seed 505), tool identity stripped. TRAP SUBJECT: the merged code clears the idle timer before yield (fixing the Copilot-bot-flagged consumer-time bug pre-merge) + handles destroy().catch + forwards iterator.return; those three are false-positive traps. HUMAN OVERRIDE: c14 regraded false-positive->valid-minor (grader refuted an imprecise summary phrasing but the underlying test-gap is real). Borderline trivia-vs-valid-minor calls (defaulted down per rubric): c5 error-classification, c25 undocumented-mechanism, c26 JSDoc-on-class, c28 raceTimeout-helper.",
+ "answer_key": {
+  "primary_bug": {
+   "id": "primary",
+   "summary": "withStreamIdleTimeout adds an idle watchdog that ACTIVELY DESTROYS the underlying stream (void stream.destroy()) when no network chunk arrives within SSE_IDLE_TIMEOUT_MS (60s), or SSE_FIRST_CHUNK_TIMEOUT_MS (2min) before the first chunk. But a gap longer than that occurs LEGITIMATELY during normal active generation \u2014 server-side tool execution, extended thinking, queueing, slow/long TTFT \u2014 so the watchdog terminates streams that are not actually hung. The consequence: live responses are truncated mid-flight, surfacing to users as 'Sorry, the response hit the length limit' with no actual output (regression issue #308627), which is why the ENTIRE feature was reverted the same day (#308779). Objective confirmation of the intended resolution: the eventual re-approach to the same hung-stream problem (#321671) is deliberately OBSERVE-ONLY \u2014 it arms an idle watchdog purely to emit telemetry and states verbatim 'It does not change request behavior \u2014 the stream is not aborted' \u2014 i.e., the accepted lesson is that actively aborting on an idle timeout (what this PR did) is unsafe.",
+   "file": "extensions/copilot/src/platform/networking/common/fetcherService.ts",
+   "locus": "withStreamIdleTimeout (~L82-129 of the diff): startTimer() arms a setTimeout whose callback does `timedOut = true; void stream.destroy()`, armed around each `await iterator.next()`; SSE_IDLE_TIMEOUT_MS=60_000 / SSE_FIRST_CHUNK_TIMEOUT_MS=120_000. Applied at the 3 `for await (const chunk of withStreamIdleTimeout(...))` call sites.",
+   "must_flag": "A reviewer catches the primary bug if it identifies that the watchdog can DESTROY / abort a stream that is still legitimately active \u2014 i.e., that treating a >60s (or >2min first-chunk) network-idle gap as 'hung' and tearing the stream down produces FALSE timeouts on live streams (legitimate long pauses during generation: tool calls, thinking, slow TTFT), truncating responses. Equivalent framings that count as TP-primary: 'the 60s idle threshold is too aggressive for LLM/SSE streams that legitimately pause and will kill live streams'; 'actively destroying the stream on idle is unsafe \u2014 a paused-but-alive stream is aborted, better to observe/measure than abort'; 'a long server-side gap (tool call / extended thinking) exceeds the timeout and terminates a healthy stream \u2192 truncated output'. The strongest catch names BOTH the active-destroy and the legitimacy of long gaps.",
+   "source": "revert PR #308779 ('Revert \"Support timing out hung streams (#308517)\"', Fix #308627) + regression issue #308627 (user: 'response hit the length limit' but Copilot produced no output \u2014 truncated stream) + the accepted observe-only re-approach #321671 which explicitly does NOT abort the stream. Verified against the checkout at merge ba8d730: withStreamIdleTimeout's timer callback calls stream.destroy(); thresholds are 60s / 2min; wired into all three SSE consumers.",
+   "difficulty": "HARD, and a deliberate trap. The code looks like the textbook idle-timeout anti-pattern, and a Copilot review bot on an EARLIER commit flagged exactly the 'timer measures consumer processing time' bug \u2014 but the author FIXED that before merge (see known_safe: clearTimer() is called immediately after await iterator.next() and BEFORE yield, with an explicit comment and a dedicated passing test 'consumer processing time longer than idle timeout does not cause false timeout'). So the merged code does NOT measure consumer time; a finding asserting it does is a FALSE POSITIVE (misreads the clearTimer-before-yield), NOT a catch. The real escaped defect is the more semantic one \u2014 active abort on an over-aggressive idle threshold kills legitimately-paused-but-live streams \u2014 which requires either domain knowledge that LLM streams legitimately pause >60s, or noticing the whole feature was reverted. Expect low true recall and a high rate of the M1 false positive, especially from tools that retrieved and parroted the bot comment without verifying it against the merged code."
+  },
+  "human_issues": [],
+  "known_safe": [
+   {
+    "id": "safe-consumer-time-cleared",
+    "summary": "The idle timer is cleared BEFORE each yield: the loop is startTimer() -> `await iterator.next()` -> clearTimer() -> yield. So the timer brackets ONLY the network read (`await iterator.next()`), NOT consumer processing (which happens while the generator is suspended at yield, timer disarmed). The diff carries an explicit comment ('Consumer processing time is NOT timed \u2014 the timer is cleared above') and a dedicated passing test ('consumer processing time longer than idle timeout does not cause false timeout') that advances fake time by 3x the idle timeout during consumer processing and asserts no timeout. Therefore any finding claiming the merged code 'starts/leaves the idle timer running during consumer processing', 'measures time between consumer next() calls / includes parsing time', or 'false-times-out under slow CONSUMERS' is a FALSE POSITIVE \u2014 it misreads the clearTimer-before-yield (this is precisely the earlier-commit bug the Copilot bot flagged, which the author fixed before merge). Note the distinction: false timeout on a slow NETWORK gap (legitimate generation pause) is the real primary bug; false timeout on a slow CONSUMER is refuted.",
+    "file": "extensions/copilot/src/platform/networking/common/fetcherService.ts"
+   },
+   {
+    "id": "safe-destroy-catch-handled",
+    "summary": "The timer callback is `void stream.destroy().catch(() => { })` \u2014 the destroy() promise's rejection IS explicitly handled/swallowed. Flagging an 'unhandled promise rejection on stream.destroy() in the timer path' is a false positive (this was a Copilot-bot comment on an earlier commit, addressed before merge).",
+    "file": "extensions/copilot/src/platform/networking/common/fetcherService.ts"
+   },
+   {
+    "id": "safe-iterator-return-forwarded",
+    "summary": "The generator's `finally` calls `clearTimer(); await iterator.return?.();` \u2014 early consumer termination (break/return/throw) IS forwarded to the underlying stream iterator, releasing the reader lock. Flagging a 'reader-lock leak / missing iterator.return() on early break' is a false positive (also a Copilot-bot comment on an earlier commit, addressed before merge; there is a dedicated passing test 'consumer break releases the underlying reader lock').",
+    "file": "extensions/copilot/src/platform/networking/common/fetcherService.ts"
+   }
+  ]
+ },
+ "clusters": [
+  {
+   "cluster_id": "c1",
+   "summary": "The idle watchdog actively destroys the stream when no network chunk arrives within SSE_IDLE_TIMEOUT_MS (60s) / SSE_FIRST_CHUNK_TIMEOUT_MS (2min), but such gaps occur legitimately during active generation (server-side tool calls, extended thinking, slow TTFT, OS suspend/resume, proxies dropping keepalives), so the watchdog terminates streams that are not actually hung \u2014 truncating live responses. The escaped, reverted defect.",
+   "file": "fetcherService.ts",
+   "line": 310,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a12aa809544392862/historical-git-context",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a214f8ca9d88a220d/prior-pr-feedback",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a74a87c6445f293f2/validator",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a26bdd89b96e8b2b5",
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a26bdd89b96e8b2b5",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a78a7d511f378e518",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-ac86284f1e73a7a75",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a160c47e96343a142/adversarial-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a18ae6c33071dff71/broad-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a9f8434733e3db146/quick-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a29689de952cb04a7/adversarial-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae2f860ebb4b90b54/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a9507cc2ce218d16f",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ab67d4274da85b3be/adversarial-general",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3ad3c2f45cdf5120/adversarial-general",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "critical",
+   "confidence": 96,
+   "rationale": "Exact primary: identifies that the watchdog actively destroys the stream when no NETWORK chunk arrives within 60s/2min, that such gaps occur legitimately during active generation (tool calls, extended thinking, slow TTFT, suspend/resume, dropped keepalives), and that this truncates live responses \u2014 the escaped, reverted defect (#308627/#308779). Names active-destroy AND the legitimacy of long gaps."
+  },
+  {
+   "cluster_id": "c2",
+   "summary": "'First chunk' means first transport bytes, not first model output: an early administrative/empty chunk (e.g. CAPI prompt_filter_results at stream.ts:409) flips isFirstChunk=false, collapsing the 2-minute TTFT budget to the 60s idle timeout, so a reasoning model silent >60s after that chunk is killed.",
+   "file": "fetcherService.ts",
+   "line": 362,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a160c47e96343a142/adversarial-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a693ed17fb3246be8/finding-validator",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "high",
+   "confidence": 70,
+   "rationale": "Verified: withStreamIdleTimeout flips isFirstChunk=false on the first NETWORK chunk regardless of content (L362), while CAPI sends an early administrative chunk with empty choices holding prompt_filter_results (stream.ts:409 comment). So the first transport bytes collapse the 2-min TTFT budget to the 60s idle timeout, and a reasoning model silent >60s after that admin chunk is killed \u2014 a distinct, diff-verifiable mechanism (the 'isFirstChunk collapse' candidate) that compounds the primary."
+  },
+  {
+   "cluster_id": "c3",
+   "summary": "The 60s/2min thresholds are hardcoded module constants applied unconditionally with no config/experiment gate and no kill switch, diverging from the path's getExperimentBasedConfig/ConfigKey convention \u2014 so the behavior cannot be tuned or disabled without a code release.",
+   "file": "fetcherService.ts",
+   "line": 303,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a3ad67a9f2a157455/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a3959bcf45aa3b00a/broad-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ae18794412ae3d9f0/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a9507cc2ce218d16f",
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-ab54e9894497372af",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ad6b2913c7d9e5470/architecture-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac0d6c7404c097eb9/architecture-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 68,
+   "rationale": "Verified: SSE_FIRST_CHUNK_TIMEOUT_MS/SSE_IDLE_TIMEOUT_MS are hardcoded module constants applied unconditionally (fetcherService.ts:303/310), while the path uses getExperimentBasedConfig/ConfigKey elsewhere (chatMLFetcher.ts:575). No config gate / kill switch means the behavior couldn't be disabled without a release \u2014 concretely relevant given the whole feature had to be reverted. Concrete one-shot fix (gate behind a ConfigKey)."
+  },
+  {
+   "cluster_id": "c3b",
+   "summary": "The wrapper is applied uniformly to all three SSE consumers rather than scoped to the endpoint where hangs were observed, maximizing the false-positive blast radius (the accepted follow-up scoped its observe-only watchdog to messagesApi only).",
+   "file": "stream.ts",
+   "line": 323,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a12aa809544392862/historical-git-context",
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-ae26078355c8a06c8/validator",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 55,
+   "rationale": "Presupposes the false-positive problem (the primary) rather than establishing it, then argues a scoping preference. 'Scope to messagesApi only' rests on external revert/follow-up knowledge not verifiable from the diff and is speculative blast-radius reasoning; design taste, defaulted down."
+  },
+  {
+   "cluster_id": "c4",
+   "summary": "If stream.destroy() -> reader.cancel() makes the pending `await iterator.next()` REJECT instead of resolving {done:true}, the post-loop `if (timedOut) throw StreamIdleTimeoutError` is never reached, so the caller sees a raw teardown error (ECONNRESET/TypeError) rather than the typed timeout \u2014 the whole signaling path silently relies on an undocumented Web Streams invariant.",
+   "file": "fetcherService.ts",
+   "line": 355,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a1658cd2c7bb11202/blind-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a4c244fe84a387172/blind-hunter",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 58,
+   "rationale": "Concretely argued: the typed-error signaling relies on destroy()->reader.cancel() making the pending `await iterator.next()` resolve {done:true} so the loop breaks and reaches `if (timedOut) throw` (L358/371). If instead the read REJECTS (errored teardown), the post-loop throw is skipped and the caller sees a raw ECONNRESET/TypeError rather than the typed StreamIdleTimeoutError \u2014 an undocumented Web-Streams invariant the signaling depends on (answer-key valid-other candidate a)."
+  },
+  {
+   "cluster_id": "c5",
+   "summary": "The new StreamIdleTimeoutError is not recognized by the downstream error-classification chain (processError in chatMLFetcher.ts, out of diff): it carries no .code and no retryable flag, so a timed-out-but-recoverable stream is misclassified (generic Failed or, via err.fetcherId tagging, NetworkError with a misleading 'check your firewall' message) and excluded from the auto-retry path.",
+   "file": "chatMLFetcher.ts",
+   "line": 1949,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a12aa809544392862/historical-git-context",
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-ac811d5095d37a3bb/validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a160c47e96343a142/adversarial-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a18ae6c33071dff71/broad-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1901af5f73be11aa/knowledge-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a3ad67a9f2a157455/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a52f656c26ae50c59/finding-validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a9f8434733e3db146/quick-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a29689de952cb04a7/adversarial-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ae18794412ae3d9f0/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a07e9fa7e27db72ba/validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a17b8ac373240327d/validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a9507cc2ce218d16f",
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-ab54e9894497372af",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ab67d4274da85b3be/adversarial-general",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ad6b2913c7d9e5470/architecture-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3ad3c2f45cdf5120/adversarial-general",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a842bda29bea58d59/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-aa92506a2c75a9283/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 58,
+   "rationale": "processError (chatMLFetcher.ts:1949, out of diff) is pre-existing handling; a StreamIdleTimeoutError would fall to the generic else->Failed (L2007-2015). But the specific 'err.fetcherId->NetworkError firewall message' path is not reached \u2014 this plain Error has no fetcherId, and isFetcherError won't tag it (fetcherId is set only on fetch-request errors, baseFetchFetcher.ts:59). The real reverted regression surfaced as 'length limit', not a firewall message, so the concrete mechanism is unreliable; out-of-scope pre-existing classification."
+  },
+  {
+   "cluster_id": "c6",
+   "summary": "The watchdog kills via stream.destroy() with no reason, so reader.cancel(undefined) propagates through the counting TransformStream and the fetch is recorded in telemetry as outcome:'cancel' \u2014 indistinguishable from a benign user cancellation, so hung-stream/false-timeout frequency cannot be measured or alerted on.",
+   "file": "fetcherService.ts",
+   "line": 346,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a160c47e96343a142/adversarial-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a18ae6c33071dff71/broad-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a4658e96dfaf2932a/security-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a8f015f2b0ba25a5f/finding-validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a9f8434733e3db146/quick-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a3959bcf45aa3b00a/broad-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ae18794412ae3d9f0/design-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a4437832360f9d633/validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a9507cc2ce218d16f",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ab67d4274da85b3be/adversarial-general",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 68,
+   "rationale": "Verified: withStreamIdleTimeout calls stream.destroy() with NO reason (fetcherService.ts:346); DestroyableStream.destroy()->reader.cancel() (L291) with reason=undefined; the counting TransformStream's cancel callback maps reason=undefined to outcome:'cancel' (L104-106). So a watchdog teardown telemeters identically to a benign user cancel \u2014 the false-timeout rate is unmeasurable. Diff-verifiable observability defect (the 'telemetry-as-cancel' candidate)."
+  },
+  {
+   "cluster_id": "c7",
+   "summary": "When the watchdog fires it emits no dedicated log/metric/telemetry at the source (the module has no logger); a hung-stream timeout is invisible except by string-matching the exception, and the error carries no request/model/deployment context for correlation.",
+   "file": "fetcherService.ts",
+   "line": 344,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a12aa809544392862/historical-git-context",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a7d011ea7a7757106/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3ad3c2f45cdf5120/adversarial-general",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a842bda29bea58d59/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a842bda29bea58d59/silent-failure-hunter",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 55,
+   "rationale": "Overstates: destroy() DOES emit a fetch telemetry event via the counting stream (as 'cancel', L104-106), so a timeout is not 'invisible' \u2014 it is misattributed (that precise defect is c6's). As a broad 'add dedicated observability' suggestion it is weaker and overlapping; defaulted down."
+  },
+  {
+   "cluster_id": "c8",
+   "summary": "`void stream.destroy().catch(() => {})` swallows every rejection from destroy()/reader.cancel() with no logging, so a systemic teardown failure becomes undiagnosable. (The empty catch itself is intentional \u2014 the critique is the absence of observability, not an unhandled rejection.)",
+   "file": "fetcherService.ts",
+   "line": 346,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1de23e01ed9f9b1f/typescript-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a6e8a589b48712b3f/finding-validator",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aa3117a56394a7701/typescript-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a1658cd2c7bb11202/blind-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aa0bee53694c45a7d/comment-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 72,
+   "rationale": "Correctly acknowledges the empty `.catch(() => {})` is intentional (not an unhandled rejection) and critiques the absence of observability \u2014 a systemic destroy()/reader.cancel() failure is swallowed with no log (L346). Answer-key-blessed valid-minor (distinguished from the safe-destroy-catch false positive)."
+  },
+  {
+   "cluster_id": "c8b",
+   "summary": "Edge in the timer callback's destroy(): `.catch()` handles an async rejection but not a SYNCHRONOUS throw from destroy() inside setTimeout (would be uncaught), and if destroy() takes the stream.cancel() branch while the reader is still locked it rejects with TypeError (swallowed), potentially leaving the read hung.",
+   "file": "fetcherService.ts",
+   "line": 346,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 55,
+   "rationale": "Largely speculative and partly refuted: destroy() returns reader.cancel()/stream.cancel() promises so a SYNCHRONOUS throw inside setTimeout is unlikely, and the 'stream.cancel() branch while reader still locked -> TypeError' case is guarded against \u2014 destroy() takes the reader.cancel() branch whenever this.reader is set (L289-295), which it is during an active read. Speculative edge musing, low value."
+  },
+  {
+   "cluster_id": "c9",
+   "summary": "Pre-existing/out-of-diff coverage gap: the watchdog was applied to only 3 SSE consumers; structurally identical consumers (completions-core SSEProcessor at stream.ts:293, oaiLanguageModelServer/claudeLanguageModelServer pass-throughs, nesFetch, Response.text()) still iterate the body with a bare for-await and no timeout, so they remain exposed to the same hang.",
+   "file": "stream.ts",
+   "line": 293,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a3ad67a9f2a157455/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a4658e96dfaf2932a/security-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a30dbf2609aad9fbf/consistency-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a3959bcf45aa3b00a/broad-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a9e6f1616371b157e/quick-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aa3117a56394a7701/typescript-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aa3117a56394a7701/typescript-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ae18794412ae3d9f0/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ae18794412ae3d9f0/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac3da3c520b44f5be/validator",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae2f860ebb4b90b54/code-reviewer",
+     "severity": "info"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ab67d4274da85b3be/adversarial-general",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3ad3c2f45cdf5120/adversarial-general",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac0d6c7404c097eb9/architecture-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 68,
+   "rationale": "Self-labeled 'pre-existing/out-of-diff coverage gap'. Verified other bare-for-await body consumers exist (Response.text() fetcherService.ts:134; completions-core SSEProcessor; nesFetch completionsFetchServiceImpl), but the diff did not touch them \u2014 explicitly the out-of-scope 'other unwrapped consumers' case the rubric maps to trivia."
+  },
+  {
+   "cluster_id": "c10",
+   "summary": "Terminal-event-then-hang: the server emits a full response (message_stop / response.completed) but hangs before closing the socket; messagesApi/responsesApi do not return on terminal events (unlike stream.ts's [DONE] handling), so the idle timer fires 60s later and StreamIdleTimeoutError discards an already-complete response \u2014 converting success into a retroactive failure.",
+   "file": "messagesApi.ts",
+   "line": 596,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a29689de952cb04a7/adversarial-reviewer",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 60,
+   "rationale": "Verified: stream.ts returns on [DONE] (L340-342), but messagesApi.ts:596-598 and responsesApi.ts:537-539 feed the parser and never break on a terminal event \u2014 they emit the completion (feed.emitOne) yet keep iterating. If the server emits message_stop/response.completed but hangs before closing the socket, the idle timer fires 60s later and throws StreamIdleTimeoutError over an already-complete response (terminal-event-then-hang candidate)."
+  },
+  {
+   "cluster_id": "c11",
+   "summary": "Same-event-loop-tick race: a chunk (or clean close) arriving in the same loop iteration the timeout becomes due is discarded because the timers phase runs before the poll phase, so a successful completion can be mis-reported as a timeout.",
+   "file": "fetcherService.ts",
+   "line": 342,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae2f860ebb4b90b54/code-reviewer",
+     "severity": "info"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-ab54e9894497372af",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 60,
+   "rationale": "Same-tick race, concretely argued via event-loop phases: if the timer becomes due in the same iteration the final chunk/clean-close arrives, the timers phase runs the callback first (timedOut=true, destroy()), the pending read then resolves done, the loop breaks and `if (timedOut) throw` fires \u2014 mis-reporting a successful completion as a timeout (answer-key valid-other candidate b)."
+  },
+  {
+   "cluster_id": "c12",
+   "summary": "The idle timer resets on every chunk with no absolute stream-duration cap and no minimum-throughput check, so a slow-drip endpoint (one byte or a ':' keepalive every <60s) holds the connection open indefinitely and grows SSEProcessor buffers unbounded.",
+   "file": "fetcherService.ts",
+   "line": 354,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a9507cc2ce218d16f",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ad435bae3e12b65dc/security-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 55,
+   "rationale": "True that the timer resets per chunk with no absolute-duration cap or min-throughput check, so a slow-drip (a byte/keepalive every <60s) evades the watchdog \u2014 but this is a pre-existing exposure the diff does not worsen (there was no timeout before), the 'SSEProcessor buffers grow unbounded' claim is dubious (chunks are processed incrementally), and the scenario is adversarial/speculative. Incomplete-protection observation, defaulted down."
+  },
+  {
+   "cluster_id": "c13",
+   "summary": "The 'consumer break releases the underlying reader lock' test is a false positive: its only post-break check is that stream.destroy() does not throw, which resolves identically whether or not the finally's iterator.return?.() forwarding exists, so it cannot detect the regression it names.",
+   "file": "streamIdleTimeout.spec.ts",
+   "line": 142,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a25d1d886e2daf91c/test-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a317d5ca56a1681bb/finding-validator",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a824e86a776deda9b/test-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-af7114265ec72c7fa/validator",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 68,
+   "rationale": "Verified vacuous: the only post-break check is `await stream.destroy()` not throwing. If the finally's iterator.return?.() forwarding (fetcherService.ts:368) were removed, the inner DestroyableStream iterator's finally never runs so the reader stays locked, but destroy()->reader.cancel() still resolves without throwing regardless. The test cannot detect the regression it names \u2014 a real test-quality defect (the 'reader-lock test is vacuous' candidate)."
+  },
+  {
+   "cluster_id": "c14",
+   "summary": "The timeout tests never assert stream.destroy()/reader.cancel() is actually invoked on timeout (nor that the timer is cleared) \u2014 a regression that stopped tearing down the hung stream would still pass; only the thrown error's name/message is checked.",
+   "file": "streamIdleTimeout.spec.ts",
+   "line": 55,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a824e86a776deda9b/test-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a9507cc2ce218d16f",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-ab54e9894497372af",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 62,
+   "rationale": "HUMAN-ADJUDICATED (was false-positive): the grader correctly noted that removing stream.destroy() would make the tests HANG (not silently pass), refuting the imprecise 'would still pass' phrasing in the cluster summary. But the underlying findings are a real valid-minor test-quality gap: there is no EXPLICIT assertion that destroy()/reader.cancel() is invoked or the timer cleared, so a teardown regression fails only as a slow unclear runner timeout, and the destroy-failure path (empty .catch) is untested. Concrete fix: assert teardown + vi.getTimerCount()===0."
+  },
+  {
+   "cluster_id": "c15",
+   "summary": "No test covers a genuine underlying-stream error (controller.error while awaiting a chunk): the wrapper should clear the timer and propagate the original error unmodified, not mask it as StreamIdleTimeoutError, but that contract is unpinned.",
+   "file": "streamIdleTimeout.spec.ts",
+   "line": 1,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a18ae6c33071dff71/broad-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a25d1d886e2daf91c/test-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a824e86a776deda9b/test-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-ab54e9894497372af",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 58,
+   "rationale": "Verified gap: no test exercises a genuine underlying-stream error (controller.error while awaiting a chunk). The contract is meaningful \u2014 on a real read rejection the wrapper clears the timer (finally) and, with timedOut false, propagates the original error unmodified rather than masking it as StreamIdleTimeoutError. Concrete test to add for a real correctness contract."
+  },
+  {
+   "cluster_id": "c16",
+   "summary": "No test exercises the three production call sites: processResponseFromMessagesEndpoint (and the responsesApi/stream.ts sites) have no coverage that a mid-stream StreamIdleTimeoutError propagates sensibly; the tests drive the generator directly, never through a real for-await consumer.",
+   "file": "messagesApi.ts",
+   "line": 596,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3ad3c2f45cdf5120/adversarial-general",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 60,
+   "rationale": "Integration-coverage 'add more tests' suggestion for the three production call sites; unbounded and out of the unit's scope (the spec drives the generator directly, which is appropriate). Note the sub-claim 'never through a real for-await consumer' is inaccurate \u2014 tests DO use for-await (spec L209/265). Low value."
+  },
+  {
+   "cluster_id": "c17",
+   "summary": "The timeout tests match on err.name string comparison (and a message substring) rather than `instanceof StreamIdleTimeoutError`, despite importing the class \u2014 a look-alike error with a spoofed name would satisfy the assertion while consumer instanceof checks silently stop matching.",
+   "file": "streamIdleTimeout.spec.ts",
+   "line": 66,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a824e86a776deda9b/test-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 56,
+   "rationale": "True that tests assert err.name + message substring rather than instanceof, but the actual downstream contract keys off .name/.message (processError uses name/message, not instanceof) and no consumer uses `instanceof StreamIdleTimeoutError`. The 'spoofed name' / 'instanceof consumers' risk is speculative; name-checking is aligned with real usage. Marginal taste."
+  },
+  {
+   "cluster_id": "c18",
+   "summary": "The timeout tests assert only the isFirstChunk-driven message substrings ('first chunk'/'inactivity'), never the numeric timeoutMs, so swapping the two constants at the throw site would still pass.",
+   "file": "streamIdleTimeout.spec.ts",
+   "line": 69,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 63,
+   "rationale": "Verified: tests assert only 'first chunk'/'inactivity' substrings (driven by isFirstChunk), never the numeric ${timeoutMs} embedded in the message (L314-316). Swapping the throw-site ternary/constants would change the number but keep the substrings, so the tests would still pass. Concrete assertion to add; low severity (message-only, not behavioral)."
+  },
+  {
+   "cluster_id": "c19",
+   "summary": "No negative-control test closes a stream with zero chunks (result.done true on the first next(), isFirstChunk never flips, timedOut false): a regression treating 'closed empty' as a first-chunk timeout would go uncaught.",
+   "file": "streamIdleTimeout.spec.ts",
+   "line": 40,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 55,
+   "rationale": "True there is no negative-control test for a zero-chunk close (done on first next(), isFirstChunk stays true, timedOut false). Low-value 'add a test'; the corresponding regression is unlikely and the assertion is minor. Defaulted down."
+  },
+  {
+   "cluster_id": "c20",
+   "summary": "No test exercises a chunk arriving at/near the exact idle-timeout deadline (the chunk-vs-timer boundary); all 'does not time out' cases push chunks with a safety margin.",
+   "file": "streamIdleTimeout.spec.ts",
+   "line": 342,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+     "severity": "critical"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 56,
+   "rationale": "True that no test pushes a chunk exactly at the deadline (the 'does not time out' cases use a margin). But the chunk-vs-timer boundary is itself an inherent race (see c11) so a fake-timer boundary test would be fragile; speculative 'add a test' suggestion."
+  },
+  {
+   "cluster_id": "c21",
+   "summary": "The fake-timer tests are fragile: test 7 drives the same fake clock from inside the code-under-test's loop and the outer body concurrently, an order-sensitive pattern relying on undocumented advanceTimersByTimeAsync draining depth that could go flaky or hang under one extra await hop.",
+   "file": "streamIdleTimeout.spec.ts",
+   "line": 161,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a7c05a2c0762c7cdd/guidance-adherence",
+     "severity": "nit"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a26bdd89b96e8b2b5",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a25d1d886e2daf91c/test-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a824e86a776deda9b/test-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 56,
+   "rationale": "Meta/speculative test-fragility commentary about test 7 driving the same fake clock from inside and outside the code-under-test. The test passes as written; 'could go flaky under one extra await hop' is unproven. Low value."
+  },
+  {
+   "cluster_id": "c22",
+   "summary": "The idle setTimeout is not .unref()'d, so a pending 1-2 minute timer keeps the event loop referenced (cosmetic \u2014 it is always cleared promptly).",
+   "file": "fetcherService.ts",
+   "line": 336,
+   "category": "perf",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1de23e01ed9f9b1f/typescript-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-ab54e9894497372af",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 66,
+   "rationale": "The timer is cleared before each yield and in finally (L356/367), so it is rarely pending long; the finding itself concedes it is 'cosmetic \u2014 always cleared promptly'. During an active read the reference is intended (streaming in progress). Taste-only."
+  },
+  {
+   "cluster_id": "c23",
+   "summary": "StreamIdleTimeoutError type design: timeoutMs and isFirstChunk are folded into the message string and discarded rather than exposed as readonly fields (forcing message.includes parsing to distinguish first-chunk vs idle), the boolean allows contradictory instances, and the declared AsyncGenerator<T> return type is wider than the for-await-only contract.",
+   "file": "fetcherService.ts",
+   "line": 312,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1de23e01ed9f9b1f/typescript-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a709b12fc027a9afd/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a709b12fc027a9afd/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a709b12fc027a9afd/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a709b12fc027a9afd/type-design-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a1658cd2c7bb11202/blind-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a44117cfee7fdd47a/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a4c244fe84a387172/blind-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-aa92506a2c75a9283/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-aa92506a2c75a9283/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 55,
+   "rationale": "Type-design grab-bag: exposing timeoutMs/isFirstChunk as readonly fields instead of folding into the message (L313-317) is a fair minor kernel, but 'boolean allows contradictory instances' and 'AsyncGenerator<T> wider than for-await contract' are taste. Bundled taste, defaulted down."
+  },
+  {
+   "cluster_id": "c24",
+   "summary": "The JSDoc says the first-chunk timeout gets 'slightly more time', but SSE_FIRST_CHUNK_TIMEOUT_MS (120s) is exactly double SSE_IDLE_TIMEOUT_MS (60s), not slightly more.",
+   "file": "fetcherService.ts",
+   "line": 300,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-ade641c626b471905/comment-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-ab54e9894497372af",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aa0bee53694c45a7d/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a8e3e8bc0e57ea65d/comment-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 75,
+   "rationale": "Verified objective doc error: the JSDoc says the first-chunk timeout gets 'slightly more time' (L300-301), but SSE_FIRST_CHUNK_TIMEOUT_MS=2*60*1000 is exactly double SSE_IDLE_TIMEOUT_MS=60*1000, not slightly more. Concrete one-shot fix (answer-key valid-minor candidate)."
+  },
+  {
+   "cluster_id": "c25",
+   "summary": "The watchdog's non-obvious mechanism and heuristics are undocumented: no comment records why 60s/2min, the liveness invariant (watchdog wraps the raw byte stream so SSE keepalives reset the timer; every endpoint must emit more often than 60s), or that the timeout path exits the loop through the same `if (result.done) break` as clean EOF \u2014 so a maintainer could 'simplify' the post-loop throw and silently break the timeout path.",
+   "file": "fetcherService.ts",
+   "line": 305,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a123e9219d9bfe887/finding-validator",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1901af5f73be11aa/knowledge-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1901af5f73be11aa/knowledge-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aac8c57e06af2bed4/knowledge-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aac8c57e06af2bed4/knowledge-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-af0e0ddbd549546cf/validator",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a1dfd676ffd0cbe00/validator",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 56,
+   "rationale": "Knowledge-preservation 'document more' critique: real subtlety exists (the timeout path exits via the same `if (result.done) break` as clean EOF, distinguished only by the timedOut flag), but the finding is a speculative maintainer-error/add-comments suggestion, not a defect. Low value."
+  },
+  {
+   "cluster_id": "c26",
+   "summary": "The exported StreamIdleTimeoutError class has no JSDoc, unlike the surrounding new constants and function in the same diff (violating the repo's 'JSDoc on classes' convention).",
+   "file": "fetcherService.ts",
+   "line": 312,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a7c05a2c0762c7cdd/guidance-adherence",
+     "severity": "nit"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-adda7b8b91464b12b/validator",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-ade641c626b471905/comment-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 55,
+   "rationale": "True that StreamIdleTimeoutError (L312) lacks JSDoc while the sibling constants/function have it, but a strict 'JSDoc on all classes' convention is only weakly supported in this file. Low-value style nit; defaulted down."
+  },
+  {
+   "cluster_id": "c27",
+   "summary": "The test helper's JSDoc ('Creates a DestroyableStream...') is physically attached to the ControllableStream interface rather than the createControllableStream factory, so IDE hover on the interface reads wrongly.",
+   "file": "streamIdleTimeout.spec.ts",
+   "line": 10,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a7c05a2c0762c7cdd/guidance-adherence",
+     "severity": "nit"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-aa74a225743e8951a/validator",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-ade641c626b471905/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a7d011ea7a7757106/silent-failure-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a8e3e8bc0e57ea65d/comment-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 55,
+   "rationale": "Objectively true \u2014 the 'Creates a DestroyableStream...' JSDoc sits on the ControllableStream interface, not the createControllableStream factory (spec diff L171-181). But it is a test-helper doc placement with negligible impact; borderline valid-minor defaulted down."
+  },
+  {
+   "cluster_id": "c28",
+   "summary": "withStreamIdleTimeout hand-rolls setTimeout/clearTimeout/flag bookkeeping instead of the codebase's canonical raceTimeout(promise, timeoutMs, onTimeout) helper (async.ts:152) used elsewhere for race-with-destructive-cleanup.",
+   "file": "fetcherService.ts",
+   "line": 328,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a8593af8c6b0f56d1/consistency-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a30dbf2609aad9fbf/consistency-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 55,
+   "rationale": "raceTimeout does exist (async.ts:152), but it is a one-shot race returning T|undefined \u2014 it does not cleanly cover the reset-per-chunk idle timer + isFirstChunk switch + typed-error semantics here, and returning undefined would conflate timeout with a real undefined chunk. Adopting it is not a clean win; consistency-taste suggestion that isn't demonstrably correct."
+  },
+  {
+   "cluster_id": "c29",
+   "summary": "A throwing `await iterator.return?.()` in the finally propagates first and masks the intended StreamIdleTimeoutError (or an original error), because it runs during unwinding.",
+   "file": "fetcherService.ts",
+   "line": 366,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a7d011ea7a7757106/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a4c244fe84a387172/blind-hunter",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 55,
+   "rationale": "Verified: the `if (timedOut) throw` sits AFTER the try/finally (L371), and the finally does `await iterator.return?.()` (L368). If that return throws/rejects during unwinding (plausible: DestroyableStream's return runs releaseLock on an already-cancelled reader), it propagates first and masks the intended StreamIdleTimeoutError (or an original error). Diff-verifiable masking edge distinct from c4/c11."
+  },
+  {
+   "cluster_id": "c30",
+   "summary": "On timeout, chunks already yielded/side-effected before the throw remain in the downstream accumulator; unchanged upstream handlers could present a truncated partial answer as complete with no truncation marker (the buffered-completions-before-error ordering in AsyncIterableObject compounds this).",
+   "file": "stream.ts",
+   "line": 322,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+     "severity": "info"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 52,
+   "rationale": "Downstream consequence-of-primary that hedges ('could present') and depends on UNCHANGED upstream handlers (out of diff): if the timeout throw propagates the consumer gets an error, not a 'complete' response, so 'partial presented as complete' requires the error to be swallowed/misclassified elsewhere. Speculative chain, not independently diff-verifiable; defaulted down."
+  },
+  {
+   "cluster_id": "c31",
+   "summary": "Claims the merged code measures/false-times-out on CONSUMER processing time ('measured consumer processing time... false timeouts under slow consumers'). REFUTED: the timer is cleared before yield (see known_safe), so consumer time is not timed \u2014 this is the earlier-commit bug the author fixed before merge.",
+   "file": "fetcherService.ts",
+   "line": 342,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a407e51e6acba63f2/validator",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "false-positive",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 88,
+   "rationale": "REFUTED (known_safe safe-consumer-time-cleared): the loop is startTimer()->await iterator.next()->clearTimer() (L354-356) BEFORE yield (L364), so consumer processing while suspended at yield is NOT timed. Comment L363 and the dedicated passing test 'consumer processing time longer than idle timeout does not cause false timeout' (advances 3x idle time during consumer processing) confirm it. This is the M1 trap \u2014 the earlier-commit bug the author fixed before merge."
+  },
+  {
+   "cluster_id": "c32",
+   "summary": "Assorted doc/comment nits: TTFT-wording imprecision, the SSE_IDLE comment stating the hung-connection heuristic as fact, the positional 'the timer is cleared above' comment-rot risk, and non-failing {@link} references.",
+   "file": "fetcherService.ts",
+   "line": 300,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-ade641c626b471905/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-ade641c626b471905/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-ade641c626b471905/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 58,
+   "rationale": "Grab-bag of doc nits (TTFT wording overlaps c24; the 'gaps this long indicate a hung connection' comment stating the flawed premise as fact; positional 'timer cleared above' comment-rot; {@link} references). Real kernels but bundled meta-commentary, low value."
+  },
+  {
+   "cluster_id": "c33",
+   "summary": "Assorted minor logic edges: if classification were ever changed to NetworkError a timeout would re-submit the full prompt; and timedOut is a one-way flag never reset, so a chunk arriving on the same in-flight read could still throw at stream end.",
+   "file": "fetcherService.ts",
+   "line": 312,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a4c244fe84a387172/blind-hunter",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 58,
+   "rationale": "'Assorted minor logic edges': the first ('if classification were ever changed to NetworkError...') is explicitly conditional/speculative, and the second (one-way timedOut flag, chunk on same in-flight read still throws) overlaps c11's race. Grab-bag speculation, low value."
+  }
+ ]
+}

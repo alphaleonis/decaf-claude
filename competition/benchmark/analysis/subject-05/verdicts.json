@@ -1,0 +1,282 @@
+[
+ {
+  "cluster_id": "c6",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 68,
+  "rationale": "Verified: withStreamIdleTimeout calls stream.destroy() with NO reason (fetcherService.ts:346); DestroyableStream.destroy()->reader.cancel() (L291) with reason=undefined; the counting TransformStream's cancel callback maps reason=undefined to outcome:'cancel' (L104-106). So a watchdog teardown telemeters identically to a benign user cancel \u2014 the false-timeout rate is unmeasurable. Diff-verifiable observability defect (the 'telemetry-as-cancel' candidate)."
+ },
+ {
+  "cluster_id": "c5",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 58,
+  "rationale": "processError (chatMLFetcher.ts:1949, out of diff) is pre-existing handling; a StreamIdleTimeoutError would fall to the generic else->Failed (L2007-2015). But the specific 'err.fetcherId->NetworkError firewall message' path is not reached \u2014 this plain Error has no fetcherId, and isFetcherError won't tag it (fetcherId is set only on fetch-request errors, baseFetchFetcher.ts:59). The real reverted regression surfaced as 'length limit', not a firewall message, so the concrete mechanism is unreliable; out-of-scope pre-existing classification."
+ },
+ {
+  "cluster_id": "c13",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 68,
+  "rationale": "Verified vacuous: the only post-break check is `await stream.destroy()` not throwing. If the finally's iterator.return?.() forwarding (fetcherService.ts:368) were removed, the inner DestroyableStream iterator's finally never runs so the reader stays locked, but destroy()->reader.cancel() still resolves without throwing regardless. The test cannot detect the regression it names \u2014 a real test-quality defect (the 'reader-lock test is vacuous' candidate)."
+ },
+ {
+  "cluster_id": "c22",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 66,
+  "rationale": "The timer is cleared before each yield and in finally (L356/367), so it is rarely pending long; the finding itself concedes it is 'cosmetic \u2014 always cleared promptly'. During an active read the reference is intended (streaming in progress). Taste-only."
+ },
+ {
+  "cluster_id": "c17",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 56,
+  "rationale": "True that tests assert err.name + message substring rather than instanceof, but the actual downstream contract keys off .name/.message (processError uses name/message, not instanceof) and no consumer uses `instanceof StreamIdleTimeoutError`. The 'spoofed name' / 'instanceof consumers' risk is speculative; name-checking is aligned with real usage. Marginal taste."
+ },
+ {
+  "cluster_id": "c27",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 55,
+  "rationale": "Objectively true \u2014 the 'Creates a DestroyableStream...' JSDoc sits on the ControllableStream interface, not the createControllableStream factory (spec diff L171-181). But it is a test-helper doc placement with negligible impact; borderline valid-minor defaulted down."
+ },
+ {
+  "cluster_id": "c28",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 55,
+  "rationale": "raceTimeout does exist (async.ts:152), but it is a one-shot race returning T|undefined \u2014 it does not cleanly cover the reset-per-chunk idle timer + isFirstChunk switch + typed-error semantics here, and returning undefined would conflate timeout with a real undefined chunk. Adopting it is not a clean win; consistency-taste suggestion that isn't demonstrably correct."
+ },
+ {
+  "cluster_id": "c3",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 68,
+  "rationale": "Verified: SSE_FIRST_CHUNK_TIMEOUT_MS/SSE_IDLE_TIMEOUT_MS are hardcoded module constants applied unconditionally (fetcherService.ts:303/310), while the path uses getExperimentBasedConfig/ConfigKey elsewhere (chatMLFetcher.ts:575). No config gate / kill switch means the behavior couldn't be disabled without a release \u2014 concretely relevant given the whole feature had to be reverted. Concrete one-shot fix (gate behind a ConfigKey)."
+ },
+ {
+  "cluster_id": "c26",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 55,
+  "rationale": "True that StreamIdleTimeoutError (L312) lacks JSDoc while the sibling constants/function have it, but a strict 'JSDoc on all classes' convention is only weakly supported in this file. Low-value style nit; defaulted down."
+ },
+ {
+  "cluster_id": "c4",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 58,
+  "rationale": "Concretely argued: the typed-error signaling relies on destroy()->reader.cancel() making the pending `await iterator.next()` resolve {done:true} so the loop breaks and reaches `if (timedOut) throw` (L358/371). If instead the read REJECTS (errored teardown), the post-loop throw is skipped and the caller sees a raw ECONNRESET/TypeError rather than the typed StreamIdleTimeoutError \u2014 an undocumented Web-Streams invariant the signaling depends on (answer-key valid-other candidate a)."
+ },
+ {
+  "cluster_id": "c1",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "critical",
+  "confidence": 96,
+  "rationale": "Exact primary: identifies that the watchdog actively destroys the stream when no NETWORK chunk arrives within 60s/2min, that such gaps occur legitimately during active generation (tool calls, extended thinking, slow TTFT, suspend/resume, dropped keepalives), and that this truncates live responses \u2014 the escaped, reverted defect (#308627/#308779). Names active-destroy AND the legitimacy of long gaps."
+ },
+ {
+  "cluster_id": "c20",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 56,
+  "rationale": "True that no test pushes a chunk exactly at the deadline (the 'does not time out' cases use a margin). But the chunk-vs-timer boundary is itself an inherent race (see c11) so a fake-timer boundary test would be fragile; speculative 'add a test' suggestion."
+ },
+ {
+  "cluster_id": "c32",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 58,
+  "rationale": "Grab-bag of doc nits (TTFT wording overlaps c24; the 'gaps this long indicate a hung connection' comment stating the flawed premise as fact; positional 'timer cleared above' comment-rot; {@link} references). Real kernels but bundled meta-commentary, low value."
+ },
+ {
+  "cluster_id": "c7",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 55,
+  "rationale": "Overstates: destroy() DOES emit a fetch telemetry event via the counting stream (as 'cancel', L104-106), so a timeout is not 'invisible' \u2014 it is misattributed (that precise defect is c6's). As a broad 'add dedicated observability' suggestion it is weaker and overlapping; defaulted down."
+ },
+ {
+  "cluster_id": "c8",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 72,
+  "rationale": "Correctly acknowledges the empty `.catch(() => {})` is intentional (not an unhandled rejection) and critiques the absence of observability \u2014 a systemic destroy()/reader.cancel() failure is swallowed with no log (L346). Answer-key-blessed valid-minor (distinguished from the safe-destroy-catch false positive)."
+ },
+ {
+  "cluster_id": "c29",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 55,
+  "rationale": "Verified: the `if (timedOut) throw` sits AFTER the try/finally (L371), and the finally does `await iterator.return?.()` (L368). If that return throws/rejects during unwinding (plausible: DestroyableStream's return runs releaseLock on an already-cancelled reader), it propagates first and masks the intended StreamIdleTimeoutError (or an original error). Diff-verifiable masking edge distinct from c4/c11."
+ },
+ {
+  "cluster_id": "c3b",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 55,
+  "rationale": "Presupposes the false-positive problem (the primary) rather than establishing it, then argues a scoping preference. 'Scope to messagesApi only' rests on external revert/follow-up knowledge not verifiable from the diff and is speculative blast-radius reasoning; design taste, defaulted down."
+ },
+ {
+  "cluster_id": "c23",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 55,
+  "rationale": "Type-design grab-bag: exposing timeoutMs/isFirstChunk as readonly fields instead of folding into the message (L313-317) is a fair minor kernel, but 'boolean allows contradictory instances' and 'AsyncGenerator<T> wider than for-await contract' are taste. Bundled taste, defaulted down."
+ },
+ {
+  "cluster_id": "c11",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 60,
+  "rationale": "Same-tick race, concretely argued via event-loop phases: if the timer becomes due in the same iteration the final chunk/clean-close arrives, the timers phase runs the callback first (timedOut=true, destroy()), the pending read then resolves done, the loop breaks and `if (timedOut) throw` fires \u2014 mis-reporting a successful completion as a timeout (answer-key valid-other candidate b)."
+ },
+ {
+  "cluster_id": "c31",
+  "verdict": "false-positive",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 88,
+  "rationale": "REFUTED (known_safe safe-consumer-time-cleared): the loop is startTimer()->await iterator.next()->clearTimer() (L354-356) BEFORE yield (L364), so consumer processing while suspended at yield is NOT timed. Comment L363 and the dedicated passing test 'consumer processing time longer than idle timeout does not cause false timeout' (advances 3x idle time during consumer processing) confirm it. This is the M1 trap \u2014 the earlier-commit bug the author fixed before merge."
+ },
+ {
+  "cluster_id": "c12",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 55,
+  "rationale": "True that the timer resets per chunk with no absolute-duration cap or min-throughput check, so a slow-drip (a byte/keepalive every <60s) evades the watchdog \u2014 but this is a pre-existing exposure the diff does not worsen (there was no timeout before), the 'SSEProcessor buffers grow unbounded' claim is dubious (chunks are processed incrementally), and the scenario is adversarial/speculative. Incomplete-protection observation, defaulted down."
+ },
+ {
+  "cluster_id": "c2",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "high",
+  "confidence": 70,
+  "rationale": "Verified: withStreamIdleTimeout flips isFirstChunk=false on the first NETWORK chunk regardless of content (L362), while CAPI sends an early administrative chunk with empty choices holding prompt_filter_results (stream.ts:409 comment). So the first transport bytes collapse the 2-min TTFT budget to the 60s idle timeout, and a reasoning model silent >60s after that admin chunk is killed \u2014 a distinct, diff-verifiable mechanism (the 'isFirstChunk collapse' candidate) that compounds the primary."
+ },
+ {
+  "cluster_id": "c10",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 60,
+  "rationale": "Verified: stream.ts returns on [DONE] (L340-342), but messagesApi.ts:596-598 and responsesApi.ts:537-539 feed the parser and never break on a terminal event \u2014 they emit the completion (feed.emitOne) yet keep iterating. If the server emits message_stop/response.completed but hangs before closing the socket, the idle timer fires 60s later and throws StreamIdleTimeoutError over an already-complete response (terminal-event-then-hang candidate)."
+ },
+ {
+  "cluster_id": "c19",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 55,
+  "rationale": "True there is no negative-control test for a zero-chunk close (done on first next(), isFirstChunk stays true, timedOut false). Low-value 'add a test'; the corresponding regression is unlikely and the assertion is minor. Defaulted down."
+ },
+ {
+  "cluster_id": "c25",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 56,
+  "rationale": "Knowledge-preservation 'document more' critique: real subtlety exists (the timeout path exits via the same `if (result.done) break` as clean EOF, distinguished only by the timedOut flag), but the finding is a speculative maintainer-error/add-comments suggestion, not a defect. Low value."
+ },
+ {
+  "cluster_id": "c24",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 75,
+  "rationale": "Verified objective doc error: the JSDoc says the first-chunk timeout gets 'slightly more time' (L300-301), but SSE_FIRST_CHUNK_TIMEOUT_MS=2*60*1000 is exactly double SSE_IDLE_TIMEOUT_MS=60*1000, not slightly more. Concrete one-shot fix (answer-key valid-minor candidate)."
+ },
+ {
+  "cluster_id": "c30",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 52,
+  "rationale": "Downstream consequence-of-primary that hedges ('could present') and depends on UNCHANGED upstream handlers (out of diff): if the timeout throw propagates the consumer gets an error, not a 'complete' response, so 'partial presented as complete' requires the error to be swallowed/misclassified elsewhere. Speculative chain, not independently diff-verifiable; defaulted down."
+ },
+ {
+  "cluster_id": "c33",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 58,
+  "rationale": "'Assorted minor logic edges': the first ('if classification were ever changed to NetworkError...') is explicitly conditional/speculative, and the second (one-way timedOut flag, chunk on same in-flight read still throws) overlaps c11's race. Grab-bag speculation, low value."
+ },
+ {
+  "cluster_id": "c14",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 62,
+  "rationale": "HUMAN-ADJUDICATED (was false-positive): the grader correctly noted that removing stream.destroy() would make the tests HANG (not silently pass), refuting the imprecise 'would still pass' phrasing in the cluster summary. But the underlying findings are a real valid-minor test-quality gap: there is no EXPLICIT assertion that destroy()/reader.cancel() is invoked or the timer cleared, so a teardown regression fails only as a slow unclear runner timeout, and the destroy-failure path (empty .catch) is untested. Concrete fix: assert teardown + vi.getTimerCount()===0."
+ },
+ {
+  "cluster_id": "c21",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 56,
+  "rationale": "Meta/speculative test-fragility commentary about test 7 driving the same fake clock from inside and outside the code-under-test. The test passes as written; 'could go flaky under one extra await hop' is unproven. Low value."
+ },
+ {
+  "cluster_id": "c9",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 68,
+  "rationale": "Self-labeled 'pre-existing/out-of-diff coverage gap'. Verified other bare-for-await body consumers exist (Response.text() fetcherService.ts:134; completions-core SSEProcessor; nesFetch completionsFetchServiceImpl), but the diff did not touch them \u2014 explicitly the out-of-scope 'other unwrapped consumers' case the rubric maps to trivia."
+ },
+ {
+  "cluster_id": "c16",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 60,
+  "rationale": "Integration-coverage 'add more tests' suggestion for the three production call sites; unbounded and out of the unit's scope (the spec drives the generator directly, which is appropriate). Note the sub-claim 'never through a real for-await consumer' is inaccurate \u2014 tests DO use for-await (spec L209/265). Low value."
+ },
+ {
+  "cluster_id": "c18",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 63,
+  "rationale": "Verified: tests assert only 'first chunk'/'inactivity' substrings (driven by isFirstChunk), never the numeric ${timeoutMs} embedded in the message (L314-316). Swapping the throw-site ternary/constants would change the number but keep the substrings, so the tests would still pass. Concrete assertion to add; low severity (message-only, not behavioral)."
+ },
+ {
+  "cluster_id": "c15",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 58,
+  "rationale": "Verified gap: no test exercises a genuine underlying-stream error (controller.error while awaiting a chunk). The contract is meaningful \u2014 on a real read rejection the wrapper clears the timer (finally) and, with timedOut false, propagates the original error unmodified rather than masking it as StreamIdleTimeoutError. Concrete test to add for a real correctness contract."
+ },
+ {
+  "cluster_id": "c8b",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 55,
+  "rationale": "Largely speculative and partly refuted: destroy() returns reader.cancel()/stream.cancel() promises so a SYNCHRONOUS throw inside setTimeout is unlikely, and the 'stream.cancel() branch while reader still locked -> TypeError' case is guarded against \u2014 destroy() takes the reader.cancel() branch whenever this.reader is set (L289-295), which it is during an active read. Speculative edge musing, low value."
+ }
+]

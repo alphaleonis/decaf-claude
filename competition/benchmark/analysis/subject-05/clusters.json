@@ -1,0 +1,2321 @@
+[
+ {
+  "cluster_id": "c1",
+  "summary": "The idle watchdog actively destroys the stream when no network chunk arrives within SSE_IDLE_TIMEOUT_MS (60s) / SSE_FIRST_CHUNK_TIMEOUT_MS (2min), but such gaps occur legitimately during active generation (server-side tool calls, extended thinking, slow TTFT, OS suspend/resume, proxies dropping keepalives), so the watchdog terminates streams that are not actually hung \u2014 truncating live responses. The escaped, reverted defect.",
+  "file": "fetcherService.ts",
+  "line": 310,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a12aa809544392862/historical-git-context",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a214f8ca9d88a220d/prior-pr-feedback",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a74a87c6445f293f2/validator",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a26bdd89b96e8b2b5",
+    "severity": "critical"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a26bdd89b96e8b2b5",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a78a7d511f378e518",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-ac86284f1e73a7a75",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a160c47e96343a142/adversarial-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a18ae6c33071dff71/broad-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a9f8434733e3db146/quick-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a29689de952cb04a7/adversarial-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-ae2f860ebb4b90b54/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a9507cc2ce218d16f",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ab67d4274da85b3be/adversarial-general",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a3ad3c2f45cdf5120/adversarial-general",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c2",
+  "summary": "'First chunk' means first transport bytes, not first model output: an early administrative/empty chunk (e.g. CAPI prompt_filter_results at stream.ts:409) flips isFirstChunk=false, collapsing the 2-minute TTFT budget to the 60s idle timeout, so a reasoning model silent >60s after that chunk is killed.",
+  "file": "fetcherService.ts",
+  "line": 362,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a160c47e96343a142/adversarial-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a693ed17fb3246be8/finding-validator",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c3",
+  "summary": "The 60s/2min thresholds are hardcoded module constants applied unconditionally with no config/experiment gate and no kill switch, diverging from the path's getExperimentBasedConfig/ConfigKey convention \u2014 so the behavior cannot be tuned or disabled without a code release.",
+  "file": "fetcherService.ts",
+  "line": 303,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a3ad67a9f2a157455/design-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a3959bcf45aa3b00a/broad-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-ae18794412ae3d9f0/design-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a9507cc2ce218d16f",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-ab54e9894497372af",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ad6b2913c7d9e5470/architecture-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-ac0d6c7404c097eb9/architecture-reviewer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c3b",
+  "summary": "The wrapper is applied uniformly to all three SSE consumers rather than scoped to the endpoint where hangs were observed, maximizing the false-positive blast radius (the accepted follow-up scoped its observe-only watchdog to messagesApi only).",
+  "file": "stream.ts",
+  "line": 323,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a12aa809544392862/historical-git-context",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-ae26078355c8a06c8/validator",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c4",
+  "summary": "If stream.destroy() -> reader.cancel() makes the pending `await iterator.next()` REJECT instead of resolving {done:true}, the post-loop `if (timedOut) throw StreamIdleTimeoutError` is never reached, so the caller sees a raw teardown error (ECONNRESET/TypeError) rather than the typed timeout \u2014 the whole signaling path silently relies on an undocumented Web Streams invariant.",
+  "file": "fetcherService.ts",
+  "line": 355,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a1658cd2c7bb11202/blind-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a4c244fe84a387172/blind-hunter",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c5",
+  "summary": "The new StreamIdleTimeoutError is not recognized by the downstream error-classification chain (processError in chatMLFetcher.ts, out of diff): it carries no .code and no retryable flag, so a timed-out-but-recoverable stream is misclassified (generic Failed or, via err.fetcherId tagging, NetworkError with a misleading 'check your firewall' message) and excluded from the auto-retry path.",
+  "file": "chatMLFetcher.ts",
+  "line": 1949,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a12aa809544392862/historical-git-context",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-ac811d5095d37a3bb/validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a160c47e96343a142/adversarial-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a18ae6c33071dff71/broad-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1901af5f73be11aa/knowledge-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a3ad67a9f2a157455/design-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a52f656c26ae50c59/finding-validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a9f8434733e3db146/quick-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a29689de952cb04a7/adversarial-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-ae18794412ae3d9f0/design-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a07e9fa7e27db72ba/validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a17b8ac373240327d/validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a9507cc2ce218d16f",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-ab54e9894497372af",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ab67d4274da85b3be/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ad6b2913c7d9e5470/architecture-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a3ad3c2f45cdf5120/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a842bda29bea58d59/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-aa92506a2c75a9283/type-design-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c6",
+  "summary": "The watchdog kills via stream.destroy() with no reason, so reader.cancel(undefined) propagates through the counting TransformStream and the fetch is recorded in telemetry as outcome:'cancel' \u2014 indistinguishable from a benign user cancellation, so hung-stream/false-timeout frequency cannot be measured or alerted on.",
+  "file": "fetcherService.ts",
+  "line": 346,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a160c47e96343a142/adversarial-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a18ae6c33071dff71/broad-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a4658e96dfaf2932a/security-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a8f015f2b0ba25a5f/finding-validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a9f8434733e3db146/quick-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a3959bcf45aa3b00a/broad-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-ae18794412ae3d9f0/design-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a4437832360f9d633/validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a9507cc2ce218d16f",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ab67d4274da85b3be/adversarial-general",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c7",
+  "summary": "When the watchdog fires it emits no dedicated log/metric/telemetry at the source (the module has no logger); a hung-stream timeout is invisible except by string-matching the exception, and the error carries no request/model/deployment context for correlation.",
+  "file": "fetcherService.ts",
+  "line": 344,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a12aa809544392862/historical-git-context",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a7d011ea7a7757106/silent-failure-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a3ad3c2f45cdf5120/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a842bda29bea58d59/silent-failure-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a842bda29bea58d59/silent-failure-hunter",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c8",
+  "summary": "`void stream.destroy().catch(() => {})` swallows every rejection from destroy()/reader.cancel() with no logging, so a systemic teardown failure becomes undiagnosable. (The empty catch itself is intentional \u2014 the critique is the absence of observability, not an unhandled rejection.)",
+  "file": "fetcherService.ts",
+  "line": 346,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1de23e01ed9f9b1f/typescript-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a6e8a589b48712b3f/finding-validator",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aa3117a56394a7701/typescript-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a1658cd2c7bb11202/blind-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-aa0bee53694c45a7d/comment-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c8b",
+  "summary": "Edge in the timer callback's destroy(): `.catch()` handles an async rejection but not a SYNCHRONOUS throw from destroy() inside setTimeout (would be uncaught), and if destroy() takes the stream.cancel() branch while the reader is still locked it rejects with TypeError (swallowed), potentially leaving the read hung.",
+  "file": "fetcherService.ts",
+  "line": 346,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c9",
+  "summary": "Pre-existing/out-of-diff coverage gap: the watchdog was applied to only 3 SSE consumers; structurally identical consumers (completions-core SSEProcessor at stream.ts:293, oaiLanguageModelServer/claudeLanguageModelServer pass-throughs, nesFetch, Response.text()) still iterate the body with a bare for-await and no timeout, so they remain exposed to the same hang.",
+  "file": "stream.ts",
+  "line": 293,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a3ad67a9f2a157455/design-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a4658e96dfaf2932a/security-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a30dbf2609aad9fbf/consistency-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a3959bcf45aa3b00a/broad-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a9e6f1616371b157e/quick-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aa3117a56394a7701/typescript-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aa3117a56394a7701/typescript-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-ae18794412ae3d9f0/design-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-ae18794412ae3d9f0/design-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-ac3da3c520b44f5be/validator",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-ae2f860ebb4b90b54/code-reviewer",
+    "severity": "info"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ab67d4274da85b3be/adversarial-general",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a3ad3c2f45cdf5120/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-ac0d6c7404c097eb9/architecture-reviewer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c10",
+  "summary": "Terminal-event-then-hang: the server emits a full response (message_stop / response.completed) but hangs before closing the socket; messagesApi/responsesApi do not return on terminal events (unlike stream.ts's [DONE] handling), so the idle timer fires 60s later and StreamIdleTimeoutError discards an already-complete response \u2014 converting success into a retroactive failure.",
+  "file": "messagesApi.ts",
+  "line": 596,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a29689de952cb04a7/adversarial-reviewer",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c11",
+  "summary": "Same-event-loop-tick race: a chunk (or clean close) arriving in the same loop iteration the timeout becomes due is discarded because the timers phase runs before the poll phase, so a successful completion can be mis-reported as a timeout.",
+  "file": "fetcherService.ts",
+  "line": 342,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-ae2f860ebb4b90b54/code-reviewer",
+    "severity": "info"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-ab54e9894497372af",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c12",
+  "summary": "The idle timer resets on every chunk with no absolute stream-duration cap and no minimum-throughput check, so a slow-drip endpoint (one byte or a ':' keepalive every <60s) holds the connection open indefinitely and grows SSEProcessor buffers unbounded.",
+  "file": "fetcherService.ts",
+  "line": 354,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a9507cc2ce218d16f",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ad435bae3e12b65dc/security-reviewer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c13",
+  "summary": "The 'consumer break releases the underlying reader lock' test is a false positive: its only post-break check is that stream.destroy() does not throw, which resolves identically whether or not the finally's iterator.return?.() forwarding exists, so it cannot detect the regression it names.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 142,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a25d1d886e2daf91c/test-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a317d5ca56a1681bb/finding-validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a824e86a776deda9b/test-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-af7114265ec72c7fa/validator",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c14",
+  "summary": "The timeout tests never assert stream.destroy()/reader.cancel() is actually invoked on timeout (nor that the timer is cleared) \u2014 a regression that stopped tearing down the hung stream would still pass; only the thrown error's name/message is checked.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 55,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a824e86a776deda9b/test-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a9507cc2ce218d16f",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-ab54e9894497372af",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c15",
+  "summary": "No test covers a genuine underlying-stream error (controller.error while awaiting a chunk): the wrapper should clear the timer and propagate the original error unmodified, not mask it as StreamIdleTimeoutError, but that contract is unpinned.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 1,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a18ae6c33071dff71/broad-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a25d1d886e2daf91c/test-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a824e86a776deda9b/test-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-ab54e9894497372af",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c16",
+  "summary": "No test exercises the three production call sites: processResponseFromMessagesEndpoint (and the responsesApi/stream.ts sites) have no coverage that a mid-stream StreamIdleTimeoutError propagates sensibly; the tests drive the generator directly, never through a real for-await consumer.",
+  "file": "messagesApi.ts",
+  "line": 596,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a3ad3c2f45cdf5120/adversarial-general",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c17",
+  "summary": "The timeout tests match on err.name string comparison (and a message substring) rather than `instanceof StreamIdleTimeoutError`, despite importing the class \u2014 a look-alike error with a spoofed name would satisfy the assertion while consumer instanceof checks silently stop matching.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 66,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a824e86a776deda9b/test-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c18",
+  "summary": "The timeout tests assert only the isFirstChunk-driven message substrings ('first chunk'/'inactivity'), never the numeric timeoutMs, so swapping the two constants at the throw site would still pass.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 69,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+    "severity": "nit"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c19",
+  "summary": "No negative-control test closes a stream with zero chunks (result.done true on the first next(), isFirstChunk never flips, timedOut false): a regression treating 'closed empty' as a first-chunk timeout would go uncaught.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 40,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-adfe87cfb39449dc0/pr-test-analyzer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c20",
+  "summary": "No test exercises a chunk arriving at/near the exact idle-timeout deadline (the chunk-vs-timer boundary); all 'does not time out' cases push chunks with a safety margin.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 342,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a475675ccb4a8aa64/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a0f9b7bdd3db2d3c4/pr-test-analyzer",
+    "severity": "critical"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c21",
+  "summary": "The fake-timer tests are fragile: test 7 drives the same fake clock from inside the code-under-test's loop and the outer body concurrently, an order-sensitive pattern relying on undocumented advanceTimersByTimeAsync draining depth that could go flaky or hang under one extra await hop.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 161,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a7c05a2c0762c7cdd/guidance-adherence",
+    "severity": "nit"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a26bdd89b96e8b2b5",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a25d1d886e2daf91c/test-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a824e86a776deda9b/test-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a6765ac04d7f77749/pr-test-analyzer",
+    "severity": "nit"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c22",
+  "summary": "The idle setTimeout is not .unref()'d, so a pending 1-2 minute timer keeps the event loop referenced (cosmetic \u2014 it is always cleared promptly).",
+  "file": "fetcherService.ts",
+  "line": 336,
+  "category": "perf",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1de23e01ed9f9b1f/typescript-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-ab54e9894497372af",
+    "severity": "nit"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c23",
+  "summary": "StreamIdleTimeoutError type design: timeoutMs and isFirstChunk are folded into the message string and discarded rather than exposed as readonly fields (forcing message.includes parsing to distinguish first-chunk vs idle), the boolean allows contradictory instances, and the declared AsyncGenerator<T> return type is wider than the for-await-only contract.",
+  "file": "fetcherService.ts",
+  "line": 312,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1de23e01ed9f9b1f/typescript-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a796f632562b5fe08/type-design-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a709b12fc027a9afd/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a709b12fc027a9afd/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a709b12fc027a9afd/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a709b12fc027a9afd/type-design-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a1658cd2c7bb11202/blind-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a44117cfee7fdd47a/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a4c244fe84a387172/blind-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-aa92506a2c75a9283/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-aa92506a2c75a9283/type-design-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c24",
+  "summary": "The JSDoc says the first-chunk timeout gets 'slightly more time', but SSE_FIRST_CHUNK_TIMEOUT_MS (120s) is exactly double SSE_IDLE_TIMEOUT_MS (60s), not slightly more.",
+  "file": "fetcherService.ts",
+  "line": 300,
+  "category": "doc",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-ade641c626b471905/comment-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-ab54e9894497372af",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-aa0bee53694c45a7d/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a8e3e8bc0e57ea65d/comment-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c25",
+  "summary": "The watchdog's non-obvious mechanism and heuristics are undocumented: no comment records why 60s/2min, the liveness invariant (watchdog wraps the raw byte stream so SSE keepalives reset the timer; every endpoint must emit more often than 60s), or that the timeout path exits the loop through the same `if (result.done) break` as clean EOF \u2014 so a maintainer could 'simplify' the post-loop throw and silently break the timeout path.",
+  "file": "fetcherService.ts",
+  "line": 305,
+  "category": "doc",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a123e9219d9bfe887/finding-validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1901af5f73be11aa/knowledge-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1901af5f73be11aa/knowledge-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aac8c57e06af2bed4/knowledge-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aac8c57e06af2bed4/knowledge-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-af0e0ddbd549546cf/validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a1dfd676ffd0cbe00/validator",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a02a3b63da40facc3/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c26",
+  "summary": "The exported StreamIdleTimeoutError class has no JSDoc, unlike the surrounding new constants and function in the same diff (violating the repo's 'JSDoc on classes' convention).",
+  "file": "fetcherService.ts",
+  "line": 312,
+  "category": "doc",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a7c05a2c0762c7cdd/guidance-adherence",
+    "severity": "nit"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-adda7b8b91464b12b/validator",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-ade641c626b471905/comment-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c27",
+  "summary": "The test helper's JSDoc ('Creates a DestroyableStream...') is physically attached to the ControllableStream interface rather than the createControllableStream factory, so IDE hover on the interface reads wrongly.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 10,
+  "category": "doc",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a7c05a2c0762c7cdd/guidance-adherence",
+    "severity": "nit"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-aa74a225743e8951a/validator",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-ade641c626b471905/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a7d011ea7a7757106/silent-failure-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a8e3e8bc0e57ea65d/comment-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c28",
+  "summary": "withStreamIdleTimeout hand-rolls setTimeout/clearTimeout/flag bookkeeping instead of the codebase's canonical raceTimeout(promise, timeoutMs, onTimeout) helper (async.ts:152) used elsewhere for race-with-destructive-cleanup.",
+  "file": "fetcherService.ts",
+  "line": 328,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a8593af8c6b0f56d1/consistency-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a30dbf2609aad9fbf/consistency-reviewer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c29",
+  "summary": "A throwing `await iterator.return?.()` in the finally propagates first and masks the intended StreamIdleTimeoutError (or an original error), because it runs during unwinding.",
+  "file": "fetcherService.ts",
+  "line": 366,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a7d011ea7a7757106/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a4c244fe84a387172/blind-hunter",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c30",
+  "summary": "On timeout, chunks already yielded/side-effected before the throw remain in the downstream accumulator; unchanged upstream handlers could present a truncated partial answer as complete with no truncation marker (the buffered-completions-before-error ordering in AsyncIterableObject compounds this).",
+  "file": "stream.ts",
+  "line": 322,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-acfd2475050ef1f9d/silent-failure-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a8965355be2e113bc/silent-failure-hunter",
+    "severity": "info"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c31",
+  "summary": "Claims the merged code measures/false-times-out on CONSUMER processing time ('measured consumer processing time... false timeouts under slow consumers'). REFUTED: the timer is cleared before yield (see known_safe), so consumer time is not timed \u2014 this is the earlier-commit bug the author fixed before merge.",
+  "file": "fetcherService.ts",
+  "line": 342,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a407e51e6acba63f2/validator",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c32",
+  "summary": "Assorted doc/comment nits: TTFT-wording imprecision, the SSE_IDLE comment stating the hung-connection heuristic as fact, the positional 'the timer is cleared above' comment-rot risk, and non-failing {@link} references.",
+  "file": "fetcherService.ts",
+  "line": 300,
+  "category": "doc",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a5eae520761e0f197/comment-analyzer",
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-ade641c626b471905/comment-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-ade641c626b471905/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-ade641c626b471905/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c33",
+  "summary": "Assorted minor logic edges: if classification were ever changed to NetworkError a timeout would re-submit the full prompt; and timedOut is a one-way flag never reset, so a chunk arriving on the same in-flight read could still throw at stream end.",
+  "file": "fetcherService.ts",
+  "line": 312,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a4c244fe84a387172/blind-hunter",
+    "severity": "low"
+   }
+  ]
+ }
+]
