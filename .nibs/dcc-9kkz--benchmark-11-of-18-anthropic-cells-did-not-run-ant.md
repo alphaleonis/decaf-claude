@@ -10,7 +10,7 @@ tags:
     - benchmark
     - validity
 created_at: 2026-07-28T21:15:14Z
-updated_at: 2026-07-28T21:15:44Z
+updated_at: 2026-07-28T21:20:00Z
 order: zzzk
 ---
 
@@ -72,6 +72,32 @@ finds survive; conclusions about *what it costs* do not.
   baselines they cite
 - **#dcc-05uw** — the evidence table
 - #dcc-m8ar's token fix is mechanical and unaffected
+
+# What the contaminated cells actually are — and one further distortion
+
+They ran ours **at `high` mode**, not the benchmarked `mid`. Every parsed cell reports
+`**Mode:** high` in its own output and wrote a `.decaf/code-reviews/CODE_REVIEW_*.md`.
+
+| subject | ours `mid` (own cells) | ours `high` (mislabeled cells) |
+|---|---|---|
+| 2 | $11.25 | $10.28 |
+| 3 | $27.97 | $32.25 |
+| 9 | $32.11 | $24.24 |
+| 10 | $17.35 | $20.37 |
+| **mean** | **$22.17** | **$20.29** |
+
+So they are **not poolable with ours' cells** — different mode, and a different invocation
+(no `--report`, "print every finding you would post", `gh` framing). They are, accidentally, the
+only measurement of ours at `high` in the study. [Inference] `high` ran ~8% *cheaper* than `mid`
+on the same subjects, on fewer agents (11.9 vs 13.5) despite the higher model tier. Suggestive
+only; the prompt differed, so treat it as a hint for the tier-measurement item in #dcc-e0wj
+workstream 2, not a result.
+
+**Further distortion — overlap and uniqueness are inflated.** `unique_true` counts clusters found
+by only one tool. On subjects 2, 3, 9 and 10 a cluster found by ours *and* by the mislabeled
+"anthropic" cell reads as two tools agreeing when it is **one tool at two settings**. That
+understates ours' uniqueness and overstates cross-tool corroboration, for those subjects. Any
+overlap/Jaccard figure covering them needs recomputing after the re-runs.
 
 # Fix
 
