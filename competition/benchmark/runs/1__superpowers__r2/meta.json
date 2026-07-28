@@ -30,10 +30,10 @@
   "session_tokens": {
     "subagents": 1,
     "input": 28,
-    "output": 11031,
+    "output": 27808,
     "cache_creation": 72182,
     "cache_read": 617835,
-    "total": 701076,
+    "total": 717853,
     "orchestrator": {
       "output": 6695,
       "total": 201981,
@@ -41,11 +41,11 @@
     },
     "per_subagent": [
       {
-        "output": 4336,
+        "output": 21113,
         "input": 21,
         "cache_creation": 58066,
         "cache_read": 436672,
-        "total": 499095,
+        "total": 515872,
         "duration_s": 293,
         "agent": "agent-a7ba309d5c5b37203"
       }

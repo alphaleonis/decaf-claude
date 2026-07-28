@@ -30,10 +30,10 @@
   "session_tokens": {
     "subagents": 7,
     "input": 121,
-    "output": 54667,
+    "output": 169145,
     "cache_creation": 509476,
     "cache_read": 3373323,
-    "total": 3937587,
+    "total": 4052065,
     "orchestrator": {
       "output": 48153,
       "total": 665594,
@@ -41,65 +41,65 @@
     },
     "per_subagent": [
       {
-        "output": 6150,
+        "output": 37950,
         "input": 30,
         "cache_creation": 87590,
         "cache_read": 1091808,
-        "total": 1185578,
+        "total": 1217378,
         "duration_s": 511,
         "agent": "agent-a143e8406ffd94925"
       },
       {
-        "output": 22,
+        "output": 8790,
         "input": 11,
         "cache_creation": 59635,
         "cache_read": 229650,
-        "total": 289318,
+        "total": 298086,
         "duration_s": 237,
         "agent": "agent-a4e9b0892a7eca4f4"
       },
       {
-        "output": 14,
+        "output": 16543,
         "input": 6,
         "cache_creation": 63058,
         "cache_read": 85713,
-        "total": 148791,
+        "total": 165320,
         "duration_s": 176,
         "agent": "agent-a73f9876d5388cc0e"
       },
       {
-        "output": 19,
+        "output": 10400,
         "input": 8,
         "cache_creation": 49147,
         "cache_read": 142303,
-        "total": 191477,
+        "total": 201858,
         "duration_s": 142,
         "agent": "agent-a75e87562018cb89d"
       },
       {
-        "output": 201,
+        "output": 17047,
         "input": 28,
         "cache_creation": 58633,
         "cache_read": 712885,
-        "total": 771747,
+        "total": 788593,
         "duration_s": 197,
         "agent": "agent-a96cb5dcbeffd8b11"
       },
       {
-        "output": 28,
+        "output": 15614,
         "input": 15,
         "cache_creation": 61396,
         "cache_read": 398307,
-        "total": 459746,
+        "total": 475332,
         "duration_s": 235,
         "agent": "agent-a9b6b158a4acbd1c8"
       },
       {
-        "output": 80,
+        "output": 14648,
         "input": 10,
         "cache_creation": 45267,
         "cache_read": 179979,
-        "total": 225336,
+        "total": 239904,
         "duration_s": 209,
         "agent": "agent-a9f5c8b406f60e81b"
       }

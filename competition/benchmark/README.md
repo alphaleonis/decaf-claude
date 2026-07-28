@@ -55,11 +55,24 @@ Run IDs are `<subject_id>__<tool>__r<repeat>` (e.g. `11__tag1-comprehensive-revi
 > **orchestrator session only** — it misses every subagent's tokens (for a 5-agent tool that's ~60%
 > of the real spend). So the harness ALSO sums the subagent transcripts
 > (`~/.claude/projects/<proj>/<session_id>/subagents/agent-*.jsonl`), deduped by message id, into
-> `session_tokens` (the `ws_*` columns). Two things to keep in mind:
+> `session_tokens` (the `ws_*` columns). Things to keep in mind:
 > - **`cost_usd` is the authoritative whole-session figure** (Claude Code sums subagents; it is billed
 >   cost, not an estimate) — the primary cross-tool comparable.
 > - **`ws total_tokens` is prompt-cache-inflated** (cache_read is re-counted every turn), so it is not a
 >   clean "work" measure. **`ws output_tokens`** is the clean, cache-independent token signal.
+> - **Dedup takes the LAST usage record per message id, not the first.** A transcript writes one line
+>   per *content block*, and on streamed responses each line carries the usage as it stood when that
+>   block was emitted — one message reads e.g. `[5, 5, 278]` and only the final entry is cumulative.
+>   Taking the first under-counted **sub-agent** output by ~10× (orchestrator figures were unaffected,
+>   their lines already carrying the final value). Fixed and all runs backfilled 2026-07-28; see
+>   #dcc-m8ar. Check any run with `scripts/verify_subagent_tokens.py` — it compares each
+>   `per_subagent[].output` against the agent's own archived transcript and exits non-zero if a
+>   recorded figure is below the text that agent demonstrably emitted.
+> - **`per_subagent[].output` is unrecoverable for 2 of 742 rows** (`5__tag1…__r1`, `7__tag1…__r2`):
+>   those transcripts hold a single message id whose usage lines are all partial, so no final count
+>   was ever written. That is an upstream capture gap; both are allowlisted in the verifier with
+>   their reason. Six further rows sit 1–2× under the verifier's `bytes/4` estimate, which is inside
+>   that heuristic's error band rather than evidence of a defect.
 
 ## What each run captures (`runs/<run_id>/`)
 
@@ -93,7 +106,8 @@ size, status). This is the comparable dataset for the write-up.
   is reproducible even as the repos move on.
 - **Session model held constant** (`BENCH_MODEL` in `config.env`). **Confound (documented, not
   removed):** some tools hard-pin their own models regardless — Anthropic `/code-review` pins
-  haiku/sonnet/opus by role; Tag1 pins Opus for 2 agents; ours tiers off the session model. Each
+  haiku/sonnet by role (5 Sonnet reviewers, Haiku for triage and confidence scoring; no Opus
+  subagents); Tag1 pins Opus for 2 agents; ours tiers off the session model. Each
   tool's policy is in `tools.json` `model_policy`. We measure each tool "as it ships."
 - **Local / no-post only** — every invocation is instructed to post nothing to the real PRs.
 - **N=2 repeats** per cell to expose stochasticity; report mean + range, don't trust a single run.
