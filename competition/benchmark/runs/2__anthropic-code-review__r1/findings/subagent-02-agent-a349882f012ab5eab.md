@@ -1,0 +1,18 @@
+# subagent agent-a349882f012ab5eab
+
+This confirms the pre-existing "internal properties must not validate" behavior (guarded by an existing test) is preserved unchanged by the new `BindingFlags.Public` filter in both lookup branches — consistent with the original 2019 comment. Investigation complete.
+
+## Findings
+
+No history-based issues found.
+
+**Details of the investigation** (for completeness):
+
+- The repo was shallow (depth 2, only the PR commit and its immediate parent) at the start of the review. I unshallowed it (`git fetch --unshallow origin`) to get real history, then traced the modified region back through the file's full lifetime.
+- The line `propertyInfo = cacheKey.ModelType.GetProperty(cacheKey.FieldName);` (and its accompanying comment "DataAnnotations only validates public properties, so that's all we'll look for") is **verbatim unchanged since the very first commit that introduced Blazor forms validation**: `7a2dfd3200` "Components: Forms and validation (#7614)" (Steve Sanderson, Feb 2019). It survived ~24 subsequent commits touching this file (namespace/rename churn, nullable annotations, trim-analyzer annotations `442a380854`, hot-reload cache invalidation `a14d7685c9`/`39dccd7ca2`, async validation support `4a634b98b0`/`b126e4ffb9`, the new `IValidatableTypeInfo` path `73a4975044`) — none of which ever revisited the reflection call itself. This confirms PR #67075 is the **first** fix to this specific reflection call in the file's history; there is no earlier intentional handling of inherited/hidden/static members that it could be regressing.
+- The `_propertyInfoCache` (`ConcurrentDictionary<(Type, string), PropertyInfo?>`) caching strategy and its "no need to lock, because it doesn't matter if we write the same value twice" comment are also original from 2019. The new two-step lookup (`DeclaredOnly` then `FlattenHierarchy` fallback) still performs exactly one cache write per miss, so it preserves that same double-write-tolerant invariant; hot-reload cache clearing (`ClearCache()`, wired up in `a14d7685c9`/`39dccd7ca2`) is untouched and unaffected.
+- The pre-existing trim-analyzer suppression `[UnconditionalSuppressMessage("Trimming", "IL2080", ...)]` on `TryGetValidatableProperty` (added in `442a380854`, "Enable trim analyzer") already covers reflection on `cacheKey.ModelType` broadly; the new `GetProperty(name, BindingFlags)` overload still only requests public instance members (`Public | Instance`, just with `DeclaredOnly`/`FlattenHierarchy` added), so it maps to the same `DynamicallyAccessedMemberTypes.PublicProperties` requirement as before — I did not build with the trimming analyzer to confirm no new warning ID is emitted, so this is [Unverified] but not something history flags as a known trap.
+- The existing regression test guarding that `internal` properties are never validated (`ThisWillNotBeValidatedBecauseItIsInternal`, present since `c298c94fe1` in 2019) is preserved: both new lookup branches use `BindingFlags.Public` only, matching original intent.
+- Sibling code in `src/Validation/gen/Emitters/ValidationsGenerator.Emitter.cs` uses a similar `BindingFlags.Instance | Public | DeclaredOnly` pattern for a related but distinct purpose (source-generated attribute lookup); it's a different code path (Minimal API validation, not `EditContext` forms) and doesn't indicate a regression here — noted only as background, not a finding.
+
+Relevant files: `/home/decaf/code/decaf-claude/competition/benchmark/repos/2/src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs` (lines ~362-386), `/home/decaf/code/decaf-claude/competition/benchmark/repos/2/src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs`.

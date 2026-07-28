@@ -1,2352 +1,2059 @@
 {
+ "subject_id": 2,
+ "lang": "csharp",
+ "size": "medium",
+ "repo": "dotnet/aspnetcore",
+ "pr": 67075,
+ "judge_model": "claude-opus-5[1m]",
+ "notes": "Re-analysis after nib dcc-9kkz: the two anthropic-code-review cells were re-run with a plugin-qualified invocation; the previous cells recorded under that label had executed decaf-quality (ours) at high mode. The 8 non-anthropic cells' findings bundles are byte-identical to the 17 Jul extraction and were reused verbatim; only the anthropic findings were re-extracted. All 34 clusters were re-graded blind (tool identity stripped, shuffled).",
+ "answer_key": {
   "subject_id": 2,
   "lang": "csharp",
   "size": "medium",
   "repo": "dotnet/aspnetcore",
   "pr": 67075,
-  "judge_model": "claude-opus-4-8",
-  "answer_key": {
-    "primary_bug": {
-      "id": "primary",
-      "summary": "TryGetValidatableProperty's new two-step lookup \u2014 GetProperty(name, Public|Instance|DeclaredOnly) first, then a GetProperty(name, Public|Instance|FlattenHierarchy) fallback when the first returns null \u2014 does NOT actually fix the AmbiguousMatchException it targets, and introduces a silent-validation-drop. FlattenHierarchy does not flatten INSTANCE members, so when the runtime model type does not itself declare the property but an intermediate base type hides an ancestor's property with `new`, the fallback call still finds >1 matching instance property and throws AmbiguousMatchException. Separately, DeclaredOnly-first resolves to whichever property the most-derived level declares, so a `new` shadow that omits the validation attribute (present on the base) causes the base attribute to be silently dropped with no diagnostic \u2014 a behavior the added test SkipsValidationWhenDerivedShadowHasNoAttributes enshrines as 'expected'.",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "locus": "TryGetValidatableProperty ~L370-383: the added `GetProperty(FieldName, DeclaredOnly)` then `if (propertyInfo is null) GetProperty(FieldName, FlattenHierarchy)` fallback.",
-      "must_flag": "A reviewer catches the primary bug if it flags EITHER facet against the diff: (a) the DeclaredOnly->FlattenHierarchy fallback does not actually eliminate AmbiguousMatchException \u2014 FlattenHierarchy does not flatten instance members, so hiding at an intermediate base type (model type inherits a property that is `new`-shadowed at an ancestor level) still throws; OR (b) the lookup silently drops validation attributes / resolves the wrong property depending on which hierarchy level matches (esp. an unattributed `new` shadow suppressing a base attribute), including flagging that SkipsValidationWhenDerivedShadowHasNoAttributes bakes in incorrect silent-drop behavior. The strongest catch names the still-throws-on-intermediate-hiding facet. Merely praising or restating that the fix 'handles hidden members' does NOT count.",
-      "source": "revert PR #67712 ('Revert #67075') which reverted TryGetValidatableProperty to the single GetProperty(FieldName) lookup; the revert body states verbatim that FlattenHierarchy 'doesn't flatten instance members, so hiding at an intermediate base type still throws' and that it 'silently drops validation attributes depending on which hierarchy level resolves.' Also corroborated by human reviewer Youssef1313 in an UNRESOLVED review thread on the fallback line: 'FlattenHierarchy is only relevant for statics IIRC. And this code can still throw if the previous call returned null and we get into here with some shadowing member in a base type.'",
-      "difficulty": "subtle \u2014 requires knowing that BindingFlags.FlattenHierarchy affects only static-member surfacing, not instance-property ambiguity; the maintainers merged it and reverted only later. A human reviewer (Youssef1313) did flag it pre-merge but it was merged anyway. Expect low-to-moderate recall; a genuine catch is a strong signal."
-    },
-    "human_issues": [],
-    "known_safe": [
-      {
-        "id": "safe-static-skip",
-        "summary": "Both lookups use BindingFlags.Instance, so static properties are never resolved and are silently not validated (test IgnoresStaticProperty asserts this). DataAnnotations validation targets instance properties; skipping statics is intended/correct behavior, not a defect. Flagging 'static properties are silently skipped' as a bug is a false positive.",
-        "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs"
-      },
-      {
-        "id": "safe-cache-lockfree",
-        "summary": "The `_propertyInfoCache[cacheKey] = propertyInfo` write with no lock is PRE-EXISTING and unchanged by this PR (the 'No need to lock, because it doesn't matter if we write the same value twice' comment predates the diff). Attributing a new thread-safety/race defect to this PR is out of scope / a false positive; the diff neither introduces nor worsens the cache write.",
-        "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs"
-      },
-      {
-        "id": "safe-two-reflection-calls",
-        "summary": "The fallback makes up to two GetProperty reflection calls instead of one. The result is memoized in _propertyInfoCache per (ModelType, FieldName), so the cost is one-time per field, not per-validation. Flagging this as a meaningful performance regression is a low-value nitpick, not a real defect.",
-        "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs"
-      }
-    ]
+  "review_diff": "gh pr diff 67075 -R dotnet/aspnetcore \u2014 full PR: src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs (~11 production lines) + src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs (7 new tests + model classes). Saved at subject-02/review.diff.",
+  "primary_bug": {
+   "id": "primary",
+   "summary": "TryGetValidatableProperty's new two-step lookup \u2014 GetProperty(name, Public|Instance|DeclaredOnly) first, then a GetProperty(name, Public|Instance|FlattenHierarchy) fallback when the first returns null \u2014 does NOT actually fix the AmbiguousMatchException it targets, and introduces a silent-validation-drop. FlattenHierarchy does not flatten INSTANCE members, so when the runtime model type does not itself declare the property but an intermediate base type hides an ancestor's property with `new`, the fallback call still finds >1 matching instance property and throws AmbiguousMatchException. Separately, DeclaredOnly-first resolves to whichever property the most-derived level declares, so a `new` shadow that omits the validation attribute (present on the base) causes the base attribute to be silently dropped with no diagnostic \u2014 a behavior the added test SkipsValidationWhenDerivedShadowHasNoAttributes enshrines as 'expected'.",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "locus": "TryGetValidatableProperty ~L370-383: the added `GetProperty(FieldName, DeclaredOnly)` then `if (propertyInfo is null) GetProperty(FieldName, FlattenHierarchy)` fallback.",
+   "must_flag": "A reviewer catches the primary bug if it flags EITHER facet against the diff: (a) the DeclaredOnly->FlattenHierarchy fallback does not actually eliminate AmbiguousMatchException \u2014 FlattenHierarchy does not flatten instance members, so hiding at an intermediate base type (model type inherits a property that is `new`-shadowed at an ancestor level) still throws; OR (b) the lookup silently drops validation attributes / resolves the wrong property depending on which hierarchy level matches (esp. an unattributed `new` shadow suppressing a base attribute), including flagging that SkipsValidationWhenDerivedShadowHasNoAttributes bakes in incorrect silent-drop behavior. The strongest catch names the still-throws-on-intermediate-hiding facet. Merely praising or restating that the fix 'handles hidden members' does NOT count.",
+   "source": "revert PR #67712 ('Revert #67075') which reverted TryGetValidatableProperty to the single GetProperty(FieldName) lookup; the revert body states verbatim that FlattenHierarchy 'doesn't flatten instance members, so hiding at an intermediate base type still throws' and that it 'silently drops validation attributes depending on which hierarchy level resolves.' Also corroborated by human reviewer Youssef1313 in an UNRESOLVED review thread on the fallback line: 'FlattenHierarchy is only relevant for statics IIRC. And this code can still throw if the previous call returned null and we get into here with some shadowing member in a base type.'",
+   "difficulty": "subtle \u2014 requires knowing that BindingFlags.FlattenHierarchy affects only static-member surfacing, not instance-property ambiguity; the maintainers merged it and reverted only later. A human reviewer (Youssef1313) did flag it pre-merge but it was merged anyway. Expect low-to-moderate recall; a genuine catch is a strong signal."
   },
-  "clusters": [
+  "human_issues": [],
+  "known_safe": [
+   {
+    "id": "safe-static-skip",
+    "summary": "Both lookups use BindingFlags.Instance, so static properties are never resolved and are silently not validated (test IgnoresStaticProperty asserts this). DataAnnotations validation targets instance properties; skipping statics is intended/correct behavior, not a defect. Flagging 'static properties are silently skipped' as a bug is a false positive.",
+    "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs"
+   },
+   {
+    "id": "safe-cache-lockfree",
+    "summary": "The `_propertyInfoCache[cacheKey] = propertyInfo` write with no lock is PRE-EXISTING and unchanged by this PR (the 'No need to lock, because it doesn't matter if we write the same value twice' comment predates the diff). Attributing a new thread-safety/race defect to this PR is out of scope / a false positive; the diff neither introduces nor worsens the cache write.",
+    "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs"
+   },
+   {
+    "id": "safe-two-reflection-calls",
+    "summary": "The fallback makes up to two GetProperty reflection calls instead of one. The result is memoized in _propertyInfoCache per (ModelType, FieldName), so the cost is one-time per field, not per-validation. Flagging this as a meaningful performance regression is a low-value nitpick, not a real defect.",
+    "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs"
+   }
+  ],
+  "notes": "The fixture recorded human_threads.count=9; the GitHub API returns 4 review threads (9+ individual comments). Of those threads: (1) ilonatommy 'managing flow by exceptions is not preferred' is OUTDATED \u2014 it targeted an earlier try/catch approach that was replaced by the merged DeclaredOnly/FlattenHierarchy code, so it does not apply to this diff; (2) & (3) ilonatommy's test-coverage / test-naming requests were RESOLVED by adding the tests that are now IN the diff, so there is nothing left for a reviewer of the final diff to 'catch'; (4) Youssef1313's unresolved comment IS the primary bug. Therefore human_issues is intentionally EMPTY \u2014 the one substantive live human issue coincides with primary_bug (a cluster matching it should be graded TP-primary, not TP-human), and the rest are superseded or already-addressed. Score cells on: (1) primary_bug recall, (2) false-positive discipline (esp. NOT inventing a race in the pre-existing cache write, NOT calling static-skip a bug), (3) any valid-other real defects, (4) noise."
+ },
+ "clusters": [
+  {
+   "cluster_id": "c1",
+   "summary": "TryGetValidatableProperty's DeclaredOnly->FlattenHierarchy fallback still throws AmbiguousMatchException when a property is `new`-hidden at an INTERMEDIATE ancestor and the leaf/runtime model type does not redeclare it (FlattenHierarchy does not flatten instance members) \u2014 the fix is incomplete for multi-level hiding.",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": 376,
+   "category": "logic",
+   "reported_by": [
     {
-      "cluster_id": "c1",
-      "summary": "TryGetValidatableProperty's DeclaredOnly->FlattenHierarchy fallback still throws AmbiguousMatchException when a property is `new`-hidden at an INTERMEDIATE ancestor and the leaf/runtime model type does not redeclare it (FlattenHierarchy does not flatten instance members) \u2014 the fix is incomplete for multi-level hiding.",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "line": 376,
-      "category": "logic",
-      "verdict": "TP-primary",
-      "matches": "primary",
-      "judged_severity": "high",
-      "confidence": 95,
-      "rationale": "Textbook catch of facet (a): DeclaredOnly->FlattenHierarchy still throws AmbiguousMatchException when a property is new-hidden at an intermediate ancestor and the leaf does not redeclare it, because FlattenHierarchy does not flatten instance members.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a02849f12b9034bb8",
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a5b13fb86c6ea5be6",
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a719d703c9e296316",
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a94d65fae336e5542",
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a9a8fe93ec11c2b4c",
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a9bf95685577afd4e",
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-aa1e5d1b2e0cd1f13",
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a4e9b0892a7eca4f4",
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a73f9876d5388cc0e",
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a75e87562018cb89d",
-          "severity": "info"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a9b6b158a4acbd1c8",
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a9f5c8b406f60e81b",
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a1be82669646a5b1d",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a5420e4ff0e3100bb",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a6605db7be41c2f56",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a728ce101b51b528b",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a7629e1dbdf807bbc",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-aa8dad0533d791dc3",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-aabac3611a96e1be9",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-ab4574df069b6fbea",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-ae2caa46073a59956",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a0573731f335be28a",
-          "severity": "critical"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-ad6aec6ad1cdbe3af",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-aea472b30baeb321f",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-afae3de342e274ce7",
-          "severity": "high"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "high"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a47759a771cd80f3d",
-          "severity": "high"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a71c15a4b96655a69",
-          "severity": "critical"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-ae438ae3a0fc88a35",
-          "severity": "nit"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "critical"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a190a6bed117e4a15",
-          "severity": "critical"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a2ab99685389ff7b5",
-          "severity": "critical"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a53ef6924a6bd421f",
-          "severity": "critical"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-ab5fa52184284286d",
-          "severity": "high"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "high"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 1,
-          "subagent": "agent-a5b7c3a3ca9817fe7",
-          "severity": "high"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "high"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 2,
-          "subagent": "agent-a02b6c8522ffe52c1",
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a1b4c87cf9ad5ed54",
-          "severity": "critical"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a316649fcc0391bb2",
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a69b4a73805ca52e4",
-          "severity": "info"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a6b9b3dcdf837dea6",
-          "severity": "medium"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a7eef1fab7661abcf",
-          "severity": "medium"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a87e7c7bcce0a2119",
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a8b0318a5bc323290",
-          "severity": "medium"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-ac3b4c65f3ba3862b",
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a17c938dfe20f773f",
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a21c8c726256f58fa",
-          "severity": "critical"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a33219f0e17c71b1a",
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a50d0ddf8942020bb",
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-ab18b8329e2f15ca0",
-          "severity": "medium"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-ad91e03ff01681f2c",
-          "severity": "critical"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-afdbb3d631386f6af",
-          "severity": "high"
-        }
-      ]
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
     },
     {
-      "cluster_id": "c2",
-      "summary": "No test exercises the still-throwing intermediate-hiding fallback path: ValidatesPropertyHiddenAtMultipleInheritanceLevels uses DeepDerivedModel which redeclares Tag (so DeclaredOnly succeeds), and MidLevelModelWithShadow is never instantiated as the leaf under test, so the dangerous FlattenHierarchy-ambiguity path has zero coverage.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 240,
-      "category": "test",
-      "verdict": "TP-primary",
-      "matches": "primary",
-      "judged_severity": "high",
-      "confidence": 82,
-      "rationale": "Correctly reasons DeepDerivedModel redeclares Tag so DeclaredOnly succeeds (fallback never hit) and MidLevelModelWithShadow is never the leaf, so the still-throwing FlattenHierarchy-ambiguity path has zero coverage; names the still-throws-on-intermediate-hiding facet.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a5b13fb86c6ea5be6",
-          "severity": "medium"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-ab61407c2b21944e8",
-          "severity": "high"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a143e8406ffd94925",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a6605db7be41c2f56",
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a728ce101b51b528b",
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-ab4574df069b6fbea",
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a0573731f335be28a",
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a71c15a4b96655a69",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "critical"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a190a6bed117e4a15",
-          "severity": "high"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a909c00677471f3d9",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-ab5fa52184284286d",
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a56585c7f6a20db28",
-          "severity": "critical"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a6aba2dc483cfadc8",
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a21c8c726256f58fa",
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a890db2796321a00b",
-          "severity": "medium"
-        }
-      ]
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1be82669646a5b1d",
+     "severity": "high"
     },
     {
-      "cluster_id": "c3",
-      "summary": "Sibling call site DefaultClientValidationService.BuildMetadata resolves a validatable property with the same plain GetProperty(name) pattern and is left unfixed by this PR, so client-side validation still throws AmbiguousMatchException on the same hidden-member models. (This file is NOT part of the PR diff.)",
-      "file": "src/Components/Forms/src/DefaultClientValidationService.cs",
-      "line": 283,
-      "category": "design",
-      "verdict": "valid-other",
-      "matches": "none",
-      "judged_severity": "high",
-      "confidence": 45,
-      "rationale": "Plausible latent twin bug: sibling DefaultClientValidationService using the same plain GetProperty(name) would throw the same AmbiguousMatchException; file is NOT in the diff so unverifiable here \u2014 graded on plausibility of the pattern transfer.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a4e9b0892a7eca4f4",
-          "severity": "medium"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a96cb5dcbeffd8b11",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a735ccb9b58598b7d",
-          "severity": "high"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a7eef1fab7661abcf",
-          "severity": "medium"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        }
-      ]
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a5420e4ff0e3100bb",
+     "severity": "high"
     },
     {
-      "cluster_id": "c4",
-      "summary": "The BindingFlags.FlattenHierarchy flag on the fallback GetProperty call is inert/no-op for an instance-only lookup (it only affects static-member surfacing) and is misleading \u2014 it suggests hierarchy-safe traversal it does not provide, and is inconsistent with the repo's other FlattenHierarchy usages.",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "line": 378,
-      "category": "design",
-      "verdict": "TP-primary",
-      "matches": "primary",
-      "judged_severity": "high",
-      "confidence": 65,
-      "rationale": "Identifies the exact mechanism of the primary bug: FlattenHierarchy is inert for an instance-only lookup (affects only static surfacing) and does not provide the hierarchy-safe traversal the fix appears to intend, i.e. the fallback does not actually solve the ambiguity.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a02849f12b9034bb8",
-          "severity": "low"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a5b13fb86c6ea5be6",
-          "severity": "medium"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a7d803a1282a2edeb",
-          "severity": "medium"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a4e9b0892a7eca4f4",
-          "severity": "low"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a73f9876d5388cc0e",
-          "severity": "low"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a9b6b158a4acbd1c8",
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a5420e4ff0e3100bb",
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a728ce101b51b528b",
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-aa8dad0533d791dc3",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a47759a771cd80f3d",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a190a6bed117e4a15",
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a33219f0e17c71b1a",
-          "severity": "nit"
-        }
-      ]
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a6605db7be41c2f56",
+     "severity": "high"
     },
     {
-      "cluster_id": "c5",
-      "summary": "The two-step DeclaredOnly->FlattenHierarchy lookup has no rationale comment explaining the AmbiguousMatchException it works around, so a future maintainer could 'simplify' it back to a single GetProperty call and silently reintroduce the bug.",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "line": 368,
-      "category": "doc",
-      "verdict": "valid-minor",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 65,
-      "rationale": "Missing-rationale-comment suggestion; maintainability nit, not a defect (and the underlying fix it would document is itself incomplete).",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-ac388da07005a1c2a",
-          "severity": "high"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a6a12fb2c65cec1c1",
-          "severity": "high"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a87e7c7bcce0a2119",
-          "severity": "nit"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-af780ae236f5af2ae",
-          "severity": "nit"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 65,
-      "regrade_rationale": "The adjacent comment in the same method already explains its reflection rationale (public-only), and the new two-step lookup genuinely looks redundant without a note on the AmbiguousMatchException it avoids \u2014 one bounded comment at one location, converges, plausibly accepted."
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a728ce101b51b528b",
+     "severity": "high"
     },
     {
-      "cluster_id": "c6",
-      "summary": "Both new GetProperty calls omit BindingFlags.Static (present in the original default flags), so a public static property matching a field name is now silently no longer validated \u2014 an undocumented behavior change (locked in only by the IgnoresStaticProperty test).",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "line": 370,
-      "category": "logic",
-      "verdict": "false-positive",
-      "matches": "safe-static-skip",
-      "judged_severity": "low",
-      "confidence": 68,
-      "rationale": "Flags the intended static-skip (known_safe safe-static-skip) as a silent undocumented regression; dropping BindingFlags.Static is correct since DataAnnotations validates instance properties, so this is a refutable non-defect.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a02849f12b9034bb8",
-          "severity": "low"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-aa1e5d1b2e0cd1f13",
-          "severity": "low"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "info"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a4e9b0892a7eca4f4",
-          "severity": "low"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a9b6b158a4acbd1c8",
-          "severity": "info"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a5420e4ff0e3100bb",
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a6baef9a0a2d61e04",
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a728ce101b51b528b",
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a7629e1dbdf807bbc",
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-aa8dad0533d791dc3",
-          "severity": "high"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a0573731f335be28a",
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a47759a771cd80f3d",
-          "severity": "info"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a6a12fb2c65cec1c1",
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-ae438ae3a0fc88a35",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a190a6bed117e4a15",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a53ef6924a6bd421f",
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-ab5fa52184284286d",
-          "severity": "info"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 1,
-          "subagent": "agent-a5b7c3a3ca9817fe7",
-          "severity": "nit"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 2,
-          "subagent": "agent-a02b6c8522ffe52c1",
-          "severity": "nit"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a316649fcc0391bb2",
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a6b9b3dcdf837dea6",
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a87e7c7bcce0a2119",
-          "severity": "medium"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a8b0318a5bc323290",
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "info"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a21c8c726256f58fa",
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a33219f0e17c71b1a",
-          "severity": "nit"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a50d0ddf8942020bb",
-          "severity": "info"
-        }
-      ]
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a7629e1dbdf807bbc",
+     "severity": "high"
     },
     {
-      "cluster_id": "c7",
-      "summary": "The PR description claims a try/catch(AmbiguousMatchException)-with-retry fix, but the merged code contains no try/catch (it uses BindingFlags instead) \u2014 stale/divergent narrative vs. implementation.",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "line": null,
-      "category": "doc",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 75,
-      "rationale": "Documentation-of-PR-body: the description's stale try/catch narrative vs the merged BindingFlags code; not a defect in the diff.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "info"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a9b6b158a4acbd1c8",
-          "severity": "info"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 75,
-      "regrade_rationale": "PR-description-vs-code drift is meta/process commentary \u2014 not an in-repo artifact fixable by a patch to the codebase."
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aa8dad0533d791dc3",
+     "severity": "high"
     },
     {
-      "cluster_id": "c8",
-      "summary": "The change adds a third property-resolution policy inconsistent with the codebase's existing hidden-member-aware helpers (e.g. MemberAssignment.GetPropertiesIncludingInherited's hierarchy walk); an existing helper could have been reused instead.",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "line": null,
-      "category": "design",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 45,
-      "rationale": "Suggests reusing a hierarchy-aware helper (MemberAssignment.GetPropertiesIncludingInherited) not shown in the diff; unverifiable existence/applicability, so a low-confidence design suggestion rather than a verified defect.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a96cb5dcbeffd8b11",
-          "severity": "info"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a50d0ddf8942020bb",
-          "severity": "medium"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 80,
-      "regrade_rationale": "Reuse-a-different-helper is a design redesign with different semantics, not a one-shot patch mergeable without debate."
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aabac3611a96e1be9",
+     "severity": "high"
     },
     {
-      "cluster_id": "c9",
-      "summary": "When both lookups return null the property is cached as null and validation is silently skipped with no diagnostic/log, and the reflection lookups have no error handling (pre-existing behavior, not introduced by this PR).",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "line": 382,
-      "category": "design",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 72,
-      "rationale": "Self-admittedly pre-existing (both-null caches null, silent skip, no error handling) and unchanged by this PR; out-of-scope and not the shadow-drop facet.",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "info"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-ae438ae3a0fc88a35",
-          "severity": "info"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a190a6bed117e4a15",
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-af780ae236f5af2ae",
-          "severity": "info"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 90,
-      "regrade_rationale": "Self-admittedly pre-existing behavior (null-cache/silent-skip predates the diff); out-of-scope code the diff didn't introduce."
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ab4574df069b6fbea",
+     "severity": "high"
     },
     {
-      "cluster_id": "c10",
-      "summary": "The '// If we can't find it, cache null' comment now sits ~13 lines above the actual null-cache write (an unrelated conditional block was inserted between), weakening comment-to-code mapping.",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "line": 369,
-      "category": "doc",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 70,
-      "rationale": "Real but trivial: the cache-null comment is now separated from the null-cache write by the inserted fallback block; comment-proximity nit.",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "info"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a6a12fb2c65cec1c1",
-          "severity": "info"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a53ef6924a6bd421f",
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-ab18b8329e2f15ca0",
-          "severity": "nit"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 70,
-      "regrade_rationale": "Not genuinely misleading in situ \u2014 the comment paragraph is a coherent preamble to the lookup+cache block and the null-cache write is still the block's last statement."
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ae2caa46073a59956",
+     "severity": "high"
     },
     {
-      "cluster_id": "c12",
-      "summary": "The new lookups are case-sensitive (no BindingFlags.IgnoreCase) and this is untested \u2014 a wrong-case field name silently resolves to null and is not validated, despite MatchesPropertyByExactName's name.",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "line": 370,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 66,
-      "rationale": "Case-sensitivity is pre-existing (original GetProperty(name) was also case-sensitive) and field names come from nameof; untested-but-not-a-defect, out of scope.",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a71c15a4b96655a69",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a2ab99685389ff7b5",
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a56585c7f6a20db28",
-          "severity": "nit"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 80,
-      "regrade_rationale": "Case-sensitivity is unchanged from the old default GetProperty (also no IgnoreCase) \u2014 not a path the diff introduced, and the test ask is the unbounded shapes class."
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
     },
     {
-      "cluster_id": "c13",
-      "summary": "Several exotic reflection shapes are untested: protected/private shadowing of a public base member, constructed-generic-base shadowing, null FieldName, indexers/explicit interface implementations, static/instance name collisions.",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "line": 370,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 55,
-      "rationale": "Enumerates mostly out-of-scope exotic shapes (protected/private aren't public; indexers; explicit interface impls); speculative missing-test list, low value.",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a71c15a4b96655a69",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 95,
-      "regrade_rationale": "Explicitly the unbounded exotic-shape test class (protected shadowing, generic bases, indexers, null names) \u2014 none introduced as load-bearing by the diff."
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a0573731f335be28a",
+     "severity": "critical"
     },
     {
-      "cluster_id": "c14",
-      "summary": "ValidatesHiddenPropertiesWithPropertyCaching does not actually verify caching \u2014 it asserts only validation messages, which are identical whether the PropertyInfo is cached or re-resolved, so it would pass with or without the _propertyInfoCache.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 193,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 68,
-      "rationale": "True that ValidatesHiddenPropertiesWithPropertyCaching asserts only messages, but it does traverse the cached path; verifying cache internals needs private state \u2014 low-value naming/assertion nit.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-ab61407c2b21944e8",
-          "severity": "medium"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a71c15a4b96655a69",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a2ab99685389ff7b5",
-          "severity": "medium"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-ad91e03ff01681f2c",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 60,
-      "regrade_rationale": "True that the test can't fail without the cache, but a transparent cache is unobservable from behavior; the only 'fix' is asserting private statics or a rename \u2014 no clean patch maintainers would take without debate."
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ad6aec6ad1cdbe3af",
+     "severity": "high"
     },
     {
-      "cluster_id": "c15",
-      "summary": "MatchesPropertyByExactName is redundant/misnamed \u2014 it duplicates ValidatesHiddenPropertiesWithoutAmbiguousMatchException (same model/field/assertion) and verifies nothing distinct about exact-name matching; tests 1/2/3 overlap heavily.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 212,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 70,
-      "rationale": "Largely true that MatchesPropertyByExactName overlaps ValidatesHiddenPropertiesWithoutAmbiguousMatchException; redundant/misnamed test is a hygiene nit.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-ab61407c2b21944e8",
-          "severity": "medium"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-ab4574df069b6fbea",
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a0573731f335be28a",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a71c15a4b96655a69",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a2ab99685389ff7b5",
-          "severity": "low"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 1,
-          "subagent": "agent-a5b7c3a3ca9817fe7",
-          "severity": "nit"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a56585c7f6a20db28",
-          "severity": "nit"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-ad91e03ff01681f2c",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 55,
-      "regrade_rationale": "The redundancy is real (test 3 is a subset of test 1's per-field flow), but deleting/merging harmless tests is exactly the 'extra coverage is cheap' debate \u2014 not accepted without discussion."
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aea472b30baeb321f",
+     "severity": "high"
     },
     {
-      "cluster_id": "c16",
-      "summary": "Weak Assert.Empty-only assertions in SkipsValidationWhenDerivedShadowHasNoAttributes and IgnoresStaticProperty cannot distinguish 'property correctly resolved with nothing to fail' from 'property never found at all' \u2014 vacuous-pass risk (no positive control).",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 256,
-      "category": "test",
-      "verdict": "valid-other",
-      "matches": "none",
-      "judged_severity": "low",
-      "confidence": 52,
-      "rationale": "Real vacuous-pass risk for SkipsValidationWhenDerivedShadowHasNoAttributes (Assert.Empty cannot distinguish resolved-with-nothing-to-fail from never-found, masking the silent-drop facet); weaker on IgnoresStaticProperty, which actually does discriminate vs reverted code.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-ab61407c2b21944e8",
-          "severity": "medium"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a143e8406ffd94925",
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-ab4574df069b6fbea",
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a38e065e13752fb40",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a71c15a4b96655a69",
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-ae7f9075913eec193",
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a56585c7f6a20db28",
-          "severity": "nit"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-ad91e03ff01681f2c",
-          "severity": "medium"
-        }
-      ]
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-afae3de342e274ce7",
+     "severity": "high"
     },
     {
-      "cluster_id": "c17",
-      "summary": "IgnoresStaticProperty is misnamed/weak \u2014 it frames an incidental side effect (the dropped BindingFlags.Static) as intended behavior, and the instance Value=0 field is misleading noise.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 268,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 70,
-      "rationale": "Test-naming/quality nit; also mischaracterizes the intended static-skip as an incidental side effect. Low value, no code defect.",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-ab4574df069b6fbea",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a2ab99685389ff7b5",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 75,
-      "regrade_rationale": "The static exclusion is arguably intentional in the new Public|Instance flags and pinning it is legitimate; 'misnamed/weak framing' is contestable meta-commentary, not a patch."
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
     },
     {
-      "cluster_id": "c17b",
-      "summary": "IgnoresStaticProperty is tautological: Assert.Empty(GetValidationMessages()) supposedly passes under BOTH the fixed code and the reverted pre-fix code, so it allegedly proves nothing about the fix.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 268,
-      "category": "test",
-      "verdict": "false-positive",
-      "matches": "none",
-      "judged_severity": "low",
-      "confidence": 90,
-      "rationale": "Refuted: on reverted code default flags include Static, so StaticValue(=0) is found and fails Range(1,100) -> a message -> Assert.Empty FAILS; the test is NOT tautological and does distinguish fixed from reverted code.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a143e8406ffd94925",
-          "severity": "medium"
-        }
-      ]
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a47759a771cd80f3d",
+     "severity": "high"
     },
     {
-      "cluster_id": "c18",
-      "summary": "Inert fixture members set but never read/asserted \u2014 ModelWithStaticProperty.Value and DerivedModelWithInheritedOnly.Description are assigned but never validated, and MidLevelModelWithShadow.Tag is never exercised as its own runtime type.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 445,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 78,
-      "rationale": "Accurate but trivial test-hygiene: ModelWithStaticProperty.Value and DerivedModelWithInheritedOnly.Description are set-but-unasserted, MidLevelModelWithShadow.Tag never exercised as a leaf.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-ab61407c2b21944e8",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-ae7f9075913eec193",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a909c00677471f3d9",
-          "severity": "nit"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a890db2796321a00b",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 55,
-      "regrade_rationale": "The inert assignments (Value = 0, Description = \"x\") are unflagged test-data filler, and the bundle includes an unbounded ask (exercise MidLevel Tag as its own runtime type) \u2014 not an unused-using-grade objective removal."
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a71c15a4b96655a69",
+     "severity": "critical"
     },
     {
-      "cluster_id": "c19",
-      "summary": "Three of four new test-model hierarchies declare the derived class before its base class, contrary to the base-then-derived convention used by sibling fixtures.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 405,
-      "category": "style",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 74,
-      "rationale": "Class-declaration ordering (derived-before-base) style nit.",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a88e97446a386ea47",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-ae7f9075913eec193",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a909c00677471f3d9",
-          "severity": "nit"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 70,
-      "regrade_rationale": "No pre-existing file-local base/derived fixture pairs exist to anchor a base-then-derived convention; declaration order is compile-irrelevant taste."
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae438ae3a0fc88a35",
+     "severity": "nit"
     },
     {
-      "cluster_id": "c20",
-      "summary": "New attributed test-model properties split the validation attribute and the property declaration across two lines, unlike every pre-existing attributed property in the file (single-line).",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 407,
-      "category": "style",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 78,
-      "rationale": "Pure formatting: attribute on its own line vs single-line pre-existing attributed properties.",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a88e97446a386ea47",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 55,
-      "regrade_rationale": "File precedent (all pre-existing attributed properties single-line) is real, but the 'fix' direction contradicts the dominant attribute-on-own-line C#/dotnet style, so the patch would be debated, not accepted outright."
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
     },
     {
-      "cluster_id": "c21",
-      "summary": "New leaf test-model classes are declared as bare `class` (implicit private) rather than `private sealed class` like recently-added sibling fixtures (AsyncTestModel/AsyncThrowingModel).",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 405,
-      "category": "style",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 75,
-      "rationale": "Style: bare class vs private sealed class like sibling fixtures; trivial.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a96cb5dcbeffd8b11",
-          "severity": "info"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-ae7f9075913eec193",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a909c00677471f3d9",
-          "severity": "nit"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 60,
-      "regrade_rationale": "File demonstrates both styles \u2014 the immediately adjacent pre-existing TestModel is bare 'class' \u2014 so the private-sealed anchor is ambiguous; new fixtures match their nearest sibling."
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a190a6bed117e4a15",
+     "severity": "critical"
     },
     {
-      "cluster_id": "c22",
-      "summary": "MatchesPropertyByExactName hardcodes the literal \"OrderID\" instead of nameof(...), diverging from every other reference to that property in the file.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 219,
-      "category": "style",
-      "verdict": "valid-minor",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 85,
-      "rationale": "Pure style: literal \"OrderID\" instead of nameof(...); trivial.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a7d803a1282a2edeb",
-          "severity": "low"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a143e8406ffd94925",
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a88e97446a386ea47",
-          "severity": "medium"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a38e065e13752fb40",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 60,
-      "regrade_rationale": "Verified: line 219 hardcodes \"OrderID\" while every other FieldIdentifier reference in the file (pre-existing 107-108 and all new tests) uses nameof \u2014 file-demonstrated convention, one-shot, converges."
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a2ab99685389ff7b5",
+     "severity": "critical"
     },
     {
-      "cluster_id": "c23",
-      "summary": "Fixture names ModelWithNamedBase and ModelWithBaseName are near-anagrams for two unrelated scenarios (a mix-up hazard); some fixture names (DeepDerivedModel) don't convey what they hide.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 434,
-      "category": "style",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 72,
-      "rationale": "Near-anagram fixture names (ModelWithNamedBase vs ModelWithBaseName) is a real but trivial naming/readability nit.",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-ae7f9075913eec193",
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a909c00677471f3d9",
-          "severity": "nit"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 90,
-      "regrade_rationale": "Naming-aesthetics complaint (near-anagram fixture names) \u2014 taste, and renames are an unbounded regenerating class."
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a53ef6924a6bd421f",
+     "severity": "critical"
     },
     {
-      "cluster_id": "c25",
-      "summary": "The static _propertyInfoCache is never reset between tests, so only the first of the three tests keying on (DerivedModelWithHiddenProperty, OrderID) actually exercises the reflection path; tests are not isolated and could become order-dependent.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 177,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 58,
-      "rationale": "Plausible test-isolation observation (static cache persists so only the first (type,field) test hits reflection), but cached values are deterministic/correct so no flakiness or masked bug; low value.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-ab61407c2b21944e8",
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-ab4574df069b6fbea",
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a38e065e13752fb40",
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a71c15a4b96655a69",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 70,
-      "regrade_rationale": "All three tests expect the same outcome cached or not, so no actual order-dependence ('could become' is speculative), and the fix needs cache-reset machinery \u2014 not a one-shot accepted patch."
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-ab5fa52184284286d",
+     "severity": "high"
     },
     {
-      "cluster_id": "c27",
-      "summary": "ModelWithHiddenBaseProperty has low cohesion \u2014 it serves two unrelated scenario families (the OrderID two-level hide and the Tag three-level hide) on one base type.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 411,
-      "category": "design",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 68,
-      "rationale": "Fixture-cohesion critique (ModelWithHiddenBaseProperty serves OrderID and Tag families); test-design style nit.",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-ae7f9075913eec193",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a909c00677471f3d9",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 90,
-      "regrade_rationale": "Fixture 'cohesion' is taste-only design commentary on test scaffolding with no in-repo anchor."
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
     },
     {
-      "cluster_id": "c28",
-      "summary": "The load-bearing base members typed `object` (the object-vs-int mismatch that creates the distinct shadowed reflection member driving the repro) and the multi-level Tag shadow intent are undocumented; a maintainer could 'align' the types and silently break the repro.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 411,
-      "category": "doc",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 62,
-      "rationale": "Undocumented object-typed base members / shadow intent; a missing-comment robustness nit, not a defect.",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a6a12fb2c65cec1c1",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a53ef6924a6bd421f",
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a909c00677471f3d9",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 60,
-      "regrade_rationale": "Comment-add on test fixtures with zero in-file precedent (the file's demonstrated convention is self-documenting fixture names, not comments), motivated by a speculative future 'alignment' edit; default down."
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a5b7c3a3ca9817fe7",
+     "severity": "high"
     },
     {
-      "cluster_id": "c29",
-      "summary": "All new tests construct `new FieldIdentifier(model, nameof(...))` directly instead of the sibling-canonical `editContext.Field(nameof(...))` helper.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 186,
-      "category": "style",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 75,
-      "rationale": "Convention nit: new FieldIdentifier(...) vs an editContext.Field(...) helper; style only.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a7d803a1282a2edeb",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 80,
-      "regrade_rationale": "Anchor is false: pre-existing tests use both patterns \u2014 lines 107-108 construct new FieldIdentifier(model, nameof(...)) directly \u2014 so editContext.Field is not sibling-canonical."
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
     },
     {
-      "cluster_id": "c30",
-      "summary": "No test proves that the most-derived attributes win when BOTH a base and a derived shadow carry validation attributes (only the base-dropped / unattributed-shadow direction is covered).",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 256,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 62,
-      "rationale": "Real but low-value coverage gap: no test where both base and derived carry attributes (most-derived-wins); the benign direction, doesn't mask the primary bug.",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a2ab99685389ff7b5",
-          "severity": "medium"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 75,
-      "regrade_rationale": "Derived-wins is already proven (base OrderID has no attributes, so the derived Range firing proves which PropertyInfo won); the both-attributed variant is the unbounded more-shapes test class."
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a02b6c8522ffe52c1",
+     "severity": "high"
     },
     {
-      "cluster_id": "c31",
-      "summary": "In ValidatesHiddenPropertiesWithoutAmbiguousMatchException the first NotifyFieldChanged fires with no intervening assertion before the state changes again \u2014 a confusing/dead call.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 187,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 65,
-      "rationale": "The first NotifyFieldChanged before model.OrderID=50 has no intervening assertion, but it does re-exercise the field path with an invalid value; a minor clarity nit, not dead code.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a143e8406ffd94925",
-          "severity": "low"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-ad91e03ff01681f2c",
-          "severity": "nit"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 75,
-      "regrade_rationale": "An assertion-free intermediate NotifyFieldChanged is harmless setup noise; 'confusing' is taste with no convention anchor."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
     },
     {
-      "cluster_id": "c32",
-      "summary": "The orderIdIdentifier local variable's casing diverges from the file's existing variable-casing convention.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 186,
-      "category": "style",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 72,
-      "rationale": "orderIdIdentifier is ordinary camelCase; the claimed casing divergence is trivial/dubious style.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a96cb5dcbeffd8b11",
-          "severity": "info"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 85,
-      "regrade_rationale": "orderIdIdentifier is ordinary camelCase matching the requiredStringIdentifier pattern; the only 'divergence' is ID-vs-Id acronym casing, which follows standard .NET naming anyway \u2014 no objective violation."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a1b4c87cf9ad5ed54",
+     "severity": "critical"
     },
     {
-      "cluster_id": "c34",
-      "summary": "The structural invariant that each fixture actually contains shadowing/ambiguity is unguarded \u2014 a future edit dropping `new` or the base property would silently neuter a test; no guard asserts the fallback lookup genuinely throws.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 405,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 60,
-      "rationale": "Theoretical test-robustness point: no guard that fixtures actually retain shadowing; low value and does not identify a live defect.",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a909c00677471f3d9",
-          "severity": "medium"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 80,
-      "regrade_rationale": "Textbook speculative robustness ('a future edit could neuter the test') \u2014 guard-the-guards meta with no concrete pathway."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a316649fcc0391bb2",
+     "severity": "high"
     },
     {
-      "cluster_id": "c36",
-      "summary": "The cache invalidation / hot-reload path (ClearCache, MetadataUpdater.IsSupported gating, negative-result caching) is entirely untested.",
-      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
-      "line": 388,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 65,
-      "rationale": "Hot-reload/ClearCache/negative-caching path is pre-existing and not in this diff; out-of-scope coverage complaint.",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "medium"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a2ab99685389ff7b5",
-          "severity": "medium"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "info"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 2,
-          "subagent": "agent-a02b6c8522ffe52c1",
-          "severity": "info"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 85,
-      "regrade_rationale": "ClearCache/hot-reload path is pre-existing code the diff didn't touch, plus an unbounded more-tests ask."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a69b4a73805ca52e4",
+     "severity": "info"
     },
     {
-      "cluster_id": "c37",
-      "summary": "ValidatesInheritedPropertyFromBaseClass does not exercise hiding/ambiguity (BaseName is declared once, never shadowed) so it passes on pre-fix code too \u2014 it guards the step-2 fallback for plain inheritance, not the ambiguity fix.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 224,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 62,
-      "rationale": "Accurate that ValidatesInheritedPropertyFromBaseClass (BaseName never shadowed) passes pre-fix and only guards the fallback for plain inheritance; a fair test-scope characterization, not a defect.",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-ab61407c2b21944e8",
-          "severity": "low"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": null,
-          "severity": "nit"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a38e065e13752fb40",
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a71c15a4b96655a69",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 65,
-      "regrade_rationale": "Observation without an actionable fix \u2014 the test legitimately guards the step-2 FlattenHierarchy fallback the diff itself introduced, so 'passes pre-fix' is not a defect to patch."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a6b9b3dcdf837dea6",
+     "severity": "medium"
     },
     {
-      "cluster_id": "c38",
-      "summary": "Fixtures mix 'Hidden', 'Shadow', and plain 'new' vocabulary for the same concept, and DeepDerivedModel is the only leaf name that doesn't say what it hides \u2014 inconsistent naming.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 423,
-      "category": "style",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 80,
-      "rationale": "Naming-vocabulary consistency across fixtures; pure style.",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-ae7f9075913eec193",
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 90,
-      "regrade_rationale": "Vocabulary-consistency taste (Hidden vs Shadow vs new) \u2014 unbounded rename class, no objective anchor."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a7eef1fab7661abcf",
+     "severity": "medium"
     },
     {
-      "cluster_id": "c39",
-      "summary": "New test model classes encode subtle reflection scenarios (object-vs-int shadowing, static exclusion, three-level shadow) via class shape alone, with no explanatory comments.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 405,
-      "category": "doc",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 66,
-      "rationale": "Missing explanatory comments on fixtures; documentation nit (overlaps c28).",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": null,
-          "severity": "low"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 75,
-      "regrade_rationale": "Duplicative restatement of c28 and the unbounded 'more comments on fixtures' class with no in-file comment precedent."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a87e7c7bcce0a2119",
+     "severity": "high"
     },
     {
-      "cluster_id": "c40",
-      "summary": "Assert.False(editContext.Validate()) in a hidden-property test exercises the whole-form Validator.TryValidateObject path rather than the TryGetValidatableProperty two-step lookup under test.",
-      "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
-      "line": 183,
-      "category": "test",
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 60,
-      "rationale": "Accurate that Assert.False(Validate()) exercises whole-form validation rather than the field-level lookup, but the same test also calls NotifyFieldChanged; low-value precision nit.",
-      "reported_by": [
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-ad91e03ff01681f2c",
-          "severity": "nit"
-        }
-      ],
-      "regraded_from": "nitpick",
-      "regrade_confidence": 70,
-      "regrade_rationale": "Partial/inaccurate critique: the same test exercises the per-field TryGetValidatableProperty path immediately after the whole-form Validate() call, so the extra coverage is additive, not a defect."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a8b0318a5bc323290",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac3b4c65f3ba3862b",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a17c938dfe20f773f",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a21c8c726256f58fa",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a33219f0e17c71b1a",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a50d0ddf8942020bb",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab18b8329e2f15ca0",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ad91e03ff01681f2c",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-afdbb3d631386f6af",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a6fb1daf3873a43bc/scorer",
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a8a3b8b7a12e1bba7/prior-pr",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-afc95163175c36507/bug-scan",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a0652069e42f0d394/prior-pr",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a3eef590f38087b9f/code-comment",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a5b9f9d64669e1521/bug-scan",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-ae49499538979fba8/git-history",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afa482a0075cbc5b1/scorer",
+     "severity": null
     }
-  ]
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "high",
+   "confidence": 95,
+   "rationale": "Verbatim facet (a): the fallback GetProperty(name, Public|Instance|FlattenHierarchy) still matches multiple instance properties when the runtime type does not redeclare a property shadowed at an intermediate base, because FlattenHierarchy does not flatten instance members."
+  },
+  {
+   "cluster_id": "c2",
+   "summary": "No test exercises the still-throwing intermediate-hiding fallback path: ValidatesPropertyHiddenAtMultipleInheritanceLevels uses DeepDerivedModel which redeclares Tag (so DeclaredOnly succeeds), and MidLevelModelWithShadow is never instantiated as the leaf under test, so the dangerous FlattenHierarchy-ambiguity path has zero coverage.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 240,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a6605db7be41c2f56",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a728ce101b51b528b",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ab4574df069b6fbea",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a0573731f335be28a",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a71c15a4b96655a69",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a190a6bed117e4a15",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a909c00677471f3d9",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-ab5fa52184284286d",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a56585c7f6a20db28",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a6aba2dc483cfadc8",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a21c8c726256f58fa",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a890db2796321a00b",
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a0652069e42f0d394/prior-pr",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a236af59c644598ed/scorer",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a3eef590f38087b9f/code-comment",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a5b9f9d64669e1521/bug-scan",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-ae49499538979fba8/git-history",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afa482a0075cbc5b1/scorer",
+     "severity": null
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "medium",
+   "confidence": 72,
+   "rationale": "Asserts the still-throwing intermediate-hiding path exists and is uncovered, with correct diff analysis: DeepDerivedModel redeclares `new int Tag` so DeclaredOnly succeeds, and no fixture has a leaf that inherits a property `new`-shadowed at an ancestor \u2014 precisely facet (a)'s scenario."
+  },
+  {
+   "cluster_id": "c3",
+   "summary": "Sibling call site DefaultClientValidationService.BuildMetadata resolves a validatable property with the same plain GetProperty(name) pattern and is left unfixed by this PR, so client-side validation still throws AmbiguousMatchException on the same hidden-member models. (This file is NOT part of the PR diff.)",
+   "file": "src/Components/Forms/src/DefaultClientValidationService.cs",
+   "line": 283,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a735ccb9b58598b7d",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a7eef1fab7661abcf",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 72,
+   "rationale": "Self-declares that DefaultClientValidationService.cs is not in the PR diff; pre-existing, untouched code outside the changeset is out of scope."
+  },
+  {
+   "cluster_id": "c4",
+   "summary": "The BindingFlags.FlattenHierarchy flag on the fallback GetProperty call is inert/no-op for an instance-only lookup (it only affects static-member surfacing) and is misleading \u2014 it suggests hierarchy-safe traversal it does not provide, and is inconsistent with the repo's other FlattenHierarchy usages.",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": 378,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a5420e4ff0e3100bb",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a728ce101b51b528b",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aa8dad0533d791dc3",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a47759a771cd80f3d",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a190a6bed117e4a15",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a33219f0e17c71b1a",
+     "severity": "nit"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-ab0a7422f192f7236/scorer",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-ae49499538979fba8/git-history",
+     "severity": "low"
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "medium",
+   "confidence": 65,
+   "rationale": "Names the exact mechanism of the primary bug \u2014 the fallback's BindingFlags.FlattenHierarchy (diff line 378) does nothing for a Public|Instance lookup because FlattenHierarchy only surfaces statics, so the flag advertises hierarchy-safe resolution it does not provide; it stops short of stating the still-throws consequence but asserts the protection-that-does-not-protect, which is facet (a)'s core."
+  },
+  {
+   "cluster_id": "c5",
+   "summary": "The two-step DeclaredOnly->FlattenHierarchy lookup has no rationale comment explaining the AmbiguousMatchException it works around, so a future maintainer could 'simplify' it back to a single GetProperty call and silently reintroduce the bug.",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": 368,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac388da07005a1c2a",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6a12fb2c65cec1c1",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a87e7c7bcce0a2119",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-af780ae236f5af2ae",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a565998fa307dd09f/code-comment",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-aa0934a7f38aa8940/scorer",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a3eef590f38087b9f/code-comment",
+     "severity": null
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 58,
+   "rationale": "True and specific: the diff adds a non-obvious two-step lookup with no comment explaining the AmbiguousMatchException it targets, while the surrounding block is otherwise commented."
+  },
+  {
+   "cluster_id": "c6",
+   "summary": "Both new GetProperty calls omit BindingFlags.Static (present in the original default flags), so a public static property matching a field name is now silently no longer validated \u2014 an undocumented behavior change (locked in only by the IgnoresStaticProperty test).",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": 370,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a5420e4ff0e3100bb",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a6baef9a0a2d61e04",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a728ce101b51b528b",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a7629e1dbdf807bbc",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aa8dad0533d791dc3",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a0573731f335be28a",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a47759a771cd80f3d",
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6a12fb2c65cec1c1",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae438ae3a0fc88a35",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a190a6bed117e4a15",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a53ef6924a6bd421f",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-ab5fa52184284286d",
+     "severity": "info"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a5b7c3a3ca9817fe7",
+     "severity": "nit"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a02b6c8522ffe52c1",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a316649fcc0391bb2",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a6b9b3dcdf837dea6",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a87e7c7bcce0a2119",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a8b0318a5bc323290",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a21c8c726256f58fa",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a33219f0e17c71b1a",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a50d0ddf8942020bb",
+     "severity": "info"
+    }
+   ],
+   "verdict": "false-positive",
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 88,
+   "rationale": "Direct hit on known_safe safe-static-skip: both new calls specify BindingFlags.Instance and dropping static resolution is intended for DataAnnotations instance-property validation."
+  },
+  {
+   "cluster_id": "c7",
+   "summary": "The PR description claims a try/catch(AmbiguousMatchException)-with-retry fix, but the merged code contains no try/catch (it uses BindingFlags instead) \u2014 stale/divergent narrative vs. implementation.",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": null,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 68,
+   "rationale": "Meta/process commentary about the PR narrative rather than the code; a stale PR description is not a defect in the changeset."
+  },
+  {
+   "cluster_id": "c8",
+   "summary": "The change adds a third property-resolution policy inconsistent with the codebase's existing hidden-member-aware helpers (e.g. MemberAssignment.GetPropertiesIncludingInherited's hierarchy walk); an existing helper could have been reused instead.",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": null,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a50d0ddf8942020bb",
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a8a3b8b7a12e1bba7/prior-pr",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-ab817f8977b13438b/scorer",
+     "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a0652069e42f0d394/prior-pr",
+     "severity": null
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 55,
+   "rationale": "A design-preference claim about reusing an out-of-diff helper; not verifiable against the diff and unbounded as stated."
+  },
+  {
+   "cluster_id": "c9",
+   "summary": "When both lookups return null the property is cached as null and validation is silently skipped with no diagnostic/log, and the reflection lookups have no error handling (pre-existing behavior, not introduced by this PR).",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": 382,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae438ae3a0fc88a35",
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a190a6bed117e4a15",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-af780ae236f5af2ae",
+     "severity": "info"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 88,
+   "rationale": "Self-declared pre-existing: null-caching with no diagnostic predates the diff, which only changes which BindingFlags are passed."
+  },
+  {
+   "cluster_id": "c10",
+   "summary": "The '// If we can't find it, cache null' comment now sits ~13 lines above the actual null-cache write (an unrelated conditional block was inserted between), weakening comment-to-code mapping.",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": 369,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6a12fb2c65cec1c1",
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a53ef6924a6bd421f",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab18b8329e2f15ca0",
+     "severity": "nit"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a565998fa307dd09f/code-comment",
+     "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a6b14ba39a86e2934/scorer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 72,
+   "rationale": "The comment does now sit above a longer block ending in the cache write, but it still reads as a preamble to the lookup it describes \u2014 cosmetic."
+  },
+  {
+   "cluster_id": "c12",
+   "summary": "The new lookups are case-sensitive (no BindingFlags.IgnoreCase) and this is untested \u2014 a wrong-case field name silently resolves to null and is not validated, despite MatchesPropertyByExactName's name.",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": 370,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a71c15a4b96655a69",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a2ab99685389ff7b5",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a56585c7f6a20db28",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "Case sensitivity is unchanged by the diff \u2014 the replaced call was equally case-sensitive \u2014 and FieldIdentifier names come from nameof/expressions, so adding IgnoreCase would be wrong, not missing."
+  },
+  {
+   "cluster_id": "c13",
+   "summary": "Several exotic reflection shapes are untested: protected/private shadowing of a public base member, constructed-generic-base shadowing, null FieldName, indexers/explicit interface implementations, static/instance name collisions.",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": 370,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a71c15a4b96655a69",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 88,
+   "rationale": "An open-ended list of additional reflection shapes to test \u2014 an unbounded suggestion class not tied to a demonstrated defect in the diff."
+  },
+  {
+   "cluster_id": "c14",
+   "summary": "ValidatesHiddenPropertiesWithPropertyCaching does not actually verify caching \u2014 it asserts only validation messages, which are identical whether the PropertyInfo is cached or re-resolved, so it would pass with or without the _propertyInfoCache.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 193,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a71c15a4b96655a69",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a2ab99685389ff7b5",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ad91e03ff01681f2c",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 68,
+   "rationale": "Correct that the assertions only check messages, but the repeated NotifyFieldChanged loop does exercise the cached-lookup branch and a test is not obliged to observe a private static cache."
+  },
+  {
+   "cluster_id": "c15",
+   "summary": "MatchesPropertyByExactName is redundant/misnamed \u2014 it duplicates ValidatesHiddenPropertiesWithoutAmbiguousMatchException (same model/field/assertion) and verifies nothing distinct about exact-name matching; tests 1/2/3 overlap heavily.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 212,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ab4574df069b6fbea",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a0573731f335be28a",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a71c15a4b96655a69",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a2ab99685389ff7b5",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a5b7c3a3ca9817fe7",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a56585c7f6a20db28",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ad91e03ff01681f2c",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 62,
+   "rationale": "Accurate that MatchesPropertyByExactName re-uses the same model/field/expected message as ValidatesHiddenPropertiesWithoutAmbiguousMatchException, but redundant-test removal is a taste call with no defect behind it."
+  },
+  {
+   "cluster_id": "c16",
+   "summary": "Weak Assert.Empty-only assertions in SkipsValidationWhenDerivedShadowHasNoAttributes and IgnoresStaticProperty cannot distinguish 'property correctly resolved with nothing to fail' from 'property never found at all' \u2014 vacuous-pass risk (no positive control).",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 256,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ab4574df069b6fbea",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38e065e13752fb40",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a71c15a4b96655a69",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae7f9075913eec193",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a56585c7f6a20db28",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ad91e03ff01681f2c",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 52,
+   "rationale": "Half correct: in SkipsValidationWhenDerivedShadowHasNoAttributes Assert.Empty genuinely cannot distinguish 'resolved the unattributed derived shadow' from 'resolved nothing'; the IgnoresStaticProperty half is refuted, since resolving the static would surface \"StaticValue:range\"."
+  },
+  {
+   "cluster_id": "c17",
+   "summary": "IgnoresStaticProperty is misnamed/weak \u2014 it frames an incidental side effect (the dropped BindingFlags.Static) as intended behavior, and the instance Value=0 field is misleading noise.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 268,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ab4574df069b6fbea",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a2ab99685389ff7b5",
+     "severity": "low"
+    }
+   ],
+   "verdict": "false-positive",
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 62,
+   "rationale": "Matches known_safe safe-static-skip: both lookups deliberately use BindingFlags.Instance and DataAnnotations validates instance properties, so IgnoresStaticProperty documents correct behaviour."
+  },
+  {
+   "cluster_id": "c18",
+   "summary": "Inert fixture members set but never read/asserted \u2014 ModelWithStaticProperty.Value and DerivedModelWithInheritedOnly.Description are assigned but never validated, and MidLevelModelWithShadow.Tag is never exercised as its own runtime type.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 445,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae7f9075913eec193",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a909c00677471f3d9",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a890db2796321a00b",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "Correct that Value and Description are never asserted, but MidLevelModelWithShadow is load-bearing as DeepDerivedModel's base; harmless fixture noise."
+  },
+  {
+   "cluster_id": "c19",
+   "summary": "Three of four new test-model hierarchies declare the derived class before its base class, contrary to the base-then-derived convention used by sibling fixtures.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 405,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a88e97446a386ea47",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae7f9075913eec193",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a909c00677471f3d9",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 80,
+   "rationale": "Declaration-order preference only; ordering of nested test fixtures has no correctness or convention weight visible in the file."
+  },
+  {
+   "cluster_id": "c20",
+   "summary": "New attributed test-model properties split the validation attribute and the property declaration across two lines, unlike every pre-existing attributed property in the file (single-line).",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 407,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a88e97446a386ea47",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 78,
+   "rationale": "Formatting taste; attribute-on-own-line is the standard C# layout, not a violation."
+  },
+  {
+   "cluster_id": "c21",
+   "summary": "New leaf test-model classes are declared as bare `class` (implicit private) rather than `private sealed class` like recently-added sibling fixtures (AsyncTestModel/AsyncThrowingModel).",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 405,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae7f9075913eec193",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a909c00677471f3d9",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 68,
+   "rationale": "Style-only; the nearest sibling fixture visible in the diff context (`class TestModel`) is itself a bare implicit-private class, so the new bare `class` declarations match adjacent code."
+  },
+  {
+   "cluster_id": "c22",
+   "summary": "MatchesPropertyByExactName hardcodes the literal \"OrderID\" instead of nameof(...), diverging from every other reference to that property in the file.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 219,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a88e97446a386ea47",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38e065e13752fb40",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 55,
+   "rationale": "Verifiably true and one-shot: one call site uses the literal \"OrderID\" while five others use nameof(...); a maintainer could accept the nameof swap, though the literal is arguably deliberate given the test's exact-name framing."
+  },
+  {
+   "cluster_id": "c23",
+   "summary": "Fixture names ModelWithNamedBase and ModelWithBaseName are near-anagrams for two unrelated scenarios (a mix-up hazard); some fixture names (DeepDerivedModel) don't convey what they hide.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 434,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae7f9075913eec193",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a909c00677471f3d9",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 72,
+   "rationale": "ModelWithNamedBase and ModelWithBaseName are indeed confusingly similar, but neither name is incorrect \u2014 naming taste with no objective violation."
+  },
+  {
+   "cluster_id": "c25",
+   "summary": "The static _propertyInfoCache is never reset between tests, so only the first of the three tests keying on (DerivedModelWithHiddenProperty, OrderID) actually exercises the reflection path; tests are not isolated and could become order-dependent.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 177,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ab4574df069b6fbea",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38e065e13752fb40",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a71c15a4b96655a69",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 52,
+   "rationale": "Mechanically true against the visible cache write keyed by ModelType+FieldName: three added tests share (DerivedModelWithHiddenProperty, OrderID) so only whichever runs first performs the reflection lookup."
+  },
+  {
+   "cluster_id": "c27",
+   "summary": "ModelWithHiddenBaseProperty has low cohesion \u2014 it serves two unrelated scenario families (the OrderID two-level hide and the Tag three-level hide) on one base type.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 411,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae7f9075913eec193",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a909c00677471f3d9",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 85,
+   "rationale": "ModelWithHiddenBaseProperty does carry both OrderID and Tag, but 'low cohesion in a test fixture' is pure taste with no behavioral consequence."
+  },
+  {
+   "cluster_id": "c28",
+   "summary": "The load-bearing base members typed `object` (the object-vs-int mismatch that creates the distinct shadowed reflection member driving the repro) and the multi-level Tag shadow intent are undocumented; a maintainer could 'align' the types and silently break the repro.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 411,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6a12fb2c65cec1c1",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a53ef6924a6bd421f",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a909c00677471f3d9",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 58,
+   "rationale": "Correct and non-obvious: the base members are typed `object` while the shadows are `int`/`string`, and that signature mismatch is what makes GetProperty ambiguous at all \u2014 'aligning' the types would silently neuter the repro."
+  },
+  {
+   "cluster_id": "c30",
+   "summary": "No test proves that the most-derived attributes win when BOTH a base and a derived shadow carry validation attributes (only the base-dropped / unattributed-shadow direction is covered).",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 256,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a2ab99685389ff7b5",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 62,
+   "rationale": "True gap \u2014 no fixture attributes both a base and its `new` shadow \u2014 but the both-attributed case resolves most-derived and would simply pass."
+  },
+  {
+   "cluster_id": "c31",
+   "summary": "In ValidatesHiddenPropertiesWithoutAmbiguousMatchException the first NotifyFieldChanged fires with no intervening assertion before the state changes again \u2014 a confusing/dead call.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 187,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ad91e03ff01681f2c",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "false-positive",
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 65,
+   "rationale": "Refuted by the diff: the first NotifyFieldChanged is the load-bearing call \u2014 the field-level lookup that would have thrown pre-fix \u2014 and it seeds the message whose removal the final Assert.Empty verifies."
+  },
+  {
+   "cluster_id": "c34",
+   "summary": "The structural invariant that each fixture actually contains shadowing/ambiguity is unguarded \u2014 a future edit dropping `new` or the base property would silently neuter a test; no guard asserts the fallback lookup genuinely throws.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 405,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a909c00677471f3d9",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "Asks for meta-assertions that each fixture still contains shadowing \u2014 a speculative, unbounded test-hardening class."
+  },
+  {
+   "cluster_id": "c36",
+   "summary": "The cache invalidation / hot-reload path (ClearCache, MetadataUpdater.IsSupported gating, negative-result caching) is entirely untested.",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": 388,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a2ab99685389ff7b5",
+     "severity": "medium"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a02b6c8522ffe52c1",
+     "severity": "info"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 85,
+   "rationale": "ClearCache/MetadataUpdater gating is pre-existing code the diff does not touch; an out-of-scope coverage ask."
+  },
+  {
+   "cluster_id": "c37",
+   "summary": "ValidatesInheritedPropertyFromBaseClass does not exercise hiding/ambiguity (BaseName is declared once, never shadowed) so it passes on pre-fix code too \u2014 it guards the step-2 fallback for plain inheritance, not the ambiguity fix.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 224,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38e065e13752fb40",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a71c15a4b96655a69",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 60,
+   "rationale": "Factually right that BaseName is declared once so no ambiguity is exercised, but that is the test's legitimate purpose \u2014 DeclaredOnly-first would regress plain inherited properties without the step-2 fallback."
+  },
+  {
+   "cluster_id": "c38",
+   "summary": "Fixtures mix 'Hidden', 'Shadow', and plain 'new' vocabulary for the same concept, and DeepDerivedModel is the only leaf name that doesn't say what it hides \u2014 inconsistent naming.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 423,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae7f9075913eec193",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 80,
+   "rationale": "Naming taste only \u2014 'Hidden', 'Shadow' and DeepDerivedModel do mix vocabulary, but no name is wrong and nothing behavioural follows."
+  },
+  {
+   "cluster_id": "c39",
+   "summary": "New test model classes encode subtle reflection scenarios (object-vs-int shadowing, static exclusion, three-level shadow) via class shape alone, with no explanatory comments.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 405,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 85,
+   "rationale": "'Add explanatory comments to the new fixture classes' is an unbounded documentation-preference ask with no specific in-repo anchor."
+  },
+  {
+   "cluster_id": "c40",
+   "summary": "Assert.False(editContext.Validate()) in a hidden-property test exercises the whole-form Validator.TryValidateObject path rather than the TryGetValidatableProperty two-step lookup under test.",
+   "file": "src/Components/Forms/test/EditContextDataAnnotationsExtensionsTest.cs",
+   "line": 183,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ad91e03ff01681f2c",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "True that editContext.Validate() goes through the whole-model Validator.TryValidateObject path rather than TryGetValidatableProperty, but the same test then exercises the field path via NotifyFieldChanged, so the extra assertion is additional coverage, not a defect."
+  },
+  {
+   "cluster_id": "c41",
+   "summary": "The DeclaredOnly-first lookup silently drops validation attributes when a derived `new` shadow omits an attribute present on the base \u2014 no diagnostic \u2014 and the added test SkipsValidationWhenDerivedShadowHasNoAttributes enshrines that silent drop as expected behaviour.",
+   "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+   "line": 370,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a317fe40502b953c0/scorer",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a8a3b8b7a12e1bba7/prior-pr",
+     "severity": null
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "high",
+   "confidence": 93,
+   "rationale": "Exactly facet (b) of the answer key: DeclaredOnly-first resolves DerivedModelWithUnattributedHiddenProperty's unattributed `new string Name` so the base [Required] is never evaluated, and SkipsValidationWhenDerivedShadowHasNoAttributes codifies that silent drop as expected."
+  }
+ ]
 }

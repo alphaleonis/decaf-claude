@@ -1,0 +1,155 @@
+{
+  "run_id": "2__anthropic-code-review__r2",
+  "subject_id": 2,
+  "lang": "csharp",
+  "size": "medium",
+  "tool": "anthropic-code-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "merge_sha": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "review_base": "3b00cfcae37cd1866de43205059039c1576404ff^1",
+  "review_head": "3b00cfcae37cd1866de43205059039c1576404ff",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 662,
+  "duration_ms": "659707",
+  "duration_api_ms": "1444378",
+  "num_turns": "23",
+  "cost_usd": "5.338996500000002",
+  "orch_usage": {
+    "input_tokens": "2461",
+    "output_tokens": "20543",
+    "cache_creation_tokens": "64407",
+    "cache_read_tokens": "806821",
+    "total_tokens": 894232
+  },
+  "session_tokens": {
+    "subagents": 11,
+    "input": 3245,
+    "output": 112794,
+    "cache_creation": 564219,
+    "cache_read": 5232090,
+    "total": 5912348,
+    "orchestrator": {
+      "output": 20543,
+      "total": 894232,
+      "duration_s": 660
+    },
+    "per_subagent": [
+      {
+        "output": 14918,
+        "input": 28,
+        "cache_creation": 77012,
+        "cache_read": 803835,
+        "total": 895793,
+        "duration_s": 199,
+        "agent": "agent-a0652069e42f0d394"
+      },
+      {
+        "output": 6205,
+        "input": 98,
+        "cache_creation": 39263,
+        "cache_read": 407744,
+        "total": 453310,
+        "duration_s": 91,
+        "agent": "agent-a236af59c644598ed"
+      },
+      {
+        "output": 1392,
+        "input": 66,
+        "cache_creation": 18344,
+        "cache_read": 187887,
+        "total": 207689,
+        "duration_s": 25,
+        "agent": "agent-a2a4ec72a53678150"
+      },
+      {
+        "output": 17510,
+        "input": 26,
+        "cache_creation": 61757,
+        "cache_read": 636359,
+        "total": 715652,
+        "duration_s": 201,
+        "agent": "agent-a3eef590f38087b9f"
+      },
+      {
+        "output": 17427,
+        "input": 30,
+        "cache_creation": 51331,
+        "cache_read": 709178,
+        "total": 777966,
+        "duration_s": 204,
+        "agent": "agent-a5b9f9d64669e1521"
+      },
+      {
+        "output": 290,
+        "input": 4,
+        "cache_creation": 39196,
+        "cache_read": 30844,
+        "total": 70334,
+        "duration_s": 5,
+        "agent": "agent-aacd03087cba74a2c"
+      },
+      {
+        "output": 3770,
+        "input": 34,
+        "cache_creation": 24930,
+        "cache_read": 93941,
+        "total": 122675,
+        "duration_s": 44,
+        "agent": "agent-ab0a7422f192f7236"
+      },
+      {
+        "output": 1214,
+        "input": 58,
+        "cache_creation": 26785,
+        "cache_read": 150969,
+        "total": 179026,
+        "duration_s": 25,
+        "agent": "agent-ae23d8f7afcf8858c"
+      },
+      {
+        "output": 21497,
+        "input": 324,
+        "cache_creation": 90459,
+        "cache_read": 1034527,
+        "total": 1146807,
+        "duration_s": 274,
+        "agent": "agent-ae49499538979fba8"
+      },
+      {
+        "output": 6934,
+        "input": 90,
+        "cache_creation": 50791,
+        "cache_read": 312816,
+        "total": 370631,
+        "duration_s": 119,
+        "agent": "agent-afa482a0075cbc5b1"
+      },
+      {
+        "output": 1094,
+        "input": 26,
+        "cache_creation": 19944,
+        "cache_read": 57169,
+        "total": 78233,
+        "duration_s": 15,
+        "agent": "agent-afb2b7d07080f8925"
+      }
+    ],
+    "max_subagent_duration_s": 274,
+    "sum_subagent_duration_s": 1202
+  },
+  "input_tokens": "2461",
+  "output_tokens": "20543",
+  "cache_creation_tokens": "64407",
+  "cache_read_tokens": "806821",
+  "total_tokens": 894232,
+  "session_id": "36008c5f-4414-4a36-9869-f096e3beaca9",
+  "findings_lines": 56,
+  "invocation": "Use the Skill tool to run `code-review:code-review` — the plugin-qualified command from code-review@claude-plugins-official. It is NOT `decaf-quality:code-review`: a different tool ships a skill of the same bare name, so never invoke a bare `/code-review`, and abort rather than substituting anything else if the qualified skill does not resolve. Review pull request #67075 of the GitHub repository dotnet/aspnetcore. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-28T21:53:50Z"
+}
