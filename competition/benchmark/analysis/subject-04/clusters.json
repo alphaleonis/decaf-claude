@@ -1,0 +1,1568 @@
+[
+ {
+  "cluster_id": "c1",
+  "summary": "Making createChildren (behind the public Node.getChildren() API) scan JSX files with the JSX language variant changes the token children getChildren() emits for JSX (`</` becomes one LessThanSlashToken instead of `<`+`/`); getChildren is consumed by external tooling and the changed/mis-tiled child stream crashed downstream AST walkers (typescript-eslint, eslint-stylistic) with 'RangeError: Maximum call stack size exceeded', invisible to TS's own test suite \u2014 the escaped, reverted defect (#62423/#62188).",
+  "file": "src/services/services.ts",
+  "line": 507,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-af28592e88bfde118/validator",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-af5869fa38e394d5d/prior-pr-feedback",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a422bac8608c872d5",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-ae8caf79b869b612b",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c2",
+  "summary": "In getCompletionData's 'Fix location' switch, the mechanical SlashToken -> LessThanSlashToken rename was applied to the case still guarded by `parent.kind === JsxSelfClosingElement`; a self-closing element's `/` is a plain SlashToken (a LessThanSlashToken only parents a JsxClosingElement/Fragment), so the combination is unsatisfiable and the branch is dead code \u2014 silently dropping the self-closing-tag completion-location fix-up.",
+  "file": "src/services/completions.ts",
+  "line": 3511,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a1157a636476f66e1/historical-git-context",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a1936ee7463c91158/validator",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a347cbda50e075ad4/bug-scan",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-aa67651916f86777a/guidance-adherence",
+    "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a32a084456b4b7ed4",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-aaf13da0ee3285fb0",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-ac4eec98d6fc16144",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-afd2cba6291d45c71",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a07d075e5d163411d/typescript-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a17d9db0853139925/broad-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a5e545c656cd94d49/consistency-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a8428bcd48e453209/finding-validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a8c5d862c534d77f3/knowledge-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a9b384b1b04929242/quick-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-ad5dc302fcef8c43a/design-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a09f303e59f161f4a/consistency-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a09f303e59f161f4a/consistency-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a0f458c4bf3845edb/broad-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a1b71b0604fe0fa1a/knowledge-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a1bf8c9c96340d200/quick-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a25e33fc6248f4819/finding-validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a2b3cc5df26c71238/typescript-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a1ffed6d4047216e8/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a87a4ff9cec5ad885/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a0392c0935026824e/pr-test-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a6ca0c8a8f5dfd8cb/silent-failure-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-aabb39184e94bc3f6/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a77f304997a99fa2b",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-af3fba8d6b9f621b9",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a04bc3b5667758b3c/comment-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a2be9c8efcb77a13b/code-reviewer",
+    "severity": "critical"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a93dd8be1491077a1/blind-hunter",
+    "severity": "critical"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ac2efc8095158b0eb/adversarial-general",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-af23bf71d00256295/edge-case-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a7febe1c17e6a42f2/blind-hunter",
+    "severity": "critical"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c3",
+  "summary": "createChildren mutates the shared module-level scanner's language variant (setLanguageVariant(JSX)) and resets it to Standard only on the normal return path \u2014 NOT in a try/finally \u2014 so a throw mid-traversal (e.g. Debug.fail in addSyntheticNodes) leaves the process-wide singleton scanner stuck in JSX variant, silently mis-tokenizing later non-JSX scans in completions/preProcess/organizeImports.",
+  "file": "src/services/services.ts",
+  "line": 509,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-a1157a636476f66e1/historical-git-context",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-af6ad082903591c8a/validator",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a07d075e5d163411d/typescript-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a17d9db0853139925/broad-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a794717b025a5dc43/finding-validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-ad5dc302fcef8c43a/design-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a0f458c4bf3845edb/broad-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a2b3cc5df26c71238/typescript-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-ae9dcb359ae48d561/finding-validator",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-af49adbfae13cb551/design-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a87a4ff9cec5ad885/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-ace9a512c90982e51/silent-failure-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a6ca0c8a8f5dfd8cb/silent-failure-hunter",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-aabb39184e94bc3f6/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a77f304997a99fa2b",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-af3fba8d6b9f621b9",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ab251604af6994ba8/security-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ac2efc8095158b0eb/adversarial-general",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-aec0aa3a41438fd78/architecture-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-af23bf71d00256295/edge-case-hunter",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a2f03f471977f644d/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a841e9624cfa4e1d9/edge-case-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-aa246ac352721bcdb/silent-failure-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-ac1e1aa9c12370817/architecture-reviewer",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c4",
+  "summary": "The new `languageVariant?` on SourceFileLike is added WITHOUT `/** @internal */` (unlike its sibling optional members), so it ships in the public typescript.d.ts baseline and permanently widens TypeScript's public API surface despite having only an internal consumer.",
+  "file": "src/compiler/types.ts",
+  "line": 4291,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a8c5d862c534d77f3/knowledge-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-ad5dc302fcef8c43a/design-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a0f458c4bf3845edb/broad-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-af49adbfae13cb551/design-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a0279ef40ef55a297/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aa1a7e88da5e0e6c6/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aa1a7e88da5e0e6c6/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a62877d94d160b6d5/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-aa33775cf143fc9f0/comment-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-aabb39184e94bc3f6/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a77f304997a99fa2b",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-af3fba8d6b9f621b9",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a86a2ad2ad92347fd/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ac2efc8095158b0eb/adversarial-general",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-aec0aa3a41438fd78/architecture-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a2f03f471977f644d/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a3e0daf53ebefc49c/type-design-analyzer",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-ac1e1aa9c12370817/architecture-reviewer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c5",
+  "summary": "Asymmetric fallback / incomplete fix: createChildren derives languageVariant only from `sourceFile?.languageVariant ?? Standard` while the scan text falls back to `sourceFile || node.getSourceFile()`, so a SourceFileLike that carries JSX text but omits the optional languageVariant (e.g. the literals built in textChanges.ts:1339, sourcemaps.ts) is scanned as Standard \u2014 silently re-introducing the `</` mis-tokenization the PR set out to fix.",
+  "file": "src/services/services.ts",
+  "line": 507,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a32a084456b4b7ed4",
+    "severity": "low"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a899eda5e75b3934e",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a17d9db0853139925/broad-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a1bf8c9c96340d200/quick-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a2b3cc5df26c71238/typescript-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-aad8558ea7f5c203f",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-abf8f50c49a8934bf/finding-validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-af49adbfae13cb551/design-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a87a4ff9cec5ad885/code-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aa1a7e88da5e0e6c6/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-ace9a512c90982e51/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a62877d94d160b6d5/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a62877d94d160b6d5/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a6ca0c8a8f5dfd8cb/silent-failure-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-aabb39184e94bc3f6/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a77f304997a99fa2b",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-af3fba8d6b9f621b9",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a86a2ad2ad92347fd/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ac2efc8095158b0eb/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-af23bf71d00256295/edge-case-hunter",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a3e0daf53ebefc49c/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a7febe1c17e6a42f2/blind-hunter",
+    "severity": "high"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a841e9624cfa4e1d9/edge-case-hunter",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c6",
+  "summary": "The braceMatching map has no LessThanSlashToken entry and the change removed the LessThanToken child of a JSX closing tag, so go-to-matching-brace on a .tsx closing tag now returns emptyArray \u2014 an editor-feature regression from the token change.",
+  "file": "src/services/services.ts",
+  "line": 2630,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a2be9c8efcb77a13b/code-reviewer",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c7",
+  "summary": "formatting.ts shouldAddDelta was not migrated to LessThanSlashToken: now that a JsxClosingElement's leading token is LessThanSlashToken, its 'no indent delta' carve-out for JSX closing tags no longer fires and falls through to default delta logic (a maintainer flagged this on the PR; no indentation test covers it).",
+  "file": "src/services/formatting/formatting.ts",
+  "line": 737,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-aa87547ed2f5ed925/validator",
+    "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "agent-af5869fa38e394d5d/prior-pr-feedback",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a1ef4a74b373fcc39/prior-feedback-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a98f4c99875b875b6/finding-validator",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a0f458c4bf3845edb/broad-reviewer",
+    "severity": "high"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c8",
+  "summary": "The two modified fourslash JSX classification tests re-touch the trailing `const c2 = classification(\"2020\")` block with textually identical -/+ lines \u2014 a pure LF->CRLF line-ending normalization unrelated to the fix, inflating the diff and confusing git blame.",
+  "file": "tests/cases/fourslash/syntacticClassificationsJsx1.ts",
+  "line": null,
+  "category": "style",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a5a95fab56266f1a9/test-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a1ffed6d4047216e8/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a87a4ff9cec5ad885/code-reviewer",
+    "severity": "nit"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a0392c0935026824e/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-af3fba8d6b9f621b9",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a40a6139c341d40d4/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a2f03f471977f644d/adversarial-general",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c9",
+  "summary": "Test-coverage gap: the behavioral completions/utilities changes ship with no PR-authored test \u2014 only two syntactic-classification baselines were updated. Uncovered: the self-closing 'Fix location' branch, JSX fragment `</>` close, .jsx/.js-family variant derivation, the scanner-reset cross-file leak, and a direct getChildren token-kind unit test.",
+  "file": "src/services/completions.ts",
+  "line": 3511,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-ab5b8c0f222591d9a/test-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-ab5b8c0f222591d9a/test-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a5a95fab56266f1a9/test-reviewer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a1ffed6d4047216e8/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a1ffed6d4047216e8/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a1ffed6d4047216e8/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a1ffed6d4047216e8/pr-test-analyzer",
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a0392c0935026824e/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a0392c0935026824e/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a0392c0935026824e/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a0392c0935026824e/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a0392c0935026824e/pr-test-analyzer",
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-aabb39184e94bc3f6/code-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a77f304997a99fa2b",
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-af3fba8d6b9f621b9",
+    "severity": "nit"
+   },
+   {
+    "tool": "superpowers",
+    "repeat": 2,
+    "subagent": "agent-af3fba8d6b9f621b9",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a40a6139c341d40d4/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a40a6139c341d40d4/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a40a6139c341d40d4/pr-test-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a40a6139c341d40d4/pr-test-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ac2efc8095158b0eb/adversarial-general",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a6c16d92a13309bea/pr-test-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a6c16d92a13309bea/pr-test-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c10",
+  "summary": "The load-bearing `scanner.setLanguageVariant(LanguageVariant.Standard)` reset (which restores the shared singleton for other consumers) has no comment explaining why it exists, so a future maintainer could read it as redundant teardown and delete it, silently corrupting scanning elsewhere.",
+  "file": "src/services/services.ts",
+  "line": 530,
+  "category": "doc",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a8c5d862c534d77f3/knowledge-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-a1b71b0604fe0fa1a/knowledge-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "medium"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a0279ef40ef55a297/comment-analyzer",
+    "severity": "critical"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-aa33775cf143fc9f0/comment-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a04bc3b5667758b3c/comment-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a2f03f471977f644d/adversarial-general",
+    "severity": "low"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a9a0894c93e6b1e29/comment-analyzer",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c11",
+  "summary": "The new SourceFileLike.languageVariant field / its non-local coupling is undocumented: no comment records the absent-means-Standard contract, that implementers backing JSX must populate it, or that the six LessThanSlashToken consumer checks silently depend on createChildren's variant switch.",
+  "file": "src/compiler/types.ts",
+  "line": 4291,
+  "category": "doc",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a8c5d862c534d77f3/knowledge-reviewer",
+    "severity": "high"
+   },
+   {
+    "tool": "ours",
+    "repeat": 1,
+    "subagent": "agent-a917eee19e185b6d0/finding-validator",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-a0279ef40ef55a297/comment-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-aa33775cf143fc9f0/comment-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a04bc3b5667758b3c/comment-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a86a2ad2ad92347fd/type-design-analyzer",
+    "severity": "nit"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c12",
+  "summary": "Type-design of the new field: modeling a total field as optional-with-silent-default (`?? Standard`) is questionable \u2014 it conflates 'unknown' with 'Standard', duplicates the required SourceFile.languageVariant, and pushes one consumer's need onto the shared SourceFileLike interface (ISP); some suggest making it required so Standard is an explicit choice.",
+  "file": "src/compiler/types.ts",
+  "line": 4291,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "ours",
+    "repeat": 2,
+    "subagent": "agent-af49adbfae13cb551/design-reviewer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aa1a7e88da5e0e6c6/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a62877d94d160b6d5/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-a62877d94d160b6d5/type-design-analyzer",
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a86a2ad2ad92347fd/type-design-analyzer",
+    "severity": "medium"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-a86a2ad2ad92347fd/type-design-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c13",
+  "summary": "The PR's own 'test tsserver top300' CI bot reported SIGABRT tsserver crashes for backstage, kibana, and remotion against this diff, and those abnormal exits were never investigated before merge \u2014 direct CI evidence of the downstream breakage.",
+  "file": "src/services/services.ts",
+  "line": 507,
+  "category": "test",
+  "reported_by": [
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-ae8caf79b869b612b",
+    "severity": "medium"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c14",
+  "summary": "Narrow edge: a malformed closing tag with whitespace between `<` and `/` (`< /div>`) leaves a bare LessThanToken that the old SlashToken/LessThanToken check matched but the new LessThanSlashToken check does not.",
+  "file": "src/services/utilities.ts",
+  "line": 1892,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "info"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-aabb39184e94bc3f6/code-reviewer",
+    "severity": "info"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c15",
+  "summary": "The adjacent unchanged comment `// <div>Hello |</div>` in utilities.ts may now be stale, since that caret position routes through the updated LessThanSlashToken/JsxClosingElement branch.",
+  "file": "src/services/utilities.ts",
+  "line": 1874,
+  "category": "doc",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 2,
+    "subagent": "agent-aa33775cf143fc9f0/comment-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c16",
+  "summary": "Design alternative: rather than widening the public SourceFileLike type, createChildren's only caller already guarantees a real SourceFile, so the variant could be read from node.getSourceFile().languageVariant with zero new public API; if the field stays, centralize the `?? Standard` default in one documented helper.",
+  "file": "src/services/services.ts",
+  "line": 507,
+  "category": "design",
+  "reported_by": [
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aa1a7e88da5e0e6c6/type-design-analyzer",
+    "severity": "low"
+   },
+   {
+    "tool": "pr-review-toolkit",
+    "repeat": 1,
+    "subagent": "agent-aa1a7e88da5e0e6c6/type-design-analyzer",
+    "severity": "low"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c17",
+  "summary": "Other switches (getPossibleTypeArgumentsInfo, the breakpoints switch) have no LessThanSlashToken case, so a JSX closing bracket now falls through to their defaults \u2014 appears benign but untested.",
+  "file": "src/services/utilities.ts",
+  "line": 2049,
+  "category": "logic",
+  "reported_by": [
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 1,
+    "subagent": "agent-ac2efc8095158b0eb/adversarial-general",
+    "severity": "info"
+   }
+  ]
+ },
+ {
+  "cluster_id": "c18",
+  "summary": "The intentional divergence \u2014 JsxText/JsxExpression checks stay LessThanToken while JsxClosingElement moved to LessThanSlashToken (error-recovery paths) \u2014 is undocumented, so a future consistency fix could break the error-recovery paths.",
+  "file": "src/services/utilities.ts",
+  "line": 1875,
+  "category": "doc",
+  "reported_by": [
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "nit"
+   },
+   {
+    "tool": "tag1-comprehensive-review",
+    "repeat": 2,
+    "subagent": "agent-a2f03f471977f644d/adversarial-general",
+    "severity": "info"
+   }
+  ]
+ }
+]

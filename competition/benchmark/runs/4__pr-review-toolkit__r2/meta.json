@@ -1,0 +1,101 @@
+{
+  "run_id": "4__pr-review-toolkit__r2",
+  "subject_id": 4,
+  "lang": "typescript",
+  "size": "small",
+  "tool": "pr-review-toolkit",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/TypeScript",
+  "pr": 61928,
+  "merge_sha": "02672d281c26e561708127da1d8d1a6cae45fee2",
+  "review_base": "02672d281c26e561708127da1d8d1a6cae45fee2^1",
+  "review_head": "02672d281c26e561708127da1d8d1a6cae45fee2",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 671,
+  "duration_ms": "39253",
+  "duration_api_ms": "2050497",
+  "num_turns": "1",
+  "cost_usd": "9.473497750000003",
+  "orch_usage": {
+    "input_tokens": "2",
+    "output_tokens": "3328",
+    "cache_creation_tokens": "6331",
+    "cache_read_tokens": "88769",
+    "total_tokens": 98430
+  },
+  "session_tokens": {
+    "subagents": 5,
+    "input": 207,
+    "output": 21963,
+    "cache_creation": 414570,
+    "cache_read": 5617238,
+    "total": 6053978,
+    "orchestrator": {
+      "output": 19499,
+      "total": 679621,
+      "duration_s": 669
+    },
+    "per_subagent": [
+      {
+        "output": 334,
+        "input": 38,
+        "cache_creation": 79253,
+        "cache_read": 1113906,
+        "total": 1193531,
+        "duration_s": 437,
+        "agent": "agent-a0392c0935026824e"
+      },
+      {
+        "output": 107,
+        "input": 18,
+        "cache_creation": 48368,
+        "cache_read": 363225,
+        "total": 411718,
+        "duration_s": 177,
+        "agent": "agent-a62877d94d160b6d5"
+      },
+      {
+        "output": 1088,
+        "input": 58,
+        "cache_creation": 74471,
+        "cache_read": 1503892,
+        "total": 1579509,
+        "duration_s": 399,
+        "agent": "agent-a6ca0c8a8f5dfd8cb"
+      },
+      {
+        "output": 38,
+        "input": 16,
+        "cache_creation": 45051,
+        "cache_read": 303490,
+        "total": 348595,
+        "duration_s": 216,
+        "agent": "agent-aa33775cf143fc9f0"
+      },
+      {
+        "output": 897,
+        "input": 58,
+        "cache_creation": 87792,
+        "cache_read": 1752257,
+        "total": 1841004,
+        "duration_s": 583,
+        "agent": "agent-aabb39184e94bc3f6"
+      }
+    ],
+    "max_subagent_duration_s": 583,
+    "sum_subagent_duration_s": 1812
+  },
+  "input_tokens": "2",
+  "output_tokens": "3328",
+  "cache_creation_tokens": "6331",
+  "cache_read_tokens": "88769",
+  "total_tokens": 98430,
+  "session_id": "38c79238-c033-4eaa-b0cc-090e06b7e24b",
+  "findings_lines": 56,
+  "invocation": "Comprehensively review pull request #61928 of the GitHub repository microsoft/TypeScript using the pr-review-toolkit agents: run code-reviewer, silent-failure-hunter, pr-test-analyzer, comment-analyzer, and type-design-analyzer against the PR's diff (fetch it with gh pr diff 61928). Do NOT post anything. Output each agent's complete findings with file:line references.",
+  "finished_at": "2026-07-25T16:55:01Z"
+}

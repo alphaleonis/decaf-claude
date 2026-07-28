@@ -1,0 +1,146 @@
+[
+ {
+  "cluster_id": "c17",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 78,
+  "rationale": "Verified that getPossibleTypeArgumentsInfo (utilities.ts:2035-2075) switches on LessThanToken with no LessThanSlashToken case, so a JSX closing `</` no longer counts there. But the finding itself concedes it 'appears benign' and names no behavioral consequence — speculative/no concrete pathway, so trivia by default-down."
+ },
+ {
+  "cluster_id": "c5",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 60,
+  "rationale": "The asymmetry is real in services.ts:507-508 — text falls back to `sourceFile || node.getSourceFile()` while the variant comes only from `sourceFile?.languageVariant ?? Standard`, so any SourceFileLike carrying JSX text but no languageVariant (the internal signature `findChildOfKind(n, kind, sourceFile: SourceFileLike)` / `getChildren(sourceFile?: SourceFileLike)` in services/types.ts:54 admits one) silently re-scans as Standard. The answer key sanctions this 'silent-default mis-scan' as the incomplete-fix valid-other. Downgraded confidence because the two cited examples are wrong: textChanges.ts:1339's literal goes to formatNodeGivenIndentation, which takes languageVariant as a separate parameter and uses the formatting scanner, never createChildren; and getChildren defaults its parameter to `getSourceFileOfNode(this)` (services.ts:462), so the no-arg path does get a real SourceFile."
+ },
+ {
+  "cluster_id": "c15",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 70,
+  "rationale": "The comment at utilities.ts:1874 annotates the UNCHANGED `LessThanToken && parent.kind === JsxText` check; the changed check at 1891-1892 has its own comment `// <div>|</div>`. The finding is self-hedged ('may now be stale') and offers no verification that the 1874 caret now routes elsewhere — speculative doc nit."
+ },
+ {
+  "cluster_id": "c12",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 72,
+  "rationale": "Brushes the known_safe optional-typing trap but is framed as a design suggestion ('questionable', 'some suggest making it required'), not asserted as a defect, so not an FP. It is nonetheless taste: optionality is exactly what DanielRosenwasser requested on the PR (verified: the sole human review comment is 'I would personally just declare languageVariant as optional in SourceFileLike')."
+ },
+ {
+  "cluster_id": "c4",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 85,
+  "rationale": "Verified against types.ts:4285-4292: both sibling optional members (`lineMap?`, `getPositionOfLineAndCharacter?`) carry `/** @internal */`, the new `languageVariant?` does not, and it consequently lands in the committed public baseline (tests/baselines/reference/api/typescript.d.ts:5910). One-shot API-hygiene fix matching a sibling convention in this repo."
+ },
+ {
+  "cluster_id": "c8",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 90,
+  "rationale": "Verified byte-level: at HEAD^ the trailing `const c2 = classification(\"2020\")` block ended its lines with `\\n`, at HEAD with `\\r\\n` — the 5 changed lines in each fourslash file differ only in line terminator, unrelated to the fix. Concrete one-shot diff-noise cleanup."
+ },
+ {
+  "cluster_id": "c16",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 68,
+  "rationale": "Design taste, and its premise is inaccurate: createChildren's caller is `getChildren(sourceFile: SourceFileLike = getSourceFileOfNode(this))` (services.ts:462) — it DEFAULTS to a real SourceFile but does not 'guarantee' one, since callers may pass any SourceFileLike (services/types.ts:54). Proposes an alternative the maintainers explicitly steered away from; no defect asserted."
+ },
+ {
+  "cluster_id": "c7",
+  "verdict": "false-positive",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 80,
+  "rationale": "Refuted: formatting never consumes createChildren's tokens. formatting.ts:439/469-471 calls getFormattingScanner(text, sourceFile.languageVariant, ...), and formattingScanner.ts:25-26/55-56 picks a dedicated `jsxScanner = createScanner(..., LanguageVariant.JSX)` — which already emitted LessThanSlashToken for `</` before this PR (scanner.ts:2204-2209 gates solely on languageVariant === JSX). This diff therefore changes nothing about shouldAddDelta. The attribution 'a maintainer flagged this on the PR' is also unsupported: the PR has exactly two review comments (Copilot on utilities.ts:1894, DanielRosenwasser on optional typing)."
+ },
+ {
+  "cluster_id": "c18",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 75,
+  "rationale": "The divergence is real (utilities.ts:1875/1880 keep LessThanToken while 1892 moved to LessThanSlashToken), but the ask is 'add a comment' plus a speculative 'a future consistency fix could break it' — no current defect, and siblings in this file carry no such rationale comments."
+ },
+ {
+  "cluster_id": "c6",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 78,
+  "rationale": "Verified end to end: braceMatching (services.ts:2630-2635) maps only GreaterThanToken<->LessThanToken; getBraceMatchingAtPosition uses getTouchingToken and findChildOfKind, both of which walk `n.getChildren(sourceFile)` (utilities.ts:1580, 1144) i.e. createChildren. Post-change a JSX closing tag's leading token is a single LessThanSlashToken, so `braceMatching.get()` misses from the `<` side and `findChildOfKind(JsxClosingElement, LessThanToken)` misses from the `>` side — go-to-matching-brace returns emptyArray in both directions where it previously matched. Real editor-feature regression, distinct from the primary."
+ },
+ {
+  "cluster_id": "c14",
+  "verdict": "false-positive",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 68,
+  "rationale": "Refuted: a bare LessThanToken can never parent a JsxClosingElement, so the OLD check at utilities.ts:1892 did not match `< /div>` either — there is no regression. parseJsxChildren (parser.ts:6160-6179) drives parseJsxChild on scanner.reScanJsxToken(); a LessThanToken recurses into parseJsxElementOrSelfClosingElementOrFragment (parser.ts:6154), and the loop only breaks — reaching parseJsxClosingElement (parser.ts:6337-6339, which parseExpects LessThanSlashToken) — on LessThanSlashToken, ConflictMarkerTrivia, or EOF (parser.ts:6146). So `< /div>` yields a malformed opening/self-closing element, never a JsxClosingElement with a bare `<` child."
+ },
+ {
+  "cluster_id": "c10",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 72,
+  "rationale": "The reset at services.ts:530 is indeed load-bearing (the scanner is the module singleton exported at utilities.ts:391), but the finding asks only for an explanatory comment and reasons from a speculative future deletion. Taste-level maintainability nit; c3 is the substantive version of the same observation."
+ },
+ {
+  "cluster_id": "c11",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 68,
+  "rationale": "Request to document the new field's absent-means-Standard contract. No in-repo convention supports it — the sibling SourceFileLike members (types.ts:4286-4290) carry no doc comments either, only @internal markers. Overlaps c4, which names the concrete, convention-anchored fix."
+ },
+ {
+  "cluster_id": "c2",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 85,
+  "rationale": "Verified: completions.ts:3511-3515 now tests `LessThanSlashToken` under `parent.kind === JsxSelfClosingElement`, an unsatisfiable pair. LessThanSlashToken is produced only for `</` (scanner.ts:2204-2209, 3703-3706) and is consumed only by parseJsxClosingElement/parseJsxClosingFragment (parser.ts:6339, 6355); a self-closing element's `/` in `/>` is a plain SlashToken. The mechanical rename turned a live branch into dead code, dropping the self-closing completion location fix-up. This is the answer key's gray-area case, explicitly excluded from the closing-token known_safe."
+ },
+ {
+  "cluster_id": "c9",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 62,
+  "rationale": "True and concrete: the PR ships no new test — only two existing fourslash classification baselines were edited (review.diff), while behavioral changes land in completions.ts and utilities.ts. The enumerated gaps are specific rather than an open-ended 'add tests' list, and 'a direct getChildren token-kind unit test' is exactly the answer key's test-gap note. Held at valid-minor (not valid-other) since it asserts no defect of its own."
+ },
+ {
+  "cluster_id": "c1",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "critical",
+  "confidence": 95,
+  "rationale": "Names the must_flag exactly: createChildren sits behind the public Node.getChildren() API (services.ts:462-464), the JSX variant changes the synthetic token children for JSX files (`</` becomes one LessThanSlashToken — confirmed by the fourslash baseline going from `c.punctuation(\"<\"), c.punctuation(\"/\")` to `c.punctuation(\"</\")`), and the breakage is downstream in external AST walkers with a concrete crash mode, invisible to TS's own suite."
+ },
+ {
+  "cluster_id": "c13",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "critical",
+  "confidence": 70,
+  "rationale": "Verified against the live PR: the `test tsserver top300` bot comment (#61928 issuecomment-2998507645) does report 'Server exited prematurely with code unknown and signal SIGABRT' against refs/pull/61928/merge, and the run was never resolved before merge — direct, diff-attributable evidence of the downstream crash the primary describes. Two caveats holding confidence down: the affected repos are actually Infisical, babel, backstage, cal.com and sealos (kibana and remotion are fabricated), and it names no tokenization mechanism, only the empirical crash."
+ },
+ {
+  "cluster_id": "c3",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 85,
+  "rationale": "Verified: `scanner` is the module-level singleton `export const scanner = createScanner(...)` (utilities.ts:391), shared with completions.ts:339 and preProcess.ts:11; the restore at services.ts:530 is a bare statement after node.forEachChild/addSyntheticNodes, and addSyntheticNodes can throw (Debug.fail at services.ts:544), leaving the singleton in JSX variant. This is the narrow, exception-safety framing the answer key explicitly carves out of the 'never reset' known_safe. Minor inaccuracy: organizeImports.ts:225 builds its own scanner, so only completions/preProcess are actually exposed."
+ }
+]

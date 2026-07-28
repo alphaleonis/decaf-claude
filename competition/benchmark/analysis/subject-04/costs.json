@@ -1,0 +1,120 @@
+{
+  "subject_id": 4,
+  "lang": "typescript",
+  "size": "small",
+  "repo": "microsoft/TypeScript",
+  "pr": 61928,
+  "merge_sha": "02672d281c26e561708127da1d8d1a6cae45fee2",
+  "cells": [
+    {
+      "tool": "anthropic-code-review",
+      "repeat": 1,
+      "cost_usd": 7.9935976,
+      "wall": 1487,
+      "ws_output": 30410,
+      "subagents": 12,
+      "max_subagent_s": 1027,
+      "session_id": "5c1a74a0-474c-4dee-90b6-f42750b336f8",
+      "findings_dir": "runs/4__anthropic-code-review__r1/findings"
+    },
+    {
+      "tool": "anthropic-code-review",
+      "repeat": 2,
+      "cost_usd": 8.124267949999997,
+      "wall": 1037,
+      "ws_output": 28400,
+      "subagents": 13,
+      "max_subagent_s": 533,
+      "session_id": "5c3792ff-2cb9-403b-85bc-c328beeaf8c1",
+      "findings_dir": "runs/4__anthropic-code-review__r2/findings"
+    },
+    {
+      "tool": "ours",
+      "repeat": 1,
+      "cost_usd": 18.422810449999997,
+      "wall": 1794,
+      "ws_output": 72569,
+      "subagents": 12,
+      "max_subagent_s": 685,
+      "session_id": "182637bc-6f91-4277-a781-03cad41db556",
+      "findings_dir": "runs/4__ours__r1/findings"
+    },
+    {
+      "tool": "ours",
+      "repeat": 2,
+      "cost_usd": 20.00251635,
+      "wall": 2061,
+      "ws_output": 86236,
+      "subagents": 12,
+      "max_subagent_s": 764,
+      "session_id": "97146f13-3350-48d3-8137-a8fdea8b26c1",
+      "findings_dir": "runs/4__ours__r2/findings"
+    },
+    {
+      "tool": "pr-review-toolkit",
+      "repeat": 1,
+      "cost_usd": 8.635094999999998,
+      "wall": 660,
+      "ws_output": 16963,
+      "subagents": 5,
+      "max_subagent_s": 511,
+      "session_id": "63a17dee-8976-4c95-834d-254709509db7",
+      "findings_dir": "runs/4__pr-review-toolkit__r1/findings"
+    },
+    {
+      "tool": "pr-review-toolkit",
+      "repeat": 2,
+      "cost_usd": 9.473497750000003,
+      "wall": 671,
+      "ws_output": 21963,
+      "subagents": 5,
+      "max_subagent_s": 583,
+      "session_id": "38c79238-c033-4eaa-b0cc-090e06b7e24b",
+      "findings_dir": "runs/4__pr-review-toolkit__r2/findings"
+    },
+    {
+      "tool": "superpowers",
+      "repeat": 1,
+      "cost_usd": 3.5745297499999995,
+      "wall": 691,
+      "ws_output": 7839,
+      "subagents": 1,
+      "max_subagent_s": 602,
+      "session_id": "9b186c9e-7d90-47c9-8a8b-59b5eb4b8cfe",
+      "findings_dir": "runs/4__superpowers__r1/findings"
+    },
+    {
+      "tool": "superpowers",
+      "repeat": 2,
+      "cost_usd": 2.6998310000000005,
+      "wall": 598,
+      "ws_output": 6610,
+      "subagents": 1,
+      "max_subagent_s": 515,
+      "session_id": "748a953a-adfd-40ef-a5ae-1036af8e9c4f",
+      "findings_dir": "runs/4__superpowers__r2/findings"
+    },
+    {
+      "tool": "tag1-comprehensive-review",
+      "repeat": 1,
+      "cost_usd": 18.628610650000002,
+      "wall": 1341,
+      "ws_output": 52592,
+      "subagents": 10,
+      "max_subagent_s": 806,
+      "session_id": "5992dfb9-252f-4b4e-b1a8-f57430d4566e",
+      "findings_dir": "runs/4__tag1-comprehensive-review__r1/findings"
+    },
+    {
+      "tool": "tag1-comprehensive-review",
+      "repeat": 2,
+      "cost_usd": 18.848431450000007,
+      "wall": 1483,
+      "ws_output": 105348,
+      "subagents": 11,
+      "max_subagent_s": 775,
+      "session_id": "1b02a026-cd1f-4392-95f1-047952c18e6f",
+      "findings_dir": "runs/4__tag1-comprehensive-review__r2/findings"
+    }
+  ]
+}

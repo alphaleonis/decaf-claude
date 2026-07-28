@@ -1,0 +1,180 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Benchmark analysis — subject 4 (typescript/small)</title>
+<style>
+:root{--bg:#fff;--fg:#18181b;--muted:#71717a;--line:#e4e4e7;--card:#fafafa;--accent:#0ea5e9}
+@media(prefers-color-scheme:dark){:root{--bg:#0b0b0f;--fg:#e4e4e7;--muted:#a1a1aa;--line:#27272a;--card:#141418}}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:34px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+h3{font-size:15px;margin:20px 0 6px} .sub{color:var(--muted);margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:6px 0}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:right} th{background:var(--card);font-weight:600}
+td:first-child,th:first-child,.tool{text-align:left} .tool{font-weight:600}
+.matrix td{text-align:center} .matrix .diag{background:var(--card)}
+.mono,.clusters .mono{font-family:ui-monospace,monospace;font-size:12px}
+.clusters td{text-align:left} .verdict{color:#fff;padding:2px 7px;border-radius:10px;font-size:11px;white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
+svg .ax{stroke:var(--muted)} svg .grid{stroke:var(--line)} svg .pt{fill:var(--accent)}
+svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);font-size:11px}
+.wrap>section{overflow-x:auto} code{background:var(--card);padding:1px 4px;border-radius:4px;font-size:12.5px}
+.legend{color:var(--muted);font-size:12px;margin-top:4px}
+.glossary dl{margin:6px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.glossary dt{font-weight:600;white-space:nowrap} .glossary dd{margin:0;color:var(--muted);font-size:13px}
+.glossary h3{margin:0 0 8px} @media(max-width:560px){.glossary dl{grid-template-columns:1fr}.glossary dd{margin:0 0 6px}}
+</style></head><body><div class="wrap">
+<h1>Benchmark analysis — subject 4 (typescript/small)</h1>
+<p class="sub">microsoft/TypeScript#61928 · judge: <code>claude-opus-4-8</code> ·
+18 distinct issues · no human threads (bug + FP discipline only)</p>
+
+<section><h2>Leaderboard</h2><table><thead><tr><th>tool</th><th>escaped bug</th><th>valid /run</th><th>suggestions /run</th><th>unique valid</th><th>trivia /run</th><th>invalid /run</th><th>precision</th><th>sev. calibration</th><th>subagent distinct.</th><th>cost /run</th><th>~agents</th></tr></thead><tbody><tr><td class='tool'>anthropic-code-review</td><td>100%</td><td>3.5</td><td>0.0</td><td>2</td><td>0</td><td>0</td><td>88%</td><td>100%</td><td>24%</td><td>$8.06</td><td>12</td></tr><tr><td class='tool'>superpowers</td><td>0%</td><td>3.0</td><td>2.5</td><td>0</td><td>0</td><td>0</td><td>55%</td><td>100%</td><td>—</td><td>$3.14</td><td>1</td></tr><tr><td class='tool'>pr-review-toolkit</td><td>0%</td><td>3.0</td><td>3.0</td><td>0</td><td>4</td><td>0</td><td>29%</td><td>60%</td><td>18%</td><td>$9.05</td><td>5</td></tr><tr><td class='tool'>tag1-comprehensive-review</td><td>0%</td><td>3.5</td><td>3.0</td><td>1</td><td>3</td><td>0</td><td>37%</td><td>80%</td><td>20%</td><td>$18.74</td><td>10</td></tr><tr><td class='tool'>ours</td><td>0%</td><td>3.0</td><td>3.0</td><td>0</td><td>2</td><td>1</td><td>33%</td><td>33%</td><td>18%</td><td>$19.21</td><td>12</td></tr></tbody></table>
+<p class="legend">Every tool reviewed the PR twice; "/run" columns are averaged across the two runs. Definitions below.</p>
+<div class="card glossary"><h3>How to read this</h3><dl>
+<dt>run (cell)</dt><dd>one review = one tool running once. Each tool reviewed this PR twice, so 2 runs per tool; "/run" numbers are averaged across the two.</dd>
+<dt>finding (issue)</dt><dd>one distinct problem a review raised. The same issue restated by many sub-agents / worded differently is collapsed into a single issue before counting.</dd>
+<dt>escaped bug</dt><dd>the real defect that was bad enough to be reverted in a follow-up PR — the one a reviewer <em>must</em> catch. The column is the % of runs that caught it.</dd>
+<dt>valid /run</dt><dd>real, worth-acting-on findings per run — the escaped bug plus any other genuine defects (excludes trivia and mistakes).</dd>
+<dt>unique valid</dt><dd>valid findings that <em>only this tool</em> caught (nobody else did).</dd>
+<dt>suggestions /run</dt><dd>correct improvement suggestions per run (valid-minor) — true, one-shot-fixable, anchored in the repo's own conventions or objective doc/spelling correctness; a maintainer would plausibly take them as a patch. Not counted in precision.</dd>
+<dt>trivia /run</dt><dd>true-but-valueless findings per run — taste-only, speculative, out-of-scope, duplicative, or an unbounded suggestion class. The attention tax.</dd>
+<dt>invalid /run</dt><dd>false positives per run — findings asserting a problem that isn't real (refuted against the code). Actively misleading.</dd>
+<dt>precision</dt><dd>substantive precision: valid ÷ everything reported (suggestions and trivia both count against it). Higher = less to read per real defect.</dd>
+<dt>sev. calibration</dt><dd>when the tool itself labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop.</dd>
+<dt>subagent distinct.</dt><dd>for multi-agent tools, distinct issues ÷ total sub-agent findings. Low = many agents re-finding the same things.</dd>
+<dt>Jaccard (overlap, below)</dt><dd>how similar two tools' valid-finding sets are: shared ÷ combined. 1.00 = identical, 0.00 = no overlap.</dd>
+<dt>verdict labels</dt><dd>each issue in the drill-down is graded: <strong>TP-primary</strong> = caught the escaped bug; <strong>TP-human</strong> = matched a human review thread; <strong>valid-other</strong> = a different real defect; <strong>valid-minor</strong> = correct improvement suggestion; <strong>trivia</strong> = true but not worth attention; <strong>false-positive</strong> = not real. ("valid" findings = TP-primary + TP-human + valid-other.)</dd>
+</dl></div></section>
+
+<section><h2>Cost vs. bug-catch</h2><div class="card"><svg viewBox="0 0 560 300" width="100%" role="img" aria-label="cost vs bug-catch">
+<line x1="48" y1="252" x2="512" y2="252" class="ax"/>
+<line x1="48" y1="48" x2="48" y2="252" class="ax"/>
+<text x="40" y="256" text-anchor="end" class="tick">0%</text>
+<line x1="48" y1="252" x2="512" y2="252" class="grid"/>
+<text x="40" y="154.0" text-anchor="end" class="tick">50%</text>
+<line x1="48" y1="150.0" x2="512" y2="150.0" class="grid"/>
+<text x="40" y="52" text-anchor="end" class="tick">100%</text>
+<line x1="48" y1="48" x2="512" y2="48" class="grid"/>
+<circle cx="217.3" cy="48.0" r="6" class="pt"/>
+<text x="226.3" y="52.0" class="lbl">anthropic-code-review</text>
+<circle cx="451.5" cy="252.0" r="6" class="pt"/>
+<text x="460.5" y="256.0" class="lbl">ours</text>
+<circle cx="238.1" cy="252.0" r="6" class="pt"/>
+<text x="247.1" y="256.0" class="lbl">pr-review-toolkit</text>
+<circle cx="114.0" cy="252.0" r="6" class="pt"/>
+<text x="123.0" y="256.0" class="lbl">superpowers</text>
+<circle cx="441.6" cy="252.0" r="6" class="pt"/>
+<text x="450.6" y="256.0" class="lbl">tag1-comprehensive-review</text>
+<text x="280.0" y="292" text-anchor="middle" class="axl">mean cost / cell (usage $) →</text>
+<text x="14" y="150.0" transform="rotate(-90 14 150.0)" text-anchor="middle" class="axl">bug-catch rate ↑</text>
+</svg></div>
+<p class="legend">Upper-left = efficient (catches the bug cheaply). The benchmark's core question: does the fan-out premium buy the catch?</p></section>
+
+<section><h2>Inter-tool overlap (Jaccard, true/valid findings)</h2><table class='matrix'><thead><tr><th></th><th>anthropic-code-review</th><th>superpowers</th><th>pr-review-toolkit</th><th>tag1-comprehensive-review</th><th>ours</th></tr></thead><tbody><tr><th>anthropic-code-review</th><td class='diag'></td><td style='background:rgba(14,165,233,0.60)'>0.60</td><td style='background:rgba(14,165,233,0.60)'>0.60</td><td style='background:rgba(14,165,233,0.50)'>0.50</td><td style='background:rgba(14,165,233,0.60)'>0.60</td></tr><tr><th>superpowers</th><td style='background:rgba(14,165,233,0.60)'>0.60</td><td class='diag'></td><td style='background:rgba(14,165,233,1.00)'>1.00</td><td style='background:rgba(14,165,233,0.75)'>0.75</td><td style='background:rgba(14,165,233,1.00)'>1.00</td></tr><tr><th>pr-review-toolkit</th><td style='background:rgba(14,165,233,0.60)'>0.60</td><td style='background:rgba(14,165,233,1.00)'>1.00</td><td class='diag'></td><td style='background:rgba(14,165,233,0.75)'>0.75</td><td style='background:rgba(14,165,233,1.00)'>1.00</td></tr><tr><th>tag1-comprehensive-review</th><td style='background:rgba(14,165,233,0.50)'>0.50</td><td style='background:rgba(14,165,233,0.75)'>0.75</td><td style='background:rgba(14,165,233,0.75)'>0.75</td><td class='diag'></td><td style='background:rgba(14,165,233,0.75)'>0.75</td></tr><tr><th>ours</th><td style='background:rgba(14,165,233,0.60)'>0.60</td><td style='background:rgba(14,165,233,1.00)'>1.00</td><td style='background:rgba(14,165,233,1.00)'>1.00</td><td style='background:rgba(14,165,233,0.75)'>0.75</td><td class='diag'></td></tr></tbody></table>
+<p class="legend">1.00 = identical valid findings · 0.00 = fully complementary.</p></section>
+
+<section><h2>Narrative</h2><h1>Subject 4 — microsoft/TypeScript #61928 (typescript/small): findings-quality analysis</h1>
+<p><strong>The subject, and why it is the hardest primary in the set.</strong> A tiny (21+/16−, 7-file) change</p>
+<p>that makes <code>createChildren</code> — the implementation behind the public <code>Node.getChildren()</code> API — scan</p>
+<p>JSX source files with the JSX language variant, so <code>&lt;/</code> is emitted as a single <code>LessThanSlashToken</code></p>
+<p>instead of <code>&lt;</code> + <code>/</code>, with matching <code>SlashToken → LessThanSlashToken</code> updates across the JSX</p>
+<p>closing-element handling. It even fixes a real correctness gap (getChildren previously mis-tokenized</p>
+<p><code>&lt;/</code>). But changing the token children a public API returns for JSX is a breaking behavioral change</p>
+<p>for external consumers: downstream AST walkers (typescript-eslint, eslint-stylistic) crashed with</p>
+<p><code>RangeError: Maximum call stack size exceeded</code> on the changed child stream, and it was fully reverted</p>
+<p>(#62423, issue #62188). Critically, the crash <strong>does not appear in TypeScript&#x27;s own test suite</strong> —</p>
+<p>only two fourslash baselines needed updating — so a reviewer reading the diff sees a small,</p>
+<p>internally-consistent, test-passing change. Catching the escaped bug requires reasoning about</p>
+<p>*external consumer* impact, not anything visible in the diff.</p>
+<p><strong>The result inverts subject 1: only one tool caught the escaped bug.</strong> The primary (c1) was found</p>
+<p>by <strong>anthropic-code-review alone</strong>, in both reps — and its second TP-primary cluster (c13) was the</p>
+<p>observation that the PR&#x27;s own <code>test tsserver top300</code> CI bot reported SIGABRT crashes on real-world</p>
+<p>repos, never resolved before merge. The other four tools — **including the two most expensive, ours</p>
+<p>($19.21/cell) and tag1 ($18.74/cell)<strong> — </strong>missed the primary in both repeats**. Bug-catch:</p>
+<p>anthropic 2/2; ours, pr-review-toolkit, superpowers, tag1 all 0/2. This is the sharpest recall</p>
+<p>separation in the benchmark so far, and it runs opposite to cost: the priciest fan-outs missed what</p>
+<p>a mid-cost tool caught.</p>
+<p><strong>But anthropic&#x27;s catch was retrieval-driven — and the same channel cost it precision.</strong> anthropic&#x27;s</p>
+<p>primary framing came from its historical-git-context and prior-pr-feedback agents, which retrieved</p>
+<p>the revert PR, the regression issue, and the CI signal from GitHub. That retrieval is a real</p>
+<p>capability — none of the diff-only reviewers connected the tokenization change to a downstream crash</p>
+<p>— but it is not pure diff-reasoning, and it is double-edged: the same retrieval channel produced</p>
+<p>subject 4&#x27;s most notable false positive. anthropic&#x27;s c7 cluster asserts that <code>formatting.ts</code>&#x27;s</p>
+<p><code>shouldAddDelta</code> was &quot;left unmigrated&quot; and cites &quot;a maintainer flagged this on the PR.&quot; Both halves</p>
+<p>are false: formatting uses its <strong>own dedicated JSX-variant scanner</strong> (<code>formattingScanner.ts</code>&#x27;s</p>
+<p><code>jsxScanner</code>), independent of <code>createChildren</code>, which already emitted <code>LessThanSlashToken</code> for JSX</p>
+<p>before this PR — so the diff changes nothing about <code>shouldAddDelta</code> — and the PR has exactly two</p>
+<p>review comments (Copilot on utilities.ts, DanielRosenwasser on the optional typing), *neither about</p>
+<p>formatting*. The &quot;maintainer flagged it&quot; attribution is a hallucination. c13&#x27;s SIGABRT finding is</p>
+<p>similar: the crash signal is genuine, but the tool named fabricated repos (kibana, remotion) that</p>
+<p>do not appear in the actual CI report. Retrieval bought the only catch of the escaped bug and, in</p>
+<p>the same breath, invented a review comment and mis-cited the evidence.</p>
+<p><strong>The valid-other layer everyone found is genuinely strong.</strong> Even missing the primary, the four</p>
+<p>diff-only tools converged on a real, verified secondary set, so signal density stays high:</p>
+<ul>
+<li><strong>c2 — self-closing dead code (unanimous, 10/10 cells).</strong> The <code>SlashToken → LessThanSlashToken</code></li>
+</ul>
+<p>  rename was applied to the completions.ts case still guarded by `parent.kind ===</p>
+<p>  JsxSelfClosingElement<code>; a </code>LessThanSlashToken<code> (</code>&lt;/`) can only parent a JsxClosingElement/Fragment,</p>
+<p>  never a self-closing element (whose <code>/</code> is a plain SlashToken), so the branch is unreachable dead</p>
+<p>  code and the self-closing completion-location fix-up silently stopped firing. A textbook</p>
+<p>  mechanical-rename bug, caught by every cell.</p>
+<ul>
+<li><strong>c3 — scanner-variant leak (9 cells).</strong> <code>createChildren</code> mutates the shared module-singleton</li>
+</ul>
+<p>  scanner to JSX and resets it only on the normal return path (no try/finally), so a <code>Debug.fail</code></p>
+<p>  in <code>addSyntheticNodes</code> leaks the JSX variant to later non-JSX scans in completions/preProcess.</p>
+<ul>
+<li><strong>c5 — incomplete-fix asymmetric fallback (9 cells).</strong> The variant comes from</li>
+</ul>
+<p>  <code>sourceFile?.languageVariant ?? Standard</code> while the text falls back to <code>node.getSourceFile()</code>, so</p>
+<p>  a variant-less <code>SourceFileLike</code> carrying JSX still scans as Standard — re-introducing the very</p>
+<p>  mis-tokenization the PR fixes. (Verified real, though held at low confidence: the tools&#x27; cited</p>
+<p>  examples — textChanges.ts, sourcemaps.ts — turned out to reach a *different* scanner, so the</p>
+<p>  concrete trigger they named is wrong even though the asymmetry is real.)</p>
+<ul>
+<li><strong>c4 — public-API widening (8 cells).</strong> <code>languageVariant?</code> was added to SourceFileLike without</li>
+</ul>
+<p>  <code>/** @internal */</code>, unlike both sibling optional members, so it ships in the public</p>
+<p>  typescript.d.ts baseline — a one-shot API-hygiene fix (valid-minor).</p>
+<ul>
+<li><strong>c6 — braceMatching regression (tag1 unique).</strong> tag1 alone traced that the braceMatching map has</li>
+</ul>
+<p>  no <code>LessThanSlashToken</code> entry, so go-to-matching-brace on a .tsx closing tag now returns</p>
+<p>  <code>emptyArray</code> — a concrete internal editor-feature regression from the same token change. tag1&#x27;s</p>
+<p>  fan-out earned this one.</p>
+<p><strong>FP discipline held on the traps; the two FPs were elsewhere.</strong> No tool fell for the four</p>
+<p><code>known_safe</code> traps — nobody flagged the deliberately-optional <code>languageVariant?</code> as a required-field</p>
+<p>bug (it is exactly what the human reviewer requested), nor the <code>?? Standard</code> guard as an NPE, nor the</p>
+<p>correct closing-token edits, nor claimed the scanner is &quot;never reset.&quot; The two graded false positives</p>
+<p>are both refuted by deeper code paths the tools didn&#x27;t check: c7 (formatting, refuted by the separate</p>
+<p>formatting scanner) and c14 (a <code>&lt; /div&gt;</code> whitespace edge, refuted because a bare LessThanToken never</p>
+<p>parents a JsxClosingElement, so the old check didn&#x27;t match it either). superpowers and tag1 posted</p>
+<p>zero FPs; ours carried the c7 formatting FP in both reps (framed as &quot;not migrated,&quot; without</p>
+<p>anthropic&#x27;s fabricated attribution); prt had the lone c14 edge FP.</p>
+<p><strong>Subagent economics and overlap.</strong> Distinctness sits at 0.18–0.24 for the fan-outs — high</p>
+<p>redundancy, as ever. The four diff-only tools are near-interchangeable here: pairwise Jaccard over</p>
+<p>valid clusters is 0.75–1.0 among ours/prt/superpowers/tag1 (they found the *same* secondary set),</p>
+<p>while anthropic is the outlier (0.5–0.6) precisely because it alone holds the primary. tag1&#x27;s fan-out</p>
+<p>justified itself with the unique braceMatching catch; ours&#x27; fan-out — the most expensive on the</p>
+<p>board — produced the same secondary set as the $3 tool plus the c7 FP, and did not reach the primary.</p>
+<p><strong>Cost–quality verdict.</strong> anthropic is the clear winner: the only tool to catch the escaped bug (2/2),</p>
+<p>precision 0.88, severity calibration 1.0, at $8.06 — with the caveat that the catch is</p>
+<p>retrieval-driven and came bundled with a hallucinated FP. superpowers is the value floor: $3.14,</p>
+<p>precision 0.55, zero FPs, the whole real secondary layer — but no primary. ours and tag1 are the</p>
+<p>cautionary tale of this subject: ~$19/cell, 0/2 on the escaped bug, and (for ours) the highest FP</p>
+<p>rate on the board. On a downstream-only bug, spending 6× more on fan-out bought no recall and, in</p>
+<p>ours&#x27; case, worse precision.</p>
+<p><strong>Caveats.</strong> (1) The escaped bug is downstream-only and invisible to TS&#x27;s tests, so this subject</p>
+<p>measures external-impact reasoning (or retrieval) more than diff-reading; treat anthropic&#x27;s catch as</p>
+<p>substantially a retrieval result, and note that retrieval also produced its c7/c13 fabrications.</p>
+<p>(2) human_issues is empty — the sole human thread (DanielRosenwasser&#x27;s optional-typing request) was</p>
+<p>adopted in the merged code — so the grade rests on primary recall + FP discipline + valid-other</p>
+<p>yield. (3) c13 was graded TP-primary but is empirical CI-evidence with fabricated repo names and no</p>
+<p>tokenization mechanism; it does not change the leaderboard (anthropic already catches via c1) but is</p>
+<p>a soft TP — worth a spot-check. (4) c5 is verified-real but the tools&#x27; concrete trigger examples are</p>
+<p>wrong; it is valid-other at low confidence. (5) The whole primary rests on one tool and one</p>
+<p>mechanism family (retrieval) — a single-cell result to weight accordingly in the cross-subject</p>
+<p>synthesis, where subject 4 is the strongest evidence that diff-only review misses downstream-only</p>
+<p>regressions.</p></section>
+
+<section><h2>Findings drill-down (auditable)</h2><table class='clusters'><thead><tr><th>issue</th><th>file:line</th><th>verdict</th><th>found by</th></tr></thead><tbody><tr><td>Making createChildren (behind the public Node.getChildren() API) scan JSX files with the JSX language variant changes the token children getChildren() emits for JSX (`&lt;/` becomes one LessThanSlashToken instead of `&lt;`+`/`); getChildren is consumed by external tooling and the changed/mis-tiled child stream crashed downstream AST walkers (typescript-eslint, eslint-stylistic) with &#x27;RangeError: Maximum call stack size exceeded&#x27;, invisible to TS&#x27;s own test suite — the escaped, reverted defect (#62423/#62188).</td><td class='mono'>src/services/services.ts:507</td><td><span class='verdict' style='background:#16a34a'>TP-primary</span></td><td>anthropic-code-review</td></tr><tr><td>The PR&#x27;s own &#x27;test tsserver top300&#x27; CI bot reported SIGABRT tsserver crashes for backstage, kibana, and remotion against this diff, and those abnormal exits were never investigated before merge — direct CI evidence of the downstream breakage.</td><td class='mono'>src/services/services.ts:507</td><td><span class='verdict' style='background:#16a34a'>TP-primary</span></td><td>anthropic-code-review</td></tr><tr><td>formatting.ts shouldAddDelta was not migrated to LessThanSlashToken: now that a JsxClosingElement&#x27;s leading token is LessThanSlashToken, its &#x27;no indent delta&#x27; carve-out for JSX closing tags no longer fires and falls through to default delta logic (a maintainer flagged this on the PR; no indentation test covers it).</td><td class='mono'>src/services/formatting/formatting.ts:737</td><td><span class='verdict' style='background:#dc2626'>false-positive</span></td><td>anthropic-code-review, ours</td></tr><tr><td>Narrow edge: a malformed closing tag with whitespace between `&lt;` and `/` (`&lt; /div&gt;`) leaves a bare LessThanToken that the old SlashToken/LessThanToken check matched but the new LessThanSlashToken check does not.</td><td class='mono'>src/services/utilities.ts:1892</td><td><span class='verdict' style='background:#dc2626'>false-positive</span></td><td>pr-review-toolkit</td></tr><tr><td>The load-bearing `scanner.setLanguageVariant(LanguageVariant.Standard)` reset (which restores the shared singleton for other consumers) has no comment explaining why it exists, so a future maintainer could read it as redundant teardown and delete it, silently corrupting scanning elsewhere.</td><td class='mono'>src/services/services.ts:530</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>ours, pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>The new SourceFileLike.languageVariant field / its non-local coupling is undocumented: no comment records the absent-means-Standard contract, that implementers backing JSX must populate it, or that the six LessThanSlashToken consumer checks silently depend on createChildren&#x27;s variant switch.</td><td class='mono'>src/compiler/types.ts:4291</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>ours, pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>Type-design of the new field: modeling a total field as optional-with-silent-default (`?? Standard`) is questionable — it conflates &#x27;unknown&#x27; with &#x27;Standard&#x27;, duplicates the required SourceFile.languageVariant, and pushes one consumer&#x27;s need onto the shared SourceFileLike interface (ISP); some suggest making it required so Standard is an explicit choice.</td><td class='mono'>src/compiler/types.ts:4291</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>ours, pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>The adjacent unchanged comment `// &lt;div&gt;Hello |&lt;/div&gt;` in utilities.ts may now be stale, since that caret position routes through the updated LessThanSlashToken/JsxClosingElement branch.</td><td class='mono'>src/services/utilities.ts:1874</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>pr-review-toolkit</td></tr><tr><td>Design alternative: rather than widening the public SourceFileLike type, createChildren&#x27;s only caller already guarantees a real SourceFile, so the variant could be read from node.getSourceFile().languageVariant with zero new public API; if the field stays, centralize the `?? Standard` default in one documented helper.</td><td class='mono'>src/services/services.ts:507</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>pr-review-toolkit</td></tr><tr><td>Other switches (getPossibleTypeArgumentsInfo, the breakpoints switch) have no LessThanSlashToken case, so a JSX closing bracket now falls through to their defaults — appears benign but untested.</td><td class='mono'>src/services/utilities.ts:2049</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>tag1-comprehensive-review</td></tr><tr><td>The intentional divergence — JsxText/JsxExpression checks stay LessThanToken while JsxClosingElement moved to LessThanSlashToken (error-recovery paths) — is undocumented, so a future consistency fix could break the error-recovery paths.</td><td class='mono'>src/services/utilities.ts:1875</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>tag1-comprehensive-review</td></tr><tr><td>The new `languageVariant?` on SourceFileLike is added WITHOUT `/** @internal */` (unlike its sibling optional members), so it ships in the public typescript.d.ts baseline and permanently widens TypeScript&#x27;s public API surface despite having only an internal consumer.</td><td class='mono'>src/compiler/types.ts:4291</td><td><span class='verdict' style='background:#8b5cf6'>valid-minor</span></td><td>ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>The two modified fourslash JSX classification tests re-touch the trailing `const c2 = classification(&quot;2020&quot;)` block with textually identical -/+ lines — a pure LF-&gt;CRLF line-ending normalization unrelated to the fix, inflating the diff and confusing git blame.</td><td class='mono'>tests/cases/fourslash/syntacticClassificationsJsx1.ts:</td><td><span class='verdict' style='background:#8b5cf6'>valid-minor</span></td><td>ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>Test-coverage gap: the behavioral completions/utilities changes ship with no PR-authored test — only two syntactic-classification baselines were updated. Uncovered: the self-closing &#x27;Fix location&#x27; branch, JSX fragment `&lt;/&gt;` close, .jsx/.js-family variant derivation, the scanner-reset cross-file leak, and a direct getChildren token-kind unit test.</td><td class='mono'>src/services/completions.ts:3511</td><td><span class='verdict' style='background:#8b5cf6'>valid-minor</span></td><td>ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>In getCompletionData&#x27;s &#x27;Fix location&#x27; switch, the mechanical SlashToken -&gt; LessThanSlashToken rename was applied to the case still guarded by `parent.kind === JsxSelfClosingElement`; a self-closing element&#x27;s `/` is a plain SlashToken (a LessThanSlashToken only parents a JsxClosingElement/Fragment), so the combination is unsatisfiable and the branch is dead code — silently dropping the self-closing-tag completion-location fix-up.</td><td class='mono'>src/services/completions.ts:3511</td><td><span class='verdict' style='background:#0ea5e9'>valid-other</span></td><td>anthropic-code-review, ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>createChildren mutates the shared module-level scanner&#x27;s language variant (setLanguageVariant(JSX)) and resets it to Standard only on the normal return path — NOT in a try/finally — so a throw mid-traversal (e.g. Debug.fail in addSyntheticNodes) leaves the process-wide singleton scanner stuck in JSX variant, silently mis-tokenizing later non-JSX scans in completions/preProcess/organizeImports.</td><td class='mono'>src/services/services.ts:509</td><td><span class='verdict' style='background:#0ea5e9'>valid-other</span></td><td>anthropic-code-review, ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>Asymmetric fallback / incomplete fix: createChildren derives languageVariant only from `sourceFile?.languageVariant ?? Standard` while the scan text falls back to `sourceFile || node.getSourceFile()`, so a SourceFileLike that carries JSX text but omits the optional languageVariant (e.g. the literals built in textChanges.ts:1339, sourcemaps.ts) is scanned as Standard — silently re-introducing the `&lt;/` mis-tokenization the PR set out to fix.</td><td class='mono'>src/services/services.ts:507</td><td><span class='verdict' style='background:#0ea5e9'>valid-other</span></td><td>anthropic-code-review, ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>The braceMatching map has no LessThanSlashToken entry and the change removed the LessThanToken child of a JSX closing tag, so go-to-matching-brace on a .tsx closing tag now returns emptyArray — an editor-feature regression from the token change.</td><td class='mono'>src/services/services.ts:2630</td><td><span class='verdict' style='background:#0ea5e9'>valid-other</span></td><td>tag1-comprehensive-review</td></tr></tbody></table></section>
+</div></body></html>

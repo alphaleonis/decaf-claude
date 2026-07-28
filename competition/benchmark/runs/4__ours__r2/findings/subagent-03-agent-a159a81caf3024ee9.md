@@ -1,0 +1,20 @@
+# subagent agent-a159a81caf3024ee9
+
+## Prior-Feedback Review — PR #61928
+
+**Verdict: no reportable findings.** All three prior review threads were addressed or resolved through discussion; nothing was left undone or regressed.
+
+### Considered But Not Flagged
+
+- **Thread 1 (jakebailey, "is it worth changing?")** — a scope question, not a change request; jakebailey later APPROVED. No action required, no regression possible.
+- **Thread 2 (DanielRosenwasser, `languageVariant?` optional on `SourceFileLike`)** — fully addressed. `src/compiler/types.ts:4291` declares `languageVariant?: LanguageVariant;` (optional, exactly as requested), and the public API baseline `tests/baselines/reference/api/typescript.d.ts` reflects the same optional field. Confidence 0 (verified present).
+- **Thread 3 (DanielRosenwasser, `shouldAddDelta`/`SlashToken` formatter concern, later self-dismissed + PR approved)** — investigated in depth; not reportable (anchor ≤25):
+  - The merged diff indeed touches no formatting files (`src/services/formatting/formatting.ts` unchanged).
+  - However, `src/services/formatting/formattingScanner.ts` already selects between an independent `jsxScanner`/`standardScanner` pair based on `languageVariant` (lines 25–26, 55–56), entirely separate from `services.ts`'s `createChildren` scanner that this PR modified. The formatter's own tokenization of JSX was already JSX-variant-aware before and after this PR — this PR's scanner-variant fix for `createChildren` (outline/getChildren path) doesn't touch the formatter's token stream at all.
+  - In `shouldAddDelta` (`src/services/formatting/formatting.ts:737-745`), the `SlashToken`/`GreaterThanToken` case is shared: even though a real `JsxClosingElement`'s opening `</` now scans as a single `LessThanSlashToken` (making the `SlashToken`+`JsxClosingElement` combination unreachable for that specific token), the same case still fires for the closing tag's trailing `GreaterThanToken`, and for `JsxSelfClosingElement`'s `SlashToken` — so indentation suppression for JSX closing tags is still functionally exercised, just via a different token/branch pairing. This is at most latent dead code, not a functional regression.
+  - Pre-existing (unmodified by this PR) fourslash coverage already exercises JSX closing-tag indentation/autoformatting directly: `tests/cases/fourslash/formattingJsxElements.ts` has markers `closingTagAutoformat`, `containedClosingTagAutoformat`, `fragmentClosingTagIndent`; `tests/cases/fourslash/indentationInJsx1.ts` and `indentationInJsx2.ts` also cover JSX indentation. Since this is a merged, CI-green commit, these continue to pass — so DanielRosenwasser's "might indicate a lack of test" concern doesn't hold up on inspection; coverage already existed, just not added by this PR.
+  - Combined with DanielRosenwasser dismissing his own review and the author's subsequent approval, this reads as a concern raised, investigated, and found not to apply to this change's actual scope — a resolved discussion, not an unaddressed request.
+
+No `PRIOR_UNADDRESSED`, `PRIOR_PARTIAL`, or `PRIOR_REGRESSION` items meet the ≥50 confidence threshold for this PR.
+
+Files inspected: `/home/decaf/code/decaf-claude/competition/benchmark/repos/4/src/compiler/types.ts`, `/home/decaf/code/decaf-claude/competition/benchmark/repos/4/src/services/services.ts`, `/home/decaf/code/decaf-claude/competition/benchmark/repos/4/src/services/formatting/formatting.ts`, `/home/decaf/code/decaf-claude/competition/benchmark/repos/4/src/services/formatting/formattingScanner.ts`, `/home/decaf/code/decaf-claude/competition/benchmark/repos/4/tests/baselines/reference/api/typescript.d.ts`, `/home/decaf/code/decaf-claude/competition/benchmark/repos/4/tests/cases/fourslash/formattingJsxElements.ts`, `/home/decaf/code/decaf-claude/competition/benchmark/repos/4/tests/cases/fourslash/indentationInJsx1.ts`, `/home/decaf/code/decaf-claude/competition/benchmark/repos/4/tests/cases/fourslash/indentationInJsx2.ts`, `/home/decaf/code/decaf-claude/competition/benchmark/repos/4/tests/cases/fourslash/syntacticClassificationsJsx1.ts`.
