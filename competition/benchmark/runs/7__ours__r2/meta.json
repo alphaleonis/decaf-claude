@@ -1,0 +1,173 @@
+{
+  "run_id": "7__ours__r2",
+  "subject_id": 7,
+  "lang": "go",
+  "size": "small",
+  "tool": "ours",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "prometheus/prometheus",
+  "pr": 13777,
+  "merge_sha": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "review_base": "d1abc3f2557660728dc6a34eb2da1f32461b6665^1",
+  "review_head": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1356,
+  "duration_ms": "1354638",
+  "duration_api_ms": "3949338",
+  "num_turns": "33",
+  "cost_usd": "17.62739925",
+  "orch_usage": {
+    "input_tokens": "2589",
+    "output_tokens": "62840",
+    "cache_creation_tokens": "153314",
+    "cache_read_tokens": "1776790",
+    "total_tokens": 1995533
+  },
+  "session_tokens": {
+    "subagents": 13,
+    "input": 3026,
+    "output": 70072,
+    "cache_creation": 1105347,
+    "cache_read": 15543800,
+    "total": 16722245,
+    "orchestrator": {
+      "output": 62840,
+      "total": 1995533,
+      "duration_s": 1355
+    },
+    "per_subagent": [
+      {
+        "output": 536,
+        "input": 50,
+        "cache_creation": 80534,
+        "cache_read": 1632899,
+        "total": 1714019,
+        "duration_s": 307,
+        "agent": "agent-a176c0c79cd0afdc7"
+      },
+      {
+        "output": 245,
+        "input": 40,
+        "cache_creation": 76842,
+        "cache_read": 1278283,
+        "total": 1355410,
+        "duration_s": 234,
+        "agent": "agent-a1a523a5be9df8647"
+      },
+      {
+        "output": 343,
+        "input": 24,
+        "cache_creation": 76363,
+        "cache_read": 731264,
+        "total": 807994,
+        "duration_s": 251,
+        "agent": "agent-a1dbe13d52172fab6"
+      },
+      {
+        "output": 129,
+        "input": 18,
+        "cache_creation": 55014,
+        "cache_read": 432347,
+        "total": 487508,
+        "duration_s": 192,
+        "agent": "agent-a2e501b33f72831ba"
+      },
+      {
+        "output": 53,
+        "input": 26,
+        "cache_creation": 60528,
+        "cache_read": 489051,
+        "total": 549658,
+        "duration_s": 194,
+        "agent": "agent-a38746c10176cf1e7"
+      },
+      {
+        "output": 1115,
+        "input": 64,
+        "cache_creation": 88560,
+        "cache_read": 2309550,
+        "total": 2399289,
+        "duration_s": 346,
+        "agent": "agent-a3b4f33133cb849c6"
+      },
+      {
+        "output": 259,
+        "input": 36,
+        "cache_creation": 84918,
+        "cache_read": 1077391,
+        "total": 1162604,
+        "duration_s": 212,
+        "agent": "agent-a3f09c78459d9c7be"
+      },
+      {
+        "output": 112,
+        "input": 32,
+        "cache_creation": 66283,
+        "cache_read": 933394,
+        "total": 999821,
+        "duration_s": 168,
+        "agent": "agent-a520239200e01fcbc"
+      },
+      {
+        "output": 43,
+        "input": 20,
+        "cache_creation": 58875,
+        "cache_read": 506613,
+        "total": 565551,
+        "duration_s": 125,
+        "agent": "agent-a55a256eaacd59efa"
+      },
+      {
+        "output": 645,
+        "input": 39,
+        "cache_creation": 101601,
+        "cache_read": 1564129,
+        "total": 1666414,
+        "duration_s": 417,
+        "agent": "agent-a77dbd2d6f50531aa"
+      },
+      {
+        "output": 3417,
+        "input": 48,
+        "cache_creation": 83858,
+        "cache_read": 1687752,
+        "total": 1775075,
+        "duration_s": 332,
+        "agent": "agent-abc392ffa30dfe337"
+      },
+      {
+        "output": 150,
+        "input": 14,
+        "cache_creation": 36880,
+        "cache_read": 280936,
+        "total": 317980,
+        "duration_s": 95,
+        "agent": "agent-abcc195caaf69e7fd"
+      },
+      {
+        "output": 185,
+        "input": 26,
+        "cache_creation": 81777,
+        "cache_read": 843401,
+        "total": 925389,
+        "duration_s": 298,
+        "agent": "agent-aed818a68e4947078"
+      }
+    ],
+    "max_subagent_duration_s": 417,
+    "sum_subagent_duration_s": 3171
+  },
+  "input_tokens": "2589",
+  "output_tokens": "62840",
+  "cache_creation_tokens": "153314",
+  "cache_read_tokens": "1776790",
+  "total_tokens": 1995533,
+  "session_id": "4d281441-2e5b-4f26-8e4a-613a33dc4c3d",
+  "findings_lines": 17,
+  "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report 13777. This reviews pull request #13777 of the GitHub repository prometheus/prometheus (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-07-27T19:11:21Z"
+}

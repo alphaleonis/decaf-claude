@@ -1,0 +1,1378 @@
+{
+ "subject_id": 7,
+ "lang": "go",
+ "size": "small",
+ "repo": "prometheus/prometheus",
+ "pr": 13777,
+ "judge_model": "claude-opus-4-8",
+ "notes": "174 findings from 10 cells -> 21 clusters, none excluded. Blind grading: clusters shuffled (seed 707), tool identity stripped. CLEANEST RECALL RESULT IN THE SET: the primary (c1, premature defer querier.Close() before the lazy ChunkSeriesSet is consumed -> use-after-close on mmap'd chunk files; reverted #14515 / issue #14422) was caught by ALL 10 CELLS with the correct mechanism, several tracing it to Block.pendingReaders refcounting. Diff-visible, single 32-line file, no retrieval required. ZERO false positives across the whole subject \u2014 all three known_safe traps (leak/inverse-error, swallowed ChunkQuerier error, changed Select semantics) held. HUMAN OVERRIDE: c18 regraded TP-primary -> valid-other (grader denied c3 TP-primary for omitting the use-after-close consequence but granted c18 despite the same acknowledged omission; override does not change any tool's bug-catch rate). c5 accepted as TP-primary: it states the primary in contract vocabulary AND asserts the first-party TSDB impl does not uphold the invariant (verified: blockBaseQuerier.Close closes index/chunks/tombstones readers). c2 (head-path isolation-state release) accepted as valid-other, not a primary restatement: distinct consequence (snapshot-isolation breakage) and distinct fix surface (ref-counting the chunk reader would not restore isolation) \u2014 and its reporter's own validator CORRECTED the consequence downward (head chunks are copied under readPathMtx, so isolation breakage rather than use-after-free).",
+ "answer_key": {
+  "primary_bug": {
+   "id": "primary",
+   "summary": "USE-AFTER-CLOSE. `getChunkSeriesSet` registers `defer querier.Close()` and then returns `querier.Select(ctx, true, hints, filteredMatchers...)`. Select returns a LAZY storage.ChunkSeriesSet whose iterators read through the querier's underlying resources \u2014 notably memory-mapped TSDB chunk files. Because the deferred Close runs when the HELPER returns, the querier (and its mmap'd files) is closed BEFORE the caller ever iterates the returned series set in StreamChunkedReadResponses. The consumer then reads from unmapped memory. In the pre-PR code the equivalent `defer querier.Close()` lived in the caller's per-query IIFE, so the querier stayed alive until after StreamChunkedReadResponses had fully consumed the series set \u2014 i.e. the refactor moved the close from 'after consumption' to 'before consumption'. Production impact: SIGSEGV / `fatal error: fault` inside chunks.(*Reader).ChunkOrIterable -> encoding/binary.Uvarint, reproducibly right after a block was written to disk (issue #14422). Fully reverted in #14515.",
+   "file": "storage/remote/read_handler.go",
+   "locus": "The new `getChunkSeriesSet` helper (diff lines ~50-74; merged file ~L239-266): the `defer func(){ querier.Close() }()` on the same function that ends with `return querier.Select(ctx, true, hints, filteredMatchers...)`. Consumption happens later at the call site, `StreamChunkedReadResponses(..., chunks, ...)`.",
+   "must_flag": "A reviewer catches the primary bug if it identifies that the deferred `querier.Close()` runs when `getChunkSeriesSet` RETURNS \u2014 i.e. BEFORE the returned ChunkSeriesSet is iterated/consumed by StreamChunkedReadResponses \u2014 and that this makes the returned series set / its iterators use resources belonging to an already-closed querier (lazy Select result outliving its querier; memory-mapped chunk files unmapped underneath the reader) leading to invalid reads, crashes, or wrong data. Equivalent framings that count: 'Select is lazy, so closing the querier before consumption invalidates the iterators'; 'the ChunkSeriesSet outlives the querier that owns its data \u2014 use-after-close/use-after-free'; 'the querier is closed too early; the streaming consumer reads freed/unmapped memory'; 'defer fires at helper return, not after streaming, so chunks are read after Close'. Merely observing that the querier is now closed inside a helper, or asking to 'double-check the querier lifetime', or praising the encapsulation, does NOT count. Flagging the OPPOSITE (a leak / 'the querier is never closed') does NOT count and is a false positive (see known_safe).",
+   "source": "revert PR #14515 ('Revert \"Chunked remote read: close the querier earlier\"', Fixes #14422) which states verbatim: 'I believe the iterators for the querier can access memory-mapped files, which are closed when the querier is closed. A better fix might be to reference-count the chunk-reader so it is only closed when no longer accessed.' + regression issue #14422 ('SIGSEGV after writing block', stack: chunks.(*Reader).ChunkOrIterable -> encoding/binary.Uvarint, only on large instances, always right after block write). Verified against the checkout at merge d1abc3f2: the helper defers Close and returns Select's lazy result; the pre-PR defer was in the caller's IIFE and thus ran after StreamChunkedReadResponses.",
+   "difficulty": "MODERATE \u2014 and the crispest ground truth in the set. The diff is one file, 32/21 lines, and the defect is a classic Go lifetime error: returning a lazily-evaluated, resource-backed value from a function that defers cleanup of that resource. A reviewer who knows (a) Go defer semantics and (b) that storage.Select returns a lazy iterator should get there from the diff alone, with no external context. But it is well camouflaged: the helper's own doc comment asserts the opposite ('encapsulating the operation in its own function to ensure timely release of the querier resources'), the PR title/body frame it as a deliberate OOM improvement, and it passed human review with ZERO inline comments, shipped, and crashed production for ~4 months before the revert. Expect moderate-to-good recall; failure to catch it is a meaningful signal, as is catching it with the correct mechanism rather than a vague lifetime worry."
+  },
+  "human_issues": [],
+  "known_safe": [
+   {
+    "id": "safe-error-propagated",
+    "summary": "The ChunkQuerier construction error is NOT swallowed. On failure `getChunkSeriesSet` returns `storage.ErrChunkSeriesSet(err)` (a ChunkSeriesSet whose Err() carries the error \u2014 storage/interface.go:402), and the caller immediately does `if err := chunks.Err(); err != nil { return err }`. Flagging 'the error from ChunkQuerier is dropped/ignored/swallowed by the refactor' or 'errors are silently converted and lost' is a FALSE POSITIVE \u2014 the error round-trips and is checked.",
+    "file": "storage/remote/read_handler.go"
+   },
+   {
+    "id": "safe-not-a-leak",
+    "summary": "The querier IS closed \u2014 the `defer querier.Close()` moved into `getChunkSeriesSet`, it was not deleted. Claiming the refactor 'leaks the querier', 'removes the defer so the querier is never closed', or 'no longer releases resources' is a FALSE POSITIVE and is the exact INVERSE of the real defect (closed too early, not never). Likewise, claiming the pre-PR code leaked because 'defer in a loop accumulates until the function returns' is wrong: the pre-PR defer lived inside a per-query IIFE (`func() error { ... }()`), so it already ran once per iteration.",
+    "file": "storage/remote/read_handler.go"
+   },
+   {
+    "id": "safe-select-args-unchanged",
+    "summary": "The `hints` construction (the `if query.Hints != nil { ... }` block) and the Select arguments are moved VERBATIM \u2014 `querier.Select(ctx, true, hints, filteredMatchers...)` keeps sortSeries=true, the same hints mapping, and the same matchers, matching the pre-PR call. Flagging 'the sorted flag changed', 'hints are now dropped/mis-mapped', or 'Select semantics changed' is a FALSE POSITIVE; the only semantic change in this diff is WHEN the querier is closed.",
+    "file": "storage/remote/read_handler.go"
+   }
+  ]
+ },
+ "clusters": [
+  {
+   "cluster_id": "c1",
+   "summary": "USE-AFTER-CLOSE: getChunkSeriesSet's `defer querier.Close()` fires when the helper RETURNS, before the lazily-evaluated ChunkSeriesSet it returns is iterated by StreamChunkedReadResponses. The querier's Close releases the block pendingReaders guard / unmaps the mmap-backed chunk+index readers, so streaming reads chunk bytes from an already-closed (potentially munmap'd) region \u2014 SIGSEGV/SIGBUS or silently corrupted chunk data served to the client.",
+   "file": "storage/remote/read_handler.go",
+   "line": 247,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a3085026915bfa0d7/code-comment",
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a7859461c460d210d/git-history",
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a8c4b298ef311edfc/prior-pr-comments",
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a9085ac1c7ed7aaed/guidance-compliance",
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-adb046fd903682335/scorer",
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-aeb5ce3e87f4785a7/bug-scan",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a1bea1a5f9dbac2e8/bug-scan",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a5ed265a3c14b23d0/scorer",
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-ab5ba2199d3095a47/prior-pr-comments",
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afd2382cbcfd38579/code-comment",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a07a000be70fd93ea/quick-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a43c6e350bbedcc76/design-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a79582ef4ca4503eb/adversarial-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aa72465f80d3e317a/performance-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ab5e5887c73ca6d14/go-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aca6269b39e47a72d/finding-validator",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ae7cd60911563920a/broad-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a176c0c79cd0afdc7/broad-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a3b4f33133cb849c6/go-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a3f09c78459d9c7be/quick-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a520239200e01fcbc/finding-validator",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a77dbd2d6f50531aa/design-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aed818a68e4947078/adversarial-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0eff739587ddc04a/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a887be23a6ef8b7dd/code-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a31d3338985d3d0be/code-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a344a1fc940ed7991/type-design-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aa6c4baaabf70b7c3/silent-failure-hunter",
+     "severity": "critical"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-aaa76ea62de2da982",
+     "severity": "critical"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a8d01469abe47d253",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a0463da38b1f52699/security-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a21402a90690dd5a1/comment-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a2d95260b001834cc/architecture-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a4dfd974a01bae6f0/blind-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-af227d20641a5e5b9/code-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a5063c07822e9a543/security-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-aa0ace6fad898ee7b/architecture-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-aad10338179a2ab04/code-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-adf245456e17409d3/blind-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-adfb6e2c2818d2a15/silent-failure-hunter",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ae46693aa4e3337f7/edge-case-hunter",
+     "severity": "critical"
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "critical",
+   "confidence": 98,
+   "rationale": "Exact primary with the correct mechanism: the defer at read_handler.go:247-251 fires when the helper returns at :265, before StreamChunkedReadResponses iterates `chunks` (:214, codec.go:235). Close reaches blockBaseQuerier.Close \u2192 chunks.Close() (tsdb/querier.go:103-115), which does pendingReaders.Done() (tsdb/block.go:537) and thereby unblocks Block.Close/pendingReaders.Wait (:378-389) \u2014 the mmap'd chunk files can be unmapped mid-stream."
+  },
+  {
+   "cluster_id": "c2",
+   "summary": "Head-path variant of the same premature-close root cause: querier.Close() also closes the read's isolationState, unregistering it from Head.iso.readsOpen, so a concurrent head truncation/GC can advance past a still-iterating read \u2014 breaking snapshot isolation (mid-stream ErrNotFound, or results mixing pre- and post-truncation state), distinct from the mmap use-after-free consequence.",
+   "file": "storage/remote/read_handler.go",
+   "line": 247,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a79582ef4ca4503eb/adversarial-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a176c0c79cd0afdc7/broad-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a1a523a5be9df8647/finding-validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a3b4f33133cb849c6/go-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aed818a68e4947078/adversarial-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae92efb95575e1d60/silent-failure-hunter",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a500c57bcd8c3b52b/adversarial-general",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aed5c75d27c28984b/edge-case-hunter",
+     "severity": "critical"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "high",
+   "confidence": 72,
+   "rationale": "Mechanism verified independently of the mmap chain: the head range querier's Close reaches headChunkReader.Close (tsdb/head_read.go:318-323) \u2192 isolationState.Close unlinks it from readsOpen (tsdb/isolation.go:36-41), and db.go:2024-2026 states the querier registers 'in the queue that the truncation waits on'. Distinct consequence and distinct fix surface \u2014 ref-counting the chunk reader (the revert's proposed fix) would not restore isolation \u2014 so genuinely additive rather than the primary reworded."
+  },
+  {
+   "cluster_id": "c3",
+   "summary": "The new getChunkSeriesSet doc comment ('encapsulating the operation in its own function to ensure timely release of the querier resources') documents a false safety property: it frames the early Close as a pure benefit and omits the load-bearing precondition that the returned ChunkSeriesSet is consumed AFTER the querier is closed \u2014 actively obscuring the defect and inviting maintainers to replicate the close-before-consume pattern.",
+   "file": "storage/remote/read_handler.go",
+   "line": 239,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a45dc0f24b6702cf9/knowledge-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a67f3eec2cae57946/finding-validator",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ae7cd60911563920a/broad-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a1dbe13d52172fab6/knowledge-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a77dbd2d6f50531aa/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-abcc195caaf69e7fd/finding-validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a1bf30e753b07e328/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5b4465d52ed66925/comment-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5b4465d52ed66925/comment-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5b4465d52ed66925/comment-analyzer",
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a887be23a6ef8b7dd/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-acc78426285aab12c/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-acc78426285aab12c/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-aaa76ea62de2da982",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a8d01469abe47d253",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a21402a90690dd5a1/comment-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a21402a90690dd5a1/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a500c57bcd8c3b52b/adversarial-general",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a42753399c6bad495/adversarial-general",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a5413cf5e124e8f21/comment-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-aa0ace6fad898ee7b/architecture-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 72,
+   "rationale": "The doc comment at read_handler.go:239-241 does assert a false safety property ('to ensure timely release of the querier resources') for a function that returns a lazy set consumed after Close \u2014 a real, in-repo, one-shot fix. It names the close-before-consume shape but stops at 'obscures the defect' without the use-after-close consequence, so it does not fold up to TP-primary."
+  },
+  {
+   "cluster_id": "c4",
+   "summary": "No test accompanies the lifecycle change, and the existing TestStreamReadEndpoint uses head-only in-memory storage (promql.LoadedStorage/teststorage), so the mmap-backed persistent-block path where the premature close manifests is never exercised \u2014 CI passes give false assurance. A detonate-on-close mock queryable or a compacted-block variant under -race is the missing load-bearing test.",
+   "file": "storage/remote/read_handler.go",
+   "line": null,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a9085ac1c7ed7aaed/guidance-compliance",
+     "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a1bea1a5f9dbac2e8/bug-scan",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a176c0c79cd0afdc7/broad-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0eff739587ddc04a/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a887be23a6ef8b7dd/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a20c656de100ca031/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-aaa76ea62de2da982",
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a8d01469abe47d253",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a500c57bcd8c3b52b/adversarial-general",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a42753399c6bad495/adversarial-general",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 78,
+   "rationale": "Verified: the PR is production-code-only (1 file, no test change), and TestStreamReadEndpoint (read_handler_test.go:198-211) builds its store with promql.LoadedStorage (promql/test.go:59-71), which only appends into the head \u2014 no compaction, so the persistent-block/mmap path where Close unmaps chunk files is never exercised. Concrete, one-shot, load-bearing missing test."
+  },
+  {
+   "cluster_id": "c5",
+   "summary": "The change depends on an undocumented, unenforced storage-interface contract \u2014 that a ChunkSeriesSet stays valid after its producing ChunkQuerier is Closed. storage/interface.go states no such rule, the nearest precedent (LabelValues) documents the opposite, and the first-party TSDB block querier does not uphold it, so any implementation freeing eagerly on Close breaks remote read with no compile-time signal.",
+   "file": "storage/interface.go",
+   "line": 436,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a1dbe13d52172fab6/knowledge-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a1bf30e753b07e328/type-design-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a344a1fc940ed7991/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a344a1fc940ed7991/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a2d95260b001834cc/architecture-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "critical",
+   "confidence": 70,
+   "rationale": "States the primary in contract vocabulary: the code requires a ChunkSeriesSet to remain valid after its ChunkQuerier is Closed, ChunkSeriesSet (storage/interface.go:436-446) documents no such rule, LabelValues documents the opposite lifetime rule (:161), and it correctly asserts the first-party impl does not uphold it \u2014 confirmed by blockBaseQuerier.Close closing index/chunks/tombstones readers (tsdb/querier.go:103-115). That is 'the set outlives the querier that owns its data', a listed equivalent framing."
+  },
+  {
+   "cluster_id": "c6",
+   "summary": "The prompb.Query.Hints -> storage.SelectHints field-by-field mapping is now duplicated verbatim between remoteReadSamples and getChunkSeriesSet (both omitting ShardCount/ShardIndex/DisableTrimming); extract a shared toSelectHints helper.",
+   "file": "storage/remote/read_handler.go",
+   "line": 253,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a1bf30e753b07e328/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 70,
+   "rationale": "Verified verbatim duplication: read_handler.go:147-158 (remoteReadSamples) and :253-264 (getChunkSeriesSet) map the same seven prompb.Query.Hints fields and both omit ShardCount/ShardIndex/DisableTrimming (storage/interface.go:200-217). Extract-shared-helper for code the diff itself relocated \u2014 one-shot and anchored."
+  },
+  {
+   "cluster_id": "c7",
+   "summary": "The new helper uses a `get-` prefix while every sibling in the file doing the same class of job is named for the action without one; suggests an action-based name such as selectChunkSeriesSet.",
+   "file": "storage/remote/read_handler.go",
+   "line": 242,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-af5d758b504c6c735/consistency-reviewer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 70,
+   "rationale": "True as stated for read_handler.go (siblings are remoteReadSamples / remoteReadStreamedXORChunks / filterExtLabelsFromMatchers), but the package already contains get-prefixed helpers (codec.go:462 getHistogramValType), so this is naming taste with no convention violation of substance."
+  },
+  {
+   "cluster_id": "c8",
+   "summary": "Log-message drift: getChunkSeriesSet logs 'Error on chunk querier close' while the sibling remoteReadSamples logs 'Error on querier close' for the analogous querier.Close() failure.",
+   "file": "storage/remote/read_handler.go",
+   "line": 249,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a2e501b33f72831ba/consistency-reviewer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 72,
+   "rationale": "The two strings do differ (read_handler.go:143 'Error on querier close' vs :249 'Error on chunk querier close'), but the chunk-path wording is pre-existing \u2014 the diff moved that log line verbatim (review.diff lines 15-19 \u2192 55-59) \u2014 and the distinction between the sample querier and the chunk querier is meaningful, not drift."
+  },
+  {
+   "cluster_id": "c9",
+   "summary": "Sibling asymmetry: the chunk path now delegates querier+hints+Select construction to getChunkSeriesSet (closing before consumption) while remoteReadSamples still builds them inline and materializes via ToQueryResult before Close \u2014 the two read paths now follow opposite lifecycle models with nothing documenting why.",
+   "file": "storage/remote/read_handler.go",
+   "line": 205,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a2e501b33f72831ba/consistency-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a42753399c6bad495/adversarial-general",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 58,
+   "rationale": "The contrast is real \u2014 remoteReadSamples materializes via ToQueryResult while the querier is still open (read_handler.go:161) whereas the chunk path now closes before consumption \u2014 but the finding's remedy is 'document why', treating the bug as an undocumented design choice. Correct observation, wrong ask; default down."
+  },
+  {
+   "cluster_id": "c10",
+   "summary": "The new early `chunks.Err()` check has narrow coverage: for a lazy merge series set Err() is generally nil before the first Next(), so it only catches the ErrChunkSeriesSet querier-construction failure, not deferred Select/iteration errors \u2014 worth a one-line comment so readers do not assume it validates the whole Select.",
+   "file": "storage/remote/read_handler.go",
+   "line": 206,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aa6c4baaabf70b7c3/silent-failure-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a8d01469abe47d253",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 65,
+   "rationale": "Claim verified: DB.ChunkQuerier returns a merge querier (tsdb/db.go:2067-2073) whose Select yields a lazyGenericSeriesSet whose Err() returns nil until the first Next() (storage/lazy.go:36-41, storage/merge.go:104-122), so the new chunks.Err() check at read_handler.go:206 only catches the ErrChunkSeriesSet construction failure. Iteration errors are still surfaced later via ss.Err() (codec.go:295), so this is a clarifying-comment suggestion, not a defect."
+  },
+  {
+   "cluster_id": "c11",
+   "summary": "Signature honesty: folding the querier-acquisition error into the returned ChunkSeriesSet via ErrChunkSeriesSet makes the signature advertise total success and drops the compiler-enforced error check a (ChunkSeriesSet, error) return would give; it also swallows the querier handle, foreclosing caller-side lifetime management (prefer returning an io.Closer or a loan/callback form).",
+   "file": "storage/remote/read_handler.go",
+   "line": 242,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a344a1fc940ed7991/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-aa0ace6fad898ee7b/architecture-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 62,
+   "rationale": "Not the error-swallowing trap (it does not claim the error is lost \u2014 the caller checks chunks.Err() at :206), but the critique is weak: storage.ErrChunkSeriesSet-as-return is the codebase's own idiom for exactly this shape (tsdb/querier.go:187). The 'forecloses caller-side lifetime management' half gestures at the fix without naming the close-before-consume mechanism or any consequence."
+  },
+  {
+   "cluster_id": "c12",
+   "summary": "Parameter granularity: the helper takes the whole *prompb.Query while ALSO taking filteredMatchers, leaving the unused query.Matchers field as a latent trap a future edit could use, silently bypassing external-label filtering; pass (start, end, hints) instead.",
+   "file": "storage/remote/read_handler.go",
+   "line": 242,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a344a1fc940ed7991/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 65,
+   "rationale": "Factually true \u2014 getChunkSeriesSet (read_handler.go:242) takes *prompb.Query and uses only StartTimestampMs/EndTimestampMs/Hints while matchers arrive pre-filtered \u2014 but the harm is a hypothetical future edit; the sibling remoteReadSamples holds the same query+filteredMatchers pair in scope (L132-161). Parameter-granularity taste, default down."
+  },
+  {
+   "cluster_id": "c13",
+   "summary": "The surviving '// The streaming API has to provide the series sorted.' comment at the call site is now orphaned from the sortSeries=true argument it justified, which moved into getChunkSeriesSet's bare `true` \u2014 latent comment/code drift.",
+   "file": "storage/remote/read_handler.go",
+   "line": 213,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a59018ca01cc655b6/git-history",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a5b4465d52ed66925/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-acc78426285aab12c/comment-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 80,
+   "rationale": "Verified drift introduced by the diff: the comment '// The streaming API has to provide the series sorted.' at read_handler.go:213 now sits above the bare `chunks,` argument, while the sortSeries=true it justified moved to the unannotated `true` in querier.Select at :265. Move-the-comment is a concrete one-shot fix."
+  },
+  {
+   "cluster_id": "c14",
+   "summary": "Because the streaming path commits 200 OK on the first write, a mid-stream read error makes http.Error's WriteHeader(500) a no-op and the client receives HTTP 200 with a truncated/corrupt chunk stream \u2014 pre-existing, but this PR materially widens the window.",
+   "file": "storage/remote/read_handler.go",
+   "line": 233,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aa6c4baaabf70b7c3/silent-failure-hunter",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 68,
+   "rationale": "The 200-then-error behavior is real and pre-existing (codec.go:283 writes to the stream before any later error reaches http.Error at read_handler.go:233), and the diff does not worsen it \u2014 the new chunks.Err() check at :206 runs before any byte is written. 'Materially widens the window' is unsupported: the primary's failure mode is a fault, not an HTTP error."
+  },
+  {
+   "cluster_id": "c15",
+   "summary": "Observability gap: the change replaces an observable, semi-recoverable OOM with an unobservable fatal SIGBUS or silent byte corruption, and adds no metric/log for aborted or errored chunked reads, querier lifetime, or in-flight streamed bytes \u2014 so operators cannot confirm the fix worked or detect the new failure mode.",
+   "file": "storage/remote/read_handler.go",
+   "line": 205,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a500c57bcd8c3b52b/adversarial-general",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a42753399c6bad495/adversarial-general",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Downstream ops commentary on the primary's failure mode plus an open-ended metrics wish list (aborted reads, querier lifetime, in-flight bytes); nothing in the diff introduces a specific missing signal, and no concrete one-shot change is named."
+  },
+  {
+   "cluster_id": "c16",
+   "summary": "The stated OOM-avoidance premise is unvalidated and only partially addressed: the change unpins compaction/GC refcounts sooner but leaves the primary per-connection cost untouched \u2014 a stalled stream.Write() with no ctx check and no WriteTimeout (web.go sets only ReadTimeout) keeps the live ChunkSeriesSet state pinned indefinitely.",
+   "file": "storage/remote/read_handler.go",
+   "line": null,
+   "category": "perf",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a55a256eaacd59efa/finding-validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-abc392ffa30dfe337/performance-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a42753399c6bad495/adversarial-general",
+     "severity": "critical"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 62,
+   "rationale": "Sub-claims check out (StreamChunkedReadResponses takes no ctx and never checks one, codec.go:221-296; web/web.go:618 sets only ReadTimeout), but this critiques the PR's stated OOM motivation rather than identifying a defect the diff introduces, and the 'pinned indefinitely' cost is speculative. Meta/perf commentary."
+  },
+  {
+   "cluster_id": "c17",
+   "summary": "A querier Close() error is logged at Warn and never reflected in the HTTP response, so the stream is still reported as success \u2014 pre-existing, not introduced by this PR.",
+   "file": "storage/remote/read_handler.go",
+   "line": 247,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-ae92efb95575e1d60/silent-failure-hunter",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 80,
+   "rationale": "Self-declared pre-existing and correct: the warn-and-swallow on Close error is identical in the sample path (read_handler.go:141-145) and was moved verbatim by the diff (review.diff 15-19 \u2192 55-59). Out of scope for this change."
+  },
+  {
+   "cluster_id": "c18",
+   "summary": "Over-encapsulation: by pulling the querier entirely inside the helper and returning only the set, the design makes it structurally impossible for the caller to keep the producer alive during consumption \u2014 encapsulation that makes correct use unrepresentable.",
+   "file": "storage/remote/read_handler.go",
+   "line": 242,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a344a1fc940ed7991/type-design-analyzer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 65,
+   "rationale": "HUMAN-ADJUDICATED (was TP-primary): the grader denied c3 TP-primary for 'stopping short of the use-after-close consequence' but granted c18 while itself noting it 'omits the resulting invalid reads' \u2014 the same omission. Applying must_flag consistently, naming that the caller cannot keep the producer alive during consumption is a real structural defect (and the reason the revert had to restructure), but without the invalid-read/crash consequence it does not meet the primary bar. Regraded valid-other. Note: does not change any tool's bug-catch rate (its sole reporter already catches c1 in both reps)."
+  },
+  {
+   "cluster_id": "c19",
+   "summary": "Existing streamed tests assert exact serialized chunk bytes \u2014 brittle golden-byte assertions coupled to encoding internals that give a false sense of thoroughness while being blind to the lifecycle regression.",
+   "file": "storage/remote/read_handler_test.go",
+   "line": 307,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0eff739587ddc04a/pr-test-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a20c656de100ca031/pr-test-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "The golden-byte assertions are real (read_handler_test.go:295-330 compares literal XOR chunk Data blobs), but the test file is untouched by this diff and the observation is test-style commentary rather than an actionable defect; the useful part (a regression test for the lifecycle) is c4's."
+  },
+  {
+   "cluster_id": "c20",
+   "summary": "The error paths introduced/reshaped by the refactor are untested: no test injects a queryable whose ChunkQuerier() errors (error -> ErrChunkSeriesSet -> chunks.Err() -> HTTP status routing), none asserts a deferred Select error mid-iteration maps to the right status, and the Close()-returns-error warn-log branch is uncovered.",
+   "file": "storage/remote/read_handler.go",
+   "line": 243,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0eff739587ddc04a/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0eff739587ddc04a/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0eff739587ddc04a/pr-test-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a20c656de100ca031/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a20c656de100ca031/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a20c656de100ca031/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-af1b0c5f1fe82e48b/silent-failure-hunter",
+     "severity": "critical"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 65,
+   "rationale": "Verified: no test in read_handler_test.go injects a failing queryable, so the branch the diff introduces (ChunkQuerier error \u2192 storage.ErrChunkSeriesSet at :245 \u2192 chunks.Err() \u2192 HTTP status routing) and the Close-warn branch at :248-250 are both uncovered. Bounded, concrete, anchored to paths this diff reshaped."
+  },
+  {
+   "cluster_id": "c21",
+   "summary": "Empty-result streaming and large multi-block streaming after close are uncovered \u2014 the multi-block case is the scenario most likely to dereference unmapped memory in production.",
+   "file": "storage/remote/read_handler_test.go",
+   "line": null,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a20c656de100ca031/pr-test-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 62,
+   "rationale": "True that only TestSampledReadEndpoint and TestStreamReadEndpoint exist (read_handler_test.go:39, :198), but this is an unbounded coverage list mixing a generic empty-result case with a vaguer restatement of the multi-block scenario that c4 specifies concretely (detonate-on-close mock / compacted block under -race)."
+  }
+ ]
+}

@@ -1,0 +1,146 @@
+{
+  "run_id": "7__ours__r1",
+  "subject_id": 7,
+  "lang": "go",
+  "size": "small",
+  "tool": "ours",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "prometheus/prometheus",
+  "pr": 13777,
+  "merge_sha": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "review_base": "d1abc3f2557660728dc6a34eb2da1f32461b6665^1",
+  "review_head": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1150,
+  "duration_ms": "1147735",
+  "duration_api_ms": "3119766",
+  "num_turns": "28",
+  "cost_usd": "14.0125225",
+  "orch_usage": {
+    "input_tokens": "6125",
+    "output_tokens": "48303",
+    "cache_creation_tokens": "139777",
+    "cache_read_tokens": "1095238",
+    "total_tokens": 1289443
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 6447,
+    "output": 53205,
+    "cache_creation": 916661,
+    "cache_read": 11713219,
+    "total": 12689532,
+    "orchestrator": {
+      "output": 48303,
+      "total": 1289443,
+      "duration_s": 1148
+    },
+    "per_subagent": [
+      {
+        "output": 1340,
+        "input": 74,
+        "cache_creation": 106962,
+        "cache_read": 2803679,
+        "total": 2912055,
+        "duration_s": 401,
+        "agent": "agent-a07a000be70fd93ea"
+      },
+      {
+        "output": 31,
+        "input": 20,
+        "cache_creation": 116647,
+        "cache_read": 926270,
+        "total": 1042968,
+        "duration_s": 271,
+        "agent": "agent-a43c6e350bbedcc76"
+      },
+      {
+        "output": 118,
+        "input": 18,
+        "cache_creation": 63950,
+        "cache_read": 470181,
+        "total": 534267,
+        "duration_s": 186,
+        "agent": "agent-a45dc0f24b6702cf9"
+      },
+      {
+        "output": 307,
+        "input": 18,
+        "cache_creation": 46530,
+        "cache_read": 385401,
+        "total": 432256,
+        "duration_s": 96,
+        "agent": "agent-a67f3eec2cae57946"
+      },
+      {
+        "output": 265,
+        "input": 38,
+        "cache_creation": 94447,
+        "cache_read": 1321405,
+        "total": 1416155,
+        "duration_s": 449,
+        "agent": "agent-a79582ef4ca4503eb"
+      },
+      {
+        "output": 78,
+        "input": 22,
+        "cache_creation": 72922,
+        "cache_read": 601871,
+        "total": 674893,
+        "duration_s": 255,
+        "agent": "agent-aa72465f80d3e317a"
+      },
+      {
+        "output": 221,
+        "input": 34,
+        "cache_creation": 74275,
+        "cache_read": 1075303,
+        "total": 1149833,
+        "duration_s": 222,
+        "agent": "agent-ab5e5887c73ca6d14"
+      },
+      {
+        "output": 1519,
+        "input": 20,
+        "cache_creation": 43599,
+        "cache_read": 439574,
+        "total": 484712,
+        "duration_s": 48,
+        "agent": "agent-aca6269b39e47a72d"
+      },
+      {
+        "output": 991,
+        "input": 60,
+        "cache_creation": 97270,
+        "cache_read": 2139349,
+        "total": 2237670,
+        "duration_s": 373,
+        "agent": "agent-ae7cd60911563920a"
+      },
+      {
+        "output": 32,
+        "input": 18,
+        "cache_creation": 60282,
+        "cache_read": 454948,
+        "total": 515280,
+        "duration_s": 203,
+        "agent": "agent-af5d758b504c6c735"
+      }
+    ],
+    "max_subagent_duration_s": 449,
+    "sum_subagent_duration_s": 2504
+  },
+  "input_tokens": "6125",
+  "output_tokens": "48303",
+  "cache_creation_tokens": "139777",
+  "cache_read_tokens": "1095238",
+  "total_tokens": 1289443,
+  "session_id": "70a10723-a5b5-41bb-8f2a-ab25e10ce723",
+  "findings_lines": 7,
+  "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report 13777. This reviews pull request #13777 of the GitHub repository prometheus/prometheus (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-07-27T18:48:45Z"
+}

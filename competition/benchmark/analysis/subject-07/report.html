@@ -1,0 +1,152 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Benchmark analysis — subject 7 (go/small)</title>
+<style>
+:root{--bg:#fff;--fg:#18181b;--muted:#71717a;--line:#e4e4e7;--card:#fafafa;--accent:#0ea5e9}
+@media(prefers-color-scheme:dark){:root{--bg:#0b0b0f;--fg:#e4e4e7;--muted:#a1a1aa;--line:#27272a;--card:#141418}}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:34px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+h3{font-size:15px;margin:20px 0 6px} .sub{color:var(--muted);margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:6px 0}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:right} th{background:var(--card);font-weight:600}
+td:first-child,th:first-child,.tool{text-align:left} .tool{font-weight:600}
+.matrix td{text-align:center} .matrix .diag{background:var(--card)}
+.mono,.clusters .mono{font-family:ui-monospace,monospace;font-size:12px}
+.clusters td{text-align:left} .verdict{color:#fff;padding:2px 7px;border-radius:10px;font-size:11px;white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
+svg .ax{stroke:var(--muted)} svg .grid{stroke:var(--line)} svg .pt{fill:var(--accent)}
+svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);font-size:11px}
+.wrap>section{overflow-x:auto} code{background:var(--card);padding:1px 4px;border-radius:4px;font-size:12.5px}
+.legend{color:var(--muted);font-size:12px;margin-top:4px}
+.glossary dl{margin:6px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.glossary dt{font-weight:600;white-space:nowrap} .glossary dd{margin:0;color:var(--muted);font-size:13px}
+.glossary h3{margin:0 0 8px} @media(max-width:560px){.glossary dl{grid-template-columns:1fr}.glossary dd{margin:0 0 6px}}
+</style></head><body><div class="wrap">
+<h1>Benchmark analysis — subject 7 (go/small)</h1>
+<p class="sub">prometheus/prometheus#13777 · judge: <code>claude-opus-4-8</code> ·
+21 distinct issues · no human threads (bug + FP discipline only)</p>
+
+<section><h2>Leaderboard</h2><table><thead><tr><th>tool</th><th>escaped bug</th><th>valid /run</th><th>suggestions /run</th><th>unique valid</th><th>trivia /run</th><th>invalid /run</th><th>precision</th><th>sev. calibration</th><th>subagent distinct.</th><th>cost /run</th><th>~agents</th></tr></thead><tbody><tr><td class='tool'>superpowers</td><td>100%</td><td>1.0</td><td>2.5</td><td>0</td><td>0</td><td>0</td><td>29%</td><td>50%</td><td>—</td><td>$1.94</td><td>1</td></tr><tr><td class='tool'>anthropic-code-review</td><td>100%</td><td>1.0</td><td>1.5</td><td>0</td><td>0</td><td>0</td><td>42%</td><td>50%</td><td>20%</td><td>$4.85</td><td>10</td></tr><tr><td class='tool'>pr-review-toolkit</td><td>100%</td><td>3.0</td><td>5.0</td><td>1</td><td>4</td><td>0</td><td>27%</td><td>50%</td><td>24%</td><td>$7.15</td><td>5</td></tr><tr><td class='tool'>tag1-comprehensive-review</td><td>100%</td><td>2.0</td><td>2.5</td><td>0</td><td>2</td><td>0</td><td>29%</td><td>33%</td><td>26%</td><td>$10.85</td><td>9</td></tr><tr><td class='tool'>ours</td><td>100%</td><td>2.5</td><td>1.5</td><td>0</td><td>2</td><td>0</td><td>44%</td><td>60%</td><td>22%</td><td>$15.82</td><td>12</td></tr></tbody></table>
+<p class="legend">Every tool reviewed the PR twice; "/run" columns are averaged across the two runs. Definitions below.</p>
+<div class="card glossary"><h3>How to read this</h3><dl>
+<dt>run (cell)</dt><dd>one review = one tool running once. Each tool reviewed this PR twice, so 2 runs per tool; "/run" numbers are averaged across the two.</dd>
+<dt>finding (issue)</dt><dd>one distinct problem a review raised. The same issue restated by many sub-agents / worded differently is collapsed into a single issue before counting.</dd>
+<dt>escaped bug</dt><dd>the real defect that was bad enough to be reverted in a follow-up PR — the one a reviewer <em>must</em> catch. The column is the % of runs that caught it.</dd>
+<dt>valid /run</dt><dd>real, worth-acting-on findings per run — the escaped bug plus any other genuine defects (excludes trivia and mistakes).</dd>
+<dt>unique valid</dt><dd>valid findings that <em>only this tool</em> caught (nobody else did).</dd>
+<dt>suggestions /run</dt><dd>correct improvement suggestions per run (valid-minor) — true, one-shot-fixable, anchored in the repo's own conventions or objective doc/spelling correctness; a maintainer would plausibly take them as a patch. Not counted in precision.</dd>
+<dt>trivia /run</dt><dd>true-but-valueless findings per run — taste-only, speculative, out-of-scope, duplicative, or an unbounded suggestion class. The attention tax.</dd>
+<dt>invalid /run</dt><dd>false positives per run — findings asserting a problem that isn't real (refuted against the code). Actively misleading.</dd>
+<dt>precision</dt><dd>substantive precision: valid ÷ everything reported (suggestions and trivia both count against it). Higher = less to read per real defect.</dd>
+<dt>sev. calibration</dt><dd>when the tool itself labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop.</dd>
+<dt>subagent distinct.</dt><dd>for multi-agent tools, distinct issues ÷ total sub-agent findings. Low = many agents re-finding the same things.</dd>
+<dt>Jaccard (overlap, below)</dt><dd>how similar two tools' valid-finding sets are: shared ÷ combined. 1.00 = identical, 0.00 = no overlap.</dd>
+<dt>verdict labels</dt><dd>each issue in the drill-down is graded: <strong>TP-primary</strong> = caught the escaped bug; <strong>TP-human</strong> = matched a human review thread; <strong>valid-other</strong> = a different real defect; <strong>valid-minor</strong> = correct improvement suggestion; <strong>trivia</strong> = true but not worth attention; <strong>false-positive</strong> = not real. ("valid" findings = TP-primary + TP-human + valid-other.)</dd>
+</dl></div></section>
+
+<section><h2>Cost vs. bug-catch</h2><div class="card"><svg viewBox="0 0 560 300" width="100%" role="img" aria-label="cost vs bug-catch">
+<line x1="48" y1="252" x2="512" y2="252" class="ax"/>
+<line x1="48" y1="48" x2="48" y2="252" class="ax"/>
+<text x="40" y="256" text-anchor="end" class="tick">0%</text>
+<line x1="48" y1="252" x2="512" y2="252" class="grid"/>
+<text x="40" y="154.0" text-anchor="end" class="tick">50%</text>
+<line x1="48" y1="150.0" x2="512" y2="150.0" class="grid"/>
+<text x="40" y="52" text-anchor="end" class="tick">100%</text>
+<line x1="48" y1="48" x2="512" y2="48" class="grid"/>
+<circle cx="171.7" cy="48.0" r="6" class="pt"/>
+<text x="180.7" y="52.0" class="lbl">anthropic-code-review</text>
+<circle cx="451.5" cy="48.0" r="6" class="pt"/>
+<text x="460.5" y="52.0" class="lbl">ours</text>
+<circle cx="230.4" cy="48.0" r="6" class="pt"/>
+<text x="239.4" y="52.0" class="lbl">pr-review-toolkit</text>
+<circle cx="97.5" cy="48.0" r="6" class="pt"/>
+<text x="106.5" y="52.0" class="lbl">superpowers</text>
+<circle cx="324.7" cy="48.0" r="6" class="pt"/>
+<text x="333.7" y="52.0" class="lbl">tag1-comprehensive-review</text>
+<text x="280.0" y="292" text-anchor="middle" class="axl">mean cost / cell (usage $) →</text>
+<text x="14" y="150.0" transform="rotate(-90 14 150.0)" text-anchor="middle" class="axl">bug-catch rate ↑</text>
+</svg></div>
+<p class="legend">Upper-left = efficient (catches the bug cheaply). The benchmark's core question: does the fan-out premium buy the catch?</p></section>
+
+<section><h2>Inter-tool overlap (Jaccard, true/valid findings)</h2><table class='matrix'><thead><tr><th></th><th>superpowers</th><th>anthropic-code-review</th><th>pr-review-toolkit</th><th>tag1-comprehensive-review</th><th>ours</th></tr></thead><tbody><tr><th>superpowers</th><td class='diag'></td><td style='background:rgba(14,165,233,1.00)'>1.00</td><td style='background:rgba(14,165,233,0.25)'>0.25</td><td style='background:rgba(14,165,233,0.33)'>0.33</td><td style='background:rgba(14,165,233,0.33)'>0.33</td></tr><tr><th>anthropic-code-review</th><td style='background:rgba(14,165,233,1.00)'>1.00</td><td class='diag'></td><td style='background:rgba(14,165,233,0.25)'>0.25</td><td style='background:rgba(14,165,233,0.33)'>0.33</td><td style='background:rgba(14,165,233,0.33)'>0.33</td></tr><tr><th>pr-review-toolkit</th><td style='background:rgba(14,165,233,0.25)'>0.25</td><td style='background:rgba(14,165,233,0.25)'>0.25</td><td class='diag'></td><td style='background:rgba(14,165,233,0.75)'>0.75</td><td style='background:rgba(14,165,233,0.75)'>0.75</td></tr><tr><th>tag1-comprehensive-review</th><td style='background:rgba(14,165,233,0.33)'>0.33</td><td style='background:rgba(14,165,233,0.33)'>0.33</td><td style='background:rgba(14,165,233,0.75)'>0.75</td><td class='diag'></td><td style='background:rgba(14,165,233,1.00)'>1.00</td></tr><tr><th>ours</th><td style='background:rgba(14,165,233,0.33)'>0.33</td><td style='background:rgba(14,165,233,0.33)'>0.33</td><td style='background:rgba(14,165,233,0.75)'>0.75</td><td style='background:rgba(14,165,233,1.00)'>1.00</td><td class='diag'></td></tr></tbody></table>
+<p class="legend">1.00 = identical valid findings · 0.00 = fully complementary.</p></section>
+
+<section><h2>Narrative</h2><h1>Subject 7 — prometheus/prometheus #13777 (go/small): findings-quality analysis</h1>
+<p><strong>The subject.</strong> A single-file, 32+/21− refactor of <code>storage/remote/read_handler.go</code>: querier</p>
+<p>creation, hints building, and <code>querier.Select(...)</code> move out of the chunked remote-read loop into a</p>
+<p>new helper, <code>getChunkSeriesSet</code>, which holds <code>defer querier.Close()</code> and returns the result of</p>
+<p><code>Select</code>. The defect is a textbook Go lifetime error: <code>Select</code> returns a <strong>lazy</strong> <code>ChunkSeriesSet</code>,</p>
+<p>so the deferred <code>Close()</code> fires when the *helper* returns — before <code>StreamChunkedReadResponses</code> ever</p>
+<p>iterates it. The consumer then reads chunk bytes through a closed querier whose memory-mapped files</p>
+<p>may already be unmapped. Production result: <code>fatal error: fault</code> / SIGSEGV inside</p>
+<p><code>chunks.(*Reader).ChunkOrIterable</code>, reproducibly right after a block write (issue #14422); fully</p>
+<p>reverted four months later (#14515, whose author names the mechanism exactly: *&quot;the iterators for the</p>
+<p>querier can access memory-mapped files, which are closed when the querier is closed&quot;*).</p>
+<p>The camouflage is notable: the helper&#x27;s own doc comment asserts the opposite of the truth</p>
+<p>(&quot;...to ensure timely release of the querier resources&quot;), the PR title frames it as a deliberate OOM</p>
+<p>improvement, and it passed human review with <strong>zero inline comments</strong>.</p>
+<p><strong>Every tool caught it, in every repeat — 10/10 cells, with the correct mechanism.</strong> This is the</p>
+<p>cleanest recall result in the benchmark, and unlike subject 1&#x27;s sweep it is a meaningful one: the bug</p>
+<p>is diff-visible but genuinely requires reasoning (Go <code>defer</code> semantics + laziness of <code>Select</code> +</p>
+<p>ownership of mmap-backed data), and no retrieval is needed. Several tools went well past the bar,</p>
+<p>tracing <code>querier.Close()</code> → <code>blockBaseQuerier.Close</code> → <code>chunks.Close()</code> → <code>pendingReaders.Done()</code></p>
+<p>and naming the concurrent-compaction race (<code>Block.Close</code>/<code>reloadBlocks</code> unmapping segments</p>
+<p>mid-stream) that converts the latent bug into a crash. Multiple tools independently reached the same</p>
+<p>conclusion the Prometheus maintainers did in the revert. On a bug that a human review missed</p>
+<p>entirely, all five tools succeeded — the strongest evidence in this benchmark that these tools read</p>
+<p>code rather than merely pattern-match or retrieve.</p>
+<p><strong>Zero false positives across the entire subject.</strong> All three <code>known_safe</code> traps held. Nobody claimed</p>
+<p>the querier *leaks* (the inverse error — the <code>defer</code> moved, it wasn&#x27;t deleted); nobody claimed the</p>
+<p><code>ChunkQuerier</code> construction error is swallowed (it round-trips via <code>storage.ErrChunkSeriesSet</code> and is</p>
+<p>checked by <code>chunks.Err()</code>); nobody claimed the verbatim-moved hints mapping or <code>sortSeries=true</code></p>
+<p>changed semantics. Across 174 findings and five tools, not one refuted claim — the best FP discipline</p>
+<p>of any subject so far.</p>
+<p><strong>A genuinely additive second defect, found by three tools.</strong> <code>ours</code> (both reps), pr-review-toolkit,</p>
+<p>and tag1 surfaced the <strong>head-path variant</strong> (c2, valid-other): the same premature <code>Close()</code> also</p>
+<p>releases the read&#x27;s <code>isolationState</code>, unregistering it from <code>Head.iso.readsOpen</code> so a concurrent head</p>
+<p>truncation can advance past a still-iterating read. The judge confirmed this is not the primary</p>
+<p>reworded — the consequence differs (snapshot-isolation breakage, not use-after-free) and so does the</p>
+<p>fix surface, since the revert&#x27;s proposed ref-counting of the chunk reader would *not* restore</p>
+<p>isolation. Notably, <code>ours</code>&#x27; own validator <strong>corrected the claim downward</strong> mid-run: head chunks are</p>
+<p>copied under <code>readPathMtx</code>, so the outcome is isolation breakage rather than a memory fault. That is</p>
+<p>a validator doing its job — reducing an overstated severity instead of amplifying it.</p>
+<p><strong>The contract-vocabulary catch.</strong> A second cluster (c5) also graded TP-primary: four cells</p>
+<p>(<code>ours</code> r2, pr-review-toolkit ×2, tag1 r1) framed the defect as an *undocumented storage-interface</p>
+<p>contract* — the code requires a <code>ChunkSeriesSet</code> to stay valid after its <code>ChunkQuerier</code> is closed,</p>
+<p><code>storage/interface.go</code> states no such rule, the nearest precedent (<code>LabelValues</code>) documents the</p>
+<p>opposite, and the first-party TSDB block querier does not uphold it. That is the primary stated in</p>
+<p>design language with the violation asserted, and it points at the durable fix (write the lifetime</p>
+<p>rule into the interface docs) rather than just the local patch.</p>
+<p><strong>Noise profile and the suggestion tier.</strong> With recall saturated, the separation is again in what</p>
+<p>else got said. anthropic was the most economical: ~4 findings per cell, <strong>zero trivia</strong>, precision</p>
+<p>0.42 at $4.85 — it found the bug, noted the missing test, and stopped. superpowers matched it for</p>
+<p>discipline (zero trivia, $1.94/cell) with a slightly thinner valid set. pr-review-toolkit ran widest</p>
+<p>(5.0 valid-minor and 3.5 trivia per cell, precision 0.27), and its volume was not empty: it produced</p>
+<p>the concrete missing-error-path test list (c20), the orphaned sorted-comment drift (c13), the</p>
+<p>duplicated hints mapping (c6), and the sole unique-true finding (c18). tag1 sat between, adding an</p>
+<p>observability/metrics wish-list that graded trivia. <code>ours</code> was mid-pack on noise (2.0 trivia) with the</p>
+<p>strongest deep-mechanism writing, but at $15.82/cell — 8× superpowers for the same headline catch.</p>
+<p><strong>Cost–quality verdict.</strong> Every tool caught the escaped bug, so cost-per-bug is just cost:</p>
+<p>superpowers $1.94, anthropic $4.85, pr-review-toolkit $7.15, tag1 $10.85, <code>ours</code> $15.82. On this</p>
+<p>subject the frontier is unambiguously <strong>superpowers and anthropic</strong> — cheapest and cleanest, with</p>
+<p>anthropic&#x27;s zero-trivia profile making it the best &quot;read the top of the list and act&quot; tool. The</p>
+<p>premium tools bought marginal extras: pr-review-toolkit&#x27;s unique c18 and its bounded error-path test</p>
+<p>list, tag1 nothing distinctive, <code>ours</code> the richest mechanism narratives and validator self-correction</p>
+<p>but no unique finding. Subagent distinctness stayed low across all fan-outs (0.20–0.26), i.e. ~75–80%</p>
+<p>of subagent findings restate a sibling&#x27;s cluster.</p>
+<p><strong>Caveats.</strong> (1) <code>human_issues</code> is empty — the PR had zero inline review comments — so the grade rests</p>
+<p>entirely on primary recall, FP discipline, and valid-other yield; there is no human-issue axis here.</p>
+<p>(2) <strong>One grader verdict was human-overridden</strong>: c18 (&quot;the helper makes it structurally impossible for</p>
+<p>the caller to keep the producer alive during consumption&quot;) was graded TP-primary, but the judge had</p>
+<p>denied c3 that status for omitting the use-after-close consequence while acknowledging c18 omits the</p>
+<p>same thing. Applying the bar consistently, c18 was regraded valid-other; this does <strong>not</strong> change any</p>
+<p>tool&#x27;s bug-catch rate, since its sole reporter already catches c1 in both reps. (3) c5&#x27;s TP-primary is</p>
+<p>a judgment call — it is the primary in contract vocabulary rather than a separate defect; it is</p>
+<p>retained because it asserts the invariant is violated by the real implementation, but a stricter</p>
+<p>reading would fold it into c1. (4) Lowest-confidence cluster is c9 at 58 (chunk-vs-samples path</p>
+<p>asymmetry — a correct observation whose remedy, &quot;document why&quot;, treats the bug as a design choice).</p>
+<p>(5) Because recall saturated at 10/10, this subject discriminates only on precision and cost — it is</p>
+<p>the counterweight to subject 4, where the same tools mostly failed on a downstream-only bug.</p></section>
+
+<section><h2>Findings drill-down (auditable)</h2><table class='clusters'><thead><tr><th>issue</th><th>file:line</th><th>verdict</th><th>found by</th></tr></thead><tbody><tr><td>USE-AFTER-CLOSE: getChunkSeriesSet&#x27;s `defer querier.Close()` fires when the helper RETURNS, before the lazily-evaluated ChunkSeriesSet it returns is iterated by StreamChunkedReadResponses. The querier&#x27;s Close releases the block pendingReaders guard / unmaps the mmap-backed chunk+index readers, so streaming reads chunk bytes from an already-closed (potentially munmap&#x27;d) region — SIGSEGV/SIGBUS or silently corrupted chunk data served to the client.</td><td class='mono'>storage/remote/read_handler.go:247</td><td><span class='verdict' style='background:#16a34a'>TP-primary</span></td><td>anthropic-code-review, ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>The change depends on an undocumented, unenforced storage-interface contract — that a ChunkSeriesSet stays valid after its producing ChunkQuerier is Closed. storage/interface.go states no such rule, the nearest precedent (LabelValues) documents the opposite, and the first-party TSDB block querier does not uphold it, so any implementation freeing eagerly on Close breaks remote read with no compile-time signal.</td><td class='mono'>storage/interface.go:436</td><td><span class='verdict' style='background:#16a34a'>TP-primary</span></td><td>ours, pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>The new helper uses a `get-` prefix while every sibling in the file doing the same class of job is named for the action without one; suggests an action-based name such as selectChunkSeriesSet.</td><td class='mono'>storage/remote/read_handler.go:242</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>ours</td></tr><tr><td>Log-message drift: getChunkSeriesSet logs &#x27;Error on chunk querier close&#x27; while the sibling remoteReadSamples logs &#x27;Error on querier close&#x27; for the analogous querier.Close() failure.</td><td class='mono'>storage/remote/read_handler.go:249</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>ours</td></tr><tr><td>Sibling asymmetry: the chunk path now delegates querier+hints+Select construction to getChunkSeriesSet (closing before consumption) while remoteReadSamples still builds them inline and materializes via ToQueryResult before Close — the two read paths now follow opposite lifecycle models with nothing documenting why.</td><td class='mono'>storage/remote/read_handler.go:205</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>ours, tag1-comprehensive-review</td></tr><tr><td>Signature honesty: folding the querier-acquisition error into the returned ChunkSeriesSet via ErrChunkSeriesSet makes the signature advertise total success and drops the compiler-enforced error check a (ChunkSeriesSet, error) return would give; it also swallows the querier handle, foreclosing caller-side lifetime management (prefer returning an io.Closer or a loan/callback form).</td><td class='mono'>storage/remote/read_handler.go:242</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>Parameter granularity: the helper takes the whole *prompb.Query while ALSO taking filteredMatchers, leaving the unused query.Matchers field as a latent trap a future edit could use, silently bypassing external-label filtering; pass (start, end, hints) instead.</td><td class='mono'>storage/remote/read_handler.go:242</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>pr-review-toolkit</td></tr><tr><td>Because the streaming path commits 200 OK on the first write, a mid-stream read error makes http.Error&#x27;s WriteHeader(500) a no-op and the client receives HTTP 200 with a truncated/corrupt chunk stream — pre-existing, but this PR materially widens the window.</td><td class='mono'>storage/remote/read_handler.go:233</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>pr-review-toolkit</td></tr><tr><td>Observability gap: the change replaces an observable, semi-recoverable OOM with an unobservable fatal SIGBUS or silent byte corruption, and adds no metric/log for aborted or errored chunked reads, querier lifetime, or in-flight streamed bytes — so operators cannot confirm the fix worked or detect the new failure mode.</td><td class='mono'>storage/remote/read_handler.go:205</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>tag1-comprehensive-review</td></tr><tr><td>The stated OOM-avoidance premise is unvalidated and only partially addressed: the change unpins compaction/GC refcounts sooner but leaves the primary per-connection cost untouched — a stalled stream.Write() with no ctx check and no WriteTimeout (web.go sets only ReadTimeout) keeps the live ChunkSeriesSet state pinned indefinitely.</td><td class='mono'>storage/remote/read_handler.go:</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>ours, tag1-comprehensive-review</td></tr><tr><td>A querier Close() error is logged at Warn and never reflected in the HTTP response, so the stream is still reported as success — pre-existing, not introduced by this PR.</td><td class='mono'>storage/remote/read_handler.go:247</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>pr-review-toolkit</td></tr><tr><td>Existing streamed tests assert exact serialized chunk bytes — brittle golden-byte assertions coupled to encoding internals that give a false sense of thoroughness while being blind to the lifecycle regression.</td><td class='mono'>storage/remote/read_handler_test.go:307</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>pr-review-toolkit</td></tr><tr><td>Empty-result streaming and large multi-block streaming after close are uncovered — the multi-block case is the scenario most likely to dereference unmapped memory in production.</td><td class='mono'>storage/remote/read_handler_test.go:</td><td><span class='verdict' style='background:#a1a1aa'>trivia</span></td><td>pr-review-toolkit</td></tr><tr><td>The new getChunkSeriesSet doc comment (&#x27;encapsulating the operation in its own function to ensure timely release of the querier resources&#x27;) documents a false safety property: it frames the early Close as a pure benefit and omits the load-bearing precondition that the returned ChunkSeriesSet is consumed AFTER the querier is closed — actively obscuring the defect and inviting maintainers to replicate the close-before-consume pattern.</td><td class='mono'>storage/remote/read_handler.go:239</td><td><span class='verdict' style='background:#8b5cf6'>valid-minor</span></td><td>ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>No test accompanies the lifecycle change, and the existing TestStreamReadEndpoint uses head-only in-memory storage (promql.LoadedStorage/teststorage), so the mmap-backed persistent-block path where the premature close manifests is never exercised — CI passes give false assurance. A detonate-on-close mock queryable or a compacted-block variant under -race is the missing load-bearing test.</td><td class='mono'>storage/remote/read_handler.go:</td><td><span class='verdict' style='background:#8b5cf6'>valid-minor</span></td><td>anthropic-code-review, ours, pr-review-toolkit, superpowers, tag1-comprehensive-review</td></tr><tr><td>The prompb.Query.Hints -&gt; storage.SelectHints field-by-field mapping is now duplicated verbatim between remoteReadSamples and getChunkSeriesSet (both omitting ShardCount/ShardIndex/DisableTrimming); extract a shared toSelectHints helper.</td><td class='mono'>storage/remote/read_handler.go:253</td><td><span class='verdict' style='background:#8b5cf6'>valid-minor</span></td><td>pr-review-toolkit</td></tr><tr><td>The new early `chunks.Err()` check has narrow coverage: for a lazy merge series set Err() is generally nil before the first Next(), so it only catches the ErrChunkSeriesSet querier-construction failure, not deferred Select/iteration errors — worth a one-line comment so readers do not assume it validates the whole Select.</td><td class='mono'>storage/remote/read_handler.go:206</td><td><span class='verdict' style='background:#8b5cf6'>valid-minor</span></td><td>pr-review-toolkit, superpowers</td></tr><tr><td>The surviving &#x27;// The streaming API has to provide the series sorted.&#x27; comment at the call site is now orphaned from the sortSeries=true argument it justified, which moved into getChunkSeriesSet&#x27;s bare `true` — latent comment/code drift.</td><td class='mono'>storage/remote/read_handler.go:213</td><td><span class='verdict' style='background:#8b5cf6'>valid-minor</span></td><td>anthropic-code-review, pr-review-toolkit</td></tr><tr><td>The error paths introduced/reshaped by the refactor are untested: no test injects a queryable whose ChunkQuerier() errors (error -&gt; ErrChunkSeriesSet -&gt; chunks.Err() -&gt; HTTP status routing), none asserts a deferred Select error mid-iteration maps to the right status, and the Close()-returns-error warn-log branch is uncovered.</td><td class='mono'>storage/remote/read_handler.go:243</td><td><span class='verdict' style='background:#8b5cf6'>valid-minor</span></td><td>pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>Head-path variant of the same premature-close root cause: querier.Close() also closes the read&#x27;s isolationState, unregistering it from Head.iso.readsOpen, so a concurrent head truncation/GC can advance past a still-iterating read — breaking snapshot isolation (mid-stream ErrNotFound, or results mixing pre- and post-truncation state), distinct from the mmap use-after-free consequence.</td><td class='mono'>storage/remote/read_handler.go:247</td><td><span class='verdict' style='background:#0ea5e9'>valid-other</span></td><td>ours, pr-review-toolkit, tag1-comprehensive-review</td></tr><tr><td>Over-encapsulation: by pulling the querier entirely inside the helper and returning only the set, the design makes it structurally impossible for the caller to keep the producer alive during consumption — encapsulation that makes correct use unrepresentable.</td><td class='mono'>storage/remote/read_handler.go:242</td><td><span class='verdict' style='background:#0ea5e9'>valid-other</span></td><td>pr-review-toolkit</td></tr></tbody></table></section>
+</div></body></html>

@@ -1,0 +1,240 @@
+# Benchmark run: 7__pr-review-toolkit__r1
+
+| field | value |
+|---|---|
+| tool | pr-review-toolkit |
+| subject | 7 (go / small) — prometheus/prometheus#13777 |
+| review diff | `d1abc3f2557660728dc6a34eb2da1f32461b6665^1..d1abc3f2557660728dc6a34eb2da1f32461b6665` (merge d1abc3f2557660728dc6a34eb2da1f32461b6665) |
+| session model | claude-opus-4-8 |
+| status | done (exit 0, is_error=false, subtype=success) |
+| **total review time — wall (s)** | 554 |
+| longest single subagent (s) | 335 |
+| duration_ms (orchestrator self) | 552369 |
+| duration_api_ms (summed parallel API time, not wall) | 1415543 |
+| num_turns | 10 |
+| cost_usd | 7.095695999999999 |
+| input_tokens | 9 |
+| output_tokens | 22331 |
+| cache_creation_tokens | 65819 |
+| cache_read_tokens | 207919 |
+| total_tokens (orchestrator only) | 296078 |
+| **subagents** | 5 |
+| **ws output_tokens** | 23814 |
+| ws input_tokens | 136 |
+| ws cache_creation | 387607 |
+| ws cache_read | 3847852 |
+| ws total_tokens | 4259409 |
+| session_id | 363e0745-19f2-4b7d-9335-a5ce1dc289e7 |
+| findings (raw lines) | 189 |
+
+> **ws = whole-session** (orchestrator + every subagent transcript, deduped). The non-ws token
+> rows are the orchestrator session ONLY — they miss subagent tokens for fan-out tools.
+> **`cost_usd` is the authoritative whole-session cost** (Claude Code sums subagents; not an estimate).
+> Caveat: `ws total_tokens` is inflated by prompt-cache re-reads (cache_read counted per turn);
+> `ws output_tokens` is the clean, cache-independent work signal. Findings files under ./findings/.
+
+### Per-subagent (diagnostic)
+
+Subagents run in PARALLEL — the TOTAL review time is the wall clock above (554s), NOT the sum of these.
+
+| agent | output_tokens | total_tokens | duration_s |
+|---|---:|---:|---:|
+| agent-a0eff739587ddc04a | 31 | 493056 | 164 |
+| agent-a1bf30e753b07e328 | 189 | 607517 | 203 |
+| agent-a5b4465d52ed66925 | 86 | 249634 | 115 |
+| agent-a887be23a6ef8b7dd | 532 | 1168633 | 335 |
+| agent-ae92efb95575e1d60 | 645 | 1444491 | 332 |
+
+## Findings (final result text)
+
+```
+All five pr-review-toolkit agents have completed. Nothing was posted anywhere — these are review-only findings. 
+
+The five agents converged independently on the **same critical defect**, and the test-analyzer surfaced a decisive external fact: **this exact change was reverted upstream in commit `6e89250a5d`** with the message *"Believed to trigger segmentation faults due to memory-mapped block data still being accessed by iterators after the querier is closed."* That confirms the agents' core finding was a real production bug.
+
+Here are each agent's complete findings.
+
+---
+
+# PR #13777 — "Chunked remote read: close the querier earlier"
+
+**Change:** one file, `storage/remote/read_handler.go` (+32 −21). Extracts querier create/`Select`/`Close` into a new helper `getChunkSeriesSet(...)` that closes the `ChunkQuerier` via `defer` **before** the returned `storage.ChunkSeriesSet` is streamed by `StreamChunkedReadResponses`. Stated goal: release querier resources earlier to avoid OOMs on broken chunked remote reads.
+
+---
+
+## 1. `code-reviewer` — findings
+
+### 🔴 CRITICAL — Use-after-close of the chunk querier: the `ChunkSeriesSet` is streamed after its querier (and mmap read reference) is released
+
+**Location:** `storage/remote/read_handler.go:242-266` (new `getChunkSeriesSet`), consumed at `storage/remote/read_handler.go:205-218`.
+
+- `getChunkSeriesSet` registers `defer querier.Close()` (lines 247-251) then `return querier.Select(...)` (line 265). Go runs the deferred `Close()` when the function **returns** — i.e. the querier is closed *before* the returned set is ever iterated. The caller iterates it later inside `StreamChunkedReadResponses` (lines 210-218). Pre-PR, the `defer querier.Close()` lived in the outer per-query closure and ran *after* streaming finished (the still-unchanged sample path at lines 141-161 shows the original pattern).
+- **Reads are lazy, from the closed readers.** Verified chain:
+  1. `StreamChunkedReadResponses` pulls lazily after `Select` returned: `ss.Next()` (`storage/remote/codec.go:235`), `series.Iterator` (`:237`), `iter.Next()`/`iter.At()` (`:246`,`:250`), and `chk.Chunk.Bytes()` (`:261`).
+  2. `blockBaseSeriesSet.Next()` reads labels from the **index reader** `b.index.Series(...)` (`tsdb/querier.go:560`) and the **tombstones reader** `b.tombstones.Get(...)` (`:573`) — both already closed.
+  3. Chunk bytes load lazily via `populateWithDelGenericSeriesIterator.next()` → `p.cr.ChunkOrIterable(p.currMeta)` (`tsdb/querier.go:721`).
+  4. For a persistent block, `Reader.ChunkOrIterable` returns a chunk backed by `realByteSlice(f.Bytes())` — a slice **directly into the mmap**, no copy (`tsdb/chunks/chunks.go:666-673`, mmap at `:635`, wrapped at `:643`). Only the in-memory head chunk is deep-copied via `ChunkWithCopy` (`tsdb/querier.go:714-719`).
+- **Why it becomes a use-after-unmap.** Block mmap lifetime is guarded by a reader ref-count that `Close()` releases:
+  - `Block.Chunks()/Index()/Tombstones()` each `startRead()` → `pendingReaders.Add(1)` (`tsdb/block.go:428-449`).
+  - Wrapper `Close()` methods only `pendingReaders.Done()` — they do **not** unmap (`tsdb/block.go:536-539`, `557-560`, `567-570`).
+  - Real unmap happens only in `Block.Close()`, which sets `closing=true`, `pendingReaders.Wait()`, then `pb.chunkr.Close()` → munmap (`tsdb/block.go:378-390`; `tsdb/chunks/chunks.go:656-658`). Its doc: *"It blocks as long as there are readers reading from the block."*
+  - `blockBaseQuerier.Close()` closes all three readers (`tsdb/querier.go:103-115`); the merge querier closes every child (`storage/merge.go:255-263`); `db.ChunkQuerier` is that merge (`tsdb/db.go:2067-2072`).
+- **Net:** the moment `getChunkSeriesSet` returns, `pendingReaders` drops to zero for every backing block. A concurrent compaction / retention deletion calling `Block.Close()` now passes `pendingReaders.Wait()` and unmaps the chunk file **while `StreamChunkedReadResponses` is still reading bytes from it** → SIGBUS/SIGSEGV or silently corrupt chunk bytes. Pre-PR code held the reference for the whole stream, which is exactly what made `Block.Close()` block until streaming completed.
+- **Verified vs. [Inference]:** Verified — close-before-iterate ordering; lazy reads of labels/tombstones/chunk-bytes; persistent chunk bytes alias mmap with no copy; reader `Close()` only decrements `pendingReaders` while `Block.Close()` unmaps after the wait. [Inference] — the concrete crash/corruption requires a compaction/retention `Block.Close()` to race the in-flight stream; absent that, results are still correct (which is why unit tests and manual testing pass — it's a latent data race).
+- **Severity:** Critical by impact (remote read is heavily used — Thanos/Cortex/federation), gated behind a race window (non-deterministic).
+- **Fixes (any one):** (a) keep the querier open until streaming completes — return `(ChunkSeriesSet, io.Closer)` / the querier and `defer querier.Close()` in the caller *after* `StreamChunkedReadResponses`; (b) fully materialize/copy chunk bytes before `Close()` (defeats the streaming/memory goal); (c) if the goal is only to bound memory on hung clients, use context cancellation / write deadlines rather than shortening reader lifetime.
+
+### Secondary points (with evidence)
+
+- **`chunks.Err()` immediately after `Select` — correct and idiomatic (SAFE).** Both construction-error sources funnel into `Err()`: failed `ChunkQuerier()` → `storage.ErrChunkSeriesSet(err)` (`read_handler.go:245`); failed `PostingsForMatchers` inside `Select` → `storage.ErrChunkSeriesSet(err)` (`tsdb/querier.go:187`). `errChunkSeriesSet.Err()` returns the wrapped error verbatim (`storage/interface.go:398,402-404`). It does not re-check `Err()` after iteration, but `StreamChunkedReadResponses` already returns `ss.Err()`/`iter.Err()` at the end (`codec.go:292-296`), so post-iteration errors are still surfaced.
+- **HTTPError status propagation preserved (SAFE).** Because `errChunkSeriesSet.Err()` returns the original error unwrapped, `errors.As(err, &httpErr)` (`read_handler.go:228-229`) still recovers an `HTTPError`; HTTP status behavior unchanged.
+- **Asymmetry with the sample path is the tell.** `remoteReadSamples` also closes its querier in the closure, but `ToQueryResult(querier.Select(...))` (`read_handler.go:161`) **fully materializes** into protobuf before returning — safe there. The chunked path is the opposite: close-then-materialize because streaming is lazy.
+- **Head in-memory chunks are copied (partial mitigation, not a fix).** `ChunkWithCopy` deep-copies the live head chunk (`tsdb/querier.go:714-719`, comment `:693-696`). Persistent-block/mmapped chunks are still read straight from mmap after Close.
+
+### Minor
+- No regression test accompanies the change.
+- Doc comment slightly overstates safety: `getChunkSeriesSet`'s comment (`read_handler.go:239-241`) says it ensures "timely release of the querier resources" — accurate about timing, but release happens *before* the resources are done being used.
+
+**Bottom line:** refactor is clean and the `Err()`/error-propagation mechanics are correct, but the central lifecycle change is unsafe. Recommend restoring the querier's lifetime to span the entire `StreamChunkedReadResponses` call while keeping the helper for hint construction.
+
+---
+
+## 2. `silent-failure-hunter` — findings
+
+### 🔴 CRITICAL — Querier closed before its data is streamed → use-after-close read of mmap'd chunks (silent corruption or crash)
+
+**Location:** `storage/remote/read_handler.go:247-251` (the `defer querier.Close()`), triggered by call site `:205` and deferred read at `:210-218`.
+
+- `getChunkSeriesSet` (242-266) opens a `ChunkQuerier`, defers `querier.Close()`, returns the *lazy* set from `querier.Select(...)` (265). The `defer` is scoped to the helper, so **`Close()` executes the moment it returns** — before the caller touches the set. The caller hands `chunks` to `StreamChunkedReadResponses` (210), where the set is iterated and chunk bytes are read (`codec.go:235-296`, byte read at `codec.go:261`).
+- The set reads lazily from resources the closed querier owned: `chunkSeriesEntry` holds the block's `ChunkReader` (`tsdb/querier.go:1173-1180`); its iterator loads bytes via `cr.ChunkOrIterable()` (`tsdb/querier.go:773-780`). Merge path returns a `lazyGenericSeriesSet` whose `init` doesn't run until the first `Next()` during streaming (`storage/lazy.go:20-34`, `storage/merge.go:118-121`).
+- **What `Close()` releases (load-bearing):**
+  - Persistent blocks: `blockChunkReader.Close()` / `blockIndexReader.Close()` only `pendingReaders.Done()` (`tsdb/block.go:536-539`, `567-570`) — no unmap. Mmap is released by `Block.Close()`, which blocks on `pb.pendingReaders.Wait()` then `pb.chunkr.Close()` (`tsdb/block.go:378-390`). Retention reaches this via `deleteBlocks`, whose comment says it closes the block because it "might need to wait for pending readers to complete" before deleting files (`tsdb/db.go:1656-1659`).
+  - Head: `headChunkReader.Close()` calls `isoState.Close()` (`tsdb/head_read.go:318-323`), removing this reader from the open-reads list (`tsdb/isolation.go:36-41`). Head truncation spins in `WaitForPendingReadersInTimeRange` until no open read overlaps (`tsdb/head.go:1141-1158`), from `truncateMemory` (`tsdb/head.go:1093-1117`); once the reader is gone, truncation unmaps/deletes head chunk files streaming is still reading.
+- **Triggering scenario:** client issues a wide-range `STREAMED_XOR_CHUNKS` read (slow streaming). During the window, head truncation fires (~every 2h) or retention/compaction deletes an overlapping block via `reloadBlocks`→`deleteBlocks`. Because the querier was already closed at line 205, the wait no longer sees this reader and proceeds to unmap/delete; `StreamChunkedReadResponses` then reads the unmapped/recycled region.
+- **Silent-failure angle (worst kind):** [Inference — depends on OS mmap timing] Two manifestations: (a) fully unmapped region → fault → SIGBUS/SIGSEGV crashes the whole Prometheus process; (b) file released and address recycled → stale/garbage bytes get marshaled into `prompb.Chunk{Data: chk.Chunk.Bytes()}` (`codec.go:257-262`) and streamed to the client **with no error anywhere** — `iter.Err()` (`codec.go:292`) and `ss.Err()` (`codec.go:296`) cannot detect bytes came from freed memory. Silent data corruption to the remote-read consumer.
+- **Confirmed regression by this PR:** the diff moved `defer querier.Close()` out of the streaming closure (ran *after* streaming) into `getChunkSeriesSet` (runs *before* streaming). The doc comment "ensure timely release of the querier resources" states the intent that is exactly the defect.
+- **Fix:** the querier must outlive streaming. Simplest: revert to closing after `StreamChunkedReadResponses` completes — keep creation, `Select`, streaming, and `defer querier.Close()` in the same (per-query closure) scope. Note the PR's stated benefit doesn't require reading after Close: the pre-PR per-iteration defer already closed between queries.
+
+### Other concerns — assessed SAFE / not a regression
+- **Concern 1 — early `chunks.Err()` vs. lazy errors: SAFE.** `lazyGenericSeriesSet.Err()` returns `nil` until initialized (`storage/lazy.go:36-41`), so the early check (`read_handler.go:206`) catches only construction-time errors (`ChunkQuerier()` fail → `ErrChunkSeriesSet`, `read_handler.go:243-245`; or single-querier `PostingsForMatchers` fail, `tsdb/querier.go:185-188`). Lazily-produced errors are **not** dropped — surfaced mid-stream (`codec.go:292-294`) and via `ss.Err()` (`codec.go:296`), propagated to `http.Error` (`read_handler.go:219-234`). Redundant-but-harmless.
+- **Concern 2 — Close() error logged at Warn, not returned: NOT a regression (pre-existing, minor).** `read_handler.go:247-251`; matches `remoteReadSamples` (`:141-145`) and old chunked code. A close error never reflected in the HTTP response — but unchanged by this PR.
+- **Concern 3 — `ws` warnings logged, not returned: SAFE (pre-existing).** `read_handler.go:223-225`; the `prompb.ChunkedReadResponse` wire format has no warnings field. Unchanged.
+
+**Bottom line:** Concerns 1-3 clean or pre-existing. Concern 4 is the headline: this PR introduces a use-after-close read of mmap'd index/chunk data. Recommend reverting the early close.
+
+---
+
+## 3. `pr-test-analyzer` — findings
+
+**Verdict: "no new tests" is NOT adequate.** Decisive evidence: the identical change on HEAD (`53091126c2`) was later reverted upstream in **`6e89250a5d`** — *"Believed to trigger segmentation faults due to memory-mapped block data still being accessed by iterators after the querier is closed."* The existing tests passed before and after that segfault was discovered — they never exercised the failing path.
+
+### What existing tests do
+- Two tests hit the chunked path via `NewReadHandler` + `ServeHTTP` with `STREAMED_XOR_CHUNKS`:
+  - `TestStreamReadEndpoint` (`storage/remote/read_handler_test.go:198`) — asserts `recorder.Code/100 == 2` (`:277`) and byte-exact chunk output (`:296-431`).
+  - `BenchmarkStreamReadEndpoint` (`read_handler_test.go:134`) — asserts success and result count.
+- Both build the queryable via `promql.LoadedStorage` → `teststorage.New` (`util/teststorage/storage.go:31-50`) — a **real** `tsdb.DB`, so structurally they do reach the reordered code (close, then iterate synchronously inside `ServeHTTP`).
+- **The gap is the fixture's storage layout, not a no-op mock.** `teststorage.New` sets `MinBlockDuration = MaxBlockDuration = 24h` (`storage.go:38-39`) and never compacts. All loaded samples (~4h span) stay in the **in-memory head**, backed by live Go heap memory that `Close()` doesn't unmap/free — so iterating after close is harmless *for this fixture*. The dangerous case — a **persistent, memory-mapped block** querier whose `Close()` releases the mmap — is never constructed. [Inference, consistent with the revert] That's why tests are green while the change segfaults against on-disk blocks.
+
+### Untested scenarios, ranked
+1. **Streaming after early `Close` on a memory-mapped block querier — the reverted segfault. Criticality 10.** No test compacts into a persistent block then streams. Recommend two tests:
+   - `TestStreamReadEndpoint_ConsumeAfterCloseIsSafe` using a **mock** `storage.SampleAndChunkQueryable` whose `ChunkQuerier` returns a set whose chunk `Data`/iterator is backed by a buffer the querier **invalidates on `Close()`** (zeroes it, or the iterator returns a sentinel error / panics if touched post-close). Drive through `ServeHTTP`, assert streamed bytes equal pre-close data. Fails deterministically under the current design (no reliance on a real segfault). This is the load-bearing missing test.
+   - Integration variant: append data, `db.Compact()` to force a persistent mmap'd block, run the chunked read, assert correct output — under `-race`. [Inference] real crash is timing/OS-dependent, so the mock is the primary detector.
+2. **Querier-creation error path unasserted. Criticality 7.** The PR moved error propagation to `ErrChunkSeriesSet(err)` (`read_handler.go:245`) via `chunks.Err()` (`:206-208`). No test injects a `ChunkQuerier(...)` error, and no chunked-path test asserts a non-2xx status. Recommend `TestStreamReadEndpoint_ChunkQuerierError`: mock returning `(nil, errors.New("boom"))`; assert `recorder.Code == 500` and body contains `boom`. Add an `HTTPError` case to assert status mapping at `read_handler.go:228-231`.
+3. **Lazy error during iteration unasserted. Criticality 5.** A set that errors mid-iteration is surfaced via `ss.Err()` (`codec.go:296`) → HTTP error; not covered. Recommend `TestStreamReadEndpoint_IterationError`: mock whose `Select` yields one series then reports `Err()` (or a nil-`Chunk`, hitting `codec.go:252-254`); assert 500 reaches the client.
+4. **`Close()` returning an error (warn-log branch). Criticality 2.** `read_handler.go:248-250` logs and swallows; log-only, low priority.
+
+### Notes
+- Test-quality: `TestStreamReadEndpoint` asserts byte-exact chunk payloads (`read_handler_test.go:311` etc.) — reasonable golden assertion but couples to encoding internals.
+- Positives: the chunked path is genuinely driven end-to-end through `ServeHTTP`, iterate-after-close does occur under test, head-case output correctness is asserted precisely; `errChunkSeriesSet` contract is clean (`storage/interface.go:396-404`). Only the fixture's storage layout and the handler-level error assertions are missing.
+
+**Minimum bar for merge:** gap 1 (detonate-on-close mock) + gap 2 (creation-error assertion). The upstream revert is direct proof that shipping without gap 1 let a segfault through.
+
+---
+
+## 4. `comment-analyzer` — findings
+
+The refactor is correct and comments aren't factually wrong, but the single most important fact — the reason the function exists — is absent from the code.
+
+Confirmed mechanics: `getChunkSeriesSet` (242-266) opens a `ChunkQuerier`, `defer`s `Close()` (247-251), and returns `querier.Select(...)` (265); the deferred `Close()` runs when the function returns, before the set reaches the caller (`read_handler.go:205-218`), which is consumed in `StreamChunkedReadResponses` where iteration happens (`codec.go:235-236`).
+
+### 🔴 Must-fix — #1 Doc comment omits the close-before-consume contract
+- **Location:** `storage/remote/read_handler.go:239-241` (comment) for the function at `:242`.
+- The comment says "ensure timely release of the querier resources" but never states the subtle, high-risk fact that the querier is **closed before the returned `ChunkSeriesSet` is iterated**, nor that correctness depends on the set remaining valid after `Close()`. The `ChunkSeriesSet` contract (`storage/interface.go:436-445`) says nothing about post-`Close` validity — it only guarantees `At()` results survive across `Next()`. Safety here is an implicit assumption about the querier implementations, held together only by this helper.
+- A maintainer who inlines this back into the caller, returns the querier alongside the set, or changes a querier impl to free backing memory on `Close()` would silently reintroduce the exact bug class this PR set out to fix — with no warning in code.
+- **Suggested rewrite:**
+  ```go
+  // getChunkSeriesSet runs a chunk query and returns its ChunkSeriesSet.
+  //
+  // The chunk querier is opened and Closed entirely within this function, so it
+  // is already closed by the time the caller iterates the returned
+  // ChunkSeriesSet. This is deliberate: closing the querier before streaming the
+  // (possibly large, slow, or broken) chunked response bounds the resources held
+  // during streaming and avoids OOMs. It relies on the invariant that a
+  // ChunkSeriesSet returned by ChunkQuerier.Select stays valid after its querier
+  // is closed — do not change this without preserving that guarantee.
+  ```
+
+### 🔴 Must-fix — #2 Missing "why" / rationale (folded into #1)
+- **Location:** `read_handler.go:239-241`. The comment explains *what* and the structural motivation, but not *why it matters* (OOM avoidance on broken/slow chunked reads by closing early). The rationale currently lives only in the PR description. Capture the OOM-avoidance "why" in code.
+
+### 🟡 Nice-to-have — #3 "Series sorted" comment now separated from the code that satisfies it
+- **Location:** `read_handler.go:213` (`// The streaming API has to provide the series sorted.`) above `chunks,` at `:214`. Still correctly placed, but the mechanism that satisfies it — `sortSeries=true` in `querier.Select(ctx, true, hints, ...)` — moved into `getChunkSeriesSet` at `:265` (`Select(ctx, sortSeries bool, …)` confirmed at `storage/interface.go:155`). The requirement and the `true` that enforces it now live in different functions; someone editing `getChunkSeriesSet` could flip `true`→`false` with no nearby warning.
+- **Suggestion:** add at `:265`: `// sortSeries must be true: the streaming remote-read API requires sorted series.`
+
+### ℹ️ #4 Go doc-comment convention (no change needed)
+- `read_handler.go:239`: comment starts with the identifier `getChunkSeriesSet` and ends with a full stop — correct godoc style. The Prometheus "start with a capital letter" template line is in tension with "start with the identifier" for unexported names; Go convention wins, matching `filterExtLabelsFromMatchers` (`:268`). Only note: "encapsulating the operation in its own function" narrates refactoring structure rather than behavior; the #1 rewrite drops it.
+
+### Removals: none. Positives: the `ErrChunkSeriesSet` (`:245`) / `chunks.Err()` (`:206`) error path is self-documenting; retained log messages are accurate (`:249`, `:224`).
+
+---
+
+## 5. `type-design-analyzer` — findings
+
+No new type introduced; this evaluates how the change uses existing `ChunkQuerier` / `ChunkSeriesSet` / `ErrChunkSeriesSet` / `SelectHints` contracts.
+
+### Central tension: the type system does not express "ChunkSeriesSet outlives its querier"
+- **Location:** `storage/remote/read_handler.go:242-266`. The `defer querier.Close()` (`:247-251`) runs when `getChunkSeriesSet` returns, before the caller iterates the set in `StreamChunkedReadResponses` (`:210-218`, consumed at `codec.go:235-296`). This is the load-bearing invariant the PR silently introduces.
+- **The interface contract points the opposite way:**
+  - `LabelQuerier.Close()` is documented only as "releases the resources of the Querier" (`storage/interface.go:171-172`) — no statement that prior `Select` results stay valid.
+  - Sibling `LabelValues` explicitly warns "It is not safe to use the strings beyond the lifetime of the querier" (`storage/interface.go:161-162`) — the family convention is results are bounded by querier lifetime.
+  - `ChunkSeriesSet.At()` documents one lifetime extension only: "iterable even after `Next` is called" (`storage/interface.go:438`) — deliberately *after Next*, not *after querier close*.
+- **The first-party TSDB impl actively violates the assumed invariant:** `blockChunkQuerier.Select` returns a lazy `NewBlockChunkSeriesSet(...)` storing `q.index`, `q.chunks`, `q.tombstones` (`tsdb/querier.go:174-196`); `blockBaseQuerier.Close()` closes exactly those (`tsdb/querier.go:103-115`); `blockChunkSeriesSet.At()` hands out `chunkSeriesEntry{chunks: b.chunks, ...}` holding the `ChunkReader` (`tsdb/querier.go:1173-1180`), with bytes pulled lazily during iteration (`codec.go:250-262`). [Inference] For any TSDB-block-backed set, closing before iteration closes the chunk reader out from under the still-lazy set. From a type-design standpoint the conclusion is unconditional: the code depends on an invariant the interface neither states nor enforces, that its neighboring docs contradict, and that at least one implementation doesn't uphold.
+- The doc comment (`read_handler.go:239-241`) states the *motive* but never the *precondition that makes it safe*.
+
+### Four evaluation axes
+1. **Lifetime invariant — alternatives:**
+   - **(A) Materialize before Close** — drain into an owned in-memory representation, then `Close`, then return (`storage.ChunkSeriesEntry`, `storage.NewListChunkSeriesIterator`, `storage/series.go:61,180`). Cost: copies chunk bytes to heap, which **conflicts with the OOM-avoidance motive** — you can't both release early and keep a lazy set alive. Naming this tradeoff is the most valuable outcome: the current design *appears* to get both only because the invariant is unchecked.
+   - **(B) Keep querier ownership with the streaming call** (the pre-PR design) — correct by construction; option (A) is the only safe way to shorten the window.
+   - **(C) Return the resource handle alongside the value** — `(storage.ChunkSeriesSet, func() error)` or an owning wrapper with `Close()`; caller `defer`s after consuming. Makes coupling explicit and keeps laziness, but doesn't close earlier than old code — a clarity improvement, not an OOM win.
+2. **Error channeling — idiomatic, low concern.** `storage.ErrChunkSeriesSet(err)` (`read_handler.go:245`) is the established Prometheus idiom: `tsdb/querier.go:138,187` and `storage/remote/read.go:165,170` all do the same. Surfacing via `chunks.Err()` (`:206`) is consistent; caller maps both to the same HTTP response (`:227-235`). Accept as-is.
+3. **Hints construction duplication — a real (pre-existing, now worsened) smell.** The `prompb.Query.Hints → storage.SelectHints` field-by-field copy is duplicated between `remoteReadSamples` (`read_handler.go:147-158`) and `getChunkSeriesSet` (`:253-264`). Both already **omit** `ShardCount`, `ShardIndex`, `DisableTrimming` (`storage/interface.go:200-217`), so a reader must check two sites to confirm the omission is intentional. Recommend a single unexported helper `func toSelectHints(h *prompb.ReadHints) *storage.SelectHints` (nil-in/nil-out) used by both — highest-value low-risk cleanup.
+4. **Signature / cohesion.** Parameters are fine; the problem is the **return type under-communicating ownership** — a bare `storage.ChunkSeriesSet` hides that validity is coupled to a resource already released. Options (A) or (C) would make the return type tell the truth about lifetime.
+
+### Ratings
+- **Encapsulation: 4/10** — querier object well-hidden and closed once, but leaks a *dependency* on the closed resource through the returned value.
+- **Invariant expression: 2/10** — the "set outlives closed querier" invariant is entirely implicit; type signature silent, comment omits the precondition, neighboring docs imply the opposite.
+- **Invariant usefulness: 5/10** — the goal (bound memory) is legitimate and "closed once via defer" is clean, but the relied-on invariant isn't the enforced one and collides with the type family's laziness.
+- **Invariant enforcement: 2/10** — nothing prevents handing out a set whose backing resources are gone; a first-party impl demonstrably breaks it.
+
+### Ranked recommendations
+1. Resolve the lifetime invariant deliberately — (A) materialize before Close (measure/accept memory cost; only design that keeps the OOM win *and* is safe) or (C) return set + close func / owning wrapper. Don't leave it a bare `ChunkSeriesSet` over a closed querier.
+2. At minimum, document the precondition at `read_handler.go:239-241`.
+3. Extract a shared `toSelectHints` helper (kills `:147-158` / `:253-264` duplication).
+4. Keep the `ErrChunkSeriesSet` error channeling — idiomatic, no change.
+
+*Caveat noted by the agent:* the type-design conclusion holds regardless of runtime; the "breaks at runtime" specifics are [Inference] deferred to the code-review / silent-failure agents (who confirmed them).
+
+---
+
+## Cross-agent synthesis
+
+- **One Critical defect, independently found by 3 agents (code-reviewer, silent-failure-hunter, type-design-analyzer) and confirmed real by pr-test-analyzer via the upstream revert `6e89250a5d`:** `getChunkSeriesSet` closes the `ChunkQuerier` (`read_handler.go:247-251`) before the returned lazy `ChunkSeriesSet` is streamed (`:210-218` → `codec.go:235-296`). For persistent, mmap-backed blocks this is a use-after-close read → segfault or silent chunk-data corruption to remote-read clients. The head-only test fixture masks it.
+- **Test gap (pr-test-analyzer):** the existing `TestStreamReadEndpoint` exercises the ordering but only against in-memory head data, so it can't catch the regression. A detonate-on-close mock querier test + a querier-creation-error assertion are the minimum bar.
+- **Comment gap (comment-analyzer):** the doc comment at `read_handler.go:239-241` documents the mechanism but not the load-bearing "querier is closed before consumption / must stay valid after close" contract — a knowledge-loss risk that invites reintroduction.
+- **Cleanup (type-design-analyzer):** duplicated `prompb.Hints → SelectHints` mapping (`:147-158` vs `:253-264`) should be a shared `toSelectHints` helper; the `ErrChunkSeriesSet` error channeling is idiomatic and fine.
+- **Confirmed safe / non-regressions:** `chunks.Err()` early check, HTTPError propagation, Close-error Warn logging, and dropped warnings are all either correct or pre-existing.
+
+**Overall:** the refactor's error-handling and structure are sound, but the core lifecycle reordering is unsafe on real on-disk blocks — which is exactly why it was reverted upstream. The correct fix keeps the querier alive for the full duration of `StreamChunkedReadResponses` (the helper can remain for hint construction), or fully materializes chunk bytes before closing (at the cost of the intended memory savings).
+
+Nothing was posted to GitHub.
+```

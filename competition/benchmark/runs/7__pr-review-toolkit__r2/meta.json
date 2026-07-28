@@ -1,0 +1,101 @@
+{
+  "run_id": "7__pr-review-toolkit__r2",
+  "subject_id": 7,
+  "lang": "go",
+  "size": "small",
+  "tool": "pr-review-toolkit",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "prometheus/prometheus",
+  "pr": 13777,
+  "merge_sha": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "review_base": "d1abc3f2557660728dc6a34eb2da1f32461b6665^1",
+  "review_head": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 648,
+  "duration_ms": "646652",
+  "duration_api_ms": "1492928",
+  "num_turns": "13",
+  "cost_usd": "7.208898",
+  "orch_usage": {
+    "input_tokens": "15",
+    "output_tokens": "21192",
+    "cache_creation_tokens": "69883",
+    "cache_read_tokens": "428121",
+    "total_tokens": 519211
+  },
+  "session_tokens": {
+    "subagents": 5,
+    "input": 128,
+    "output": 22175,
+    "cache_creation": 389703,
+    "cache_read": 3649456,
+    "total": 4061462,
+    "orchestrator": {
+      "output": 21192,
+      "total": 519211,
+      "duration_s": 647
+    },
+    "per_subagent": [
+      {
+        "output": 30,
+        "input": 17,
+        "cache_creation": 56813,
+        "cache_read": 419491,
+        "total": 476351,
+        "duration_s": 165,
+        "agent": "agent-a20c656de100ca031"
+      },
+      {
+        "output": 378,
+        "input": 31,
+        "cache_creation": 79327,
+        "cache_read": 948856,
+        "total": 1028592,
+        "duration_s": 298,
+        "agent": "agent-a31d3338985d3d0be"
+      },
+      {
+        "output": 177,
+        "input": 24,
+        "cache_creation": 65893,
+        "cache_read": 685644,
+        "total": 751738,
+        "duration_s": 236,
+        "agent": "agent-a344a1fc940ed7991"
+      },
+      {
+        "output": 377,
+        "input": 33,
+        "cache_creation": 77989,
+        "cache_read": 1048434,
+        "total": 1126833,
+        "duration_s": 431,
+        "agent": "agent-aa6c4baaabf70b7c3"
+      },
+      {
+        "output": 21,
+        "input": 8,
+        "cache_creation": 39798,
+        "cache_read": 118910,
+        "total": 158737,
+        "duration_s": 114,
+        "agent": "agent-acc78426285aab12c"
+      }
+    ],
+    "max_subagent_duration_s": 431,
+    "sum_subagent_duration_s": 1244
+  },
+  "input_tokens": "15",
+  "output_tokens": "21192",
+  "cache_creation_tokens": "69883",
+  "cache_read_tokens": "428121",
+  "total_tokens": 519211,
+  "session_id": "4e629eb9-d897-4ba8-8efb-59569c3f0158",
+  "findings_lines": 155,
+  "invocation": "Comprehensively review pull request #13777 of the GitHub repository prometheus/prometheus using the pr-review-toolkit agents: run code-reviewer, silent-failure-hunter, pr-test-analyzer, comment-analyzer, and type-design-analyzer against the PR's diff (fetch it with gh pr diff 13777). Do NOT post anything. Output each agent's complete findings with file:line references.",
+  "finished_at": "2026-07-27T20:58:34Z"
+}
