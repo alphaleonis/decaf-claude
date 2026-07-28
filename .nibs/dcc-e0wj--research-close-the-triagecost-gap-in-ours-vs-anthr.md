@@ -7,7 +7,7 @@ type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-28T20:57:51Z
+updated_at: 2026-07-28T21:03:57Z
 order: zzw
 ---
 
@@ -148,8 +148,9 @@ small count — re-measure rather than trusting 0.85.
 ## 2. Cost / fan-out efficiency
 $21.33/run vs $11.82; 14.5 sub-agents vs 10.3 (by role: 9.4 reviewers + 5.1 validators vs 5
 reviewers + ~5 auxiliary). Across all subjects ~77% of sub-agent findings
-restate a sibling's. Cost scaled steeply with repo size (~$14.7 efcore-small → ~$29.5
-vscode-large) while superpowers stayed ~flat at $2.5.
+restate a sibling's. Cost scales with **diff** size, not repo size — see the scaling section below (the earlier
+"scaled steeply with repo size" reading compared subject 1 to subject 6, which differ 10× in
+diff *and* 3× in repo, and picked the wrong variable). superpowers stayed ~flat at $2.5.
 
 ### Where the output actually goes (corrected 2026-07-28)
 
@@ -289,24 +290,67 @@ counts clusters lost *entirely* — it cannot model the anchor-promotion loss ab
 systematically flatters any reduction. Treat its output as an upper bound on the saving and a
 lower bound on the damage.
 
+### Cost scales with diff size, not repo size
+
+The two predictors are near-independent across the 9 graded subjects (r = +0.09), so they can be
+compared directly:
+
+| id | lang | diff LOC | repo files | ours $ | agents |
+|---|---|---|---|---|---|
+| 10 | rust | 33 | **220** | 17.35 | 10.5 |
+| 4 | typescript | 37 | **74,229** | 19.21 | 12.0 |
+| 7 | go | 53 | 1,234 | 15.82 | 11.5 |
+| 1 | csharp | 72 | 5,133 | 14.70 | 15.5 |
+| 2 | csharp | 169 | 17,128 | 11.25 | 10.0 |
+| 5 | typescript | 276 | 14,505 | 24.02 | 16.5 |
+| 3 | csharp | 424 | 57,593 | 27.97 | 14.5 |
+| 6 | typescript | 701 | 15,674 | 29.50 | 21.0 |
+| 9 | go | 1,560 | 26,968 | 32.10 | 19.0 |
+
+- `r(cost, diff LOC)` = **+0.80** against `r(cost, repo files)` = **+0.31**
+- `r(diff LOC, agent count)` = **+0.72** — the mechanism is roster size; gated dispatch responds
+  to the changeset, which is the intended behaviour
+- Subjects **4 and 10** are the clean contrast: near-identical diffs (37 vs 33 LOC) in repos
+  differing **337×** (74,229 vs 220 files), costing $19.21 vs $17.35
+
+**The other tools are the ones that scale with repo size** — superpowers +0.63, tag1 +0.64,
+pr-review-toolkit +0.58, against ours' +0.31. This is a point in ours' favour, not against it.
+The earlier "scaled steeply with repo size" reading compared subject 1 to subject 6, which differ
+10x in diff and 3x in repo, and attributed the growth to the wrong variable — made easy by the
+benchmark's size labels being *diff*-size labels.
+
+Residual worth a look: subject 4 is the least diff-proportionate run (37 LOC, 12 agents, $19.21).
+It is also the subject with the downstream-only regression (workstream 4), so reviewers may have
+legitimately explored beyond the diff. One data point; do not build on it.
+
 
 - [x] Identify which reviewer personas contribute zero unique clusters across the 9 subjects
       — done, and the framing turned out to be misleading: zero *unique* clusters means
       reliable corroborator, not dead weight. On participation no persona is dead weight;
       `go-reviewer` (50% signal) is the only weak one. See the table above.
-- [ ] Test a reduced roster / conditional dispatch and **re-measure recall** — no clear drop
-      candidate survived the corrected analysis; `go-reviewer` is the one to test first
-- [ ] Re-examine `security-reviewer`'s dispatch gate — best ratio in the roster (5,416
-      tok/substantive) yet dispatched in only 3 of 18 runs; it looks too tight
-- [ ] Weigh the validation wave against its yield — 17.3% of sub-agent output, the single
-      largest line item, and invisible to any finding-yield measure (it refutes, not finds)
-- [ ] Investigate why cost scales with *repo* size rather than *diff* size
-- [ ] Compare per-agent output against anthropic's 13.7k — are ours' reviewers reading and
-      restating more context than their brief needs?
-- [ ] Make the shared-context-file pattern the documented default in `code-review/SKILL.md`
-      (reviewers all have Bash; write the diff once, pass a path) and re-measure a small subject
-- [ ] Prototype a cheap pre-consolidation confidence filter (anthropic's Haiku-scorer shape) and
-      measure its effect on orchestrator thinking tokens, recall, and calibration
+- [ ] Test a reduced roster and **re-measure recall** — no clear drop candidate survived the
+      corrected analysis; `go-reviewer` (50% signal) is the one to test first. Gate-side work
+      is → **#dcc-1xtt**; this item is the measurement
+- [ ] → **#dcc-1xtt** — loosen `security-reviewer`'s gate (best ratio in the roster, 5,416
+      tok/substantive, yet dispatched in only 3 of 18 runs) and re-gate stack reviewers on
+      idiom surface rather than file presence
+- [ ] → **#dcc-c2uc** — the validation wave is 17.3% of sub-agent output, the single largest
+      line item, and invisible to any finding-yield measure (it refutes, not finds)
+- [x] Investigate why cost scales with *repo* size rather than *diff* size — **it does not.**
+      For ours, r(cost, diff LOC) = **+0.80** against r(cost, repo files) = **+0.31**, and the
+      two predictors are independent in this subject set (r = +0.09), so the comparison is
+      clean. The mechanism is roster size: r(diff LOC, agent count) = +0.72 — gated dispatch
+      responds to the changeset, which is the intended behaviour. Natural experiment: subjects
+      4 and 10 have near-identical diffs (37 vs 33 LOC) in repos differing **337×** (74,229 vs
+      220 files) and cost $19.21 vs $17.35 — an 11% spread. Notably the *other* tools do scale
+      with repo size (superpowers +0.63, tag1 +0.64, pr-review-toolkit +0.58 against ours
+      +0.31), so this is a point in ours favour, not against it. n=9 subjects.
+- [ ] → **#dcc-gcob** — ours emits 19.5k output per agent against anthropic's 13.7k; disjoint
+      briefs are the proposed fix for the 77% restatement rate
+- [ ] → **#dcc-lf4a** — shared-context-file pattern as the documented default (small prize;
+      the orchestrator already does it on large diffs)
+- [ ] → **#dcc-xewu** (deferred) — cheap pre-consolidation confidence filter, anthropic's
+      Haiku-scorer shape. Blocked on workstream 3's product decision below
 - [ ] Re-measure ours at a cheap tier (`low`, `mid3`) on the benchmark subjects — never measured;
       the study ran `ours` at `mid` only. Gates the cost case in #dcc-05uw
 
