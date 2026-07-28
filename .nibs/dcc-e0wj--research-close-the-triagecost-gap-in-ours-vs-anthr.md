@@ -7,7 +7,7 @@ type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-28T20:27:33Z
+updated_at: 2026-07-28T20:38:14Z
 order: zzw
 ---
 
@@ -58,7 +58,8 @@ finding the material, the consolidation step is failing to rank it.
 - [ ] Prototype a stricter severity contract in the consolidation step and re-measure
 
 ## 2. Cost / fan-out efficiency
-$21.33/run vs $11.82; 14.5 sub-agents vs 10.3. Across all subjects ~77% of sub-agent findings
+$21.33/run vs $11.82; 14.5 sub-agents vs 10.3 (by role: 9.4 reviewers + 5.1 validators vs 5
+reviewers + ~5 auxiliary). Across all subjects ~77% of sub-agent findings
 restate a sibling's. Cost scaled steeply with repo size (~$14.7 efcore-small → ~$29.5
 vscode-large) while superpowers stayed ~flat at $2.5.
 
@@ -80,12 +81,14 @@ Corrected, per run:
 money is. Session output predicts billed cost at **r = 0.967** (orchestrator output alone:
 0.874), so session output is the right cost proxy.
 
-**Ours emits ~2× anthropic's total output**, and it does so on both dimensions at once: 41%
-more agents (14.5 vs 10.3), each emitting 43% more (19.5k vs 13.7k). Anthropic's per-agent
-figure is the field's outlier *low* — consistent with its narrow single-purpose briefs and its
-explicit "avoid reading extra context beyond the changes" instruction. Note superpowers'
-lone agent emits the most of anyone (26.3k), so per-agent verbosity is not inherently bad —
-what makes ours expensive is paying it 14.5 times over.
+**Ours emits ~2× anthropic's total output**, on both dimensions at once. Splitting the agent
+counts by role: ours runs **9.4 reviewers + 5.1 validators** per run, anthropic **5 reviewers +
+~5 auxiliary** (Haiku triage and scorers). So ours runs roughly **twice the reviewers**, each
+emitting 43% more (19.5k vs 13.7k). Anthropic's per-agent figure is the field's outlier *low* —
+consistent with its narrow single-purpose briefs and its explicit "avoid reading extra context
+beyond the changes" instruction. Note superpowers' lone agent emits the most of anyone (26.3k),
+so per-agent verbosity is not inherently bad — what makes ours expensive is paying it ~9 times
+over, plus a validation wave on top.
 
 ### Within the orchestrator, the cost is reasoning — so there is no prompt-engineering fix
 
@@ -236,6 +239,110 @@ crashed external consumers. anthropic caught it by pulling the revert commit fro
 - [ ] **Trade-off to weigh:** that same retrieval channel produced anthropic's worst false
       positive — a hallucinated claim that "a maintainer flagged this on the PR" when the PR had
       no such comment. Any retrieval must verify claims against merged code before reporting.
+
+# Candidate interventions (ranked by measured share × confidence)
+
+Levers that do **not** require removing personas — the corrected roster analysis in workstream 2
+found no dead weight. Each names its measured basis, so a failed prototype can be traced to a
+wrong premise rather than a wrong implementation.
+
+**First, a correction that reshapes several of these.** The "14.5 sub-agents" figure quoted
+throughout this nib is **9.4 reviewers + 5.1 validators** per run. Two consequences:
+
+- The reviewer comparison with anthropic is **9.4 vs 5**, not 14.5 vs 10.3 — both those totals
+  include auxiliary agents. Ours runs roughly twice the reviewers, not 41% more.
+- **A roster cap of 8 is near-useless.** Step 2b.5 excludes validators from the cap, and the
+  review wave already averages 9.4 (range 8–12), so `mid8` drops ~1.4 reviewers and is a literal
+  no-op on 6 of 18 runs. The meaningful range is `mid5`–`mid6`.
+
+## 1. A third model tier, aimed at the validation wave
+
+**Basis:** validators are 17.3% of sub-agent output (~13% of session output) and are classified
+as *volume* agents in Step 2d, so in `mid` they already run mid-tier. Anthropic does the same job
+— score a claim against a fixed 0–100 rubric — with **Haiku**, and posts the study's best
+calibration (0.88).
+
+**Change:** add a cheap tier to Step 2d's role split and put the validation wave on it.
+
+**Risk:** low. Coverage unchanged; the task is rubric application, not open-ended reasoning.
+Watch for validators losing the ability to *correct findings downward*, a behaviour the Preserve
+section says not to regress.
+
+**Measure:** re-run a subset, compare confirmed/refuted/uncertain distribution against the
+committed baseline. Cheapest high-share lever here.
+
+## 2. Score before consolidating (the structural difference)
+
+**Basis:** orchestrator thinking is 60% (small subject) to 77% (large) of orchestrator output,
+and the orchestrator is 23% of session output. Ours consolidates *everything* (Step 5), then
+validates (5.6), then suppresses via the confidence gate — paying frontier-model thinking on
+findings it is about to discard. Anthropic scores with Haiku and discards below 80 **before** its
+orchestrator does any real reasoning.
+
+**Change:** move a cheap scoring pass ahead of consolidation. The prize is not only the thinking
+saved but that the pass could **absorb** the validation wave rather than adding to it — one cheap
+pass over raw findings instead of an expensive pass over consolidated ones.
+
+**Risk:** high — it changes the skill's spine, and a hard pre-filter is a commitment to the
+"short trustworthy list" product. **Blocked on workstream 3's product decision.**
+
+**Note:** this is also workstream 1's calibration lever; an early cheap filter is what makes a
+trustworthy top-of-list possible. The two workstreams converge here.
+
+## 3. Disjoint briefs — attack the 77% restatement
+
+**Basis:** ~77% of sub-agent findings restate a sibling's, and ours emits ~19.5k output per agent
+against anthropic's 13.7k. Anthropic's five agents have genuinely disjoint jobs (CLAUDE.md
+compliance, shallow bug scan, git history, prior PR comments, code comments). Ours has `broad`,
+`quick`, `knowledge`, `consistency` and `adversarial` sweeping overlapping general ground.
+
+**Change:** narrow briefs so agents cannot restate each other.
+
+**Risk:** medium-high, and the failure mode is now well understood — redundancy is *also* what
+produces corroboration, and corroboration drives confidence promotion (Step 5 rule 4). Pushed too
+far this reproduces the `performance-reviewer` error at roster scale: agents that look redundant
+are carrying the anchors.
+
+## 4. Tune gates rather than remove agents
+
+**Basis:** two findings pointing opposite ways.
+
+- **Loosen `security-reviewer`** — best ratio in the roster (5,416 tok/substantive) yet dispatched
+  in only 3 of 18 runs. Its gate is starving the cheapest good findings available. This *adds*
+  spend and should improve yield per dollar.
+- **Tighten `go-reviewer`** — 50% signal, worst in the roster by 20 points. Stack reviewers
+  hard-gate on *file presence*; gating on *idiom surface* (goroutines, channels, defer, unsafe)
+  would fire them only when their brief applies. Generalizes to all five stack reviewers.
+
+**Risk:** low, and independently testable per gate.
+
+## 5. Price the Considered-But-Not-Flagged channel
+
+**Basis:** every reviewer emits a dismissed-items section and Step 5.5 has the orchestrator reason
+over all of them to promote wrongly-dismissed findings. That costs output in every agent plus
+orchestrator thinking, and has never been priced against what it recovers.
+
+**Measure this before changing it** — count findings promoted by Step 5.5 across the 18 archived
+runs and what the judge made of them. Pure analysis over committed data, no re-runs. If the
+promotion rate is near zero the channel is removable; if it recovers substantive findings it
+stays and this is closed.
+
+## 6. Shared-context-file pattern (already logged in workstream 2)
+
+Small and free, but the corrected numbers cap the prize: agent prompts are ~a third of the
+orchestrator's output, and the orchestrator is 23% of the session. Worth doing for consistency,
+not for the saving.
+
+## On what "measuring" costs
+
+**Simulation is free; measurement is not.** `roster_yield.py --simulate` reuses recorded findings
+at zero API cost, but it only counts clusters lost *entirely* — it cannot model the
+anchor-promotion loss, so it flatters every reduction. Use it to screen, never to decide.
+
+A real measurement means re-running cells: [Estimate] ~$18/run for a reduced roster against the
+$21.33 baseline, so ~$320 for the full 9-subject × 2-repeat sweep, ~$160 for a single-repeat
+sweep that gives up stochasticity control — plus blind re-grading on top. Budget accordingly and
+prefer interventions that can share one re-run.
 
 # Preserve — behaviours the metrics do not capture
 
