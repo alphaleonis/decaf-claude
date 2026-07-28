@@ -7,7 +7,7 @@ type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-28T20:21:29Z
+updated_at: 2026-07-28T20:27:33Z
 order: zzw
 ---
 
@@ -133,87 +133,82 @@ afterwards (Step 5.6) — so ours pays frontier-model thinking on findings it is
 away. Same insight, opposite order. This is also workstream 1's calibration lever: an early
 cheap filter is what makes a short trustworthy list possible.
 
-### Measured: per-persona yield vs. cost (`analysis/scripts/roster_yield.py`)
+### Measured: per-persona value vs. cost (`analysis/scripts/roster_yield.py`)
 
-A cluster is **sole-found** by persona P in a run when P is the only `ours` reviewer that
-reported it — i.e. what that run would have lost had P not been dispatched. Validators are
-excluded (they re-verify, never originate). Cost is per-persona sub-agent output, trustworthy
-only since #dcc-m8ar. Persona attribution was missing from `analysis.json` for subjects 2/3/9/10
-and half of 6; it is recovered from each transcript's `attributionAgent` and now cached in
-`analysis/subject-NN/agent-personas.json`, so the analysis survives transcript pruning.
+Counts every cluster a persona reported, **corroborated or not**, against the judge's verdict.
+Validators are excluded (they re-verify, never originate). Cost is per-persona sub-agent output,
+trustworthy only since #dcc-m8ar. Persona attribution was missing from `analysis.json` for
+subjects 2/3/9/10 and half of 6; recovered from each transcript's `attributionAgent` and cached
+in `analysis/subject-NN/agent-personas.json` so it survives transcript pruning.
 
-| persona | runs | tok/run | share | sole | subst | v-minor | noise | tok/useful |
+| persona | runs | share | **subst** | v-minor | noise | signal | soleU | tok/subst |
 |---|---|---|---|---|---|---|---|---|
-| adversarial-reviewer | 14 | 23,251 | 6.4% | 13 | **12** | 0 | 1 | 27,126 |
-| test-reviewer | 16 | 29,600 | 9.3% | 49 | 8 | **21** | 20 | 16,331 |
-| broad-reviewer | 18 | 43,515 | **15.4%** | 18 | 5 | 7 | 6 | 65,272 |
-| quick-reviewer | 18 | 31,935 | 11.3% | 6 | 4 | 2 | 0 | 95,804 |
-| security-reviewer | 3 | 12,637 | 0.7% | 7 | 4 | 1 | 2 | **7,582** |
-| spec-compliance-reviewer | 9 | 18,128 | 3.2% | 4 | 3 | 0 | 1 | 54,384 |
-| consistency-reviewer | 18 | 22,724 | 8.0% | 36 | 2 | 16 | 18 | 22,724 |
-| design-reviewer | 12 | 24,791 | 5.8% | 8 | 2 | 4 | 2 | 49,582 |
-| prior-feedback-reviewer | 11 | 10,737 | 2.3% | 5 | 2 | 0 | 3 | 59,054 |
-| knowledge-reviewer | 18 | 16,464 | 5.8% | 14 | 1 | 5 | 8 | 49,391 |
-| typescript-reviewer | 6 | 36,826 | 4.3% | 10 | 0 | 8 | 2 | 27,620 |
-| go-reviewer | 4 | 31,840 | 2.5% | 3 | 0 | 1 | 2 | **127,359** |
-| **performance-reviewer** | 12 | 16,135 | 3.8% | 3 | **0** | **0** | 3 | — |
-| **dotnet-reviewer** | 6 | 24,105 | 2.8% | 1 | **0** | **0** | 1 | — |
-| rust-reviewer | 2 | 10,639 | 0.4% | 0 | 0 | 0 | 0 | — |
-| **finding-validator** | 18 | 48,850 | **17.3%** | — | — | — | — | n/a by design |
+| broad-reviewer | 18 | 15.4% | **45** | 20 | 11 | 86% | 12 | 17,406 |
+| adversarial-reviewer | 14 | 6.4% | **40** | 2 | 5 | 89% | 12 | **8,138** |
+| quick-reviewer | 18 | 11.3% | 29 | 9 | 4 | 90% | 6 | 19,822 |
+| design-reviewer | 12 | 5.8% | 24 | 8 | 8 | 80% | 6 | 12,395 |
+| knowledge-reviewer | 18 | 5.8% | 18 | 15 | 14 | 70% | 6 | 16,464 |
+| test-reviewer | 16 | 9.3% | 14 | **27** | 22 | 65% | 29 | 33,828 |
+| spec-compliance-reviewer | 9 | 3.2% | 10 | 3 | 1 | **93%** | 3 | 16,315 |
+| prior-feedback-reviewer | 11 | 2.3% | 10 | 2 | 5 | 71% | 2 | 11,811 |
+| consistency-reviewer | 18 | 8.0% | 9 | **28** | 20 | 65% | 18 | 45,449 |
+| typescript-reviewer | 6 | 4.3% | 9 | 9 | 3 | 86% | 8 | 24,551 |
+| performance-reviewer | 12 | 3.8% | 9 | 0 | 3 | 75% | 0 | 21,513 |
+| dotnet-reviewer | 6 | 2.8% | 7 | 2 | 2 | 82% | 0 | 20,661 |
+| security-reviewer | 3 | 0.7% | 7 | 1 | 3 | 73% | 5 | **5,416** |
+| go-reviewer | 4 | 2.5% | 6 | 1 | **7** | **50%** | 1 | 21,226 |
+| rust-reviewer | 2 | 0.4% | 1 | 0 | 0 | — | 0 | n=2 |
+| finding-validator | 18 | **17.3%** | — | — | — | — | — | n/a by design |
 
-**The largest line item is the validation wave** — 17.3% of sub-agent output, more than any
-reviewer, originating nothing by construction. Its value is refuting false findings, which this
-table cannot see. Add the always-on floor (broad 15.4% + quick 11.3%) and **44% of sub-agent
-output goes to machinery that runs regardless of the changeset**.
+### Correction: "sole-found" was the wrong primary metric
 
-**Zero useful sole clusters:** `performance-reviewer` (12 dispatches, 12 clusters reported, 3
-sole — all noise) and `dotnet-reviewer` (6 dispatches, 1 sole, noise). `rust-reviewer` also
-scores zero but at n=2 that is no evidence. `go-reviewer` is the worst ratio among personas that
-produced anything at all: 127k tokens per useful sole cluster.
+An earlier pass ranked personas by clusters *no sibling also found* and concluded
+`performance-reviewer` and `dotnet-reviewer` were droppable. **That conclusion is withdrawn.**
 
-**Best value:** `security-reviewer` at 7,582 tok/useful — the best ratio in the roster, and
-dispatched only 3 times in 18 runs, so its gate looks too tight. `test-reviewer` has the highest
-absolute useful yield (29 sole clusters). `adversarial-reviewer` produces the most *substantive*
-sole findings of any persona (12) at a mid-range cost.
+Of the 10 perf-category clusters in the graded set, `ours` found 9, and `performance-reviewer`
+was among the finders on **7 of them** — including subject 6's **TP-primary** (an escaped bug)
+and three `valid-other`. Its sole-found score is zero only because `broad`, `adversarial`,
+and `design` reached the same findings. On participation it sits mid-roster at 75% signal and
+21.5k tokens per substantive cluster.
 
-### Simulated reduction — free on this evidence, but not yet re-measured
+Sole-finding penalises exactly the agents that agree on real bugs, and agreement is not waste:
+consolidation *promotes confidence on agreement* (Step 5 rule 4), which is what carries a
+finding over the confidence gate and up the ranking. Low soleU with high subst reads as
+**reliable corroborator**, not redundant.
 
-`roster_yield.py --simulate=performance-reviewer,dotnet-reviewer,go-reviewer,rust-reviewer`:
+### What the corrected table actually supports
 
-| | kept | lost |
-|---|---|---|
-| TP-primary | 27 | **0** |
-| TP-human | 6 | **0** |
-| valid-other | 67 | **0** |
-| valid-minor | 87 | 1 |
-| trivia | 70 | 6 |
-| false-positive | 6 | 0 |
+- **No persona is dead weight.** Every one participates in substantive clusters.
+- **`go-reviewer` is the only genuinely weak signal**: 50% — over half its reports are trivia or
+  false positives, worst in the roster by 20 points. n=4 runs, so suggestive, not settled.
+- **`rust-reviewer` remains unevaluable** at n=2.
+- **`adversarial-reviewer` is the standout**: 40 substantive clusters at 8,138 tok each, second
+  only to `security-reviewer`, which has the best ratio in the roster (5,416) on just 3 of 18
+  dispatches — its gate looks too tight.
+- **`consistency-reviewer` and `test-reviewer` are suggestion engines**, not bug finders: 28 and
+  27 valid-minor against 9 and 14 substantive, and the two worst tok/substantive figures
+  (45,449 and 33,828). Whether that is money well spent is workstream 3's product question, not
+  a defect.
+- **The validation wave is still the largest single line item** — 17.3% of sub-agent output,
+  more than any reviewer, originating nothing by design. With the always-on floor (broad 15.4%
+  + quick 11.3%) that is 44% of sub-agent output spent regardless of the changeset.
 
-**9.6% of sub-agent output saved (486,887 of 5,085,915 tokens), zero substantive clusters lost,
-one suggestion lost, six trivia removed** — signal:noise improves slightly.
-
-Three caveats before acting on it:
-
-1. **It is a simulation over recorded findings, not a re-run.** It assumes surviving agents
-   report exactly what they reported.
-2. **Removing corroborators can lower confidence anchors.** Consolidation promotes confidence on
-   agreement (Step 5 rule 4), so dropping a persona that never *uniquely* finds anything can
-   still push a surviving finding below the confidence gate. Sole-found systematically
-   undercuts corroboration value — which is precisely why the floor agents look expensive here.
-3. **Stack reviewers are hard-gated**, so each sees only its language's subjects: rust n=2,
-   go n=4, dotnet n=6. Only `performance-reviewer` (n=12) is on solid ground.
+`roster_yield.py --simulate=a,b,c` models what dropping a set would have cost, but note it only
+counts clusters lost *entirely* — it cannot model the anchor-promotion loss above, so it
+systematically flatters any reduction. Treat its output as an upper bound on the saving and a
+lower bound on the damage.
 
 
 - [x] Identify which reviewer personas contribute zero unique clusters across the 9 subjects
-      — done: `performance-reviewer` and `dotnet-reviewer` contribute zero useful sole
-      clusters; see the table above and `analysis/scripts/roster_yield.py`
-- [ ] Test a reduced roster / conditional dispatch and **re-measure recall** — the simulation
-      above says dropping performance/dotnet/go/rust costs 0 substantive clusters for 9.6% of
-      sub-agent output, but only a re-run settles the anchor-promotion effect (caveat 2)
-- [ ] Re-examine `security-reviewer`'s dispatch gate — best ratio in the roster (7,582
-      tok/useful) yet dispatched in only 3 of 18 runs; it looks too tight
+      — done, and the framing turned out to be misleading: zero *unique* clusters means
+      reliable corroborator, not dead weight. On participation no persona is dead weight;
+      `go-reviewer` (50% signal) is the only weak one. See the table above.
+- [ ] Test a reduced roster / conditional dispatch and **re-measure recall** — no clear drop
+      candidate survived the corrected analysis; `go-reviewer` is the one to test first
+- [ ] Re-examine `security-reviewer`'s dispatch gate — best ratio in the roster (5,416
+      tok/substantive) yet dispatched in only 3 of 18 runs; it looks too tight
 - [ ] Weigh the validation wave against its yield — 17.3% of sub-agent output, the single
-      largest line item, and invisible to a finding-yield measure (it refutes rather than finds)
+      largest line item, and invisible to any finding-yield measure (it refutes, not finds)
 - [ ] Investigate why cost scales with *repo* size rather than *diff* size
 - [ ] Compare per-agent output against anthropic's 13.7k — are ours' reviewers reading and
       restating more context than their brief needs?
