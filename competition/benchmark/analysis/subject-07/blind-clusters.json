@@ -1,0 +1,149 @@
+[
+ {
+  "cluster_id": "c4",
+  "summary": "No test accompanies the lifecycle change, and the existing TestStreamReadEndpoint uses head-only in-memory storage (promql.LoadedStorage/teststorage), so the mmap-backed persistent-block path where the premature close manifests is never exercised \u2014 CI passes give false assurance. A detonate-on-close mock queryable or a compacted-block variant under -race is the missing load-bearing test.",
+  "file": "storage/remote/read_handler.go",
+  "line": null,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c12",
+  "summary": "Parameter granularity: the helper takes the whole *prompb.Query while ALSO taking filteredMatchers, leaving the unused query.Matchers field as a latent trap a future edit could use, silently bypassing external-label filtering; pass (start, end, hints) instead.",
+  "file": "storage/remote/read_handler.go",
+  "line": 242,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c10",
+  "summary": "The new early `chunks.Err()` check has narrow coverage: for a lazy merge series set Err() is generally nil before the first Next(), so it only catches the ErrChunkSeriesSet querier-construction failure, not deferred Select/iteration errors \u2014 worth a one-line comment so readers do not assume it validates the whole Select.",
+  "file": "storage/remote/read_handler.go",
+  "line": 206,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c3",
+  "summary": "The new getChunkSeriesSet doc comment ('encapsulating the operation in its own function to ensure timely release of the querier resources') documents a false safety property: it frames the early Close as a pure benefit and omits the load-bearing precondition that the returned ChunkSeriesSet is consumed AFTER the querier is closed \u2014 actively obscuring the defect and inviting maintainers to replicate the close-before-consume pattern.",
+  "file": "storage/remote/read_handler.go",
+  "line": 239,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c7",
+  "summary": "The new helper uses a `get-` prefix while every sibling in the file doing the same class of job is named for the action without one; suggests an action-based name such as selectChunkSeriesSet.",
+  "file": "storage/remote/read_handler.go",
+  "line": 242,
+  "category": "style"
+ },
+ {
+  "cluster_id": "c6",
+  "summary": "The prompb.Query.Hints -> storage.SelectHints field-by-field mapping is now duplicated verbatim between remoteReadSamples and getChunkSeriesSet (both omitting ShardCount/ShardIndex/DisableTrimming); extract a shared toSelectHints helper.",
+  "file": "storage/remote/read_handler.go",
+  "line": 253,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c16",
+  "summary": "The stated OOM-avoidance premise is unvalidated and only partially addressed: the change unpins compaction/GC refcounts sooner but leaves the primary per-connection cost untouched \u2014 a stalled stream.Write() with no ctx check and no WriteTimeout (web.go sets only ReadTimeout) keeps the live ChunkSeriesSet state pinned indefinitely.",
+  "file": "storage/remote/read_handler.go",
+  "line": null,
+  "category": "perf"
+ },
+ {
+  "cluster_id": "c13",
+  "summary": "The surviving '// The streaming API has to provide the series sorted.' comment at the call site is now orphaned from the sortSeries=true argument it justified, which moved into getChunkSeriesSet's bare `true` \u2014 latent comment/code drift.",
+  "file": "storage/remote/read_handler.go",
+  "line": 213,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c8",
+  "summary": "Log-message drift: getChunkSeriesSet logs 'Error on chunk querier close' while the sibling remoteReadSamples logs 'Error on querier close' for the analogous querier.Close() failure.",
+  "file": "storage/remote/read_handler.go",
+  "line": 249,
+  "category": "style"
+ },
+ {
+  "cluster_id": "c2",
+  "summary": "Head-path variant of the same premature-close root cause: querier.Close() also closes the read's isolationState, unregistering it from Head.iso.readsOpen, so a concurrent head truncation/GC can advance past a still-iterating read \u2014 breaking snapshot isolation (mid-stream ErrNotFound, or results mixing pre- and post-truncation state), distinct from the mmap use-after-free consequence.",
+  "file": "storage/remote/read_handler.go",
+  "line": 247,
+  "category": "bug"
+ },
+ {
+  "cluster_id": "c5",
+  "summary": "The change depends on an undocumented, unenforced storage-interface contract \u2014 that a ChunkSeriesSet stays valid after its producing ChunkQuerier is Closed. storage/interface.go states no such rule, the nearest precedent (LabelValues) documents the opposite, and the first-party TSDB block querier does not uphold it, so any implementation freeing eagerly on Close breaks remote read with no compile-time signal.",
+  "file": "storage/interface.go",
+  "line": 436,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c19",
+  "summary": "Existing streamed tests assert exact serialized chunk bytes \u2014 brittle golden-byte assertions coupled to encoding internals that give a false sense of thoroughness while being blind to the lifecycle regression.",
+  "file": "storage/remote/read_handler_test.go",
+  "line": 307,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c14",
+  "summary": "Because the streaming path commits 200 OK on the first write, a mid-stream read error makes http.Error's WriteHeader(500) a no-op and the client receives HTTP 200 with a truncated/corrupt chunk stream \u2014 pre-existing, but this PR materially widens the window.",
+  "file": "storage/remote/read_handler.go",
+  "line": 233,
+  "category": "bug"
+ },
+ {
+  "cluster_id": "c18",
+  "summary": "Over-encapsulation: by pulling the querier entirely inside the helper and returning only the set, the design makes it structurally impossible for the caller to keep the producer alive during consumption \u2014 encapsulation that makes correct use unrepresentable.",
+  "file": "storage/remote/read_handler.go",
+  "line": 242,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c9",
+  "summary": "Sibling asymmetry: the chunk path now delegates querier+hints+Select construction to getChunkSeriesSet (closing before consumption) while remoteReadSamples still builds them inline and materializes via ToQueryResult before Close \u2014 the two read paths now follow opposite lifecycle models with nothing documenting why.",
+  "file": "storage/remote/read_handler.go",
+  "line": 205,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c21",
+  "summary": "Empty-result streaming and large multi-block streaming after close are uncovered \u2014 the multi-block case is the scenario most likely to dereference unmapped memory in production.",
+  "file": "storage/remote/read_handler_test.go",
+  "line": null,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c15",
+  "summary": "Observability gap: the change replaces an observable, semi-recoverable OOM with an unobservable fatal SIGBUS or silent byte corruption, and adds no metric/log for aborted or errored chunked reads, querier lifetime, or in-flight streamed bytes \u2014 so operators cannot confirm the fix worked or detect the new failure mode.",
+  "file": "storage/remote/read_handler.go",
+  "line": 205,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c17",
+  "summary": "A querier Close() error is logged at Warn and never reflected in the HTTP response, so the stream is still reported as success \u2014 pre-existing, not introduced by this PR.",
+  "file": "storage/remote/read_handler.go",
+  "line": 247,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c11",
+  "summary": "Signature honesty: folding the querier-acquisition error into the returned ChunkSeriesSet via ErrChunkSeriesSet makes the signature advertise total success and drops the compiler-enforced error check a (ChunkSeriesSet, error) return would give; it also swallows the querier handle, foreclosing caller-side lifetime management (prefer returning an io.Closer or a loan/callback form).",
+  "file": "storage/remote/read_handler.go",
+  "line": 242,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c20",
+  "summary": "The error paths introduced/reshaped by the refactor are untested: no test injects a queryable whose ChunkQuerier() errors (error -> ErrChunkSeriesSet -> chunks.Err() -> HTTP status routing), none asserts a deferred Select error mid-iteration maps to the right status, and the Close()-returns-error warn-log branch is uncovered.",
+  "file": "storage/remote/read_handler.go",
+  "line": 243,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c1",
+  "summary": "USE-AFTER-CLOSE: getChunkSeriesSet's `defer querier.Close()` fires when the helper RETURNS, before the lazily-evaluated ChunkSeriesSet it returns is iterated by StreamChunkedReadResponses. The querier's Close releases the block pendingReaders guard / unmaps the mmap-backed chunk+index readers, so streaming reads chunk bytes from an already-closed (potentially munmap'd) region \u2014 SIGSEGV/SIGBUS or silently corrupted chunk data served to the client.",
+  "file": "storage/remote/read_handler.go",
+  "line": 247,
+  "category": "bug"
+ }
+]

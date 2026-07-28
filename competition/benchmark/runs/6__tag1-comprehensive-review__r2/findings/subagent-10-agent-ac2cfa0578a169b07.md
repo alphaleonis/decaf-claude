@@ -1,0 +1,42 @@
+# subagent agent-ac2cfa0578a169b07
+
+I now have enough to calibrate. Key confirmations:
+
+- `cacheHome` = `URI.file(this.userDataPath)` — remote-clipboard temp lives under the user-data dir (e.g. `~/.config/Code`), not `/tmp`.
+- `DiskFileSystemProvider.mkdir` calls `promises.mkdir(path)` with **no mode** → default `0777 & ~umask` (typically `0755`, world-traversable/readable); `copy` writes files with default perms too.
+- The proxy mirrors `ElectronRemoteResourceLoader` exactly (`mainProcessService.registerChannel` + `window:${id}` ctx routing), confirming the main-process handler is the only cross-renderer path to the server channel today.
+
+## Security Analysis
+
+### Languages Detected
+TypeScript
+
+### Findings
+
+#### Medium
+
+- **[other / data-privacy]** Remote file contents are downloaded to a temp directory under `cacheHome` (= `userDataPath`) with default filesystem permissions, and cleanup is best-effort and never awaited — leaving potentially sensitive remote data on local disk — `src/vs/workbench/contrib/files/browser/explorerService.ts:573` (creation) and `:604-618` (dispose/cleanup)
+  - **Attack vector**: `resolveClipboardResources()` copies remote files (which may hold credentials, private source, `.env`, production secrets the user has open over SSH/WSL/dev-container) into `joinPath(cacheHome, 'remote-clipboard', <uuid>, <uuid>, <basename>)`. `fileService.createFolder` → `DiskFileSystemProvider.mkdir` creates these directories with no explicit mode (default `0755`), and the copied files inherit default create permissions, so on a multi-user host where the home path is traversable they are readable by other local accounts. `dispose()` is synchronous and calls `this.cleanupRemoteClipboardTempDir()` (an `async` method) **without awaiting** it, and there is no cleanup on crash/`SIGKILL`/power loss — so the plaintext remote copies persist on local disk after the window/app is gone. Each copy operation only cleans up the *previous* temp dir on the next copy, so the last-copied set always survives.
+  - **Impact**: Local information disclosure and data remanence: sensitive remote workspace files are written unencrypted to a persistent local location and can outlive the session; on shared machines they may be readable by other local users.
+  - **Remediation**: Create the temp root with restrictive permissions (`0700`) and write files `0600`; register the cleanup so process shutdown awaits it (e.g., an `onWillShutdown`/lifecycle-gated deletion rather than a fire-and-forget call in a `void` `dispose`), and sweep stale `remote-clipboard/*` dirs on startup to recover from crashes. Consider whether silently materializing remote secrets to local disk needs a user-visible opt-in. Rejected alternative: relying on OS temp-dir auto-cleanup — `cacheHome` is not a `/tmp` that the OS reaps, so it would not bound remanence.
+  - **Confidence**: 78/100
+
+- **[authz]** `RemoteFileSystemProxyServer` performs **no scheme validation** of its own — it services `stat`/`readdir`/`readFile`/`exists`/`resolve` against `this.fileService` / `getProvider(uri.scheme)` for any scheme, delegating all access control to the main-process handler (defense-in-depth gap) — `src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts:247-274` (notably `readFile` at `:263` calls `this.fileService.readFile(uri)` with no provider/scheme check)
+  - **Attack vector**: Today the only path that reaches the server channel is `RemoteFileSystemProxyMainHandler.call`, which rejects any `uri.scheme !== Schemas.vscodeRemote` before routing (verified: the server registers via `mainProcessService.registerChannel` and is addressed by `window:${id}` ctx, so a peer renderer cannot invoke it directly — same model as `ElectronRemoteResourceLoader`). So this is **not currently exploitable**. However, the server itself trusts its caller completely: if any future channel registration, refactor, or additional router forwards a `file://` (or other-scheme) URI to this server, it would read arbitrary local files of that window and return the bytes to the requesting renderer — a confused-deputy cross-window read. The security invariant ("only vscode-remote") is enforced in exactly one place and duplicated nowhere near the code that actually touches the filesystem.
+  - **Impact**: Latent arbitrary-file-read confused deputy across windows if the single upstream check is ever bypassed or a second caller is added; the readFile path additionally skips even the `getProvider` guard the other methods have.
+  - **Remediation**: Enforce an explicit `uri.scheme === Schemas.vscodeRemote` allow-list inside the server (reject before any `fileService`/provider call), so the control lives adjacent to the sink and does not depend solely on the router. Rejected alternative: documenting the invariant in a comment only — comments do not survive refactors.
+  - **Confidence**: 75/100
+
+### Positive Observations
+
+- The main handler (`remoteFileSystemProxyMainHandler.ts:329`) enforces a `Schemas.vscodeRemote`-only allow-list and rejects unrelated authorities, with tests covering the reject paths and correct-window routing.
+- The proxy provider is registered read-only and its `writeFile`/`mkdir`/`delete`/`rename` throw; the client is deliberately **not** registered in windows that already own a remote connection, avoiding a route-back loop.
+- `filesToPlist` escapes `&`, `<`, `>` in the correct order for XML text content, so filenames cannot break out of `<string>` elements (no XML/plist injection).
+- The clipboard parsers (`plistToFiles`, `uriListToFiles`, `fileNameWToFile`) all wrap parsing in try/catch, honor the "do not trust clipboard data" comment, and `uriListToFiles` filters to `file://` only. The `plistToFiles` regex `/<string>([^<]+)<\/string>/g` uses a single non-nested quantifier over a negated class — linear time, **no ReDoS**. `fileNameWToFile` bounds its `Uint16Array` view by `floor(byteLength/2)` within the existing buffer offset (no over-read; odd-offset/oversized inputs fail safely into the catch).
+- `dnd.ts` now filters drag text to `Schemas.file` resources, avoiding leaking remote URIs into native drops.
+
+2 low-severity best-practice observations omitted (Medium+ only): `String.fromCharCode(...u16.subarray)` spread can throw `RangeError` on a very large clipboard buffer (caught, returns `[]`); pasting clipboard-supplied `file://` paths allows user-gesture-driven reads of arbitrary local paths (inherent to file-manager paste, untrusted-clipboard already acknowledged).
+
+```json-findings
+[{"severity":"Medium","confidence":78,"category":"other","file":"src/vs/workbench/contrib/files/browser/explorerService.ts","line":573,"finding":"resolveClipboardResources() downloads remote file contents (potentially secrets/source from a remote/SSH/WSL workspace) into joinPath(cacheHome, 'remote-clipboard', <uuid>, <uuid>, basename). cacheHome resolves to userDataPath (e.g. ~/.config/Code), and DiskFileSystemProvider.mkdir/copy create dirs+files with default (0755/world-traversable) permissions. dispose() calls the async cleanupRemoteClipboardTempDir() without awaiting it, and there is no crash cleanup, so plaintext remote copies persist on local disk and may be readable by other local users.","remediation":"Create the temp root 0700 and files 0600; run cleanup via an awaited lifecycle/onWillShutdown handler instead of a fire-and-forget call in synchronous dispose(); sweep stale remote-clipboard/* dirs on startup to recover from crashes."},{"severity":"Medium","confidence":75,"category":"authz","file":"src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts","line":263,"finding":"RemoteFileSystemProxyServer services stat/readdir/readFile/exists/resolve for any URI scheme via this.fileService/getProvider(uri.scheme) and does not validate the scheme itself (readFile calls fileService.readFile(uri) with no check). All access control relies solely on the main-process handler's vscode-remote allow-list. Not currently exploitable (the handler is the only cross-renderer path), but it is a defense-in-depth gap: if any future caller forwards a file:// URI to this server it becomes an arbitrary local-file-read confused deputy returning bytes to the requesting renderer.","remediation":"Enforce uri.scheme === Schemas.vscodeRemote inside the server before any fileService/provider call, colocating the security invariant with the filesystem sink rather than depending solely on the upstream router."}]
+```

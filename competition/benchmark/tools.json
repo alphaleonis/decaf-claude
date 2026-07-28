@@ -15,7 +15,7 @@
     "install_hint": "claude plugin install code-review@claude-plugins-official",
     "model_policy": "hard-pins by role, independent of session model: 5 parallel Sonnet review agents (step 4); Haiku for eligibility, CLAUDE.md path discovery, PR summary, per-issue confidence scoring, and the re-check (steps 1/2/3/5/7). No Opus subagents — only the orchestrator runs on the session model",
     "findings_file": "",
-    "invocation": "Use the /code-review workflow to review pull request #{PR} of the GitHub repository {REPO}. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references."
+    "invocation": "Use the Skill tool to run `code-review:code-review` — the plugin-qualified command from code-review@claude-plugins-official. It is NOT `decaf-quality:code-review`: a different tool ships a skill of the same bare name, so never invoke a bare `/code-review`, and abort rather than substituting anything else if the qualified skill does not resolve. Review pull request #{PR} of the GitHub repository {REPO}. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references."
   },
   {
     "id": "pr-review-toolkit",

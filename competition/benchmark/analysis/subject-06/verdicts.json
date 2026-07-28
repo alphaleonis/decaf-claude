@@ -1,0 +1,762 @@
+[
+ {
+  "cluster_id": "win_multifile_filenamew",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 80,
+  "rationale": "Verified: clipboardService.ts:88 gates the FileNameW write on `isWindows && resources.length === 1`, and readResources only ever reconstructs a single path (fileNameWToFile returns `[URI.file(path)]`). Multi-file copies silently fall through to the internal `code/file-list` format, so native Explorer paste gets nothing with no user signal — real incompleteness, not one of the must_flag facets."
+ },
+ {
+  "cluster_id": "fromcharcode_spread_rangeerror",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Correct on the code (clipboardService.ts:249 spreads `u16.subarray(...)` whose length is clipboard-controlled when no NUL is present), but the failure is caught by the surrounding try and degrades to the same empty-paste result the path already has. One-shot fix (loop or TextDecoder('utf-16le')); low value on its own."
+ },
+ {
+  "cluster_id": "server_layering_inconsistent",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 75,
+  "rationale": "Verified: remoteFileSystemProxyServer.ts:52/60 call `fileService.getProvider(uri.scheme)` directly while readFile/exists/resolve at :63-73 go through IFileService. getProvider does not run activateProvider (fileService.ts:88-94), so stat/readdir can throw 'No provider for scheme' where readFile would have activated it. Real inconsistency, small blast radius."
+ },
+ {
+  "cluster_id": "zero_tests_clipboard_codecs",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 75,
+  "rationale": "Accurate and concrete: filesToPlist/plistToFiles/uriListToFiles/filePathToUtf16LE/fileNameWToFile (clipboardService.ts:170-258) are pure byte-level functions with zero coverage — the only new test file is remoteFileSystemProxy.test.ts, which tests the main handler. A named, bounded test gap on new pure logic."
+ },
+ {
+  "cluster_id": "remote_to_remote_roundtrip",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "high",
+  "confidence": 80,
+  "rationale": "Verified: setToCopy now puts local temp file:// URIs on the clipboard (explorerService.ts:275-277), and pasteFileHandler builds its ResourceFileEdits from `clipboardService.readResources()` (fileActions.ts:1318, 1191-1234). A remote→remote copy inside one remote workspace therefore becomes download-to-cacheHome plus re-upload instead of a provider-side copy. Distinct from must_flag facet (a), which is about the copy gesture blocking."
+ },
+ {
+  "cluster_id": "temp_plaintext_disk_security",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 75,
+  "rationale": "Verified: remote file contents are copied to `environmentService.cacheHome/remote-clipboard/<uuid>/<uuid>/<name>` (explorerService.ts:304-314) with no permission hardening, and cleanup is best-effort (`catch { }` at :609 plus an unawaited call from dispose()). Remote workspace content persists in plaintext on the local disk — a real data-at-rest exposure not in must_flag."
+ },
+ {
+  "cluster_id": "dead_exists_resolve",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 80,
+  "rationale": "Verified: the server dispatches 'exists' and 'resolve' (remoteFileSystemProxyServer.ts:36-37, 68-73) but RemoteFileSystemProxyClient only ever calls stat/readdir/readFile, and grep shows no other consumer of REMOTE_FILE_SYSTEM_PROXY_CHANNEL_NAME. Unreachable, untested surface — one-shot removal."
+ },
+ {
+  "cluster_id": "clipboard_codec_design_testability",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Correct: the five codecs are private and only reachable via platform-branching public methods (clipboardService.ts:170-258), and the 'always file:// URIs' postcondition is only enforced in uriListToFiles (:223) — plistToFiles and fileNameWToFile use URI.file unconditionally. Extracting exported free functions is exactly the one-shot testability improvement valid-minor covers."
+ },
+ {
+  "cluster_id": "cancellation_token_dropped",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 75,
+  "rationale": "Verified: IServerChannel.call takes a 4th cancellationToken (ipc.ts:35) and ChannelServer creates one per request (ipc.ts:424-428), but the handler's signature (remoteFileSystemProxyMainHandler.ts:47) drops it and forwards `targetChannel.call(command, arg)` with no token. Real but low-impact today since the proxy client never passes a token either."
+ },
+ {
+  "cluster_id": "no_audit_trail_server",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 65,
+  "rationale": "True that the server takes no ILogService, but the framing (exfiltration attribution, incident reconstruction) is speculative for a same-user, same-machine cross-window read; VS Code's sibling loaders log nothing here either. Wish-list rather than a defect."
+ },
+ {
+  "cluster_id": "macos_binary_plist",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "high",
+  "confidence": 70,
+  "rationale": "plistToFiles (clipboardService.ts:191) parses NSFilenamesPboardType with an XML `<string>` regex. AppKit serializes that pasteboard type as a binary plist (bplist00), so `clipboard.readBuffer('NSFilenamesPboardType')` on a Finder copy yields bytes the regex never matches and readResources returns [] — the macOS half of the new read path silently no-ops. External-platform claim, but concrete and consequential."
+ },
+ {
+  "cluster_id": "dnd_filter_untested",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Accurate: dnd.ts:244-248 changes user-visible DND text behavior (all-remote selections now set no TEXT at all) and no test accompanies it. A bounded, named test gap on a behavior change rather than an unbounded coverage wish."
+ },
+ {
+  "cluster_id": "urilist_filter_untested",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Correctly notes the file:// filter DOES exist (clipboardService.ts:223) — not the fixed-bot-comment trap — and asks for a test of the comment/blank-line/mixed-scheme cases. Concrete and bounded."
+ },
+ {
+  "cluster_id": "no_telemetry_proxy_download",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 75,
+  "rationale": "Unbounded observability wish-list with no defect named; the diff-verifiable core (only a logService.warn on failure) is separately and better stated as the silent-fallback finding."
+ },
+ {
+  "cluster_id": "plist_handrolled_parser",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 65,
+  "rationale": "Partly wrong: XML text content only requires escaping & and < (> optionally), so 'handles only 3 of 5 entities' is not a defect — \" and ' need no escaping outside attributes. The reuse suggestion (plistParser.ts lives in workbench/services/themes) is taste; the real plist defect is the binary-plist read path, covered elsewhere."
+ },
+ {
+  "cluster_id": "cut_becomes_copy",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "critical",
+  "confidence": 85,
+  "rationale": "Verified end to end: setToCopy substitutes temp file:// URIs even when cut=true (explorerService.ts:266-277), and the move branch builds `new ResourceFileEdit(pair.source, pair.target)` where pair.source is the clipboard URI (fileActions.ts:1218, 1223-1233). Cut+Paste of a remote file therefore moves the temp copy and leaves the original remote file in place — a silent data-level regression, distinct from all must_flag facets."
+ },
+ {
+  "cluster_id": "magic_number_bytelength_guard",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 75,
+  "rationale": "True that `buffer.byteLength < 4` (clipboardService.ts:241) is unexplained, but it is a sanity guard with no behavioral consequence — pure nit."
+ },
+ {
+  "cluster_id": "P_PATHLEAK",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "high",
+  "confidence": 90,
+  "rationale": "must_flag facet (a), second half: resolveClipboardResources returns targets under `environmentService.cacheHome/remote-clipboard/<uuid>/<uuid>` (explorerService.ts:304-315) and writeResources puts those fsPaths on the OS clipboard in native formats (clipboardService.ts:73-96), exposing the internal cache path to any native paste target. This is mjbvz's unaddressed 'leaking the /tmp file path' thread."
+ },
+ {
+  "cluster_id": "zero_tests_broad_sweep",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 80,
+  "rationale": "Unbounded 'the PR is essentially untested' sweep across four subsystems with no specific scenario named — exactly the coverage wish-list the rubric defaults down."
+ },
+ {
+  "cluster_id": "uri_revive_wire_path_untested",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Correct and specific: all three tests pass `URI.parse(...)` instances (remoteFileSystemProxy.test.ts:417, 436, 464), so URI.revive's UriComponents reconstruction branch — the one real IPC exercises — is never covered. Bounded, one-shot test addition."
+ },
+ {
+  "cluster_id": "P_CATCHDUP",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "high",
+  "confidence": 90,
+  "rationale": "must_flag facet (c), verified at explorerService.ts:308-322: the per-resource loop pushes each temp target into `result` as it goes, and the catch then does `result.push(...remoteResources)` unconditionally, so a failure on resource N yields a clipboard holding both temp copies and the original remote URIs for the already-copied files."
+ },
+ {
+  "cluster_id": "no_crash_cleanup_startup_sweep",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 80,
+  "rationale": "Verified: grep shows 'remote-clipboard' appears exactly once in the tree (explorerService.ts:304) — nothing sweeps stale directories at startup, and cleanup only runs on the next remote copy or on dispose (both best-effort). Crashes/kills leave full copies of remote files accumulating under cacheHome indefinitely."
+ },
+ {
+  "cluster_id": "no_feature_flag_kill_switch",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 70,
+  "rationale": "Process/design wish rather than a code defect; VS Code does not gate platform wiring like this behind flags by convention, and no concrete failure is named."
+ },
+ {
+  "cluster_id": "routing_test_underasserts",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 75,
+  "rationale": "Accurate against remoteFileSystemProxy.test.ts:441-467: the test asserts only `calledWindowCtx === 'window:2'`; the mock ignores the channel name, the forwarded command/arg are never asserted, and the return value is discarded, so a forwarding regression passes. Concrete, in-repo test improvement."
+ },
+ {
+  "cluster_id": "adhoc_narrow_interfaces",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 65,
+  "rationale": "Structural typing already enforces compatibility at the app.ts:1306 call site where the real IWindowsMainService is passed, so the claimed drift risk does not materialize; Pick<>-derivation and returning the matched window rather than `{ id }` are style preferences."
+ },
+ {
+  "cluster_id": "temp_uri_breaks_workspace_identity",
+  "verdict": "false-positive",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 80,
+  "rationale": "Refuted: findValidPasteFileTarget (fileActions.ts:322-353) derives the candidate from `targetFolder.resource` + basename and increments while `explorerService.findClosest(candidate)` exists — it never consults the source URI's identity. basename is preserved by the temp copy (explorerService.ts:313), so same-folder duplicate-on-paste still auto-increments; no 'already exists' failure occurs."
+ },
+ {
+  "cluster_id": "authority_case_compare",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Verified convention divergence with a concrete failure mode: windowsMainService.ts:587/648/663/680 all match windows via `isEqualAuthority` (case-insensitive), while findWindowForAuthority (remoteFileSystemProxyMainHandler.ts:70) uses `===`. A case-differing authority yields 'No window found with remote authority' instead of routing."
+ },
+ {
+  "cluster_id": "dnd_remote_text_regression",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 80,
+  "rationale": "Verified: dnd.ts:244-248 now sets DataTransfers.TEXT only when at least one file:// resource is present, and the retained comment says the purpose is 'allows to paste into text-capable areas'. Dragging a remote file into the terminal, an input box, or an editor as text now transfers nothing — a user-visible regression not in must_flag."
+ },
+ {
+  "cluster_id": "proxy_no_caller_auth",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "high",
+  "confidence": 80,
+  "rationale": "Verified and distinct from the fixed scheme-check trap: the handler acknowledges the vscode-remote guard but shows that `call(_: unknown, command, arg)` (remoteFileSystemProxyMainHandler.ts:47) discards the caller ctx entirely and routes purely on the payload authority, with no scoping or Workspace-Trust check. Any renderer can read any file on another window's privileged remote connection — a confused-deputy gap."
+ },
+ {
+  "cluster_id": "parsers_no_logging",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Correct for the new code: plistToFiles (:201), uriListToFiles (:224) and fileNameWToFile (:253) all swallow into `[]` with no log, while the class already holds an ILogService used elsewhere (:30, :39). A parse failure is indistinguishable from an empty clipboard — a concrete missing-log fix."
+ },
+ {
+  "cluster_id": "server_type_annotations_inaccurate",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Verified: the server hand-declares `{ type; size; mtime; ctime }` (remoteFileSystemProxyServer.ts:52) instead of IStat (files.ts:498, which also carries permissions) while the client annotates the same call `Promise<IStat>`, and resolve() forces `as Promise<IFileStatWithMetadata>` regardless of the runtime resolveMetadata flag. Contract inaccuracy across an IPC boundary the compiler cannot check."
+ },
+ {
+  "cluster_id": "window_ctx_magic_string",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 75,
+  "rationale": "Verified duplication: `window:${id}` is reconstructed inline at remoteFileSystemProxyMainHandler.ts:80 while the same literal is produced at mainProcessService.ts:25, windowTracker.ts:54, sharedProcessService.ts:52 and others, with no shared constant. Producer-side change would break routing silently."
+ },
+ {
+  "cluster_id": "P_SILENTFALLBACK",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "medium",
+  "confidence": 88,
+  "rationale": "must_flag facet (e), verified at explorerService.ts:317-322: the only failure signal is `logService.warn`, after which the original remote URIs are placed on the clipboard. Native paste then silently does nothing with no notification, progress, or telemetry."
+ },
+ {
+  "cluster_id": "no_command_allowlist",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 70,
+  "rationale": "True that the handler forwards any command string, but the receiving server's switch throws `Call not found` for anything outside its five commands (remoteFileSystemProxyServer.ts:33-40), so no concrete consequence follows. Defense-in-depth taste; the substantive authorization gap is the caller-auth finding."
+ },
+ {
+  "cluster_id": "jsdoc_file_uri_contract_violated",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 60,
+  "rationale": "Correct: the JSDoc at explorerService.ts:282-286 promises file:// URIs for all resources while the catch at :322 returns remote-scheme URIs. It identifies the fallback code but stops at 'the documented contract is false' — no user/system consequence is named, so it does not clear the must_flag facet (e) bar; graded as an inaccurate-doc fix."
+ },
+ {
+  "cluster_id": "remoteauthority_guard_comment",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 65,
+  "rationale": "The configured-vs-connected distinction is real (remoteFileSystemProxyClient.ts:44-53 checks environmentService.remoteAuthority), but a window with a configured remote authority is exactly the window that owns the direct provider, so the comment is materially accurate and nothing follows from the wording."
+ },
+ {
+  "cluster_id": "utf16_endianness_comment",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 75,
+  "rationale": "Correct: the comment at clipboardService.ts:231 attributes the encoding to Uint16Array, when what actually makes the FileNameW buffer correct is the host being little-endian (true on Windows, the only platform reaching this code). An inaccurate comment hiding the load-bearing assumption."
+ },
+ {
+  "cluster_id": "client_duplicates_diskfsproviderclient",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 60,
+  "rationale": "The in-repo precedent is real — RemoteFileSystemProviderClient extends DiskFileSystemProviderClient (remoteFileSystemProviderClient.ts:19, diskFileSystemProviderClient.ts:26) — and the new client hand-rolls the same stat/readdir/readFile forwarding. Reuse is not free (the base class assumes a much wider server contract), so this is a design suggestion, not a defect."
+ },
+ {
+  "cluster_id": "P_CASESENS",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "medium",
+  "confidence": 90,
+  "rationale": "must_flag facet (b), verified: remoteFileSystemProxyClient.ts:81-84 unconditionally ORs in PathCaseSensitive, while the sibling derives it from the remote OS (`{ pathCaseSensitive: remoteAgentEnvironment.os === OperatingSystem.Linux }`, remoteFileSystemProviderClient.ts:56). A Windows/macOS remote is treated as case-sensitive, breaking path identity and comparison in FileService (fileService.ts:isPathCaseSensitive)."
+ },
+ {
+  "cluster_id": "tempdir_leak_local_only_copy",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 80,
+  "rationale": "Verified: cleanupRemoteClipboardTempDir is only reached inside the `remoteResources.length > 0` branch (explorerService.ts:299-302). A remote copy followed by any local-only copy leaves the previous temp tree — containing full copies of remote files — on disk until the next remote copy or dispose."
+ },
+ {
+  "cluster_id": "clipboard_paste_arbitrary_path_read",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 75,
+  "rationale": "This is the intended semantics of file paste and is pre-existing (bufferToResources already produced arbitrary file:// URIs, clipboardService.ts:153-168 — unchanged context in the diff). No defect introduced by this PR."
+ },
+ {
+  "cluster_id": "P_EAGER",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "high",
+  "confidence": 92,
+  "rationale": "must_flag facet (a), verified: setToCopy awaits resolveClipboardResources before writeResources (explorerService.ts:275-277), and that function creates folders and awaits `fileService.copy` per remote resource in a sequential loop with no size cap, progress, or cancellation (:308-316). Ctrl+C on a remote selection blocks on a full network download — mjbvz's unaddressed review thread."
+ },
+ {
+  "cluster_id": "dnd_webloc_comment_imprecise",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "Fair against dnd.ts:241-247: the value written to TEXT is `labelService.getUriLabel(resource, { noPrefix: true })` — a path-like label, not a URI — so the .webloc rationale does not describe what is actually transferred, and the macOS-only justification is applied to a filter that runs on every platform. Inaccurate comment."
+ },
+ {
+  "cluster_id": "zero_tests_proxy_client",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "True and reasonably specific — the only new test file covers the main handler, leaving the register() loop-prevention guard, the throwing mutators, and the readFile VSBuffer unwrap uncovered. Bounded, though close to a coverage sweep."
+ },
+ {
+  "cluster_id": "routing_hang_no_timeout",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 80,
+  "rationale": "Verified against IPCServer.getChannel (ipc.ts:896-910): with a clientFilter and no matching connection it falls back to `Event.toPromise(Event.filter(that.onDidAddConnection, ...))` — an unbounded wait. findWindowForAuthority only checks the window list, so a window that is closing or whose renderer connection is gone yields a call that never settles, unlike NodeRemoteResourceRouter which throws 'Caller not found' (electronRemoteResources.ts:29)."
+ },
+ {
+  "cluster_id": "client_docstring_overclaims",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 60,
+  "rationale": "Substantively right: the Explorer copy path replaces remote URIs with local temp file:// URIs before the clipboard write (explorerService.ts:275), so the proxy client is only exercised on the download-failure fallback or cross-window paste — narrower than 'enables copy/paste and drag-and-drop between remote and local workspaces'. Doc scoping fix."
+ },
+ {
+  "cluster_id": "server_plain_error_no_code",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Verified convention gap: the codebase throws `createFileSystemProviderError(..., FileSystemProviderErrorCode.NoPermissions)` in provider paths (files.ts:845; chatResponseResourceFileSystemProvider.ts:122-136), while the proxy server throws plain Errors (remoteFileSystemProxyServer.ts:54, 62), so the code degrades to Unknown as it crosses back through FileService."
+ },
+ {
+  "cluster_id": "scope_creep",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 75,
+  "rationale": "Meta-commentary on PR sizing; no defect named. The one substantive consequence of the extra scope (native formats written for ordinary local copies) is stated properly elsewhere."
+ },
+ {
+  "cluster_id": "gnome_copied_files_format",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 60,
+  "rationale": "Concrete interop claim about the new LINUX_FILE_FORMAT write path (clipboardService.ts:81-86): Nautilus keys clipboard paste off `x-special/gnome-copied-files` with a leading copy/cut verb line, so a plain text/uri-list payload is not honored there (KDE/Dolphin does read text/uri-list). Not verifiable in-repo, but specific and consequential for the PR's headline Linux scenario."
+ },
+ {
+  "cluster_id": "unvalidated_args_uri_revive",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Correct: `const args = arg as unknown[]; URI.revive(args[0] as UriComponents)` (remoteFileSystemProxyMainHandler.ts:48-49, repeated in the server's switch) indexes an optional parameter with no validation, so a malformed payload surfaces as a raw TypeError rather than a domain error on an IPC boundary. Small, one-shot hardening."
+ },
+ {
+  "cluster_id": "missing_trace_logging_clipboard",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 70,
+  "rationale": "Premise is inaccurate: readImage, readFindText and writeFindText (clipboardService.ts:34-60) also have no trace opener, so it is not a class-wide convention, and writeResources/readResources/hasResources had none before this PR either. Style nit."
+ },
+ {
+  "cluster_id": "charcodeat_surrogate_pairs",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 75,
+  "rationale": "The code is actually correct: JS strings are UTF-16 code-unit sequences, so writing each `charCodeAt(i)` into a Uint16Array of `path.length + 1` reproduces surrogate pairs exactly (clipboardService.ts:232-235). The finding concedes it works and asks only that the assumption be documented — a nit."
+ },
+ {
+  "cluster_id": "provider_reregistration_leak",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "high",
+  "confidence": 80,
+  "rationale": "Verified: FileService.activateProvider fires onWillActivateFileSystemProvider BEFORE its `if (this.provider.has(scheme)) return` check (fileService.ts:94-104), so the listener at remoteFileSystemProxyClient.ts:62-75 runs on every vscode-remote operation. Its IIFE reaches registerProvider synchronously, which throws 'A filesystem provider for the scheme ... is already registered' (fileService.ts:52-54) — swallowed and logged at error level — while the freshly constructed provider has already been added to the window-lifetime DisposableStore. The sibling avoids this by joining one memoized promise."
+ },
+ {
+  "cluster_id": "zero_tests_proxy_server",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "Accurate and enumerated: the command-dispatch switch, the `Call not found` throw, the listen() throw and the missing-provider throws (remoteFileSystemProxyServer.ts:30-62) have no coverage; the sole new test file targets the main handler only."
+ },
+ {
+  "cluster_id": "channel_name_spelling_convention",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 70,
+  "rationale": "The cited convention is real (REMOTE_FILE_SYSTEM_CHANNEL_NAME = 'remoteFilesystem', remoteFileSystemProviderClient.ts:16) but this is cosmetic casing of an internal channel string with no functional consequence."
+ },
+ {
+  "cluster_id": "register_catch_swallows_failure",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Correct: the catch at remoteFileSystemProxyClient.ts:66-68 logs and lets the joined promise resolve, so activateProvider completes as if a provider were registered and the next access fails far from the cause with a generic 'No file system provider found'. Concrete error-handling fix (closely related to the re-registration defect)."
+ },
+ {
+  "cluster_id": "handrolled_routing_not_iclientrouter",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 60,
+  "rationale": "The canonical pattern does exist in-repo — NodeRemoteResourceRouter implements IClientRouter and is passed to getChannel (electronRemoteResources.ts:15-31) — and this handler instead does routing inside IServerChannel.call. The 'extra channel hop' half is dubious (a renderer cannot reach another renderer without the main process either way), so this is a convention suggestion."
+ },
+ {
+  "cluster_id": "electron_oneformat_comment",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 60,
+  "rationale": "Half right: clipboard.write() does accept several predefined types, but the comment is specifically about buffer formats, and nativeHostMainService.writeClipboardBuffer (:1005) does wrap a single-format clipboard.writeBuffer call. Pedantic wording critique with no consequence."
+ },
+ {
+  "cluster_id": "test_fixture_weak_discrimination",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Accurate for the routing test (remoteFileSystemProxy.test.ts:444-449): only one window carries an authority and it is the matching one, with no near-miss decoy, so relaxing `===` to startsWith/includes would still pass. Concrete fixture improvement."
+ },
+ {
+  "cluster_id": "dnd_schemas_import_unverified",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 85,
+  "rationale": "Self-declared cannot-verify meta-note, and it is wrong on the facts: Schemas is imported at dnd.ts:18 (`import { FileAccess, Schemas } from '../../base/common/network.js'`). Noise."
+ },
+ {
+  "cluster_id": "temp_dir_wording_doc",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 70,
+  "rationale": "The comments say 'download to a temp location' while the code uses environmentService.cacheHome (explorerService.ts:304) — colloquially accurate wording, and the very next line names cacheHome. Nit."
+ },
+ {
+  "cluster_id": "server_jsdoc_link_rot",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Verified: the class JSDoc at remoteFileSystemProxyServer.ts:16-21 links {@link RemoteFileSystemProxyMainHandler} and {@link ElectronRemoteResourceLoader}, neither of which is imported in that file, so the links do not resolve and renames will not track them. One-shot doc fix."
+ },
+ {
+  "cluster_id": "readonly_type_overclaims",
+  "verdict": "false-positive",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 75,
+  "rationale": "Refuted: FileReadWrite | Readonly is the codebase's canonical way to express a read-only provider — FileReadWrite is the API-shape capability, Readonly the policy bit. See localHistoryFileSystemProvider.ts:72 (`FileReadWrite | Readonly`), webWorkerFileSystemProvider.ts:14, editSessionsFileSystemProvider.ts:21, chatResponseResourceFileSystemProvider.ts:45-50. The type does not 'advertise the opposite of the intent'."
+ },
+ {
+  "cluster_id": "linux_uri_list_literal",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 75,
+  "rationale": "Verified duplicated constant: `Mimes.uriList = 'text/uri-list'` exists at base/common/mime.ts:14 and Mimes is already used symbolically in dnd.ts (Mimes.binary), yet clipboardService.ts:19 hard-codes the literal."
+ },
+ {
+  "cluster_id": "native_format_interop_unverified",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 80,
+  "rationale": "Explicitly an 'unverifiable from the diff, needs a manual per-OS test pass' note — the unbounded manual cross-platform verification wish the rubric defaults down. No concrete defect named."
+ },
+ {
+  "cluster_id": "has_vs_read_divergence",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 80,
+  "rationale": "Verified: hasResources returns true on mere format presence (clipboardService.ts:133-148) while readResources filters/parses and can return [] (e.g. a text/uri-list of non-file URIs is dropped at :223, or a binary plist yields no regex matches). explorerView.ts:656 feeds hasResources into fileCopiedContextKey, so the Paste affordance is enabled for a paste that does nothing."
+ },
+ {
+  "cluster_id": "explorer_writeresources_blast_radius",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 75,
+  "rationale": "Verified: writeResources has non-Explorer callers — chatReferencesContentPart.ts:579 and chatInlineAnchorWidget.ts:405 both call `writeResources([resource])`. Copying a chat file reference now writes NSFilenamesPboardType / text/uri-list / FileNameW onto the OS clipboard, an unintended broadening of an unrelated action's effect."
+ },
+ {
+  "cluster_id": "filenamew_odd_byteoffset",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "high",
+  "confidence": 80,
+  "rationale": "Verified: the buffer arrives over IPC, where BufferReader.read → VSBuffer.slice uses `subarray` (buffer.ts:136-140, ipc.ts:217-221), preserving a non-zero and frequently odd byteOffset into the message buffer. `new Uint16Array(buffer.buffer.buffer, buffer.buffer.byteOffset, ...)` (clipboardService.ts:247) throws RangeError unless that offset is even; the catch at :253 swallows it, so Windows native paste nondeterministically returns nothing."
+ },
+ {
+  "cluster_id": "basename_collision_untested",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Correctly states that the uuid-subfolder collision avoidance EXISTS (explorerService.ts:309-313) — not the fixed-bot-comment trap — and asks for a test pinning it. Bounded, concrete."
+ },
+ {
+  "cluster_id": "plain_error_readonly_methods",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Verified convention gap: read-only providers throw `createFileSystemProviderError('fs is readonly', FileSystemProviderErrorCode.NoPermissions)` (chatResponseResourceFileSystemProvider.ts:122-136), while remoteFileSystemProxyClient.ts:116-138 throws plain Errors that classify as Unknown (files.ts:851)."
+ },
+ {
+  "cluster_id": "app_desktop_wiring_untested",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 80,
+  "rationale": "DI wiring in app.ts/desktop.main.ts is not unit-tested anywhere in this codebase by convention; an unbounded coverage wish with no specific behavior named."
+ },
+ {
+  "cluster_id": "dispose_unawaited_cleanup",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 80,
+  "rationale": "Verified: `dispose(): void` calls `this.cleanupRemoteClipboardTempDir()` without awaiting (explorerService.ts:566-568) — a floating promise whose recursive del may not complete before teardown, and whose rejection is only swallowed by the inner empty catch. One-shot fix."
+ },
+ {
+  "cluster_id": "clipboard_format_literals_ifladder",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "Accurate: the same isMacintosh/isLinux/isWindows → format ladder is written out three times (clipboardService.ts:73-96, 115-128, 138-148), so the platform × format matrix is not a single checkable structure. Extracting a table is the one-shot improvement valid-minor covers."
+ },
+ {
+  "cluster_id": "empty_catch_cleanup",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 75,
+  "rationale": "Verified: `catch { }` with no binding and no log at explorerService.ts:611-613, followed by unconditionally clearing remoteClipboardTempDir at :615 — the only reference to the leaked directory is discarded on failure. Concrete missing-log/cleanup fix."
+ },
+ {
+  "cluster_id": "no_typed_rpc_contract",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "Accurate: remoteFileSystemProxy.ts exports only two channel-name strings, and each of the three hops re-declares the command literals with `arg?: any` and positional casts (client :99-112, handler :47-49, server :30-40), so command/arity drift is invisible to the compiler. A shared typed contract is an available in-repo pattern (ProxyChannel)."
+ },
+ {
+  "cluster_id": "client_trusts_wire_no_validation",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 70,
+  "rationale": "True of essentially every IChannel client in the codebase (including DiskFileSystemProviderClient), and both ends of this channel are first-party VS Code processes. Generic typing observation with no concrete pathway."
+ },
+ {
+  "cluster_id": "temp_deleted_clipboard_dangling",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 80,
+  "rationale": "Verified: the clipboard holds file:// paths inside remoteClipboardTempDir (explorerService.ts:304-315), and that directory is recursively deleted on dispose (:566, :612) or on the next remote copy (:302) with no clipboard invalidation. Copy a remote file, close the window, paste into Finder/Explorer → the source no longer exists."
+ },
+ {
+  "cluster_id": "test_error_regex_coupling",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 70,
+  "rationale": "Matching a stable message prefix in assert.rejects is the prevailing style across this repo's tests; asserting the interpolated authority/scheme would be marginally stronger but nothing is refuted or missed in practice."
+ },
+ {
+  "cluster_id": "double_paste_regression",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "high",
+  "confidence": 75,
+  "rationale": "Strong and code-anchored: Ctrl+V is bound via `^filesExplorer.paste` (fileActions.contribution.ts:121-126), whose `^` prefix deliberately does NOT preventDefault, so the DOM paste listener at explorerView.ts:337-343 also fires whenever `clipboardData.files.length` is non-empty. Before this PR an internal copy wrote only the custom `code/file-list` format so that guard was false; now every all-local copy writes a native file format (clipboardService.ts:73-96), so an in-app paste runs pasteFileHandler twice — and with explorer.confirmPasteNative defaulting to true (files.contribution.ts:489-492) the second pass also raises a confirmation dialog."
+ },
+ {
+  "cluster_id": "server_no_scheme_validation",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "Not the fixed-bot-comment trap — it explicitly acknowledges the vscode-remote guard exists in the main handler (:50-52) and argues for defense in depth in the renderer server, whose readFile/resolve go through IFileService and would happily serve a file:// URI. Conditional on a future caller, so a small hardening rather than a live defect."
+ },
+ {
+  "cluster_id": "P_ORDER",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "medium",
+  "confidence": 88,
+  "rationale": "must_flag facet (d), verified at explorerService.ts:288-316: the local pass-through loop pushes all file:// resources first, then the remote temp targets are appended, so for a mixed selection the clipboard order no longer matches the user's selection order (visible on paste ordering and on the single-target open at fileActions.ts:1270-1275)."
+ },
+ {
+  "cluster_id": "default_branch_comment_wrong",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 75,
+  "rationale": "Verified inaccurate on both halves: an all-local single-file copy on Windows returns at clipboardService.ts:88-96 and never reaches the '// Default (Windows, or mixed local/remote)' line at :99, while macOS and Linux do reach it for any non-all-local set."
+ },
+ {
+  "cluster_id": "urilist_all_or_nothing_parse",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Verified: the whole `.map(line => URI.parse(line))` chain sits inside one try (clipboardService.ts:216-226), and URI.parse does throw for some inputs (uri.ts:24-45 — illegal scheme characters, or a path beginning with '//' with no authority). One bad line discards every valid file:// entry and returns []."
+ },
+ {
+  "cluster_id": "zero_tests_explorer_temp_download",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Names three specific uncovered scenarios on the riskiest new code — all-local passthrough, the download-failure fallback, and cleanup/dispose (explorerService.ts:287-327, 609-617). Bounded and concrete rather than a coverage sweep."
+ },
+ {
+  "cluster_id": "stale_format_shadowing",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 55,
+  "rationale": "Premise is unverified and probably wrong: writeClipboardBuffer maps to Electron's clipboard.writeBuffer (nativeHostMainService.ts:1005), which commits through a ScopedClipboardWriter that replaces the whole clipboard rather than adding a format to the existing contents. Even if formats did accumulate, readResources checks FILE_FORMAT first (:107-112), so VS Code's own read path is unaffected. [Unverified] on Electron internals — cannot cite in-repo refuting evidence, so graded down rather than as a false positive."
+ },
+ {
+  "cluster_id": "main_handler_edge_cases_untested",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "Enumerates four concrete uncovered cases against the shipped test file (empty window list, duplicate authority, a raw UriComponents payload through URI.revive, the listen() throw at remoteFileSystemProxyMainHandler.ts:42-44). Bounded, one-shot additions."
+ },
+ {
+  "cluster_id": "test_file_name_mismatch",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 70,
+  "rationale": "Naming taste: the file sits under test/electron-main/ and the only electron-main source in the subsystem is the main handler, so the name is defensible. No behavior or coverage consequence beyond the separately-stated test gaps."
+ },
+ {
+  "cluster_id": "tempdir_race_concurrent",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "Real and diff-verifiable: remoteClipboardTempDir is a single unsynchronized slot (explorerService.ts:50) and a second setToCopy awaits cleanupRemoteClipboardTempDir (:302), which recursively deletes the directory a still-in-flight first copy is writing into (:314). Made reachable precisely because the download is long-running (facet a), though it needs overlapping copy gestures."
+ },
+ {
+  "cluster_id": "watch_inert_undocumented",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "Correct: watch() returns Disposable.None and onDidChangeFile is backed by an emitter that is never fired (remoteFileSystemProxyClient.ts:73-78, 105-107), yet the provider is registered for the whole vscode-remote scheme in that window, so any watcher there is silently inert. Undocumented, and inconsistent with the throwing mutators."
+ },
+ {
+  "cluster_id": "tempdir_bare_slot_type",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 75,
+  "rationale": "Pure type-design taste; `URI | undefined` for a single-slot lifecycle is idiomatic in this codebase and no incorrect behavior is attributed to it (the real lifecycle defects are stated separately)."
+ },
+ {
+  "cluster_id": "plist_empty_string_regex",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 70,
+  "rationale": "Technically true of `/<string>([^<]+)<\\/string>/g` (clipboardService.ts:191), but NSFilenamesPboardType entries are file paths and an empty path is not a real input, so nothing follows."
+ },
+ {
+  "cluster_id": "trace_logs_resource_paths",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 75,
+  "rationale": "Logging `resource.toString()` at trace level is the established convention for file-system providers throughout this codebase; trace is opt-in and this is not a new exposure."
+ },
+ {
+  "cluster_id": "duplicate_authority_first_match",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 70,
+  "rationale": "Accurate description of the linear scan (remoteFileSystemProxyMainHandler.ts:68-75), but two windows on the same authority expose equivalent remote providers, so an arbitrary pick has no stated consequence. The real routing defect is the unbounded wait when the picked window has no live connection."
+ },
+ {
+  "cluster_id": "proxy_no_streaming_readfile",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 75,
+  "rationale": "Verified: the client advertises only FileReadWrite (no FileReadStream, remoteFileSystemProxyClient.ts:81-84) and readFile returns a whole VSBuffer (:110-113) forwarded across two IPC hops from the server's `fileService.readFile` (:66-69), with no size cap. The full file materializes in the serving renderer, the main process, and the requesting renderer."
+ },
+ {
+  "cluster_id": "startup_race_channel_not_ready",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 60,
+  "rationale": "The stated failure mode is wrong: ChannelServer buffers requests for not-yet-registered channels via collectPendingRequest (ipc.ts:417-421) rather than rejecting with an unknown-channel error, and IPCServer.getChannel already waits for a matching connection — so the IPC layer supplies the 'readiness wait' the finding says is missing. The residual real risk (an unbounded wait) is stated properly by the routing-hang finding."
+ }
+]

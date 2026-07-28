@@ -1,0 +1,5461 @@
+{
+ "subject_id": 6,
+ "lang": "typescript",
+ "size": "large",
+ "repo": "microsoft/vscode",
+ "pr": 320685,
+ "judge_model": "claude-opus-4-8",
+ "notes": "681 findings from 10 cells -> 95 clusters (largest subject in the set; 688-line/10-file diff). Clustering was delegated to a dedicated agent with explicit instructions to keep the six primary facets and three trap categories as separate named clusters, then verified by hand (681/681 assigned, no orphans; key clusters sampled; independent regex hunt for hidden trap assertions). Blind grading: clusters shuffled (seed 606), tool identity stripped. SUBJECT SHAPE: no single escaped bug \u2014 merged, reverted (#321516, 'TPI indicated more than normal regressions' from manual cross-platform testing), re-landed, reverted AGAIN (#323490). primary_bug is therefore an AGGREGATE of six enumerated live facets; all six were graded TP-primary. SECOND TRAP SUBJECT after subject 5, and the traps held COMPLETELY: three of the PR's five review threads (uri-list filtering, non-remote scheme rejection, basename-collision) were addressed before merge, and ZERO findings across all 681 asserted any of them as live \u2014 verified independently by regex hunt over every claim. Notably several tools explicitly recorded that they had checked the bot threads against merged code (e.g. 'raised by a bot reviewer and marked resolved but unchanged' for the one thread that genuinely survived). Two false positives total, both refuted with in-repo citations. No grader overrides applied; the single sub-60 cluster (stale_format_shadowing, 55) was graded down to trivia rather than FP because the refutation rests on Electron internals not citable in-repo.",
+ "answer_key": {
+  "primary_bug": {
+   "id": "primary",
+   "summary": "AGGREGATE REGRESSION \u2014 this subject has NO single named root cause. The feature was merged, reverted (#321516: 'TPI indicated more than normal regressions so will revisit next week', ref issue #321354), re-landed, and reverted a SECOND time (#323490). The regressions were found by manual cross-platform test-plan testing (macOS/Linux/Windows testers on issue #321354; aeschli: 'Several regressions, maybe better revert?'), not by a crash or a stack trace, and no revert names a specific defect. The recall target is therefore the substantive, merged-and-still-live defects in this rework that a competent reviewer should have flagged pre-merge. The best-evidenced facet \u2014 raised by human reviewer mjbvz and NOT addressed before merge \u2014 is ExplorerService.setToCopy's temp-file scheme: `setToCopy` awaits `resolveClipboardResources(...)` (which creates a temp folder and copies every remote resource) BEFORE `writeResources`, so an ordinary copy is blocked on a full network download of every selected remote file, and the resulting local cache paths (`environmentService.cacheHome/remote-clipboard/<uuid>/<uuid>/<name>`) are written onto the system clipboard, leaking internal temp paths to any native app the user pastes into.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "locus": "setToCopy ~L266-280 (awaits resolveClipboardResources before writeResources) and resolveClipboardResources ~L288-326 (createFolder + fileService.copy per remote resource; pushes cacheHome temp targets onto the clipboard). Secondary live facets listed in must_flag.",
+   "must_flag": "A reviewer catches the primary if it flags AT LEAST ONE of the following substantive, merged-and-live defects with a concrete consequence: (a) STRONGEST \u2014 ExplorerService.setToCopy downloads remote files EAGERLY and blocks the copy on it (a copy of N large remote files stalls the UI / awaits N network copies before the clipboard is written), and/or it LEAKS the internal cacheHome temp path onto the system clipboard where native paste targets can see it [this is mjbvz's unaddressed review thread]; (b) remoteFileSystemProxyClient hard-codes `FileSystemProviderCapabilities.PathCaseSensitive` (~L81-84) regardless of the actual remote OS, so a case-insensitive remote is treated as case-sensitive \u2014 inconsistent path identity/comparison/caching [bot-raised, unaddressed]; (c) resolveClipboardResources' catch block does `result.push(...remoteResources)` after the per-resource loop may have ALREADY pushed some temp targets, so a mid-loop failure yields a clipboard containing BOTH temp copies and the original remote URIs for the same files (duplicates / mixed schemes); (d) the function pushes ALL local resources first and remote temp targets afterwards, so the clipboard order no longer matches the user's selection order for mixed local+remote selections; (e) on download failure the code falls back to remote URIs with only a `logService.warn`, so native paste silently degrades to non-functional with no user-visible signal. Flagging the DESIGN RISK in the abstract ('this is a large refactor of a cross-platform flow, regressions are likely', 'needs more manual testing') without naming a concrete defect and consequence does NOT count. Findings that merely restate what the PR does, or that flag one of the known_safe items, do NOT count.",
+   "source": "revert PR #321516 ('Revert \"Improve the local to native and remote to local copy, paste, and DND experience (#320685)\"' \u2014 'TPI indicated more than normal regressions so will revisit next week', linking test-plan issue #321354 where aeschli reported 'Several regressions, maybe better revert?' and the author confirmed 'yes we will likely revert this'); second revert PR #323490 reverting the same commit again. Facet (a) is human reviewer mjbvz's review thread on explorerService.ts:277 ('We are creating the file eagerly on copy and blocking the copy on this' / 'I worry about leaking the /tmp file path'), verified UNADDRESSED in the merged code at f9070acd. Facet (b) verified unaddressed at remoteFileSystemProxyClient.ts:81-84. Facets (c)/(d)/(e) verified by reading resolveClipboardResources in the merged checkout.",
+   "difficulty": "HARD, and structurally different from every other subject. There is no crash, no stack trace, and no named root cause \u2014 the revert reason is 'manual testing found more regressions than normal', which is not visible in the diff at all. A reviewer cannot 'catch the revert'; it can only catch the concrete defects that plausibly produced it. The diff is also the largest in the set (688 added lines, 10 files, a whole new IPC proxy subsystem), so attention is spread thin. Compounding it: THREE of the five review threads on this PR were already ADDRESSED before merge (see known_safe), so the most obvious-looking issues are traps. Expect low-to-moderate recall on the live facets and a meaningful false-positive rate from tools that re-raise the fixed bot comments."
+  },
+  "human_issues": [],
+  "known_safe": [
+   {
+    "id": "safe-urilist-is-filtered",
+    "summary": "The new `text/uri-list` read path IS filtered to file:// URIs. clipboardService.ts ~L217-223 does `.filter(line => line.length > 0 && !line.startsWith('#')).map(line => URI.parse(line)).filter(uri => uri.scheme === Schemas.file)`. A Copilot bot raised exactly this on an earlier commit ('currently returns URI.parse(...) for every non-comment line without filtering... Consider filtering to file:// URIs') and it WAS addressed before merge. Claiming the merged code parses text/uri-list without filtering non-file URIs is a FALSE POSITIVE.",
+    "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts"
+   },
+   {
+    "id": "safe-proxy-rejects-non-remote-scheme",
+    "summary": "The proxy main handler DOES reject non-vscode-remote schemes before routing: remoteFileSystemProxyMainHandler.ts ~L46-50 has `if (uri.scheme !== Schemas.vscodeRemote) { throw new Error(...) }` with the comment 'Only handle vscode-remote:// URIs to avoid routing unrelated URIs that happen to have an authority (e.g. UNC paths on Windows).' A Copilot bot raised exactly this ('routes purely based on uri.authority, but does not verify that the URI is actually a vscode-remote:// resource') and it WAS addressed before merge. Claiming the handler routes on authority alone / that UNC or file:// URIs can be routed through the proxy is a FALSE POSITIVE.",
+    "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts"
+   },
+   {
+    "id": "safe-temp-name-collision-fixed",
+    "summary": "Each downloaded remote resource IS placed in its own unique subfolder: explorerService.ts ~L309-313 creates `const uniqueDir = joinPath(tempDir, generateUuid()); await this.fileService.createFolder(uniqueDir); const target = joinPath(uniqueDir, basename(resource));` with the comment 'Place each file in its own unique subfolder to avoid name collisions'. A Copilot bot raised exactly this basename-collision concern ('two different folders both contain index.ts... the later copy overwrites the earlier file') and it WAS addressed before merge. Claiming temp targets collide / overwrite each other when two selected files share a basename is a FALSE POSITIVE.",
+    "file": "src/vs/workbench/contrib/files/browser/explorerService.ts"
+   },
+   {
+    "id": "safe-buffertoresources-preexisting",
+    "summary": "`bufferToResources` (clipboardService.ts ~L158-168), which does `bufferValue.split('\\n').map(f => URI.parse(f))` with no scheme filtering and swallows parse errors with `return []`, is PRE-EXISTING and UNCHANGED by this diff \u2014 it appears as context (leading-space) lines in review.diff, not as additions; the PR only adds a new call site to it. Attributing this unfiltered parsing / error-swallowing to the PR as a newly-introduced defect is a FALSE POSITIVE. (Noting it as a pre-existing weakness the PR now leans on more heavily is fair but low-value \u2014 trivia.)",
+    "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts"
+   }
+  ]
+ },
+ "clusters": [
+  {
+   "cluster_id": "provider_reregistration_leak",
+   "summary": "RemoteFileSystemProxyClient.register constructs and registers a new provider inside the onWillActivateFileSystemProvider listener with no idempotency guard, so every vscode-remote operation after the first throws 'already registered' (swallowed and logged at error level) and leaks a provider into the window-lifetime DisposableStore.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": 110,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a3873e3ef37f9054b",
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afba42d03b50437d5",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a010a301296d20c43",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1260b5176d4c1788",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-abad4f0bbde043e2d",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a21c2be090031b36a/adversarial-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a935ed78fa331f355/broad-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aa8d8006c417ad7d8/quick-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ab67f4c2b3eb9d5d4/finding-validator",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6fae67c736692e93/code-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a554d7dce3d23ca81/code-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a30b98ca786ec327c/code-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aa3134e2cb9ff68c1/blind-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ace0c1756805395d8/edge-case-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-af7d6b7d93aecf14e/silent-failure-hunter",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a32332a7070672b51",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a566db39e16195b70/architecture-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab5c0505050651b03/edge-case-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "high",
+   "confidence": 80,
+   "rationale": "Verified: FileService.activateProvider fires onWillActivateFileSystemProvider BEFORE its `if (this.provider.has(scheme)) return` check (fileService.ts:94-104), so the listener at remoteFileSystemProxyClient.ts:62-75 runs on every vscode-remote operation. Its IIFE reaches registerProvider synchronously, which throws 'A filesystem provider for the scheme ... is already registered' (fileService.ts:52-54) \u2014 swallowed and logged at error level \u2014 while the freshly constructed provider has already been added to the window-lifetime DisposableStore. The sibling avoids this by joining one memoized promise."
+  },
+  {
+   "cluster_id": "P_CATCHDUP",
+   "summary": "resolveClipboardResources' catch block pushes ALL remoteResources after the loop may already have pushed some temp targets, so a partial download failure produces duplicate and mixed-scheme clipboard entries.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 308,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a1184c4622dbe58ad",
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-aa1d9d32eca063f0e",
+     "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-abdf1440b2ac586f7",
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afba42d03b50437d5",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a010a301296d20c43",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a2dade6926306839c/typescript-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-abad4f0bbde043e2d",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ac85bbd536c1938a5/broad-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aa9241f047b3b6d0f/finding-validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6fae67c736692e93/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a14581f7ba729b07a/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ace0c1756805395d8/edge-case-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a32332a7070672b51",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a337a858da7a5b482/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab5c0505050651b03/edge-case-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac3a8901a3a80976b/silent-failure-hunter",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
+     "severity": "high"
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "high",
+   "confidence": 90,
+   "rationale": "must_flag facet (c), verified at explorerService.ts:308-322: the per-resource loop pushes each temp target into `result` as it goes, and the catch then does `result.push(...remoteResources)` unconditionally, so a failure on resource N yields a clipboard holding both temp copies and the original remote URIs for the already-copied files."
+  },
+  {
+   "cluster_id": "P_ORDER",
+   "summary": "resolveClipboardResources pushes all local resources first and remote temp targets after, so clipboard order no longer matches the user's selection order for mixed selections.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 287,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-abdf1440b2ac586f7",
+     "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afba42d03b50437d5",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6fae67c736692e93/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a3ed91c8c7b20d664/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a554d7dce3d23ca81/code-reviewer",
+     "severity": "nit"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a30b98ca786ec327c/code-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aa3134e2cb9ff68c1/blind-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ace0c1756805395d8/edge-case-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a32332a7070672b51",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a337a858da7a5b482/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
+     "severity": "low"
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "medium",
+   "confidence": 88,
+   "rationale": "must_flag facet (d), verified at explorerService.ts:288-316: the local pass-through loop pushes all file:// resources first, then the remote temp targets are appended, so for a mixed selection the clipboard order no longer matches the user's selection order (visible on paste ordering and on the single-target open at fileActions.ts:1270-1275)."
+  },
+  {
+   "cluster_id": "P_EAGER",
+   "summary": "ExplorerService.setToCopy eagerly downloads every selected remote resource to a local temp directory before the clipboard write returns, blocking the Ctrl+C/Ctrl+X gesture with no size/count cap, no progress UI, no cancellation, and a sequential loop.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 266,
+   "category": "perf",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a1fefa7056d097fa8",
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afba42d03b50437d5",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a14a4c8f57c902b7c/performance-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1c1f5d0cf76537dc",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aaaa43eec58c4c3ae",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ac85bbd536c1938a5/broad-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a21c2be090031b36a/adversarial-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a45593268cd85912d/prior-feedback-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a935ed78fa331f355/broad-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aa71da899a99bd313/finding-validator",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac49a7798eab021ef/performance-reviewer",
+     "severity": "critical"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac49a7798eab021ef/performance-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac49a7798eab021ef/performance-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ada911c77da7ac242/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a566db39e16195b70/architecture-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "critical"
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "high",
+   "confidence": 92,
+   "rationale": "must_flag facet (a), verified: setToCopy awaits resolveClipboardResources before writeResources (explorerService.ts:275-277), and that function creates folders and awaits `fileService.copy` per remote resource in a sequential loop with no size cap, progress, or cancellation (:308-316). Ctrl+C on a remote selection blocks on a full network download \u2014 mjbvz's unaddressed review thread."
+  },
+  {
+   "cluster_id": "filenamew_odd_byteoffset",
+   "summary": "fileNameWToFile constructs a Uint16Array over the delivered VSBuffer's backing store at a byteOffset that is frequently odd, which throws RangeError; the surrounding catch swallows it so Windows native paste silently returns nothing.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 247,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afba42d03b50437d5",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a105013ca33cd0c74",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a2dade6926306839c/typescript-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ac85bbd536c1938a5/broad-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aa8d8006c417ad7d8/quick-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ae541a9f749786347/finding-validator",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aef4e1a5ca5b83f4b/typescript-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6fae67c736692e93/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a554d7dce3d23ca81/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a30b98ca786ec327c/code-reviewer",
+     "severity": "info"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a32332a7070672b51",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a337a858da7a5b482/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "high",
+   "confidence": 80,
+   "rationale": "Verified: the buffer arrives over IPC, where BufferReader.read \u2192 VSBuffer.slice uses `subarray` (buffer.ts:136-140, ipc.ts:217-221), preserving a non-zero and frequently odd byteOffset into the message buffer. `new Uint16Array(buffer.buffer.buffer, buffer.buffer.byteOffset, ...)` (clipboardService.ts:247) throws RangeError unless that offset is even; the catch at :253 swallows it, so Windows native paste nondeterministically returns nothing."
+  },
+  {
+   "cluster_id": "routing_hang_no_timeout",
+   "summary": "The forwarded call can hang forever: findWindowForAuthority does no liveness check and IPCServer.getChannel falls back to an unbounded wait for a future matching connection, so routing to a closing, crashed, or not-yet-started window never resolves or rejects (unlike the fail-fast NodeRemoteResourceRouter).",
+   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+   "line": 356,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1260b5176d4c1788",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-abad4f0bbde043e2d",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a21c2be090031b36a/adversarial-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a75d76f16b0483b3b/finding-validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ada911c77da7ac242/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a14581f7ba729b07a/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a30b98ca786ec327c/code-reviewer",
+     "severity": "info"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a566db39e16195b70/architecture-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a5fe79e404868a607",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab5c0505050651b03/edge-case-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac3a8901a3a80976b/silent-failure-hunter",
+     "severity": "critical"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 80,
+   "rationale": "Verified against IPCServer.getChannel (ipc.ts:896-910): with a clientFilter and no matching connection it falls back to `Event.toPromise(Event.filter(that.onDidAddConnection, ...))` \u2014 an unbounded wait. findWindowForAuthority only checks the window list, so a window that is closing or whose renderer connection is gone yields a call that never settles, unlike NodeRemoteResourceRouter which throws 'Caller not found' (electronRemoteResources.ts:29)."
+  },
+  {
+   "cluster_id": "window_ctx_magic_string",
+   "summary": "The `window:${id}` connection-context format is an untyped cross-process contract reconstructed inline here and duplicated across many sites, documented only in a comment with no shared constant, so a producer-side change breaks routing silently.",
+   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+   "line": 356,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aa123b7f39028e67d",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ada911c77da7ac242/design-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa061a2645cec24e1/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aa3134e2cb9ff68c1/blind-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ab7b4faa34718512e/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac8713ca943dc165a/architecture-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3b41ef6c0615f967/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a566db39e16195b70/architecture-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a7e63c35826b4e793/comment-analyzer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 75,
+   "rationale": "Verified duplication: `window:${id}` is reconstructed inline at remoteFileSystemProxyMainHandler.ts:80 while the same literal is produced at mainProcessService.ts:25, windowTracker.ts:54, sharedProcessService.ts:52 and others, with no shared constant. Producer-side change would break routing silently."
+  },
+  {
+   "cluster_id": "proxy_no_streaming_readfile",
+   "summary": "The proxy advertises only FileReadWrite (no streaming), so readFile returns the entire file as one VSBuffer forwarded across two IPC hops with no size cap \u2014 the whole file materializes in memory in each process.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+   "line": 69,
+   "category": "perf",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a14a4c8f57c902b7c/performance-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-abe577f7e3dcca68d",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a53ff5722c5e9e95a/finding-validator",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac099673ec24f3319/security-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac49a7798eab021ef/performance-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac8713ca943dc165a/architecture-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "info"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 75,
+   "rationale": "Verified: the client advertises only FileReadWrite (no FileReadStream, remoteFileSystemProxyClient.ts:81-84) and readFile returns a whole VSBuffer (:110-113) forwarded across two IPC hops from the server's `fileService.readFile` (:66-69), with no size cap. The full file materializes in the serving renderer, the main process, and the requesting renderer."
+  },
+  {
+   "cluster_id": "dispose_unawaited_cleanup",
+   "summary": "The synchronous dispose() calls the async cleanupRemoteClipboardTempDir() without awaiting it \u2014 a floating promise whose deletion may never complete before teardown.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 567,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a2dade6926306839c/typescript-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ac85bbd536c1938a5/broad-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aef4e1a5ca5b83f4b/typescript-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6fae67c736692e93/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a14581f7ba729b07a/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ace0c1756805395d8/edge-case-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac3a8901a3a80976b/silent-failure-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 80,
+   "rationale": "Verified: `dispose(): void` calls `this.cleanupRemoteClipboardTempDir()` without awaiting (explorerService.ts:566-568) \u2014 a floating promise whose recursive del may not complete before teardown, and whose rejection is only swallowed by the inner empty catch. One-shot fix."
+  },
+  {
+   "cluster_id": "zero_tests_clipboard_codecs",
+   "summary": "The clipboard encode/decode helpers and the platform dispatch in writeResources/readResources/hasResources ship with zero unit tests despite being pure, byte-level, and format-sensitive.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 170,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38deb82b80f46130/test-reviewer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a32332a7070672b51",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a337a858da7a5b482/pr-test-analyzer",
+     "severity": "critical"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 75,
+   "rationale": "Accurate and concrete: filesToPlist/plistToFiles/uriListToFiles/filePathToUtf16LE/fileNameWToFile (clipboardService.ts:170-258) are pure byte-level functions with zero coverage \u2014 the only new test file is remoteFileSystemProxy.test.ts, which tests the main handler. A named, bounded test gap on new pure logic."
+  },
+  {
+   "cluster_id": "dead_exists_resolve",
+   "summary": "The proxy server dispatches 'exists' and 'resolve' commands (plus resolve's IFileStatWithMetadata plumbing) that no client ever invokes \u2014 unreachable, untested, speculative surface on a cross-renderer channel.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+   "line": 236,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afba42d03b50437d5",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ac85bbd536c1938a5/broad-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac8713ca943dc165a/architecture-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3b41ef6c0615f967/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 80,
+   "rationale": "Verified: the server dispatches 'exists' and 'resolve' (remoteFileSystemProxyServer.ts:36-37, 68-73) but RemoteFileSystemProxyClient only ever calls stat/readdir/readFile, and grep shows no other consumer of REMOTE_FILE_SYSTEM_PROXY_CHANNEL_NAME. Unreachable, untested surface \u2014 one-shot removal."
+  },
+  {
+   "cluster_id": "no_typed_rpc_contract",
+   "summary": "The proxy RPC boundary has no shared typed contract: the shared module exports only channel-name strings, each of the three hops re-types the command literals and takes `arg?: any` with positional unchecked casts, so command/arity drift is invisible to the compiler.",
+   "file": "src/vs/platform/files/common/remoteFileSystemProxy.ts",
+   "line": 11,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1260b5176d4c1788",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ada911c77da7ac242/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3b41ef6c0615f967/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 65,
+   "rationale": "Accurate: remoteFileSystemProxy.ts exports only two channel-name strings, and each of the three hops re-declares the command literals with `arg?: any` and positional casts (client :99-112, handler :47-49, server :30-40), so command/arity drift is invisible to the compiler. A shared typed contract is an available in-repo pattern (ProxyChannel)."
+  },
+  {
+   "cluster_id": "temp_deleted_clipboard_dangling",
+   "summary": "The temp directory backing the OS clipboard is recursively deleted on dispose() or on the next remote copy, while the clipboard still points at those paths, so a later native paste yields missing/empty files.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 568,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afba42d03b50437d5",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1260b5176d4c1788",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a3b6eb4b28273530b",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-abad4f0bbde043e2d",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ae0832980437f0ebf/spec-compliance-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a21c2be090031b36a/adversarial-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aa8d8006c417ad7d8/quick-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aca55e72e4974ba00/finding-validator",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac8713ca943dc165a/architecture-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 80,
+   "rationale": "Verified: the clipboard holds file:// paths inside remoteClipboardTempDir (explorerService.ts:304-315), and that directory is recursively deleted on dispose (:566, :612) or on the next remote copy (:302) with no clipboard invalidation. Copy a remote file, close the window, paste into Finder/Explorer \u2192 the source no longer exists."
+  },
+  {
+   "cluster_id": "win_multifile_filenamew",
+   "summary": "Windows native file-clipboard interop is single-file only: FileNameW is written only when resources.length === 1 (and read back as one path), so multi-file copies fall through to the VS Code custom format and native Explorer paste produces nothing, with no user signal.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 88,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac722bc87a0796f74/finding-validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-afb9a095ee3112138/spec-compliance-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a14581f7ba729b07a/silent-failure-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a85c2594739c154fd/comment-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aa3134e2cb9ff68c1/blind-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 80,
+   "rationale": "Verified: clipboardService.ts:88 gates the FileNameW write on `isWindows && resources.length === 1`, and readResources only ever reconstructs a single path (fileNameWToFile returns `[URI.file(path)]`). Multi-file copies silently fall through to the internal `code/file-list` format, so native Explorer paste gets nothing with no user signal \u2014 real incompleteness, not one of the must_flag facets."
+  },
+  {
+   "cluster_id": "P_CASESENS",
+   "summary": "RemoteFileSystemProxyClient.capabilities hard-codes FileSystemProviderCapabilities.PathCaseSensitive instead of deriving it from the remote OS the way the sibling RemoteFileSystemProviderClient does.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": 84,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a1fefa7056d097fa8",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1260b5176d4c1788",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aa123b7f39028e67d",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aaaa43eec58c4c3ae",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a45593268cd85912d/prior-feedback-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a6a4fce6b0809bdf6/consistency-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a935ed78fa331f355/broad-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ad9a9f6691cfdc766/knowledge-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ada911c77da7ac242/design-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a30b98ca786ec327c/code-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "medium",
+   "confidence": 90,
+   "rationale": "must_flag facet (b), verified: remoteFileSystemProxyClient.ts:81-84 unconditionally ORs in PathCaseSensitive, while the sibling derives it from the remote OS (`{ pathCaseSensitive: remoteAgentEnvironment.os === OperatingSystem.Linux }`, remoteFileSystemProviderClient.ts:56). A Windows/macOS remote is treated as case-sensitive, breaking path identity and comparison in FileService (fileService.ts:isPathCaseSensitive)."
+  },
+  {
+   "cluster_id": "macos_binary_plist",
+   "summary": "plistToFiles parses NSFilenamesPboardType with an XML-plist regex, but macOS/Finder typically serializes that pasteboard type as a binary plist, so pasting Finder-copied files silently returns nothing.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 178,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-abdf1440b2ac586f7",
+     "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afba42d03b50437d5",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a010a301296d20c43",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a21c2be090031b36a/adversarial-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a554d7dce3d23ca81/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aa3134e2cb9ff68c1/blind-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a337a858da7a5b482/pr-test-analyzer",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "high",
+   "confidence": 70,
+   "rationale": "plistToFiles (clipboardService.ts:191) parses NSFilenamesPboardType with an XML `<string>` regex. AppKit serializes that pasteboard type as a binary plist (bplist00), so `clipboard.readBuffer('NSFilenamesPboardType')` on a Finder copy yields bytes the regex never matches and readResources returns [] \u2014 the macOS half of the new read path silently no-ops. External-platform claim, but concrete and consequential."
+  },
+  {
+   "cluster_id": "routing_test_underasserts",
+   "summary": "The 'routes call to correct window' test asserts only the selected window ctx \u2014 it never varies the target id nor asserts the forwarded command/arg, the channel name, or the propagated return value, so a forwarding regression would still pass.",
+   "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
+   "line": 441,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a27baeefc99ab5743/test-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38deb82b80f46130/test-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38deb82b80f46130/test-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a337a858da7a5b482/pr-test-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 75,
+   "rationale": "Accurate against remoteFileSystemProxy.test.ts:441-467: the test asserts only `calledWindowCtx === 'window:2'`; the mock ignores the channel name, the forwarded command/arg are never asserted, and the return value is discarded, so a forwarding regression passes. Concrete, in-repo test improvement."
+  },
+  {
+   "cluster_id": "tempdir_race_concurrent",
+   "summary": "Overlapping setToCopy calls race the single unsynchronized remoteClipboardTempDir field, so a second copy's cleanup deletes the directory a still-running first copy is writing into.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 302,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a0686424faa4a9d57",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-abad4f0bbde043e2d",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a21c2be090031b36a/adversarial-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a935ed78fa331f355/broad-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ada911c77da7ac242/design-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aef4e1a5ca5b83f4b/typescript-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 65,
+   "rationale": "Real and diff-verifiable: remoteClipboardTempDir is a single unsynchronized slot (explorerService.ts:50) and a second setToCopy awaits cleanupRemoteClipboardTempDir (:302), which recursively deletes the directory a still-in-flight first copy is writing into (:314). Made reachable precisely because the download is long-running (facet a), though it needs overlapping copy gestures."
+  },
+  {
+   "cluster_id": "has_vs_read_divergence",
+   "summary": "hasResources() reports true on mere presence of a native clipboard format while readResources() filters/parses to file:// URIs and can return [], so the Explorer Paste affordance is enabled for a paste that silently does nothing.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 133,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afba42d03b50437d5",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-abad4f0bbde043e2d",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aa8d8006c417ad7d8/quick-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-adce40b59d24b008c/finding-validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "info"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 80,
+   "rationale": "Verified: hasResources returns true on mere format presence (clipboardService.ts:133-148) while readResources filters/parses and can return [] (e.g. a text/uri-list of non-file URIs is dropped at :223, or a binary plist yields no regex matches). explorerView.ts:656 feeds hasResources into fileCopiedContextKey, so the Paste affordance is enabled for a paste that does nothing."
+  },
+  {
+   "cluster_id": "tempdir_leak_local_only_copy",
+   "summary": "cleanupRemoteClipboardTempDir is called only inside the `remoteResources.length > 0` branch, so a remote copy followed by a local-only copy leaves the previous temp directory on disk.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 299,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-abdf1440b2ac586f7",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a010a301296d20c43",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a935ed78fa331f355/broad-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-afe9144fcf8119531/finding-validator",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6fae67c736692e93/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a554d7dce3d23ca81/code-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a30b98ca786ec327c/code-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aa3134e2cb9ff68c1/blind-hunter",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 80,
+   "rationale": "Verified: cleanupRemoteClipboardTempDir is only reached inside the `remoteResources.length > 0` branch (explorerService.ts:299-302). A remote copy followed by any local-only copy leaves the previous temp tree \u2014 containing full copies of remote files \u2014 on disk until the next remote copy or dispose."
+  },
+  {
+   "cluster_id": "zero_tests_explorer_temp_download",
+   "summary": "ExplorerService.resolveClipboardResources and the temp-dir lifecycle are untested \u2014 no coverage of the all-local passthrough, the download-failure fallback, or cleanup/dispose behavior.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 556,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38deb82b80f46130/test-reviewer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a337a858da7a5b482/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac3a8901a3a80976b/silent-failure-hunter",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Names three specific uncovered scenarios on the riskiest new code \u2014 all-local passthrough, the download-failure fallback, and cleanup/dispose (explorerService.ts:287-327, 609-617). Bounded and concrete rather than a coverage sweep."
+  },
+  {
+   "cluster_id": "utf16_endianness_comment",
+   "summary": "The comment 'Uint16Array naturally uses the platform's char encoding (UTF-16)' is technically wrong and hides the load-bearing assumption: correctness depends on the host being little-endian, not on any encoding property of Uint16Array.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 231,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a1184c4622dbe58ad",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa061a2645cec24e1/comment-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a3ed91c8c7b20d664/comment-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a85c2594739c154fd/comment-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a32332a7070672b51",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a7e63c35826b4e793/comment-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 75,
+   "rationale": "Correct: the comment at clipboardService.ts:231 attributes the encoding to Uint16Array, when what actually makes the FileNameW buffer correct is the host being little-endian (true on Windows, the only platform reaching this code). An inaccurate comment hiding the load-bearing assumption."
+  },
+  {
+   "cluster_id": "zero_tests_proxy_client",
+   "summary": "RemoteFileSystemProxyClient is entirely untested \u2014 the loop-prevention register() guard, the read-only throwing mutators, the readFile VSBuffer unwrap, and the capabilities contract all lack coverage.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": null,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38deb82b80f46130/test-reviewer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a337a858da7a5b482/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3b41ef6c0615f967/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 65,
+   "rationale": "True and reasonably specific \u2014 the only new test file covers the main handler, leaving the register() loop-prevention guard, the throwing mutators, and the readFile VSBuffer unwrap uncovered. Bounded, though close to a coverage sweep."
+  },
+  {
+   "cluster_id": "urilist_all_or_nothing_parse",
+   "summary": "uriListToFiles runs `.map(URI.parse)` over every line inside a single try/catch, so one malformed line discards every valid file:// entry and returns an empty list.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 216,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aa3134e2cb9ff68c1/blind-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ace0c1756805395d8/edge-case-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a32332a7070672b51",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Verified: the whole `.map(line => URI.parse(line))` chain sits inside one try (clipboardService.ts:216-226), and URI.parse does throw for some inputs (uri.ts:24-45 \u2014 illegal scheme characters, or a path beginning with '//' with no authority). One bad line discards every valid file:// entry and returns []."
+  },
+  {
+   "cluster_id": "zero_tests_broad_sweep",
+   "summary": "The PR's most novel logic ships with essentially no tests \u2014 the proxy client, the proxy server dispatch, the clipboard format round-trips, and the explorerService temp-download path \u2014 with only main-handler routing covered.",
+   "file": "(multiple)",
+   "line": null,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a27baeefc99ab5743/test-reviewer",
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a935ed78fa331f355/broad-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 80,
+   "rationale": "Unbounded 'the PR is essentially untested' sweep across four subsystems with no specific scenario named \u2014 exactly the coverage wish-list the rubric defaults down."
+  },
+  {
+   "cluster_id": "cut_becomes_copy",
+   "summary": "Cut (move) of a remote file degrades to a copy: setToCopy substitutes local temp file:// URIs, so the paste move-branch moves the temp copy and the original remote file is never removed.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 287,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a1184c4622dbe58ad",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a962d7f1512c31495",
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "critical"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "critical",
+   "confidence": 85,
+   "rationale": "Verified end to end: setToCopy substitutes temp file:// URIs even when cut=true (explorerService.ts:266-277), and the move branch builds `new ResourceFileEdit(pair.source, pair.target)` where pair.source is the clipboard URI (fileActions.ts:1218, 1223-1233). Cut+Paste of a remote file therefore moves the temp copy and leaves the original remote file in place \u2014 a silent data-level regression, distinct from all must_flag facets."
+  },
+  {
+   "cluster_id": "parsers_no_logging",
+   "summary": "plistToFiles/uriListToFiles/fileNameWToFile (and readResources) all catch and return [] with no logging at all, so a parser bug is indistinguishable from an empty clipboard and a regression stays permanently invisible.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 201,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a14581f7ba729b07a/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-af7d6b7d93aecf14e/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac3a8901a3a80976b/silent-failure-hunter",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Correct for the new code: plistToFiles (:201), uriListToFiles (:224) and fileNameWToFile (:253) all swallow into `[]` with no log, while the class already holds an ILogService used elsewhere (:30, :39). A parse failure is indistinguishable from an empty clipboard \u2014 a concrete missing-log fix."
+  },
+  {
+   "cluster_id": "plain_error_readonly_methods",
+   "summary": "writeFile/mkdir/delete/rename throw a plain Error instead of createFileSystemProviderError / NotSupportedError with NoPermissions, so the error classifies as Unknown and bypasses downstream error-code handling; the message is also developer-oriented.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": 116,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a92d3519eb4ea291e/consistency-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a6a4fce6b0809bdf6/consistency-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ab7b4faa34718512e/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3b41ef6c0615f967/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Verified convention gap: read-only providers throw `createFileSystemProviderError('fs is readonly', FileSystemProviderErrorCode.NoPermissions)` (chatResponseResourceFileSystemProvider.ts:122-136), while remoteFileSystemProxyClient.ts:116-138 throws plain Errors that classify as Unknown (files.ts:851)."
+  },
+  {
+   "cluster_id": "adhoc_narrow_interfaces",
+   "summary": "The testability interfaces (IRemoteFileSystemProxyWindowsService / IRemoteFileSystemProxyIPCServer) use anonymous inline shapes that are not Pick<>-derived from the real services and are re-declared verbatim in the tests, and findWindowForAuthority returns a freshly-built `{ id: number }` literal rather than the matched window.",
+   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+   "line": 13,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a6a4fce6b0809bdf6/consistency-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ab7b4faa34718512e/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3b41ef6c0615f967/type-design-analyzer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 65,
+   "rationale": "Structural typing already enforces compatibility at the app.ts:1306 call site where the real IWindowsMainService is passed, so the claimed drift risk does not materialize; Pick<>-derivation and returning the matched window rather than `{ id }` are style preferences."
+  },
+  {
+   "cluster_id": "authority_case_compare",
+   "summary": "findWindowForAuthority compares remoteAuthority with strict === instead of the codebase's case-insensitive isEqualAuthority, so a case-differing authority fails to match the owning window.",
+   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+   "line": 68,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a92d3519eb4ea291e/consistency-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ac086e70d92167ff5",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a21c2be090031b36a/adversarial-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a935ed78fa331f355/broad-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a32332a7070672b51",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Verified convention divergence with a concrete failure mode: windowsMainService.ts:587/648/663/680 all match windows via `isEqualAuthority` (case-insensitive), while findWindowForAuthority (remoteFileSystemProxyMainHandler.ts:70) uses `===`. A case-differing authority yields 'No window found with remote authority' instead of routing."
+  },
+  {
+   "cluster_id": "dnd_remote_text_regression",
+   "summary": "Narrowing DataTransfers.TEXT to file:// resources means dragging a remote (SSH/WSL/container) resource into an in-app text target such as the terminal, search, or an editor now sets no text at all.",
+   "file": "src/vs/workbench/browser/dnd.ts",
+   "line": 238,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a1c746241930d2c3e",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a6b25d7aa8f1970af",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afba42d03b50437d5",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "info"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 80,
+   "rationale": "Verified: dnd.ts:244-248 now sets DataTransfers.TEXT only when at least one file:// resource is present, and the retained comment says the purpose is 'allows to paste into text-capable areas'. Dragging a remote file into the terminal, an input box, or an editor as text now transfers nothing \u2014 a user-visible regression not in must_flag."
+  },
+  {
+   "cluster_id": "jsdoc_file_uri_contract_violated",
+   "summary": "resolveClipboardResources' JSDoc promises it returns file:// URIs for all resources, but the catch path returns the original remote-scheme URIs, so the documented contract is false exactly in the failure case.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 282,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a1184c4622dbe58ad",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa061a2645cec24e1/comment-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa061a2645cec24e1/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a3ed91c8c7b20d664/comment-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a7e63c35826b4e793/comment-analyzer",
+     "severity": "critical"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 60,
+   "rationale": "Correct: the JSDoc at explorerService.ts:282-286 promises file:// URIs for all resources while the catch at :322 returns remote-scheme URIs. It identifies the fallback code but stops at 'the documented contract is false' \u2014 no user/system consequence is named, so it does not clear the must_flag facet (e) bar; graded as an inaccurate-doc fix."
+  },
+  {
+   "cluster_id": "server_type_annotations_inaccurate",
+   "summary": "The server's stat() hand-declares the structural literal { type; size; mtime; ctime } instead of the canonical IStat (dropping permissions the client's typed stat claims), and resolve() carries a forced `as Promise<IFileStatWithMetadata>` cast that the runtime resolveMetadata flag does not guarantee.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+   "line": 247,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a2dade6926306839c/typescript-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ab7b4faa34718512e/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3b41ef6c0615f967/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Verified: the server hand-declares `{ type; size; mtime; ctime }` (remoteFileSystemProxyServer.ts:52) instead of IStat (files.ts:498, which also carries permissions) while the client annotates the same call `Promise<IStat>`, and resolve() forces `as Promise<IFileStatWithMetadata>` regardless of the runtime resolveMetadata flag. Contract inaccuracy across an IPC boundary the compiler cannot check."
+  },
+  {
+   "cluster_id": "temp_plaintext_disk_security",
+   "summary": "Remote file contents are materialized in plaintext under the persistent cacheHome/userDataPath with umask-default permissions and only best-effort cleanup, so potentially sensitive data persists on local disk.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 573,
+   "category": "security",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-abe577f7e3dcca68d",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-af0a527de60b8eb22",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac099673ec24f3319/security-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a3e93c35b3e7b137a/security-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac2cfa0578a169b07/security-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 75,
+   "rationale": "Verified: remote file contents are copied to `environmentService.cacheHome/remote-clipboard/<uuid>/<uuid>/<name>` (explorerService.ts:304-314) with no permission hardening, and cleanup is best-effort (`catch { }` at :609 plus an unawaited call from dispose()). Remote workspace content persists in plaintext on the local disk \u2014 a real data-at-rest exposure not in must_flag."
+  },
+  {
+   "cluster_id": "unvalidated_args_uri_revive",
+   "summary": "`const args = arg as unknown[]` then `URI.revive(args[0] as UriComponents)` indexes an unvalidated optional parameter, so a missing or malformed arg surfaces as a raw TypeError instead of a clean domain error (the proxy server repeats the same cast).",
+   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+   "line": 44,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a2dade6926306839c/typescript-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a2dade6926306839c/typescript-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-afd75ce6db98c6ef8",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aef4e1a5ca5b83f4b/typescript-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ace0c1756805395d8/edge-case-hunter",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Correct: `const args = arg as unknown[]; URI.revive(args[0] as UriComponents)` (remoteFileSystemProxyMainHandler.ts:48-49, repeated in the server's switch) indexes an optional parameter with no validation, so a malformed payload surfaces as a raw TypeError rather than a domain error on an IPC boundary. Small, one-shot hardening."
+  },
+  {
+   "cluster_id": "proxy_no_caller_auth",
+   "summary": "The main handler ignores the caller's connection context and routes purely on the payload URI's authority with no authorization, scoping, or Workspace-Trust check, so any renderer can read arbitrary files from another window's privileged remote connection (confused deputy).",
+   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+   "line": 42,
+   "category": "security",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-abe577f7e3dcca68d",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac099673ec24f3319/security-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac91a3aad6848f1a0/finding-validator",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a3e93c35b3e7b137a/security-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "high",
+   "confidence": 80,
+   "rationale": "Verified and distinct from the fixed scheme-check trap: the handler acknowledges the vscode-remote guard but shows that `call(_: unknown, command, arg)` (remoteFileSystemProxyMainHandler.ts:47) discards the caller ctx entirely and routes purely on the payload authority, with no scoping or Workspace-Trust check. Any renderer can read any file on another window's privileged remote connection \u2014 a confused-deputy gap."
+  },
+  {
+   "cluster_id": "zero_tests_proxy_server",
+   "summary": "RemoteFileSystemProxyServer is entirely untested \u2014 the command-dispatch switch, the unknown-command throw, the listen() throw, and the missing-provider throws all lack coverage.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+   "line": 36,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38deb82b80f46130/test-reviewer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 65,
+   "rationale": "Accurate and enumerated: the command-dispatch switch, the `Call not found` throw, the listen() throw and the missing-provider throws (remoteFileSystemProxyServer.ts:30-62) have no coverage; the sole new test file targets the main handler only."
+  },
+  {
+   "cluster_id": "P_SILENTFALLBACK",
+   "summary": "On remote-download failure the code falls back to remote URIs with only a logService.warn \u2014 no notification, progress, or telemetry \u2014 so native paste silently degrades with no user-visible signal.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 287,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-afb9a095ee3112138/spec-compliance-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-af7d6b7d93aecf14e/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac3a8901a3a80976b/silent-failure-hunter",
+     "severity": "high"
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "medium",
+   "confidence": 88,
+   "rationale": "must_flag facet (e), verified at explorerService.ts:317-322: the only failure signal is `logService.warn`, after which the original remote URIs are placed on the clipboard. Native paste then silently does nothing with no notification, progress, or telemetry."
+  },
+  {
+   "cluster_id": "default_branch_comment_wrong",
+   "summary": "The '// Default (Windows, or mixed local/remote)' comment is inaccurate on both halves: Windows single-file never reaches it, and macOS/Linux also fall through for any non-all-local set.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 99,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa061a2645cec24e1/comment-analyzer",
+     "severity": "critical"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a7e63c35826b4e793/comment-analyzer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 75,
+   "rationale": "Verified inaccurate on both halves: an all-local single-file copy on Windows returns at clipboardService.ts:88-96 and never reaches the '// Default (Windows, or mixed local/remote)' line at :99, while macOS and Linux do reach it for any non-all-local set."
+  },
+  {
+   "cluster_id": "readonly_type_overclaims",
+   "summary": "The client implements IFileSystemProviderWithFileReadWriteCapability and advertises FileReadWrite while carrying Readonly as a runtime capability bit and throwing on all mutators, so the type advertises the opposite of the intent; the intentional combination also lacks a doc comment.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": 137,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3b41ef6c0615f967/type-design-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "false-positive",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "Refuted: FileReadWrite | Readonly is the codebase's canonical way to express a read-only provider \u2014 FileReadWrite is the API-shape capability, Readonly the policy bit. See localHistoryFileSystemProvider.ts:72 (`FileReadWrite | Readonly`), webWorkerFileSystemProvider.ts:14, editSessionsFileSystemProvider.ts:21, chatResponseResourceFileSystemProvider.ts:45-50. The type does not 'advertise the opposite of the intent'."
+  },
+  {
+   "cluster_id": "server_jsdoc_link_rot",
+   "summary": "The server class JSDoc has two {@link} targets that are not imported (so they won't resolve and a rename won't flag them), explains the design solely by pointing at ElectronRemoteResourceLoader, and overstates 'Registered in every renderer process'.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+   "line": 20,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa061a2645cec24e1/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa061a2645cec24e1/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa061a2645cec24e1/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a3ed91c8c7b20d664/comment-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Verified: the class JSDoc at remoteFileSystemProxyServer.ts:16-21 links {@link RemoteFileSystemProxyMainHandler} and {@link ElectronRemoteResourceLoader}, neither of which is imported in that file, so the links do not resolve and renames will not track them. One-shot doc fix."
+  },
+  {
+   "cluster_id": "server_layering_inconsistent",
+   "summary": "The server mixes abstraction levels: stat/readdir call the low-level fileService.getProvider(scheme) directly while readFile/exists/resolve go through IFileService, so provider activation, limits, events, and error normalization apply on some paths but not others.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+   "line": 247,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac8713ca943dc165a/architecture-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3b41ef6c0615f967/type-design-analyzer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 75,
+   "rationale": "Verified: remoteFileSystemProxyServer.ts:52/60 call `fileService.getProvider(uri.scheme)` directly while readFile/exists/resolve at :63-73 go through IFileService. getProvider does not run activateProvider (fileService.ts:88-94), so stat/readdir can throw 'No provider for scheme' where readFile would have activated it. Real inconsistency, small blast radius."
+  },
+  {
+   "cluster_id": "server_no_scheme_validation",
+   "summary": "The renderer-side proxy server performs no scheme validation of its own \u2014 the vscode-remote-only guardrail lives solely in the main-process handler \u2014 a defense-in-depth gap that would become an arbitrary local-file-read confused deputy if any future caller forwarded a file:// URI.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+   "line": 247,
+   "category": "security",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-abe577f7e3dcca68d",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac2cfa0578a169b07/security-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 65,
+   "rationale": "Not the fixed-bot-comment trap \u2014 it explicitly acknowledges the vscode-remote guard exists in the main handler (:50-52) and argues for defense in depth in the renderer server, whose readFile/resolve go through IFileService and would happily serve a file:// URI. Conditional on a future caller, so a small hardening rather than a live defect."
+  },
+  {
+   "cluster_id": "test_error_regex_coupling",
+   "summary": "The assert.rejects regexes match only the fixed error-message prefix (never the interpolated authority/scheme), coupling the tests to prose that is not a stable contract while missing wrong-value bugs.",
+   "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
+   "line": 48,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a27baeefc99ab5743/test-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38deb82b80f46130/test-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 70,
+   "rationale": "Matching a stable message prefix in assert.rejects is the prevailing style across this repo's tests; asserting the interpolated authority/scheme would be marginally stronger but nothing is refuted or missed in practice."
+  },
+  {
+   "cluster_id": "watch_inert_undocumented",
+   "summary": "watch()/onDidChangeFile are permanently inert with no comment or capability flag saying so, while the provider is registered scheme-wide for vscode-remote \u2014 and it mixes conventions (mutators throw, watch silently returns Disposable.None).",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": 78,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a935ed78fa331f355/broad-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ab7b4faa34718512e/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a3b41ef6c0615f967/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 65,
+   "rationale": "Correct: watch() returns Disposable.None and onDidChangeFile is backed by an emitter that is never fired (remoteFileSystemProxyClient.ts:73-78, 105-107), yet the provider is registered for the whole vscode-remote scheme in that window, so any watcher there is silently inert. Undocumented, and inconsistent with the throwing mutators."
+  },
+  {
+   "cluster_id": "dnd_filter_untested",
+   "summary": "The new Schemas.file filter on the DND TEXT transfer (all-remote leaves TEXT unset, mixed selections) is a user-visible behavior change with no test.",
+   "file": "src/vs/workbench/browser/dnd.ts",
+   "line": 238,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a337a858da7a5b482/pr-test-analyzer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Accurate: dnd.ts:244-248 changes user-visible DND text behavior (all-remote selections now set no TEXT at all) and no test accompanies it. A bounded, named test gap on a behavior change rather than an unbounded coverage wish."
+  },
+  {
+   "cluster_id": "duplicate_authority_first_match",
+   "summary": "Authority-to-window routing is a first-match linear scan, so when two windows share a remote authority the selection is arbitrary; the code never establishes that authority-to-window is 1:1.",
+   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+   "line": 346,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac8713ca943dc165a/architecture-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a5fe79e404868a607",
+     "severity": "info"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 70,
+   "rationale": "Accurate description of the linear scan (remoteFileSystemProxyMainHandler.ts:68-75), but two windows on the same authority expose equivalent remote providers, so an arbitrary pick has no stated consequence. The real routing defect is the unbounded wait when the picked window has no live connection."
+  },
+  {
+   "cluster_id": "fromcharcode_spread_rangeerror",
+   "summary": "String.fromCharCode(...u16.subarray(...)) spreads an externally-sized array, so a very long path or a payload without a null terminator can exceed the engine's argument limit and throw a RangeError that is swallowed into an empty paste.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 249,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a2dade6926306839c/typescript-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-aef4e1a5ca5b83f4b/typescript-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-af7d6b7d93aecf14e/silent-failure-hunter",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac2cfa0578a169b07/security-reviewer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Correct on the code (clipboardService.ts:249 spreads `u16.subarray(...)` whose length is clipboard-controlled when no NUL is present), but the failure is caught by the surrounding try and degrades to the same empty-paste result the path already has. One-shot fix (loop or TextDecoder('utf-16le')); low value on its own."
+  },
+  {
+   "cluster_id": "test_fixture_weak_discrimination",
+   "summary": "The window fixtures lack discriminating power \u2014 only one window carries a matching remoteAuthority and there is no near-miss/decoy authority \u2014 so an implementation ignoring the authority, or a regression from strict equality to startsWith/includes, would still pass.",
+   "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
+   "line": 441,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a27baeefc99ab5743/test-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a337a858da7a5b482/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a337a858da7a5b482/pr-test-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Accurate for the routing test (remoteFileSystemProxy.test.ts:444-449): only one window carries an authority and it is the matching one, with no near-miss decoy, so relaxing `===` to startsWith/includes would still pass. Concrete fixture improvement."
+  },
+  {
+   "cluster_id": "client_trusts_wire_no_validation",
+   "summary": "stat/readFile trust the wire with no revival or validation \u2014 IChannel.call<T> infers T from the caller's own annotation, so `const buffer: VSBuffer` and `Promise<IStat>` are unverified against what the server actually returns.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": 165,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "True of essentially every IChannel client in the codebase (including DiskFileSystemProviderClient), and both ends of this channel are first-party VS Code processes. Generic typing observation with no concrete pathway."
+  },
+  {
+   "cluster_id": "clipboard_codec_design_testability",
+   "summary": "The five clipboard codec helpers are private and only reachable through platform-branching public methods, and their 'always file:// URIs' contract is implicit; extracting exported free functions / a shared toFileURIs helper would make both checkable.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": null,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a927a95b2c4e17384/type-design-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Correct: the five codecs are private and only reachable via platform-branching public methods (clipboardService.ts:170-258), and the 'always file:// URIs' postcondition is only enforced in uriListToFiles (:223) \u2014 plistToFiles and fileNameWToFile use URI.file unconditionally. Extracting exported free functions is exactly the one-shot testability improvement valid-minor covers."
+  },
+  {
+   "cluster_id": "dnd_webloc_comment_imprecise",
+   "summary": "The .webloc rationale comment is imprecise: it says 'remote URIs' when the value placed in TEXT is a getUriLabel label, states macOS .webloc creation as definite OS behavior, and justifies only the macOS case though the filter applies on all platforms.",
+   "file": "src/vs/workbench/browser/dnd.ts",
+   "line": null,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-ac85bbd536c1938a5/broad-reviewer",
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa061a2645cec24e1/comment-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa061a2645cec24e1/comment-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 65,
+   "rationale": "Fair against dnd.ts:241-247: the value written to TEXT is `labelService.getUriLabel(resource, { noPrefix: true })` \u2014 a path-like label, not a URI \u2014 so the .webloc rationale does not describe what is actually transferred, and the macOS-only justification is applied to a filter that runs on every platform. Inaccurate comment."
+  },
+  {
+   "cluster_id": "double_paste_regression",
+   "summary": "writeResources now writes OS-native file clipboard formats on ordinary internal local copies, so an in-app Ctrl+V also satisfies the explorer DOM paste listener's clipboardData.files guard, firing the paste a second time (double paste + spurious confirm dialog).",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 72,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a1fefa7056d097fa8",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a453dbd83f87bd1be",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a6b25d7aa8f1970af",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "high",
+   "confidence": 75,
+   "rationale": "Strong and code-anchored: Ctrl+V is bound via `^filesExplorer.paste` (fileActions.contribution.ts:121-126), whose `^` prefix deliberately does NOT preventDefault, so the DOM paste listener at explorerView.ts:337-343 also fires whenever `clipboardData.files.length` is non-empty. Before this PR an internal copy wrote only the custom `code/file-list` format so that guard was false; now every all-local copy writes a native file format (clipboardService.ts:73-96), so an in-app paste runs pasteFileHandler twice \u2014 and with explorer.confirmPasteNative defaulting to true (files.contribution.ts:489-492) the second pass also raises a confirmation dialog."
+  },
+  {
+   "cluster_id": "empty_catch_cleanup",
+   "summary": "cleanupRemoteClipboardTempDir uses a literal empty `catch { }` that does not bind or log the error, so a failed del() silently leaves temp copies behind (and the field is reset regardless, discarding the only reference).",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 609,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a16c1bd48a7e534ce/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-af7d6b7d93aecf14e/silent-failure-hunter",
+     "severity": "critical"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac3a8901a3a80976b/silent-failure-hunter",
+     "severity": "critical"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 75,
+   "rationale": "Verified: `catch { }` with no binding and no log at explorerService.ts:611-613, followed by unconditionally clearing remoteClipboardTempDir at :615 \u2014 the only reference to the leaked directory is discarded on failure. Concrete missing-log/cleanup fix."
+  },
+  {
+   "cluster_id": "native_format_interop_unverified",
+   "summary": "Whether NSFilenamesPboardType, text/uri-list, and FileNameW written via Electron's writeBuffer are actually honored by Finder / GNOME-KDE file managers / Explorer is unverifiable from the diff and needs a manual per-OS test pass.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": null,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "info"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a6fae67c736692e93/code-reviewer",
+     "severity": "info"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a90696f704978549b",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 80,
+   "rationale": "Explicitly an 'unverifiable from the diff, needs a manual per-OS test pass' note \u2014 the unbounded manual cross-platform verification wish the rubric defaults down. No concrete defect named."
+  },
+  {
+   "cluster_id": "plist_empty_string_regex",
+   "summary": "plistToFiles' `<string>([^<]+)</string>` regex requires at least one character, so a well-formed empty `<string></string>` element is silently dropped and the output length no longer matches the input.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 178,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ace0c1756805395d8/edge-case-hunter",
+     "severity": "info"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 70,
+   "rationale": "Technically true of `/<string>([^<]+)<\\/string>/g` (clipboardService.ts:191), but NSFilenamesPboardType entries are file paths and an empty path is not a real input, so nothing follows."
+  },
+  {
+   "cluster_id": "plist_handrolled_parser",
+   "summary": "The hand-rolled string-concatenation plist writer and regex reader duplicate the existing plistParser.ts and handle only 3 of 5 XML entities with no schema \u2014 a fragile stringly-typed serialization.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 170,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a32332a7070672b51",
+     "severity": "high"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 65,
+   "rationale": "Partly wrong: XML text content only requires escaping & and < (> optionally), so 'handles only 3 of 5 entities' is not a defect \u2014 \" and ' need no escaping outside attributes. The reuse suggestion (plistParser.ts lives in workbench/services/themes) is taste; the real plist defect is the binary-plist read path, covered elsewhere."
+  },
+  {
+   "cluster_id": "stale_format_shadowing",
+   "summary": "writeClipboardBuffer writes one format without clearing the others, so a mixed/remote copy after an all-local copy can leave a stale native format on the clipboard and a native paste yields the previously-copied files.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 100,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a21c2be090031b36a/adversarial-reviewer",
+     "severity": "high"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aa3134e2cb9ff68c1/blind-hunter",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ab837631f99d125a9/adversarial-general",
+     "severity": "info"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 55,
+   "rationale": "Premise is unverified and probably wrong: writeClipboardBuffer maps to Electron's clipboard.writeBuffer (nativeHostMainService.ts:1005), which commits through a ScopedClipboardWriter that replaces the whole clipboard rather than adding a format to the existing contents. Even if formats did accumulate, readResources checks FILE_FORMAT first (:107-112), so VS Code's own read path is unaffected. [Unverified] on Electron internals \u2014 cannot cite in-repo refuting evidence, so graded down rather than as a false positive."
+  },
+  {
+   "cluster_id": "test_file_name_mismatch",
+   "summary": "The file is named remoteFileSystemProxy.test.ts but only tests the main handler, so its name implies coverage of the whole proxy subsystem; the codebase convention names test files after the source file under test.",
+   "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
+   "line": 1,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a6a4fce6b0809bdf6/consistency-reviewer",
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 70,
+   "rationale": "Naming taste: the file sits under test/electron-main/ and the only electron-main source in the subsystem is the main handler, so the name is defensible. No behavior or coverage consequence beyond the separately-stated test gaps."
+  },
+  {
+   "cluster_id": "electron_oneformat_comment",
+   "summary": "The rationale comment 'Electron's clipboard API only supports one buffer format per call' over-generalizes and misattributes the limit \u2014 clipboard.write() can set several formats, and the restriction belongs to the writeClipboardBuffer wrapper.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 71,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a3ed91c8c7b20d664/comment-analyzer",
+     "severity": "nit"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a85c2594739c154fd/comment-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 60,
+   "rationale": "Half right: clipboard.write() does accept several predefined types, but the comment is specifically about buffer formats, and nativeHostMainService.writeClipboardBuffer (:1005) does wrap a single-format clipboard.writeBuffer call. Pedantic wording critique with no consequence."
+  },
+  {
+   "cluster_id": "main_handler_edge_cases_untested",
+   "summary": "Main-handler edge cases are untested: empty windows list, duplicate remoteAuthority, a plain UriComponents payload exercising URI.revive, and the listen() guard throw.",
+   "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
+   "line": null,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a29ad281c603ca4e7/pr-test-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 65,
+   "rationale": "Enumerates four concrete uncovered cases against the shipped test file (empty window list, duplicate authority, a raw UriComponents payload through URI.revive, the listen() throw at remoteFileSystemProxyMainHandler.ts:42-44). Bounded, one-shot additions."
+  },
+  {
+   "cluster_id": "register_catch_swallows_failure",
+   "summary": "The registration catch logs at error but the async IIFE resolves normally, so activation appears to succeed with no provider and the next access fails with a generic 'No file system provider found' far from the cause.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": 112,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a14581f7ba729b07a/silent-failure-hunter",
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac3a8901a3a80976b/silent-failure-hunter",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Correct: the catch at remoteFileSystemProxyClient.ts:66-68 logs and lets the joined promise resolve, so activateProvider completes as if a provider were registered and the next access fails far from the cause with a generic 'No file system provider found'. Concrete error-handling fix (closely related to the re-registration defect)."
+  },
+  {
+   "cluster_id": "temp_uri_breaks_workspace_identity",
+   "summary": "Replacing the copied remote URI with a local temp file:// URI breaks the source's workspace identity, so same-folder duplicate/rename-on-paste in a remote workspace fails with 'already exists' instead of auto-incrementing.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 287,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a6b25d7aa8f1970af",
+     "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-ab3d6f57a691e1bbc",
+     "severity": "high"
+    }
+   ],
+   "verdict": "false-positive",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 80,
+   "rationale": "Refuted: findValidPasteFileTarget (fileActions.ts:322-353) derives the candidate from `targetFolder.resource` + basename and increments while `explorerService.findClosest(candidate)` exists \u2014 it never consults the source URI's identity. basename is preserved by the temp copy (explorerService.ts:313), so same-folder duplicate-on-paste still auto-increments; no 'already exists' failure occurs."
+  },
+  {
+   "cluster_id": "app_desktop_wiring_untested",
+   "summary": "The DI wiring in app.ts and desktop.main.ts (channel registration, server + client instantiation) has no test coverage.",
+   "file": "src/vs/code/electron-main/app.ts",
+   "line": 1306,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a4c79f3a77f057c31/pr-test-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 80,
+   "rationale": "DI wiring in app.ts/desktop.main.ts is not unit-tested anywhere in this codebase by convention; an unbounded coverage wish with no specific behavior named."
+  },
+  {
+   "cluster_id": "basename_collision_untested",
+   "summary": "The happy-path uuid-subfolder collision avoidance (two remote files sharing a basename getting distinct targets) exists but has no test pinning it.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 556,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Correctly states that the uuid-subfolder collision avoidance EXISTS (explorerService.ts:309-313) \u2014 not the fixed-bot-comment trap \u2014 and asks for a test pinning it. Bounded, concrete."
+  },
+  {
+   "cluster_id": "cancellation_token_dropped",
+   "summary": "RemoteFileSystemProxyMainHandler.call forwards command and arg but drops IServerChannel's 4th cancellationToken parameter when calling the target renderer channel.",
+   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+   "line": null,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a554d7dce3d23ca81/code-reviewer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 75,
+   "rationale": "Verified: IServerChannel.call takes a 4th cancellationToken (ipc.ts:35) and ChannelServer creates one per request (ipc.ts:424-428), but the handler's signature (remoteFileSystemProxyMainHandler.ts:47) drops it and forwards `targetChannel.call(command, arg)` with no token. Real but low-impact today since the proxy client never passes a token either."
+  },
+  {
+   "cluster_id": "channel_name_spelling_convention",
+   "summary": "The new channel-name string values spell 'FileSystem' as two camelCased words while the closest sibling channel-name constants collapse it to 'Filesystem'.",
+   "file": "src/vs/platform/files/common/remoteFileSystemProxy.ts",
+   "line": 11,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a6a4fce6b0809bdf6/consistency-reviewer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 70,
+   "rationale": "The cited convention is real (REMOTE_FILE_SYSTEM_CHANNEL_NAME = 'remoteFilesystem', remoteFileSystemProviderClient.ts:16) but this is cosmetic casing of an internal channel string with no functional consequence."
+  },
+  {
+   "cluster_id": "charcodeat_surrogate_pairs",
+   "summary": "filePathToUtf16LE uses charCodeAt so non-BMP characters pass through as raw code units \u2014 it works only by luck for UTF-16LE and the assumption is not expressed as an invariant.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 229,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 75,
+   "rationale": "The code is actually correct: JS strings are UTF-16 code-unit sequences, so writing each `charCodeAt(i)` into a Uint16Array of `path.length + 1` reproduces surrogate pairs exactly (clipboardService.ts:232-235). The finding concedes it works and asks only that the assumption be documented \u2014 a nit."
+  },
+  {
+   "cluster_id": "clipboard_format_literals_ifladder",
+   "summary": "The four clipboard formats are loose string literals and the platform-to-format selection is an if-ladder repeated in write/read/has, so the platform x format matrix is not a single checkable structure.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 17,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 65,
+   "rationale": "Accurate: the same isMacintosh/isLinux/isWindows \u2192 format ladder is written out three times (clipboardService.ts:73-96, 115-128, 138-148), so the platform \u00d7 format matrix is not a single checkable structure. Extracting a table is the one-shot improvement valid-minor covers."
+  },
+  {
+   "cluster_id": "explorer_writeresources_blast_radius",
+   "summary": "The native OS clipboard write now applies to every writeResources([localFile]) caller, so unrelated callers such as chat widgets now populate the native file clipboard \u2014 a broadened, untracked blast radius.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 63,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 75,
+   "rationale": "Verified: writeResources has non-Explorer callers \u2014 chatReferencesContentPart.ts:579 and chatInlineAnchorWidget.ts:405 both call `writeResources([resource])`. Copying a chat file reference now writes NSFilenamesPboardType / text/uri-list / FileNameW onto the OS clipboard, an unintended broadening of an unrelated action's effect."
+  },
+  {
+   "cluster_id": "gnome_copied_files_format",
+   "summary": "GNOME/Nautilus paste expects the x-special/gnome-copied-files format with a copy/cut verb line rather than plain text/uri-list, so the Linux write path may not be honored by the main Linux file managers.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": null,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "medium",
+   "confidence": 60,
+   "rationale": "Concrete interop claim about the new LINUX_FILE_FORMAT write path (clipboardService.ts:81-86): Nautilus keys clipboard paste off `x-special/gnome-copied-files` with a leading copy/cut verb line, so a plain text/uri-list payload is not honored there (KDE/Dolphin does read text/uri-list). Not verifiable in-repo, but specific and consequential for the PR's headline Linux scenario."
+  },
+  {
+   "cluster_id": "handrolled_routing_not_iclientrouter",
+   "summary": "Routing is hand-rolled inside IServerChannel.call instead of implementing the codebase's canonical IClientRouter (as NodeRemoteResourceRouter and URLHandlerRouter do), which also adds an extra channel hop.",
+   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+   "line": 75,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a6a4fce6b0809bdf6/consistency-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 60,
+   "rationale": "The canonical pattern does exist in-repo \u2014 NodeRemoteResourceRouter implements IClientRouter and is passed to getChannel (electronRemoteResources.ts:15-31) \u2014 and this handler instead does routing inside IServerChannel.call. The 'extra channel hop' half is dubious (a renderer cannot reach another renderer without the main process either way), so this is a convention suggestion."
+  },
+  {
+   "cluster_id": "linux_uri_list_literal",
+   "summary": "LINUX_FILE_FORMAT hard-codes the raw 'text/uri-list' string, duplicating the Mimes.uriList constant that is referenced symbolically elsewhere, including in dnd.ts which this PR also touches.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 19,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a92d3519eb4ea291e/consistency-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 75,
+   "rationale": "Verified duplicated constant: `Mimes.uriList = 'text/uri-list'` exists at base/common/mime.ts:14 and Mimes is already used symbolically in dnd.ts (Mimes.binary), yet clipboardService.ts:19 hard-codes the literal."
+  },
+  {
+   "cluster_id": "magic_number_bytelength_guard",
+   "summary": "The `buffer.byteLength < 4` guard uses an unexplained magic number (one UTF-16 char plus a two-byte null terminator).",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 240,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a3ed91c8c7b20d664/comment-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 75,
+   "rationale": "True that `buffer.byteLength < 4` (clipboardService.ts:241) is unexplained, but it is a sanity guard with no behavioral consequence \u2014 pure nit."
+  },
+  {
+   "cluster_id": "missing_trace_logging_clipboard",
+   "summary": "The rewritten writeResources/readResources/hasResources omit the class-wide logService.trace('NativeClipboardService#method') opener present on every other public method.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 62,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a6a4fce6b0809bdf6/consistency-reviewer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 70,
+   "rationale": "Premise is inaccurate: readImage, readFindText and writeFindText (clipboardService.ts:34-60) also have no trace opener, so it is not a class-wide convention, and writeResources/readResources/hasResources had none before this PR either. Style nit."
+  },
+  {
+   "cluster_id": "no_audit_trail_server",
+   "summary": "Cross-window remote file reads produce no audit trail on the serving side, so exfiltration through the proxy would be unattributable and an incident could not be reconstructed.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+   "line": 30,
+   "category": "security",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-abe577f7e3dcca68d",
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ac099673ec24f3319/security-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 65,
+   "rationale": "True that the server takes no ILogService, but the framing (exfiltration attribution, incident reconstruction) is speculative for a same-user, same-machine cross-window read; VS Code's sibling loaders log nothing here either. Wish-list rather than a defect."
+  },
+  {
+   "cluster_id": "no_command_allowlist",
+   "summary": "The main handler is a pure untyped passthrough with no command allow-list, so it forwards any command string to another renderer's file-serving channel; the only structural check is the URI scheme.",
+   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+   "line": 323,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "True that the handler forwards any command string, but the receiving server's switch throws `Call not found` for anything outside its five commands (remoteFileSystemProxyServer.ts:33-40), so no concrete consequence follows. Defense-in-depth taste; the substantive authorization gap is the caller-auth finding."
+  },
+  {
+   "cluster_id": "no_crash_cleanup_startup_sweep",
+   "summary": "There is no crash cleanup and no startup sweep of stale cacheHome/remote-clipboard/* directories, so temp trees accumulate on disk indefinitely.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 567,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 80,
+   "rationale": "Verified: grep shows 'remote-clipboard' appears exactly once in the tree (explorerService.ts:304) \u2014 nothing sweeps stale directories at startup, and cleanup only runs on the next remote copy or on dispose (both best-effort). Crashes/kills leave full copies of remote files accumulating under cacheHome indefinitely."
+  },
+  {
+   "cluster_id": "no_feature_flag_kill_switch",
+   "summary": "The main handler, per-window server/client, and native-clipboard writes are wired unconditionally with no feature flag or kill switch, leaving no runtime off-switch short of a full revert.",
+   "file": "src/vs/workbench/electron-browser/desktop.main.ts",
+   "line": 289,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "Process/design wish rather than a code defect; VS Code does not gate platform wiring like this behind flags by convention, and no concrete failure is named."
+  },
+  {
+   "cluster_id": "no_telemetry_proxy_download",
+   "summary": "There is no telemetry or metrics on the remote-download/proxy path, so a field report of 'remote paste doesn't work' cannot be triaged between download failure, routing failure, or temp cleanup.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 287,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "Unbounded observability wish-list with no defect named; the diff-verifiable core (only a logService.warn on failure) is separately and better stated as the silent-fallback finding."
+  },
+  {
+   "cluster_id": "remote_to_remote_roundtrip",
+   "summary": "Discarding the original remote URIs makes remote-to-remote copy/paste regress to a download plus re-upload round-trip instead of a server-side remote copy.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 287,
+   "category": "perf",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "high"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-a85c5bccc2202cc5c",
+     "severity": "high"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": "none",
+   "judged_severity": "high",
+   "confidence": 80,
+   "rationale": "Verified: setToCopy now puts local temp file:// URIs on the clipboard (explorerService.ts:275-277), and pasteFileHandler builds its ResourceFileEdits from `clipboardService.readResources()` (fileActions.ts:1318, 1191-1234). A remote\u2192remote copy inside one remote workspace therefore becomes download-to-cacheHome plus re-upload instead of a provider-side copy. Distinct from must_flag facet (a), which is about the copy gesture blocking."
+  },
+  {
+   "cluster_id": "remoteauthority_guard_comment",
+   "summary": "The loop-prevention guard comment says the window 'has its own remote connection' but the code only checks the static remoteAuthority config value, papering over the connected-versus-configured distinction.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": 44,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a7e63c35826b4e793/comment-analyzer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 65,
+   "rationale": "The configured-vs-connected distinction is real (remoteFileSystemProxyClient.ts:44-53 checks environmentService.remoteAuthority), but a window with a configured remote authority is exactly the window that owns the direct provider, so the comment is materially accurate and nothing follows from the wording."
+  },
+  {
+   "cluster_id": "server_plain_error_no_code",
+   "summary": "The server's stat/readdir/readFile throw a plain Error instead of createFileSystemProviderError with a FileSystemProviderErrorCode, so the typed error code is lost as it propagates back through FileService.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+   "line": 56,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "medium"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a6a4fce6b0809bdf6/consistency-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Verified convention gap: the codebase throws `createFileSystemProviderError(..., FileSystemProviderErrorCode.NoPermissions)` in provider paths (files.ts:845; chatResponseResourceFileSystemProvider.ts:122-136), while the proxy server throws plain Errors (remoteFileSystemProxyServer.ts:54, 62), so the code degrades to Unknown as it crosses back through FileService."
+  },
+  {
+   "cluster_id": "temp_dir_wording_doc",
+   "summary": "The 'temp'/'temp directory' wording in the comments could send a maintainer to os.tmpdir() when the copies actually live under environmentService.cacheHome.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": null,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa061a2645cec24e1/comment-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 70,
+   "rationale": "The comments say 'download to a temp location' while the code uses environmentService.cacheHome (explorerService.ts:304) \u2014 colloquially accurate wording, and the very next line names cacheHome. Nit."
+  },
+  {
+   "cluster_id": "tempdir_bare_slot_type",
+   "summary": "remoteClipboardTempDir is a bare `URI | undefined` slot whose single-slot create-before-destroy lifecycle is maintained purely by convention rather than expressed in a type.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 50,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "nit"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-aeb42f24c1eb23848/type-design-analyzer",
+     "severity": "nit"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "nit",
+   "confidence": 75,
+   "rationale": "Pure type-design taste; `URI | undefined` for a single-slot lifecycle is idiomatic in this codebase and no incorrect behavior is attributed to it (the real lifecycle defects are stated separately)."
+  },
+  {
+   "cluster_id": "trace_logs_resource_paths",
+   "summary": "The new logService.trace calls log full resource paths (user data) on every proxied operation.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": 164,
+   "category": "security",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a1fefa7056d097fa8",
+     "severity": "low"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a3e93c35b3e7b137a/security-reviewer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "Logging `resource.toString()` at trace level is the established convention for file-system providers throughout this codebase; trace is opt-in and this is not a new exposure."
+  },
+  {
+   "cluster_id": "uri_revive_wire_path_untested",
+   "summary": "Every test passes a real URI instance, so URI.revive only exercises its instanceof fast path and the from-wire UriComponents reconstruction branch that real IPC uses is never tested.",
+   "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
+   "line": null,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null,
+     "severity": "low"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a38deb82b80f46130/test-reviewer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Correct and specific: all three tests pass `URI.parse(...)` instances (remoteFileSystemProxy.test.ts:417, 436, 464), so URI.revive's UriComponents reconstruction branch \u2014 the one real IPC exercises \u2014 is never covered. Bounded, one-shot test addition."
+  },
+  {
+   "cluster_id": "urilist_filter_untested",
+   "summary": "uriListToFiles does filter to file:// URIs, but that filtering (mixed vscode-remote/http entries, # comments, blank lines) has no test, so a regression dropping the filter would go unnoticed.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": 815,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": null,
+     "severity": "critical"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a0849355a21256611/pr-test-analyzer",
+     "severity": "critical"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 70,
+   "rationale": "Correctly notes the file:// filter DOES exist (clipboardService.ts:223) \u2014 not the fixed-bot-comment trap \u2014 and asks for a test of the comment/blank-line/mixed-scheme cases. Concrete and bounded."
+  },
+  {
+   "cluster_id": "P_PATHLEAK",
+   "summary": "The internal cacheHome temp path is written onto the system clipboard, leaking internal path layout to native paste targets.",
+   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+   "line": 292,
+   "category": "security",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aaaa43eec58c4c3ae",
+     "severity": "high"
+    }
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "high",
+   "confidence": 90,
+   "rationale": "must_flag facet (a), second half: resolveClipboardResources returns targets under `environmentService.cacheHome/remote-clipboard/<uuid>/<uuid>` (explorerService.ts:304-315) and writeResources puts those fsPaths on the OS clipboard in native formats (clipboardService.ts:73-96), exposing the internal cache path to any native paste target. This is mjbvz's unaddressed 'leaking the /tmp file path' thread."
+  },
+  {
+   "cluster_id": "client_docstring_overclaims",
+   "summary": "The class docstring's claim that it 'enables copy/paste and drag-and-drop of files between remote and local workspaces' is unscoped \u2014 the Explorer copy path pre-downloads to file:// URIs and never exercises this class.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": 33,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a85c2594739c154fd/comment-analyzer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 60,
+   "rationale": "Substantively right: the Explorer copy path replaces remote URIs with local temp file:// URIs before the clipboard write (explorerService.ts:275), so the proxy client is only exercised on the download-failure fallback or cross-window paste \u2014 narrower than 'enables copy/paste and drag-and-drop between remote and local workspaces'. Doc scoping fix."
+  },
+  {
+   "cluster_id": "client_duplicates_diskfsproviderclient",
+   "summary": "The client hand-rolls stat/readdir/readFile channel forwarding that duplicates the canonical DiskFileSystemProviderClient base class the sibling RemoteFileSystemProviderClient extends.",
+   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+   "line": null,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a92d3519eb4ea291e/consistency-reviewer",
+     "severity": "medium"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": "none",
+   "judged_severity": "low",
+   "confidence": 60,
+   "rationale": "The in-repo precedent is real \u2014 RemoteFileSystemProviderClient extends DiskFileSystemProviderClient (remoteFileSystemProviderClient.ts:19, diskFileSystemProviderClient.ts:26) \u2014 and the new client hand-rolls the same stat/readdir/readFile forwarding. Reuse is not free (the base class assumes a much wider server contract), so this is a design suggestion, not a defect."
+  },
+  {
+   "cluster_id": "clipboard_paste_arbitrary_path_read",
+   "summary": "Pasting clipboard-supplied file:// paths allows user-gesture-driven reads of arbitrary local paths.",
+   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+   "line": null,
+   "category": "security",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-ac2cfa0578a169b07/security-reviewer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "This is the intended semantics of file paste and is pre-existing (bufferToResources already produced arbitrary file:// URIs, clipboardService.ts:153-168 \u2014 unchanged context in the diff). No defect introduced by this PR."
+  },
+  {
+   "cluster_id": "dnd_schemas_import_unverified",
+   "summary": "Schemas is used in dnd.ts with no visible import in the shown diff hunk \u2014 flagged as a cannot-verify-from-diff note.",
+   "file": "src/vs/workbench/browser/dnd.ts",
+   "line": 244,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 85,
+   "rationale": "Self-declared cannot-verify meta-note, and it is wrong on the facts: Schemas is imported at dnd.ts:18 (`import { FileAccess, Schemas } from '../../base/common/network.js'`). Noise."
+  },
+  {
+   "cluster_id": "scope_creep",
+   "summary": "The PR goes beyond the linked bug: DND drag-text filtering, native-format read paths, and writing native formats for purely-local copies are additional scope.",
+   "file": "src/vs/workbench/browser/dnd.ts",
+   "line": 241,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-afb9a095ee3112138/spec-compliance-reviewer",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "Meta-commentary on PR sizing; no defect named. The one substantive consequence of the extra scope (native formats written for ordinary local copies) is stated properly elsewhere."
+  },
+  {
+   "cluster_id": "startup_race_channel_not_ready",
+   "summary": "The target window's proxy server channel may not be registered yet when the main handler routes to it during startup, so the call rejects with an unknown-channel error until renderer init finishes, with no retry or readiness wait.",
+   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+   "line": null,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-ac1b1a1dbb3403f0f/adversarial-general",
+     "severity": "low"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": "none",
+   "judged_severity": "info",
+   "confidence": 60,
+   "rationale": "The stated failure mode is wrong: ChannelServer buffers requests for not-yet-registered channels via collectPendingRequest (ipc.ts:417-421) rather than rejecting with an unknown-channel error, and IPCServer.getChannel already waits for a matching connection \u2014 so the IPC layer supplies the 'readiness wait' the finding says is missing. The residual real risk (an unbounded wait) is stated properly by the routing-hang finding."
+  }
+ ]
+}

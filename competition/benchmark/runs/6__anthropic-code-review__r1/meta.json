@@ -1,0 +1,146 @@
+{
+  "run_id": "6__anthropic-code-review__r1",
+  "subject_id": 6,
+  "lang": "typescript",
+  "size": "large",
+  "tool": "anthropic-code-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/vscode",
+  "pr": 320685,
+  "merge_sha": "f9070acd20a269fb07dd15389676bd6875b9db05",
+  "review_base": "f9070acd20a269fb07dd15389676bd6875b9db05^1",
+  "review_head": "f9070acd20a269fb07dd15389676bd6875b9db05",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1144,
+  "duration_ms": "89004",
+  "duration_api_ms": "2639709",
+  "num_turns": "1",
+  "cost_usd": "11.606948250000007",
+  "orch_usage": {
+    "input_tokens": "2",
+    "output_tokens": "6642",
+    "cache_creation_tokens": "809",
+    "cache_read_tokens": "167432",
+    "total_tokens": 174885
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 450,
+    "output": 182963,
+    "cache_creation": 661681,
+    "cache_read": 13653712,
+    "total": 14498806,
+    "orchestrator": {
+      "output": 70320,
+      "total": 4711815,
+      "duration_s": 1142
+    },
+    "per_subagent": [
+      {
+        "output": 22503,
+        "input": 58,
+        "cache_creation": 92956,
+        "cache_read": 2100869,
+        "total": 2216386,
+        "duration_s": 364,
+        "agent": "agent-a1184c4622dbe58ad"
+      },
+      {
+        "output": 412,
+        "input": 18,
+        "cache_creation": 18306,
+        "cache_read": 28615,
+        "total": 47351,
+        "duration_s": 31,
+        "agent": "agent-a1c746241930d2c3e"
+      },
+      {
+        "output": 17276,
+        "input": 44,
+        "cache_creation": 89376,
+        "cache_read": 1366251,
+        "total": 1472947,
+        "duration_s": 281,
+        "agent": "agent-a1fefa7056d097fa8"
+      },
+      {
+        "output": 5388,
+        "input": 34,
+        "cache_creation": 34136,
+        "cache_read": 83616,
+        "total": 123174,
+        "duration_s": 61,
+        "agent": "agent-a3873e3ef37f9054b"
+      },
+      {
+        "output": 1318,
+        "input": 18,
+        "cache_creation": 18499,
+        "cache_read": 28734,
+        "total": 48569,
+        "duration_s": 24,
+        "agent": "agent-a453dbd83f87bd1be"
+      },
+      {
+        "output": 29406,
+        "input": 116,
+        "cache_creation": 100025,
+        "cache_read": 4213210,
+        "total": 4342757,
+        "duration_s": 639,
+        "agent": "agent-a6b25d7aa8f1970af"
+      },
+      {
+        "output": 2179,
+        "input": 18,
+        "cache_creation": 21179,
+        "cache_read": 28685,
+        "total": 52061,
+        "duration_s": 26,
+        "agent": "agent-a962d7f1512c31495"
+      },
+      {
+        "output": 2040,
+        "input": 18,
+        "cache_creation": 17985,
+        "cache_read": 28510,
+        "total": 48553,
+        "duration_s": 26,
+        "agent": "agent-aa1d9d32eca063f0e"
+      },
+      {
+        "output": 2153,
+        "input": 18,
+        "cache_creation": 19665,
+        "cache_read": 28785,
+        "total": 50621,
+        "duration_s": 27,
+        "agent": "agent-ab3d6f57a691e1bbc"
+      },
+      {
+        "output": 29968,
+        "input": 34,
+        "cache_creation": 98820,
+        "cache_read": 1255750,
+        "total": 1384572,
+        "duration_s": 364,
+        "agent": "agent-abdf1440b2ac586f7"
+      }
+    ],
+    "max_subagent_duration_s": 639,
+    "sum_subagent_duration_s": 1843
+  },
+  "input_tokens": "2",
+  "output_tokens": "6642",
+  "cache_creation_tokens": "809",
+  "cache_read_tokens": "167432",
+  "total_tokens": 174885,
+  "session_id": "ae2d2c46-6bd7-4f7d-a268-4f94178922b9",
+  "findings_lines": 48,
+  "invocation": "Use the /code-review workflow to review pull request #320685 of the GitHub repository microsoft/vscode. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-28T11:52:42Z"
+}
