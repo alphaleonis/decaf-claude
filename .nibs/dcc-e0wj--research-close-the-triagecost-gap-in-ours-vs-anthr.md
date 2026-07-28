@@ -7,7 +7,7 @@ type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-28T21:08:34Z
+updated_at: 2026-07-28T21:16:04Z
 order: zzw
 ---
 
@@ -498,6 +498,20 @@ Do not regress these while optimizing:
       (re-run cells, re-grade blind, compare against the committed baseline)
 - [ ] Written recommendation: what to change, expected effect on calibration / cost / recall,
       and what was deliberately not changed
+
+# ⚠ Evidence validity — read first
+
+**#dcc-9kkz: 11 of 18 anthropic cells did not run anthropic.** Seven executed `decaf-quality`
+(ours) under anthropic's label; four are unattributed. Clean anthropic costs **~$5.87/run**, not
+the published $11.82 — so **ours is ~3.6× more expensive, not 1.8×**.
+
+- **Unaffected** — every ours-only finding here: the per-persona roster analysis, the severity
+  calibration root cause, and the diff-vs-repo cost scaling.
+- **Needs restatement after re-runs** — every ours-vs-anthropic *cost* comparison in this nib.
+  Quality comparisons survive: bug-catch and calibration hold across clean, contaminated and
+  unattributed cells alike (7/7, 7/7, 4/4; 0.89 / 0.89 / 0.83).
+
+The direction of the error makes this programme **more** urgent, not less.
 
 # Caveats on the evidence
 
