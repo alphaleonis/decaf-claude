@@ -7,7 +7,7 @@ type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-28T20:38:14Z
+updated_at: 2026-07-28T20:52:04Z
 order: zzw
 ---
 
@@ -20,9 +20,13 @@ $1,096 spend. On the headline metrics `ours` loses to the built-in `anthropic-co
 |---|---|---|
 | escaped bug caught | 18/18 | 16/18 |
 | substantive share | 49% | 36% |
-| severity calibration | **0.88** | **0.62** |
+| severity calibration | **0.88** | **0.62** † |
 | cost | $11.82 | **$21.33** |
 | findings emitted | 9.8 | 15.8 |
+
+† **Superseded — see workstream 1.** That 0.62 is max-severity-over-sub-agents, not what the
+consolidated report tells a reader. On the artifact a reader actually sees, ours is **0.77** and
+anthropic **0.88**. The gap is real but ~40% of the headline.
 
 But the naive reading ("ours reports more, but not what you want") is **wrong**, and the
 correction is what makes this actionable. Ours finds *more* of what you want, at every PR size:
@@ -46,16 +50,99 @@ Synthesis: `competition/benchmark/analysis/synthesis-report.html` · data:
 # Workstreams (ranked by leverage)
 
 ## 1. Severity calibration — the single widest gap
-`P(substantive | tool said critical/high)` = 0.62 vs anthropic's 0.88. With 15.8 findings per
-run and an untrustworthy top-of-list, a reader cannot skim and stop — they must read everything.
-This is a **consolidation/ranking failure, not a reviewer failure**: the review agents are
-finding the material, the consolidation step is failing to rank it.
+`P(substantive | tool said critical/high)` = 0.62 vs anthropic's 0.88.
 
-- [ ] Determine why consolidated severity diverges from judged severity (compare each subject's
-      `analysis.json` `reported_by[].severity` against `judged_severity`)
-- [ ] Look for a systematic bias (e.g. doc/comment findings promoted to high; is `critical` used
-      for anything that isn't behavioral?)
-- [ ] Prototype a stricter severity contract in the consolidation step and re-measure
+> **The premise below was wrong and is corrected in "Root cause" — this is *not* a
+> consolidation failure. Consolidation measurably *improves* calibration; the over-claiming
+> happens in the reviewers, and one persona accounts for most of it.**
+
+~~With 15.8 findings per run and an untrustworthy top-of-list, a reader cannot skim and stop —
+they must read everything. This is a consolidation/ranking failure, not a reviewer failure: the
+review agents are finding the material, the consolidation step is failing to rank it.~~ The
+reader-facing problem is real; the attribution was not.
+
+### Root cause (measured over the 9 graded subjects)
+
+**1. The headline 0.62 does not measure what a reader sees.** `compute_metrics.py::_calibration`
+takes the **max severity across every `reported_by` entry**, which includes each sub-agent's own
+claim. A reader never sees those — they see the consolidated report. Splitting the two:
+
+| tool | max-over-agents | consolidated report only |
+|---|---|---|
+| superpowers | 0.65 | 0.65 |
+| pr-review-toolkit | 0.47 | 0.50 |
+| anthropic | 0.83 | **0.88** |
+| tag1 | 0.55 | 0.79 |
+| **ours** | 0.65 | **0.77** |
+
+`superpowers` is the control: one agent, so consolidated *is* the max, and the two agree exactly.
+The fan-out tools all improve, ours most of all — **consolidation raises calibration from 0.65 to
+0.77**, and halves the number of critical/high claims (60 → 30). It is doing the ranking job,
+not failing it. The real gap to anthropic is **0.77 vs 0.88**, roughly 40% of what was believed.
+
+**2. The residual gap is entirely a category-boundary problem.** Of ours' 30 consolidated
+critical/high clusters, 23 were judged substantive. Split by category:
+
+| category | flagged crit/high | substantive | miss |
+|---|---|---|---|
+| logic | 10 | 9 | 1 |
+| bug | 9 | 8 | 1 |
+| perf | 3 | 3 | 0 |
+| **doc** | **3** | **0** | **3** |
+| design | 2 | 1 | 1 |
+| test | 2 | 1 | 1 |
+| security | 1 | 1 | 0 |
+
+**Behavioral findings are already well calibrated** — logic + bug = 17/19 = **0.89**, matching
+anthropic's overall figure. Non-behavioral ones are not: doc + test + design = 2/7 = **0.29**.
+Ours does not have a general ranking problem; it ranks non-behavioral findings as if behavioral.
+
+**3. The mechanism, traced end to end.** `knowledge-reviewer=critical` appears in **4 of the 7**
+miscalibrated clusters — in three of them as the *sole* critical against a chorus of low/medium:
+
+- `decaf-quality/agents/knowledge-reviewer.md:41` — "**MUST severity is reserved for RULE 0**
+  (knowledge loss)", so every missing-decision-log / undocumented-assumption /
+  comprehension-risk finding is emitted as MUST.
+- `code-review/SKILL.md:326` rule 1 — "Normalize severities across agents (**MUST → Critical**)".
+- `code-review/SKILL.md:328` rule 3 — "Keep the highest severity among duplicates … **a
+  specialist's Critical is never outvoted by lower ratings**."
+
+So "this decision should be documented" lands at the same rank as silent data corruption, and
+three or four dissenting `low` ratings cannot pull it down. Worked example, subject 1: a finding
+that test comments narrate change history was rated `low` by broad, consistency and test — and
+shipped as **Critical** on the knowledge-reviewer's MUST alone.
+
+### Quantified fix
+
+| variant | calibration | flagged |
+|---|---|---|
+| as shipped | 0.77 | 23/30 |
+| **cap `doc` category at Medium** | **0.85** | 23/27 |
+| demote a lone Critical against 2+ Low dissent | 0.77 | 23/30 |
+
+Capping doc at Medium **loses zero substantive findings** — across all 9 subjects and every tool
+there are only 2 substantive doc-category clusters (against 24 valid-minor and 26 trivia), and
+neither was among ours' critical/high set. It closes most of the remaining gap to 0.88.
+
+The dissent-based demotion does **nothing** here: `knowledge-reviewer` rates these critical in
+*both* repeats, so a "lone critical" test never fires. Rule 3 is not the lever; the MUST→Critical
+mapping is.
+
+- [x] Determine why consolidated severity diverges from judged severity — done; and the divergence
+      is much smaller than the headline metric implies (0.77, not 0.62)
+- [x] Look for a systematic bias — found: non-behavioral categories ranked as behavioral, via
+      `knowledge-reviewer`'s MUST → Critical normalization
+- [ ] Prototype a stricter severity contract in the consolidation step and re-measure — scoped:
+      either cap non-behavioral categories at Medium in rule 1, or stop mapping the
+      knowledge-reviewer's RULE 0 MUST onto Critical. Prefer the latter: it fixes the source
+      rather than patching the symptom, and leaves a genuinely critical doc finding able to rank
+- [ ] Decide whether `compute_metrics.py::_calibration` should use the **consolidated** severity
+      rather than max-over-agents — it currently measures sub-agent claims, not the artifact a
+      reader trusts. Changes published numbers for every fan-out tool, so it is a deliberate call
+
+**Caveat on n.** Ours has 30 consolidated critical/high clusters across 9 subjects; the doc
+bucket is 3 of them. The mechanism is traced and certain, but the *size* of the fix rests on a
+small count — re-measure rather than trusting 0.85.
 
 ## 2. Cost / fan-out efficiency
 $21.33/run vs $11.82; 14.5 sub-agents vs 10.3 (by role: 9.4 reviewers + 5.1 validators vs 5
@@ -355,7 +442,9 @@ Do not regress these while optimizing:
 
 # Acceptance
 
-- [ ] Root cause identified for the calibration gap, with evidence from the graded data
+- [x] Root cause identified for the calibration gap, with evidence from the graded data —
+      `knowledge-reviewer` MUST → rule 1 Critical → rule 3 un-outvotable; non-behavioral
+      categories ranked as behavioral. See workstream 1.
 - [ ] At least one change prototyped and re-measured on a subset of benchmark subjects
       (re-run cells, re-grade blind, compare against the committed baseline)
 - [ ] Written recommendation: what to change, expected effect on calibration / cost / recall,
