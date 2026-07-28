@@ -2,12 +2,12 @@
 # dcc-e0wj
 version: 1
 title: 'Research: close the triage/cost gap in ours vs anthropic-code-review (benchmark findings)'
-status: todo
+status: in-progress
 type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-28T20:03:46Z
+updated_at: 2026-07-28T20:21:29Z
 order: zzw
 ---
 
@@ -133,10 +133,87 @@ afterwards (Step 5.6) — so ours pays frontier-model thinking on findings it is
 away. Same insight, opposite order. This is also workstream 1's calibration lever: an early
 cheap filter is what makes a short trustworthy list possible.
 
-- [ ] Identify which reviewer personas contribute zero unique clusters across the 9 subjects
-      (per-subject `unique_true` + cluster `reported_by` already support this)
-- [ ] Test a reduced roster / conditional dispatch and re-measure recall — now the
-      best-evidenced lever: ours' output is 2× anthropic's on 41% more agents
+### Measured: per-persona yield vs. cost (`analysis/scripts/roster_yield.py`)
+
+A cluster is **sole-found** by persona P in a run when P is the only `ours` reviewer that
+reported it — i.e. what that run would have lost had P not been dispatched. Validators are
+excluded (they re-verify, never originate). Cost is per-persona sub-agent output, trustworthy
+only since #dcc-m8ar. Persona attribution was missing from `analysis.json` for subjects 2/3/9/10
+and half of 6; it is recovered from each transcript's `attributionAgent` and now cached in
+`analysis/subject-NN/agent-personas.json`, so the analysis survives transcript pruning.
+
+| persona | runs | tok/run | share | sole | subst | v-minor | noise | tok/useful |
+|---|---|---|---|---|---|---|---|---|
+| adversarial-reviewer | 14 | 23,251 | 6.4% | 13 | **12** | 0 | 1 | 27,126 |
+| test-reviewer | 16 | 29,600 | 9.3% | 49 | 8 | **21** | 20 | 16,331 |
+| broad-reviewer | 18 | 43,515 | **15.4%** | 18 | 5 | 7 | 6 | 65,272 |
+| quick-reviewer | 18 | 31,935 | 11.3% | 6 | 4 | 2 | 0 | 95,804 |
+| security-reviewer | 3 | 12,637 | 0.7% | 7 | 4 | 1 | 2 | **7,582** |
+| spec-compliance-reviewer | 9 | 18,128 | 3.2% | 4 | 3 | 0 | 1 | 54,384 |
+| consistency-reviewer | 18 | 22,724 | 8.0% | 36 | 2 | 16 | 18 | 22,724 |
+| design-reviewer | 12 | 24,791 | 5.8% | 8 | 2 | 4 | 2 | 49,582 |
+| prior-feedback-reviewer | 11 | 10,737 | 2.3% | 5 | 2 | 0 | 3 | 59,054 |
+| knowledge-reviewer | 18 | 16,464 | 5.8% | 14 | 1 | 5 | 8 | 49,391 |
+| typescript-reviewer | 6 | 36,826 | 4.3% | 10 | 0 | 8 | 2 | 27,620 |
+| go-reviewer | 4 | 31,840 | 2.5% | 3 | 0 | 1 | 2 | **127,359** |
+| **performance-reviewer** | 12 | 16,135 | 3.8% | 3 | **0** | **0** | 3 | — |
+| **dotnet-reviewer** | 6 | 24,105 | 2.8% | 1 | **0** | **0** | 1 | — |
+| rust-reviewer | 2 | 10,639 | 0.4% | 0 | 0 | 0 | 0 | — |
+| **finding-validator** | 18 | 48,850 | **17.3%** | — | — | — | — | n/a by design |
+
+**The largest line item is the validation wave** — 17.3% of sub-agent output, more than any
+reviewer, originating nothing by construction. Its value is refuting false findings, which this
+table cannot see. Add the always-on floor (broad 15.4% + quick 11.3%) and **44% of sub-agent
+output goes to machinery that runs regardless of the changeset**.
+
+**Zero useful sole clusters:** `performance-reviewer` (12 dispatches, 12 clusters reported, 3
+sole — all noise) and `dotnet-reviewer` (6 dispatches, 1 sole, noise). `rust-reviewer` also
+scores zero but at n=2 that is no evidence. `go-reviewer` is the worst ratio among personas that
+produced anything at all: 127k tokens per useful sole cluster.
+
+**Best value:** `security-reviewer` at 7,582 tok/useful — the best ratio in the roster, and
+dispatched only 3 times in 18 runs, so its gate looks too tight. `test-reviewer` has the highest
+absolute useful yield (29 sole clusters). `adversarial-reviewer` produces the most *substantive*
+sole findings of any persona (12) at a mid-range cost.
+
+### Simulated reduction — free on this evidence, but not yet re-measured
+
+`roster_yield.py --simulate=performance-reviewer,dotnet-reviewer,go-reviewer,rust-reviewer`:
+
+| | kept | lost |
+|---|---|---|
+| TP-primary | 27 | **0** |
+| TP-human | 6 | **0** |
+| valid-other | 67 | **0** |
+| valid-minor | 87 | 1 |
+| trivia | 70 | 6 |
+| false-positive | 6 | 0 |
+
+**9.6% of sub-agent output saved (486,887 of 5,085,915 tokens), zero substantive clusters lost,
+one suggestion lost, six trivia removed** — signal:noise improves slightly.
+
+Three caveats before acting on it:
+
+1. **It is a simulation over recorded findings, not a re-run.** It assumes surviving agents
+   report exactly what they reported.
+2. **Removing corroborators can lower confidence anchors.** Consolidation promotes confidence on
+   agreement (Step 5 rule 4), so dropping a persona that never *uniquely* finds anything can
+   still push a surviving finding below the confidence gate. Sole-found systematically
+   undercuts corroboration value — which is precisely why the floor agents look expensive here.
+3. **Stack reviewers are hard-gated**, so each sees only its language's subjects: rust n=2,
+   go n=4, dotnet n=6. Only `performance-reviewer` (n=12) is on solid ground.
+
+
+- [x] Identify which reviewer personas contribute zero unique clusters across the 9 subjects
+      — done: `performance-reviewer` and `dotnet-reviewer` contribute zero useful sole
+      clusters; see the table above and `analysis/scripts/roster_yield.py`
+- [ ] Test a reduced roster / conditional dispatch and **re-measure recall** — the simulation
+      above says dropping performance/dotnet/go/rust costs 0 substantive clusters for 9.6% of
+      sub-agent output, but only a re-run settles the anchor-promotion effect (caveat 2)
+- [ ] Re-examine `security-reviewer`'s dispatch gate — best ratio in the roster (7,582
+      tok/useful) yet dispatched in only 3 of 18 runs; it looks too tight
+- [ ] Weigh the validation wave against its yield — 17.3% of sub-agent output, the single
+      largest line item, and invisible to a finding-yield measure (it refutes rather than finds)
 - [ ] Investigate why cost scales with *repo* size rather than *diff* size
 - [ ] Compare per-agent output against anthropic's 13.7k — are ours' reviewers reading and
       restating more context than their brief needs?
