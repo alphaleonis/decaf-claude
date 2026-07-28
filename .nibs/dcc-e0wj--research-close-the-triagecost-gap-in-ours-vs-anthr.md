@@ -7,7 +7,7 @@ type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-28T21:03:57Z
+updated_at: 2026-07-28T21:08:34Z
 order: zzw
 ---
 
@@ -367,7 +367,11 @@ The only subject ours missed in both repeats (subject 4, typescript/small) was a
 regression, invisible in the diff — it changed the token stream a public API returns and only
 crashed external consumers. anthropic caught it by pulling the revert commit from git history.
 
-- [ ] Evaluate adding a history/blame retrieval step
+- [ ] Evaluate adding a history/blame retrieval step — **scope it to the changed files.**
+      Unscoped retrieval would flip ours from diff-scaled to repo-scaled. anthropic runs the most
+      history-based agents of any tool and still has the lowest repo sensitivity (partial
+      r = 0.119 vs ours 0.403) precisely because every channel is bounded to the modified files.
+      Measured table and the rule: #dcc-gcob
 - [ ] **Trade-off to weigh:** that same retrieval channel produced anthropic's worst false
       positive — a hallucinated claim that "a maintainer flagged this on the PR" when the PR had
       no such comment. Any retrieval must verify claims against merged code before reporting.

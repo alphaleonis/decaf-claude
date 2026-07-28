@@ -9,7 +9,7 @@ estimate: l
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-07-28T20:42:40Z
+updated_at: 2026-07-28T21:07:42Z
 parent: dcc-hyxw
 order: as
 ---
@@ -67,3 +67,37 @@ Treat a drop in multi-finder agreement as a **cost**, not a success, and measure
 
 Reasoning and measured basis: #dcc-e0wj → `# Candidate interventions` → item 3. Larger design
 change; needs its own re-run rather than sharing one.
+
+# Constraint: keep every evidence channel scoped to the changed files
+
+Adopting anthropic's evidence-channel model is the point of this nib, but three of the five
+channels named above — git history, prior review threads, project conventions — are **repo- and
+history-scaled unless explicitly bounded**. Lifting the idea without the bound would flip ours'
+cost from diff-driven to repo-driven.
+
+Measured residual repo-sensitivity, after controlling for diff size (n=9 subjects):
+
+| tool | partial r(cost, repo files \| diff) |
+|---|---|
+| anthropic | **0.119** |
+| **ours** | **0.403** |
+| pr-review-toolkit | 0.595 |
+| tag1 | 0.770 |
+| superpowers | 0.831 |
+
+Anthropic runs the *most* history-based agents of any tool in the study and still has the lowest
+repo sensitivity, because every repo-touching channel is scoped to the modified files:
+
+- "Read the git blame and history of the code **modified**"
+- "Read previous pull requests that touched **these files**"
+- "CLAUDE.md files in the directories **whose files the pull request modified**"
+
+superpowers is the counterexample at 0.831 — one agent, a diff range, and free rein.
+
+**Rule: scoped retrieval stays diff-scaled; unscoped exploration becomes repo-scaled.** Every
+brief written under this nib must name its scope in terms of the changed files. Ours currently
+scales with the change under review (r = +0.80 on diff LOC, +0.31 on repo files) — that is a
+property worth not losing, and it is the one axis where ours beats every tool except anthropic.
+
+Treat a rise in partial r(cost, repo | diff) above the 0.403 baseline as a **regression**, and
+measure it in the same re-run as the restatement rate.
