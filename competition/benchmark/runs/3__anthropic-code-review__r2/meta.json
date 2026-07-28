@@ -1,0 +1,173 @@
+{
+  "run_id": "3__anthropic-code-review__r2",
+  "subject_id": 3,
+  "lang": "csharp",
+  "size": "large",
+  "tool": "anthropic-code-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/runtime",
+  "pr": 127146,
+  "merge_sha": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "review_base": "7bba2205c2a75e4364dc32dc79cc91fae13791af^1",
+  "review_head": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1080,
+  "duration_ms": "76025",
+  "duration_api_ms": "2321415",
+  "num_turns": "4",
+  "cost_usd": "8.956902149999998",
+  "orch_usage": {
+    "input_tokens": "6",
+    "output_tokens": "5194",
+    "cache_creation_tokens": "3853",
+    "cache_read_tokens": "300026",
+    "total_tokens": 309079
+  },
+  "session_tokens": {
+    "subagents": 13,
+    "input": 758,
+    "output": 185679,
+    "cache_creation": 760405,
+    "cache_read": 11568571,
+    "total": 12515413,
+    "orchestrator": {
+      "output": 25921,
+      "total": 1434648,
+      "duration_s": 1078
+    },
+    "per_subagent": [
+      {
+        "output": 18896,
+        "input": 88,
+        "cache_creation": 107759,
+        "cache_read": 2912142,
+        "total": 3038885,
+        "duration_s": 613,
+        "agent": "agent-a035bc7fafa8937a5"
+      },
+      {
+        "output": 17381,
+        "input": 38,
+        "cache_creation": 71339,
+        "cache_read": 1035231,
+        "total": 1123989,
+        "duration_s": 218,
+        "agent": "agent-a6a9f6f079ae5595a"
+      },
+      {
+        "output": 7583,
+        "input": 106,
+        "cache_creation": 36521,
+        "cache_read": 440915,
+        "total": 485125,
+        "duration_s": 135,
+        "agent": "agent-a873ff75d7274408f"
+      },
+      {
+        "output": 60922,
+        "input": 56,
+        "cache_creation": 140052,
+        "cache_read": 2712643,
+        "total": 2913673,
+        "duration_s": 640,
+        "agent": "agent-aa3ae95f04211d9f3"
+      },
+      {
+        "output": 2794,
+        "input": 98,
+        "cache_creation": 37934,
+        "cache_read": 345447,
+        "total": 386273,
+        "duration_s": 49,
+        "agent": "agent-ab07c85dc58fc2a18"
+      },
+      {
+        "output": 8496,
+        "input": 22,
+        "cache_creation": 65440,
+        "cache_read": 530691,
+        "total": 604649,
+        "duration_s": 101,
+        "agent": "agent-ab2fa67bcb7d4c514"
+      },
+      {
+        "output": 3316,
+        "input": 26,
+        "cache_creation": 29950,
+        "cache_read": 54895,
+        "total": 88187,
+        "duration_s": 39,
+        "agent": "agent-ac64974b6a4fb260e"
+      },
+      {
+        "output": 703,
+        "input": 18,
+        "cache_creation": 25628,
+        "cache_read": 19467,
+        "total": 45816,
+        "duration_s": 11,
+        "agent": "agent-ac83bd7ff31c6d1d5"
+      },
+      {
+        "output": 6735,
+        "input": 146,
+        "cache_creation": 54794,
+        "cache_read": 874733,
+        "total": 936408,
+        "duration_s": 95,
+        "agent": "agent-ae7a4f7fc4b0fc3f8"
+      },
+      {
+        "output": 2887,
+        "input": 18,
+        "cache_creation": 18889,
+        "cache_read": 28400,
+        "total": 50194,
+        "duration_s": 33,
+        "agent": "agent-aec0aafe39c7159f9"
+      },
+      {
+        "output": 810,
+        "input": 10,
+        "cache_creation": 11403,
+        "cache_read": 8547,
+        "total": 20770,
+        "duration_s": 9,
+        "agent": "agent-af3b4582ce58a2628"
+      },
+      {
+        "output": 3270,
+        "input": 66,
+        "cache_creation": 20703,
+        "cache_read": 192387,
+        "total": 216426,
+        "duration_s": 47,
+        "agent": "agent-afae41234070c6122"
+      },
+      {
+        "output": 25965,
+        "input": 32,
+        "cache_creation": 80559,
+        "cache_read": 1063814,
+        "total": 1170370,
+        "duration_s": 271,
+        "agent": "agent-afb510ef3485a095f"
+      }
+    ],
+    "max_subagent_duration_s": 640,
+    "sum_subagent_duration_s": 2261
+  },
+  "input_tokens": "6",
+  "output_tokens": "5194",
+  "cache_creation_tokens": "3853",
+  "cache_read_tokens": "300026",
+  "total_tokens": 309079,
+  "session_id": "f962f1de-ea51-4dfd-b8ac-0dc449e87a74",
+  "findings_lines": 42,
+  "invocation": "Use the Skill tool to run `code-review:code-review` — the plugin-qualified command from code-review@claude-plugins-official. It is NOT `decaf-quality:code-review`: a different tool ships a skill of the same bare name, so never invoke a bare `/code-review`, and abort rather than substituting anything else if the qualified skill does not resolve. Review pull request #127146 of the GitHub repository dotnet/runtime. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-28T23:07:15Z"
+}
