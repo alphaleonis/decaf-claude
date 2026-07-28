@@ -30,10 +30,10 @@
   "session_tokens": {
     "subagents": 5,
     "input": 16145,
-    "output": 21901,
+    "output": 107852,
     "cache_creation": 325044,
     "cache_read": 1294938,
-    "total": 1658028,
+    "total": 1743979,
     "orchestrator": {
       "output": 21385,
       "total": 398050,
@@ -41,47 +41,47 @@
     },
     "per_subagent": [
       {
-        "output": 402,
+        "output": 21511,
         "input": 19,
         "cache_creation": 68946,
         "cache_read": 453555,
-        "total": 522922,
+        "total": 544031,
         "duration_s": 423,
         "agent": "agent-a47759a771cd80f3d"
       },
       {
-        "output": 24,
+        "output": 9123,
         "input": 10,
         "cache_creation": 47181,
         "cache_read": 170096,
-        "total": 217311,
+        "total": 226410,
         "duration_s": 133,
         "agent": "agent-a6a12fb2c65cec1c1"
       },
       {
-        "output": 17,
+        "output": 24505,
         "input": 6,
         "cache_creation": 62118,
         "cache_read": 84064,
-        "total": 146205,
+        "total": 170693,
         "duration_s": 321,
         "agent": "agent-a71c15a4b96655a69"
       },
       {
-        "output": 15,
+        "output": 15002,
         "input": 4,
         "cache_creation": 46148,
         "cache_read": 33605,
-        "total": 79772,
+        "total": 94759,
         "duration_s": 207,
         "agent": "agent-ae438ae3a0fc88a35"
       },
       {
-        "output": 58,
+        "output": 16326,
         "input": 11,
         "cache_creation": 50153,
         "cache_read": 243546,
-        "total": 293768,
+        "total": 310036,
         "duration_s": 229,
         "agent": "agent-ae7f9075913eec193"
       }

@@ -30,10 +30,10 @@
   "session_tokens": {
     "subagents": 10,
     "input": 3663,
-    "output": 24223,
+    "output": 104162,
     "cache_creation": 414840,
     "cache_read": 5362705,
-    "total": 5805431,
+    "total": 5885370,
     "orchestrator": {
       "output": 16216,
       "total": 376693,
@@ -41,92 +41,92 @@
     },
     "per_subagent": [
       {
-        "output": 17,
+        "output": 3364,
         "input": 74,
         "cache_creation": 26945,
         "cache_read": 186668,
-        "total": 213704,
+        "total": 217051,
         "duration_s": 64,
         "agent": "agent-a014b7d8318e820c2"
       },
       {
-        "output": 5,
+        "output": 1468,
         "input": 34,
         "cache_creation": 13211,
         "cache_read": 62915,
-        "total": 76165,
+        "total": 77628,
         "duration_s": 18,
         "agent": "agent-a0ec27531f585a40e"
       },
       {
-        "output": 1175,
+        "output": 10667,
         "input": 20,
         "cache_creation": 44130,
         "cache_read": 386211,
-        "total": 431536,
+        "total": 441028,
         "duration_s": 128,
         "agent": "agent-a2286be883002c61a"
       },
       {
-        "output": 3507,
+        "output": 26231,
         "input": 82,
         "cache_creation": 76983,
         "cache_read": 2279088,
-        "total": 2359660,
+        "total": 2382384,
         "duration_s": 389,
         "agent": "agent-a32dbeff85d0a9b4d"
       },
       {
-        "output": 2709,
+        "output": 16014,
         "input": 20,
         "cache_creation": 49998,
         "cache_read": 314076,
-        "total": 366803,
+        "total": 380108,
         "duration_s": 177,
         "agent": "agent-a37613387483d4068"
       },
       {
-        "output": 557,
+        "output": 21530,
         "input": 52,
         "cache_creation": 71972,
         "cache_read": 1495226,
-        "total": 1567807,
+        "total": 1588780,
         "duration_s": 284,
         "agent": "agent-a6ad794b54d9a53e2"
       },
       {
-        "output": 6,
+        "output": 450,
         "input": 26,
         "cache_creation": 14131,
         "cache_read": 44897,
-        "total": 59060,
+        "total": 59504,
         "duration_s": 22,
         "agent": "agent-a6daf4e7c73007c6d"
       },
       {
-        "output": 16,
+        "output": 3395,
         "input": 66,
         "cache_creation": 19114,
         "cache_read": 167899,
-        "total": 187095,
+        "total": 190474,
         "duration_s": 55,
         "agent": "agent-aa94ba3c6615e8c75"
       },
       {
-        "output": 6,
+        "output": 945,
         "input": 26,
         "cache_creation": 23431,
         "cache_read": 36904,
-        "total": 60367,
+        "total": 61306,
         "duration_s": 22,
         "agent": "agent-ac96ba06515669583"
       },
       {
-        "output": 9,
+        "output": 3882,
         "input": 42,
         "cache_creation": 16356,
         "cache_read": 90134,
-        "total": 106541,
+        "total": 110414,
         "duration_s": 50,
         "agent": "agent-ae99d5f86765687c4"
       }

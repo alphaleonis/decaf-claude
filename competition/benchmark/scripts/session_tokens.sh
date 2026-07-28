@@ -4,8 +4,9 @@
 # Usage: session_tokens.sh <session_id>   -> prints a JSON object (or {"error":...})
 #
 # Notes baked into the numbers:
-#  - Token sums are deduped by message id. `total` is prompt-cache-inflated (cache_read re-counted
-#    per turn); `output` is the clean, cache-independent work signal.
+#  - Token sums are deduped by message id, taking the LAST record per id (see file_stats below).
+#    `total` is prompt-cache-inflated (cache_read re-counted per turn); `output` is the clean,
+#    cache-independent work signal.
 #  - TIME: the authoritative TOTAL review time is the harness `wall_clock_s` (measured around the whole
 #    run), NOT the sum of subagent durations — subagents run in PARALLEL. `per_subagent[].duration_s`
 #    (first->last message in that subagent's transcript) is diagnostic; `max_subagent_duration_s` is
@@ -22,10 +23,16 @@ fi
 subdir="$(dirname "$orch")/${sid}/subagents"
 
 # per-file stats: deduped token sums + duration from first/last timestamp
+#
+# Take the LAST usage record per message id, not the first. A transcript writes one line per
+# CONTENT BLOCK, and on streamed responses each line carries the usage as it stood when that
+# block was emitted — so a single message reads e.g. [5, 5, 278] and only the final entry is
+# the cumulative total. Picking `.[0]` undercounted subagent output by ~10x (the orchestrator
+# happened to be unaffected: its lines all carry the final value already).
 file_stats() {
   jq -s '
     ( [ .[] | select(.type=="assistant" and .message.usage!=null) | {id:.message.id, u:.message.usage} ]
-      | group_by(.id) | map(.[0].u) ) as $u
+      | group_by(.id) | map(.[-1].u) ) as $u
     | ( [ .[] | .timestamp // empty | sub("\\.[0-9]+Z$";"Z") | (fromdateiso8601? // empty) ] ) as $ts
     | { output:         (($u|map(.output_tokens//0)|add)//0),
         input:          (($u|map(.input_tokens//0)|add)//0),
