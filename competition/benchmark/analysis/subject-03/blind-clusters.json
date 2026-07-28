@@ -1,0 +1,206 @@
+[
+ {
+  "cluster_id": "c4",
+  "summary": "MakeGenericMethodSite.InstantiateDependencies did NOT receive the NormalizeInstantiation() fix its structural twin MakeGenericTypeSite got, so MakeGenericMethod dataflow still checks constraints on (and roots) denormalized shapes \u2014 the same hazard class (#126604) on the method path, untested. (Some reviewers argue it is defensible via downstream GetCanonMethodTarget canonicalization.)",
+  "file": "src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/Dataflow/HandleCallAction.cs",
+  "line": 769
+ },
+ {
+  "cluster_id": "c34",
+  "summary": "The new *.NonCanon.cs stub files deviate from dotnet/runtime's established capability-gated stub naming convention (*.Dummy.<Feature>.cs); 'NonCanon' has no precedent in the repo.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.NonCanon.cs",
+  "line": null
+ },
+ {
+  "cluster_id": "c13",
+  "summary": "Multiple new-code branches are untested: array rank/category mismatches (only rank-1 SzArrays covered), canon-on-the-left branches (C/D) of IsCanonicalTypeArgMatch, the mixed equal+canon instantiation path of IsCanonEquivalent (the actual #126604 shape), and no negative array test (int[] vs __Canon[]).",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+  "line": 60
+ },
+ {
+  "cluster_id": "c35",
+  "summary": "IsCanonicalTypeArgMatch's doc comment ('__Canon matches any reference type') understates its actual behaviour: it also accepts __UniversalCanon (not a reference type) and recurses into arrays/parameterized types via IsCanonEquivalent.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+  "line": 26
+ },
+ {
+  "cluster_id": "c14",
+  "summary": "The IsCanonicalTypeArgMatch/IsCanonEquivalent mutual recursion carries no StackOverflowProtect/cycle guard, unlike every other recursive walk in the file (validators note the recursion is structurally decreasing, so this is a consistency/defensive concern, not a live bug).",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+  "line": 30
+ },
+ {
+  "cluster_id": "c33",
+  "summary": "The new smoke-test types use C# semicolon (empty-body) declarations, a style not used elsewhere in this particular file though established in sibling test files and fully valid at this LangVersion.",
+  "file": "src/tests/nativeaot/SmokeTests/TrimmingBehaviors/Dataflow.cs",
+  "line": 709
+ },
+ {
+  "cluster_id": "c3",
+  "summary": "Every other consumer of the widened CanCastTo inherits the new optimistic semantics unaudited: DevirtualizationManager's guards, MetadataVirtualMethodAlgorithm's DIM/static-virtual variant resolution, MethodDesc covariant-return compatibility, TypeExtensions.MergeTypesToCommonParent/TryResolveConstraintMethodApprox, crossgen2's TypeValidationChecker/UnsafeAccessors, and ~10 downstream projects referencing ILCompiler.TypeSystem \u2014 none adjusted or tested by the PR.",
+  "file": "src/coreclr/tools/Common/Compiler/DevirtualizationManager.cs",
+  "line": 97
+ },
+ {
+  "cluster_id": "c25",
+  "summary": "Several new test assertions are vacuous/non-load-bearing: five Assert.True cases pass via pre-existing short-circuits (IsGCPointer etc.) before reaching the new canon code their comments credit, and two 'canonical variance' assertions pass via the ordinary variance path.",
+  "file": "src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs",
+  "line": 425
+ },
+ {
+  "cluster_id": "c21",
+  "summary": "The pre-existing value-type prefilter fires before any canon-awareness, so e.g. 'where T : U' with T=MyStruct<string>, U=MyStruct<__Canon> returns false even though the canon logic would match \u2014 canonical value-type generic shapes are shadowed.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.cs",
+  "line": 73
+ },
+ {
+  "cluster_id": "c17",
+  "summary": "IsSpecialTypeMeetingConstraint's NotNullableValueTypeConstraint arm appears to be dead code \u2014 the caller's guard is already false for __UniversalCanon (the only type that could match), so the arm can never fire.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs",
+  "line": 18
+ },
+ {
+  "cluster_id": "c2",
+  "summary": "System.Private.TypeLoader.csproj is given the REAL CastingHelper.Canon.cs (not the behavior-preserving NonCanon stub), silently changing the runtime type loader's CanCastTo semantics used by variant GVM dispatch resolution \u2014 a runtime behavior change with no test and no PR-visible justification (the 'include all .Canon.cs files' rule).",
+  "file": "project files (ILCompiler.TypeSystem.csproj / System.Private.TypeLoader.csproj / ILVerification.projitems)",
+  "line": 120
+ },
+ {
+  "cluster_id": "c1",
+  "summary": "The canon-widened shared CanCastTo violates the JIT-EE compareTypesForCast contract: IsCanonicalCastTarget/IsCanonEquivalent make e.g. IFoo<__Canon>.CanCastTo(IFoo<string>) return TRUE ('castable for SOME instantiation'), but CorInfoImpl.compareTypesForCast passes positive results through as TypeCompareState.Must \u2014 its own comment table documents this case as May. The JIT/crossgen2 then folds/elides required runtime casts for shared generics, a type-safety miscompile (both ILC and R2R; the READYTORUN sanitizer only converts MustNot, not the new wrong Must).",
+  "file": "src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.cs",
+  "line": 2946
+ },
+ {
+  "cluster_id": "c19",
+  "summary": "Unused `using System.Diagnostics;` left in TypeSystemConstraintsHelpers.NonCanon.cs \u2014 the Copilot bot flagged unused usings and the cleanup removed only one of the two (the Canon sibling genuinely needs it; the stub does not).",
+  "file": "src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.NonCanon.cs",
+  "line": 4
+ },
+ {
+  "cluster_id": "c22",
+  "summary": "Undocumented ordering dependencies: CanCastToConstraintWithCanon must run before the value-type short-circuit (because __UniversalCanon.IsValueType), and IsCanonicalCastTarget's early return must precede the category switch \u2014 neither load-bearing placement is commented.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.cs",
+  "line": 176
+ },
+ {
+  "cluster_id": "c23",
+  "summary": "Comment-contract mismatches in the constraints helper: CanCastToConstraintWithCanon's doc reads as a caller precondition but it is invoked unconditionally, and the 'any concrete type substituted at runtime will be validated then' claim is an absolute runtime guarantee not verifiable from this diff.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs",
+  "line": 33
+ },
+ {
+  "cluster_id": "c30",
+  "summary": "RootingHelpers swallows all TypeSystemException from CheckCanGenerateMethod and returns false silently; when CheckConstraints fails the dependency list is silently empty with no diagnostic.",
+  "file": "src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/RootingHelpers.cs",
+  "line": 178
+ },
+ {
+  "cluster_id": "c12",
+  "summary": "IsCanonEquivalent's equal-arity invariant is implicit (no Debug.Assert unlike the sibling with identical logic), and the per-arg loop uses reference equality (==) instead of IsEquivalentTo.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+  "line": 70
+ },
+ {
+  "cluster_id": "c20",
+  "summary": "Project-file style inconsistencies: CastingHelper.Canon.cs entries spliced into the alphabetized Common block instead of the dedicated Canon block (two csproj files), and the new <Link> element uses 8-space indentation vs the file's 6-space convention.",
+  "file": "project files (ILCompiler.TypeSystem.csproj / System.Private.TypeLoader.csproj / ILVerification.projitems)",
+  "line": 379
+ },
+ {
+  "cluster_id": "c11",
+  "summary": "IsCanonEquivalent's doc ('same type definition with all type arguments equal or canon-compatible') contradicts the code: the Length==0 early-return makes identical NON-generic pairs return false, an unexplained asymmetry.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+  "line": 78
+ },
+ {
+  "cluster_id": "c16",
+  "summary": "IsSpecialTypeMeetingConstraint has no doc comment despite encoding the least-obvious policy of the five new helpers (why __Canon meets class/new() but not struct).",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs",
+  "line": 10
+ },
+ {
+  "cluster_id": "c5",
+  "summary": "The new canonical branches of the real CanCastTo surface are essentially untested: IsCanonicalCastTarget's true-returning arms never execute in any test (deleting the hook leaves the suite green), no test exercises the broadened CanCastTo outside constraint checking, and there is zero coverage of compareTypesForCast/devirtualization/variance consumers with canonical inputs.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+  "line": 33
+ },
+ {
+  "cluster_id": "c18",
+  "summary": "Naming drift in the new code: parameter 'type' vs sibling convention 'thisType'; 'IsCanonEquivalent' short-form vs sibling 'Canonical'; IsSpecialTypeMeetingConstraint breaks the file's Check* convention; NonVariantGenImpl breaks the ArgN fixture convention.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+  "line": 30
+ },
+ {
+  "cluster_id": "c9",
+  "summary": "The Canon/NonCanon partial-file selection contract is entirely undocumented and only half-enforced: compile errors catch a missing/double include, but a WRONG choice is silent (a project picking NonCanon silently resurrects #126604; picking Canon silently widens semantics). C#9 extended partial methods (permitted at this LangVersion) would declare the seam; the stubs carry zero explanatory comments.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.NonCanon.cs",
+  "line": 8
+ },
+ {
+  "cluster_id": "c31",
+  "summary": "No test exercises the canonical constraint logic with a non-null InstantiationContext, unlike the real production caller.",
+  "file": "src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs",
+  "line": null
+ },
+ {
+  "cluster_id": "c27",
+  "summary": "The end-to-end smoke test is a weaker proxy for #126604: it exercises the wildcard-param branch rather than the structural interface match of the reported repro, has no negative case, and its only 'assertion' is .ToString() (did-not-throw).",
+  "file": "src/tests/nativeaot/SmokeTests/TrimmingBehaviors/Dataflow.cs",
+  "line": 702
+ },
+ {
+  "cluster_id": "c6",
+  "summary": "Doc/code mismatches in the new helpers: the 'pointers/byrefs/function pointers are not valid instantiation arguments' comment corresponds to no code check (the __UniversalCanon branch returns true unconditionally for them), IsCanonicalCastTarget's deliberate one-directional asymmetry is undocumented, and IsCanonicalTypeArgMatch's summary omits the structural/recursive half.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+  "line": 17
+ },
+ {
+  "cluster_id": "c8",
+  "summary": "Function-pointer canon shapes (e.g. delegate*<string,void> vs delegate*<__Canon,void>) hit no case in IsCanonicalTypeArgMatch and silently return false, reproducing #126604's bug class for function-pointer generics.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+  "line": 30
+ },
+ {
+  "cluster_id": "c10",
+  "summary": "The canon-wildcard kernel rule is re-encoded in three/four places (CanCastToConstraintWithCanon duplicates IsCanonicalCastTarget verbatim; IsSpecialTypeMeetingConstraint re-derives it), inviting silent drift between copies.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs",
+  "line": 159
+ },
+ {
+  "cluster_id": "c7",
+  "summary": "The __UniversalCanon<->__Canon cross-form matching (the '|| IsCanonicalDefinitionType(..., Any)' disjuncts) is unexplained and arguably over-permissive \u2014 __UniversalCanon also stands for value types that __Canon cannot represent.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs",
+  "line": 57
+ },
+ {
+  "cluster_id": "c28",
+  "summary": "The two new fixture types are fetched as method-locals inside the new [Fact], inconsistent with the class's 20+ constructor-initialized field fixtures.",
+  "file": "src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs",
+  "line": 367
+ },
+ {
+  "cluster_id": "c24",
+  "summary": "Variance/base-chain integration points are only shallowly tested: no covariant (out T) fixture at all, CanCastToClass's base-walk canon match only exercised at zero-hop depth, the self-interface IsCanonEquivalent check never covered, and no negative variance-path test.",
+  "file": "src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.cs",
+  "line": 426
+ },
+ {
+  "cluster_id": "c26",
+  "summary": "Factually wrong/self-contradictory test comments: a block calls IGen<in T> contravariant then labels the same slot 'invariant arg position'; 'U=int[] stays' contradicts array canonicalization; and the 'Parameterized canonical types (__Canon[] ...)' block header promises a scenario its body never constructs (duplicate of an earlier case).",
+  "file": "src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs",
+  "line": 454
+ },
+ {
+  "cluster_id": "c32",
+  "summary": "Claim that System.Private.TypeLoader.csproj adds CastingHelper.Canon.cs but is missing the matching TypeSystemConstraintsHelpers Canon/NonCanon pair, unlike sibling projects. (Note: that project does not compile TypeSystemConstraintsHelpers.cs at all, so no pairing is required.)",
+  "file": "project files (ILCompiler.TypeSystem.csproj / System.Private.TypeLoader.csproj / ILVerification.projitems)",
+  "line": 9
+ },
+ {
+  "cluster_id": "c29",
+  "summary": "Test-assembly fixture placement/naming quibbles: new types appended after the unrelated GenericMethods class rather than grouped with variant counterparts; NonVariantGenImpl diverges from the ArgN implementer naming.",
+  "file": ".../CoreTestAssembly/GenericConstraints.cs",
+  "line": 72
+ }
+]

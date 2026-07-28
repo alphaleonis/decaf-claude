@@ -1,0 +1,146 @@
+{
+  "run_id": "3__anthropic-code-review__r1",
+  "subject_id": 3,
+  "lang": "csharp",
+  "size": "large",
+  "tool": "anthropic-code-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/runtime",
+  "pr": 127146,
+  "merge_sha": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "review_base": "7bba2205c2a75e4364dc32dc79cc91fae13791af^1",
+  "review_head": "7bba2205c2a75e4364dc32dc79cc91fae13791af",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 988,
+  "duration_ms": "984558",
+  "duration_api_ms": "2342958",
+  "num_turns": "15",
+  "cost_usd": "10.35346655",
+  "orch_usage": {
+    "input_tokens": "13",
+    "output_tokens": "15844",
+    "cache_creation_tokens": "65212",
+    "cache_read_tokens": "389877",
+    "total_tokens": 470946
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 787,
+    "output": 188299,
+    "cache_creation": 807979,
+    "cache_read": 14546989,
+    "total": 15544054,
+    "orchestrator": {
+      "output": 15844,
+      "total": 470946,
+      "duration_s": 984
+    },
+    "per_subagent": [
+      {
+        "output": 3097,
+        "input": 66,
+        "cache_creation": 36047,
+        "cache_read": 201787,
+        "total": 240997,
+        "duration_s": 42,
+        "agent": "agent-a06ff068a29b4ef9e"
+      },
+      {
+        "output": 24765,
+        "input": 50,
+        "cache_creation": 76590,
+        "cache_read": 1749113,
+        "total": 1850518,
+        "duration_s": 479,
+        "agent": "agent-a1c06dfdf6088ae7a"
+      },
+      {
+        "output": 889,
+        "input": 18,
+        "cache_creation": 26328,
+        "cache_read": 20171,
+        "total": 47406,
+        "duration_s": 12,
+        "agent": "agent-a3194dcc9c88391af"
+      },
+      {
+        "output": 37831,
+        "input": 46,
+        "cache_creation": 140107,
+        "cache_read": 2184365,
+        "total": 2362349,
+        "duration_s": 458,
+        "agent": "agent-a4cb64ac7ea549151"
+      },
+      {
+        "output": 45443,
+        "input": 104,
+        "cache_creation": 141438,
+        "cache_read": 4545343,
+        "total": 4732328,
+        "duration_s": 609,
+        "agent": "agent-a4da1bf5e0d509857"
+      },
+      {
+        "output": 6375,
+        "input": 178,
+        "cache_creation": 36611,
+        "cache_read": 730090,
+        "total": 773254,
+        "duration_s": 162,
+        "agent": "agent-a63b83d03aa2f56cd"
+      },
+      {
+        "output": 32300,
+        "input": 58,
+        "cache_creation": 134739,
+        "cache_read": 2800011,
+        "total": 2967108,
+        "duration_s": 396,
+        "agent": "agent-a90523045f4eb3650"
+      },
+      {
+        "output": 16443,
+        "input": 178,
+        "cache_creation": 100259,
+        "cache_read": 1729891,
+        "total": 1846771,
+        "duration_s": 247,
+        "agent": "agent-aae27747f9b5a62a1"
+      },
+      {
+        "output": 3374,
+        "input": 34,
+        "cache_creation": 31394,
+        "cache_read": 84721,
+        "total": 119523,
+        "duration_s": 39,
+        "agent": "agent-ac34e8492f66b9db6"
+      },
+      {
+        "output": 1938,
+        "input": 42,
+        "cache_creation": 19254,
+        "cache_read": 111620,
+        "total": 132854,
+        "duration_s": 29,
+        "agent": "agent-aef132659939fe215"
+      }
+    ],
+    "max_subagent_duration_s": 609,
+    "sum_subagent_duration_s": 2473
+  },
+  "input_tokens": "13",
+  "output_tokens": "15844",
+  "cache_creation_tokens": "65212",
+  "cache_read_tokens": "389877",
+  "total_tokens": 470946,
+  "session_id": "0c2e4266-9f62-4fd9-9b7f-14df0e079b58",
+  "findings_lines": 42,
+  "invocation": "Use the Skill tool to run `code-review:code-review` — the plugin-qualified command from code-review@claude-plugins-official. It is NOT `decaf-quality:code-review`: a different tool ships a skill of the same bare name, so never invoke a bare `/code-review`, and abort rather than substituting anything else if the qualified skill does not resolve. Review pull request #127146 of the GitHub repository dotnet/runtime. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-28T22:49:13Z"
+}
