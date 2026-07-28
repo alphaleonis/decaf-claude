@@ -141,6 +141,16 @@ def main(argv: list[str]) -> int:
                 events.append((verdict, frozenset(found_by)))
                 for persona in found_by:
                     yields[persona]["reported"] += 1
+                    # Participation, NOT sole-finding, is the primary value measure: a persona
+                    # that corroborates a substantive cluster is doing the work consolidation
+                    # depends on (Step 5 promotes confidence on agreement). Ranking by sole
+                    # findings alone penalises exactly the agents that agree on real bugs.
+                    if verdict in SUBSTANTIVE:
+                        yields[persona]["substantive"] += 1
+                    elif verdict == "valid-minor":
+                        yields[persona]["valid_minor"] += 1
+                    elif verdict in NOISE:
+                        yields[persona]["noise"] += 1
                 if len(found_by) == 1:
                     persona = next(iter(found_by))
                     yields[persona]["sole"] += 1
@@ -156,6 +166,7 @@ def main(argv: list[str]) -> int:
         counts = yields[persona]
         runs = len(dispatched[persona])
         sole_useful = counts["sole_substantive"] + counts["sole_valid_minor"]
+        graded = counts["substantive"] + counts["valid_minor"] + counts["noise"]
         rows.append(
             {
                 "persona": persona,
@@ -163,7 +174,19 @@ def main(argv: list[str]) -> int:
                 "output_tokens": tokens[persona],
                 "tokens_per_run": round(tokens[persona] / runs) if runs else 0,
                 "clusters_reported": counts["reported"],
+                "substantive": counts["substantive"],
+                "valid_minor": counts["valid_minor"],
+                "noise": counts["noise"],
+                "signal_pct": (
+                    round((counts["substantive"] + counts["valid_minor"]) / graded * 100)
+                    if graded
+                    else None
+                ),
+                "tokens_per_substantive": (
+                    round(tokens[persona] / counts["substantive"]) if counts["substantive"] else None
+                ),
                 "sole_found": counts["sole"],
+                "sole_useful": sole_useful,
                 "sole_substantive": counts["sole_substantive"],
                 "sole_valid_minor": counts["sole_valid_minor"],
                 "sole_noise": counts["sole_noise"],
@@ -172,7 +195,7 @@ def main(argv: list[str]) -> int:
                 ),
             }
         )
-    rows.sort(key=lambda r: (-r["sole_substantive"], -r["sole_valid_minor"], r["persona"]))
+    rows.sort(key=lambda r: (-r["substantive"], -r["valid_minor"], r["persona"]))
 
     grand_total = sum(r["output_tokens"] for r in rows) or 1
     for row in rows:
@@ -183,18 +206,25 @@ def main(argv: list[str]) -> int:
         return 0
 
     print(
-        f"{'persona':<28}{'runs':>5}{'tok/run':>9}{'share':>7}{'rep':>6}{'sole':>6}"
-        f"{'subst':>7}{'vminor':>8}{'noise':>7}{'tok/useful':>12}"
+        f"{'persona':<28}{'runs':>5}{'share':>7}{'SUBST':>7}{'vmin':>6}{'noise':>7}"
+        f"{'sig':>6}{'soleU':>7}{'tok/subst':>11}"
     )
     for row in rows:
-        per_useful = row["tokens_per_sole_useful"]
+        per_subst = row["tokens_per_substantive"]
+        signal = row["signal_pct"]
         print(
-            f"{row['persona']:<28}{row['runs_dispatched']:>5}{row['tokens_per_run']:>9,}"
-            f"{row['share_of_subagent_output']:>6}%{row['clusters_reported']:>6}"
-            f"{row['sole_found']:>6}{row['sole_substantive']:>7}"
-            f"{row['sole_valid_minor']:>8}{row['sole_noise']:>7}"
-            f"{('—' if per_useful is None else format(per_useful, ',')):>12}"
+            f"{row['persona']:<28}{row['runs_dispatched']:>5}"
+            f"{row['share_of_subagent_output']:>6}%{row['substantive']:>7}"
+            f"{row['valid_minor']:>6}{row['noise']:>7}"
+            f"{('—' if signal is None else f'{signal}%'):>6}{row['sole_useful']:>7}"
+            f"{('—' if per_subst is None else format(per_subst, ',')):>11}"
         )
+    print(
+        "\nSUBST/vmin/noise count clusters the persona reported, corroborated or not — a "
+        "persona\nthat agrees on a real bug is doing the work consolidation depends on. soleU "
+        "counts the\nuseful clusters no sibling in that run also found; it is a secondary "
+        "signal, and low soleU\nwith high SUBST means 'reliable corroborator', not 'redundant'."
+    )
     if unresolved:
         print(f"\n{unresolved} report(s) could not be resolved to a persona")
 
