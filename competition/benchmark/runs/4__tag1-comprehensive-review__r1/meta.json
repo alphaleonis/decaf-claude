@@ -1,0 +1,146 @@
+{
+  "run_id": "4__tag1-comprehensive-review__r1",
+  "subject_id": 4,
+  "lang": "typescript",
+  "size": "small",
+  "tool": "tag1-comprehensive-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/TypeScript",
+  "pr": 61928,
+  "merge_sha": "02672d281c26e561708127da1d8d1a6cae45fee2",
+  "review_base": "02672d281c26e561708127da1d8d1a6cae45fee2^1",
+  "review_head": "02672d281c26e561708127da1d8d1a6cae45fee2",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1341,
+  "duration_ms": "1339887",
+  "duration_api_ms": "3870981",
+  "num_turns": "26",
+  "cost_usd": "18.628610650000002",
+  "orch_usage": {
+    "input_tokens": "29",
+    "output_tokens": "42120",
+    "cache_creation_tokens": "275369",
+    "cache_read_tokens": "1768028",
+    "total_tokens": 2085546
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 1242,
+    "output": 52592,
+    "cache_creation": 1056090,
+    "cache_read": 19004566,
+    "total": 20114490,
+    "orchestrator": {
+      "output": 42120,
+      "total": 2085546,
+      "duration_s": 1340
+    },
+    "per_subagent": [
+      {
+        "output": 59,
+        "input": 36,
+        "cache_creation": 58695,
+        "cache_read": 941398,
+        "total": 1000188,
+        "duration_s": 214,
+        "agent": "agent-a04bc3b5667758b3c"
+      },
+      {
+        "output": 407,
+        "input": 86,
+        "cache_creation": 122955,
+        "cache_read": 3887646,
+        "total": 4011094,
+        "duration_s": 564,
+        "agent": "agent-a2be9c8efcb77a13b"
+      },
+      {
+        "output": 376,
+        "input": 54,
+        "cache_creation": 87948,
+        "cache_read": 1862119,
+        "total": 1950497,
+        "duration_s": 378,
+        "agent": "agent-a40a6139c341d40d4"
+      },
+      {
+        "output": 52,
+        "input": 784,
+        "cache_creation": 60939,
+        "cache_read": 743965,
+        "total": 805740,
+        "duration_s": 160,
+        "agent": "agent-a86a2ad2ad92347fd"
+      },
+      {
+        "output": 24,
+        "input": 10,
+        "cache_creation": 46916,
+        "cache_read": 194631,
+        "total": 241581,
+        "duration_s": 221,
+        "agent": "agent-a93dd8be1491077a1"
+      },
+      {
+        "output": 1534,
+        "input": 34,
+        "cache_creation": 52447,
+        "cache_read": 860986,
+        "total": 915001,
+        "duration_s": 137,
+        "agent": "agent-ab251604af6994ba8"
+      },
+      {
+        "output": 5653,
+        "input": 40,
+        "cache_creation": 90579,
+        "cache_read": 1327273,
+        "total": 1423545,
+        "duration_s": 555,
+        "agent": "agent-ac2efc8095158b0eb"
+      },
+      {
+        "output": 6,
+        "input": 4,
+        "cache_creation": 46267,
+        "cache_read": 32092,
+        "total": 78369,
+        "duration_s": 39,
+        "agent": "agent-ae71bdecb252e6fde"
+      },
+      {
+        "output": 118,
+        "input": 23,
+        "cache_creation": 69187,
+        "cache_read": 603421,
+        "total": 672749,
+        "duration_s": 251,
+        "agent": "agent-aec0aa3a41438fd78"
+      },
+      {
+        "output": 2243,
+        "input": 142,
+        "cache_creation": 144788,
+        "cache_read": 6783007,
+        "total": 6930180,
+        "duration_s": 806,
+        "agent": "agent-af23bf71d00256295"
+      }
+    ],
+    "max_subagent_duration_s": 806,
+    "sum_subagent_duration_s": 3325
+  },
+  "input_tokens": "29",
+  "output_tokens": "42120",
+  "cache_creation_tokens": "275369",
+  "cache_read_tokens": "1768028",
+  "total_tokens": 2085546,
+  "session_id": "5992dfb9-252f-4b4e-b1a8-f57430d4566e",
+  "findings_lines": 19,
+  "invocation": "Run /comprehensive-review --pr 61928 --local --output-file .decaf/tag1-review-61928.md for the GitHub repository microsoft/TypeScript. --local means display everything and post NOTHING. When done, print the output-file path and a summary of findings by severity.",
+  "finished_at": "2026-07-25T17:17:23Z"
+}

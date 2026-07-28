@@ -1,0 +1,164 @@
+{
+  "run_id": "4__ours__r2",
+  "subject_id": 4,
+  "lang": "typescript",
+  "size": "small",
+  "tool": "ours",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/TypeScript",
+  "pr": 61928,
+  "merge_sha": "02672d281c26e561708127da1d8d1a6cae45fee2",
+  "review_base": "02672d281c26e561708127da1d8d1a6cae45fee2^1",
+  "review_head": "02672d281c26e561708127da1d8d1a6cae45fee2",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 2061,
+  "duration_ms": "2059484",
+  "duration_api_ms": "5041100",
+  "num_turns": "27",
+  "cost_usd": "20.00251635",
+  "orch_usage": {
+    "input_tokens": "4134",
+    "output_tokens": "76231",
+    "cache_creation_tokens": "173887",
+    "cache_read_tokens": "1796931",
+    "total_tokens": 2051183
+  },
+  "session_tokens": {
+    "subagents": 12,
+    "input": 5234,
+    "output": 86236,
+    "cache_creation": 1129374,
+    "cache_read": 20779859,
+    "total": 22000703,
+    "orchestrator": {
+      "output": 76231,
+      "total": 2051183,
+      "duration_s": 2059
+    },
+    "per_subagent": [
+      {
+        "output": 1059,
+        "input": 42,
+        "cache_creation": 80862,
+        "cache_read": 1390615,
+        "total": 1472578,
+        "duration_s": 304,
+        "agent": "agent-a09f303e59f161f4a"
+      },
+      {
+        "output": 301,
+        "input": 70,
+        "cache_creation": 137285,
+        "cache_read": 3262110,
+        "total": 3399766,
+        "duration_s": 764,
+        "agent": "agent-a0f458c4bf3845edb"
+      },
+      {
+        "output": 1894,
+        "input": 22,
+        "cache_creation": 45092,
+        "cache_read": 489743,
+        "total": 536751,
+        "duration_s": 106,
+        "agent": "agent-a159a81caf3024ee9"
+      },
+      {
+        "output": 94,
+        "input": 17,
+        "cache_creation": 62462,
+        "cache_read": 401019,
+        "total": 463592,
+        "duration_s": 277,
+        "agent": "agent-a1b71b0604fe0fa1a"
+      },
+      {
+        "output": 4337,
+        "input": 92,
+        "cache_creation": 114823,
+        "cache_read": 3750983,
+        "total": 3870235,
+        "duration_s": 632,
+        "agent": "agent-a1bf8c9c96340d200"
+      },
+      {
+        "output": 670,
+        "input": 66,
+        "cache_creation": 103673,
+        "cache_read": 2156371,
+        "total": 2260780,
+        "duration_s": 469,
+        "agent": "agent-a25e33fc6248f4819"
+      },
+      {
+        "output": 382,
+        "input": 64,
+        "cache_creation": 91559,
+        "cache_read": 2310554,
+        "total": 2402559,
+        "duration_s": 363,
+        "agent": "agent-a2b3cc5df26c71238"
+      },
+      {
+        "output": 552,
+        "input": 62,
+        "cache_creation": 86311,
+        "cache_read": 2124823,
+        "total": 2211748,
+        "duration_s": 391,
+        "agent": "agent-a5a95fab56266f1a9"
+      },
+      {
+        "output": 35,
+        "input": 16,
+        "cache_creation": 51187,
+        "cache_read": 267474,
+        "total": 318712,
+        "duration_s": 111,
+        "agent": "agent-aad8558ea7f5c203f"
+      },
+      {
+        "output": 456,
+        "input": 38,
+        "cache_creation": 64089,
+        "cache_read": 1084600,
+        "total": 1149183,
+        "duration_s": 230,
+        "agent": "agent-abf8f50c49a8934bf"
+      },
+      {
+        "output": 130,
+        "input": 587,
+        "cache_creation": 50404,
+        "cache_read": 1140634,
+        "total": 1191755,
+        "duration_s": 208,
+        "agent": "agent-ae9dcb359ae48d561"
+      },
+      {
+        "output": 95,
+        "input": 24,
+        "cache_creation": 67740,
+        "cache_read": 604002,
+        "total": 671861,
+        "duration_s": 349,
+        "agent": "agent-af49adbfae13cb551"
+      }
+    ],
+    "max_subagent_duration_s": 764,
+    "sum_subagent_duration_s": 4204
+  },
+  "input_tokens": "4134",
+  "output_tokens": "76231",
+  "cache_creation_tokens": "173887",
+  "cache_read_tokens": "1796931",
+  "total_tokens": 2051183,
+  "session_id": "97146f13-3350-48d3-8137-a8fdea8b26c1",
+  "findings_lines": 15,
+  "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report 61928. This reviews pull request #61928 of the GitHub repository microsoft/TypeScript (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-07-24T16:44:27Z"
+}

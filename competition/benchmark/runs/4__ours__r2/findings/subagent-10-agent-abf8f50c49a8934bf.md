@@ -1,0 +1,16 @@
+# subagent agent-abf8f50c49a8934bf
+
+## Verdict
+
+```json
+{
+  "finding": "#1",
+  "verdict": "confirmed",
+  "reason": "The divergence is real and, more importantly, I traced a concrete, currently-reachable internal path that hits it (stronger than the theoretical 'external SourceFileLike caller' framing in the write-up). src/services/textChanges.ts:1339-1345 (getFormattedTextOfNode, pre-existing code) builds `file: SourceFileLike = { text, getLineAndCharacterOfPosition }` — no `languageVariant` — and passes it into `formatting.formatNodeGivenIndentation(node, file, targetSourceFile.languageVariant, ...)`. Inside formatSpanWorker (src/services/formatting/formatting.ts ~line 566), the trailing-edit branch calls `findPrecedingToken(tokenInfo.end, sourceFile, enclosingNode)` where `sourceFile` is that same `file` object. `findPrecedingToken` (src/services/utilities.ts:1744) calls `n.getChildren(sourceFile)`, which reaches `Node.getChildren` (services.ts:462-464) with a truthy but languageVariant-less SourceFileLike, and flows straight into `createChildren` (services.ts:497-509): `sourceFile?.languageVariant ?? LanguageVariant.Standard` evaluates to Standard even when the node being formatted is JSX/TSX content, since `targetSourceFile.languageVariant` (the correct value) is only threaded to the *initial* FormattingScanner, never to this `file` object. scanner.ts:2205-2209 confirms `LessThanSlashToken` is only emitted when `languageVariant === JSX`, so this reproduces the exact `</div>` mis-tokenization class the PR set out to fix, inside `getChildren`-based token lookups triggered from text-change formatting of inserted JSX nodes. This contradicts the 'may not actually hit the bug' counter-context, which only checked the primary FormattingScanner call and missed the findPrecedingToken sub-path.",
+  "corrections": {
+    "pre_existing": false
+  }
+}
+```
+
+Supporting notes (not part of the JSON but relevant context): the two new lines at `src/services/services.ts:507-509` are exactly as diffed in commit `02672d281` (`languageVariant = sourceFile?.languageVariant ?? LanguageVariant.Standard; scanner.setText(...); scanner.setLanguageVariant(languageVariant);`), and `languageVariant?: LanguageVariant` was indeed added as a non-`@internal`, optional field on `SourceFileLike` in `src/compiler/types.ts:4291`. The counter-context's claim that the *sole internal caller* is `getChildren`'s own default-parameter resolution (`getSourceFileOfNode(this)`, always a real `SourceFile`) is correct as far as it goes — but it overlooks that `Node.getChildren`/`getFirstToken`/`getLastToken` are also called internally, with caller-supplied lightweight `SourceFileLike` objects, via several utility functions in `src/services/utilities.ts` (`findPrecedingToken`, `findNextToken`, `findRightmostToken`, `nodeHasTokens`) — and at least one of those (`findPrecedingToken`) is reachable from `formatSpanWorker`'s trailing-edit handling using exactly the `languageVariant`-less object literal built in `textChanges.ts:1339`. This isn't a regression for that specific call site (pre-PR, `createChildren` never varied from Standard for anyone), but it is a live gap in what this PR was meant to fix, reachable through code the PR didn't touch. Severity/anchor left as given (Medium, services.ts line ~507) per instructions not to raise it.

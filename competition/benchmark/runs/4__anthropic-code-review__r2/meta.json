@@ -1,0 +1,173 @@
+{
+  "run_id": "4__anthropic-code-review__r2",
+  "subject_id": 4,
+  "lang": "typescript",
+  "size": "small",
+  "tool": "anthropic-code-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/TypeScript",
+  "pr": 61928,
+  "merge_sha": "02672d281c26e561708127da1d8d1a6cae45fee2",
+  "review_base": "02672d281c26e561708127da1d8d1a6cae45fee2^1",
+  "review_head": "02672d281c26e561708127da1d8d1a6cae45fee2",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1037,
+  "duration_ms": "1035072",
+  "duration_api_ms": "2123092",
+  "num_turns": "18",
+  "cost_usd": "8.124267949999997",
+  "orch_usage": {
+    "input_tokens": "2591",
+    "output_tokens": "21003",
+    "cache_creation_tokens": "65313",
+    "cache_read_tokens": "352524",
+    "total_tokens": 441431
+  },
+  "session_tokens": {
+    "subagents": 13,
+    "input": 7808,
+    "output": 28400,
+    "cache_creation": 701850,
+    "cache_read": 13031211,
+    "total": 13769269,
+    "orchestrator": {
+      "output": 21003,
+      "total": 441431,
+      "duration_s": 1035
+    },
+    "per_subagent": [
+      {
+        "output": 171,
+        "input": 58,
+        "cache_creation": 38517,
+        "cache_read": 242354,
+        "total": 281100,
+        "duration_s": 25,
+        "agent": "agent-a228789db99a59410"
+      },
+      {
+        "output": 1839,
+        "input": 96,
+        "cache_creation": 112711,
+        "cache_read": 3914082,
+        "total": 4028728,
+        "duration_s": 533,
+        "agent": "agent-a32a084456b4b7ed4"
+      },
+      {
+        "output": 298,
+        "input": 6,
+        "cache_creation": 40311,
+        "cache_read": 71635,
+        "total": 112250,
+        "duration_s": 11,
+        "agent": "agent-a3389e34fa71ba0f6"
+      },
+      {
+        "output": 25,
+        "input": 90,
+        "cache_creation": 23069,
+        "cache_read": 288298,
+        "total": 311482,
+        "duration_s": 58,
+        "agent": "agent-a422bac8608c872d5"
+      },
+      {
+        "output": 6,
+        "input": 26,
+        "cache_creation": 37174,
+        "cache_read": 55612,
+        "total": 92818,
+        "duration_s": 15,
+        "agent": "agent-a5b7d66eded6d4632"
+      },
+      {
+        "output": 41,
+        "input": 194,
+        "cache_creation": 33192,
+        "cache_read": 798936,
+        "total": 832363,
+        "duration_s": 131,
+        "agent": "agent-a899eda5e75b3934e"
+      },
+      {
+        "output": 59,
+        "input": 274,
+        "cache_creation": 53010,
+        "cache_read": 1346516,
+        "total": 1399859,
+        "duration_s": 150,
+        "agent": "agent-aaf13da0ee3285fb0"
+      },
+      {
+        "output": 8,
+        "input": 42,
+        "cache_creation": 17802,
+        "cache_read": 109323,
+        "total": 127175,
+        "duration_s": 15,
+        "agent": "agent-ac00a6567a9f116ab"
+      },
+      {
+        "output": 2,
+        "input": 18,
+        "cache_creation": 20153,
+        "cache_read": 29465,
+        "total": 49638,
+        "duration_s": 26,
+        "agent": "agent-ac063f05e84f23261"
+      },
+      {
+        "output": 2301,
+        "input": 100,
+        "cache_creation": 88304,
+        "cache_read": 3362683,
+        "total": 3453388,
+        "duration_s": 393,
+        "agent": "agent-ac4eec98d6fc16144"
+      },
+      {
+        "output": 1852,
+        "input": 4163,
+        "cache_creation": 75157,
+        "cache_read": 936284,
+        "total": 1017456,
+        "duration_s": 241,
+        "agent": "agent-ae8caf79b869b612b"
+      },
+      {
+        "output": 24,
+        "input": 106,
+        "cache_creation": 36874,
+        "cache_read": 393028,
+        "total": 430032,
+        "duration_s": 69,
+        "agent": "agent-af7088c43d47e5880"
+      },
+      {
+        "output": 771,
+        "input": 44,
+        "cache_creation": 60263,
+        "cache_read": 1130471,
+        "total": 1191549,
+        "duration_s": 253,
+        "agent": "agent-afd2cba6291d45c71"
+      }
+    ],
+    "max_subagent_duration_s": 533,
+    "sum_subagent_duration_s": 1920
+  },
+  "input_tokens": "2591",
+  "output_tokens": "21003",
+  "cache_creation_tokens": "65313",
+  "cache_read_tokens": "352524",
+  "total_tokens": 441431,
+  "session_id": "5c3792ff-2cb9-403b-85bc-c328beeaf8c1",
+  "findings_lines": 31,
+  "invocation": "Use the /code-review workflow to review pull request #61928 of the GitHub repository microsoft/TypeScript. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-24T17:26:31Z"
+}
