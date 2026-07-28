@@ -10,9 +10,9 @@ tags:
     - benchmark
     - metrics
 created_at: 2026-07-28T20:57:13Z
-updated_at: 2026-07-28T20:57:41Z
-parent: dcc-z1xw
-order: a0
+updated_at: 2026-07-28T20:59:06Z
+parent: dcc-hyxw
+order: ac
 ---
 
 # The problem
@@ -98,6 +98,11 @@ cited in three nibs.
       the three citing nibs restated
 
 # Notes
+
+Sits under #dcc-hyxw rather than the benchmark nib because it **defines the yardstick that epic
+measures against**: #dcc-c2uc, #dcc-gcob and #dcc-xewu all carry acceptance criteria comparing
+calibration to a committed baseline, and changing the definition moves those baselines. Settle
+it before spending on re-runs, or the results are scored against a number that then shifts.
 
 Found while root-causing the calibration gap for #dcc-e0wj workstream 1. Do **not** let this
 land as a side effect of the severity-contract prototype in that workstream — that change alters

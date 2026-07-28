@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-07-28T20:43:02Z
+updated_at: 2026-07-28T20:59:06Z
 order: zzzV
 ---
 
@@ -59,13 +59,15 @@ blind re-grading. Prefer interventions that can share one re-run.
 
 # Sequencing
 
-1. #dcc-3fl5 — the only intervention needing **no** re-runs; either closes a question or
+1. #dcc-hmp6 — settle the yardstick first: it decides what `severity_calibration` measures, and
+   three children below score themselves against it
+2. #dcc-3fl5 — the only intervention needing **no** re-runs; either closes a question or
    justifies spend
-2. #dcc-c2uc — best safe saving; can share a re-run with the gate changes
-3. #dcc-1xtt — cheap, independently testable per gate
-4. #dcc-gcob — larger design change; needs its own re-run
-5. #dcc-xewu — **parked**: blocked on the product decision in #dcc-e0wj workstream 3
-6. #dcc-lf4a — small and free, but low single-digit percent; do not let it displace the above
+3. #dcc-c2uc — best safe saving; can share a re-run with the gate changes
+4. #dcc-1xtt — cheap, independently testable per gate
+5. #dcc-gcob — larger design change; needs its own re-run
+6. #dcc-xewu — **parked**: blocked on the product decision in #dcc-e0wj workstream 3
+7. #dcc-lf4a — small and free, but low single-digit percent; do not let it displace the above
 
 # Acceptance
 
