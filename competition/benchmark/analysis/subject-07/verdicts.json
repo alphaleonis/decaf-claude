@@ -1,0 +1,170 @@
+[
+ {
+  "cluster_id": "c4",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 78,
+  "rationale": "Verified: the PR is production-code-only (1 file, no test change), and TestStreamReadEndpoint (read_handler_test.go:198-211) builds its store with promql.LoadedStorage (promql/test.go:59-71), which only appends into the head \u2014 no compaction, so the persistent-block/mmap path where Close unmaps chunk files is never exercised. Concrete, one-shot, load-bearing missing test."
+ },
+ {
+  "cluster_id": "c12",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 65,
+  "rationale": "Factually true \u2014 getChunkSeriesSet (read_handler.go:242) takes *prompb.Query and uses only StartTimestampMs/EndTimestampMs/Hints while matchers arrive pre-filtered \u2014 but the harm is a hypothetical future edit; the sibling remoteReadSamples holds the same query+filteredMatchers pair in scope (L132-161). Parameter-granularity taste, default down."
+ },
+ {
+  "cluster_id": "c10",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 65,
+  "rationale": "Claim verified: DB.ChunkQuerier returns a merge querier (tsdb/db.go:2067-2073) whose Select yields a lazyGenericSeriesSet whose Err() returns nil until the first Next() (storage/lazy.go:36-41, storage/merge.go:104-122), so the new chunks.Err() check at read_handler.go:206 only catches the ErrChunkSeriesSet construction failure. Iteration errors are still surfaced later via ss.Err() (codec.go:295), so this is a clarifying-comment suggestion, not a defect."
+ },
+ {
+  "cluster_id": "c3",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 72,
+  "rationale": "The doc comment at read_handler.go:239-241 does assert a false safety property ('to ensure timely release of the querier resources') for a function that returns a lazy set consumed after Close \u2014 a real, in-repo, one-shot fix. It names the close-before-consume shape but stops at 'obscures the defect' without the use-after-close consequence, so it does not fold up to TP-primary."
+ },
+ {
+  "cluster_id": "c7",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 70,
+  "rationale": "True as stated for read_handler.go (siblings are remoteReadSamples / remoteReadStreamedXORChunks / filterExtLabelsFromMatchers), but the package already contains get-prefixed helpers (codec.go:462 getHistogramValType), so this is naming taste with no convention violation of substance."
+ },
+ {
+  "cluster_id": "c6",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 70,
+  "rationale": "Verified verbatim duplication: read_handler.go:147-158 (remoteReadSamples) and :253-264 (getChunkSeriesSet) map the same seven prompb.Query.Hints fields and both omit ShardCount/ShardIndex/DisableTrimming (storage/interface.go:200-217). Extract-shared-helper for code the diff itself relocated \u2014 one-shot and anchored."
+ },
+ {
+  "cluster_id": "c16",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 62,
+  "rationale": "Sub-claims check out (StreamChunkedReadResponses takes no ctx and never checks one, codec.go:221-296; web/web.go:618 sets only ReadTimeout), but this critiques the PR's stated OOM motivation rather than identifying a defect the diff introduces, and the 'pinned indefinitely' cost is speculative. Meta/perf commentary."
+ },
+ {
+  "cluster_id": "c13",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 80,
+  "rationale": "Verified drift introduced by the diff: the comment '// The streaming API has to provide the series sorted.' at read_handler.go:213 now sits above the bare `chunks,` argument, while the sortSeries=true it justified moved to the unannotated `true` in querier.Select at :265. Move-the-comment is a concrete one-shot fix."
+ },
+ {
+  "cluster_id": "c8",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "nit",
+  "confidence": 72,
+  "rationale": "The two strings do differ (read_handler.go:143 'Error on querier close' vs :249 'Error on chunk querier close'), but the chunk-path wording is pre-existing \u2014 the diff moved that log line verbatim (review.diff lines 15-19 \u2192 55-59) \u2014 and the distinction between the sample querier and the chunk querier is meaningful, not drift."
+ },
+ {
+  "cluster_id": "c2",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "high",
+  "confidence": 72,
+  "rationale": "Mechanism verified independently of the mmap chain: the head range querier's Close reaches headChunkReader.Close (tsdb/head_read.go:318-323) \u2192 isolationState.Close unlinks it from readsOpen (tsdb/isolation.go:36-41), and db.go:2024-2026 states the querier registers 'in the queue that the truncation waits on'. Distinct consequence and distinct fix surface \u2014 ref-counting the chunk reader (the revert's proposed fix) would not restore isolation \u2014 so genuinely additive rather than the primary reworded."
+ },
+ {
+  "cluster_id": "c5",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "critical",
+  "confidence": 70,
+  "rationale": "States the primary in contract vocabulary: the code requires a ChunkSeriesSet to remain valid after its ChunkQuerier is Closed, ChunkSeriesSet (storage/interface.go:436-446) documents no such rule, LabelValues documents the opposite lifetime rule (:161), and it correctly asserts the first-party impl does not uphold it \u2014 confirmed by blockBaseQuerier.Close closing index/chunks/tombstones readers (tsdb/querier.go:103-115). That is 'the set outlives the querier that owns its data', a listed equivalent framing."
+ },
+ {
+  "cluster_id": "c19",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 70,
+  "rationale": "The golden-byte assertions are real (read_handler_test.go:295-330 compares literal XOR chunk Data blobs), but the test file is untouched by this diff and the observation is test-style commentary rather than an actionable defect; the useful part (a regression test for the lifecycle) is c4's."
+ },
+ {
+  "cluster_id": "c14",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 68,
+  "rationale": "The 200-then-error behavior is real and pre-existing (codec.go:283 writes to the stream before any later error reaches http.Error at read_handler.go:233), and the diff does not worsen it \u2014 the new chunks.Err() check at :206 runs before any byte is written. 'Materially widens the window' is unsupported: the primary's failure mode is a fault, not an HTTP error."
+ },
+ {
+  "cluster_id": "c18",
+  "verdict": "valid-other",
+  "matches": "none",
+  "judged_severity": "medium",
+  "confidence": 65,
+  "rationale": "HUMAN-ADJUDICATED (was TP-primary): the grader denied c3 TP-primary for 'stopping short of the use-after-close consequence' but granted c18 while itself noting it 'omits the resulting invalid reads' \u2014 the same omission. Applying must_flag consistently, naming that the caller cannot keep the producer alive during consumption is a real structural defect (and the reason the revert had to restructure), but without the invalid-read/crash consequence it does not meet the primary bar. Regraded valid-other. Note: does not change any tool's bug-catch rate (its sole reporter already catches c1 in both reps)."
+ },
+ {
+  "cluster_id": "c9",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 58,
+  "rationale": "The contrast is real \u2014 remoteReadSamples materializes via ToQueryResult while the querier is still open (read_handler.go:161) whereas the chunk path now closes before consumption \u2014 but the finding's remedy is 'document why', treating the bug as an undocumented design choice. Correct observation, wrong ask; default down."
+ },
+ {
+  "cluster_id": "c21",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 62,
+  "rationale": "True that only TestSampledReadEndpoint and TestStreamReadEndpoint exist (read_handler_test.go:39, :198), but this is an unbounded coverage list mixing a generic empty-result case with a vaguer restatement of the multi-block scenario that c4 specifies concretely (detonate-on-close mock / compacted block under -race)."
+ },
+ {
+  "cluster_id": "c15",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 70,
+  "rationale": "Downstream ops commentary on the primary's failure mode plus an open-ended metrics wish list (aborted reads, querier lifetime, in-flight bytes); nothing in the diff introduces a specific missing signal, and no concrete one-shot change is named."
+ },
+ {
+  "cluster_id": "c17",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "info",
+  "confidence": 80,
+  "rationale": "Self-declared pre-existing and correct: the warn-and-swallow on Close error is identical in the sample path (read_handler.go:141-145) and was moved verbatim by the diff (review.diff 15-19 \u2192 55-59). Out of scope for this change."
+ },
+ {
+  "cluster_id": "c11",
+  "verdict": "trivia",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 62,
+  "rationale": "Not the error-swallowing trap (it does not claim the error is lost \u2014 the caller checks chunks.Err() at :206), but the critique is weak: storage.ErrChunkSeriesSet-as-return is the codebase's own idiom for exactly this shape (tsdb/querier.go:187). The 'forecloses caller-side lifetime management' half gestures at the fix without naming the close-before-consume mechanism or any consequence."
+ },
+ {
+  "cluster_id": "c20",
+  "verdict": "valid-minor",
+  "matches": "none",
+  "judged_severity": "low",
+  "confidence": 65,
+  "rationale": "Verified: no test in read_handler_test.go injects a failing queryable, so the branch the diff introduces (ChunkQuerier error \u2192 storage.ErrChunkSeriesSet at :245 \u2192 chunks.Err() \u2192 HTTP status routing) and the Close-warn branch at :248-250 are both uncovered. Bounded, concrete, anchored to paths this diff reshaped."
+ },
+ {
+  "cluster_id": "c1",
+  "verdict": "TP-primary",
+  "matches": "primary",
+  "judged_severity": "critical",
+  "confidence": 98,
+  "rationale": "Exact primary with the correct mechanism: the defer at read_handler.go:247-251 fires when the helper returns at :265, before StreamChunkedReadResponses iterates `chunks` (:214, codec.go:235). Close reaches blockBaseQuerier.Close \u2192 chunks.Close() (tsdb/querier.go:103-115), which does pendingReaders.Done() (tsdb/block.go:537) and thereby unblocks Block.Close/pendingReaders.Wait (:378-389) \u2014 the mmap'd chunk files can be unmapped mid-stream."
+ }
+]

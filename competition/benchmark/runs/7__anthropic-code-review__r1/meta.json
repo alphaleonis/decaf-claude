@@ -1,0 +1,146 @@
+{
+  "run_id": "7__anthropic-code-review__r1",
+  "subject_id": 7,
+  "lang": "go",
+  "size": "small",
+  "tool": "anthropic-code-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "prometheus/prometheus",
+  "pr": 13777,
+  "merge_sha": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "review_base": "d1abc3f2557660728dc6a34eb2da1f32461b6665^1",
+  "review_head": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 557,
+  "duration_ms": "556198",
+  "duration_api_ms": "1155456",
+  "num_turns": "20",
+  "cost_usd": "5.447585149999998",
+  "orch_usage": {
+    "input_tokens": "537",
+    "output_tokens": "22372",
+    "cache_creation_tokens": "71246",
+    "cache_read_tokens": "733202",
+    "total_tokens": 827357
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 975,
+    "output": 26241,
+    "cache_creation": 527275,
+    "cache_read": 6304578,
+    "total": 6859069,
+    "orchestrator": {
+      "output": 22372,
+      "total": 827357,
+      "duration_s": 557
+    },
+    "per_subagent": [
+      {
+        "output": 2,
+        "input": 18,
+        "cache_creation": 26745,
+        "cache_read": 20155,
+        "total": 46920,
+        "duration_s": 10,
+        "agent": "agent-a1756e090604c1411"
+      },
+      {
+        "output": 510,
+        "input": 56,
+        "cache_creation": 79817,
+        "cache_read": 1822924,
+        "total": 1903307,
+        "duration_s": 190,
+        "agent": "agent-a3085026915bfa0d7"
+      },
+      {
+        "output": 13,
+        "input": 66,
+        "cache_creation": 21627,
+        "cache_read": 204162,
+        "total": 225868,
+        "duration_s": 41,
+        "agent": "agent-a4d8acfd73f966df2"
+      },
+      {
+        "output": 2677,
+        "input": 22,
+        "cache_creation": 47994,
+        "cache_read": 502023,
+        "total": 552716,
+        "duration_s": 97,
+        "agent": "agent-a7859461c460d210d"
+      },
+      {
+        "output": 89,
+        "input": 20,
+        "cache_creation": 62750,
+        "cache_read": 431586,
+        "total": 494445,
+        "duration_s": 88,
+        "agent": "agent-a8c4b298ef311edfc"
+      },
+      {
+        "output": 221,
+        "input": 36,
+        "cache_creation": 76000,
+        "cache_read": 922261,
+        "total": 998518,
+        "duration_s": 196,
+        "agent": "agent-a9085ac1c7ed7aaed"
+      },
+      {
+        "output": 3,
+        "input": 26,
+        "cache_creation": 18638,
+        "cache_read": 55929,
+        "total": 74596,
+        "duration_s": 15,
+        "agent": "agent-aa5f0f37cb8edfd7b"
+      },
+      {
+        "output": 12,
+        "input": 42,
+        "cache_creation": 17586,
+        "cache_read": 108451,
+        "total": 126091,
+        "duration_s": 19,
+        "agent": "agent-aba3c7d8d281618bc"
+      },
+      {
+        "output": 25,
+        "input": 114,
+        "cache_creation": 42940,
+        "cache_read": 460475,
+        "total": 503554,
+        "duration_s": 65,
+        "agent": "agent-adb046fd903682335"
+      },
+      {
+        "output": 317,
+        "input": 38,
+        "cache_creation": 61932,
+        "cache_read": 1043410,
+        "total": 1105697,
+        "duration_s": 169,
+        "agent": "agent-aeb5ce3e87f4785a7"
+      }
+    ],
+    "max_subagent_duration_s": 196,
+    "sum_subagent_duration_s": 890
+  },
+  "input_tokens": "537",
+  "output_tokens": "22372",
+  "cache_creation_tokens": "71246",
+  "cache_read_tokens": "733202",
+  "total_tokens": 827357,
+  "session_id": "9ed54dcd-b0ef-4417-8ea8-c2c9139f61b3",
+  "findings_lines": 35,
+  "invocation": "Use the /code-review workflow to review pull request #13777 of the GitHub repository prometheus/prometheus. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-27T19:20:40Z"
+}

@@ -1,0 +1,137 @@
+{
+  "run_id": "7__anthropic-code-review__r2",
+  "subject_id": 7,
+  "lang": "go",
+  "size": "small",
+  "tool": "anthropic-code-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "prometheus/prometheus",
+  "pr": 13777,
+  "merge_sha": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "review_base": "d1abc3f2557660728dc6a34eb2da1f32461b6665^1",
+  "review_head": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 504,
+  "duration_ms": "502803",
+  "duration_api_ms": "903153",
+  "num_turns": "13",
+  "cost_usd": "4.245571650000001",
+  "orch_usage": {
+    "input_tokens": "9",
+    "output_tokens": "15369",
+    "cache_creation_tokens": "25938",
+    "cache_read_tokens": "250987",
+    "total_tokens": 292303
+  },
+  "session_tokens": {
+    "subagents": 9,
+    "input": 385,
+    "output": 23072,
+    "cache_creation": 400249,
+    "cache_read": 5834684,
+    "total": 6258390,
+    "orchestrator": {
+      "output": 15369,
+      "total": 292303,
+      "duration_s": 503
+    },
+    "per_subagent": [
+      {
+        "output": 5,
+        "input": 18,
+        "cache_creation": 17526,
+        "cache_read": 29453,
+        "total": 47002,
+        "duration_s": 15,
+        "agent": "agent-a024f87b7078925f2"
+      },
+      {
+        "output": 372,
+        "input": 28,
+        "cache_creation": 49402,
+        "cache_read": 687656,
+        "total": 737458,
+        "duration_s": 127,
+        "agent": "agent-a1bea1a5f9dbac2e8"
+      },
+      {
+        "output": 2268,
+        "input": 56,
+        "cache_creation": 62525,
+        "cache_read": 1535530,
+        "total": 1600379,
+        "duration_s": 183,
+        "agent": "agent-a59018ca01cc655b6"
+      },
+      {
+        "output": 102,
+        "input": 4,
+        "cache_creation": 27465,
+        "cache_read": 43873,
+        "total": 71444,
+        "duration_s": 5,
+        "agent": "agent-a5e2232e26704b803"
+      },
+      {
+        "output": 25,
+        "input": 114,
+        "cache_creation": 37811,
+        "cache_read": 391647,
+        "total": 429597,
+        "duration_s": 68,
+        "agent": "agent-a5ed265a3c14b23d0"
+      },
+      {
+        "output": 4,
+        "input": 18,
+        "cache_creation": 18682,
+        "cache_read": 29315,
+        "total": 48019,
+        "duration_s": 14,
+        "agent": "agent-a892ef46a6ac72223"
+      },
+      {
+        "output": 2467,
+        "input": 34,
+        "cache_creation": 64853,
+        "cache_read": 939846,
+        "total": 1007200,
+        "duration_s": 115,
+        "agent": "agent-ab5ba2199d3095a47"
+      },
+      {
+        "output": 13,
+        "input": 50,
+        "cache_creation": 17811,
+        "cache_read": 135786,
+        "total": 153660,
+        "duration_s": 15,
+        "agent": "agent-ae723d1293211210f"
+      },
+      {
+        "output": 2447,
+        "input": 54,
+        "cache_creation": 78236,
+        "cache_read": 1790591,
+        "total": 1871328,
+        "duration_s": 228,
+        "agent": "agent-afd2382cbcfd38579"
+      }
+    ],
+    "max_subagent_duration_s": 228,
+    "sum_subagent_duration_s": 770
+  },
+  "input_tokens": "9",
+  "output_tokens": "15369",
+  "cache_creation_tokens": "25938",
+  "cache_read_tokens": "250987",
+  "total_tokens": 292303,
+  "session_id": "e715895a-adc9-4859-b003-9a1020f9e0b8",
+  "findings_lines": 38,
+  "invocation": "Use the /code-review workflow to review pull request #13777 of the GitHub repository prometheus/prometheus. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-27T19:29:04Z"
+}

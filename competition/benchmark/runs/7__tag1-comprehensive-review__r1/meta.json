@@ -1,0 +1,137 @@
+{
+  "run_id": "7__tag1-comprehensive-review__r1",
+  "subject_id": 7,
+  "lang": "go",
+  "size": "small",
+  "tool": "tag1-comprehensive-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "prometheus/prometheus",
+  "pr": 13777,
+  "merge_sha": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "review_base": "d1abc3f2557660728dc6a34eb2da1f32461b6665^1",
+  "review_head": "d1abc3f2557660728dc6a34eb2da1f32461b6665",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 871,
+  "duration_ms": "178228",
+  "duration_api_ms": "2638568",
+  "num_turns": "4",
+  "cost_usd": "12.478988149999996",
+  "orch_usage": {
+    "input_tokens": "7",
+    "output_tokens": "13622",
+    "cache_creation_tokens": "17869",
+    "cache_read_tokens": "725295",
+    "total_tokens": 756793
+  },
+  "session_tokens": {
+    "subagents": 9,
+    "input": 291,
+    "output": 50330,
+    "cache_creation": 732778,
+    "cache_read": 10242978,
+    "total": 11026377,
+    "orchestrator": {
+      "output": 45953,
+      "total": 3790749,
+      "duration_s": 870
+    },
+    "per_subagent": [
+      {
+        "output": 40,
+        "input": 18,
+        "cache_creation": 63120,
+        "cache_read": 431254,
+        "total": 494432,
+        "duration_s": 208,
+        "agent": "agent-a0463da38b1f52699"
+      },
+      {
+        "output": 2799,
+        "input": 38,
+        "cache_creation": 59248,
+        "cache_read": 1047006,
+        "total": 1109091,
+        "duration_s": 180,
+        "agent": "agent-a21402a90690dd5a1"
+      },
+      {
+        "output": 26,
+        "input": 16,
+        "cache_creation": 69758,
+        "cache_read": 374798,
+        "total": 444598,
+        "duration_s": 227,
+        "agent": "agent-a2d95260b001834cc"
+      },
+      {
+        "output": 9,
+        "input": 4,
+        "cache_creation": 34705,
+        "cache_read": 43353,
+        "total": 78071,
+        "duration_s": 186,
+        "agent": "agent-a4dfd974a01bae6f0"
+      },
+      {
+        "output": 44,
+        "input": 20,
+        "cache_creation": 73314,
+        "cache_read": 513861,
+        "total": 587239,
+        "duration_s": 298,
+        "agent": "agent-a500c57bcd8c3b52b"
+      },
+      {
+        "output": 6,
+        "input": 4,
+        "cache_creation": 45107,
+        "cache_read": 31040,
+        "total": 76157,
+        "duration_s": 23,
+        "agent": "agent-aa6a47d6b522e7726"
+      },
+      {
+        "output": 277,
+        "input": 44,
+        "cache_creation": 67312,
+        "cache_read": 1312207,
+        "total": 1379840,
+        "duration_s": 246,
+        "agent": "agent-aed5c75d27c28984b"
+      },
+      {
+        "output": 725,
+        "input": 44,
+        "cache_creation": 69656,
+        "cache_read": 1322777,
+        "total": 1393202,
+        "duration_s": 271,
+        "agent": "agent-af1b0c5f1fe82e48b"
+      },
+      {
+        "output": 451,
+        "input": 52,
+        "cache_creation": 77665,
+        "cache_read": 1594830,
+        "total": 1672998,
+        "duration_s": 355,
+        "agent": "agent-af227d20641a5e5b9"
+      }
+    ],
+    "max_subagent_duration_s": 355,
+    "sum_subagent_duration_s": 1994
+  },
+  "input_tokens": "7",
+  "output_tokens": "13622",
+  "cache_creation_tokens": "17869",
+  "cache_read_tokens": "725295",
+  "total_tokens": 756793,
+  "session_id": "09d8f717-e124-49e6-80f6-67c80928810a",
+  "findings_lines": 47,
+  "invocation": "Run /comprehensive-review --pr 13777 --local --output-file .decaf/tag1-review-13777.md for the GitHub repository prometheus/prometheus. --local means display everything and post NOTHING. When done, print the output-file path and a summary of findings by severity.",
+  "finished_at": "2026-07-27T21:13:06Z"
+}
