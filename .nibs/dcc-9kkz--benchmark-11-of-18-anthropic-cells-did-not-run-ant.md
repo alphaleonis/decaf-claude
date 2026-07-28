@@ -10,7 +10,7 @@ tags:
     - benchmark
     - validity
 created_at: 2026-07-28T21:15:14Z
-updated_at: 2026-07-28T21:20:00Z
+updated_at: 2026-07-28T21:26:25Z
 order: zzzk
 ---
 
@@ -21,9 +21,9 @@ Runs labelled `anthropic-code-review` did not all run the Anthropic plugin. Audi
 
 | group | cells | $/run | agents | what it actually ran |
 |---|---|---|---|---|
-| **contaminated** | **7** | **$20.29** | 11.9 | `decaf-quality` — ours, under anthropic's label |
-| unattributed | 4 | $7.44 | 6.5 | no plugin attribution; orchestrator hand-rolled the workflow |
-| clean | 7 | **$5.87** | 11.0 | `code-review` — the actual Anthropic plugin |
+| **invalid — ran ours** | **7** | **$20.29** | 11.9 | `decaf-quality` at `high`, under anthropic's label |
+| **invalid — degenerate** | **2** | $3.32 | 0.5 | `3__r2` (0 sub-agents, reviewed inline) and `6__r2` (1); no `code-review` attribution at all |
+| valid | 9 | **$7.13** | 11.3 | the Anthropic plugin. Includes `5__r1`/`6__r1`, whose mixed attribution (3/15 and 4/10 sub-agents tagged `code-review`) is normal — the command has the orchestrator spawn most agents itself |
 | *ours (reference)* | 18 | $21.33 | 14.5 | `decaf-quality` |
 
 Contaminated cells carry `attributionPlugin: decaf-quality` on every sub-agent, with
@@ -54,9 +54,8 @@ things are called some variant of code-review.
 
 # Impact
 
-**Cost — badly wrong.** The published anthropic figure of **$11.82** is a blend of ~$5.87 real
-runs and ~$20.29 runs that were actually ours. Clean anthropic is **~$5.87**, so ours is
-**~3.6× more expensive**, not 1.8×. The gap this whole programme exists to close is roughly
+**Cost — badly wrong.** The published anthropic figure of **$11.82** is a blend. Across the 9
+valid cells anthropic averages **$7.13**, so ours is **~3.0× more expensive**, not 1.8×. The gap this whole programme exists to close is roughly
 twice what was believed, which makes #dcc-hyxw more urgent, not less.
 
 **Quality — robust.** Bug-catch and calibration hold across all three groups (7/7, 7/7, 4/4;
@@ -101,12 +100,17 @@ overlap/Jaccard figure covering them needs recomputing after the re-runs.
 
 # Fix
 
-- [ ] [run] `rg -n "invocation" competition/benchmark/tools.json` — expect: the anthropic entry
-      names the plugin unambiguously (plugin-qualified, as `ours` already does) so the agent
-      cannot resolve to a same-named skill
-- [ ] [run] `python3 competition/benchmark/analysis/scripts/verify_run_provenance.py` — expect:
-      exit 0; every done run's dominant `attributionPlugin` matches its declared tool. Add this
-      to the per-cell recording path so a mismatch fails at run time, not months later
+- [x] [run] `rg -n "invocation" competition/benchmark/tools.json` — expect: the anthropic entry
+      names the plugin unambiguously. Done: it now says run `code-review:code-review` from
+      code-review@claude-plugins-official, states it is NOT `decaf-quality:code-review`, and
+      instructs aborting rather than substituting if the qualified skill does not resolve
+- [x] [manual] Invalid cells quarantined to `runs-invalid/` and reset to `pending`, so
+      `/bench-status` no longer counts them and `rebuild_metrics.sh` drops them (90 → 81 rows)
+- [x] [run] `python3 competition/benchmark/analysis/scripts/verify_run_provenance.py` — expect:
+      exit 0; every done run's dominant `attributionPlugin` matches its declared tool. Done:
+      script lives at `scripts/verify_run_provenance.py` and `run_cell.sh` calls it after each
+      cell, printing a loud PROVENANCE MISMATCH rather than failing (the output is already
+      captured; quarantining is the operator's call)
 - [ ] [manual] The 11 affected cells re-run and re-graded blind. [Estimate] clean anthropic is
       ~$5.87/run, so ~$65 plus grading — cheap relative to the correction
 - [ ] [manual] Downstream artifacts and the three citing nibs restated

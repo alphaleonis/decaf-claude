@@ -153,5 +153,16 @@ bash "$BENCH_DIR/scripts/render_run.sh" "$RID" >/dev/null
 # metrics.csv is derived from every runs/*/meta.json (source of truth) — rebuild it now.
 bash "$BENCH_DIR/scripts/rebuild_metrics.sh" >/dev/null
 
+# Provenance: confirm the cell ran the tool it claims. Several plugins ship a skill of the same
+# bare name, so an unqualified invocation can silently resolve to the wrong tool — that produced
+# 7 cells of ours recorded as anthropic (dcc-9kkz). Report loudly; do not fail the run, since the
+# output is already captured and the operator decides whether to quarantine.
+if [ "$final" = "done" ]; then
+  python3 "$BENCH_DIR/scripts/verify_run_provenance.py" "$RID" >/dev/null 2>&1 || {
+    echo "[$RID] ⚠ PROVENANCE MISMATCH — this cell did not run $tool_id."
+    python3 "$BENCH_DIR/scripts/verify_run_provenance.py" "$RID" 2>&1 | tail -6
+  }
+fi
+
 manifest_finish "$RID" "$final" "${cost:-}" "$wall" "runs/$RID"
 echo "[$RID] $final — wall ${wall}s, cost \$${cost:-?}, tokens(sum) $total_tok, findings ${findings_lines} lines -> runs/$RID/run.md"

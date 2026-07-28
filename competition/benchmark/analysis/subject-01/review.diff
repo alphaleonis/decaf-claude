@@ -1,0 +1,138 @@
+diff --git a/src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs b/src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs
+index 78dc68de380..beda1457331 100644
+--- a/src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs
++++ b/src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs
+@@ -14,8 +14,21 @@
+ 
+ namespace Microsoft.Data.Sqlite
+ {
++    
+     internal class SqliteDataRecord : SqliteValueReader, IDisposable
+     {
++        internal class RowIdInfo
++        {
++            public int Ordinal { get; set; }
++            public string TableName { get; set; }
++
++            public RowIdInfo(int ordinal, string tableName)
++            {
++                Ordinal = ordinal;
++                TableName = tableName;
++            }
++        }
++
+         private readonly SqliteConnection _connection;
+         private readonly Action<int> _addChanges;
+         private byte[][]? _blobCache;
+@@ -23,7 +36,8 @@ internal class SqliteDataRecord : SqliteValueReader, IDisposable
+         private Dictionary<string, int>? _columnNameOrdinalCache;
+         private string[]? _columnNameCache;
+         private bool _stepped;
+-        private int? _rowidOrdinal;
++        readonly Dictionary<string, RowIdInfo> RowIds = new Dictionary<string, RowIdInfo>();
++
+         private bool _alreadyThrown;
+         private bool _alreadyAddedChanges;
+ 
+@@ -310,11 +324,11 @@ public virtual Stream GetStream(int ordinal)
+             var blobDatabaseName = sqlite3_column_database_name(Handle, ordinal).utf8_to_string();
+             var blobTableName = sqlite3_column_table_name(Handle, ordinal).utf8_to_string();
+ 
+-            if (!_rowidOrdinal.HasValue)
++            RowIdInfo? rowIdForOrdinal = null;
++            string rowidkey = $"{blobDatabaseName}_{blobTableName}";
++            if (!RowIds.TryGetValue(rowidkey, out rowIdForOrdinal))
+             {
+-                _rowidOrdinal = -1;
+                 var pkColumns = -1L;
+-
+                 for (var i = 0; i < FieldCount; i++)
+                 {
+                     if (i == ordinal)
+@@ -337,7 +351,8 @@ public virtual Stream GetStream(int ordinal)
+                     var columnName = sqlite3_column_origin_name(Handle, i).utf8_to_string();
+                     if (columnName == "rowid")
+                     {
+-                        _rowidOrdinal = i;
++                        rowIdForOrdinal = new RowIdInfo(i, tableName);
++                        RowIds.Add(rowidkey, rowIdForOrdinal);
+                         break;
+                     }
+ 
+@@ -368,22 +383,23 @@ public virtual Stream GetStream(int ordinal)
+ 
+                         if (pkColumns == 1L)
+                         {
+-                            _rowidOrdinal = i;
++                            rowIdForOrdinal = new RowIdInfo(i, tableName);
++                            RowIds.Add(rowidkey, rowIdForOrdinal);
+                             break;
+                         }
+                     }
+                 }
+ 
+-                Debug.Assert(_rowidOrdinal.HasValue);
++                Debug.Assert(rowIdForOrdinal!=null);
+             }
+ 
+-            if (_rowidOrdinal.Value < 0)
++            if (rowIdForOrdinal == null)
+             {
+                 return new MemoryStream(GetCachedBlob(ordinal), false);
+             }
+ 
+             var blobColumnName = sqlite3_column_origin_name(Handle, ordinal).utf8_to_string();
+-            var rowid = GetInt64(_rowidOrdinal.Value);
++            var rowid = GetInt64(rowIdForOrdinal.Ordinal);
+ 
+             return new SqliteBlob(_connection, blobDatabaseName, blobTableName, blobColumnName, rowid, readOnly: true);
+         }
+diff --git a/test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs b/test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs
+index a866a0c10db..6d1205bca97 100644
+--- a/test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs
++++ b/test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs
+@@ -145,6 +145,44 @@ public void GetBytes_works_streaming()
+         }
+     }
+ 
++    [Fact]
++    public void GetBytes_works_streaming_join()
++    {
++        using (var connection = new SqliteConnection("Data Source=:memory:"))
++        {
++            connection.Open();
++
++            connection.ExecuteNonQuery("CREATE TABLE A (ID INTEGER PRIMARY KEY,VALUE BLOB); INSERT INTO A (ID, VALUE) VALUES (1,x'01020304');");
++            connection.ExecuteNonQuery("CREATE TABLE B (ID INTEGER PRIMARY KEY,FATHER_ID INTEGER NOT NULL,VALUE BLOB); INSERT INTO B (ID,FATHER_ID, VALUE) VALUES (1000,1,x'05060708');");
++
++            using (var reader = connection.ExecuteReader(@"SELECT 
++                                                A.ID as AID,
++                                                A.VALUE as AVALUE,
++                                                B.ID as BID,
++                                                B.VALUE as BVALUE
++                                            FROM 
++                                                A JOIN B
++                                                ON B.FATHER_ID=A.ID "))
++            {
++                var hasData = reader.Read();
++                Assert.True(hasData);
++
++                //reading fields that does not involve blobs should be ok
++                Console.WriteLine($"A.ID={reader.GetInt32(0)} B.ID={reader.GetInt32(2)}");
++
++                //get len of abuff
++                var abuff = new byte[2];
++                reader.GetBytes(1, 1, abuff, 0, abuff.Length);
++                Assert.Equal([0x02, 0x03], abuff);
++
++                var bbuff = new byte[2];
++                reader.GetBytes(3, 1, bbuff, 0, bbuff.Length);  //this was failing. now should be fixed
++                Assert.Equal([0x06, 0x07], bbuff);
++
++            }
++        }
++    }
++
+     [Fact]
+     public void GetBytes_NullBuffer()
+     {

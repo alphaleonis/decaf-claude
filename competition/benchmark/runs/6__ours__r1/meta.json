@@ -1,0 +1,227 @@
+{
+  "run_id": "6__ours__r1",
+  "subject_id": 6,
+  "lang": "typescript",
+  "size": "large",
+  "tool": "ours",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/vscode",
+  "pr": 320685,
+  "merge_sha": "f9070acd20a269fb07dd15389676bd6875b9db05",
+  "review_base": "f9070acd20a269fb07dd15389676bd6875b9db05^1",
+  "review_head": "f9070acd20a269fb07dd15389676bd6875b9db05",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1897,
+  "duration_ms": "1895722",
+  "duration_api_ms": "6256012",
+  "num_turns": "33",
+  "cost_usd": "28.05863045000001",
+  "orch_usage": {
+    "input_tokens": "26",
+    "output_tokens": "98403",
+    "cache_creation_tokens": "307016",
+    "cache_read_tokens": "1677949",
+    "total_tokens": 2083394
+  },
+  "session_tokens": {
+    "subagents": 19,
+    "input": 675,
+    "output": 447525,
+    "cache_creation": 1778227,
+    "cache_read": 26272489,
+    "total": 28498916,
+    "orchestrator": {
+      "output": 98403,
+      "total": 2083394,
+      "duration_s": 1896
+    },
+    "per_subagent": [
+      {
+        "output": 43538,
+        "input": 80,
+        "cache_creation": 134199,
+        "cache_read": 3740195,
+        "total": 3918012,
+        "duration_s": 583,
+        "agent": "agent-a010a301296d20c43"
+      },
+      {
+        "output": 6361,
+        "input": 16,
+        "cache_creation": 40083,
+        "cache_read": 315268,
+        "total": 361728,
+        "duration_s": 89,
+        "agent": "agent-a0686424faa4a9d57"
+      },
+      {
+        "output": 17495,
+        "input": 58,
+        "cache_creation": 74011,
+        "cache_read": 1964914,
+        "total": 2056478,
+        "duration_s": 240,
+        "agent": "agent-a105013ca33cd0c74"
+      },
+      {
+        "output": 20427,
+        "input": 30,
+        "cache_creation": 91838,
+        "cache_read": 1082925,
+        "total": 1195220,
+        "duration_s": 360,
+        "agent": "agent-a1260b5176d4c1788"
+      },
+      {
+        "output": 14662,
+        "input": 36,
+        "cache_creation": 77108,
+        "cache_read": 1226410,
+        "total": 1318216,
+        "duration_s": 229,
+        "agent": "agent-a14a4c8f57c902b7c"
+      },
+      {
+        "output": 2771,
+        "input": 18,
+        "cache_creation": 55292,
+        "cache_read": 380042,
+        "total": 438123,
+        "duration_s": 67,
+        "agent": "agent-a1c1f5d0cf76537dc"
+      },
+      {
+        "output": 9475,
+        "input": 18,
+        "cache_creation": 61317,
+        "cache_read": 500636,
+        "total": 571446,
+        "duration_s": 157,
+        "agent": "agent-a27baeefc99ab5743"
+      },
+      {
+        "output": 36748,
+        "input": 34,
+        "cache_creation": 103802,
+        "cache_read": 1424508,
+        "total": 1565092,
+        "duration_s": 460,
+        "agent": "agent-a2dade6926306839c"
+      },
+      {
+        "output": 12042,
+        "input": 26,
+        "cache_creation": 54966,
+        "cache_read": 630134,
+        "total": 697168,
+        "duration_s": 162,
+        "agent": "agent-a3b6eb4b28273530b"
+      },
+      {
+        "output": 37852,
+        "input": 116,
+        "cache_creation": 142281,
+        "cache_read": 5883146,
+        "total": 6063395,
+        "duration_s": 582,
+        "agent": "agent-a92d3519eb4ea291e"
+      },
+      {
+        "output": 12490,
+        "input": 15,
+        "cache_creation": 87243,
+        "cache_read": 473800,
+        "total": 573548,
+        "duration_s": 246,
+        "agent": "agent-aa123b7f39028e67d"
+      },
+      {
+        "output": 7700,
+        "input": 14,
+        "cache_creation": 55199,
+        "cache_read": 343828,
+        "total": 406741,
+        "duration_s": 83,
+        "agent": "agent-aaaa43eec58c4c3ae"
+      },
+      {
+        "output": 27874,
+        "input": 17,
+        "cache_creation": 80561,
+        "cache_read": 545025,
+        "total": 653477,
+        "duration_s": 402,
+        "agent": "agent-abad4f0bbde043e2d"
+      },
+      {
+        "output": 13626,
+        "input": 7,
+        "cache_creation": 65288,
+        "cache_read": 156788,
+        "total": 235709,
+        "duration_s": 202,
+        "agent": "agent-abe577f7e3dcca68d"
+      },
+      {
+        "output": 7505,
+        "input": 32,
+        "cache_creation": 48558,
+        "cache_read": 782352,
+        "total": 838447,
+        "duration_s": 107,
+        "agent": "agent-ac086e70d92167ff5"
+      },
+      {
+        "output": 46272,
+        "input": 66,
+        "cache_creation": 124010,
+        "cache_read": 3326321,
+        "total": 3496669,
+        "duration_s": 566,
+        "agent": "agent-ac85bbd536c1938a5"
+      },
+      {
+        "output": 22072,
+        "input": 20,
+        "cache_creation": 93719,
+        "cache_read": 823688,
+        "total": 939499,
+        "duration_s": 334,
+        "agent": "agent-ae0832980437f0ebf"
+      },
+      {
+        "output": 4013,
+        "input": 28,
+        "cache_creation": 36800,
+        "cache_read": 605330,
+        "total": 646171,
+        "duration_s": 77,
+        "agent": "agent-af0a527de60b8eb22"
+      },
+      {
+        "output": 6199,
+        "input": 18,
+        "cache_creation": 44936,
+        "cache_read": 389230,
+        "total": 440383,
+        "duration_s": 91,
+        "agent": "agent-afd75ce6db98c6ef8"
+      }
+    ],
+    "max_subagent_duration_s": 583,
+    "sum_subagent_duration_s": 5037
+  },
+  "input_tokens": "26",
+  "output_tokens": "98403",
+  "cache_creation_tokens": "307016",
+  "cache_read_tokens": "1677949",
+  "total_tokens": 2083394,
+  "session_id": "ec2fef52-0209-4743-9c4c-9af5877fbadb",
+  "findings_lines": 10,
+  "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report 320685. This reviews pull request #320685 of the GitHub repository microsoft/vscode (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-07-28T11:00:36Z"
+}

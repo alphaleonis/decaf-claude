@@ -1,0 +1,128 @@
+[
+ {
+  "cluster_id": "c17",
+  "summary": "Other switches (getPossibleTypeArgumentsInfo, the breakpoints switch) have no LessThanSlashToken case, so a JSX closing bracket now falls through to their defaults \u2014 appears benign but untested.",
+  "file": "src/services/utilities.ts",
+  "line": 2049,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c5",
+  "summary": "Asymmetric fallback / incomplete fix: createChildren derives languageVariant only from `sourceFile?.languageVariant ?? Standard` while the scan text falls back to `sourceFile || node.getSourceFile()`, so a SourceFileLike that carries JSX text but omits the optional languageVariant (e.g. the literals built in textChanges.ts:1339, sourcemaps.ts) is scanned as Standard \u2014 silently re-introducing the `</` mis-tokenization the PR set out to fix.",
+  "file": "src/services/services.ts",
+  "line": 507,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c15",
+  "summary": "The adjacent unchanged comment `// <div>Hello |</div>` in utilities.ts may now be stale, since that caret position routes through the updated LessThanSlashToken/JsxClosingElement branch.",
+  "file": "src/services/utilities.ts",
+  "line": 1874,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c12",
+  "summary": "Type-design of the new field: modeling a total field as optional-with-silent-default (`?? Standard`) is questionable \u2014 it conflates 'unknown' with 'Standard', duplicates the required SourceFile.languageVariant, and pushes one consumer's need onto the shared SourceFileLike interface (ISP); some suggest making it required so Standard is an explicit choice.",
+  "file": "src/compiler/types.ts",
+  "line": 4291,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c4",
+  "summary": "The new `languageVariant?` on SourceFileLike is added WITHOUT `/** @internal */` (unlike its sibling optional members), so it ships in the public typescript.d.ts baseline and permanently widens TypeScript's public API surface despite having only an internal consumer.",
+  "file": "src/compiler/types.ts",
+  "line": 4291,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c8",
+  "summary": "The two modified fourslash JSX classification tests re-touch the trailing `const c2 = classification(\"2020\")` block with textually identical -/+ lines \u2014 a pure LF->CRLF line-ending normalization unrelated to the fix, inflating the diff and confusing git blame.",
+  "file": "tests/cases/fourslash/syntacticClassificationsJsx1.ts",
+  "line": null,
+  "category": "style"
+ },
+ {
+  "cluster_id": "c16",
+  "summary": "Design alternative: rather than widening the public SourceFileLike type, createChildren's only caller already guarantees a real SourceFile, so the variant could be read from node.getSourceFile().languageVariant with zero new public API; if the field stays, centralize the `?? Standard` default in one documented helper.",
+  "file": "src/services/services.ts",
+  "line": 507,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c7",
+  "summary": "formatting.ts shouldAddDelta was not migrated to LessThanSlashToken: now that a JsxClosingElement's leading token is LessThanSlashToken, its 'no indent delta' carve-out for JSX closing tags no longer fires and falls through to default delta logic (a maintainer flagged this on the PR; no indentation test covers it).",
+  "file": "src/services/formatting/formatting.ts",
+  "line": 737,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c18",
+  "summary": "The intentional divergence \u2014 JsxText/JsxExpression checks stay LessThanToken while JsxClosingElement moved to LessThanSlashToken (error-recovery paths) \u2014 is undocumented, so a future consistency fix could break the error-recovery paths.",
+  "file": "src/services/utilities.ts",
+  "line": 1875,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c6",
+  "summary": "The braceMatching map has no LessThanSlashToken entry and the change removed the LessThanToken child of a JSX closing tag, so go-to-matching-brace on a .tsx closing tag now returns emptyArray \u2014 an editor-feature regression from the token change.",
+  "file": "src/services/services.ts",
+  "line": 2630,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c14",
+  "summary": "Narrow edge: a malformed closing tag with whitespace between `<` and `/` (`< /div>`) leaves a bare LessThanToken that the old SlashToken/LessThanToken check matched but the new LessThanSlashToken check does not.",
+  "file": "src/services/utilities.ts",
+  "line": 1892,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c10",
+  "summary": "The load-bearing `scanner.setLanguageVariant(LanguageVariant.Standard)` reset (which restores the shared singleton for other consumers) has no comment explaining why it exists, so a future maintainer could read it as redundant teardown and delete it, silently corrupting scanning elsewhere.",
+  "file": "src/services/services.ts",
+  "line": 530,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c11",
+  "summary": "The new SourceFileLike.languageVariant field / its non-local coupling is undocumented: no comment records the absent-means-Standard contract, that implementers backing JSX must populate it, or that the six LessThanSlashToken consumer checks silently depend on createChildren's variant switch.",
+  "file": "src/compiler/types.ts",
+  "line": 4291,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c2",
+  "summary": "In getCompletionData's 'Fix location' switch, the mechanical SlashToken -> LessThanSlashToken rename was applied to the case still guarded by `parent.kind === JsxSelfClosingElement`; a self-closing element's `/` is a plain SlashToken (a LessThanSlashToken only parents a JsxClosingElement/Fragment), so the combination is unsatisfiable and the branch is dead code \u2014 silently dropping the self-closing-tag completion-location fix-up.",
+  "file": "src/services/completions.ts",
+  "line": 3511,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c9",
+  "summary": "Test-coverage gap: the behavioral completions/utilities changes ship with no PR-authored test \u2014 only two syntactic-classification baselines were updated. Uncovered: the self-closing 'Fix location' branch, JSX fragment `</>` close, .jsx/.js-family variant derivation, the scanner-reset cross-file leak, and a direct getChildren token-kind unit test.",
+  "file": "src/services/completions.ts",
+  "line": 3511,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c1",
+  "summary": "Making createChildren (behind the public Node.getChildren() API) scan JSX files with the JSX language variant changes the token children getChildren() emits for JSX (`</` becomes one LessThanSlashToken instead of `<`+`/`); getChildren is consumed by external tooling and the changed/mis-tiled child stream crashed downstream AST walkers (typescript-eslint, eslint-stylistic) with 'RangeError: Maximum call stack size exceeded', invisible to TS's own test suite \u2014 the escaped, reverted defect (#62423/#62188).",
+  "file": "src/services/services.ts",
+  "line": 507,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c13",
+  "summary": "The PR's own 'test tsserver top300' CI bot reported SIGABRT tsserver crashes for backstage, kibana, and remotion against this diff, and those abnormal exits were never investigated before merge \u2014 direct CI evidence of the downstream breakage.",
+  "file": "src/services/services.ts",
+  "line": 507,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c3",
+  "summary": "createChildren mutates the shared module-level scanner's language variant (setLanguageVariant(JSX)) and resets it to Standard only on the normal return path \u2014 NOT in a try/finally \u2014 so a throw mid-traversal (e.g. Debug.fail in addSyntheticNodes) leaves the process-wide singleton scanner stuck in JSX variant, silently mis-tokenizing later non-JSX scans in completions/preProcess/organizeImports.",
+  "file": "src/services/services.ts",
+  "line": 509,
+  "category": "logic"
+ }
+]

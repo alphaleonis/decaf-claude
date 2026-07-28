@@ -1,0 +1,263 @@
+{
+  "run_id": "6__ours__r2",
+  "subject_id": 6,
+  "lang": "typescript",
+  "size": "large",
+  "tool": "ours",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/vscode",
+  "pr": 320685,
+  "merge_sha": "f9070acd20a269fb07dd15389676bd6875b9db05",
+  "review_base": "f9070acd20a269fb07dd15389676bd6875b9db05^1",
+  "review_head": "f9070acd20a269fb07dd15389676bd6875b9db05",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1980,
+  "duration_ms": "1978053",
+  "duration_api_ms": "6688115",
+  "num_turns": "37",
+  "cost_usd": "30.948394699999987",
+  "orch_usage": {
+    "input_tokens": "26",
+    "output_tokens": "95229",
+    "cache_creation_tokens": "462634",
+    "cache_read_tokens": "1502821",
+    "total_tokens": 2060710
+  },
+  "session_tokens": {
+    "subagents": 23,
+    "input": 863,
+    "output": 482900,
+    "cache_creation": 2148638,
+    "cache_read": 26889430,
+    "total": 29521831,
+    "orchestrator": {
+      "output": 95229,
+      "total": 2060710,
+      "duration_s": 1979
+    },
+    "per_subagent": [
+      {
+        "output": 20664,
+        "input": 20,
+        "cache_creation": 90405,
+        "cache_read": 694828,
+        "total": 805917,
+        "duration_s": 446,
+        "agent": "agent-a21c2be090031b36a"
+      },
+      {
+        "output": 16245,
+        "input": 10,
+        "cache_creation": 48602,
+        "cache_read": 204010,
+        "total": 268867,
+        "duration_s": 210,
+        "agent": "agent-a38deb82b80f46130"
+      },
+      {
+        "output": 7714,
+        "input": 14,
+        "cache_creation": 62341,
+        "cache_read": 380858,
+        "total": 450927,
+        "duration_s": 93,
+        "agent": "agent-a45593268cd85912d"
+      },
+      {
+        "output": 6513,
+        "input": 28,
+        "cache_creation": 53463,
+        "cache_read": 715358,
+        "total": 775362,
+        "duration_s": 86,
+        "agent": "agent-a53ff5722c5e9e95a"
+      },
+      {
+        "output": 39385,
+        "input": 299,
+        "cache_creation": 162192,
+        "cache_read": 7404310,
+        "total": 7606186,
+        "duration_s": 583,
+        "agent": "agent-a6a4fce6b0809bdf6"
+      },
+      {
+        "output": 4881,
+        "input": 24,
+        "cache_creation": 43703,
+        "cache_read": 526629,
+        "total": 575237,
+        "duration_s": 78,
+        "agent": "agent-a75d76f16b0483b3b"
+      },
+      {
+        "output": 47572,
+        "input": 68,
+        "cache_creation": 140061,
+        "cache_read": 3479336,
+        "total": 3667037,
+        "duration_s": 624,
+        "agent": "agent-a935ed78fa331f355"
+      },
+      {
+        "output": 4287,
+        "input": 22,
+        "cache_creation": 44734,
+        "cache_read": 516615,
+        "total": 565658,
+        "duration_s": 75,
+        "agent": "agent-aa71da899a99bd313"
+      },
+      {
+        "output": 40556,
+        "input": 62,
+        "cache_creation": 126665,
+        "cache_read": 2795458,
+        "total": 2962741,
+        "duration_s": 573,
+        "agent": "agent-aa8d8006c417ad7d8"
+      },
+      {
+        "output": 7631,
+        "input": 18,
+        "cache_creation": 48415,
+        "cache_read": 403689,
+        "total": 459753,
+        "duration_s": 90,
+        "agent": "agent-aa9241f047b3b6d0f"
+      },
+      {
+        "output": 4678,
+        "input": 14,
+        "cache_creation": 53392,
+        "cache_read": 278851,
+        "total": 336935,
+        "duration_s": 57,
+        "agent": "agent-ab67f4c2b3eb9d5d4"
+      },
+      {
+        "output": 6643,
+        "input": 8,
+        "cache_creation": 62151,
+        "cache_read": 158980,
+        "total": 227782,
+        "duration_s": 209,
+        "agent": "agent-ac099673ec24f3319"
+      },
+      {
+        "output": 22701,
+        "input": 32,
+        "cache_creation": 85394,
+        "cache_read": 1131007,
+        "total": 1239134,
+        "duration_s": 277,
+        "agent": "agent-ac49a7798eab021ef"
+      },
+      {
+        "output": 4021,
+        "input": 16,
+        "cache_creation": 43338,
+        "cache_read": 358383,
+        "total": 405758,
+        "duration_s": 60,
+        "agent": "agent-ac722bc87a0796f74"
+      },
+      {
+        "output": 9332,
+        "input": 20,
+        "cache_creation": 54312,
+        "cache_read": 505950,
+        "total": 569614,
+        "duration_s": 126,
+        "agent": "agent-ac91a3aad6848f1a0"
+      },
+      {
+        "output": 4392,
+        "input": 16,
+        "cache_creation": 45365,
+        "cache_read": 349068,
+        "total": 398841,
+        "duration_s": 79,
+        "agent": "agent-aca55e72e4974ba00"
+      },
+      {
+        "output": 17654,
+        "input": 17,
+        "cache_creation": 84856,
+        "cache_read": 533901,
+        "total": 636428,
+        "duration_s": 262,
+        "agent": "agent-ad9a9f6691cfdc766"
+      },
+      {
+        "output": 20325,
+        "input": 24,
+        "cache_creation": 81523,
+        "cache_read": 789172,
+        "total": 891044,
+        "duration_s": 304,
+        "agent": "agent-ada911c77da7ac242"
+      },
+      {
+        "output": 4151,
+        "input": 26,
+        "cache_creation": 46676,
+        "cache_read": 624448,
+        "total": 675301,
+        "duration_s": 64,
+        "agent": "agent-adce40b59d24b008c"
+      },
+      {
+        "output": 22534,
+        "input": 34,
+        "cache_creation": 72927,
+        "cache_read": 983853,
+        "total": 1079348,
+        "duration_s": 295,
+        "agent": "agent-ae541a9f749786347"
+      },
+      {
+        "output": 49240,
+        "input": 44,
+        "cache_creation": 117851,
+        "cache_read": 2030540,
+        "total": 2197675,
+        "duration_s": 554,
+        "agent": "agent-aef4e1a5ca5b83f4b"
+      },
+      {
+        "output": 24573,
+        "input": 13,
+        "cache_creation": 85694,
+        "cache_read": 387264,
+        "total": 497544,
+        "duration_s": 354,
+        "agent": "agent-afb9a095ee3112138"
+      },
+      {
+        "output": 1979,
+        "input": 8,
+        "cache_creation": 31944,
+        "cache_read": 134101,
+        "total": 168032,
+        "duration_s": 23,
+        "agent": "agent-afe9144fcf8119531"
+      }
+    ],
+    "max_subagent_duration_s": 624,
+    "sum_subagent_duration_s": 5522
+  },
+  "input_tokens": "26",
+  "output_tokens": "95229",
+  "cache_creation_tokens": "462634",
+  "cache_read_tokens": "1502821",
+  "total_tokens": 2060710,
+  "session_id": "24dea64b-2f2d-48a9-965a-a02b62ae699e",
+  "findings_lines": 12,
+  "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report 320685. This reviews pull request #320685 of the GitHub repository microsoft/vscode (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-07-28T11:33:37Z"
+}

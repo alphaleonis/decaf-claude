@@ -7,7 +7,7 @@ type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-28T21:16:04Z
+updated_at: 2026-07-28T21:26:25Z
 order: zzw
 ---
 
@@ -502,8 +502,8 @@ Do not regress these while optimizing:
 # ⚠ Evidence validity — read first
 
 **#dcc-9kkz: 11 of 18 anthropic cells did not run anthropic.** Seven executed `decaf-quality`
-(ours) under anthropic's label; four are unattributed. Clean anthropic costs **~$5.87/run**, not
-the published $11.82 — so **ours is ~3.6× more expensive, not 1.8×**.
+(ours) under anthropic's label; four are unattributed. Across the 9 valid cells anthropic
+averages **$7.13/run**, not the published $11.82 — so **ours is ~3.0× more expensive, not 1.8×**.
 
 - **Unaffected** — every ours-only finding here: the per-persona roster analysis, the severity
   calibration root cause, and the diff-vs-repo cost scaling.

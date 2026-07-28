@@ -1,0 +1,247 @@
+[
+ {
+  "cluster_id": "c6",
+  "summary": "The watchdog kills via stream.destroy() with no reason, so reader.cancel(undefined) propagates through the counting TransformStream and the fetch is recorded in telemetry as outcome:'cancel' \u2014 indistinguishable from a benign user cancellation, so hung-stream/false-timeout frequency cannot be measured or alerted on.",
+  "file": "fetcherService.ts",
+  "line": 346,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c5",
+  "summary": "The new StreamIdleTimeoutError is not recognized by the downstream error-classification chain (processError in chatMLFetcher.ts, out of diff): it carries no .code and no retryable flag, so a timed-out-but-recoverable stream is misclassified (generic Failed or, via err.fetcherId tagging, NetworkError with a misleading 'check your firewall' message) and excluded from the auto-retry path.",
+  "file": "chatMLFetcher.ts",
+  "line": 1949,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c13",
+  "summary": "The 'consumer break releases the underlying reader lock' test is a false positive: its only post-break check is that stream.destroy() does not throw, which resolves identically whether or not the finally's iterator.return?.() forwarding exists, so it cannot detect the regression it names.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 142,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c22",
+  "summary": "The idle setTimeout is not .unref()'d, so a pending 1-2 minute timer keeps the event loop referenced (cosmetic \u2014 it is always cleared promptly).",
+  "file": "fetcherService.ts",
+  "line": 336,
+  "category": "perf"
+ },
+ {
+  "cluster_id": "c17",
+  "summary": "The timeout tests match on err.name string comparison (and a message substring) rather than `instanceof StreamIdleTimeoutError`, despite importing the class \u2014 a look-alike error with a spoofed name would satisfy the assertion while consumer instanceof checks silently stop matching.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 66,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c27",
+  "summary": "The test helper's JSDoc ('Creates a DestroyableStream...') is physically attached to the ControllableStream interface rather than the createControllableStream factory, so IDE hover on the interface reads wrongly.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 10,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c28",
+  "summary": "withStreamIdleTimeout hand-rolls setTimeout/clearTimeout/flag bookkeeping instead of the codebase's canonical raceTimeout(promise, timeoutMs, onTimeout) helper (async.ts:152) used elsewhere for race-with-destructive-cleanup.",
+  "file": "fetcherService.ts",
+  "line": 328,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c3",
+  "summary": "The 60s/2min thresholds are hardcoded module constants applied unconditionally with no config/experiment gate and no kill switch, diverging from the path's getExperimentBasedConfig/ConfigKey convention \u2014 so the behavior cannot be tuned or disabled without a code release.",
+  "file": "fetcherService.ts",
+  "line": 303,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c26",
+  "summary": "The exported StreamIdleTimeoutError class has no JSDoc, unlike the surrounding new constants and function in the same diff (violating the repo's 'JSDoc on classes' convention).",
+  "file": "fetcherService.ts",
+  "line": 312,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c4",
+  "summary": "If stream.destroy() -> reader.cancel() makes the pending `await iterator.next()` REJECT instead of resolving {done:true}, the post-loop `if (timedOut) throw StreamIdleTimeoutError` is never reached, so the caller sees a raw teardown error (ECONNRESET/TypeError) rather than the typed timeout \u2014 the whole signaling path silently relies on an undocumented Web Streams invariant.",
+  "file": "fetcherService.ts",
+  "line": 355,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c1",
+  "summary": "The idle watchdog actively destroys the stream when no network chunk arrives within SSE_IDLE_TIMEOUT_MS (60s) / SSE_FIRST_CHUNK_TIMEOUT_MS (2min), but such gaps occur legitimately during active generation (server-side tool calls, extended thinking, slow TTFT, OS suspend/resume, proxies dropping keepalives), so the watchdog terminates streams that are not actually hung \u2014 truncating live responses. The escaped, reverted defect.",
+  "file": "fetcherService.ts",
+  "line": 310,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c20",
+  "summary": "No test exercises a chunk arriving at/near the exact idle-timeout deadline (the chunk-vs-timer boundary); all 'does not time out' cases push chunks with a safety margin.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 342,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c32",
+  "summary": "Assorted doc/comment nits: TTFT-wording imprecision, the SSE_IDLE comment stating the hung-connection heuristic as fact, the positional 'the timer is cleared above' comment-rot risk, and non-failing {@link} references.",
+  "file": "fetcherService.ts",
+  "line": 300,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c7",
+  "summary": "When the watchdog fires it emits no dedicated log/metric/telemetry at the source (the module has no logger); a hung-stream timeout is invisible except by string-matching the exception, and the error carries no request/model/deployment context for correlation.",
+  "file": "fetcherService.ts",
+  "line": 344,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c8",
+  "summary": "`void stream.destroy().catch(() => {})` swallows every rejection from destroy()/reader.cancel() with no logging, so a systemic teardown failure becomes undiagnosable. (The empty catch itself is intentional \u2014 the critique is the absence of observability, not an unhandled rejection.)",
+  "file": "fetcherService.ts",
+  "line": 346,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c29",
+  "summary": "A throwing `await iterator.return?.()` in the finally propagates first and masks the intended StreamIdleTimeoutError (or an original error), because it runs during unwinding.",
+  "file": "fetcherService.ts",
+  "line": 366,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c3b",
+  "summary": "The wrapper is applied uniformly to all three SSE consumers rather than scoped to the endpoint where hangs were observed, maximizing the false-positive blast radius (the accepted follow-up scoped its observe-only watchdog to messagesApi only).",
+  "file": "stream.ts",
+  "line": 323,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c23",
+  "summary": "StreamIdleTimeoutError type design: timeoutMs and isFirstChunk are folded into the message string and discarded rather than exposed as readonly fields (forcing message.includes parsing to distinguish first-chunk vs idle), the boolean allows contradictory instances, and the declared AsyncGenerator<T> return type is wider than the for-await-only contract.",
+  "file": "fetcherService.ts",
+  "line": 312,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c11",
+  "summary": "Same-event-loop-tick race: a chunk (or clean close) arriving in the same loop iteration the timeout becomes due is discarded because the timers phase runs before the poll phase, so a successful completion can be mis-reported as a timeout.",
+  "file": "fetcherService.ts",
+  "line": 342,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c31",
+  "summary": "Claims the merged code measures/false-times-out on CONSUMER processing time ('measured consumer processing time... false timeouts under slow consumers'). REFUTED: the timer is cleared before yield (see known_safe), so consumer time is not timed \u2014 this is the earlier-commit bug the author fixed before merge.",
+  "file": "fetcherService.ts",
+  "line": 342,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c12",
+  "summary": "The idle timer resets on every chunk with no absolute stream-duration cap and no minimum-throughput check, so a slow-drip endpoint (one byte or a ':' keepalive every <60s) holds the connection open indefinitely and grows SSEProcessor buffers unbounded.",
+  "file": "fetcherService.ts",
+  "line": 354,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c2",
+  "summary": "'First chunk' means first transport bytes, not first model output: an early administrative/empty chunk (e.g. CAPI prompt_filter_results at stream.ts:409) flips isFirstChunk=false, collapsing the 2-minute TTFT budget to the 60s idle timeout, so a reasoning model silent >60s after that chunk is killed.",
+  "file": "fetcherService.ts",
+  "line": 362,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c10",
+  "summary": "Terminal-event-then-hang: the server emits a full response (message_stop / response.completed) but hangs before closing the socket; messagesApi/responsesApi do not return on terminal events (unlike stream.ts's [DONE] handling), so the idle timer fires 60s later and StreamIdleTimeoutError discards an already-complete response \u2014 converting success into a retroactive failure.",
+  "file": "messagesApi.ts",
+  "line": 596,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c19",
+  "summary": "No negative-control test closes a stream with zero chunks (result.done true on the first next(), isFirstChunk never flips, timedOut false): a regression treating 'closed empty' as a first-chunk timeout would go uncaught.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 40,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c25",
+  "summary": "The watchdog's non-obvious mechanism and heuristics are undocumented: no comment records why 60s/2min, the liveness invariant (watchdog wraps the raw byte stream so SSE keepalives reset the timer; every endpoint must emit more often than 60s), or that the timeout path exits the loop through the same `if (result.done) break` as clean EOF \u2014 so a maintainer could 'simplify' the post-loop throw and silently break the timeout path.",
+  "file": "fetcherService.ts",
+  "line": 305,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c24",
+  "summary": "The JSDoc says the first-chunk timeout gets 'slightly more time', but SSE_FIRST_CHUNK_TIMEOUT_MS (120s) is exactly double SSE_IDLE_TIMEOUT_MS (60s), not slightly more.",
+  "file": "fetcherService.ts",
+  "line": 300,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c30",
+  "summary": "On timeout, chunks already yielded/side-effected before the throw remain in the downstream accumulator; unchanged upstream handlers could present a truncated partial answer as complete with no truncation marker (the buffered-completions-before-error ordering in AsyncIterableObject compounds this).",
+  "file": "stream.ts",
+  "line": 322,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c33",
+  "summary": "Assorted minor logic edges: if classification were ever changed to NetworkError a timeout would re-submit the full prompt; and timedOut is a one-way flag never reset, so a chunk arriving on the same in-flight read could still throw at stream end.",
+  "file": "fetcherService.ts",
+  "line": 312,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c14",
+  "summary": "The timeout tests never assert stream.destroy()/reader.cancel() is actually invoked on timeout (nor that the timer is cleared) \u2014 a regression that stopped tearing down the hung stream would still pass; only the thrown error's name/message is checked.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 55,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c21",
+  "summary": "The fake-timer tests are fragile: test 7 drives the same fake clock from inside the code-under-test's loop and the outer body concurrently, an order-sensitive pattern relying on undocumented advanceTimersByTimeAsync draining depth that could go flaky or hang under one extra await hop.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 161,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c9",
+  "summary": "Pre-existing/out-of-diff coverage gap: the watchdog was applied to only 3 SSE consumers; structurally identical consumers (completions-core SSEProcessor at stream.ts:293, oaiLanguageModelServer/claudeLanguageModelServer pass-throughs, nesFetch, Response.text()) still iterate the body with a bare for-await and no timeout, so they remain exposed to the same hang.",
+  "file": "stream.ts",
+  "line": 293,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c16",
+  "summary": "No test exercises the three production call sites: processResponseFromMessagesEndpoint (and the responsesApi/stream.ts sites) have no coverage that a mid-stream StreamIdleTimeoutError propagates sensibly; the tests drive the generator directly, never through a real for-await consumer.",
+  "file": "messagesApi.ts",
+  "line": 596,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c18",
+  "summary": "The timeout tests assert only the isFirstChunk-driven message substrings ('first chunk'/'inactivity'), never the numeric timeoutMs, so swapping the two constants at the throw site would still pass.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 69,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c15",
+  "summary": "No test covers a genuine underlying-stream error (controller.error while awaiting a chunk): the wrapper should clear the timer and propagate the original error unmodified, not mask it as StreamIdleTimeoutError, but that contract is unpinned.",
+  "file": "streamIdleTimeout.spec.ts",
+  "line": 1,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c8b",
+  "summary": "Edge in the timer callback's destroy(): `.catch()` handles an async rejection but not a SYNCHRONOUS throw from destroy() inside setTimeout (would be uncaught), and if destroy() takes the stream.cancel() branch while the reader is still locked it rejects with TypeError (swallowed), potentially leaving the read hung.",
+  "file": "fetcherService.ts",
+  "line": 346,
+  "category": "logic"
+ }
+]

@@ -1,0 +1,184 @@
+[
+ {
+  "cluster_id": "c17",
+  "summary": "The new caching scheme is undocumented: the RowIds key format (underscore join, null-name sentinel), the cache's changed semantics (only successes cached), and RowIdInfo's purpose carry no comments despite the file's // NB: idiom.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 39,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c13",
+  "summary": "The new test's comments are defective: '//this was failing. now should be fixed' narrates change history, '//get len of abuff' misdescribes the adjacent code (nothing obtains a length), the '//reading fields...' comment has a grammar error, and the test lacks the file's '[Fact] // Issue #NNNNN' provenance idiom.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 173,
+  "category": "doc"
+ },
+ {
+  "cluster_id": "c10",
+  "summary": "Whitespace churn introduced by the diff: a stray whitespace-only line after the namespace opening brace, a stray blank line splitting the field block, and a removed blank line after 'var pkColumns = -1L;' (trim_trailing_whitespace violations).",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 17,
+  "category": "style"
+ },
+ {
+  "cluster_id": "c26",
+  "summary": "Expression/computed blob columns (empty database/table name) all map to the sentinel key '_'; two expression-derived blob columns would share one cache entry \u2014 unexercised by tests.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 324,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c20",
+  "summary": "A new interpolated key string is allocated on every GetStream call, including cache hits (per chunk during chunked blob reads), where the pre-change code did a zero-allocation check.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 328,
+  "category": "perf"
+ },
+ {
+  "cluster_id": "c7",
+  "summary": "Local variable 'rowidkey' is an unbroken lowercase run, deviating from the camelCase convention of every other multi-word local in the method (should be rowIdKey, and var per file usage).",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 328,
+  "category": "style"
+ },
+ {
+  "cluster_id": "c6",
+  "summary": "The new RowIds field violates the file's field conventions: PascalCase with no explicit access modifier where every sibling private field is 'private' + _camelCase (per .editorconfig).",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 39,
+  "category": "style"
+ },
+ {
+  "cluster_id": "c11",
+  "summary": "The new test verifies the joined non-blob columns only via Console.WriteLine \u2014 xUnit does not capture console output and nothing is asserted, so wrong GetInt32 values would pass silently; should be Assert.Equal.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 171,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c16",
+  "summary": "The new test asserts only byte content and never the stream type, so it cannot distinguish true SqliteBlob streaming from the MemoryStream fallback \u2014 a silent regression to the buffered path would still pass; sibling tests use Assert.IsType<SqliteBlob>.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 174,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c23",
+  "summary": "The choice B.ID=1000 in the new test is load-bearing (had B.ID been 1, the stale-rowid bug would coincidentally pass) and is documented nowhere in the test.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 156,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c12",
+  "summary": "The new test discards the GetBytes return values instead of asserting them (sibling tests assert the returned count).",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 175,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c19",
+  "summary": "The RowIds dictionary is eagerly allocated in every SqliteDataRecord construction, unlike every sibling cache in the class which is nullable and lazily initialized.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 39,
+  "category": "perf"
+ },
+ {
+  "cluster_id": "c2",
+  "summary": "The 'searched, not found' outcome is never stored in the RowIds dictionary (only found branches call Add), so every subsequent GetStream/GetBytes/GetChars/GetTextReader call on a no-rowid table re-runs the full O(FieldCount) metadata scan plus a fresh pragma_table_info SQL query \u2014 a regression vs. the old -1 sentinel which memoized the negative result.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 329,
+  "category": "perf"
+ },
+ {
+  "cluster_id": "c15",
+  "summary": "The dictionary cache-hit branch (TryGetValue returning true) is executed by zero tests \u2014 a wrong stored ordinal or stale entry would be invisible to the suite.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 329,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c24",
+  "summary": "Pre-existing, adjacent to the diff: the pragma_table_info($table) query is not schema-qualified, so it resolves against schema search order rather than the column's databaseName \u2014 an ATTACHed table sharing a name with a main table can yield a wrong pkColumns count.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 377,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c14",
+  "summary": "Test-coverage gaps around the new caching mechanism: no join-with-fallback-table case, no reverse/interleaved read order, no multi-row iteration over the cached path, no ATTACH/database-name coverage, no WITHOUT ROWID or aliased-rowid-projection cases, no single-row pin \u2014 the new test covers only the happy two-table path.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 149,
+  "category": "test"
+ },
+ {
+  "cluster_id": "c3",
+  "summary": "The cache key $\"{blobDatabaseName}_{blobTableName}\" is built by naive '_' concatenation and is not injective \u2014 distinct (database, table) pairs whose names contain underscores (e.g. ATTACHed databases) can collide, silently reusing the wrong table's cached rowid ordinal (wrong row's blob bytes or a spurious error).",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 328,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c18",
+  "summary": "RowIdInfo.TableName is declared non-nullable string but is assigned from sqlite3_column_table_name(...).utf8_to_string(), which the same file treats as nullable and which returns null for expression columns \u2014 the annotation is unenforced.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 23,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c25",
+  "summary": "Pre-existing, adjacent to the diff: a single-column INTEGER PK on a WITHOUT ROWID table satisfies the pkColumns==1 branch and is treated as a rowid alias, but sqlite3_blob_open would fail at runtime; untested.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 384,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c5",
+  "summary": "The RowIdInfo nested class is over-designed: TableName is assigned at both construction sites but never read (dead state), both properties have public setters though set exactly once, internal visibility is wider than needed, and the type reduces to an int (or a tuple/record per repo idiom).",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 20,
+  "category": "design"
+ },
+ {
+  "cluster_id": "c22",
+  "summary": "Test formatting drift: trailing whitespace inside the verbatim SQL literal, multi-line SQL diverging from the file's compact single-line convention, a stray blank line before the closing brace, and abuff/bbuff naming vs the sibling 'buffer' convention.",
+  "file": "test/Microsoft.Data.Sqlite.Tests/SqliteDataReaderTest.cs",
+  "line": 158,
+  "category": "style"
+ },
+ {
+  "cluster_id": "c8",
+  "summary": "Debug.Assert(rowIdForOrdinal!=null) is missing spaces around the != operator, contrary to the .editorconfig binary-operator spacing rule.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 393,
+  "category": "style"
+ },
+ {
+  "cluster_id": "c9",
+  "summary": "RowIdInfo? rowIdForOrdinal = null; is a redundant pre-declaration before the TryGetValue out argument \u2014 the codebase idiom is inline 'out var'.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 327,
+  "category": "style"
+ },
+ {
+  "cluster_id": "c1",
+  "summary": "Debug.Assert(rowIdForOrdinal != null) after the scan loop asserts a false invariant: 'no rowid found for the blob's (database, table)' is a legitimate, reachable outcome (expression columns with no table, PK not selected, composite-PK / WITHOUT ROWID tables) that the null-check fallback two lines below explicitly handles, so the assert fires and terminates the process in Debug builds; the old code's -1 sentinel made the equivalent assert vacuously true.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 393,
+  "category": "bug"
+ },
+ {
+  "cluster_id": "c4",
+  "summary": "Self-join: sqlite3_column_table_name returns the origin table name, not the SQL alias, so two aliases of the same table share one cache key and the second alias's blob is resolved with the first alias's rowid ordinal \u2014 silently the wrong row's blob; the PR's per-table fix does not cover this degenerate case (pre-existing in kind) and no test exercises it.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 328,
+  "category": "logic"
+ },
+ {
+  "cluster_id": "c21",
+  "summary": "Under multithreaded misuse (outside DbDataReader's contract) RowIds.Add can throw ArgumentException on a duplicate key or corrupt the dictionary, where the old int? field raced benignly; the indexer would be idempotent.",
+  "file": "src/Microsoft.Data.Sqlite.Core/SqliteDataRecord.cs",
+  "line": 355,
+  "category": "logic"
+ }
+]
