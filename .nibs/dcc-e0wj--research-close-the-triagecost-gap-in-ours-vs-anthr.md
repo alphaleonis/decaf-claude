@@ -7,7 +7,7 @@ type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-28T20:52:04Z
+updated_at: 2026-07-28T20:57:51Z
 order: zzw
 ---
 
@@ -136,9 +136,10 @@ mapping is.
       either cap non-behavioral categories at Medium in rule 1, or stop mapping the
       knowledge-reviewer's RULE 0 MUST onto Critical. Prefer the latter: it fixes the source
       rather than patching the symptom, and leaves a genuinely critical doc finding able to rank
-- [ ] Decide whether `compute_metrics.py::_calibration` should use the **consolidated** severity
-      rather than max-over-agents — it currently measures sub-agent claims, not the artifact a
-      reader trusts. Changes published numbers for every fan-out tool, so it is a deliberate call
+- [ ] → **#dcc-hmp6** — whether `_calibration` should measure the consolidated severity rather
+      than max-over-agents. Promoted out of this nib: it rescores every tool and touches
+      committed reports cited by three nibs, so it must not land as a side effect of the
+      severity-contract prototype above
 
 **Caveat on n.** Ours has 30 consolidated critical/high clusters across 9 subjects; the doc
 bucket is 3 of them. The mechanism is traced and certain, but the *size* of the fix rests on a
