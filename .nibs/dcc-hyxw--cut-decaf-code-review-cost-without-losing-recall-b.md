@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-07-28T20:59:06Z
+updated_at: 2026-07-28T21:08:51Z
 order: zzzV
 ---
 
@@ -77,3 +77,7 @@ blind re-grading. Prefer interventions that can share one re-run.
       and the post-change roster table recorded alongside the baseline for comparison
 - [ ] [manual] No regression in the behaviours #dcc-e0wj lists under `# Preserve` — notably
       validators correcting their own findings downward
+- [ ] [manual] **Cost still scales with diff size, not repo size.** Partial
+      r(cost, repo files | diff LOC) stays at or below the 0.403 baseline (anthropic 0.119,
+      superpowers 0.831 for scale). #dcc-gcob and any history-retrieval work are the two that
+      can break this; both must keep every evidence channel scoped to the changed files
