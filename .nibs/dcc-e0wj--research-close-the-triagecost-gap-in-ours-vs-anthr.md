@@ -164,7 +164,7 @@ small count — re-measure rather than trusting 0.85.
 ## 2. Cost / fan-out efficiency
 $21.33/run vs **$7.61** (restated on the repaired data, #dcc-9kkz; the published $11.82 was a
 blended column); 14.5 sub-agents vs 11.8, by role 9.4 reviewers + 5.1 validators vs 5 reviewers +
-~7 auxiliary. Across all subjects ~47% of sub-agent findings restate a sibling's (the 77% first
+~7 auxiliary. Across all subjects ~44% of sub-agent findings restate a sibling's (the 77% first
 cited here counted validator rows, consolidated-report rows and cross-repeat determinism —
 corrected in #dcc-gcob). Cost scales with **diff** size, not repo size — see the scaling section below (the earlier
 "scaled steeply with repo size" reading compared subject 1 to subject 6, which differ 10× in
@@ -446,7 +446,7 @@ trustworthy top-of-list possible. The two workstreams converge here.
 ## 3. Disjoint briefs — attack the restatement rate — **SCRAPPED, see #dcc-gcob**
 
 > **Do not build this.** Measured before implementing: the restatement figure was wrong and the
-> redundancy is load-bearing. Reviewer-to-reviewer restatement is **47%**, not 77%. Substantive
+> redundancy is load-bearing. Reviewer-to-reviewer restatement is **44%**, not 77% — and mid-pack, not an outlier. Substantive
 > clusters average **2.80** finders against trivia's 1.32, and **62%** of all restatement lands on
 > substantive findings — so disjoint briefs delete agreement about real defects, and 72% of
 > substantive findings would fall to a single finder, where 84% of trivia already sits. The

@@ -39,7 +39,7 @@ reasoning, measured basis and risk per intervention live in #dcc-e0wj under
 - **Orchestrator thinking is 60–77% of orchestrator output**, and the orchestrator is 23% of
   session output. Consolidation is genuinely frontier-model work — there is no
   prompt-engineering fix.
-- **~47% of sub-agent findings restate a sibling's** — the 77% previously cited counts validator rows, consolidated-report rows and cross-repeat determinism; corrected in #dcc-gcob, which also found the restatement is mostly corroboration of substantive findings. Ours emits 19.5k output per agent
+- **~44% of sub-agent findings restate a sibling's** — the 77% previously cited counts validator rows, consolidated-report rows and cross-repeat determinism; corrected in #dcc-gcob, which also found the restatement is mostly corroboration of substantive findings. Ours emits 19.5k output per agent
   against anthropic's 9.6k — a 2.0x gap on the repaired data.
 
 # The trap these all share
