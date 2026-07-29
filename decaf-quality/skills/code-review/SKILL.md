@@ -179,9 +179,25 @@ Current roster gates (authoritative text lives in each agent's `## Dispatch Gate
 
 **User override:** explicit user instructions beat gates — "include security" spawns the security-reviewer regardless of triage; "skip knowledge" excludes it.
 
-#### Step 2b.5: Apply the roster cap (only when a `mode<N>` cap was given)
+#### Step 2b.5: Resolve the `roster` axis
 
-Skip this step when no cap was parsed. In `low` mode a cap is always a no-op (the roster is already the two-agent floor) — note it if one was given and move on.
+Determine `N`, then resolve the roster against it. In `low` mode this step is always a no-op (the roster is already the two-agent floor) — note any cap that was given and move on.
+
+**Determining `N`:**
+
+1. An **explicit** `roster=<N>` or `mode<N>` suffix always wins.
+2. Otherwise, in `mid` and `high`, derive a default from the Step 2a executable-line count:
+
+   | changed executable lines | default `N` | why |
+   |---|---|---|
+   | < 100 | **4** | on small changesets almost nothing is load-bearing — measured drop cost is ~0 for most personas, because whatever one finds another finds too |
+   | 100 – 400 | **6** | specialists start to carry findings alone |
+   | > 400 | **uncapped** | specialists become decisive: `adversarial-reviewer`'s drop cost reaches 3.20/run on large diffs against 0.50 on small ones |
+
+   Record the derived value and its basis: `roster N=4 (derived: 72 executable lines)`.
+3. In `max`, never derive a default — `max` means every gate-matched agent, and a size-derived cap would contradict it.
+
+**These defaults are a first estimate.** The *shape* is measured — drop cost rises steeply and nearly monotonically with diff size — but the specific numbers are not. Revise them when the presets are measured; do not treat 4/6/uncapped as established.
 
 The cap bounds the **review-wave roster** — the agents launched in Step 3 — at `N`. Validators (Step 5.6) are not counted, and the mode's `models` policy (Step 2d) and validation policy are unchanged: a `mid4` roster is a 4-agent roster reviewed and validated under `mid` rules. Resolve the cap against the roster Step 2b produced:
 
@@ -191,11 +207,15 @@ The cap bounds the **review-wave roster** — the agents launched in Step 3 — 
 4. **`N` ≤ 2** → clamp to the floor only; record `roster cap N below floor size — clamped to the 2-agent floor`. (This is still a `mid`/`high`/`max` run — its tiering and validation wave follow the mode, unlike `low`.)
 5. **Otherwise** → keep the floor (and any pins), fill the remaining `N − kept` slots with the highest-ranked gate-matched specialists, and **drop the rest** — recording each dropped agent under the roster-cap exclusion wording (Step 2c).
 
-**Rank the gate-matched specialists by fit to *this* changeset (use the Step 2a classification); keep the top slots:**
+**Rank the gate-matched specialists, then keep the top slots.** The order below is *measured*, not intuited — from per-persona drop cost over the 18 archived benchmark runs (`analysis/scripts/roster_yield.py`; method and limits in the roster-axis work item). Refresh it from that data rather than re-deriving it by judgement, which is how the previous ordering went wrong.
 
-1. **Categorical coverage the generalists cannot substitute — rank highest.** Dropping one leaves an entire dimension unreviewed, not merely thinner: the **stack reviewer** for the dominant changed language (`dotnet` / `typescript` / `cpp` / `go` / `rust`); `data-migration-reviewer` when migration artifacts are present; `prior-feedback-reviewer` when re-reviewing a PR with prior threads (addressing them is the point of the re-review); `spec-compliance-reviewer` for an `explicit` or `linked` spec.
-2. **The changeset's primary risk dimension — rank next**, mapped from the Step 2a character: security-adjacent / untrusted-input → `security-reviewer` (then `adversarial-reviewer`); API / contract / boundary / concurrency → `design-reviewer`; test files dominate the diff → `test-reviewer`; DB / loops / async / caching → `performance-reviewer`. Order these by how central the dimension is to the diff — the dominant risk takes the first specialist slot.
-3. **`knowledge-reviewer` and `consistency-reviewer` — rank last.** They are precision-safe and broaden coverage, but their lanes overlap `broad` the most, so they are the first specialists to shed when slots are scarce.
+**Drop cost** = substantive clusters only this persona found (weighted double — those are lost outright) plus substantive clusters that would fall below the two-finder corroboration threshold. Corroboration is what consolidation ranks on, so demoting a finding to single-finder is a real cost, not a neutral one.
+
+1. **`adversarial-reviewer` — rank first among specialists.** The most load-bearing persona measured: 1.85 drop cost per run, 10 sole-found substantive clusters, and rank 1–2 under every leave-one-out jackknife. It previously sat mid-tier and behind `security-reviewer`; that was the largest error in the old ordering.
+2. **Then the other well-sampled personas, by measured drop cost**: `test-reviewer` (0.94), `broad`/floor, `design-reviewer` (0.50). These have ≥12 runs of evidence and their ranks are stable (swing ≤4 under jackknife).
+3. **Then the rarely-dispatched specialists, by categorical fit** — the **stack reviewer** for the dominant changed language; `data-migration-reviewer` with migration artifacts; `prior-feedback-reviewer` re-reviewing a PR with prior threads; `spec-compliance-reviewer` for an `explicit` or `linked` spec; `security-reviewer` on a trust-boundary trigger. **Rank these by category, not by measurement.** Each fires in ≤9 of 18 runs, so its measured figure swings up to 13 ranks under jackknife and cannot order anything — but by construction it only fires when its domain is present, so its *gate* is the evidence of fit.
+   - **Do not promote `security-reviewer` on its measured figure.** It tops the drop-cost table at 2.00/run on **n=3**, the least trustworthy number in it.
+4. **`knowledge-reviewer` and `consistency-reviewer` — rank last.** Measured drop cost 0.17 and 0.00: they are the two personas whose findings another persona reliably also finds. They are precision-safe and broaden coverage, so they shed first rather than being cut from the gate. `consistency-reviewer` earns its slot back on runs whose deliverable includes the suggestion tier — it yields 1.6 valid-minor findings per run — which is a preset distinction the preset work item introduces.
 
 **Hard-gate agents are not exempt from the cap.** A tight enough cap can drop the stack reviewer on a C#-heavy diff or the test-reviewer on a test-bearing diff — a real coverage trade, not a gate decision. Rank such agents by rule 1/2 so they survive unless the cap is severe, and always name the trade in the announcement. If the cap forces dropping a hard-gate agent whose domain dominates the diff, surface it prominently — the user most likely wants a higher `N`.
 
@@ -220,7 +240,8 @@ Review team:
 | Judgment gate didn't match | `skipped — changes confined to private method internals` |
 | Hard gate failed | `skipped — no test files in changeset (hard gate)` |
 | `low` mode floor-only rule | `not evaluated — low mode runs the floor only` |
-| Roster cap dropped it (Step 2b.5) | `dropped — roster cap (mid4): ranked below the 2 specialists kept` |
+| `roster` dropped it (Step 2b.5) | `dropped — roster N=4 (explicit): ranked below the 2 specialists kept` |
+| `roster` dropped it, derived cap | `dropped — roster N=4 (derived: 72 executable lines): ranked below the 2 specialists kept` |
 
 In `low` mode the specialists' gates are never evaluated; describing such an exclusion as a gate decision ("hard gate not applied") misstates why the agent is absent — its gate may well have matched. Likewise, an agent dropped by the roster cap had its gate **match** — it lost a slot to higher-ranked agents — so its exclusion wording must say "dropped — roster cap", never "skipped". When the cap drops a hard-gate agent whose domain is present (e.g. the stack reviewer on a C# diff), state that the coverage was traded for the cap.
 
@@ -433,7 +454,7 @@ FILENAME=".decaf/code-reviews/CODE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 ```markdown
 # Code Review
 
-**Mode**: <mode> (<explicit | asked | default (non-interactive)>)[ · roster cap N — M gate-matched agents dropped] | **Reviewers**: <agent list> | **Date**: <YYYY-MM-DD>
+**Mode**: <mode> (<explicit | asked | default (non-interactive)>)[ · roster N=<N> (<explicit | derived: L executable lines>) — M gate-matched agents dropped] | **Reviewers**: <agent list> | **Date**: <YYYY-MM-DD>
 **Source**: <PR #N — title (platform) [source → target]> | <local changes> | <last commit>
 **Scope**: N files changed, +X/-Y lines
 **Spec**: <path or work item #N (explicit | linked | inferred)> | <none found>
