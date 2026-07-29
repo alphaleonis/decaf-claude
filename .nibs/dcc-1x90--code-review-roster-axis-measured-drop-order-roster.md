@@ -2,14 +2,14 @@
 # dcc-1x90
 version: 1
 title: 'code-review: roster axis — measured drop order, roster scaled to changeset size'
-status: todo
+status: in-progress
 type: feature
 priority: high
 estimate: m
 tags:
     - code-review
 created_at: 2026-07-29T18:29:16Z
-updated_at: 2026-07-29T18:30:12Z
+updated_at: 2026-07-29T18:38:52Z
 parent: dcc-9q01
 blocked_by:
     - dcc-evph
@@ -51,15 +51,61 @@ to score with (#dcc-xewu), not by `quick`'s solo value, which is 0.24/run with z
 
 # Acceptance
 
-- [ ] [run] `rg -n "Rank the gate-matched specialists" -A15 decaf-quality/skills/code-review/SKILL.md`
+- [x] [run] `rg -n "Rank the gate-matched specialists" -A15 decaf-quality/skills/code-review/SKILL.md`
       — expect: order stated as measured drop cost with its provenance, not as agent category
-- [ ] [run] `python3 competition/benchmark/analysis/scripts/roster_yield.py` — expect: exit 0; the
+- [x] [run] `python3 competition/benchmark/analysis/scripts/roster_yield.py` — expect: exit 0; the
       figures the ranking cites are reproducible from committed data
-- [ ] [manual] `adversarial-reviewer` ranks ahead of `security-reviewer`
-- [ ] [manual] Personas below the n>=12 stability threshold are ranked by gate, not by figure
-- [ ] [manual] Default roster scales with changeset size, or the decision to keep a fixed `N` is
+- [x] [manual] `adversarial-reviewer` ranks ahead of `security-reviewer`
+- [x] [manual] Personas below the n>=12 stability threshold are ranked by gate, not by figure
+- [x] [manual] Default roster scales with changeset size, or the decision to keep a fixed `N` is
       recorded against the size table
 
 # Notes
 
 Measurement and its limits: **#dcc-2a8i** (child of this nib).
+
+## Done 2026-07-29
+
+Step 2b.5 renamed from *"Apply the roster cap"* to *"Resolve the `roster` axis"* — it now runs on
+every `mid`/`high` review, not only when a cap was typed.
+
+**Size-derived default `N`**, from the Step 2a executable-line count, applied when no explicit
+`roster=`/`modeN` was given. Thresholds are grounded in the benchmark's own size classes (small
+33-72 changed lines, medium 169-276, large 424-1560):
+
+| lines | default `N` |
+|---|---|
+| < 100 | 4 |
+| 100-400 | 6 |
+| > 400 | uncapped |
+
+`max` never derives a default — it means every gate-matched agent, and a size cap would contradict
+that. The skill states plainly that **the shape is measured and the numbers are not**: drop cost
+rises steeply and near-monotonically with diff size, but 4/6/uncapped is a first estimate to revise
+when #dcc-gxuk measures the presets.
+
+**Ranking replaced with the measured order**, and the drop-cost definition stated inline so the
+weighting is auditable: sole-found substantive clusters count double (lost outright), demotions
+below the two-finder threshold count single (corroboration lost).
+
+1. `adversarial-reviewer` first among specialists — the correction this nib exists for.
+2. Well-sampled personas by measured drop cost.
+3. Rarely-dispatched specialists **by category, not measurement** — their gate is the evidence of
+   fit, and their figures swing up to 13 ranks under jackknife. `security-reviewer` is explicitly
+   barred from promotion on its n=3 figure.
+4. `knowledge` and `consistency` last, with a note that `consistency` earns its slot back on runs
+   whose deliverable includes the suggestion tier — the preset distinction #dcc-rbkl introduces.
+
+Also: the roster-cap exclusion wording and the report header now distinguish an explicit `N` from a
+derived one, so a reader can tell whether the roster was chosen or inferred.
+
+### Behavior change worth knowing
+
+**An uncapped `mid` on a small changeset now runs 4 agents instead of every gate-matched one.** This
+is the intended effect — measured drop cost is ~0 on small diffs — but it is a real reduction in
+default coverage, unverified until #dcc-gxuk. An explicit `roster=` or `modeN` overrides it.
+
+### Not done here
+
+The `audit`-preset ordering (rank by drop cost **+** minor yield, which moves `consistency`
+mid-table) needs the presets to exist. It lands with #dcc-rbkl; the hook is named in rule 4.
