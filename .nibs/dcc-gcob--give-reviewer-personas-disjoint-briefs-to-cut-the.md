@@ -128,8 +128,11 @@ reviewer restating a sibling:
   having, counted here as waste (the metric is repeat-agnostic when counting distinct clusters but
   not when counting instances).
 
-Reviewer-to-reviewer restatement *within a single run* is **47%** (512 reviewer findings over 272
-distinct clusters), not 77%.
+Reviewer-to-reviewer restatement *within a single run* is **44%** (270 distinct findings over 485
+discovery reports), not 77%. On the corrected metric `ours` is **not an outlier** — anthropic 38%,
+pr-review-toolkit 39%, ours 44%, tag1 45% — where the published 77% had made it look uniquely
+redundant. (An earlier hand calculation in this nib said 47%; the committed metric resolves
+sub-agent personas through the per-run cache and so excludes validators the hand version missed.)
 
 ### 2. Corroboration is the strongest quality signal in the roster
 
@@ -180,8 +183,13 @@ as anthropic's agents; 91% of their output never reaches the report at all. The 
 
 Recorded here rather than opened as a follow-up (operator's call, 2026-07-29).
 
-### Known defect left in place
+### The metric itself — fixed 2026-07-29
 
-`compute_metrics.py::subagent_distinctness` does not compute what `METHODOLOGY.md` line 131 says it
-computes. It is still published per subject. Not fixed here — flagged so the next reader of that
-column does not repeat this nib's mistake.
+`compute_metrics.py::subagent_distinctness` now computes what `METHODOLOGY.md` describes: distinct
+findings over *discovery* sub-agent reports, counted **within a single run**, excluding the
+consolidated report's own rows and verification agents (validators, anthropic's `scorer`). Reports
+publish `k/n` and mark with `*` any tool whose personas could not all be resolved, since the
+verifier exclusion is then incomplete and the figure reads high — resolution is 100% for `ours`
+and 77–83% elsewhere. METHODOLOGY and the per-subject glossary now also state that redundancy is
+not straightforwardly waste, so the next reader meets the corroboration finding alongside the
+number. All 9 subjects regenerated; the synthesis page never carried this metric and is unchanged.

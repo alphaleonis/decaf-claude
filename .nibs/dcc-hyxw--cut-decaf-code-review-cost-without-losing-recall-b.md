@@ -86,7 +86,7 @@ bought, and the riskiest change lands last when the baseline is already improved
    more, not less, so pair it with 3 in the same re-run to net out.
 5. ~~**#dcc-gcob** — the big lever.~~ **SCRAPPED 2026-07-29 without a re-run.** The measurement
    that would have justified it refuted it instead: the 77% restatement baseline counted validator
-   rows, consolidated-report rows and cross-repeat determinism (real figure 47%), and the
+   rows, consolidated-report rows and cross-repeat determinism (real figure 44%, which puts ours mid-pack rather than the field's outlier), and the
    redundancy is corroboration — substantive clusters average 2.80 finders against trivia's 1.32,
    and 62% of all restatement lands on substantive findings. Disjoint briefs would have deleted the
    signal consolidation ranks on. **The epic's biggest lever is gone, and no replacement is

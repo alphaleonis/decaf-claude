@@ -128,9 +128,27 @@ stripped and clusters shuffled before grading.
 - **Unique-true** = TP/valid clusters found by **only this tool**.
 - **Inter-tool overlap** = pairwise **Jaccard** over TP/valid clusters (which tools are redundant vs.
   complementary).
-- **Subagent redundancy** = within a fan-out tool, `1 − distinct_clusters / subagent_findings`; plus
-  **per-agent unique yield** (does agent K ever find something no sibling did? — the systematic
-  version of the corpus's "quick-reviewer 0-unique" signal).
+- **Subagent redundancy** = within a fan-out tool, `1 − distinct_findings / discovery_reports`,
+  counted **inside a single run**; plus **per-agent unique yield** (does agent K ever find something
+  no sibling did? — the systematic version of the corpus's "quick-reviewer 0-unique" signal).
+
+  Three categories are excluded, because counting them measures something other than siblings
+  re-finding each other (the definition in force through 2026-07-29 counted all three, which put
+  `ours` at 77% against a true 44% and made it look like the field's outlier — see #dcc-gcob):
+  the **consolidated report's own rows** (the report is not one of the sub-agents); **verification
+  agents** (validators, and anthropic's rubric `scorer` — re-examining a raised finding is the job,
+  not duplication); and **cross-repeat matches** (keyed by cluster *and* repeat, so an agent finding
+  the same real defect in both runs reads as determinism).
+
+  Reports publish `k/n` beside the ratio and a `*` where sub-agent personas could not all be
+  resolved — the verifier exclusion is then incomplete and the figure reads high. Persona resolution
+  is 100% for `ours` (a per-run persona cache exists) and 77–83% for the other fan-out tools.
+
+  **Redundancy is not straightforwardly waste.** Clusters the judge graded substantive average 2.80
+  finders against 1.64 for valid-minor and 1.32 for trivia; 72% of substantive findings are
+  multi-finder against 16% of trivia. Agreement is the strongest available signal that a finding is
+  real, and consolidation ranks on it — so read a high number as "this tool corroborates", not
+  automatically as "this tool wastes tokens".
 - **Repeat stability** = `Jaccard(r1 clusters, r2 clusters)` — determinism.
 
 **Efficiency (quality per resource):**
