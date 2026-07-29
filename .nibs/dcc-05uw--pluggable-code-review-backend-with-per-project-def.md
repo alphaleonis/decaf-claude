@@ -7,7 +7,7 @@ type: feature
 priority: normal
 estimate: l
 created_at: 2026-07-28T18:48:19Z
-updated_at: 2026-07-28T19:53:59Z
+updated_at: 2026-07-29T11:03:32Z
 order: zzy
 ---
 
@@ -25,7 +25,7 @@ the field, and for many jobs a cheaper one loses little.
 | backend | $/run | escaped bug caught | useful findings/run | trivia share | calibration |
 |---|---|---|---|---|---|
 | superpowers | **$2.48** | 14/18 | 5.0 | **21%** | 0.63 |
-| anthropic-code-review | $11.82 | **18/18** | 6.3 | 25% | **0.88** |
+| anthropic-code-review | $7.61 ‡ | **18/18** | 6.3 | 25% | **0.92** ‡ |
 | pr-review-toolkit | $8.56 | 12/18 | 11.7 | 42% | 0.51 |
 | tag1-comprehensive-review | $16.72 | 15/18 | 11.2 | 37% | 0.61 |
 | ours | $21.33 | 16/18 | 10.5 | 31% | 0.62 |

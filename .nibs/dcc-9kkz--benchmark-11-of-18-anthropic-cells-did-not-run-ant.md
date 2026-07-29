@@ -1,8 +1,8 @@
 ---
 # dcc-9kkz
 version: 1
-title: 'Benchmark: 11 of 18 anthropic cells did not run anthropic — /code-review resolved to decaf-quality'
-status: todo
+title: 'Benchmark: 9 of 18 anthropic cells did not run anthropic — /code-review resolved to decaf-quality'
+status: completed
 type: bug
 priority: critical
 estimate: l
@@ -10,7 +10,7 @@ tags:
     - benchmark
     - validity
 created_at: 2026-07-28T21:15:14Z
-updated_at: 2026-07-28T21:26:25Z
+updated_at: 2026-07-29T11:07:05Z
 order: zzzk
 ---
 
@@ -111,9 +111,13 @@ overlap/Jaccard figure covering them needs recomputing after the re-runs.
       script lives at `scripts/verify_run_provenance.py` and `run_cell.sh` calls it after each
       cell, printing a loud PROVENANCE MISMATCH rather than failing (the output is already
       captured; quarantining is the operator's call)
-- [ ] [manual] The 11 affected cells re-run and re-graded blind. [Estimate] clean anthropic is
-      ~$5.87/run, so ~$65 plus grading — cheap relative to the correction
-- [ ] [manual] Downstream artifacts and the three citing nibs restated
+- [x] [manual] The affected cells re-run and re-graded blind — **9 cells, not 11**: closer reading
+      split the four unattributed cells into two faithful runs (`5__r1`, `6__r1`, both carrying
+      `code-review` attribution on some sub-agents) and two degenerate ones (`3__r2` with 0
+      sub-agents, `6__r2` with 1). All 9 re-run clean; subjects 2, 3, 6, 9 and 10 re-analysed.
+      Actual re-run cost ~$74 against the ~$65 estimate
+- [x] [manual] Downstream artifacts and the three citing nibs restated — synthesis page rebuilt on
+      clean data (commit 85930ab); #dcc-e0wj, #dcc-hyxw, #dcc-gcob and #dcc-05uw restated
 
 # Notes
 
@@ -123,3 +127,33 @@ the roles could not be read from `attributionAgent`, and checking why exposed th
 The tell was visible earlier and misread: subjects 2, 3, 9 and 10 were exactly the subjects whose
 `analysis.json` lacked per-sub-agent persona labels (#dcc-m8ar notes recovering them for *ours*).
 That was not an extraction gap for those cells — it was a different tool running.
+
+## Summary
+
+Nine of eighteen anthropic cells did not run anthropic. Seven executed decaf-quality (ours) at
+`high` mode under anthropic's label; two were degenerate (0 and 1 sub-agents against a workflow
+mandating five reviewers plus scorers). Cause was a naming collision, not a harness bug —
+`decaf-quality` ships a skill named `code-review` and the official plugin ships a command of the
+same name, so the unqualified invocation in `tools.json` resolved to ours.
+
+Fixed by quarantining the nine cells to `runs-invalid/`, resetting them to `pending`,
+plugin-qualifying the invocation, and re-running all nine clean. Subjects 2, 3, 6, 9 and 10 were
+re-analysed blind against their frozen answer keys. Added `scripts/verify_run_provenance.py`,
+wired into `run_cell.sh`, which checks each cell's dominant `attributionPlugin` against
+`tools.json`; it now passes on all 90 runs.
+
+Impact was larger than first assessed, and in one place it reversed a conclusion. Anthropic's
+published $11.82/run and 0.88 calibration were a blended column: clean figures are **$7.61 and
+0.92**, with 18/18 recall and a 56% substantive share — so ours is **2.8×** more expensive, not
+1.8×. Per-agent output was the biggest miss: anthropic emits 9.6k, not the 13.7k recorded, making
+the gap to ours **2.0×** rather than 43%. And repo-size sensitivity inverted — anthropic is 0.572,
+not 0.119, which means **ours now has the lowest in the field (0.403)**, so #dcc-gcob is defending
+a lead rather than chasing one.
+
+Quality conclusions survived; cost and per-agent conclusions did not. The synthesis page was
+rebuilt on clean data and #dcc-e0wj, #dcc-hyxw, #dcc-gcob and #dcc-05uw restated.
+
+Two things worth carrying forward. The tell was visible early and misread: subjects 2, 3, 9 and 10
+were exactly the subjects lacking per-sub-agent persona labels, which I diagnosed as an extraction
+gap and built a recovery around rather than asking why those four. And the re-run cost ~$74 —
+trivial against the months the error sat in published conclusions.

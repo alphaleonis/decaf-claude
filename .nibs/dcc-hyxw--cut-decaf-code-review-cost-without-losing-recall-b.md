@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-07-28T21:16:04Z
+updated_at: 2026-07-29T11:05:26Z
 blocked_by:
     - dcc-9kkz
 order: zzzV
@@ -18,7 +18,7 @@ order: zzzV
 # Why
 
 The controlled benchmark (#dcc-z1xw) and the analysis in #dcc-e0wj establish that `ours` costs
-$21.33/run against anthropic's $11.82 while losing on severity calibration (0.62 vs 0.88). The
+$21.33/run against anthropic's $7.61 while losing on severity calibration (0.50 vs 0.92; both restated on the repaired data, #dcc-9kkz). The
 per-persona analysis (`analysis/scripts/roster_yield.py`) then showed **no persona is dead
 weight** — every one participates in substantive clusters — so the cost has to come out of
 *how* the roster works, not *which* agents are in it.
@@ -38,7 +38,7 @@ reasoning, measured basis and risk per intervention live in #dcc-e0wj under
   session output. Consolidation is genuinely frontier-model work — there is no
   prompt-engineering fix.
 - **~77% of sub-agent findings restate a sibling's**, and ours emits 19.5k output per agent
-  against anthropic's 13.7k.
+  against anthropic's 9.6k — a 2.0x gap on the repaired data.
 
 # The trap these all share
 
@@ -80,6 +80,7 @@ blind re-grading. Prefer interventions that can share one re-run.
 - [ ] [manual] No regression in the behaviours #dcc-e0wj lists under `# Preserve` — notably
       validators correcting their own findings downward
 - [ ] [manual] **Cost still scales with diff size, not repo size.** Partial
-      r(cost, repo files | diff LOC) stays at or below the 0.403 baseline (anthropic 0.119,
-      superpowers 0.831 for scale). #dcc-gcob and any history-retrieval work are the two that
-      can break this; both must keep every evidence channel scoped to the changed files
+      r(cost, repo files | diff LOC) stays at or below the 0.403 baseline — which on the repaired
+      data (#dcc-9kkz) is the **lowest in the field**, ahead of anthropic 0.572 and superpowers
+      0.831. #dcc-gcob and any history-retrieval work are the two that can break this; both must
+      keep every evidence channel scoped to the changed files
