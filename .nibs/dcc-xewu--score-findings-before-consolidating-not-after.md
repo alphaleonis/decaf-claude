@@ -45,8 +45,14 @@ product is exhaustive coverage with explicit tiers, aggressive early filtering i
 change — the valid-minor findings it would discard are precisely what a fix-and-rerun loop
 consumes, and ours currently produces 4.8 of them per run against anthropic's 2.1.
 
-Resolve #dcc-e0wj workstream 3's first item — *"a short trustworthy list, or exhaustive coverage
-with tiers?"* — before starting. Do not treat this nib as ready until that is answered.
+~~Resolve #dcc-e0wj workstream 3's first item before starting.~~ **Discharged 2026-07-29 by
+#dcc-9q01**, which answers the product question by making the product a per-run preset rather than a
+permanent commitment. This nib becomes the implementation of that design's `evidence` axis.
+
+Two premises here are superseded and must not be built on: the hard-filter framing (the screen
+selects a tier, it does not permanently discard), and the claim that anthropic's 0/25/50/75/100
+ladder means only findings scored 100 survive — the skill specifies a continuous 0-100 scale with
+five anchor *descriptions*, and its scorers demonstrably emit 80 and 85. See #dcc-9q01.
 
 # Risk
 

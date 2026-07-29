@@ -63,7 +63,10 @@ blind re-grading. Prefer interventions that can share one re-run.
 
 # Sequencing
 
-**Sweep order is fixed: #dcc-c2uc + #dcc-1xtt are already landed and unverified, so the next
+**SUPERSEDED 2026-07-29 by #dcc-9q01** — the axis/preset redesign re-measures ours against a new
+default, so the sweep reserved below is no longer the next spend. Kept for the reasoning.
+
+**Sweep order was fixed: #dcc-c2uc + #dcc-1xtt are already landed and unverified, so the next
 benchmark spend measures those two and nothing else.** Both changed the default path (validators to
 the cheap tier; stack-reviewer and security dispatch gates), and both carry a named risk that hides
 in aggregate — a cheap validator becoming a rubber stamp, and a narrowed stack gate missing subtler
