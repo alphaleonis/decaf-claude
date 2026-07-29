@@ -12,7 +12,7 @@ analysis.json schema (produced by the LLM stages of /bench-analyze):
                  matches, judged_severity, confidence, rationale,
                  reported_by:[ {tool, repeat, subagent, severity} ] } ] }
 """
-import json, sys, argparse
+import json, sys, os, re, argparse
 from collections import defaultdict
 
 TP = {"TP-primary", "TP-human", "valid-other"}          # counts as a "good" finding
@@ -31,6 +31,7 @@ def main():
     a = ap.parse_args()
     A = json.load(open(a.analysis)); C = json.load(open(a.costs))
     clusters = A.get("clusters", [])
+    personas = _load_personas(a.analysis)
     cells = C.get("cells", [])
     tools = sorted({c["tool"] for c in cells})
     reps_by_tool = defaultdict(set)
@@ -45,8 +46,15 @@ def main():
     # tool_clusters[tool] = set of cluster_ids the tool found in ANY repeat (for uniqueness/overlap)
     tool_clusters = defaultdict(set)
     tool_pos_clusters = defaultdict(set)   # TP/valid clusters per tool
-    # per-tool subagent instances (for redundancy): tool -> list of (cluster_id, repeat, subagent)
+    # Per-tool DISCOVERY sub-agent reports, for redundancy. Three things are deliberately excluded,
+    # because counting them measured something other than "siblings re-finding each other":
+    #   - consolidated-report rows (subagent is None) — the report is not one of the sub-agents;
+    #   - verification agents (validators/scorers) — re-examining a raised finding IS their job;
+    #   - cross-repeat matches — keyed by (cluster, repeat), so an agent finding the same real
+    #     defect in both runs reads as determinism, not as duplication.
+    # tool -> list of (cluster_id, repeat, persona_or_None)
     subagent_hits = defaultdict(list)
+    unresolved = defaultdict(int)
     for c in clusters:
         cid = c["cluster_id"]; verdict = c.get("verdict", "false-positive")
         seen_cell = set()
@@ -55,7 +63,13 @@ def main():
             tool_clusters[t].add(cid)
             if verdict in POS:
                 tool_pos_clusters[t].add(cid)
-            subagent_hits[t].append((cid, r, rb.get("subagent")))
+            sub = rb.get("subagent")
+            if sub is not None:
+                p = _persona(sub, personas, A.get("subject_id"), t, r)
+                if p is None:
+                    unresolved[t] += 1
+                if not _is_verifier(p):
+                    subagent_hits[t].append((cid, r, p))
             if (t, r) not in seen_cell:
                 seen_cell.add((t, r))
                 found[(t, r)].append(verdict)
@@ -96,9 +110,9 @@ def main():
         # tool-level uniqueness: TP/valid clusters this tool found that NO other tool found
         others = set().union(*[tool_pos_clusters[o] for o in tools if o != t]) if len(tools) > 1 else set()
         unique_true = sorted(tool_pos_clusters[t] - others)
-        # subagent distinctness (fan-out only): distinct clusters / subagent-instances
+        # subagent distinctness (fan-out only): distinct (cluster, repeat) / discovery reports
         hits = subagent_hits[t]
-        n_inst = len(hits); n_distinct = len({h[0] for h in hits})
+        n_inst = len(hits); n_distinct = len({(h[0], h[1]) for h in hits})
         distinctness = (n_distinct / n_inst) if n_inst else None
         mean_cost = _mean([rr["cost_usd"] for rr in rep_rows])
         n_tp_total = sum(rr["tp_primary"] + rr["tp_human"] + rr["valid_other"] for rr in rep_rows)
@@ -121,7 +135,13 @@ def main():
             "mean_cost_usd": rnd(mean_cost),
             "cost_per_bug_caught": rnd(mean_cost / (bug_hits / nrep)) if bug_hits else None,
             "cost_per_true_finding": rnd((mean_cost * len(reps)) / n_tp_total) if n_tp_total else None,
-            "subagent_distinctness": rnd(distinctness) if (out := _fanout(rep_rows)) else None,
+            "subagent_distinctness": rnd(distinctness) if _fanout(rep_rows) else None,
+            "subagent_reports": n_inst if _fanout(rep_rows) else None,
+            "subagent_distinct_findings": n_distinct if _fanout(rep_rows) else None,
+            # share of this tool's sub-agent rows whose persona could be named; where it is low the
+            # verifier exclusion above is incomplete and redundancy reads high
+            "subagent_persona_resolved": (rnd(1 - unresolved[t] / (n_inst + unresolved[t]))
+                                          if _fanout(rep_rows) and (n_inst + unresolved[t]) else None),
             "mean_subagents": rnd(_mean([rr["subagents"] for rr in rep_rows])),
         }
 
@@ -171,6 +191,39 @@ def _calibration(tool, clusters):
         if c.get("verdict") in POS:
             substantive += 1
     return substantive, flagged
+
+
+_BARE_AGENT = re.compile(r"^agent-[0-9a-f]+$")
+# Agents that score or re-verify an already-raised finding rather than discovering one. Named
+# rather than pattern-matched on "validator" alone because anthropic calls its rubric scorer
+# `scorer`; add to this set when a tool introduces another verification role.
+VERIFIER_PERSONAS = {"finding-validator", "validator", "scorer"}
+
+
+def _load_personas(analysis_path):
+    """run_id -> {agent_id: persona}, from the sibling agent-personas.json (may be absent)."""
+    p = os.path.join(os.path.dirname(os.path.abspath(analysis_path)), "agent-personas.json")
+    try:
+        return json.load(open(p))
+    except (OSError, ValueError):
+        return {}
+
+
+def _persona(subagent, personas, subject_id, tool, repeat):
+    """Name the persona behind a `reported_by.subagent`, or None when it cannot be resolved.
+
+    The field is either `agent-<hex>/<persona>` or a bare `agent-<hex>`; bare ids are looked up in
+    the per-run persona cache, which currently covers `ours` only.
+    """
+    tail = subagent.split("/")[-1]
+    if not _BARE_AGENT.match(tail):
+        return tail
+    run = personas.get(f"{subject_id}__{tool}__r{repeat}", {})
+    return run.get(subagent.split("/")[0]) or run.get(subagent)
+
+
+def _is_verifier(persona):
+    return persona in VERIFIER_PERSONAS
 
 
 def _mean(xs):

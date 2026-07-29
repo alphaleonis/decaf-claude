@@ -74,6 +74,16 @@ def main():
     def minor_pc(m):
         v = m.get("valid_minor_per_cell")
         return "—" if v is None else f"{v:,.1f}"
+    def distinct(m):
+        v, k, n = (m.get("subagent_distinctness"), m.get("subagent_distinct_findings"),
+                   m.get("subagent_reports"))
+        if v is None:
+            return "—"
+        res = m.get("subagent_persona_resolved")
+        # a low resolution rate means verification agents could not all be excluded, which reads as
+        # extra redundancy — mark it rather than letting the number stand unqualified
+        warn = "" if res is None or res > 0.9 else "*"
+        return f"{pct(v)}{warn} <span class='n'>{k}/{n}</span>"
     def calib(m):
         # always show the denominator — these counts are small enough that a bare percentage
         # reads far more precise than it is
@@ -88,7 +98,7 @@ def main():
             ("invalid /run", lambda m: num(m["fp_per_cell"])),
             ("precision", lambda m: pct(m["precision_mean"])),
             ("sev. calibration", calib),
-            ("subagent distinct.", lambda m: pct(m["subagent_distinctness"])),
+            ("subagent distinct.", distinct),
             ("cost /run", lambda m: money(m["mean_cost_usd"])),
             ("~agents", lambda m: num(m["mean_subagents"]))]
     lb = ["<table><thead><tr><th>tool</th>" + "".join(f"<th>{esc(c)}</th>" for c,_ in cols) + "</tr></thead><tbody>"]
@@ -109,7 +119,7 @@ def main():
 <dt>invalid /run</dt><dd>false positives per run — findings asserting a problem that isn't real (refuted against the code). Actively misleading.</dd>
 <dt>precision</dt><dd>substantive precision: valid ÷ everything reported (suggestions and trivia both count against it). Higher = less to read per real defect.</dd>
 <dt>sev. calibration</dt><dd>when the tool's <em>consolidated report</em> labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop. Severities a sub-agent claimed privately don't count — the reader never sees them. The fraction beside the percentage is the count it rests on; below ~20 flagged findings, read it as a direction, not a score.</dd>
-<dt>subagent distinct.</dt><dd>for multi-agent tools, distinct issues ÷ total sub-agent findings. Low = many agents re-finding the same things.</dd>
+<dt>subagent distinct.</dt><dd>for multi-agent tools, distinct issues ÷ reports from <em>discovery</em> sub-agents, within a single run. Low = many agents re-finding the same things. Three things are excluded because they are not siblings duplicating each other: the consolidated report's own entries, verification agents (validators and scorers — re-examining a raised finding is their job), and matches across the two repeats (an agent finding the same defect twice is consistency, not duplication). A <code>*</code> means some sub-agents could not be named, so verification agents may not all have been excluded and the figure reads high. Note that overlap is not pure waste — findings the judge graded substantive average ~2.8 finders against ~1.3 for trivia, so agreement is also the strongest signal that a finding is real.</dd>
 <dt>Jaccard (overlap, below)</dt><dd>how similar two tools' valid-finding sets are: shared ÷ combined. 1.00 = identical, 0.00 = no overlap.</dd>
 <dt>verdict labels</dt><dd>each issue in the drill-down is graded: <strong>TP-primary</strong> = caught the escaped bug; <strong>TP-human</strong> = matched a human review thread; <strong>valid-other</strong> = a different real defect; <strong>valid-minor</strong> = correct improvement suggestion; <strong>trivia</strong> = true but not worth attention; <strong>false-positive</strong> = not real. ("valid" findings = TP-primary + TP-human + valid-other.)</dd>
 </dl></div>"""

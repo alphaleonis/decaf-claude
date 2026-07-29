@@ -62,7 +62,10 @@
       "mean_cost_usd": 5.81,
       "cost_per_bug_caught": 5.81,
       "cost_per_true_finding": 3.88,
-      "subagent_distinctness": 0.27,
+      "subagent_distinctness": 0.57,
+      "subagent_reports": 7,
+      "subagent_distinct_findings": 4,
+      "subagent_persona_resolved": 1.0,
       "mean_subagents": 8.5
     },
     "ours": {
@@ -118,7 +121,10 @@
       "mean_cost_usd": 17.35,
       "cost_per_bug_caught": 17.35,
       "cost_per_true_finding": 8.67,
-      "subagent_distinctness": 0.36,
+      "subagent_distinctness": 0.74,
+      "subagent_reports": 19,
+      "subagent_distinct_findings": 14,
+      "subagent_persona_resolved": 1.0,
       "mean_subagents": 10.5
     },
     "pr-review-toolkit": {
@@ -174,7 +180,10 @@
       "mean_cost_usd": 9.21,
       "cost_per_bug_caught": 18.42,
       "cost_per_true_finding": 18.42,
-      "subagent_distinctness": 0.63,
+      "subagent_distinctness": 1.0,
+      "subagent_reports": 19,
+      "subagent_distinct_findings": 19,
+      "subagent_persona_resolved": 0.5,
       "mean_subagents": 5.0
     },
     "superpowers": {
@@ -231,6 +240,9 @@
       "cost_per_bug_caught": 2.31,
       "cost_per_true_finding": 2.31,
       "subagent_distinctness": null,
+      "subagent_reports": null,
+      "subagent_distinct_findings": null,
+      "subagent_persona_resolved": null,
       "mean_subagents": 1.0
     },
     "tag1-comprehensive-review": {
@@ -288,7 +300,10 @@
       "mean_cost_usd": 12.99,
       "cost_per_bug_caught": 12.99,
       "cost_per_true_finding": 6.49,
-      "subagent_distinctness": 0.41,
+      "subagent_distinctness": 0.69,
+      "subagent_reports": 16,
+      "subagent_distinct_findings": 11,
+      "subagent_persona_resolved": 0.5,
       "mean_subagents": 9.0
     }
   },
