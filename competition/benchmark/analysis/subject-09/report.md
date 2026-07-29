@@ -3,128 +3,97 @@
 **kubernetes/kubernetes#130837** (go / large) — an 18-file, ~1,560-line kube-proxy refactor ("node
 manager") whose escaped bug was that NodeIP acquisition at startup became **fatal**: the new
 `NodeManager` blocks up to 5 minutes for the node to have NodeIPs and, on timeout, returns an error
-that aborts kube-proxy startup — removing the previous **non-fatal** ~30–63s backoff + localhost/
-BindAddress fallback that let kube-proxy start degraded. That broke backward compatibility for
-cloud-provider environments (cloud-provider-azure #9266) where NodeIPs are assigned late; the PR was
-reverted (#132958) and re-landed (#133059) "with more care to exactly preserve backward-compatibility."
-Judge: `claude-opus-4-8`, blind. **824 raw findings → 56 clusters: 2 TP-primary, 2 TP-human, 7
-valid-other, 1 false-positive, 44 nitpick.**
+that aborts kube-proxy startup — removing the previous **non-fatal** ~30–63s backoff plus
+localhost/BindAddress fallback. Reverted after breaking out-of-tree cloud providers. Judge:
+`claude-opus-5[1m]`, blind. 56 clusters graded: **2 TP-primary, 2 TP-human, 7 valid-other,
+28 valid-minor, 2 false-positive, 15 trivia.**
 
-## Did they catch the bug? (this time, no — not everyone)
+**This is a re-analysis.** The two `anthropic-code-review` cells were re-run on 2026-07-29 with a
+plugin-qualified invocation. The cells previously recorded under that label had executed
+`decaf-quality` (ours) at `high` mode — see nib dcc-9kkz. The eight non-anthropic cells are
+unchanged (17 Jul) and their extraction was reused verbatim; only the anthropic findings were
+re-extracted, and all 56 clusters were re-graded blind.
 
-Unlike the medium subject where every tool caught the escaped bug, **here recall is the headline
-separator.** Bug-catch: **`ours` 100%, `anthropic-code-review` 100%, `superpowers` 50%,
-`tag1-comprehensive-review` 50%, `pr-review-toolkit` 0%.** Only the two deep fan-out reviewers caught
-the fatal-vs-non-fatal backward-compat regression in **both** repeats. `superpowers` and `tag1` caught
-it in one of two; **`pr-review-toolkit` missed it entirely.** The miss is not for lack of looking at
-`newNodeManager` — `pr-review-toolkit` and the other missers flagged its *fragile `(nil,nil)` return*,
-the *informer-ordering race*, and its *doc comments* — but none of them named the actual defect: that
-returning an error on NodeIP timeout **aborts startup where the old code fell back to localhost and
-kept running.** This bug is genuinely hard: buried in a large refactor, it requires reasoning about
-cloud-provider startup ordering (kubelet registers the Node before the cloud controller assigns IPs),
-and a kube-proxy maintainer (danwinship) foreshadowed it in review yet it merged anyway. **Here the
-fan-out premium bought the catch** — the opposite of the medium subject, where the bug was easy and
-depth bought only noise.
+## The subject that finally separates everything
 
-## Depth pays for recall, but it is expensive and loud
+This is the first subject in the study where recall splits four ways:
 
-The two tools that caught the bug reliably are also the two priciest and among the noisiest.
-`anthropic-code-review` is the best-balanced thorough reviewer on this subject: **100% catch, 8.0 valid
-findings/run, zero false positives, 17.5 nitpicks/run, $24/run.** `ours` matches it on recall and valid
-yield (8.0/run) but costs more (**$32/run**), is noisier (**22 nitpicks/run**), and owns the subject's
-**only false positive** (see below). `pr-review-toolkit` is the cautionary tale: cheapest of the
-"thorough" tools at $10/run, but **0% bug-catch, 29 nitpicks/run, 13% precision** — the worst value
-here. `superpowers` is the efficiency outlier in the other direction: **$3.21/run and only 4.5
-nitpicks/run** (cleanest by far), but it caught the escaped bug only once and surfaced the fewest valid
-findings (2.5/run) — it reviews shallowly, which is cheap and quiet but misses a subtle bug half the
-time and skips most of the secondary defects.
+- **`ours` and `anthropic` caught it in both repeats** (1.00)
+- **`superpowers` and `tag1` caught it in one of two** (0.50)
+- **`pr-review-toolkit` missed it in both** (0.00) — despite emitting 183 findings and touching 40
+  of 56 clusters, more than anyone
 
-## Rich secondary yield — and it is where the tools overlap
+That last result is the sharpest illustration in the benchmark of volume not being coverage.
+`pr-review-toolkit` produced 17.5 valid-minor and 10.0 trivia per cell and still never asserted
+that a startup path had become fatal.
 
-Beyond the primary, the graders confirmed **seven valid-other defects**, and this is where the large
-diff rewarded thoroughness: **OnNodeChange stores the incoming node *before* validating its IPs**, so a
-transient address-less update poisons the baseline and a later restore triggers a spurious crash
-(and the error early-return skips the crash check); a **dual-stack bringup spurious-crash** (order-
-sensitive `reflect.DeepEqual` with no debounce fires `os.Exit(1)` when the CCM adds IPv6 after
-kubelet's IPv4); a **handler-registration data race** (handlers attached to an informer `NewNodeManager`
-already started/synced, racing an unsynchronized `eventHandlers` slice — `go test -race` detectable);
-**`NodeEligible()` deep-copying the whole Node under a needless exclusive lock on every `/healthz`
-probe**; the **dropped `AddFunc`**; **`podCIDRs` now populated unconditionally**; and **lost per-attempt
-startup logging.** The thorough tools' valid sets overlap heavily (`ours`↔`anthropic` Jaccard **0.9**,
-`ours`↔`tag1` **0.8**) — they find the *same* real issues. Only **`tag1` had a unique valid catch** (the
-lost startup-poll diagnostic logging); every other real finding was corroborated by ≥2 tools, so no
-single tool is indispensable for the secondary signal.
+## Three tools, three different unique catches
 
-## Human-thread recall
+Unusually, this subject has **three** unique-true clusters, one each:
 
-Two issues from the PR's (mostly-resolved) human threads applied to the merged code:
-**h1 — `klog.Flush()`+`os.Exit` replaced `klog.FlushAndExit()`**, dropping the bounded-flush guarantee
-(the exact regression a maintainer, nojnhuh, reported post-merge as breaking cluster creation); and
-**h2 — server.go logs "Successfully retrieved NodeIPs" unconditionally even when empty** (danwinship's
-warn-on-empty request). **`anthropic` caught both; `ours` caught h1; `pr-review-toolkit` caught h2;
-`superpowers` and `tag1` caught neither.**
+- **`ours` uniquely caught `c5` — a TP-human.** All three exit sites now use `klog.Flush()` +
+  `exitFunc(1)` where the replaced handler used `klog.FlushAndExit(klog.ExitFlushTimeout, 1)`,
+  risking the loss of the very log line explaining why kube-proxy died. That is a real human-review
+  issue nobody else found, and it is the strongest single result for ours in the repaired set.
+- **`anthropic` uniquely caught `c60`** — the deleted `waitForPodCIDR` condition contained a
+  `DeletionTimestamp` check; the replacement poll does not, so a terminating node now satisfies the
+  wait and its stale PodCIDRs are used. Its `git-history` and `prior-pr` agents both traced this to
+  the specific commit that had added the guard.
+- **`tag1` uniquely caught `c59`** — the deleted `getNodeIPs` logged on every attempt while the
+  replacement poll returns silently, so a multi-minute startup block now emits nothing between
+  cache sync and the final error.
 
-## False positives — rare, and the one that exists is contestable
+The second TP-human (`c35`, the unconditional "Successfully retrieved NodeIPs" log) was found by
+several tools.
 
-Across all 56 clusters the judge confirmed **exactly one false positive** — a strong signal that,
-despite 800+ raw findings, the tools rarely asserted things that aren't true. Notably the tools' many
-"kube-proxy now crashes on node change/delete" observations were correctly graded **nitpick
-(by-design)**, and the "`(nil,nil)` nil-panic" and "nil-deref" claims graded **nitpick (latent/safe)**,
-not false positives. The lone FP is **c36 — "the 'register handlers before starting the informer or
-we'll lose events' comment is factually incorrect"** — raised by `ours` (both runs) and `tag1` (one
-run), which is what gives `ours` its 1.0 FP/run. **This verdict is genuinely contestable:** kube-proxy
-maintainer danwinship, in an unresolved review thread, *explicitly agrees* the comment is wrong
-("these comments were always incorrect … informers have always had code to retroactively catch new
-handlers up"). The blind judge — not given that thread — ruled the comment defensible and marked the
-finding refuted. This is the single most important item to eyeball (below); if regraded, `ours`' FP
-rate drops to 0.
+## Noise character
 
-## Cost vs. catch
+`ours` emitted **248 findings** across 37 clusters — the most in the study — at precision 0.23,
+8.5 trivia/cell, and **2 false positives per cell**, both on `known_safe` traps: it asserted the
+exit-on-NodeIP-change behavior is a defect (`c2`, `c3`) when the `NodeManager` type doc explicitly
+states it "crashes kube-proxy if there are any changes in NodeIPs or PodCIDRs". That is the
+documented contract, and ours argued against it twice.
 
-**Cost per bug caught: `superpowers` $6.43, `anthropic` $24.23, `ours` $32.10, `tag1` $42.36,
-`pr-review-toolkit` ∞ (never caught it).** `superpowers` again looks cheapest per catch — but that
-number hides that it only caught the bug in one of two runs and found the least of everything else; on
-a subtle bug you cannot afford to miss, a 50% catch rate at low cost is a different product than a 100%
-catch rate. The real lesson of this subject is that **the escaped bug's subtlety inverted the medium
-subject's economics**: depth (`ours`/`anthropic`) was necessary to catch it reliably, and the cheap/lean
-tools' savings came with a real recall cost (`pr-review-toolkit` 0%, `superpowers`/`tag1` 50%).
+`anthropic` is again the cleanest: **48 findings, 11 clusters, precision 0.46, 0.5 trivia/cell** —
+a seventeenth of `pr-review-toolkit`'s trivia rate on the same diff.
+
+`tag1` also took 2 FP/cell and, like `pr-review-toolkit`, spent most of its output on valid-minor
+(14.5/cell).
+
+## Did the fan-out earn its agents?
+
+Partly, and for the first time. Ours ran **19 agents** — its largest roster anywhere — and that
+breadth is plausibly what surfaced `c5`, a subtle logging-flush regression buried in an 18-file
+diff. Distinctness remains low at 0.23, so most of that breadth was still restatement.
+
+But `anthropic` reached the same primary catch plus its own unique `c60` with 15 agents and a fifth
+of the findings, and `pr-review-toolkit`'s 5 agents produced the most clusters and zero catches. On
+this subject roster size did not predict recall; brief quality did.
+
+## Cost versus catch
+
+superpowers **$3.21** (half a catch), pr-review-toolkit **$9.97** (no catch), anthropic **$10.19**,
+tag1 **$21.18** (half a catch), ours **$32.10**.
+
+Ours is **3.1× anthropic** for the same recall — but this is the one subject where the premium
+bought something identifiable: a unique TP-human nobody else saw. Whether one human-review issue
+justifies $22 more per run is the product question, not a measurement one.
+
+Ours' $32.10 is the single most expensive cell in the benchmark. Anthropic's $10.19 on a 1,560-line
+diff against $5.81 on a 33-line diff confirms its shallow cost curve: a 47× diff-size range moves
+it only 1.8×.
 
 ## Caveats
 
-- **One large, refactor-heavy PR.** 18 files and ~1,560 lines produce a huge nitpick tail for everyone
-  (17–29/run), so precision looks low across the board and the "valid vs noise" ratio is harsher than on
-  a small PR. The signal that matters most — who caught the escaped bug — is clean; the precision
-  numbers are size-inflated noise.
-- **`c19` as a second TP-primary is a lenient call** (it frames the fatal gating as a stale-comment
-  issue); it adds no new cell to bug-catch, so it does not change the recall leaderboard.
-- **The one false positive (`c36`) is contestable** and single-handedly sets `ours`' FP rate — treat it
-  as the top spot-check.
-- **Single judge** (`claude-opus-4-8`).
-
-## Human spot-check queue (bias control)
-
-- **Every TP-primary:** `c1` (conf 92 — the core catch, solid) and **`c19` (66)** — decide whether the
-  "5-minute-timeout comment now fatally bounds the NodeIP wait" framing should count as catching the
-  primary or is a doc nitpick.
-- **The lone false positive `c36` (60) — highest priority:** danwinship's unresolved thread supports the
-  finding, so reconsider false-positive vs valid-other/nitpick; it sets `ours`' (1.0) and `tag1`'s (0.5)
-  FP rate.
-- **Human matches:** `c5` (h1, 90) and `c35` (h2, 88) — confirm the klog.Flush and success-log matches.
-- **Low-confidence valid-other (<60 / borderline):** `c7` (missing AddFunc, 52), `c34` (podCIDRs, 58),
-  `c59` (lost logging, 64 — `tag1`'s sole unique catch), `c8` (race, 66).
-
-*Outputs are committed-local under `analysis/subject-09/`. Nothing was posted anywhere; analysis is
-read-only over `runs/`.*
-
-## Addendum — suggestion-tier regrade (valid-minor vs trivia)
-
-The 44 nitpick clusters were blind-regraded under the suggestion-tier rubric: **17 valid-minor, 27
-trivia** — the richest suggestion harvest of the four subjects, fitting an 18-file refactor full of
-objective doc/code mismatches (the "polled in NewNodeManager" docs, the garbled type comment, the
-`OnTopologyChanged` TODO typo, the double-space typo, the removed #111321 rationale link, the
-ctx-logger convention the PR itself established then broke). Suggestion yield: `pr-review-toolkit`
-11.0/run, `ours` 8.0, `tag1` 8.0, `anthropic` 7.5, `superpowers` 2.0. Even with suggestions credited,
-`pr-review-toolkit` still carries 18 trivia/run. Severity calibration: `tag1` 80%, `anthropic` 71%,
-`ours` 64%, `pr-review-toolkit` 43%, **`superpowers` 0%** — on the one subject where its confident
-labels mattered, they pointed at non-substantive findings (and its r1 missed the primary). Low-confidence
-regrades: `c22` (→ valid-minor, 55), `c46` (→ valid-minor, 55), `c18` (→ trivia, 55), `c55` (→ trivia, 55).
+- **`pr-review-toolkit` scoring 0.00 rests on two cells.** It is a real miss in both, but n=2.
+- **`c19` is a borderline TP-primary at confidence 55** — the grader credited a stale-comment
+  framing because it states the load-bearing fact (the 5-minute timeout now fatally bounds startup
+  in all modes). A stricter reading would call it a comment nit and drop ours' or whoever's credit
+  accordingly. This is the single most consequential judgment call in the subject.
+- **Anthropic emits confidence scores, not severities**, so its calibration of 1.00 rests on few
+  severity-tagged clusters and is not weight-comparable. Tracked in dcc-hmp6.
+- **The eight non-anthropic cells reuse the 17 Jul extraction.**
+- **Cluster count moved 56 → 56** (two dissolved, two added) with a changed verdict vocabulary, so
+  headline counts are not comparable to the previous version.
+- Twelve clusters were graded at confidence ≤ 60; those plus all four TP verdicts want a human
+  eyeball.

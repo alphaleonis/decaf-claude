@@ -1,0 +1,2209 @@
+diff --git a/cmd/kube-proxy/app/server.go b/cmd/kube-proxy/app/server.go
+index cd900f3580da7..ab4f6acf2f6fd 100644
+--- a/cmd/kube-proxy/app/server.go
++++ b/cmd/kube-proxy/app/server.go
+@@ -76,7 +76,6 @@ import (
+ 	"k8s.io/kubernetes/pkg/proxy/healthcheck"
+ 	proxymetrics "k8s.io/kubernetes/pkg/proxy/metrics"
+ 	proxyutil "k8s.io/kubernetes/pkg/proxy/util"
+-	utilnode "k8s.io/kubernetes/pkg/util/node"
+ 	"k8s.io/kubernetes/pkg/util/oom"
+ 	netutils "k8s.io/utils/net"
+ )
+@@ -173,7 +172,8 @@ type ProxyServer struct {
+ 	NodeIPs         map[v1.IPFamily]net.IP
+ 	flagz           flagz.Reader
+ 
+-	podCIDRs []string // only used for LocalModeNodeCIDR
++	podCIDRs    []string // only used for LocalModeNodeCIDR
++	NodeManager *proxy.NodeManager
+ 
+ 	Proxier proxy.Provider
+ }
+@@ -207,7 +207,16 @@ func newProxyServer(ctx context.Context, config *kubeproxyconfig.KubeProxyConfig
+ 		return nil, err
+ 	}
+ 
+-	rawNodeIPs := getNodeIPs(ctx, s.Client, s.NodeName)
++	// NodeManager makes an informer that selects for the node where this kube-proxy is running
++	s.NodeManager, err = proxy.NewNodeManager(ctx, s.Client, s.Config.ConfigSyncPeriod.Duration,
++		s.NodeName, s.Config.DetectLocalMode == kubeproxyconfig.LocalModeNodeCIDR)
++	if err != nil {
++		return nil, err
++	}
++
++	rawNodeIPs := s.NodeManager.NodeIPs()
++	s.podCIDRs = s.NodeManager.PodCIDRs()
++	logger.Info("Successfully retrieved NodeIPs", "NodeIPs", rawNodeIPs)
+ 	s.PrimaryIPFamily, s.NodeIPs = detectNodeIPs(ctx, rawNodeIPs, config.BindAddress)
+ 
+ 	if len(config.NodePortAddresses) == 1 && config.NodePortAddresses[0] == kubeproxyconfig.NodePortAddressesPrimary {
+@@ -232,7 +241,7 @@ func newProxyServer(ctx context.Context, config *kubeproxyconfig.KubeProxyConfig
+ 	}
+ 
+ 	if len(config.HealthzBindAddress) > 0 {
+-		s.HealthzServer = healthcheck.NewProxyHealthServer(config.HealthzBindAddress, 2*config.SyncPeriod.Duration)
++		s.HealthzServer = healthcheck.NewProxyHealthServer(config.HealthzBindAddress, 2*config.SyncPeriod.Duration, s.NodeManager)
+ 	}
+ 
+ 	err = s.platformSetup(ctx)
+@@ -594,26 +603,15 @@ func (s *ProxyServer) Run(ctx context.Context) error {
+ 	informerFactory.Start(wait.NeverStop)
+ 	serviceInformerFactory.Start(wait.NeverStop)
+ 
+-	// Make an informer that selects for our nodename.
+-	currentNodeInformerFactory := informers.NewSharedInformerFactoryWithOptions(s.Client, s.Config.ConfigSyncPeriod.Duration,
+-		informers.WithTweakListOptions(func(options *metav1.ListOptions) {
+-			options.FieldSelector = fields.OneTermEqualSelector("metadata.name", s.NodeRef.Name).String()
+-		}))
+-	nodeConfig := config.NewNodeConfig(ctx, currentNodeInformerFactory.Core().V1().Nodes(), s.Config.ConfigSyncPeriod.Duration)
+-	// https://issues.k8s.io/111321
+-	if s.Config.DetectLocalMode == kubeproxyconfig.LocalModeNodeCIDR {
+-		nodeConfig.RegisterEventHandler(proxy.NewNodePodCIDRHandler(ctx, s.podCIDRs))
+-	}
+-	nodeConfig.RegisterEventHandler(&proxy.NodeEligibleHandler{
+-		HealthServer: s.HealthzServer,
+-	})
+-	nodeConfig.RegisterEventHandler(s.Proxier)
+-
+-	go nodeConfig.Run(wait.NeverStop)
++	// hollow-proxy doesn't need node config, and we don't create nodeManager for hollow-proxy.
++	if s.NodeManager != nil {
++		nodeConfig := config.NewNodeConfig(ctx, s.NodeManager.NodeInformer(), s.Config.ConfigSyncPeriod.Duration)
++		nodeConfig.RegisterEventHandler(s.NodeManager)
++		nodeTopologyConfig := config.NewNodeTopologyConfig(ctx, s.NodeManager.NodeInformer(), s.Config.ConfigSyncPeriod.Duration)
++		nodeTopologyConfig.RegisterEventHandler(s.Proxier)
+ 
+-	// This has to start after the calls to NewNodeConfig because that must
+-	// configure the shared informer event handler first.
+-	currentNodeInformerFactory.Start(wait.NeverStop)
++		go nodeConfig.Run(wait.NeverStop)
++	}
+ 
+ 	// Birth Cry after the birth is successful
+ 	s.birthCry()
+@@ -685,34 +683,3 @@ func detectNodeIPs(ctx context.Context, rawNodeIPs []net.IP, bindAddress string)
+ 	}
+ 	return primaryFamily, nodeIPs
+ }
+-
+-// getNodeIP returns IPs for the node with the provided name.  If
+-// required, it will wait for the node to be created.
+-func getNodeIPs(ctx context.Context, client clientset.Interface, name string) []net.IP {
+-	logger := klog.FromContext(ctx)
+-	var nodeIPs []net.IP
+-	backoff := wait.Backoff{
+-		Steps:    6,
+-		Duration: 1 * time.Second,
+-		Factor:   2.0,
+-		Jitter:   0.2,
+-	}
+-
+-	err := wait.ExponentialBackoff(backoff, func() (bool, error) {
+-		node, err := client.CoreV1().Nodes().Get(ctx, name, metav1.GetOptions{})
+-		if err != nil {
+-			logger.Error(err, "Failed to retrieve node info")
+-			return false, nil
+-		}
+-		nodeIPs, err = utilnode.GetNodeHostIPs(node)
+-		if err != nil {
+-			logger.Error(err, "Failed to retrieve node IPs")
+-			return false, nil
+-		}
+-		return true, nil
+-	})
+-	if err == nil {
+-		logger.Info("Successfully retrieved node IP(s)", "IPs", nodeIPs)
+-	}
+-	return nodeIPs
+-}
+diff --git a/cmd/kube-proxy/app/server_linux.go b/cmd/kube-proxy/app/server_linux.go
+index 7b967419705ea..37c4da7bbbcd8 100644
+--- a/cmd/kube-proxy/app/server_linux.go
++++ b/cmd/kube-proxy/app/server_linux.go
+@@ -33,13 +33,6 @@ import (
+ 	"github.com/google/cadvisor/utils/sysfs"
+ 
+ 	v1 "k8s.io/api/core/v1"
+-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+-	"k8s.io/apimachinery/pkg/fields"
+-	"k8s.io/apimachinery/pkg/runtime"
+-	"k8s.io/apimachinery/pkg/watch"
+-	clientset "k8s.io/client-go/kubernetes"
+-	"k8s.io/client-go/tools/cache"
+-	toolswatch "k8s.io/client-go/tools/watch"
+ 	utilsysctl "k8s.io/component-helpers/node/util/sysctl"
+ 	"k8s.io/klog/v2"
+ 	"k8s.io/kubernetes/pkg/proxy"
+@@ -53,10 +46,6 @@ import (
+ 	utiliptables "k8s.io/kubernetes/pkg/util/iptables"
+ )
+ 
+-// timeoutForNodePodCIDR is the time to wait for allocators to assign a PodCIDR to the
+-// node after it is registered.
+-var timeoutForNodePodCIDR = 5 * time.Minute
+-
+ // platformApplyDefaults is called after parsing command-line flags and/or reading the
+ // config file, to apply platform-specific default values to config.
+ func (o *Options) platformApplyDefaults(config *proxyconfigapi.KubeProxyConfiguration) {
+@@ -80,17 +69,6 @@ func (o *Options) platformApplyDefaults(config *proxyconfigapi.KubeProxyConfigur
+ // Proxier. It should fill in any platform-specific fields and perform other
+ // platform-specific setup.
+ func (s *ProxyServer) platformSetup(ctx context.Context) error {
+-	logger := klog.FromContext(ctx)
+-	if s.Config.DetectLocalMode == proxyconfigapi.LocalModeNodeCIDR {
+-		logger.Info("Watching for node, awaiting podCIDR allocation", "node", s.NodeName)
+-		node, err := waitForPodCIDR(ctx, s.Client, s.NodeName)
+-		if err != nil {
+-			return err
+-		}
+-		s.podCIDRs = node.Spec.PodCIDRs
+-		logger.Info("NodeInfo", "podCIDRs", node.Spec.PodCIDRs)
+-	}
+-
+ 	ct := &realConntracker{}
+ 	err := s.setupConntrack(ctx, ct)
+ 	if err != nil {
+@@ -391,50 +369,6 @@ func getConntrackMax(ctx context.Context, config proxyconfigapi.KubeProxyConntra
+ 	return 0, nil
+ }
+ 
+-func waitForPodCIDR(ctx context.Context, client clientset.Interface, nodeName string) (*v1.Node, error) {
+-	// since allocators can assign the podCIDR after the node registers, we do a watch here to wait
+-	// for podCIDR to be assigned, instead of assuming that the Get() on startup will have it.
+-	ctx, cancelFunc := context.WithTimeout(ctx, timeoutForNodePodCIDR)
+-	defer cancelFunc()
+-
+-	fieldSelector := fields.OneTermEqualSelector("metadata.name", nodeName).String()
+-	lw := &cache.ListWatch{
+-		ListFunc: func(options metav1.ListOptions) (object runtime.Object, e error) {
+-			options.FieldSelector = fieldSelector
+-			return client.CoreV1().Nodes().List(ctx, options)
+-		},
+-		WatchFunc: func(options metav1.ListOptions) (i watch.Interface, e error) {
+-			options.FieldSelector = fieldSelector
+-			return client.CoreV1().Nodes().Watch(ctx, options)
+-		},
+-	}
+-	condition := func(event watch.Event) (bool, error) {
+-		// don't process delete events
+-		if event.Type != watch.Modified && event.Type != watch.Added {
+-			return false, nil
+-		}
+-
+-		n, ok := event.Object.(*v1.Node)
+-		if !ok {
+-			return false, fmt.Errorf("event object not of type Node")
+-		}
+-		// don't consider the node if is going to be deleted and keep waiting
+-		if !n.DeletionTimestamp.IsZero() {
+-			return false, nil
+-		}
+-		return n.Spec.PodCIDR != "" && len(n.Spec.PodCIDRs) > 0, nil
+-	}
+-
+-	evt, err := toolswatch.UntilWithSync(ctx, lw, &v1.Node{}, nil, condition)
+-	if err != nil {
+-		return nil, fmt.Errorf("timeout waiting for PodCIDR allocation to configure detect-local-mode %v: %v", proxyconfigapi.LocalModeNodeCIDR, err)
+-	}
+-	if n, ok := evt.Object.(*v1.Node); ok {
+-		return n, nil
+-	}
+-	return nil, fmt.Errorf("event object not of type node")
+-}
+-
+ func detectNumCPU() int {
+ 	// try get numCPU from /sys firstly due to a known issue (https://github.com/kubernetes/kubernetes/issues/99225)
+ 	_, numCPU, err := machine.GetTopology(sysfs.NewRealSysFs())
+diff --git a/cmd/kube-proxy/app/server_linux_test.go b/cmd/kube-proxy/app/server_linux_test.go
+index 3918a15279388..04d33569ecacc 100644
+--- a/cmd/kube-proxy/app/server_linux_test.go
++++ b/cmd/kube-proxy/app/server_linux_test.go
+@@ -23,7 +23,6 @@ import (
+ 	"context"
+ 	"errors"
+ 	"fmt"
+-	"net"
+ 	"os"
+ 	"path/filepath"
+ 	"reflect"
+@@ -36,14 +35,9 @@ import (
+ 	"github.com/spf13/pflag"
+ 	v1 "k8s.io/api/core/v1"
+ 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+-	"k8s.io/apimachinery/pkg/runtime"
+-	"k8s.io/apimachinery/pkg/watch"
+-	clientsetfake "k8s.io/client-go/kubernetes/fake"
+-	clientgotesting "k8s.io/client-go/testing"
+ 	proxyconfigapi "k8s.io/kubernetes/pkg/proxy/apis/config"
+ 	proxyutil "k8s.io/kubernetes/pkg/proxy/util"
+ 	"k8s.io/kubernetes/test/utils/ktesting"
+-	netutils "k8s.io/utils/net"
+ 	"k8s.io/utils/ptr"
+ )
+ 
+@@ -445,18 +439,6 @@ func Test_getLocalDetectors(t *testing.T) {
+ 	}
+ }
+ 
+-func makeNodeWithPodCIDRs(cidrs ...string) *v1.Node {
+-	if len(cidrs) == 0 {
+-		return &v1.Node{}
+-	}
+-	return &v1.Node{
+-		Spec: v1.NodeSpec{
+-			PodCIDR:  cidrs[0],
+-			PodCIDRs: cidrs,
+-		},
+-	}
+-}
+-
+ func TestConfigChange(t *testing.T) {
+ 	setUp := func() (*os.File, string, error) {
+ 		tempDir, err := os.MkdirTemp("", "kubeproxy-config-change")
+@@ -574,56 +556,6 @@ detectLocalMode: "BridgeInterface"`)
+ 	}
+ }
+ 
+-func Test_waitForPodCIDR(t *testing.T) {
+-	_, ctx := ktesting.NewTestContext(t)
+-	expected := []string{"192.168.0.0/24", "fd00:1:2::/64"}
+-	nodeName := "test-node"
+-	oldNode := &v1.Node{
+-		ObjectMeta: metav1.ObjectMeta{
+-			Name:            nodeName,
+-			ResourceVersion: "1000",
+-		},
+-		Spec: v1.NodeSpec{
+-			PodCIDR:  "10.0.0.0/24",
+-			PodCIDRs: []string{"10.0.0.0/24", "2001:db2:1/64"},
+-		},
+-	}
+-	node := &v1.Node{
+-		ObjectMeta: metav1.ObjectMeta{
+-			Name:            nodeName,
+-			ResourceVersion: "1",
+-		},
+-	}
+-	updatedNode := node.DeepCopy()
+-	updatedNode.Spec.PodCIDRs = expected
+-	updatedNode.Spec.PodCIDR = expected[0]
+-
+-	// start with the new node
+-	client := clientsetfake.NewSimpleClientset()
+-	client.AddReactor("list", "nodes", func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
+-		obj := &v1.NodeList{}
+-		return true, obj, nil
+-	})
+-	fakeWatch := watch.NewFake()
+-	client.PrependWatchReactor("nodes", clientgotesting.DefaultWatchReactor(fakeWatch, nil))
+-
+-	go func() {
+-		fakeWatch.Add(node)
+-		// receive a delete event for the old node
+-		fakeWatch.Delete(oldNode)
+-		// set the PodCIDRs on the new node
+-		fakeWatch.Modify(updatedNode)
+-	}()
+-	got, err := waitForPodCIDR(ctx, client, node.Name)
+-	if err != nil {
+-		t.Errorf("waitForPodCIDR() unexpected error %v", err)
+-		return
+-	}
+-	if !reflect.DeepEqual(got.Spec.PodCIDRs, expected) {
+-		t.Errorf("waitForPodCIDR() got %v expected to be %v ", got.Spec.PodCIDRs, expected)
+-	}
+-}
+-
+ func TestGetConntrackMax(t *testing.T) {
+ 	ncores := goruntime.NumCPU()
+ 	testCases := []struct {
+@@ -671,57 +603,6 @@ func TestGetConntrackMax(t *testing.T) {
+ 	}
+ }
+ 
+-func TestProxyServer_platformSetup(t *testing.T) {
+-	tests := []struct {
+-		name         string
+-		node         *v1.Node
+-		config       *proxyconfigapi.KubeProxyConfiguration
+-		wantPodCIDRs []string
+-	}{
+-		{
+-			name:         "LocalModeNodeCIDR store the node PodCIDRs obtained",
+-			node:         makeNodeWithPodCIDRs("10.0.0.0/24"),
+-			config:       &proxyconfigapi.KubeProxyConfiguration{DetectLocalMode: proxyconfigapi.LocalModeNodeCIDR},
+-			wantPodCIDRs: []string{"10.0.0.0/24"},
+-		},
+-		{
+-			name:         "LocalModeNodeCIDR store the node PodCIDRs obtained dual stack",
+-			node:         makeNodeWithPodCIDRs("10.0.0.0/24", "2001:db2:1/64"),
+-			config:       &proxyconfigapi.KubeProxyConfiguration{DetectLocalMode: proxyconfigapi.LocalModeNodeCIDR},
+-			wantPodCIDRs: []string{"10.0.0.0/24", "2001:db2:1/64"},
+-		},
+-		{
+-			name:   "LocalModeClusterCIDR does not get the node PodCIDRs",
+-			node:   makeNodeWithPodCIDRs("10.0.0.0/24", "2001:db2:1/64"),
+-			config: &proxyconfigapi.KubeProxyConfiguration{DetectLocalMode: proxyconfigapi.LocalModeClusterCIDR},
+-		},
+-	}
+-	for _, tt := range tests {
+-		t.Run(tt.name, func(t *testing.T) {
+-			_, ctx := ktesting.NewTestContext(t)
+-			client := clientsetfake.NewSimpleClientset(tt.node)
+-			s := &ProxyServer{
+-				Config:   tt.config,
+-				Client:   client,
+-				NodeName: "nodename",
+-				NodeIPs: map[v1.IPFamily]net.IP{
+-					v1.IPv4Protocol: netutils.ParseIPSloppy("127.0.0.1"),
+-					v1.IPv6Protocol: net.IPv6zero,
+-				},
+-			}
+-			err := s.platformSetup(ctx)
+-			if err != nil {
+-				t.Errorf("ProxyServer.createProxier() error = %v", err)
+-				return
+-			}
+-			if !reflect.DeepEqual(s.podCIDRs, tt.wantPodCIDRs) {
+-				t.Errorf("Expected PodCIDRs %v got %v", tt.wantPodCIDRs, s.podCIDRs)
+-			}
+-
+-		})
+-	}
+-}
+-
+ type fakeConntracker struct {
+ 	called []string
+ 	err    error
+diff --git a/cmd/kube-proxy/app/server_test.go b/cmd/kube-proxy/app/server_test.go
+index e76a272d7ef16..f95f55391a248 100644
+--- a/cmd/kube-proxy/app/server_test.go
++++ b/cmd/kube-proxy/app/server_test.go
+@@ -25,8 +25,6 @@ import (
+ 	"time"
+ 
+ 	v1 "k8s.io/api/core/v1"
+-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+-	clientsetfake "k8s.io/client-go/kubernetes/fake"
+ 	kubeproxyconfig "k8s.io/kubernetes/pkg/proxy/apis/config"
+ 	"k8s.io/kubernetes/test/utils/ktesting"
+ 	netutils "k8s.io/utils/net"
+@@ -61,83 +59,6 @@ func (s *fakeProxyServerError) CleanupAndExit() error {
+ 	return errors.New("mocking error from ProxyServer.CleanupAndExit()")
+ }
+ 
+-func makeNodeWithAddress(name, primaryIP string) *v1.Node {
+-	node := &v1.Node{
+-		ObjectMeta: metav1.ObjectMeta{
+-			Name: name,
+-		},
+-		Status: v1.NodeStatus{
+-			Addresses: []v1.NodeAddress{},
+-		},
+-	}
+-
+-	if primaryIP != "" {
+-		node.Status.Addresses = append(node.Status.Addresses,
+-			v1.NodeAddress{Type: v1.NodeInternalIP, Address: primaryIP},
+-		)
+-	}
+-
+-	return node
+-}
+-
+-// Test that getNodeIPs retries on failure
+-func Test_getNodeIPs(t *testing.T) {
+-	var chans [3]chan error
+-
+-	client := clientsetfake.NewSimpleClientset(
+-		// node1 initially has no IP address.
+-		makeNodeWithAddress("node1", ""),
+-
+-		// node2 initially has an invalid IP address.
+-		makeNodeWithAddress("node2", "invalid-ip"),
+-
+-		// node3 initially does not exist.
+-	)
+-
+-	for i := range chans {
+-		chans[i] = make(chan error)
+-		ch := chans[i]
+-		nodeName := fmt.Sprintf("node%d", i+1)
+-		expectIP := fmt.Sprintf("192.168.0.%d", i+1)
+-		go func() {
+-			_, ctx := ktesting.NewTestContext(t)
+-			ips := getNodeIPs(ctx, client, nodeName)
+-			if len(ips) == 0 {
+-				ch <- fmt.Errorf("expected IP %s for %s but got nil", expectIP, nodeName)
+-			} else if ips[0].String() != expectIP {
+-				ch <- fmt.Errorf("expected IP %s for %s but got %s", expectIP, nodeName, ips[0].String())
+-			} else if len(ips) != 1 {
+-				ch <- fmt.Errorf("expected IP %s for %s but got multiple IPs", expectIP, nodeName)
+-			}
+-			close(ch)
+-		}()
+-	}
+-
+-	// Give the goroutines time to fetch the bad/non-existent nodes, then fix them.
+-	time.Sleep(1200 * time.Millisecond)
+-
+-	_, _ = client.CoreV1().Nodes().UpdateStatus(context.TODO(),
+-		makeNodeWithAddress("node1", "192.168.0.1"),
+-		metav1.UpdateOptions{},
+-	)
+-	_, _ = client.CoreV1().Nodes().UpdateStatus(context.TODO(),
+-		makeNodeWithAddress("node2", "192.168.0.2"),
+-		metav1.UpdateOptions{},
+-	)
+-	_, _ = client.CoreV1().Nodes().Create(context.TODO(),
+-		makeNodeWithAddress("node3", "192.168.0.3"),
+-		metav1.CreateOptions{},
+-	)
+-
+-	// Ensure each getNodeIP completed as expected
+-	for i := range chans {
+-		err := <-chans[i]
+-		if err != nil {
+-			t.Error(err.Error())
+-		}
+-	}
+-}
+-
+ func Test_detectNodeIPs(t *testing.T) {
+ 	cases := []struct {
+ 		name           string
+diff --git a/pkg/proxy/config/config.go b/pkg/proxy/config/config.go
+index 1544ad5a7d7d2..725149013b58b 100644
+--- a/pkg/proxy/config/config.go
++++ b/pkg/proxy/config/config.go
+@@ -19,6 +19,7 @@ package config
+ import (
+ 	"context"
+ 	"fmt"
++	"reflect"
+ 	"sync"
+ 	"time"
+ 
+@@ -259,12 +260,9 @@ func (c *ServiceConfig) handleDeleteService(obj interface{}) {
+ // NodeHandler is an abstract interface of objects which receive
+ // notifications about node object changes.
+ type NodeHandler interface {
+-	// OnNodeAdd is called whenever creation of new node object
+-	// is observed.
+-	OnNodeAdd(node *v1.Node)
+-	// OnNodeUpdate is called whenever modification of an existing
+-	// node object is observed.
+-	OnNodeUpdate(oldNode, node *v1.Node)
++	// OnNodeChange is called whenever creation or modification
++	// of node object is observed.
++	OnNodeChange(node *v1.Node)
+ 	// OnNodeDelete is called whenever deletion of an existing node
+ 	// object is observed.
+ 	OnNodeDelete(node *v1.Node)
+@@ -273,24 +271,6 @@ type NodeHandler interface {
+ 	OnNodeSynced()
+ }
+ 
+-// NoopNodeHandler is a noop handler for proxiers that have not yet
+-// implemented a full NodeHandler.
+-type NoopNodeHandler struct{}
+-
+-// OnNodeAdd is a noop handler for Node creates.
+-func (*NoopNodeHandler) OnNodeAdd(node *v1.Node) {}
+-
+-// OnNodeUpdate is a noop handler for Node updates.
+-func (*NoopNodeHandler) OnNodeUpdate(oldNode, node *v1.Node) {}
+-
+-// OnNodeDelete is a noop handler for Node deletes.
+-func (*NoopNodeHandler) OnNodeDelete(node *v1.Node) {}
+-
+-// OnNodeSynced is a noop handler for Node syncs.
+-func (*NoopNodeHandler) OnNodeSynced() {}
+-
+-var _ NodeHandler = &NoopNodeHandler{}
+-
+ // NodeConfig tracks a set of node configurations.
+ // It accepts "set", "add" and "remove" operations of node via channels, and invokes registered handlers on change.
+ type NodeConfig struct {
+@@ -307,8 +287,7 @@ func NewNodeConfig(ctx context.Context, nodeInformer v1informers.NodeInformer, r
+ 
+ 	handlerRegistration, _ := nodeInformer.Informer().AddEventHandlerWithResyncPeriod(
+ 		cache.ResourceEventHandlerFuncs{
+-			AddFunc:    result.handleAddNode,
+-			UpdateFunc: result.handleUpdateNode,
++			UpdateFunc: func(_, newObj interface{}) { result.handleChangeNode(newObj) },
+ 			DeleteFunc: result.handleDeleteNode,
+ 		},
+ 		resyncPeriod,
+@@ -338,32 +317,22 @@ func (c *NodeConfig) Run(stopCh <-chan struct{}) {
+ 	}
+ }
+ 
+-func (c *NodeConfig) handleAddNode(obj interface{}) {
++func (c *NodeConfig) handleChangeNode(obj interface{}) {
+ 	node, ok := obj.(*v1.Node)
+ 	if !ok {
+-		utilruntime.HandleError(fmt.Errorf("unexpected object type: %v", obj))
+-		return
+-	}
+-	for i := range c.eventHandlers {
+-		c.logger.V(4).Info("Calling handler.OnNodeAdd")
+-		c.eventHandlers[i].OnNodeAdd(node)
+-	}
+-}
+-
+-func (c *NodeConfig) handleUpdateNode(oldObj, newObj interface{}) {
+-	oldNode, ok := oldObj.(*v1.Node)
+-	if !ok {
+-		utilruntime.HandleError(fmt.Errorf("unexpected object type: %v", oldObj))
+-		return
+-	}
+-	node, ok := newObj.(*v1.Node)
+-	if !ok {
+-		utilruntime.HandleError(fmt.Errorf("unexpected object type: %v", newObj))
+-		return
++		tombstone, ok := obj.(cache.DeletedFinalStateUnknown)
++		if !ok {
++			utilruntime.HandleError(fmt.Errorf("unexpected object type: %v", obj))
++			return
++		}
++		if node, ok = tombstone.Obj.(*v1.Node); !ok {
++			utilruntime.HandleError(fmt.Errorf("unexpected object type: %v", obj))
++			return
++		}
+ 	}
+ 	for i := range c.eventHandlers {
+-		c.logger.V(5).Info("Calling handler.OnNodeUpdate")
+-		c.eventHandlers[i].OnNodeUpdate(oldNode, node)
++		c.logger.V(4).Info("Calling handler.OnNodeChange")
++		c.eventHandlers[i].OnNodeChange(node)
+ 	}
+ }
+ 
+@@ -483,3 +452,86 @@ func (c *ServiceCIDRConfig) handleServiceCIDREvent(oldObj, newObj interface{}) {
+ 		c.eventHandlers[i].OnServiceCIDRsChanged(c.cidrs.UnsortedList())
+ 	}
+ }
++
++// NodeTopologyHandler is an abstract interface for objects which receive
++// notifications about changes in proxy relevant node topology labels.
++type NodeTopologyHandler interface {
++	// OnTopologyChange is called whenever a change is observed in proxy
++	// relevant node topology labels, and provides the observed change.
++	OnTopologyChange(topologyLabels map[string]string)
++}
++
++// NodeTopologyConfig tracks node topology labels.
++type NodeTopologyConfig struct {
++	listerSynced   cache.InformerSynced
++	eventHandlers  []NodeTopologyHandler
++	topologyLabels map[string]string
++	logger         klog.Logger
++}
++
++// NewNodeTopologyConfig creates a new NodeTopologyConfig.
++func NewNodeTopologyConfig(ctx context.Context, nodeInformer v1informers.NodeInformer, resyncPeriod time.Duration) *NodeTopologyConfig {
++	return newNodeTopologyConfig(ctx, nodeInformer, resyncPeriod, nil)
++}
++
++// newNodeTopologyConfig implements NewNodeTopologyConfig by additionally consuming a callback function which is invoked when
++// event handler completes processing and is only used for testing.
++func newNodeTopologyConfig(ctx context.Context, nodeInformer v1informers.NodeInformer, resyncPeriod time.Duration, callback func()) *NodeTopologyConfig {
++	result := &NodeTopologyConfig{
++		logger:         klog.FromContext(ctx),
++		topologyLabels: make(map[string]string),
++	}
++
++	handlerRegistration, _ := nodeInformer.Informer().AddEventHandlerWithResyncPeriod(
++		cache.ResourceEventHandlerFuncs{
++			AddFunc: func(obj interface{}) {
++				result.handleNodeEvent(obj)
++				if callback != nil {
++					callback()
++				}
++			},
++			UpdateFunc: func(_, newObj interface{}) {
++				result.handleNodeEvent(newObj)
++				if callback != nil {
++					callback()
++				}
++			},
++			DeleteFunc: func(_ interface{}) {},
++		},
++		resyncPeriod,
++	)
++	result.listerSynced = handlerRegistration.HasSynced
++
++	return result
++}
++
++// RegisterEventHandler registers a handler which is called on Node object change.
++func (n *NodeTopologyConfig) RegisterEventHandler(handler NodeTopologyHandler) {
++	n.eventHandlers = append(n.eventHandlers, handler)
++}
++
++// handleNodeEvent is a helper function to handle Add, Update and Delete
++// events on Node objects and call downstream event handlers.
++func (n *NodeTopologyConfig) handleNodeEvent(obj interface{}) {
++	node, ok := obj.(*v1.Node)
++	if !ok {
++		utilruntime.HandleError(fmt.Errorf("unexpected object type: %v", obj))
++		return
++	}
++
++	topologyLabels := make(map[string]string)
++	if _, ok = node.Labels[v1.LabelTopologyZone]; ok {
++		topologyLabels[v1.LabelTopologyZone] = node.Labels[v1.LabelTopologyZone]
++	}
++
++	// skip calling event handlers when no change in topology labels
++	if reflect.DeepEqual(n.topologyLabels, topologyLabels) {
++		return
++	}
++
++	n.topologyLabels = topologyLabels
++	for i := range n.eventHandlers {
++		n.logger.V(4).Info("Calling handler.OnTopologyChange")
++		n.eventHandlers[i].OnTopologyChange(n.topologyLabels)
++	}
++}
+diff --git a/pkg/proxy/config/config_test.go b/pkg/proxy/config/config_test.go
+index 88802c3667a02..c2f6511b34543 100644
+--- a/pkg/proxy/config/config_test.go
++++ b/pkg/proxy/config/config_test.go
+@@ -17,12 +17,15 @@ limitations under the License.
+ package config
+ 
+ import (
++	"fmt"
+ 	"reflect"
+ 	"sort"
+ 	"sync"
+ 	"testing"
+ 	"time"
+ 
++	"github.com/stretchr/testify/require"
++
+ 	"k8s.io/api/core/v1"
+ 	discoveryv1 "k8s.io/api/discovery/v1"
+ 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+@@ -457,3 +460,137 @@ func TestNewEndpointsMultipleHandlersAddRemoveSetAndNotified(t *testing.T) {
+ // Currently this module has a circular dependency with config, and so it's
+ // named config_test, which means even test methods need to be public. This
+ // is refactoring that we can avoid by resolving the dependency.
++
++type nodeTopologyHandlerMock struct {
++	topologyLabels map[string]string
++}
++
++func (n *nodeTopologyHandlerMock) OnTopologyChange(topologyLabels map[string]string) {
++	n.topologyLabels = topologyLabels
++}
++
++// waitForInvocation waits for event handler to complete processing of the invocation.
++func waitForInvocation(invoked <-chan struct{}) error {
++	for {
++		select {
++		// unit tests will hard timeout in 5m with a stack trace, prevent that
++		// and surface a clearer reason for failure.
++		case <-time.After(wait.ForeverTestTimeout):
++			return fmt.Errorf("timed out waiting for event handler to process update")
++		case <-invoked:
++			return nil
++		}
++	}
++}
++
++func TestNewNodeTopologyConfig(t *testing.T) {
++	_, ctx := klogtesting.NewTestContext(t)
++	client := fake.NewClientset()
++	fakeWatch := watch.NewFake()
++	client.PrependWatchReactor("nodes", ktesting.DefaultWatchReactor(fakeWatch, nil))
++
++	stopCh := make(chan struct{})
++	defer close(stopCh)
++
++	sharedInformers := informers.NewSharedInformerFactory(client, time.Minute)
++	nodeInformer := sharedInformers.Core().V1().Nodes()
++	invoked := make(chan struct{})
++	config := newNodeTopologyConfig(ctx, nodeInformer, time.Minute, func() {
++		// The callback is invoked after the event has been processed by the
++		// handlers. For this unit test, we write to the channel here and wait
++		// for it in waitForInvocation() which is called before doing assertions.
++		invoked <- struct{}{}
++	})
++
++	handler := &nodeTopologyHandlerMock{
++		topologyLabels: make(map[string]string),
++	}
++	config.RegisterEventHandler(handler)
++	sharedInformers.Start(stopCh)
++
++	testNodeName := "test-node"
++
++	// add non-topology labels, handle should receive no notification
++	fakeWatch.Add(&v1.Node{
++		ObjectMeta: metav1.ObjectMeta{
++			Name: testNodeName,
++			Labels: map[string]string{
++				v1.LabelInstanceType: "m4.large",
++				v1.LabelOSStable:     "linux",
++			},
++		},
++	})
++	err := waitForInvocation(invoked)
++	require.NoError(t, err)
++	require.Empty(t, handler.topologyLabels)
++
++	// add topology label not relevant to kube-proxy, handle should receive no notification
++	fakeWatch.Add(&v1.Node{
++		ObjectMeta: metav1.ObjectMeta{
++			Name: testNodeName,
++			Labels: map[string]string{
++				v1.LabelInstanceType:   "m4.large",
++				v1.LabelOSStable:       "linux",
++				v1.LabelTopologyRegion: "us-east-1",
++			},
++		},
++	})
++	err = waitForInvocation(invoked)
++	require.NoError(t, err)
++	require.Empty(t, handler.topologyLabels)
++
++	// add relevant zone topology label, handle should receive notification
++	fakeWatch.Add(&v1.Node{
++		ObjectMeta: metav1.ObjectMeta{
++			Name: testNodeName,
++			Labels: map[string]string{
++				v1.LabelInstanceType: "c6.large",
++				v1.LabelOSStable:     "windows",
++				v1.LabelTopologyZone: "us-west-2a",
++			},
++		},
++	})
++
++	err = waitForInvocation(invoked)
++	require.NoError(t, err)
++	require.Len(t, handler.topologyLabels, 1)
++	require.Equal(t, map[string]string{
++		v1.LabelTopologyZone: "us-west-2a",
++	}, handler.topologyLabels)
++
++	// add region topology label, handle should not receive notification
++	// because kube-proxy doesn't do any region-based topology.
++	fakeWatch.Add(&v1.Node{
++		ObjectMeta: metav1.ObjectMeta{
++			Name: testNodeName,
++			Labels: map[string]string{
++				v1.LabelInstanceType:   "m3.medium",
++				v1.LabelOSStable:       "windows",
++				v1.LabelTopologyRegion: "us-east-1",
++				v1.LabelTopologyZone:   "us-east-1b",
++			},
++		},
++	})
++	err = waitForInvocation(invoked)
++	require.NoError(t, err)
++	require.Len(t, handler.topologyLabels, 1)
++	require.Equal(t, map[string]string{
++		v1.LabelTopologyZone: "us-east-1b",
++	}, handler.topologyLabels)
++
++	// update non-topology label, handle should not receive notification
++	fakeWatch.Add(&v1.Node{
++		ObjectMeta: metav1.ObjectMeta{
++			Name: testNodeName,
++			Labels: map[string]string{
++				v1.LabelInstanceType:   "m3.large",
++				v1.LabelOSStable:       "windows",
++				v1.LabelTopologyRegion: "us-east-1",
++				v1.LabelTopologyZone:   "us-east-1b",
++			},
++		},
++	})
++	err = waitForInvocation(invoked)
++	require.NoError(t, err)
++	require.Len(t, handler.topologyLabels, 1)
++}
+diff --git a/pkg/proxy/healthcheck/healthcheck_test.go b/pkg/proxy/healthcheck/healthcheck_test.go
+index e096d6fc34a3e..e5924296dcdd5 100644
+--- a/pkg/proxy/healthcheck/healthcheck_test.go
++++ b/pkg/proxy/healthcheck/healthcheck_test.go
+@@ -27,21 +27,24 @@ import (
+ 	"time"
+ 
+ 	"github.com/google/go-cmp/cmp"
++
+ 	v1 "k8s.io/api/core/v1"
+ 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+-	"k8s.io/component-base/metrics/testutil"
+-
+ 	"k8s.io/apimachinery/pkg/types"
+ 	"k8s.io/apimachinery/pkg/util/dump"
+ 	"k8s.io/apimachinery/pkg/util/sets"
+-	"k8s.io/utils/ptr"
+-
++	clientsetfake "k8s.io/client-go/kubernetes/fake"
+ 	basemetrics "k8s.io/component-base/metrics"
++	"k8s.io/component-base/metrics/testutil"
++	"k8s.io/kubernetes/pkg/proxy"
+ 	"k8s.io/kubernetes/pkg/proxy/metrics"
+ 	proxyutil "k8s.io/kubernetes/pkg/proxy/util"
+ 	testingclock "k8s.io/utils/clock/testing"
++	"k8s.io/utils/ptr"
+ )
+ 
++const testNodeName = "test-node"
++
+ type fakeListener struct {
+ 	openPorts sets.Set[string]
+ }
+@@ -431,7 +434,16 @@ func tHandler(hcs *server, nsn types.NamespacedName, status int, endpoints int,
+ type nodeTweak func(n *v1.Node)
+ 
+ func makeNode(tweaks ...nodeTweak) *v1.Node {
+-	n := &v1.Node{}
++	n := &v1.Node{
++		ObjectMeta: metav1.ObjectMeta{
++			Name: testNodeName,
++		},
++		Status: v1.NodeStatus{
++			Addresses: []v1.NodeAddress{{
++				Type: v1.NodeInternalIP, Address: "192.168.0.1",
++			}},
++		},
++	}
+ 	for _, tw := range tweaks {
+ 		tw(n)
+ 	}
+@@ -464,8 +476,10 @@ func TestHealthzServer(t *testing.T) {
+ 	listener := newFakeListener()
+ 	httpFactory := newFakeHTTPServerFactory()
+ 	fakeClock := testingclock.NewFakeClock(time.Now())
++	client := clientsetfake.NewClientset(makeNode())
+ 
+-	hs := newProxyHealthServer(listener, httpFactory, fakeClock, "127.0.0.1:10256", 10*time.Second)
++	nodeManager, _ := proxy.NewNodeManager(context.TODO(), client, time.Second, testNodeName, false)
++	hs := newProxyHealthServer(listener, httpFactory, fakeClock, "127.0.0.1:10256", 10*time.Second, nodeManager)
+ 	server := hs.httpFactory.New(healthzHandler{hs: hs})
+ 
+ 	hsTest := &serverTest{
+@@ -481,7 +495,7 @@ func TestHealthzServer(t *testing.T) {
+ 	testProxyHealthUpdater(hs, hsTest, fakeClock, ptr.To(true), t)
+ 
+ 	// Should return 200 "OK" if we've synced a node, tainted in any other way
+-	hs.SyncNode(makeNode(tweakTainted("other")))
++	nodeManager.OnNodeChange(makeNode(tweakTainted("other")))
+ 	expectedPayload = ProxyHealth{
+ 		CurrentTime:  fakeClock.Now(),
+ 		LastUpdated:  fakeClock.Now(),
+@@ -495,7 +509,7 @@ func TestHealthzServer(t *testing.T) {
+ 	testHTTPHandler(hsTest, http.StatusOK, expectedPayload, t)
+ 
+ 	// Should return 503 "ServiceUnavailable" if we've synced a ToBeDeletedTaint node
+-	hs.SyncNode(makeNode(tweakTainted(ToBeDeletedTaint)))
++	nodeManager.OnNodeChange(makeNode(tweakTainted(ToBeDeletedTaint)))
+ 	expectedPayload = ProxyHealth{
+ 		CurrentTime:  fakeClock.Now(),
+ 		LastUpdated:  fakeClock.Now(),
+@@ -509,7 +523,7 @@ func TestHealthzServer(t *testing.T) {
+ 	testHTTPHandler(hsTest, http.StatusServiceUnavailable, expectedPayload, t)
+ 
+ 	// Should return 200 "OK" if we've synced a node, tainted in any other way
+-	hs.SyncNode(makeNode(tweakTainted("other")))
++	nodeManager.OnNodeChange(makeNode(tweakTainted("other")))
+ 	expectedPayload = ProxyHealth{
+ 		CurrentTime:  fakeClock.Now(),
+ 		LastUpdated:  fakeClock.Now(),
+@@ -523,7 +537,7 @@ func TestHealthzServer(t *testing.T) {
+ 	testHTTPHandler(hsTest, http.StatusOK, expectedPayload, t)
+ 
+ 	// Should return 503 "ServiceUnavailable" if we've synced a deleted node
+-	hs.SyncNode(makeNode(tweakDeleted()))
++	nodeManager.OnNodeChange(makeNode(tweakDeleted()))
+ 	expectedPayload = ProxyHealth{
+ 		CurrentTime:  fakeClock.Now(),
+ 		LastUpdated:  fakeClock.Now(),
+@@ -542,8 +556,10 @@ func TestLivezServer(t *testing.T) {
+ 	listener := newFakeListener()
+ 	httpFactory := newFakeHTTPServerFactory()
+ 	fakeClock := testingclock.NewFakeClock(time.Now())
++	client := clientsetfake.NewClientset(makeNode())
+ 
+-	hs := newProxyHealthServer(listener, httpFactory, fakeClock, "127.0.0.1:10256", 10*time.Second)
++	nodeManager, _ := proxy.NewNodeManager(context.TODO(), client, time.Second, testNodeName, false)
++	hs := newProxyHealthServer(listener, httpFactory, fakeClock, "127.0.0.1:10256", 10*time.Second, nodeManager)
+ 	server := hs.httpFactory.New(livezHandler{hs: hs})
+ 
+ 	hsTest := &serverTest{
+@@ -559,7 +575,7 @@ func TestLivezServer(t *testing.T) {
+ 	testProxyHealthUpdater(hs, hsTest, fakeClock, nil, t)
+ 
+ 	// Should return 200 "OK" irrespective of node syncs
+-	hs.SyncNode(makeNode(tweakTainted("other")))
++	nodeManager.OnNodeChange(makeNode(tweakTainted("other")))
+ 	expectedPayload = ProxyHealth{
+ 		CurrentTime: fakeClock.Now(),
+ 		LastUpdated: fakeClock.Now(),
+@@ -572,7 +588,7 @@ func TestLivezServer(t *testing.T) {
+ 	testHTTPHandler(hsTest, http.StatusOK, expectedPayload, t)
+ 
+ 	// Should return 200 "OK" irrespective of node syncs
+-	hs.SyncNode(makeNode(tweakTainted(ToBeDeletedTaint)))
++	nodeManager.OnNodeChange(makeNode(tweakTainted(ToBeDeletedTaint)))
+ 	expectedPayload = ProxyHealth{
+ 		CurrentTime: fakeClock.Now(),
+ 		LastUpdated: fakeClock.Now(),
+@@ -585,7 +601,7 @@ func TestLivezServer(t *testing.T) {
+ 	testHTTPHandler(hsTest, http.StatusOK, expectedPayload, t)
+ 
+ 	// Should return 200 "OK" irrespective of node syncs
+-	hs.SyncNode(makeNode(tweakTainted("other")))
++	nodeManager.OnNodeChange(makeNode(tweakTainted("other")))
+ 	expectedPayload = ProxyHealth{
+ 		CurrentTime: fakeClock.Now(),
+ 		LastUpdated: fakeClock.Now(),
+@@ -598,7 +614,7 @@ func TestLivezServer(t *testing.T) {
+ 	testHTTPHandler(hsTest, http.StatusOK, expectedPayload, t)
+ 
+ 	// Should return 200 "OK" irrespective of node syncs
+-	hs.SyncNode(makeNode(tweakDeleted()))
++	nodeManager.OnNodeChange(makeNode(tweakDeleted()))
+ 	expectedPayload = ProxyHealth{
+ 		CurrentTime: fakeClock.Now(),
+ 		LastUpdated: fakeClock.Now(),
+diff --git a/pkg/proxy/healthcheck/proxy_health.go b/pkg/proxy/healthcheck/proxy_health.go
+index 9eec48833a9bb..1f2fd564ddd0b 100644
+--- a/pkg/proxy/healthcheck/proxy_health.go
++++ b/pkg/proxy/healthcheck/proxy_health.go
+@@ -26,6 +26,7 @@ import (
+ 
+ 	v1 "k8s.io/api/core/v1"
+ 	"k8s.io/klog/v2"
++	"k8s.io/kubernetes/pkg/proxy"
+ 	"k8s.io/kubernetes/pkg/proxy/metrics"
+ 	"k8s.io/utils/clock"
+ 	"k8s.io/utils/ptr"
+@@ -70,34 +71,32 @@ type ProxyHealthServer struct {
+ 	httpFactory httpServerFactory
+ 	clock       clock.Clock
+ 
++	nodeManager *proxy.NodeManager
++
+ 	addr          string
+ 	healthTimeout time.Duration
+ 
+ 	lock                   sync.RWMutex
+ 	lastUpdatedMap         map[v1.IPFamily]time.Time
+ 	oldestPendingQueuedMap map[v1.IPFamily]time.Time
+-	nodeEligible           bool
+ }
+ 
+ // NewProxyHealthServer returns a proxy health http server.
+-func NewProxyHealthServer(addr string, healthTimeout time.Duration) *ProxyHealthServer {
+-	return newProxyHealthServer(stdNetListener{}, stdHTTPServerFactory{}, clock.RealClock{}, addr, healthTimeout)
++func NewProxyHealthServer(addr string, healthTimeout time.Duration, nodeManager *proxy.NodeManager) *ProxyHealthServer {
++	return newProxyHealthServer(stdNetListener{}, stdHTTPServerFactory{}, clock.RealClock{}, addr, healthTimeout, nodeManager)
+ }
+ 
+-func newProxyHealthServer(listener listener, httpServerFactory httpServerFactory, c clock.Clock, addr string, healthTimeout time.Duration) *ProxyHealthServer {
++func newProxyHealthServer(listener listener, httpServerFactory httpServerFactory, c clock.Clock, addr string, healthTimeout time.Duration, nodeManager *proxy.NodeManager) *ProxyHealthServer {
+ 	return &ProxyHealthServer{
+ 		listener:      listener,
+ 		httpFactory:   httpServerFactory,
+ 		clock:         c,
+ 		addr:          addr,
+ 		healthTimeout: healthTimeout,
++		nodeManager:   nodeManager,
+ 
+ 		lastUpdatedMap:         make(map[v1.IPFamily]time.Time),
+ 		oldestPendingQueuedMap: make(map[v1.IPFamily]time.Time),
+-		// The node is eligible (and thus the proxy healthy) while it's starting up
+-		// and until we've processed the first node event that indicates the
+-		// contrary.
+-		nodeEligible: true,
+ 	}
+ }
+ 
+@@ -172,30 +171,22 @@ func (hs *ProxyHealthServer) Health() ProxyHealth {
+ 	return health
+ }
+ 
+-// SyncNode syncs the node and determines if it is eligible or not. Eligible is
+-// defined as being: not tainted by ToBeDeletedTaint and not deleted.
+-func (hs *ProxyHealthServer) SyncNode(node *v1.Node) {
++// NodeEligible returns if node is eligible or not. Eligible is defined
++// as being: not tainted by ToBeDeletedTaint and not deleted.
++func (hs *ProxyHealthServer) NodeEligible() bool {
+ 	hs.lock.Lock()
+ 	defer hs.lock.Unlock()
+ 
++	node := hs.nodeManager.Node()
+ 	if !node.DeletionTimestamp.IsZero() {
+-		hs.nodeEligible = false
+-		return
++		return false
+ 	}
+ 	for _, taint := range node.Spec.Taints {
+ 		if taint.Key == ToBeDeletedTaint {
+-			hs.nodeEligible = false
+-			return
++			return false
+ 		}
+ 	}
+-	hs.nodeEligible = true
+-}
+-
+-// NodeEligible returns nodeEligible field of ProxyHealthServer.
+-func (hs *ProxyHealthServer) NodeEligible() bool {
+-	hs.lock.RLock()
+-	defer hs.lock.RUnlock()
+-	return hs.nodeEligible
++	return true
+ }
+ 
+ // Run starts the healthz HTTP server and blocks until it exits.
+diff --git a/pkg/proxy/iptables/proxier.go b/pkg/proxy/iptables/proxier.go
+index 4d1b257b24ca1..c599c2b001509 100644
+--- a/pkg/proxy/iptables/proxier.go
++++ b/pkg/proxy/iptables/proxier.go
+@@ -26,7 +26,6 @@ import (
+ 	"encoding/base32"
+ 	"fmt"
+ 	"net"
+-	"reflect"
+ 	"strconv"
+ 	"strings"
+ 	"sync"
+@@ -143,10 +142,10 @@ type Proxier struct {
+ 	endpointsChanges *proxy.EndpointsChangeTracker
+ 	serviceChanges   *proxy.ServiceChangeTracker
+ 
+-	mu           sync.Mutex // protects the following fields
+-	svcPortMap   proxy.ServicePortMap
+-	endpointsMap proxy.EndpointsMap
+-	nodeLabels   map[string]string
++	mu             sync.Mutex // protects the following fields
++	svcPortMap     proxy.ServicePortMap
++	endpointsMap   proxy.EndpointsMap
++	topologyLabels map[string]string
+ 	// endpointSlicesSynced, and servicesSynced are set to true
+ 	// when corresponding objects are synced after startup. This is used to avoid
+ 	// updating iptables with some partial data after kube-proxy restart.
+@@ -623,78 +622,16 @@ func (proxier *Proxier) OnEndpointSlicesSynced() {
+ 	proxier.syncProxyRules()
+ }
+ 
+-// OnNodeAdd is called whenever creation of new node object
+-// is observed.
+-func (proxier *Proxier) OnNodeAdd(node *v1.Node) {
+-	if node.Name != proxier.nodeName {
+-		proxier.logger.Error(nil, "Received a watch event for a node that doesn't match the current node",
+-			"eventNode", node.Name, "currentNode", proxier.nodeName)
+-		return
+-	}
+-
+-	if reflect.DeepEqual(proxier.nodeLabels, node.Labels) {
+-		return
+-	}
+-
++// OnTopologyChange is called whenever this node's proxy relevant topology-related labels change.
++func (proxier *Proxier) OnTopologyChange(topologyLabels map[string]string) {
+ 	proxier.mu.Lock()
+-	proxier.nodeLabels = map[string]string{}
+-	for k, v := range node.Labels {
+-		proxier.nodeLabels[k] = v
+-	}
++	proxier.topologyLabels = topologyLabels
+ 	proxier.needFullSync = true
+ 	proxier.mu.Unlock()
+-	proxier.logger.V(4).Info("Updated proxier node labels", "labels", node.Labels)
+-
++	proxier.logger.V(4).Info("Updated proxier node topology labels", "labels", topologyLabels)
+ 	proxier.Sync()
+ }
+ 
+-// OnNodeUpdate is called whenever modification of an existing
+-// node object is observed.
+-func (proxier *Proxier) OnNodeUpdate(oldNode, node *v1.Node) {
+-	if node.Name != proxier.nodeName {
+-		proxier.logger.Error(nil, "Received a watch event for a node that doesn't match the current node",
+-			"eventNode", node.Name, "currentNode", proxier.nodeName)
+-		return
+-	}
+-
+-	if reflect.DeepEqual(proxier.nodeLabels, node.Labels) {
+-		return
+-	}
+-
+-	proxier.mu.Lock()
+-	proxier.nodeLabels = map[string]string{}
+-	for k, v := range node.Labels {
+-		proxier.nodeLabels[k] = v
+-	}
+-	proxier.needFullSync = true
+-	proxier.mu.Unlock()
+-	proxier.logger.V(4).Info("Updated proxier node labels", "labels", node.Labels)
+-
+-	proxier.Sync()
+-}
+-
+-// OnNodeDelete is called whenever deletion of an existing node
+-// object is observed.
+-func (proxier *Proxier) OnNodeDelete(node *v1.Node) {
+-	if node.Name != proxier.nodeName {
+-		proxier.logger.Error(nil, "Received a watch event for a node that doesn't match the current node",
+-			"eventNode", node.Name, "currentNode", proxier.nodeName)
+-		return
+-	}
+-
+-	proxier.mu.Lock()
+-	proxier.nodeLabels = nil
+-	proxier.needFullSync = true
+-	proxier.mu.Unlock()
+-
+-	proxier.Sync()
+-}
+-
+-// OnNodeSynced is called once all the initial event handlers were
+-// called and the state is fully propagated to local cache.
+-func (proxier *Proxier) OnNodeSynced() {
+-}
+-
+ // OnServiceCIDRsChanged is called whenever a change is observed
+ // in any of the ServiceCIDRs, and provides complete list of service cidrs.
+ func (proxier *Proxier) OnServiceCIDRsChanged(_ []string) {}
+@@ -998,7 +935,7 @@ func (proxier *Proxier) syncProxyRules() (retryError error) {
+ 		// from this node, given the service's traffic policies. hasEndpoints is true
+ 		// if the service has any usable endpoints on any node, not just this one.
+ 		allEndpoints := proxier.endpointsMap[svcName]
+-		clusterEndpoints, localEndpoints, allLocallyReachableEndpoints, hasEndpoints := proxy.CategorizeEndpoints(allEndpoints, svcInfo, proxier.nodeName, proxier.nodeLabels)
++		clusterEndpoints, localEndpoints, allLocallyReachableEndpoints, hasEndpoints := proxy.CategorizeEndpoints(allEndpoints, svcInfo, proxier.nodeName, proxier.topologyLabels)
+ 
+ 		// clusterPolicyChain contains the endpoints used with "Cluster" traffic policy
+ 		clusterPolicyChain := svcInfo.clusterPolicyChainName
+diff --git a/pkg/proxy/ipvs/proxier.go b/pkg/proxy/ipvs/proxier.go
+index 82846e3c1f4ae..8fc01b2979841 100644
+--- a/pkg/proxy/ipvs/proxier.go
++++ b/pkg/proxy/ipvs/proxier.go
+@@ -27,7 +27,6 @@ import (
+ 	"io"
+ 	"net"
+ 	"os/exec"
+-	"reflect"
+ 	"strconv"
+ 	"strings"
+ 	"sync"
+@@ -171,10 +170,10 @@ type Proxier struct {
+ 	endpointsChanges *proxy.EndpointsChangeTracker
+ 	serviceChanges   *proxy.ServiceChangeTracker
+ 
+-	mu           sync.Mutex // protects the following fields
+-	svcPortMap   proxy.ServicePortMap
+-	endpointsMap proxy.EndpointsMap
+-	nodeLabels   map[string]string
++	mu             sync.Mutex // protects the following fields
++	svcPortMap     proxy.ServicePortMap
++	endpointsMap   proxy.EndpointsMap
++	topologyLabels map[string]string
+ 	// initialSync is a bool indicating if the proxier is syncing for the first time.
+ 	// It is set to true when a new proxier is initialized and then set to false on all
+ 	// future syncs.
+@@ -850,72 +849,15 @@ func (proxier *Proxier) OnEndpointSlicesSynced() {
+ 	proxier.syncProxyRules()
+ }
+ 
+-// OnNodeAdd is called whenever creation of new node object
+-// is observed.
+-func (proxier *Proxier) OnNodeAdd(node *v1.Node) {
+-	if node.Name != proxier.nodeName {
+-		proxier.logger.Error(nil, "Received a watch event for a node that doesn't match the current node", "eventNode", node.Name, "currentNode", proxier.nodeName)
+-		return
+-	}
+-
+-	if reflect.DeepEqual(proxier.nodeLabels, node.Labels) {
+-		return
+-	}
+-
++// OnTopologyChange is called whenever this node's proxy relevant topology-related labels change.
++func (proxier *Proxier) OnTopologyChange(topologyLabels map[string]string) {
+ 	proxier.mu.Lock()
+-	proxier.nodeLabels = map[string]string{}
+-	for k, v := range node.Labels {
+-		proxier.nodeLabels[k] = v
+-	}
++	proxier.topologyLabels = topologyLabels
+ 	proxier.mu.Unlock()
+-	proxier.logger.V(4).Info("Updated proxier node labels", "labels", node.Labels)
+-
++	proxier.logger.V(4).Info("Updated proxier node topology labels", "labels", topologyLabels)
+ 	proxier.Sync()
+ }
+ 
+-// OnNodeUpdate is called whenever modification of an existing
+-// node object is observed.
+-func (proxier *Proxier) OnNodeUpdate(oldNode, node *v1.Node) {
+-	if node.Name != proxier.nodeName {
+-		proxier.logger.Error(nil, "Received a watch event for a node that doesn't match the current node", "eventNode", node.Name, "currentNode", proxier.nodeName)
+-		return
+-	}
+-
+-	if reflect.DeepEqual(proxier.nodeLabels, node.Labels) {
+-		return
+-	}
+-
+-	proxier.mu.Lock()
+-	proxier.nodeLabels = map[string]string{}
+-	for k, v := range node.Labels {
+-		proxier.nodeLabels[k] = v
+-	}
+-	proxier.mu.Unlock()
+-	proxier.logger.V(4).Info("Updated proxier node labels", "labels", node.Labels)
+-
+-	proxier.Sync()
+-}
+-
+-// OnNodeDelete is called whenever deletion of an existing node
+-// object is observed.
+-func (proxier *Proxier) OnNodeDelete(node *v1.Node) {
+-	if node.Name != proxier.nodeName {
+-		proxier.logger.Error(nil, "Received a watch event for a node that doesn't match the current node", "eventNode", node.Name, "currentNode", proxier.nodeName)
+-		return
+-	}
+-
+-	proxier.mu.Lock()
+-	proxier.nodeLabels = nil
+-	proxier.mu.Unlock()
+-
+-	proxier.Sync()
+-}
+-
+-// OnNodeSynced is called once all the initial event handlers were
+-// called and the state is fully propagated to local cache.
+-func (proxier *Proxier) OnNodeSynced() {
+-}
+-
+ // OnServiceCIDRsChanged is called whenever a change is observed
+ // in any of the ServiceCIDRs, and provides complete list of service cidrs.
+ func (proxier *Proxier) OnServiceCIDRsChanged(_ []string) {}
+@@ -1871,7 +1813,7 @@ func (proxier *Proxier) syncEndpoint(svcPortName proxy.ServicePortName, onlyNode
+ 	if !ok {
+ 		proxier.logger.Info("Unable to filter endpoints due to missing service info", "servicePortName", svcPortName)
+ 	} else {
+-		clusterEndpoints, localEndpoints, _, hasAnyEndpoints := proxy.CategorizeEndpoints(endpoints, svcInfo, proxier.nodeName, proxier.nodeLabels)
++		clusterEndpoints, localEndpoints, _, hasAnyEndpoints := proxy.CategorizeEndpoints(endpoints, svcInfo, proxier.nodeName, proxier.topologyLabels)
+ 		if onlyNodeLocalEndpoints {
+ 			if len(localEndpoints) > 0 {
+ 				endpoints = localEndpoints
+diff --git a/pkg/proxy/kubemark/hollow_proxy.go b/pkg/proxy/kubemark/hollow_proxy.go
+index 36bdcf6f6c411..34fdc94896c32 100644
+--- a/pkg/proxy/kubemark/hollow_proxy.go
++++ b/pkg/proxy/kubemark/hollow_proxy.go
+@@ -30,7 +30,6 @@ import (
+ 	"k8s.io/client-go/tools/events"
+ 	proxyapp "k8s.io/kubernetes/cmd/kube-proxy/app"
+ 	proxyconfigapi "k8s.io/kubernetes/pkg/proxy/apis/config"
+-	proxyconfig "k8s.io/kubernetes/pkg/proxy/config"
+ 	"k8s.io/utils/ptr"
+ )
+ 
+@@ -38,9 +37,7 @@ type HollowProxy struct {
+ 	ProxyServer *proxyapp.ProxyServer
+ }
+ 
+-type FakeProxier struct {
+-	proxyconfig.NoopNodeHandler
+-}
++type FakeProxier struct{}
+ 
+ func (*FakeProxier) Sync() {}
+ func (*FakeProxier) SyncLoop() {
+@@ -55,6 +52,7 @@ func (*FakeProxier) OnEndpointSliceUpdate(oldSlice, slice *discoveryv1.EndpointS
+ func (*FakeProxier) OnEndpointSliceDelete(slice *discoveryv1.EndpointSlice)           {}
+ func (*FakeProxier) OnEndpointSlicesSynced()                                          {}
+ func (*FakeProxier) OnServiceCIDRsChanged(_ []string)                                 {}
++func (*FakeProxier) OnTopologyChange(_ map[string]string)                             {}
+ 
+ func NewHollowProxy(
+ 	nodeName string,
+diff --git a/pkg/proxy/metaproxier/meta_proxier.go b/pkg/proxy/metaproxier/meta_proxier.go
+index df56bd8f8a6f9..1df3e9ddb8649 100644
+--- a/pkg/proxy/metaproxier/meta_proxier.go
++++ b/pkg/proxy/metaproxier/meta_proxier.go
+@@ -128,32 +128,10 @@ func (proxier *metaProxier) OnEndpointSlicesSynced() {
+ 	proxier.ipv6Proxier.OnEndpointSlicesSynced()
+ }
+ 
+-// OnNodeAdd is called whenever creation of new node object is observed.
+-func (proxier *metaProxier) OnNodeAdd(node *v1.Node) {
+-	proxier.ipv4Proxier.OnNodeAdd(node)
+-	proxier.ipv6Proxier.OnNodeAdd(node)
+-}
+-
+-// OnNodeUpdate is called whenever modification of an existing
+-// node object is observed.
+-func (proxier *metaProxier) OnNodeUpdate(oldNode, node *v1.Node) {
+-	proxier.ipv4Proxier.OnNodeUpdate(oldNode, node)
+-	proxier.ipv6Proxier.OnNodeUpdate(oldNode, node)
+-}
+-
+-// OnNodeDelete is called whenever deletion of an existing node
+-// object is observed.
+-func (proxier *metaProxier) OnNodeDelete(node *v1.Node) {
+-	proxier.ipv4Proxier.OnNodeDelete(node)
+-	proxier.ipv6Proxier.OnNodeDelete(node)
+-
+-}
+-
+-// OnNodeSynced is called once all the initial event handlers were
+-// called and the state is fully propagated to local cache.
+-func (proxier *metaProxier) OnNodeSynced() {
+-	proxier.ipv4Proxier.OnNodeSynced()
+-	proxier.ipv6Proxier.OnNodeSynced()
++// OnTopologyChange is called whenever change in proxy relevant topology labels is observed.
++func (proxier *metaProxier) OnTopologyChange(topologyLabels map[string]string) {
++	proxier.ipv4Proxier.OnTopologyChange(topologyLabels)
++	proxier.ipv6Proxier.OnTopologyChange(topologyLabels)
+ }
+ 
+ // OnServiceCIDRsChanged is called whenever a change is observed
+diff --git a/pkg/proxy/nftables/proxier.go b/pkg/proxy/nftables/proxier.go
+index 6b9ff52d43ca6..4f88ec0cf266f 100644
+--- a/pkg/proxy/nftables/proxier.go
++++ b/pkg/proxy/nftables/proxier.go
+@@ -27,7 +27,6 @@ import (
+ 	"net"
+ 	"os"
+ 	"os/exec"
+-	"reflect"
+ 	"strconv"
+ 	"strings"
+ 	"sync"
+@@ -151,10 +150,10 @@ type Proxier struct {
+ 	endpointsChanges *proxy.EndpointsChangeTracker
+ 	serviceChanges   *proxy.ServiceChangeTracker
+ 
+-	mu           sync.Mutex // protects the following fields
+-	svcPortMap   proxy.ServicePortMap
+-	endpointsMap proxy.EndpointsMap
+-	nodeLabels   map[string]string
++	mu             sync.Mutex // protects the following fields
++	svcPortMap     proxy.ServicePortMap
++	endpointsMap   proxy.EndpointsMap
++	topologyLabels map[string]string
+ 	// endpointSlicesSynced, and servicesSynced are set to true
+ 	// when corresponding objects are synced after startup. This is used to avoid
+ 	// updating nftables with some partial data after kube-proxy restart.
+@@ -841,78 +840,16 @@ func (proxier *Proxier) OnEndpointSlicesSynced() {
+ 	proxier.syncProxyRules()
+ }
+ 
+-// OnNodeAdd is called whenever creation of new node object
+-// is observed.
+-func (proxier *Proxier) OnNodeAdd(node *v1.Node) {
+-	if node.Name != proxier.nodeName {
+-		proxier.logger.Error(nil, "Received a watch event for a node that doesn't match the current node",
+-			"eventNode", node.Name, "currentNode", proxier.nodeName)
+-		return
+-	}
+-
+-	if reflect.DeepEqual(proxier.nodeLabels, node.Labels) {
+-		return
+-	}
+-
++// OnTopologyChange is called whenever this node's proxy relevant topology-related labels change.
++func (proxier *Proxier) OnTopologyChange(topologyLabels map[string]string) {
+ 	proxier.mu.Lock()
+-	proxier.nodeLabels = map[string]string{}
+-	for k, v := range node.Labels {
+-		proxier.nodeLabels[k] = v
+-	}
++	proxier.topologyLabels = topologyLabels
+ 	proxier.needFullSync = true
+ 	proxier.mu.Unlock()
+-	proxier.logger.V(4).Info("Updated proxier node labels", "labels", node.Labels)
+-
++	proxier.logger.V(4).Info("Updated proxier node topology labels", "labels", topologyLabels)
+ 	proxier.Sync()
+ }
+ 
+-// OnNodeUpdate is called whenever modification of an existing
+-// node object is observed.
+-func (proxier *Proxier) OnNodeUpdate(oldNode, node *v1.Node) {
+-	if node.Name != proxier.nodeName {
+-		proxier.logger.Error(nil, "Received a watch event for a node that doesn't match the current node",
+-			"eventNode", node.Name, "currentNode", proxier.nodeName)
+-		return
+-	}
+-
+-	if reflect.DeepEqual(proxier.nodeLabels, node.Labels) {
+-		return
+-	}
+-
+-	proxier.mu.Lock()
+-	proxier.nodeLabels = map[string]string{}
+-	for k, v := range node.Labels {
+-		proxier.nodeLabels[k] = v
+-	}
+-	proxier.needFullSync = true
+-	proxier.mu.Unlock()
+-	proxier.logger.V(4).Info("Updated proxier node labels", "labels", node.Labels)
+-
+-	proxier.Sync()
+-}
+-
+-// OnNodeDelete is called whenever deletion of an existing node
+-// object is observed.
+-func (proxier *Proxier) OnNodeDelete(node *v1.Node) {
+-	if node.Name != proxier.nodeName {
+-		proxier.logger.Error(nil, "Received a watch event for a node that doesn't match the current node",
+-			"eventNode", node.Name, "currentNode", proxier.nodeName)
+-		return
+-	}
+-
+-	proxier.mu.Lock()
+-	proxier.nodeLabels = nil
+-	proxier.needFullSync = true
+-	proxier.mu.Unlock()
+-
+-	proxier.Sync()
+-}
+-
+-// OnNodeSynced is called once all the initial event handlers were
+-// called and the state is fully propagated to local cache.
+-func (proxier *Proxier) OnNodeSynced() {
+-}
+-
+ // OnServiceCIDRsChanged is called whenever a change is observed
+ // in any of the ServiceCIDRs, and provides complete list of service cidrs.
+ func (proxier *Proxier) OnServiceCIDRsChanged(cidrs []string) {
+@@ -1312,7 +1249,7 @@ func (proxier *Proxier) syncProxyRules() (retryError error) {
+ 		// from this node, given the service's traffic policies. hasEndpoints is true
+ 		// if the service has any usable endpoints on any node, not just this one.
+ 		allEndpoints := proxier.endpointsMap[svcName]
+-		clusterEndpoints, localEndpoints, allLocallyReachableEndpoints, hasEndpoints := proxy.CategorizeEndpoints(allEndpoints, svcInfo, proxier.nodeName, proxier.nodeLabels)
++		clusterEndpoints, localEndpoints, allLocallyReachableEndpoints, hasEndpoints := proxy.CategorizeEndpoints(allEndpoints, svcInfo, proxier.nodeName, proxier.topologyLabels)
+ 
+ 		// skipServiceUpdate is used for all service-related chains and their elements.
+ 		// If no changes were done to the service or its endpoints, these objects may be skipped.
+diff --git a/pkg/proxy/node.go b/pkg/proxy/node.go
+index db92508fb4b0f..21ad919616d1b 100644
+--- a/pkg/proxy/node.go
++++ b/pkg/proxy/node.go
+@@ -18,94 +18,173 @@ package proxy
+ 
+ import (
+ 	"context"
++	"fmt"
++	"net"
++	"os"
+ 	"reflect"
+ 	"sync"
++	"time"
+ 
+ 	v1 "k8s.io/api/core/v1"
++	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
++	"k8s.io/apimachinery/pkg/fields"
++	"k8s.io/apimachinery/pkg/util/wait"
++	"k8s.io/client-go/informers"
++	v1informers "k8s.io/client-go/informers/core/v1"
++	clientset "k8s.io/client-go/kubernetes"
++	corelisters "k8s.io/client-go/listers/core/v1"
++	"k8s.io/client-go/tools/cache"
+ 	"k8s.io/klog/v2"
+-	"k8s.io/kubernetes/pkg/proxy/config"
+-	"k8s.io/kubernetes/pkg/proxy/healthcheck"
++	utilnode "k8s.io/kubernetes/pkg/util/node"
+ )
+ 
+-// NodePodCIDRHandler handles the life cycle of kube-proxy based on the node PodCIDR assigned
+-// Implements the config.NodeHandler interface
+-// https://issues.k8s.io/111321
+-type NodePodCIDRHandler struct {
+-	mu       sync.Mutex
+-	podCIDRs []string
+-	logger   klog.Logger
++// NodeManager handles the life cycle of kube-proxy based on the NodeIPs and PodCIDRs handles
++// node watch events and crashes kube-proxy if there are any changes in NodeIPs or PodCIDRs.
++// Note: It only crashes on change on PodCIDR when watchPodCIDRs is set to true.
++type NodeManager struct {
++	mu            sync.Mutex
++	node          *v1.Node
++	nodeInformer  v1informers.NodeInformer
++	nodeLister    corelisters.NodeLister
++	watchPodCIDRs bool
++	exitFunc      func(exitCode int)
+ }
+ 
+-func NewNodePodCIDRHandler(ctx context.Context, podCIDRs []string) *NodePodCIDRHandler {
+-	return &NodePodCIDRHandler{
+-		podCIDRs: podCIDRs,
+-		logger:   klog.FromContext(ctx),
++// NewNodeManager initializes node informer that selects for the given node, waits for cache
++// sync and returns NodeManager after waiting for the node object to exist and have NodeIPs
++// and PodCIDRs (if watchPodCIDRs is enabled).
++func NewNodeManager(ctx context.Context, client clientset.Interface,
++	resyncInterval time.Duration, nodeName string, watchPodCIDRs bool,
++) (*NodeManager, error) {
++	// we wait for at most 5 minutes for allocators to assign a PodCIDR to the node after it is registered.
++	return newNodeManager(ctx, client, resyncInterval, nodeName, watchPodCIDRs, os.Exit, time.Second, 5*time.Minute)
++}
++
++// newNodeManager implements NewNodeManager with configurable exit function, poll interval and timeout.
++func newNodeManager(ctx context.Context, client clientset.Interface, resyncInterval time.Duration,
++	nodeName string, watchPodCIDRs bool, exitFunc func(int), pollInterval, pollTimeout time.Duration,
++) (*NodeManager, error) {
++	// make an informer that selects for the given node
++	thisNodeInformerFactory := informers.NewSharedInformerFactoryWithOptions(client, resyncInterval,
++		informers.WithTweakListOptions(func(options *metav1.ListOptions) {
++			options.FieldSelector = fields.OneTermEqualSelector("metadata.name", nodeName).String()
++		}))
++	nodeInformer := thisNodeInformerFactory.Core().V1().Nodes()
++	nodeLister := nodeInformer.Lister()
++
++	// initialize the informer and wait for cache sync
++	thisNodeInformerFactory.Start(wait.NeverStop)
++	if !cache.WaitForNamedCacheSync("node informer cache", ctx.Done(), nodeInformer.Informer().HasSynced) {
++		return nil, fmt.Errorf("can not sync node informer")
++	}
++
++	var node *v1.Node
++	var err error
++
++	// wait for the node object to exist and have NodeIPs and PodCIDRs
++	ctx, cancel := context.WithTimeout(ctx, pollTimeout)
++	defer cancel()
++	pollErr := wait.PollUntilContextCancel(ctx, pollInterval, true, func(context.Context) (bool, error) {
++		node, err = nodeLister.Get(nodeName)
++		if err != nil {
++			return false, nil
++		}
++
++		_, err = utilnode.GetNodeHostIPs(node)
++		if err != nil {
++			return false, nil
++		}
++
++		// we only wait for PodCIDRs if NodeManager is configured with watchPodCIDRs
++		if watchPodCIDRs && len(node.Spec.PodCIDRs) == 0 {
++			err = fmt.Errorf("node %q does not have any PodCIDR allocated", nodeName)
++			return false, nil
++		}
++		return true, nil
++	})
++
++	// we return the actual error in case of poll timeout
++	if pollErr != nil {
++		return nil, err
+ 	}
++	return &NodeManager{
++		nodeInformer:  nodeInformer,
++		nodeLister:    nodeLister,
++		node:          node,
++		watchPodCIDRs: watchPodCIDRs,
++		exitFunc:      exitFunc,
++	}, nil
+ }
+ 
+-var _ config.NodeHandler = &NodePodCIDRHandler{}
++// NodeIPs returns the NodeIPs polled in NewNodeManager().
++func (n *NodeManager) NodeIPs() []net.IP {
++	n.mu.Lock()
++	defer n.mu.Unlock()
++	nodeIPs, _ := utilnode.GetNodeHostIPs(n.node)
++	return nodeIPs
++}
+ 
+-// OnNodeAdd is a handler for Node creates.
+-func (n *NodePodCIDRHandler) OnNodeAdd(node *v1.Node) {
++// PodCIDRs returns the PodCIDRs polled in NewNodeManager().
++func (n *NodeManager) PodCIDRs() []string {
+ 	n.mu.Lock()
+ 	defer n.mu.Unlock()
++	return n.node.Spec.PodCIDRs
++}
+ 
+-	podCIDRs := node.Spec.PodCIDRs
+-	// initialize podCIDRs
+-	if len(n.podCIDRs) == 0 && len(podCIDRs) > 0 {
+-		n.logger.Info("Setting current PodCIDRs", "podCIDRs", podCIDRs)
+-		n.podCIDRs = podCIDRs
+-		return
+-	}
+-	if !reflect.DeepEqual(n.podCIDRs, podCIDRs) {
+-		n.logger.Error(nil, "Using NodeCIDR LocalDetector mode, current PodCIDRs are different than previous PodCIDRs, restarting",
+-			"node", klog.KObj(node), "newPodCIDRs", podCIDRs, "oldPodCIDRs", n.podCIDRs)
+-		klog.FlushAndExit(klog.ExitFlushTimeout, 1)
+-	}
++// NodeInformer returns the NodeInformer.
++func (n *NodeManager) NodeInformer() v1informers.NodeInformer {
++	return n.nodeInformer
+ }
+ 
+-// OnNodeUpdate is a handler for Node updates.
+-func (n *NodePodCIDRHandler) OnNodeUpdate(_, node *v1.Node) {
++// OnNodeChange is a handler for Node creation and update.
++func (n *NodeManager) OnNodeChange(node *v1.Node) {
++	// update the node object
+ 	n.mu.Lock()
+-	defer n.mu.Unlock()
+-	podCIDRs := node.Spec.PodCIDRs
+-	// initialize podCIDRs
+-	if len(n.podCIDRs) == 0 && len(podCIDRs) > 0 {
+-		n.logger.Info("Setting current PodCIDRs", "podCIDRs", podCIDRs)
+-		n.podCIDRs = podCIDRs
++	oldNodeIPs, _ := utilnode.GetNodeHostIPs(n.node)
++	oldPodCIDRs := n.node.Spec.PodCIDRs
++	n.node = node
++	n.mu.Unlock()
++
++	// We exit whenever there is a change in PodCIDRs detected initially, and PodCIDRs received
++	// on node watch event if the node manager is configured with watchPodCIDRs.
++	if n.watchPodCIDRs {
++		if !reflect.DeepEqual(oldPodCIDRs, node.Spec.PodCIDRs) {
++			klog.InfoS("PodCIDRs changed for the node",
++				"node", klog.KObj(node), "newPodCIDRs", node.Spec.PodCIDRs, "oldPodCIDRs", oldPodCIDRs)
++			klog.Flush()
++			n.exitFunc(1)
++		}
++	}
++
++	nodeIPs, err := utilnode.GetNodeHostIPs(node)
++	if err != nil {
++		klog.ErrorS(err, "Failed to retrieve NodeIPs")
+ 		return
+ 	}
+-	if !reflect.DeepEqual(n.podCIDRs, podCIDRs) {
+-		n.logger.Error(nil, "Using NodeCIDR LocalDetector mode, current PodCIDRs are different than previous PodCIDRs, restarting",
+-			"node", klog.KObj(node), "newPodCIDRs", podCIDRs, "oldPODCIDRs", n.podCIDRs)
+-		klog.FlushAndExit(klog.ExitFlushTimeout, 1)
++
++	// We exit whenever there is a change in NodeIPs detected initially, and NodeIPs received
++	// on node watch event.
++	if !reflect.DeepEqual(oldNodeIPs, nodeIPs) {
++		klog.InfoS("NodeIPs changed for the node",
++			"node", klog.KObj(node), "newNodeIPs", nodeIPs, "oldNodeIPs", oldNodeIPs)
++		klog.Flush()
++		n.exitFunc(1)
+ 	}
+ }
+ 
+ // OnNodeDelete is a handler for Node deletes.
+-func (n *NodePodCIDRHandler) OnNodeDelete(node *v1.Node) {
+-	n.logger.Error(nil, "Current Node is being deleted", "node", klog.KObj(node))
++func (n *NodeManager) OnNodeDelete(node *v1.Node) {
++	klog.InfoS("Node is being deleted", "node", klog.KObj(node))
++	klog.Flush()
++	n.exitFunc(1)
+ }
+ 
+-// OnNodeSynced is a handler for Node syncs.
+-func (n *NodePodCIDRHandler) OnNodeSynced() {}
++// OnNodeSynced is called after the cache is synced and all pre-existing Nodes have been reported
++func (n *NodeManager) OnNodeSynced() {}
+ 
+-// NodeEligibleHandler handles the life cycle of the Node's eligibility, as
+-// determined by the health server for directing load balancer traffic.
+-type NodeEligibleHandler struct {
+-	HealthServer *healthcheck.ProxyHealthServer
++// Node returns the deep copy of the latest node object.
++func (n *NodeManager) Node() *v1.Node {
++	n.mu.Lock()
++	defer n.mu.Unlock()
++	return n.node.DeepCopy()
+ }
+-
+-var _ config.NodeHandler = &NodeEligibleHandler{}
+-
+-// OnNodeAdd is a handler for Node creates.
+-func (n *NodeEligibleHandler) OnNodeAdd(node *v1.Node) { n.HealthServer.SyncNode(node) }
+-
+-// OnNodeUpdate is a handler for Node updates.
+-func (n *NodeEligibleHandler) OnNodeUpdate(_, node *v1.Node) { n.HealthServer.SyncNode(node) }
+-
+-// OnNodeDelete is a handler for Node deletes.
+-func (n *NodeEligibleHandler) OnNodeDelete(node *v1.Node) { n.HealthServer.SyncNode(node) }
+-
+-// OnNodeSynced is a handler for Node syncs.
+-func (n *NodeEligibleHandler) OnNodeSynced() {}
+diff --git a/pkg/proxy/node_test.go b/pkg/proxy/node_test.go
+index a0fc5a9e20921..b3cb919f3a047 100644
+--- a/pkg/proxy/node_test.go
++++ b/pkg/proxy/node_test.go
+@@ -17,135 +17,311 @@ limitations under the License.
+ package proxy
+ 
+ import (
+-	"strconv"
++	"context"
++	"net"
+ 	"testing"
++	"time"
++
++	"github.com/stretchr/testify/require"
+ 
+ 	v1 "k8s.io/api/core/v1"
+ 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+-	"k8s.io/klog/v2"
++	clientset "k8s.io/client-go/kubernetes"
++	clientsetfake "k8s.io/client-go/kubernetes/fake"
++	"k8s.io/kubernetes/test/utils/ktesting"
++	netutils "k8s.io/utils/net"
++	"k8s.io/utils/ptr"
+ )
+ 
+-func TestNodePodCIDRHandlerAdd(t *testing.T) {
+-	oldKlogOsExit := klog.OsExit
+-	defer func() {
+-		klog.OsExit = oldKlogOsExit
+-	}()
+-	klog.OsExit = customExit
++const (
++	testNodeName = "test-node"
++)
+ 
+-	tests := []struct {
+-		name            string
+-		oldNodePodCIDRs []string
+-		newNodePodCIDRs []string
+-		expectPanic     bool
++type nodeTweak func(n *v1.Node)
++
++func makeNode(tweaks ...nodeTweak) *v1.Node {
++	n := &v1.Node{
++		ObjectMeta: metav1.ObjectMeta{
++			Name: testNodeName,
++		},
++	}
++	for _, tw := range tweaks {
++		tw(n)
++	}
++	return n
++}
++
++func tweakNodeIPs(nodeIPs ...string) nodeTweak {
++	return func(n *v1.Node) {
++		for _, ip := range nodeIPs {
++			n.Status.Addresses = append(n.Status.Addresses, v1.NodeAddress{Type: v1.NodeInternalIP, Address: ip})
++		}
++	}
++}
++
++func tweakPodCIDRs(podCIDRs ...string) nodeTweak {
++	return func(n *v1.Node) {
++		n.Spec.PodCIDRs = append(n.Spec.PodCIDRs, podCIDRs...)
++	}
++}
++
++func tweakResourceVersion(resourceVersion string) nodeTweak {
++	return func(n *v1.Node) {
++		n.ResourceVersion = resourceVersion
++	}
++}
++
++func TestNewNodeManager(t *testing.T) {
++	testCases := []struct {
++		name             string
++		watchPodCIDRs    bool
++		nodeUpdates      []func(context.Context, clientset.Interface)
++		expectedNodeIPs  []net.IP
++		expectedPodCIDRs []string
++		expectedError    string
+ 	}{
+ 		{
+-			name: "both empty",
++			name: "node object doesn't exist",
++			// assert on error thrown by node lister
++			expectedError: "node \"test-node\" not found",
+ 		},
+ 		{
+-			name:            "initialized correctly",
+-			newNodePodCIDRs: []string{"192.168.1.0/24", "fd00:1:2:3::/64"},
++			name: "node object exist without NodeIP",
++			nodeUpdates: []func(ctx context.Context, client clientset.Interface){
++				func(ctx context.Context, client clientset.Interface) {
++					// node object doesn't exist initially
++				},
++
++				func(ctx context.Context, client clientset.Interface) {
++					// node object now exists but without NodeIP
++					_, _ = client.CoreV1().Nodes().Create(ctx, makeNode(), metav1.CreateOptions{})
++				},
++			},
++			// assert on error thrown by GetNodeHostIPs()
++			expectedError: "host IP unknown; known addresses: []",
+ 		},
+ 		{
+-			name:            "already initialized and same node",
+-			oldNodePodCIDRs: []string{"10.0.0.0/24", "fd00:3:2:1::/64"},
+-			newNodePodCIDRs: []string{"10.0.0.0/24", "fd00:3:2:1::/64"},
++			name: "node object exist with NodeIP",
++			nodeUpdates: []func(ctx context.Context, client clientset.Interface){
++				func(ctx context.Context, client clientset.Interface) {
++					// node object doesn't exist initially
++				},
++
++				func(ctx context.Context, client clientset.Interface) {
++					// node object now exists but without NodeIP
++					_, _ = client.CoreV1().Nodes().Create(ctx, makeNode(), metav1.CreateOptions{})
++				},
++
++				func(ctx context.Context, client clientset.Interface) {
++					// node object got updated with NodeIPs
++					_, _ = client.CoreV1().Nodes().Update(ctx, makeNode(
++						tweakNodeIPs("192.168.1.10"),
++					), metav1.UpdateOptions{})
++				},
++			},
++			expectedNodeIPs: []net.IP{netutils.ParseIPSloppy("192.168.1.10")},
+ 		},
+ 		{
+-			name:            "already initialized and different node",
+-			oldNodePodCIDRs: []string{"192.168.1.0/24", "fd00:1:2:3::/64"},
+-			newNodePodCIDRs: []string{"10.0.0.0/24", "fd00:3:2:1::/64"},
+-			expectPanic:     true,
++			name:          "watchPodCIDRs and node object exist without PodCIDRs",
++			watchPodCIDRs: true,
++			nodeUpdates: []func(ctx context.Context, client clientset.Interface){
++				func(ctx context.Context, client clientset.Interface) {
++					// node object doesn't exist initially
++				},
++
++				func(ctx context.Context, client clientset.Interface) {
++					// node object now exists but without NodeIP
++					_, _ = client.CoreV1().Nodes().Create(ctx, makeNode(), metav1.CreateOptions{})
++				},
++				func(ctx context.Context, client clientset.Interface) {
++					// node object got updated with NodeIPs
++					_, _ = client.CoreV1().Nodes().Update(ctx, makeNode(
++						tweakNodeIPs("192.168.1.10"),
++					), metav1.UpdateOptions{})
++				},
++			},
++			// assert on error thrown by newNodeManager()
++			expectedError: "node \"test-node\" does not have any PodCIDR allocated",
+ 		},
+-	}
+-	for _, tt := range tests {
+-		t.Run(tt.name, func(t *testing.T) {
+-			n := &NodePodCIDRHandler{
+-				podCIDRs: tt.oldNodePodCIDRs,
+-			}
+-			node := &v1.Node{
+-				ObjectMeta: metav1.ObjectMeta{
+-					Name:            "test-node",
+-					ResourceVersion: "1",
++		{
++			name:          "watchPodCIDRs and node object exist with NodeIP and PodCIDR",
++			watchPodCIDRs: true,
++			nodeUpdates: []func(ctx context.Context, client clientset.Interface){
++				func(ctx context.Context, client clientset.Interface) {
++					// node object doesn't exist initially
+ 				},
+-				Spec: v1.NodeSpec{
+-					PodCIDRs: tt.newNodePodCIDRs,
++
++				func(ctx context.Context, client clientset.Interface) {
++					// node object now exists but without NodeIP
++					_, _ = client.CoreV1().Nodes().Create(ctx, makeNode(), metav1.CreateOptions{})
+ 				},
+-			}
+-			defer func() {
+-				r := recover()
+-				if r == nil && tt.expectPanic {
+-					t.Errorf("The code did not panic")
+-				} else if r != nil && !tt.expectPanic {
+-					t.Errorf("The code did panic")
++
++				func(ctx context.Context, client clientset.Interface) {
++					// node object got updated with NodeIPs
++					_, _ = client.CoreV1().Nodes().Update(ctx, makeNode(
++						tweakNodeIPs("192.168.1.10"),
++					), metav1.UpdateOptions{})
++				},
++				func(ctx context.Context, client clientset.Interface) {
++					// node updated with PodCIDRs
++					_, _ = client.CoreV1().Nodes().Update(ctx, makeNode(
++						tweakNodeIPs("192.168.1.1"),
++						tweakPodCIDRs("10.0.0.0/24"),
++					), metav1.UpdateOptions{})
++				},
++			},
++			expectedNodeIPs:  []net.IP{netutils.ParseIPSloppy("192.168.1.1")},
++			expectedPodCIDRs: []string{"10.0.0.0/24"},
++		},
++		{
++			name:          "watchPodCIDRs and node object exist without NodeIP and with PodCIDR",
++			watchPodCIDRs: true,
++			nodeUpdates: []func(ctx context.Context, client clientset.Interface){
++				func(ctx context.Context, client clientset.Interface) {
++					// node object doesn't exist initially
++				},
++
++				func(ctx context.Context, client clientset.Interface) {
++					// node object now exists but without NodeIP
++					_, _ = client.CoreV1().Nodes().Create(ctx, makeNode(), metav1.CreateOptions{})
++				},
++				func(ctx context.Context, client clientset.Interface) {
++					// node updated with PodCIDRs
++					_, _ = client.CoreV1().Nodes().Update(ctx, makeNode(
++						tweakPodCIDRs("10.0.0.0/24"),
++					), metav1.UpdateOptions{})
++				},
++			},
++			// assert on error thrown by GetNodeHostIPs()
++			expectedError: "host IP unknown; known addresses: []",
++		},
++	}
++
++	for _, tc := range testCases {
++		t.Run(tc.name, func(t *testing.T) {
++			_, ctx := ktesting.NewTestContext(t)
++			client := clientsetfake.NewClientset()
++
++			// call the node update functions in go routine, we add 15ms sleep in between
++			// each update function to wait for the 10ms poll interval to finish
++			go func() {
++				// wait for node manager setup
++				time.Sleep(100 * time.Millisecond)
++
++				for _, update := range tc.nodeUpdates {
++					update(ctx, client)
++					// wait for 15 ms for 10ms poll interval to finish
++					time.Sleep(15 * time.Millisecond)
+ 				}
+ 			}()
+-
+-			n.OnNodeAdd(node)
++			// initialize the node manager with 10ms poll interval and 1s poll timeout
++			nodeManager, err := newNodeManager(ctx, client, time.Second, testNodeName, tc.watchPodCIDRs, func(i int) {}, 10*time.Millisecond, time.Second)
++			if len(tc.expectedError) > 0 {
++				require.Nil(t, nodeManager)
++				require.ErrorContains(t, err, tc.expectedError)
++			} else {
++				require.NoError(t, err)
++				require.Equal(t, tc.expectedNodeIPs, nodeManager.NodeIPs())
++				require.Equal(t, tc.expectedPodCIDRs, nodeManager.PodCIDRs())
++			}
+ 		})
+ 	}
+ }
+ 
+-func TestNodePodCIDRHandlerUpdate(t *testing.T) {
+-	oldKlogOsExit := klog.OsExit
+-	defer func() {
+-		klog.OsExit = oldKlogOsExit
+-	}()
+-	klog.OsExit = customExit
+-
++func TestNodeManagerOnNodeChange(t *testing.T) {
+ 	tests := []struct {
+-		name            string
+-		oldNodePodCIDRs []string
+-		newNodePodCIDRs []string
+-		expectPanic     bool
++		name             string
++		initialNodeIPs   []string
++		initialPodCIDRs  []string
++		updatedNodeIPs   []string
++		updatedPodCIDRs  []string
++		watchPodCIDRs    bool
++		expectedExitCode *int
+ 	}{
+ 		{
+-			name: "both empty",
++			name:             "node updated with same NodeIPs",
++			initialNodeIPs:   []string{"192.168.1.1", "fd00:1:2:3::1"},
++			updatedNodeIPs:   []string{"192.168.1.1", "fd00:1:2:3::1"},
++			expectedExitCode: nil,
+ 		},
+ 		{
+-			name:            "initialize",
+-			newNodePodCIDRs: []string{"192.168.1.0/24", "fd00:1:2:3::/64"},
++			name:             "node updated with different NodeIPs",
++			initialNodeIPs:   []string{"192.168.1.1", "fd00:1:2:3::1"},
++			updatedNodeIPs:   []string{"10.0.1.1", "fd00:3:2:1::2"},
++			expectedExitCode: ptr.To(1),
+ 		},
+ 		{
+-			name:            "same node",
+-			oldNodePodCIDRs: []string{"192.168.1.0/24", "fd00:1:2:3::/64"},
+-			newNodePodCIDRs: []string{"192.168.1.0/24", "fd00:1:2:3::/64"},
++			name:             "watchPodCIDR and node updated with same PodCIDRs",
++			initialNodeIPs:   []string{"192.168.1.1", "fd00:1:2:3::1"},
++			initialPodCIDRs:  []string{"10.0.0.0/8", "fd01:2345::/64"},
++			updatedNodeIPs:   []string{"192.168.1.1", "fd00:1:2:3::1"},
++			updatedPodCIDRs:  []string{"10.0.0.0/8", "fd01:2345::/64"},
++			watchPodCIDRs:    true,
++			expectedExitCode: nil,
+ 		},
+ 		{
+-			name:            "different nodes",
+-			oldNodePodCIDRs: []string{"192.168.1.0/24", "fd00:1:2:3::/64"},
+-			newNodePodCIDRs: []string{"10.0.0.0/24", "fd00:3:2:1::/64"},
+-			expectPanic:     true,
++			name:             "watchPodCIDR and node updated with different PodCIDRs",
++			initialNodeIPs:   []string{"192.168.1.1", "fd00:1:2:3::1"},
++			initialPodCIDRs:  []string{"10.0.0.0/8", "fd01:2345::/64"},
++			updatedNodeIPs:   []string{"192.168.1.1", "fd00:1:2:3::1"},
++			updatedPodCIDRs:  []string{"172.16.10.0/24", "fd01:5422::/64"},
++			watchPodCIDRs:    true,
++			expectedExitCode: ptr.To(1),
+ 		},
+ 	}
+-	for _, tt := range tests {
+-		t.Run(tt.name, func(t *testing.T) {
+-			n := &NodePodCIDRHandler{
+-				podCIDRs: tt.oldNodePodCIDRs,
+-			}
+-			oldNode := &v1.Node{}
+-			node := &v1.Node{
+-				ObjectMeta: metav1.ObjectMeta{
+-					Name:            "test-node",
+-					ResourceVersion: "1",
+-				},
+-				Spec: v1.NodeSpec{
+-					PodCIDRs: tt.newNodePodCIDRs,
+-				},
++	for _, tc := range tests {
++		t.Run(tc.name, func(t *testing.T) {
++			_, ctx := ktesting.NewTestContext(t)
++			var exitCode *int
++			exitFunc := func(code int) {
++				exitCode = &code
+ 			}
+-			defer func() {
+-				r := recover()
+-				if r == nil && tt.expectPanic {
+-					t.Errorf("The code did not panic")
+-				} else if r != nil && !tt.expectPanic {
+-					t.Errorf("The code did panic")
+-				}
+-			}()
+ 
+-			n.OnNodeUpdate(oldNode, node)
++			client := clientsetfake.NewClientset()
++			_, err := client.CoreV1().Nodes().Create(ctx, makeNode(
++				tweakNodeIPs(tc.initialNodeIPs...),
++				tweakPodCIDRs(tc.initialPodCIDRs...),
++			), metav1.CreateOptions{})
++			require.NoError(t, err)
++
++			nodeManager, err := newNodeManager(ctx, client, 30*time.Second, testNodeName, tc.watchPodCIDRs, exitFunc, 10*time.Millisecond, time.Second)
++			require.NoError(t, err)
++
++			nodeManager.OnNodeChange(makeNode(tweakNodeIPs(tc.updatedNodeIPs...), tweakPodCIDRs(tc.updatedPodCIDRs...)))
++			require.Equal(t, tc.expectedExitCode, exitCode)
+ 		})
+ 	}
+ }
+ 
+-func customExit(exitCode int) {
+-	panic(strconv.Itoa(exitCode))
++func TestNodeManagerOnNodeDelete(t *testing.T) {
++	_, ctx := ktesting.NewTestContext(t)
++	var exitCode *int
++	exitFunc := func(code int) {
++		exitCode = &code
++	}
++	client := clientsetfake.NewClientset()
++	_, _ = client.CoreV1().Nodes().Create(ctx, makeNode(tweakNodeIPs("192.168.1.1")), metav1.CreateOptions{})
++	nodeManager, err := newNodeManager(ctx, client, 30*time.Second, testNodeName, false, exitFunc, 10*time.Millisecond, time.Second)
++	require.NoError(t, err)
++
++	nodeManager.OnNodeDelete(makeNode())
++	require.Equal(t, ptr.To(1), exitCode)
++}
++
++func TestNodeManagerNode(t *testing.T) {
++	_, ctx := ktesting.NewTestContext(t)
++
++	client := clientsetfake.NewClientset()
++	_, _ = client.CoreV1().Nodes().Create(ctx, makeNode(
++		tweakNodeIPs("192.168.1.1"),
++		tweakResourceVersion("1")),
++		metav1.CreateOptions{})
++
++	nodeManager, err := newNodeManager(ctx, client, 30*time.Second, testNodeName, false, func(i int) {}, time.Nanosecond, time.Nanosecond)
++	require.NoError(t, err)
++	require.Equal(t, "1", nodeManager.Node().ResourceVersion)
++
++	nodeManager.OnNodeChange(makeNode(tweakResourceVersion("2")))
++	require.NoError(t, err)
++	require.Equal(t, "2", nodeManager.Node().ResourceVersion)
+ }
+diff --git a/pkg/proxy/topology.go b/pkg/proxy/topology.go
+index e30b3d5233e93..c8b447971eddb 100644
+--- a/pkg/proxy/topology.go
++++ b/pkg/proxy/topology.go
+@@ -41,7 +41,11 @@ import (
+ // "Usable endpoints" means Ready endpoints by default, but will fall back to
+ // Serving-Terminating endpoints (independently for Cluster and Local) if no Ready
+ // endpoints are available.
+-func CategorizeEndpoints(endpoints []Endpoint, svcInfo ServicePort, nodeName string, nodeLabels map[string]string) (clusterEndpoints, localEndpoints, allReachableEndpoints []Endpoint, hasAnyEndpoints bool) {
++//
++// Note: NodeTopologyConfig.handleNodeEvent (pkg/proxy/config) filters topology labels
++// before notifying proxiers. If you modify the logic over here to  watch other endpoint
++// types or labels, ensure the filtering logic in NodeTopologyConfig is updated accordingly.
++func CategorizeEndpoints(endpoints []Endpoint, svcInfo ServicePort, nodeName string, topologyLabels map[string]string) (clusterEndpoints, localEndpoints, allReachableEndpoints []Endpoint, hasAnyEndpoints bool) {
+ 	if len(endpoints) == 0 {
+ 		// If there are no endpoints, we have nothing to categorize
+ 		return
+@@ -51,7 +55,7 @@ func CategorizeEndpoints(endpoints []Endpoint, svcInfo ServicePort, nodeName str
+ 	var useServingTerminatingEndpoints bool
+ 
+ 	if svcInfo.UsesClusterEndpoints() {
+-		zone := nodeLabels[v1.LabelTopologyZone]
++		zone := topologyLabels[v1.LabelTopologyZone]
+ 		topologyMode = topologyModeFromHints(svcInfo, endpoints, nodeName, zone)
+ 		clusterEndpoints = filterEndpoints(endpoints, func(ep Endpoint) bool {
+ 			if !ep.IsReady() {
+diff --git a/pkg/proxy/types.go b/pkg/proxy/types.go
+index 0065da6b96088..5c042c17f9e25 100644
+--- a/pkg/proxy/types.go
++++ b/pkg/proxy/types.go
+@@ -28,7 +28,7 @@ import (
+ type Provider interface {
+ 	config.EndpointSliceHandler
+ 	config.ServiceHandler
+-	config.NodeHandler
++	config.NodeTopologyHandler
+ 	config.ServiceCIDRHandler
+ 
+ 	// Sync immediately synchronizes the Provider's current state to proxy rules.
+diff --git a/pkg/proxy/winkernel/proxier.go b/pkg/proxy/winkernel/proxier.go
+index bd7d5ae760c51..f32a5cb4fc6b4 100644
+--- a/pkg/proxy/winkernel/proxier.go
++++ b/pkg/proxy/winkernel/proxier.go
+@@ -44,7 +44,6 @@ import (
+ 	kubefeatures "k8s.io/kubernetes/pkg/features"
+ 	"k8s.io/kubernetes/pkg/proxy"
+ 	"k8s.io/kubernetes/pkg/proxy/apis/config"
+-	proxyconfig "k8s.io/kubernetes/pkg/proxy/config"
+ 	"k8s.io/kubernetes/pkg/proxy/healthcheck"
+ 	"k8s.io/kubernetes/pkg/proxy/metaproxier"
+ 	"k8s.io/kubernetes/pkg/proxy/metrics"
+@@ -641,8 +640,6 @@ type endPointsReferenceCountMap map[string]*uint16
+ type Proxier struct {
+ 	// ipFamily defines the IP family which this proxier is tracking.
+ 	ipFamily v1.IPFamily
+-	// TODO(imroc): implement node handler for winkernel proxier.
+-	proxyconfig.NoopNodeHandler
+ 
+ 	// endpointsChanges and serviceChanges contains all changes to endpoints and
+ 	// services that happened since policies were synced. For a single object,
+@@ -1098,6 +1095,13 @@ func (proxier *Proxier) OnEndpointSlicesSynced() {
+ // in any of the ServiceCIDRs, and provides complete list of service cidrs.
+ func (proxier *Proxier) OnServiceCIDRsChanged(_ []string) {}
+ 
++// TODO(imroc): implement OnTopologyChanged for winkernel proxier.
++// OnTopologyChange is called whenever node topology labels are changed.
++// The informer is tweaked to listen for updates of the node where this
++// instance of kube-proxy is running, this guarantees the changed labels
++// are for this node.
++func (proxier *Proxier) OnTopologyChange(topologyLabels map[string]string) {}
++
+ func (proxier *Proxier) cleanupAllPolicies() {
+ 	for svcName, svc := range proxier.svcPortMap {
+ 		svcInfo, ok := svc.(*serviceInfo)
