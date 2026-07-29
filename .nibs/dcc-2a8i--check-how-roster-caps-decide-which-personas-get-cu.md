@@ -44,7 +44,6 @@ Related: #dcc-1xtt (gate tuning — which personas are dispatched at all) is the
 question; this one is about what happens once a cap forces a choice among those dispatched.
 
 ## Measured — the ranking is wrong in two specific ways
-## Measured — the ranking is wrong in two specific ways
 
 Checked 2026-07-29 against the 18 archived `ours` runs. The decision a cap actually makes is
 "given this persona was gate-matched, what does dropping it cost?", so the metric is **drop cost
@@ -83,14 +82,18 @@ should survive every cap that keeps any specialist at all.
 The nib's suspicion is confirmed and understated: this is not a tier misplacement, it is the
 single largest ranking error.
 
-### 2. "Categorical coverage the generalists cannot substitute" is not supported
+### 2. "Categorical coverage the generalists cannot substitute" does not hold as a class
 
 That premise puts every stack reviewer in the top tier on the argument that dropping one "leaves an
-entire dimension unreviewed". The stack reviewers span **0.00 to 0.83**, and `dotnet-reviewer`'s
-0.00 means literally everything it found was also found by two or more siblings. The generalists
-do substitute, at least on these subjects. `data-migration-reviewer` never fired at all.
+entire dimension unreviewed". The stack reviewers span **0.00 to 0.83**, so the category does not
+predict contribution. `dotnet-reviewer`'s 0.00 — everything it found had two or more other finders —
+is a **stable** result (rank 12-14 under jackknife), so at least for C# the generalists demonstrably
+substitute. `data-migration-reviewer` never fired at all.
 
-Ranking by *category* is the error; category is a poor predictor of contribution.
+But the individual stack figures are *not* trustworthy either (see Stability): `typescript` and `go`
+swing 10 and 9 ranks. So the correct reading is narrower than "rank by measurement instead" — for
+these personas neither category nor measurement supports a confident order, which is what makes the
+dispatch gate the right place to carry the weight.
 
 ### 3. Shedding `consistency-reviewer` and `knowledge-reviewer` first is correct — for one preset
 
@@ -109,25 +112,83 @@ primary contributor to the deliverable and should not lead the cut.
 corroborator. That is not worthless — agreement is the discriminator — but it is thin justification
 for being undroppable when a cap is tight, and it costs 11.3% of sub-agent output.
 
+## Stability — where the ordering can be trusted
+
+Leave-one-subject-out jackknife over the 9 subjects, plus the size slice (the only slice the study's
+methodology permits — one subject per language x size cell makes a language slice meaningless).
+
+| persona | base rank | jackknife range | swing | n |
+|---|---|---|---|---|
+| **adversarial-reviewer** | 2 | **1-2** | **1** | 13 |
+| quick-reviewer | 11 | 10-11 | 1 | 17 |
+| dotnet-reviewer | 14 | 12-14 | 2 | 5 |
+| test-reviewer | 3 | 2-5 | 3 | 16 |
+| broad-reviewer | 5 | 3-6 | 3 | 18 |
+| prior-feedback-reviewer | 10 | 7-10 | 3 | 8 |
+| knowledge / consistency | 12 / 13 | 8-12 / 9-13 | 4 | 18 / 18 |
+| design-reviewer | 9 | 6-10 | 4 | 12 |
+| spec-compliance / performance | 6 / 7 | 5-10 | 5 | 7 / 9 |
+| **go-reviewer** | 8 | 3-12 | **9** | 4 |
+| **typescript-reviewer** | 4 | 3-13 | **10** | 6 |
+| **security-reviewer** | 1 | **1-14** | **13** | 3 |
+
+**Swing tracks sample size almost exactly: every persona at n >= 12 swings <= 4; every persona at
+n <= 6 swings up to 13.** The ordering is trustworthy at the top (`adversarial`) and at the bottom
+(`knowledge`, `consistency`, `quick`, `dotnet`) and unusable through the middle, which is precisely
+where the rarely-firing specialists sit.
+
+### Drop cost rises steeply with diff size — the stronger finding
+
+| persona | small | medium | large |
+|---|---|---|---|
+| adversarial | 0.50 | 1.50 | **3.20** |
+| typescript | 0.00 | 0.00 | **2.50** |
+| test | 0.33 | 1.00 | 1.50 |
+| broad | 0.62 | 0.75 | 1.00 |
+| spec-compliance | 0.00 | 0.00 | 1.00 |
+| design | 0.00 | 0.50 | 0.83 |
+| quick | 0.00 | 0.00 | 0.67 |
+| knowledge | 0.25 | 0.00 | 0.17 |
+
+Nearly monotonic. **On small diffs almost nothing is load-bearing** — most personas sit at 0.00,
+meaning everything they found someone else found too. On large diffs specialists become decisive.
+So the cost of capping is a function of changeset size, not a constant. `knowledge-reviewer` is the
+lone exception, flat-to-declining across sizes, which confirms it as the shed-first pick at any size.
+
 ## What to change
 
-Replace the hand-written category ranking in Step 2b.5 with a **measured, preset-aware drop-cost
-order**, refreshable from `roster_yield.py` rather than re-derived by intuition:
+A first draft of this nib proposed replacing category ranking with measured drop cost outright. The
+stability data refutes that: it works for the frequently-dispatched personas and fails exactly where
+it was meant to help. A persona that rarely fires has thin evidence **by construction** — but also,
+by construction, only fires when its domain is present. For those the gate *is* the evidence of fit.
 
-- **`bugs`** — rank by substantive drop cost. `adversarial` first among specialists; `consistency`
-  and `knowledge` shed first (unchanged); stack reviewers ranked on their own numbers, not as a
-  class.
-- **`audit`** — rank by drop cost **+ minor yield**, which promotes `consistency` and `test`.
-- **`review`** — between the two.
+So the current rules are not wrong everywhere. They are wrong for the generalists and roughly right
+for the hard-gated specialists.
 
-This nib is now the `roster` axis of #dcc-9q01 rather than a standalone question.
+1. **Floor — `broad` + `quick`**, justified by the `evidence` screen needing an agreement signal to
+   score with (#dcc-9q01's cluster-before-screen constraint), not by `quick`'s solo value (0.24/run,
+   zero unique findings in 18 runs).
+2. **Measured tier (n >= 12) — use the numbers.** `adversarial-reviewer` first among specialists;
+   `knowledge` and `consistency` shed first. This is the part the data supports.
+3. **Gate-evidenced tier (n < 12) — rank by category, as today.** The gate proves fit and there is
+   no usable measurement. **Do not promote `security-reviewer`** on the strength of its n=3 figure.
+4. **Scale the default roster with diff size** rather than capping at a fixed N — the size table
+   says a tight cap on a small diff is nearly free and an expensive mistake on a large one.
+
+**The one confident ranking change: `adversarial-reviewer` moves ahead of `security-reviewer`**, and
+into the top specialist slot. Rank 1-2 across every jackknife at n=13.
+
+Preset-dependence still holds for the shed-first pair: under `audit`, rank by drop cost **+** minor
+yield, which moves `consistency` from last to mid-table. This nib is the `roster` axis of #dcc-9q01.
 
 ## Limits — read before acting
 
-- **Sample sizes differ wildly.** Only `broad`, `quick`, `knowledge`, `consistency` (18 runs),
-  `test` (16) and `adversarial` (13) are well sampled. `security` (3), `go` (4), `dotnet` (5),
-  `typescript` (6), `rust` (2) are not. **`security-reviewer`'s 2.00 is the top of the table and
-  the least trustworthy number in it** — do not promote it on this basis.
+- **Sample size decides trustworthiness, and the threshold is measured, not guessed:** n >= 12
+  swings <= 4 ranks, n <= 6 swings up to 13. **`security-reviewer`'s 2.00 is the top of the table
+  and the least trustworthy number in it** (n=3, swing 13) — do not promote it on this basis.
+- **What would fix the unusable middle** is more data on the rarely-firing personas: the three unrun
+  subjects (go/medium, rust/medium, rust/large), or more repeats. Worth scoping into whatever
+  re-run #dcc-9q01 requires.
 - **The dispatch gates changed after these runs.** #dcc-1xtt widened `security-reviewer`'s gate and
   narrowed the stack reviewers to idiom surface. Both change which personas are even eligible for a
   cap decision, so these frequencies will not reproduce.
@@ -136,7 +197,6 @@ This nib is now the `roster` axis of #dcc-9q01 rather than a standalone question
   weight. It deliberately does not reward uniqueness alone — that error was already made once with
   `performance-reviewer`.
 
-## Acceptance
 ## Acceptance
 
 - [ ] [run] `rg -n "Rank the gate-matched specialists" -A12 decaf-quality/skills/code-review/SKILL.md`
@@ -148,4 +208,8 @@ This nib is now the `roster` axis of #dcc-9q01 rather than a standalone question
 - [ ] [manual] The order differs by preset (`bugs` / `review` / `audit`) per #dcc-9q01, with
       `consistency-reviewer` not leading the cut under `audit`
 - [ ] [manual] Under-sampled personas are handled explicitly — the ranking does not promote
-      `security-reviewer` on n=3
+      `security-reviewer` on n=3, and personas below the n>=12 stability threshold are ranked by
+      their gate rather than by their measured figure
+- [ ] [manual] The default roster scales with changeset size, or the decision to keep a fixed `N`
+      is recorded against the size table (drop cost ~0 on small diffs, 3.20 for `adversarial` on
+      large ones)
