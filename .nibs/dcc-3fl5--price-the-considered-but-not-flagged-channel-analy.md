@@ -96,8 +96,9 @@ overriding reviewers who dismissed correctly.
 ### The cost is smaller than this nib assumed
 
 The `# Why` above says the channel "costs output in every agent plus orchestrator thinking". The
-first half is minor: CBNF sections are 19.8% of sub-agent *report* text but only **~1.8% of a run's
-260.8k output tokens** (~4.7k tokens/run). Removing the reviewer-side section would not move the
+first half is minor: CBNF sections are 19.8% of sub-agent *report* text but only **~1.3% of a run's
+367k output tokens** (~4.7k tokens/run). (Restated 2026-07-29 — the 260.8k denominator came from a
+stale `ws_output` that undercounted every tool by 35-49%; see #dcc-9q01.) Removing the reviewer-side section would not move the
 $21.33/run figure.
 
 The orchestrator side is unmeasured and is the real unknown — Step 5.5 reads all 49.5 bullets and
