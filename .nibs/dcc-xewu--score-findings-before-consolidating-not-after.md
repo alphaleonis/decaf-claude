@@ -2,14 +2,14 @@
 # dcc-xewu
 version: 1
 title: Score findings before consolidating, not after
-status: deferred
+status: todo
 type: feature
 priority: normal
 estimate: l
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-07-29T16:58:16Z
+updated_at: 2026-07-29T17:47:33Z
 parent: dcc-hyxw
 order: "n"
 ---
@@ -67,9 +67,15 @@ no anchor, so the whole downstream contract has to be re-checked.
       which makes the product a per-run preset; this nib becomes its `evidence` axis
 - [ ] [manual] The three broken premises in the Assessment are corrected wherever cited (this nib,
       #dcc-05uw) before any design rests on them
-- [ ] [manual] Cheap-model clustering experiment run against the archived findings, its clusters
+- [x] [manual] Cheap-model clustering experiment run against the archived findings, its clusters
       compared to the committed ones, and an explicit verdict on whether `cluster-then-screen` is
-      viable — **this gates the rest**; if not viable, scrap on measurement per #dcc-gcob
+      viable — **PASSED 2026-07-29**: raw F1 0.78, but the substantive-vs-trivia multi-finder gap
+      widens from 1.95x to 3.08x, so the errors fall in the useful direction
+- [ ] [manual] Re-run the clustering experiment on a **large** subject before committing — no large
+      run had joinable ground truth, and dedup is hardest where the orchestrator's thinking share is
+      77%. Fixing subject 6's `cluster-assign.json` id scheme is the cheapest route
+- [ ] [run] the prototype asserts every input finding lands in exactly one cluster — the cheap model
+      silently dropped ids until told to count them
 - [ ] [run] `rg -n "Step 5" -A15 decaf-quality/skills/code-review/SKILL.md` — expect: the
       scoring pass documented ahead of consolidation, with its model tier stated
 - [ ] [manual] Downstream contract re-verified: `auto-code-review` Step 3c and
@@ -158,3 +164,68 @@ outlier", not "fix our excess".
   If it does not, #dcc-e0wj is right that the thinking is irreducible, and this nib should be
   scrapped on measurement like #dcc-gcob was.
 - Sequence #dcc-2a8i (the `roster` axis) ahead of it — bigger target, better evidence, measured.
+
+## Gating experiment — RUN 2026-07-29, PASSED with limits
+## Gating experiment — RUN 2026-07-29, PASSED with limits
+
+Replayed archived `ours` sub-agent findings through a **Haiku** clustering pass and scored against
+the committed reference clustering. 8 runs, 227 findings, 83 reference clusters (subjects 1/4/5/7 —
+the ones whose `findings.json` carries an inline `cluster_id`). Reproduce with
+`analysis/scripts/cluster_replay.py build|score <workdir>`.
+
+### Raw agreement — mediocre, and asymmetric
+
+**Pooled: precision 0.93, recall 0.67, F1 0.78** — 214 pairs correctly merged, **17 wrongly merged,
+105 wrongly split.** The cheap model **under-merges**: it rarely fuses things that do not belong
+together, but splits about a third of what does.
+
+I expected that to be fatal. It is not.
+
+### Corroboration survival — the number that actually decides it
+
+| tier | clusters | mean finders before | after | 2+ finders before | after |
+|---|---|---|---|---|---|
+| substantive | 27 | 3.96 | **3.00** | 78% | **74%** |
+| valid-minor | 31 | 2.26 | 2.00 | 58% | 52% |
+| trivia / FP | 25 | 2.00 | **1.48** | 40% | **24%** |
+
+**The discriminator survives, and sharpens.** The substantive-to-trivia gap in multi-finder rate
+goes from 78%/40% (1.95x) to 74%/24% (**3.08x**). Under-merging hurts trivia far more than it hurts
+real findings — which makes sense: genuine defects get described in similar terms by independent
+reviewers and are easy to match, while trivia co-occurrence is more incidental and shatters under a
+literal-minded clusterer.
+
+So a cheap clusterer is not merely adequate here; on the one property the screen consumes, its
+errors fall in the useful direction.
+
+### Verdict
+
+**The gate passes.** `cluster-then-screen` is viable enough to justify a prototype, so this nib is
+no longer blocked on the experiment. Four limits carry forward:
+
+1. **Large runs are untested.** Subject 6's `cluster-assign.json` uses positional ids
+   (`ours__r1__N`) that do not join to its `findings.json` (`f00NN`), so no large run had usable
+   ground truth. Dedup is hardest exactly where the orchestrator's thinking share is 77%. **Test a
+   large run before committing.**
+2. **The reference is itself an LLM product.** F1 0.78 means "agrees with the bench-analyze
+   clustering 78% of the time", not "78% correct". Both could be wrong together.
+3. **Findings get silently dropped.** The first batch lost 3, 6 and 1 ids on three runs. Adding an
+   explicit "count the ids and check before writing" instruction fixed it — the second batch dropped
+   none. Prompt-fixable, but a screen that never sees a finding cannot tier it, so the prototype
+   needs a hard count assertion, not an instruction.
+4. **Only dedup was tested.** The orchestrator's residual also covers severity normalization,
+   confidence promotion and validator selection. This says nothing about whether *those* move to a
+   cheap model.
+
+Per-run F1 ranged 0.50-1.00 with no clean relationship to run size, so the variance is not simply a
+scale effect.
+
+### What this does not change
+
+The sequencing in the Assessment above stands. The gate passing makes this nib *buildable*, not
+*next* — #dcc-2a8i (the `roster` axis) is still the larger and better-evidenced lever, and this
+nib's target remains 14-18% of output.
+
+Screen thresholds must be calibrated against **post-cheap-clustering** finder counts, not the
+current ones: substantive drops 3.96 -> 3.00 and trivia 2.00 -> 1.48, so any rule written against
+today's distribution will misfire.
