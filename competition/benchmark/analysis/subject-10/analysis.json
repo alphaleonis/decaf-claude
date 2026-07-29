@@ -1,821 +1,695 @@
 {
+ "subject_id": 10,
+ "lang": "rust",
+ "size": "small",
+ "repo": "BurntSushi/ripgrep",
+ "pr": 3185,
+ "judge_model": "claude-opus-5[1m]",
+ "notes": "Re-analysis after nib dcc-9kkz: the two anthropic-code-review cells were re-run with a plugin-qualified invocation; the cells previously recorded under that label had executed decaf-quality (ours) at high mode. The 8 non-anthropic cells' bundles are unchanged (16 Jul) and their extraction was reused verbatim; only the anthropic findings were re-extracted. All 18 clusters re-graded blind.",
+ "answer_key": {
   "subject_id": 10,
   "lang": "rust",
   "size": "small",
   "repo": "BurntSushi/ripgrep",
   "pr": 3185,
-  "judge_model": "claude-opus-4-8",
-  "answer_key": {
-    "subject_id": 10,
-    "lang": "rust",
-    "size": "small",
-    "repo": "BurntSushi/ripgrep",
-    "pr": 3185,
-    "review_diff": "gh pr diff 3185 \u2014 full PR: CHANGELOG.md, crates/searcher/src/line_buffer.rs, crates/searcher/src/searcher/core.rs, crates/searcher/src/searcher/glue.rs",
-    "primary_bug": {
-      "id": "primary",
-      "summary": "The new fill loop in LineBuffer::fill reads repeatedly until the caller's buffer is full (`while !self.free_buffer().is_empty() { let readlen = rdr.read(...)?; if readlen==0 { break } self.end += readlen; }`), which breaks --line-buffered / streaming: line-buffered mode must yield what it can read immediately, not block waiting for a full buffer. Regressed real streaming use such as `journalctl -f | rg --line-buffered`.",
-      "file": "crates/searcher/src/line_buffer.rs",
-      "locus": "fill(): the added inner `while !self.free_buffer().is_empty()` read-until-full loop (~L416-421)",
-      "must_flag": "A reviewer catches this if it flags that packing the whole buffer across multiple reads defeats --line-buffered / prompt streaming (or otherwise identifies the read-loop as changing streaming/latency behavior).",
-      "source": "revert PR #3195 ('searcher: fix regression with --line-buffered flag'), regression issue #3194 ('Line buffering appears broken in 15.0.0')",
-      "difficulty": "subtle \u2014 requires reasoning about line-buffered/streaming semantics; the maintainer himself merged it and reverted only after a user bug report. Expect low recall; a genuine catch here is a strong signal."
-    },
-    "human_issues": [],
-    "known_safe": [
-      {
-        "id": "safe-core",
-        "summary": "core.rs: changing lines::preceding's 3rd arg from self.config.max_context() to self.config.before_context. This is the CORRECT fix (kept by the revert; it is what actually fixes #3184's -A/--after-context perf bug). Flagging it as incorrect/buggy is a FALSE POSITIVE.",
-        "file": "crates/searcher/src/searcher/core.rs"
-      },
-      {
-        "id": "safe-glue",
-        "summary": "glue.rs: test-expectation byte counts 262146 -> 262142. Expected consequence of the buffering change (fewer bytes searched before binary detection), not a defect.",
-        "file": "crates/searcher/src/searcher/glue.rs"
-      }
-    ],
-    "notes": "ripgrep is solo-maintained (Andrew Gallant self-merges) -> PR #3185 has no human review threads, so human_issues is empty. Score cells on: (1) primary_bug recall, (2) false-positive discipline (esp. NOT flagging the correct core.rs change), (3) any valid-other real defects, (4) noise."
+  "review_diff": "gh pr diff 3185 \u2014 full PR: CHANGELOG.md, crates/searcher/src/line_buffer.rs, crates/searcher/src/searcher/core.rs, crates/searcher/src/searcher/glue.rs",
+  "primary_bug": {
+   "id": "primary",
+   "summary": "The new fill loop in LineBuffer::fill reads repeatedly until the caller's buffer is full (`while !self.free_buffer().is_empty() { let readlen = rdr.read(...)?; if readlen==0 { break } self.end += readlen; }`), which breaks --line-buffered / streaming: line-buffered mode must yield what it can read immediately, not block waiting for a full buffer. Regressed real streaming use such as `journalctl -f | rg --line-buffered`.",
+   "file": "crates/searcher/src/line_buffer.rs",
+   "locus": "fill(): the added inner `while !self.free_buffer().is_empty()` read-until-full loop (~L416-421)",
+   "must_flag": "A reviewer catches this if it flags that packing the whole buffer across multiple reads defeats --line-buffered / prompt streaming (or otherwise identifies the read-loop as changing streaming/latency behavior).",
+   "source": "revert PR #3195 ('searcher: fix regression with --line-buffered flag'), regression issue #3194 ('Line buffering appears broken in 15.0.0')",
+   "difficulty": "subtle \u2014 requires reasoning about line-buffered/streaming semantics; the maintainer himself merged it and reverted only after a user bug report. Expect low recall; a genuine catch here is a strong signal."
   },
-  "clusters": [
+  "human_issues": [],
+  "known_safe": [
+   {
+    "id": "safe-core",
+    "summary": "core.rs: changing lines::preceding's 3rd arg from self.config.max_context() to self.config.before_context. This is the CORRECT fix (kept by the revert; it is what actually fixes #3184's -A/--after-context perf bug). Flagging it as incorrect/buggy is a FALSE POSITIVE.",
+    "file": "crates/searcher/src/searcher/core.rs"
+   },
+   {
+    "id": "safe-glue",
+    "summary": "glue.rs: test-expectation byte counts 262146 -> 262142. Expected consequence of the buffering change (fewer bytes searched before binary detection), not a defect.",
+    "file": "crates/searcher/src/searcher/glue.rs"
+   }
+  ],
+  "notes": "ripgrep is solo-maintained (Andrew Gallant self-merges) -> PR #3185 has no human review threads, so human_issues is empty. Score cells on: (1) primary_bug recall, (2) false-positive discipline (esp. NOT flagging the correct core.rs change), (3) any valid-other real defects, (4) noise."
+ },
+ "clusters": [
+  {
+   "cluster_id": "c1",
+   "summary": "fill()'s new inner read loop reads until the buffer is full or EOF instead of returning after a usable line is available, regressing streaming/interactive/line-buffered latency (tail -f, journalctl -f).",
+   "file": "line_buffer.rs",
+   "line": 419,
+   "category": "logic",
+   "reported_by": [
     {
-      "cluster_id": "c1",
-      "summary": "fill()'s new inner read loop reads until the buffer is full or EOF instead of returning after a usable line is available, regressing streaming/interactive/line-buffered latency (tail -f, journalctl -f).",
-      "file": "line_buffer.rs",
-      "line": 419,
-      "category": "logic",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a1fced166e359e89a"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a631d51976f8ac052"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a864f67d45d8a2a23"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a87ddd8e263aa1ac1"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a704884ea5794b33a"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a880df2aa1bdb50cc"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-ace7c309669d036a2"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a4dcda786f63e7b0c"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a7331ee0b4e5b7842"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a9d0e64cf43dc205a"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-adc827f79b3fb8420"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a2b66c7f9b67e2100"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a27a0d3e50c69a2e5"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a9acc3f1c3e84e225"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a77d31d1d2d97e916"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a35936c767b79b1db"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a90803beccdff50af"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-afa6f6107277c845e"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 1,
-          "subagent": "agent-a583893d07ba2c2dd"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 2,
-          "subagent": "agent-ae0e30873a6731490"
-        }
-      ],
-      "verdict": "TP-primary",
-      "matches": "primary",
-      "judged_severity": "high",
-      "confidence": 92,
-      "rationale": "Correctly identifies the new inner while-loop that reads until the buffer is full/EOF rather than returning after a usable read \u2014 the --line-buffered/streaming latency regression reverted in #3195."
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a1fced166e359e89a"
     },
     {
-      "cluster_id": "c2",
-      "summary": "CHANGELOG links issue #3184 with a /pull/ URL though #3184 is the issue (PR is #3185).",
-      "file": "CHANGELOG.md",
-      "line": 11,
-      "category": "doc",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": null
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-afae6437d9aaf0202"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-aa4646d4b49c20458"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a2d78549a4f11d588"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-aaaa158259a8c99ac"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": null
-        }
-      ],
-      "verdict": "valid-minor",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 55,
-      "rationale": "GitHub redirects /pull/N<->/issues/N so the link works; trivial doc quibble.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 90,
-      "regrade_rationale": "Verified via GitHub API: #3184 is an issue (PR is #3185), so the /pull/3184 URL is objectively wrong against the file's own convention of matching number to referent type (PERF #2111 -> /issues/, PERF #2865 -> /pull/); one-shot s|pull|issues| fix."
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a631d51976f8ac052"
     },
     {
-      "cluster_id": "c3",
-      "summary": "fill() inner loop's fill-to-capacity rationale not documented in code (only the commit message), so a maintainer could simplify it and reintroduce #3184.",
-      "file": "line_buffer.rs",
-      "line": 419,
-      "category": "doc",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a4854df96b6ae33f9"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a068eb7515a8e3ca1"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-abb66db32a884be3a"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a1a38ee098bffb6e3"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null
-        }
-      ],
-      "verdict": "valid-minor",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 60,
-      "rationale": "Missing-comment/maintainability note on the fill loop; the loop it wants documented is itself the escaped bug.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 70,
-      "regrade_rationale": "Verified: new fill-to-capacity loop (line_buffer.rs:419-425) has zero comment while every other step in this densely-commented function is explained, and the same diff added a rationale comment for the core.rs half of the fix; the loop is load-bearing (simplifying it stays correct but reintroduces #3184) \u2014 one-shot comment fix that converges."
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a864f67d45d8a2a23"
     },
     {
-      "cluster_id": "c4",
-      "summary": "No test exercises fill()'s new multi-short-read amortization / incremental-read accumulation path.",
-      "file": "line_buffer.rs",
-      "line": 419,
-      "category": "test",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a45e910505af937af"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a631d51976f8ac052"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-ab341ab882a25cf28"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-ace7c309669d036a2"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-a53ed4e2fa05dda5b"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a05b2537f0eec312c"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a280460d51bb6c4d0"
-        }
-      ],
-      "verdict": "valid-other",
-      "matches": "none",
-      "judged_severity": "low",
-      "confidence": 62,
-      "rationale": "Genuine coverage gap: the new multi-read accumulation path in fill() is not exercised by any single-read test."
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a87ddd8e263aa1ac1"
     },
     {
-      "cluster_id": "c5",
-      "summary": "No regression test covers the roll() before_context-vs-max_context change across a buffer roll with large -A.",
-      "file": "core.rs",
-      "line": 198,
-      "category": "test",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a6e397cebc1ddaf50"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a05b2537f0eec312c"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a280460d51bb6c4d0"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a27a0d3e50c69a2e5"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 1,
-          "subagent": "agent-a583893d07ba2c2dd"
-        }
-      ],
-      "verdict": "valid-other",
-      "matches": "none",
-      "judged_severity": "low",
-      "confidence": 60,
-      "rationale": "The correct max_context->before_context fix has no guarding test \u2014 reverting core.rs leaves the suite green."
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a704884ea5794b33a"
     },
     {
-      "cluster_id": "c6",
-      "summary": "roll() comment 'skip this step when before_context==0' does not match the code (preceding() is called unconditionally).",
-      "file": "core.rs",
-      "line": 195,
-      "category": "doc",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a98de0a6942a2c716"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-ab75267c82095c9f0"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a9acc3f1c3e84e225"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-aff9c396233e335be"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-aea578d5186fbe56f"
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 50,
-      "rationale": "The comment describes that the costly backward scan is effectively skipped when before_context==0; reading it as a literal call-elision mismatch is pedantic.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 85,
-      "regrade_rationale": "Pedantic reading: the 'step' is finding N preceding lines, and lines.rs:163 doc confirms preceding(_,_,0) finds zero preceding lines (returns current line start) \u2014 the costly-for-large-N work is skipped as the comment says."
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a880df2aa1bdb50cc"
     },
     {
-      "cluster_id": "c7",
-      "summary": "Changed glue.rs golden byte-count constants (262146->262142) are undocumented magic numbers / unexplained --stats shift.",
-      "file": "glue.rs",
-      "line": 740,
-      "category": "doc",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a45e910505af937af"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-ab341ab882a25cf28"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a05b2537f0eec312c"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a27a0d3e50c69a2e5"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a90803beccdff50af"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 2,
-          "subagent": "agent-ae0e30873a6731490"
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 60,
-      "rationale": "The 262146->262142 constants are the known-safe expected consequence of the buffering change.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 90,
-      "regrade_rationale": "Golden test constants per the magic-number calibration: surrounding prose comments already explain the byte-count semantics, and the 262146->262142 shift follows from the fill change \u2014 commit-message territory."
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ace7c309669d036a2"
     },
     {
-      "cluster_id": "c8",
-      "summary": "Narrowing roll() lookback to before_context leaves correctness on an implicit, unguarded invariant (no debug_assert).",
-      "file": "core.rs",
-      "line": 198,
-      "category": "design",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a4854df96b6ae33f9"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a880bf4bf625211c2"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-abb66db32a884be3a"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": "agent-adc1e07166791dc36"
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "low",
-      "confidence": 50,
-      "rationale": "before_context is the correct revert-kept fix; a speculative debug_assert suggestion casting unwarranted doubt on a known-safe change.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 95,
-      "regrade_rationale": "Matches the calibration example exactly: debug_assert suggestion on a correct change is speculative robustness with no concrete failure pathway."
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a2b66c7f9b67e2100"
     },
     {
-      "cluster_id": "c9",
-      "summary": "Inner read loop propagates ErrorKind::Interrupted via ? instead of retrying (noted pre-existing).",
-      "file": "line_buffer.rs",
-      "line": 420,
-      "category": "logic",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-aaa71b70703f98044"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a2b66c7f9b67e2100"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a84628f238e48ed35"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 1,
-          "subagent": "agent-a583893d07ba2c2dd"
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "low",
-      "confidence": 55,
-      "rationale": "Propagating Interrupted via ? is pre-existing (original single read did the same), negligible impact.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 90,
-      "regrade_rationale": "Self-noted pre-existing: the removed line used the same `?` on rdr.read; changing EINTR semantics is a behavior debate, not an accept-without-debate patch."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a27a0d3e50c69a2e5"
     },
     {
-      "cluster_id": "c10",
-      "summary": "CHANGELOG wording 'performance of large values with -A' reads awkwardly.",
-      "file": "CHANGELOG.md",
-      "line": 11,
-      "category": "doc",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-aea578d5186fbe56f"
-        },
-        {
-          "tool": "superpowers",
-          "repeat": 2,
-          "subagent": "agent-ae0e30873a6731490"
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 70,
-      "rationale": "Pure CHANGELOG wording preference, no technical content.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 75,
-      "regrade_rationale": "Self-described as 'reads awkwardly' \u2014 comprehensible sentence, taste-level rewording; calibration limits CHANGELOG nits to objectively broken/wrong links."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a9acc3f1c3e84e225"
     },
     {
-      "cluster_id": "c11",
-      "summary": "In Quit binary mode the loop drains the buffer before binary detection, over-reading past a NUL by up to a buffer's worth.",
-      "file": "line_buffer.rs",
-      "line": 419,
-      "category": "perf",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-a4ce009b7f2251b1d"
-        },
-        {
-          "tool": "ours",
-          "repeat": 1,
-          "subagent": "agent-aa116db3581228904"
-        },
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-ace7c309669d036a2"
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "low",
-      "confidence": 50,
-      "rationale": "Quit-mode over-read is bounded by buffer size and is the accepted consequence in the known-safe glue.rs change, not a defect.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 75,
-      "regrade_rationale": "True but a bounded (one buffer) deliberate consequence of the PR's fill-completely design; no one-shot fix exists \u2014 per-read detection would defeat the fix, so it's tradeoff commentary the maintainer would debate."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a77d31d1d2d97e916"
     },
     {
-      "cluster_id": "c12",
-      "summary": "Read result bound to readlen; every other manual read loop in the crate names it nread.",
-      "file": "line_buffer.rs",
-      "line": 420,
-      "category": "style",
-      "reported_by": [
-        {
-          "tool": "ours",
-          "repeat": 2,
-          "subagent": "agent-a9d5d064299eb77b2"
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null
-        },
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": null
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 72,
-      "rationale": "Naming style, and 'readlen' is pre-existing in the original code.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 90,
-      "regrade_rationale": "The file's own removed line used `readlen` (diff preserves local precedent); 'every other manual read loop' is one loop (mod.rs:1005) \u2014 rename is taste churn against in-file convention."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a35936c767b79b1db"
     },
     {
-      "cluster_id": "c13",
-      "summary": "Inner loop advances self.end after each read, so a later read error in the same pass discards already-read bytes.",
-      "file": "line_buffer.rs",
-      "line": 418,
-      "category": "bug",
-      "reported_by": [
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 1,
-          "subagent": "agent-a40e39c82fa6d69de"
-        },
-        {
-          "tool": "tag1-comprehensive-review",
-          "repeat": 2,
-          "subagent": "agent-a35936c767b79b1db"
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "low",
-      "confidence": 50,
-      "rationale": "Dropping in-flight bytes on a mid-pass I/O error is normal abort behavior; negligible.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 70,
-      "regrade_rationale": "Error-path behavior nuance with no accept-without-debate one-shot fix: on a read error the searcher aborts the file anyway, and surfacing partial data before the error is a semantic design change."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a90803beccdff50af"
     },
     {
-      "cluster_id": "c14",
-      "summary": "before/after/max_context() are three interchangeable bare usize (weak typing behind the regression).",
-      "file": "mod.rs",
-      "line": 213,
-      "category": "design",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-af7dd0177ea7a1046"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a648384ad162f9549"
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "low",
-      "confidence": 48,
-      "rationale": "Newtype/type-safety musing that misattributes the regression to the context-value swap (the correct fix), not diff-verifiable.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 95,
-      "regrade_rationale": "Taste-only newtype design suggestion with no in-repo anchor (crate uses bare usize throughout); unbounded suggestion class."
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-afa6f6107277c845e"
     },
     {
-      "cluster_id": "c15",
-      "summary": "LineBuffer ordering/bound invariants expressed only in prose over bare usize fields, not type-enforced.",
-      "file": "line_buffer.rs",
-      "line": 299,
-      "category": "design",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-af7dd0177ea7a1046"
-        },
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a648384ad162f9549"
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 55,
-      "rationale": "Broad architecture observation about invariants not being type-enforced; not a defect in the diff.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 95,
-      "regrade_rationale": "Pre-existing struct fields (line_buffer.rs:299) untouched by the diff; type-enforcement of invariants is a taste-level unbounded redesign."
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a583893d07ba2c2dd"
     },
     {
-      "cluster_id": "c16",
-      "summary": "Binary detection spanning a read boundary is untested.",
-      "file": "line_buffer.rs",
-      "line": 431,
-      "category": "test",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a280460d51bb6c4d0"
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 50,
-      "rationale": "Detection runs over the full contiguous newbytes range, so a NUL cannot be split across reads \u2014 no real risk.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 80,
-      "regrade_rationale": "Unbounded add-a-test class; the glue.rs golden tests were updated for exactly the multi-read binary-detection behavior change, and 'untested' is not verifiably established."
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-ae0e30873a6731490"
     },
     {
-      "cluster_id": "c17",
-      "summary": "EOF or error mid-accumulation inside the new inner loop is untested.",
-      "file": "line_buffer.rs",
-      "line": 419,
-      "category": "test",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 2,
-          "subagent": "agent-a280460d51bb6c4d0"
-        }
-      ],
-      "verdict": "valid-other",
-      "matches": "none",
-      "judged_severity": "low",
-      "confidence": 56,
-      "rationale": "Reasonable coverage gap: the new inner loop's EOF/error mid-accumulation break paths are new and untested."
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": null,
+     "severity": null
     },
     {
-      "cluster_id": "c18",
-      "summary": "A transient Ok(0) then more data with no line terminator asserted to accumulate the whole stream (OOM).",
-      "file": "line_buffer.rs",
-      "line": 419,
-      "category": "bug",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 2,
-          "subagent": "agent-a859681943b47654e"
-        }
-      ],
-      "verdict": "false-positive",
-      "matches": "none",
-      "judged_severity": "low",
-      "confidence": 60,
-      "rationale": "A transient Ok(0) hits `if readlen==0 { break }` and ends the pass; unbounded growth on a terminator-less line is pre-existing by design, not the asserted new OOM."
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a449acd211d1fa319/scorer",
+     "severity": null
     },
     {
-      "cluster_id": "c19",
-      "summary": "core.rs redundant same-name rebind (pre-existing).",
-      "file": "core.rs",
-      "line": 203,
-      "category": "style",
-      "reported_by": [
-        {
-          "tool": "anthropic-code-review",
-          "repeat": 1,
-          "subagent": null
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 58,
-      "rationale": "Self-admitted pre-existing style rebind unrelated to the change.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 95,
-      "regrade_rationale": "Verified pre-existing: `let consumed = ...; consumed` is an unchanged context line in the diff \u2014 out-of-scope code the diff didn't touch."
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a9f2d96e5caf18a99/git-history",
+     "severity": null
     },
     {
-      "cluster_id": "c20",
-      "summary": "self.last_lineterm = self.end has no explanatory comment.",
-      "file": "line_buffer.rs",
-      "line": 433,
-      "category": "doc",
-      "reported_by": [
-        {
-          "tool": "pr-review-toolkit",
-          "repeat": 1,
-          "subagent": "agent-a98de0a6942a2c716"
-        }
-      ],
-      "verdict": "trivia",
-      "matches": "none",
-      "judged_severity": "nit",
-      "confidence": 63,
-      "rationale": "Missing-comment nit on a line that already existed in the original code, merely relocated.",
-      "regraded_from": "nitpick",
-      "regrade_confidence": 80,
-      "regrade_rationale": "Comment-absence nit on a moved line whose adjacent comment predates the diff and never explained the assignment; no objective comment/code mismatch, just missing-comment taste."
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-ae0e41828238fbe36/prior-pr",
+     "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-af855c2ffe8c13358/bug-scan",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-ac180b6229a9adf91/git-history",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a6fac905ec7e9d4bd/prior-pr",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a784f3c775096e28e/scorer",
+     "severity": null
     }
-  ]
+   ],
+   "verdict": "TP-primary",
+   "matches": "primary",
+   "judged_severity": "high",
+   "confidence": 96,
+   "rationale": "Exactly the primary bug: the added while !self.free_buffer().is_empty() { rdr.read(...) } inner loop in fill() packs the whole buffer across multiple reads instead of returning once a line is available, which broke --line-buffered/streaming (tail -f, journalctl -f) and forced the revert."
+  },
+  {
+   "cluster_id": "c2",
+   "summary": "CHANGELOG links issue #3184 with a /pull/ URL though #3184 is the issue (PR is #3185).",
+   "file": "CHANGELOG.md",
+   "line": 11,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": null
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-aa4646d4b49c20458"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a2d78549a4f11d588"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aaaa158259a8c99ac"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": null
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 70,
+   "rationale": "Verifiable and one-shot: the PR's commit says Fixes #3184 (so 3184 is the issue, 3185 the PR), and CHANGELOG.md's own convention links issues as /issues/N versus /pull/N for PRs, so the new entry should use /issues/3184."
+  },
+  {
+   "cluster_id": "c3",
+   "summary": "fill() inner loop's fill-to-capacity rationale not documented in code (only the commit message), so a maintainer could simplify it and reintroduce #3184.",
+   "file": "line_buffer.rs",
+   "line": 419,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a4854df96b6ae33f9"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a068eb7515a8e3ca1"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-abb66db32a884be3a"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-ae0e41828238fbe36/prior-pr",
+     "severity": null
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 60,
+   "rationale": "Verifiably true: the rationale for the fill-to-capacity loop lives only in the commit message; the added loop carries no comment, in a file where every other block in fill() is commented. A one-line why-comment is a plausible accepted patch."
+  },
+  {
+   "cluster_id": "c4",
+   "summary": "No test exercises fill()'s new multi-short-read amortization / incremental-read accumulation path.",
+   "file": "line_buffer.rs",
+   "line": 419,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a45e910505af937af"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a631d51976f8ac052"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ab341ab882a25cf28"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ace7c309669d036a2"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a05b2537f0eec312c"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a280460d51bb6c4d0"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 58,
+   "rationale": "Checked the crate: no impl io::Read test fixture exists in crates/searcher/src, and every line_buffer test feeds a &[u8] satisfied in one read, so the multi-nonzero-read accumulation path the diff adds is unreachable by the existing suite."
+  },
+  {
+   "cluster_id": "c5",
+   "summary": "No regression test covers the roll() before_context-vs-max_context change across a buffer roll with large -A.",
+   "file": "core.rs",
+   "line": 198,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a05b2537f0eec312c"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a280460d51bb6c4d0"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a27a0d3e50c69a2e5"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a583893d07ba2c2dd"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 55,
+   "rationale": "Partly refuted: the max_context-vs-before_context divergence is already exercised by the after-only context_sherlock cases whose expectations are unchanged; only the >buffer-capacity variant is uncovered."
+  },
+  {
+   "cluster_id": "c6",
+   "summary": "roll() comment 'skip this step when before_context==0' does not match the code (preceding() is called unconditionally).",
+   "file": "core.rs",
+   "line": 195,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a98de0a6942a2c716"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-ab75267c82095c9f0"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a9acc3f1c3e84e225"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-aff9c396233e335be"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-aea578d5186fbe56f"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 55,
+   "rationale": "The comment's 'potentially costly step' refers to walking back N lines, and lines::preceding(.., 0) does skip that, so the cost the comment describes really is skipped even though the call remains; a wording quibble with no behavioural content."
+  },
+  {
+   "cluster_id": "c7",
+   "summary": "Changed glue.rs golden byte-count constants (262146->262142) are undocumented magic numbers / unexplained --stats shift.",
+   "file": "glue.rs",
+   "line": 740,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a45e910505af937af"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ab341ab882a25cf28"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a05b2537f0eec312c"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a27a0d3e50c69a2e5"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a90803beccdff50af"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-ae0e30873a6731490"
+    }
+   ],
+   "verdict": "false-positive",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 80,
+   "rationale": "Matches known_safe safe-glue: the 262146 -> 262142 constants are the expected consequence of detecting binary data over the fully-filled buffer before searching, and the adjacent in-file comment already explains it."
+  },
+  {
+   "cluster_id": "c8",
+   "summary": "Narrowing roll() lookback to before_context leaves correctness on an implicit, unguarded invariant (no debug_assert).",
+   "file": "core.rs",
+   "line": 198,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a4854df96b6ae33f9"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a880bf4bf625211c2"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-abb66db32a884be3a"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "Asks for a debug_assert without naming the invariant to assert; the narrowing to before_context is the intended and correct fix (kept by the revert), and 'add an assertion where an invariant is implicit' is an unbounded suggestion class."
+  },
+  {
+   "cluster_id": "c9",
+   "summary": "Inner read loop propagates ErrorKind::Interrupted via ? instead of retrying (noted pre-existing).",
+   "file": "line_buffer.rs",
+   "line": 420,
+   "category": "logic",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aaa71b70703f98044"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a2b66c7f9b67e2100"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a84628f238e48ed35"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "subagent": "agent-a583893d07ba2c2dd"
+    }
+   ],
+   "verdict": "valid-minor",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 52,
+   "rationale": "In-repo anchored: the analogous manual read loop in searcher/mod.rs:1005 retries ErrorKind::Interrupted while the new inner loop propagates it via ?; the diff multiplies exposure and now loses accumulated bytes when it fires. Weakened by being pre-existing on the single-read version."
+  },
+  {
+   "cluster_id": "c10",
+   "summary": "CHANGELOG wording 'performance of large values with -A' reads awkwardly.",
+   "file": "CHANGELOG.md",
+   "line": 11,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-aea578d5186fbe56f"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "subagent": "agent-ae0e30873a6731490"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 74,
+   "rationale": "Pure wording preference on a one-line CHANGELOG entry the maintainer authored; meaning is unambiguous and no in-repo style rule is violated."
+  },
+  {
+   "cluster_id": "c11",
+   "summary": "In Quit binary mode the loop drains the buffer before binary detection, over-reading past a NUL by up to a buffer's worth.",
+   "file": "line_buffer.rs",
+   "line": 419,
+   "category": "perf",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-a4ce009b7f2251b1d"
+    },
+    {
+     "tool": "ours",
+     "repeat": 1,
+     "subagent": "agent-aa116db3581228904"
+    },
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-ace7c309669d036a2"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "subagent": "agent-a6fbaae9c0202cfa9/bug-scan",
+     "severity": "low"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 58,
+   "rationale": "Diff-verifiable: binary detection under BinaryDetection::Quit now runs only after the inner loop has filled the whole free buffer, so on a short-read stream ripgrep consumes up to a full buffer past the NUL before quitting. Real but low-impact \u2014 offsets stay correct."
+  },
+  {
+   "cluster_id": "c12",
+   "summary": "Read result bound to readlen; every other manual read loop in the crate names it nread.",
+   "file": "line_buffer.rs",
+   "line": 420,
+   "category": "style",
+   "reported_by": [
+    {
+     "tool": "ours",
+     "repeat": 2,
+     "subagent": "agent-a9d5d064299eb77b2"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 68,
+   "rationale": "The premise is true (siblings use nread), but readlen is the name the function already used on the deleted line, so the diff inherited rather than introduced it; pure local-variable taste."
+  },
+  {
+   "cluster_id": "c13",
+   "summary": "Inner loop advances self.end after each read, so a later read error in the same pass discards already-read bytes.",
+   "file": "line_buffer.rs",
+   "line": 418,
+   "category": "bug",
+   "reported_by": [
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 1,
+     "subagent": "agent-a40e39c82fa6d69de"
+    },
+    {
+     "tool": "tag1-comprehensive-review",
+     "repeat": 2,
+     "subagent": "agent-a35936c767b79b1db"
+    }
+   ],
+   "verdict": "valid-other",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 66,
+   "rationale": "True and diff-specific: self.end += readlen advances per iteration, and a subsequent read error propagates out of fill() before last_lineterm/binary detection run, so bytes read earlier in the same pass are never surfaced; the old code would have searched that first chunk."
+  },
+  {
+   "cluster_id": "c14",
+   "summary": "before/after/max_context() are three interchangeable bare usize (weak typing behind the regression).",
+   "file": "mod.rs",
+   "line": 213,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-af7dd0177ea7a1046"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a648384ad162f9549"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 85,
+   "rationale": "Points at mod.rs:213, which is not in the diff at all, and proposes newtypes for before/after/max_context \u2014 speculative design commentary about pre-existing code."
+  },
+  {
+   "cluster_id": "c15",
+   "summary": "LineBuffer ordering/bound invariants expressed only in prose over bare usize fields, not type-enforced.",
+   "file": "line_buffer.rs",
+   "line": 299,
+   "category": "design",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-af7dd0177ea7a1046"
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a648384ad162f9549"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 85,
+   "rationale": "Targets LineBuffer's pre-existing usize fields (untouched by the diff) and proposes an open-ended newtype redesign \u2014 unbounded refactor commentary, not a reviewable defect in this change."
+  },
+  {
+   "cluster_id": "c16",
+   "summary": "Binary detection spanning a read boundary is untested.",
+   "file": "line_buffer.rs",
+   "line": 431,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a280460d51bb6c4d0"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 64,
+   "rationale": "Detection is single-byte (find_byte for Quit, replace_bytes for Convert), so there is no cross-read-boundary state to get wrong; the new code scans the whole accumulated region in one pass. The named scenario cannot fail."
+  },
+  {
+   "cluster_id": "c17",
+   "summary": "EOF or error mid-accumulation inside the new inner loop is untested.",
+   "file": "line_buffer.rs",
+   "line": 419,
+   "category": "test",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "subagent": "agent-a280460d51bb6c4d0"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 68,
+   "rationale": "Half refuted: EOF mid-accumulation is exercised by nearly every existing line_buffer test. Only the error-mid-loop path is uncovered, and its substance is the data-loss issue rather than the test itself."
+  },
+  {
+   "cluster_id": "c20",
+   "summary": "self.last_lineterm = self.end has no explanatory comment.",
+   "file": "line_buffer.rs",
+   "line": 433,
+   "category": "doc",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "subagent": "agent-a98de0a6942a2c716"
+    }
+   ],
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 82,
+   "rationale": "self.last_lineterm = self.end is pre-existing code merely reordered above its explanatory comment, which still sits two lines below it; asking for another comment is noise."
+  }
+ ]
 }

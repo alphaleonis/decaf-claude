@@ -1,0 +1,137 @@
+{
+  "run_id": "10__anthropic-code-review__r2",
+  "subject_id": 10,
+  "lang": "rust",
+  "size": "small",
+  "tool": "anthropic-code-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "BurntSushi/ripgrep",
+  "pr": 3185,
+  "merge_sha": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "review_base": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0^1",
+  "review_head": "d4b77a8d8967ce1bf701ec65ceb9a75e85e5f2e0",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 482,
+  "duration_ms": "479905",
+  "duration_api_ms": "1084818",
+  "num_turns": "14",
+  "cost_usd": "5.264726849999998",
+  "orch_usage": {
+    "input_tokens": "11",
+    "output_tokens": "10931",
+    "cache_creation_tokens": "50842",
+    "cache_read_tokens": "285962",
+    "total_tokens": 347746
+  },
+  "session_tokens": {
+    "subagents": 9,
+    "input": 409,
+    "output": 75006,
+    "cache_creation": 471395,
+    "cache_read": 7164117,
+    "total": 7710927,
+    "orchestrator": {
+      "output": 10931,
+      "total": 347746,
+      "duration_s": 480
+    },
+    "per_subagent": [
+      {
+        "output": 506,
+        "input": 18,
+        "cache_creation": 18243,
+        "cache_read": 28560,
+        "total": 47327,
+        "duration_s": 12,
+        "agent": "agent-a42a7732e4d29bf83"
+      },
+      {
+        "output": 269,
+        "input": 18,
+        "cache_creation": 22776,
+        "cache_read": 29405,
+        "total": 52468,
+        "duration_s": 14,
+        "agent": "agent-a48877f307ac9544f"
+      },
+      {
+        "output": 1912,
+        "input": 90,
+        "cache_creation": 19913,
+        "cache_read": 275662,
+        "total": 297577,
+        "duration_s": 39,
+        "agent": "agent-a66a490ea291c2bf9"
+      },
+      {
+        "output": 8489,
+        "input": 42,
+        "cache_creation": 81564,
+        "cache_read": 1475175,
+        "total": 1565270,
+        "duration_s": 157,
+        "agent": "agent-a6fac905ec7e9d4bd"
+      },
+      {
+        "output": 16356,
+        "input": 60,
+        "cache_creation": 69221,
+        "cache_read": 1834695,
+        "total": 1920332,
+        "duration_s": 236,
+        "agent": "agent-a73136e15e0b9a761"
+      },
+      {
+        "output": 2613,
+        "input": 66,
+        "cache_creation": 32148,
+        "cache_read": 200395,
+        "total": 235222,
+        "duration_s": 41,
+        "agent": "agent-a784f3c775096e28e"
+      },
+      {
+        "output": 11635,
+        "input": 58,
+        "cache_creation": 71883,
+        "cache_read": 1784433,
+        "total": 1868009,
+        "duration_s": 183,
+        "agent": "agent-ac180b6229a9adf91"
+      },
+      {
+        "output": 22125,
+        "input": 42,
+        "cache_creation": 75826,
+        "cache_read": 1207149,
+        "total": 1305142,
+        "duration_s": 281,
+        "agent": "agent-af855c2ffe8c13358"
+      },
+      {
+        "output": 170,
+        "input": 4,
+        "cache_creation": 28979,
+        "cache_read": 42681,
+        "total": 71834,
+        "duration_s": 10,
+        "agent": "agent-afd3b5d75df99de0d"
+      }
+    ],
+    "max_subagent_duration_s": 281,
+    "sum_subagent_duration_s": 973
+  },
+  "input_tokens": "11",
+  "output_tokens": "10931",
+  "cache_creation_tokens": "50842",
+  "cache_read_tokens": "285962",
+  "total_tokens": 347746,
+  "session_id": "a836fd23-b0c5-4cc6-9712-9c4ffff1739a",
+  "findings_lines": 25,
+  "invocation": "Use the Skill tool to run `code-review:code-review` — the plugin-qualified command from code-review@claude-plugins-official. It is NOT `decaf-quality:code-review`: a different tool ships a skill of the same bare name, so never invoke a bare `/code-review`, and abort rather than substituting anything else if the qualified skill does not resolve. Review pull request #3185 of the GitHub repository BurntSushi/ripgrep. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-29T00:07:07Z"
+}

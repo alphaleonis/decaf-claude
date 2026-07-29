@@ -1,0 +1,110 @@
+[
+ {
+  "cluster_id": "c1",
+  "summary": "fill()'s new inner read loop reads until the buffer is full or EOF instead of returning after a usable line is available, regressing streaming/interactive/line-buffered latency (tail -f, journalctl -f).",
+  "file": "line_buffer.rs",
+  "line": 419
+ },
+ {
+  "cluster_id": "c7",
+  "summary": "Changed glue.rs golden byte-count constants (262146->262142) are undocumented magic numbers / unexplained --stats shift.",
+  "file": "glue.rs",
+  "line": 740
+ },
+ {
+  "cluster_id": "c6",
+  "summary": "roll() comment 'skip this step when before_context==0' does not match the code (preceding() is called unconditionally).",
+  "file": "core.rs",
+  "line": 195
+ },
+ {
+  "cluster_id": "c8",
+  "summary": "Narrowing roll() lookback to before_context leaves correctness on an implicit, unguarded invariant (no debug_assert).",
+  "file": "core.rs",
+  "line": 198
+ },
+ {
+  "cluster_id": "c2",
+  "summary": "CHANGELOG links issue #3184 with a /pull/ URL though #3184 is the issue (PR is #3185).",
+  "file": "CHANGELOG.md",
+  "line": 11
+ },
+ {
+  "cluster_id": "c15",
+  "summary": "LineBuffer ordering/bound invariants expressed only in prose over bare usize fields, not type-enforced.",
+  "file": "line_buffer.rs",
+  "line": 299
+ },
+ {
+  "cluster_id": "c9",
+  "summary": "Inner read loop propagates ErrorKind::Interrupted via ? instead of retrying (noted pre-existing).",
+  "file": "line_buffer.rs",
+  "line": 420
+ },
+ {
+  "cluster_id": "c11",
+  "summary": "In Quit binary mode the loop drains the buffer before binary detection, over-reading past a NUL by up to a buffer's worth.",
+  "file": "line_buffer.rs",
+  "line": 419
+ },
+ {
+  "cluster_id": "c10",
+  "summary": "CHANGELOG wording 'performance of large values with -A' reads awkwardly.",
+  "file": "CHANGELOG.md",
+  "line": 11
+ },
+ {
+  "cluster_id": "c3",
+  "summary": "fill() inner loop's fill-to-capacity rationale not documented in code (only the commit message), so a maintainer could simplify it and reintroduce #3184.",
+  "file": "line_buffer.rs",
+  "line": 419
+ },
+ {
+  "cluster_id": "c17",
+  "summary": "EOF or error mid-accumulation inside the new inner loop is untested.",
+  "file": "line_buffer.rs",
+  "line": 419
+ },
+ {
+  "cluster_id": "c5",
+  "summary": "No regression test covers the roll() before_context-vs-max_context change across a buffer roll with large -A.",
+  "file": "core.rs",
+  "line": 198
+ },
+ {
+  "cluster_id": "c4",
+  "summary": "No test exercises fill()'s new multi-short-read amortization / incremental-read accumulation path.",
+  "file": "line_buffer.rs",
+  "line": 419
+ },
+ {
+  "cluster_id": "c20",
+  "summary": "self.last_lineterm = self.end has no explanatory comment.",
+  "file": "line_buffer.rs",
+  "line": 433
+ },
+ {
+  "cluster_id": "c12",
+  "summary": "Read result bound to readlen; every other manual read loop in the crate names it nread.",
+  "file": "line_buffer.rs",
+  "line": 420
+ },
+ {
+  "cluster_id": "c13",
+  "summary": "Inner loop advances self.end after each read, so a later read error in the same pass discards already-read bytes.",
+  "file": "line_buffer.rs",
+  "line": 418
+ },
+ {
+  "cluster_id": "c16",
+  "summary": "Binary detection spanning a read boundary is untested.",
+  "file": "line_buffer.rs",
+  "line": 431
+ },
+ {
+  "cluster_id": "c14",
+  "summary": "before/after/max_context() are three interchangeable bare usize (weak typing behind the regression).",
+  "file": "mod.rs",
+  "line": 213
+ }
+]
