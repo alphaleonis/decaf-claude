@@ -13,10 +13,27 @@ synthesis + conclusion**.
 - The single most important quality question: **did the tool catch the escaped bug?** Everything
   else (precision, noise, overlap, efficiency) is secondary to that.
 
+## 0.5 What is under test (2026-07-29)
+
+The study began as a five-tool comparison. It is now primarily a **preset comparison**: `ours-bugs`,
+`ours-review` and `ours-audit` — the three presets of the reworked code-review skill — run on one
+subject per size class (1 small, 5 medium, 9 large), with `anthropic-code-review` and `superpowers`
+retained as external reference points.
+
+**`pr-review-toolkit` and `tag1-comprehensive-review` are retired as targets** and will not be run
+again. Their 36 graded cells stay committed and stay in the analysis: they are the evidence behind
+several closed findings — notably the corroboration measurement that scrapped the disjoint-briefs
+intervention — and removing them would change cluster membership for every other tool, since
+clusters are pooled across whatever tools are present.
+
+**The `ours-*` cells are not comparable to the archived `ours` column.** Those ran the pre-axis
+skill at `mid --report`, before `roster`, `models`, `evidence` and `reach` existed. Treat the
+archived figures as a different tool, not as a baseline these can be diffed against.
+
 ## 1. Inputs (already on disk per cell)
 
 - `runs/<cell>/findings/` — `00-final-output.md` (consolidated) + `subagent-NN-*.md` (each agent's
-  full output) + the tool's own report file (ours/tag1).
+  full output) + the tool's own report file (the `ours-*` presets write one; the archived tag1 runs did too).
 - `runs/<cell>/meta.json` — cost, whole-session + per-subagent tokens, per-subagent + total timing.
 - `subjects/NN-*.json` `ground_truth` — the escaped bug, revert/fix PR, regression issue, human threads.
 - **The review diff** — `git diff <merge>^1 <merge>` (reconstructable from the pinned SHA). The judge
@@ -163,9 +180,11 @@ stripped and clusters shuffled before grading.
 Aggregate over all 12 subjects and slice by the two axes:
 - **tool × size** — does bug-catch or precision degrade on large PRs?
 - **tool × language** — weak spots (e.g., ours on Rust/Go, its non-primary stacks)?
-- **overall** — the **cost–quality frontier**: is the fan-out premium (ours/anthropic/tag1 at
-  ~$13–20) *buying* bug-catches and unique true findings, or mostly more noise vs. the lean tools
-  (pr-review-toolkit $9, superpowers $3)? Which tool wins per context.
+- **overall** — the **cost–quality frontier**: is the fan-out premium *buying* bug-catches and
+  unique true findings, or mostly more noise vs. the lean tools? Which tool wins per context.
+- **preset × preset** (from 2026-07-29) — the comparison the study now exists for: `bugs` / `review`
+  / `audit` on identical code. Cross-tool ranking is secondary; the live question is what each
+  preset delivers for what it costs.
 
 ## 6. Report (self-contained HTML)
 
