@@ -46,6 +46,16 @@ one or two short paragraphs:
 writing chart code). Favicon 🔬. Also copy the file to
 `competition/benchmark/analysis/synthesis-report.html` so it survives the scratchpad.
 
+**Update the existing artifact — do not mint a new one.** Pass its URL:
+
+```
+https://claude.ai/code/artifact/99994352-ac12-4729-a6dc-29f6309ecdc4
+```
+
+Without `url`, a session that did not itself publish the page gets a *new* URL, and the old one
+stays live with superseded numbers. That has already happened once: `198955f4-3eb…` is a stranded
+2026-07-28 copy carrying the contaminated anthropic figures (#dcc-9kkz) — treat it as dead.
+
 ## Non-negotiables
 
 - **Shares, not raw counts**, for every quality comparison. Cluster granularity varies per subject
