@@ -1,0 +1,200 @@
+{
+  "run_id": "9__anthropic-code-review__r2",
+  "subject_id": 9,
+  "lang": "go",
+  "size": "large",
+  "tool": "anthropic-code-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "kubernetes/kubernetes",
+  "pr": 130837,
+  "merge_sha": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "review_base": "0872760763d5877707b018a4eea870d1fc02e6a4^1",
+  "review_head": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1052,
+  "duration_ms": "91349",
+  "duration_api_ms": "2796314",
+  "num_turns": "1",
+  "cost_usd": "10.462779699999993",
+  "orch_usage": {
+    "input_tokens": "2",
+    "output_tokens": "6698",
+    "cache_creation_tokens": "1194",
+    "cache_read_tokens": "119967",
+    "total_tokens": 127861
+  },
+  "session_tokens": {
+    "subagents": 16,
+    "input": 1338,
+    "output": 201038,
+    "cache_creation": 879171,
+    "cache_read": 14546919,
+    "total": 15628466,
+    "orchestrator": {
+      "output": 42973,
+      "total": 1911722,
+      "duration_s": 1051
+    },
+    "per_subagent": [
+      {
+        "output": 22487,
+        "input": 68,
+        "cache_creation": 98348,
+        "cache_read": 2512359,
+        "total": 2633262,
+        "duration_s": 367,
+        "agent": "agent-a3f30e21cf9035b46"
+      },
+      {
+        "output": 5043,
+        "input": 178,
+        "cache_creation": 29785,
+        "cache_read": 668187,
+        "total": 703193,
+        "duration_s": 214,
+        "agent": "agent-a4932707f145e86fc"
+      },
+      {
+        "output": 606,
+        "input": 6,
+        "cache_creation": 39622,
+        "cache_read": 69808,
+        "total": 110042,
+        "duration_s": 12,
+        "agent": "agent-a5a2393d842928d4d"
+      },
+      {
+        "output": 4764,
+        "input": 122,
+        "cache_creation": 24599,
+        "cache_read": 429689,
+        "total": 459174,
+        "duration_s": 73,
+        "agent": "agent-a678aca0bdb750698"
+      },
+      {
+        "output": 24218,
+        "input": 76,
+        "cache_creation": 114969,
+        "cache_read": 3250067,
+        "total": 3389330,
+        "duration_s": 383,
+        "agent": "agent-a769bca7c6cdeb8aa"
+      },
+      {
+        "output": 3044,
+        "input": 50,
+        "cache_creation": 21496,
+        "cache_read": 140532,
+        "total": 165122,
+        "duration_s": 41,
+        "agent": "agent-a90cada87bce8e726"
+      },
+      {
+        "output": 32546,
+        "input": 24,
+        "cache_creation": 111784,
+        "cache_read": 942238,
+        "total": 1086592,
+        "duration_s": 437,
+        "agent": "agent-a95311838ab8d597e"
+      },
+      {
+        "output": 5143,
+        "input": 90,
+        "cache_creation": 34532,
+        "cache_read": 315613,
+        "total": 355378,
+        "duration_s": 77,
+        "agent": "agent-aa3419148358744d9"
+      },
+      {
+        "output": 3986,
+        "input": 42,
+        "cache_creation": 56646,
+        "cache_read": 146517,
+        "total": 207191,
+        "duration_s": 53,
+        "agent": "agent-abe9efdccb52e2f25"
+      },
+      {
+        "output": 3649,
+        "input": 106,
+        "cache_creation": 27920,
+        "cache_read": 375867,
+        "total": 407542,
+        "duration_s": 185,
+        "agent": "agent-ac2bd752ae3bb73a7"
+      },
+      {
+        "output": 1440,
+        "input": 10,
+        "cache_creation": 11968,
+        "cache_read": 8576,
+        "total": 21994,
+        "duration_s": 15,
+        "agent": "agent-ac5cb3102f1ef01db"
+      },
+      {
+        "output": 37935,
+        "input": 54,
+        "cache_creation": 116374,
+        "cache_read": 2289955,
+        "total": 2444318,
+        "duration_s": 466,
+        "agent": "agent-ac96bf736d4a8f773"
+      },
+      {
+        "output": 4239,
+        "input": 98,
+        "cache_creation": 35001,
+        "cache_read": 333860,
+        "total": 373198,
+        "duration_s": 69,
+        "agent": "agent-ad0b1814e8213c0b1"
+      },
+      {
+        "output": 941,
+        "input": 50,
+        "cache_creation": 26699,
+        "cache_read": 123996,
+        "total": 151686,
+        "duration_s": 26,
+        "agent": "agent-ae0b81310608bfe8e"
+      },
+      {
+        "output": 5157,
+        "input": 242,
+        "cache_creation": 29475,
+        "cache_read": 899424,
+        "total": 934298,
+        "duration_s": 111,
+        "agent": "agent-aeb3de47d1bf75b38"
+      },
+      {
+        "output": 2867,
+        "input": 82,
+        "cache_creation": 21740,
+        "cache_read": 249735,
+        "total": 274424,
+        "duration_s": 44,
+        "agent": "agent-aece1b95bf274779d"
+      }
+    ],
+    "max_subagent_duration_s": 466,
+    "sum_subagent_duration_s": 2573
+  },
+  "input_tokens": "2",
+  "output_tokens": "6698",
+  "cache_creation_tokens": "1194",
+  "cache_read_tokens": "119967",
+  "total_tokens": 127861,
+  "session_id": "bba063a2-b609-453e-8d70-4c87529a6c2a",
+  "findings_lines": 43,
+  "invocation": "Use the Skill tool to run `code-review:code-review` — the plugin-qualified command from code-review@claude-plugins-official. It is NOT `decaf-quality:code-review`: a different tool ships a skill of the same bare name, so never invoke a bare `/code-review`, and abort rather than substituting anything else if the qualified skill does not resolve. Review pull request #130837 of the GitHub repository kubernetes/kubernetes. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-29T00:59:11Z"
+}
