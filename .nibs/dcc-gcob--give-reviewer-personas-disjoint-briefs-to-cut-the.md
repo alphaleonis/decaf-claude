@@ -2,14 +2,14 @@
 # dcc-gcob
 version: 1
 title: Give reviewer personas disjoint briefs to cut the 77% restatement rate
-status: todo
+status: scrapped
 type: feature
 priority: normal
 estimate: l
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-07-29T11:45:03Z
+updated_at: 2026-07-29T13:26:49Z
 parent: dcc-hyxw
 order: aw
 ---
@@ -108,3 +108,62 @@ one.
 
 Treat a rise in partial r(cost, repo | diff) above the 0.403 baseline as a **regression**, and
 measure it in the same re-run as the restatement rate.
+
+## Reasons for Scrapping
+## Reasons for Scrapping
+
+Measured before building. **The premise does not hold: the redundancy this nib set out to remove is
+the signal consolidation depends on.**
+
+### 1. The 77% baseline does not measure sibling restatement
+
+It is `1 − distinct_clusters / all reported_by rows`, macro-averaged across subjects
+(`compute_metrics.py::subagent_distinctness`). That denominator counts three things that are not a
+reviewer restating a sibling:
+
+- **consolidated-report rows** — not a sub-agent at all;
+- **validator rows** — whose *job* is to re-examine an already-raised finding (98% co-occurrence,
+  by construction);
+- **the same agent finding the same thing in both repeats** — that is determinism, a property worth
+  having, counted here as waste (the metric is repeat-agnostic when counting distinct clusters but
+  not when counting instances).
+
+Reviewer-to-reviewer restatement *within a single run* is **47%** (512 reviewer findings over 272
+distinct clusters), not 77%.
+
+### 2. Corroboration is the strongest quality signal in the roster
+
+| tier | mean finders | 2+ finders | 3+ finders |
+|---|---|---|---|
+| substantive | **2.80** | **72%** | 46% |
+| valid-minor | 1.64 | 38% | 15% |
+| trivia / FP | 1.32 | 16% | 7% |
+
+### 3. The redundancy sits on real findings, not noise
+
+Of 240 restated reviewer findings, **62% land on substantive clusters** and only **12%** on
+trivia/FP. Disjoint briefs delete those 240 findings, and what goes is mostly agreement about things
+that turned out to be real. 72% of substantive findings would fall to a single finder — which is
+exactly where 84% of trivia already sits. Consolidation would lose its discriminator, and Step 5
+rule 4 (promote confidence on agreement) would have nothing to act on.
+
+The `# The risk` section above anticipated this. The measurement says it is not a risk to be managed
+by careful brief-writing — it is the dominant effect, and it is what the intervention removes.
+
+**One nuance worth keeping:** narrowing any *single* persona is cheap — each costs 0–4 substantive
+clusters and demotes ~2 to single-finder. The damage is collective. That asymmetry is why disjoint
+briefs read as safe when reasoned about one agent at a time, and are not in aggregate.
+
+### The cost problem is real; this was the wrong lever
+
+The 19.5k vs 9.6k per-agent output gap stands. It is not caused by territorial overlap. A quarter of
+reviewer report text is non-finding prose — Considered But Not Flagged 20.1%, probe requests 3.6%,
+positive observations 1.4% — and #dcc-3fl5 measured CBNF as yielding 7 promotions across 18 runs,
+none substantive. Recorded here rather than opened as a follow-up (operator's call, 2026-07-29); it
+is the obvious place to look if the per-agent gap is attacked again.
+
+### Known defect left in place
+
+`compute_metrics.py::subagent_distinctness` does not compute what `METHODOLOGY.md` line 131 says it
+computes. It is still published per subject. Not fixed here — flagged so the next reader of that
+column does not repeat this nib's mistake.

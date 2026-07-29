@@ -39,7 +39,7 @@ reasoning, measured basis and risk per intervention live in #dcc-e0wj under
 - **Orchestrator thinking is 60–77% of orchestrator output**, and the orchestrator is 23% of
   session output. Consolidation is genuinely frontier-model work — there is no
   prompt-engineering fix.
-- **~77% of sub-agent findings restate a sibling's**, and ours emits 19.5k output per agent
+- **~47% of sub-agent findings restate a sibling's** — the 77% previously cited counts validator rows, consolidated-report rows and cross-repeat determinism; corrected in #dcc-gcob, which also found the restatement is mostly corroboration of substantive findings. Ours emits 19.5k output per agent
   against anthropic's 9.6k — a 2.0x gap on the repaired data.
 
 # The trap these all share
@@ -62,6 +62,14 @@ the full 9-subject × 2-repeat sweep, ~$160 single-repeat (giving up stochastici
 blind re-grading. Prefer interventions that can share one re-run.
 
 # Sequencing
+
+**Sweep order is fixed: #dcc-c2uc + #dcc-1xtt are already landed and unverified, so the next
+benchmark spend measures those two and nothing else.** Both changed the default path (validators to
+the cheap tier; stack-reviewer and security dispatch gates), and both carry a named risk that hides
+in aggregate — a cheap validator becoming a rubber stamp, and a narrowed stack gate missing subtler
+idiom surface. Landing any further roster or persona change before that sweep makes its results
+unattributable. Decided 2026-07-29.
+
 Ordered **free work first, then cheap-and-safe paid work, then the big lever, then the parked
 items** — so every question that can be settled without API spend is settled before any re-run is
 bought, and the riskiest change lands last when the baseline is already improved.
@@ -76,10 +84,13 @@ bought, and the riskiest change lands last when the baseline is already improved
    anthropic does the same job on Haiku. Low risk, coverage unchanged. **Shares one re-run with 4.**
 4. **#dcc-1xtt** — cheap and independently testable per gate; loosening `security-reviewer` costs
    more, not less, so pair it with 3 in the same re-run to net out.
-5. **#dcc-gcob** — the big lever, and **the repair raised its rank** (see below). Needs its own
-   re-run and carries the highest risk in the epic: stripping overlap can cost corroboration, and
-   ours' calibration (0.70, 21/30) is its weakest metric against anthropic, though no longer by
-   the margin the pre-#dcc-hmp6 figure suggested.
+5. ~~**#dcc-gcob** — the big lever.~~ **SCRAPPED 2026-07-29 without a re-run.** The measurement
+   that would have justified it refuted it instead: the 77% restatement baseline counted validator
+   rows, consolidated-report rows and cross-repeat determinism (real figure 47%), and the
+   redundancy is corroboration — substantive clusters average 2.80 finders against trivia's 1.32,
+   and 62% of all restatement lands on substantive findings. Disjoint briefs would have deleted the
+   signal consolidation ranks on. **The epic's biggest lever is gone, and no replacement is
+   planned** — the per-agent output gap (19.5k vs 9.6k) is unattacked. See #dcc-gcob.
 6. **#dcc-lf4a** — small and free to implement, but low single-digit percent of session output;
    do not let it displace the above.
 7. **#dcc-2a8i** — `draft`. Its premise weakened with the repair: if per-agent verbosity rather
