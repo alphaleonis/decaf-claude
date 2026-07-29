@@ -71,652 +71,647 @@
   }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px 96px; }
 
-  .mono, .num, table, .tag, .axis, .cellgrid {
+  .mono, .num, table, .tag, .axis, .cellgrid, .vlabel {
     font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
     font-variant-numeric: tabular-nums;
   }
 
   /* ---------- masthead ---------- */
-  header.top {
-    padding: 72px 0 40px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 48px;
-  }
+  header.top { padding: 72px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
   .eyebrow {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--accent); margin: 0 0 18px;
+    color: var(--ink-3); margin: 0 0 18px;
   }
   h1 {
-    font-size: clamp(30px, 4.6vw, 46px);
-    line-height: 1.08; letter-spacing: -.022em; font-weight: 640;
-    margin: 0 0 20px; text-wrap: balance; max-width: 20ch;
+    font-size: clamp(30px, 4.4vw, 46px); line-height: 1.12; letter-spacing: -.022em;
+    margin: 0 0 20px; text-wrap: balance; font-weight: 640; max-width: 20ch;
   }
-  .standfirst {
-    font-size: 18px; line-height: 1.55; color: var(--ink-2);
-    max-width: 62ch; margin: 0 0 32px;
+  .standfirst { font-size: 18px; line-height: 1.62; color: var(--ink-2); max-width: 68ch; margin: 0 0 28px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px; padding: 5px 10px; border: 1px solid var(--border-2);
+    border-radius: 4px; color: var(--ink-2); background: var(--surface);
+    font-variant-numeric: tabular-nums;
   }
-  .scope { display: flex; flex-wrap: wrap; gap: 8px; }
-  .tag {
-    font-size: 12px; padding: 5px 10px; border-radius: 3px;
-    background: var(--surface-2); color: var(--ink-2);
-    border: 1px solid var(--border);
-  }
+  .chip b { color: var(--ink); font-weight: 620; }
 
   /* ---------- sections ---------- */
-  section { margin: 0 0 72px; }
+  section { margin: 0 0 52px; }
   h2 {
-    font-size: 13px; letter-spacing: .12em; text-transform: uppercase;
+    font-size: 13px; letter-spacing: .13em; text-transform: uppercase; font-weight: 640;
+    color: var(--ink-3); margin: 0 0 6px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    color: var(--ink-3); font-weight: 600;
-    margin: 0 0 6px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
   }
-  h3 {
-    font-size: clamp(21px, 2.6vw, 27px); line-height: 1.2; letter-spacing: -.015em;
-    font-weight: 620; margin: 18px 0 14px; text-wrap: balance; max-width: 30ch;
+  .claim {
+    font-size: 21px; line-height: 1.42; letter-spacing: -.012em; font-weight: 600;
+    margin: 0 0 22px; max-width: 60ch; text-wrap: balance;
   }
-  p { margin: 0 0 16px; max-width: 68ch; color: var(--ink-2); }
-  p strong { color: var(--ink); font-weight: 620; }
-  .lede { color: var(--ink); font-size: 17px; }
-
-  /* ---------- panels ---------- */
+  section p { color: var(--ink-2); max-width: 68ch; margin: 16px 0 0; font-size: 15.5px; }
+  section p strong { color: var(--ink); font-weight: 620; }
   .panel {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 24px; box-shadow: var(--shadow);
-    margin: 24px 0;
+    border-radius: 8px; padding: 22px; box-shadow: var(--shadow);
   }
-  .panel-title {
-    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--ink-3); margin: 0 0 4px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  }
-  .panel-sub { font-size: 13px; color: var(--ink-3); margin: 0 0 20px; max-width: 70ch; }
-
-  /* ---------- stat strip ---------- */
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px;
-           background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-  .stat { background: var(--surface); padding: 18px 20px; }
-  .stat .v { font-size: 27px; font-weight: 620; letter-spacing: -.02em; display: block; line-height: 1.15;
-             font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
-  .stat .k { font-size: 11.5px; color: var(--ink-3); letter-spacing: .06em; text-transform: uppercase; margin-top: 6px; display: block; }
+  .scroller { overflow-x: auto; }
 
   /* ---------- tables ---------- */
-  .scroll { overflow-x: auto; margin: 0 -4px; padding: 0 4px; }
-  table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 640px; }
-  th, td { text-align: right; padding: 9px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-  th:first-child, td:first-child { text-align: left; }
-  thead th {
-    font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
-    color: var(--ink-3); font-weight: 600; border-bottom: 1px solid var(--border-2);
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 640px; }
+  th {
+    text-align: right; font-weight: 600; color: var(--ink-3); padding: 0 12px 10px;
+    border-bottom: 1px solid var(--border-2); white-space: nowrap; font-size: 12px;
+    letter-spacing: .04em;
   }
+  th:first-child, td:first-child { text-align: left; padding-left: 4px; }
+  td { text-align: right; padding: 11px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
   tbody tr:last-child td { border-bottom: none; }
-  tbody tr.hl td { background: color-mix(in srgb, var(--accent) 7%, transparent); }
-  td.best { color: var(--good); font-weight: 620; }
-  td.worst { color: var(--bad); }
+  td.name { color: var(--ink); font-weight: 600; }
+  .best { color: var(--good); font-weight: 650; }
+  .worst { color: var(--bad); font-weight: 650; }
+  .sub { color: var(--ink-3); font-size: 12px; }
 
-  /* ---------- bars ---------- */
-  .rows { display: flex; flex-direction: column; gap: 12px; }
-  .row { display: grid; grid-template-columns: 170px 1fr 66px; gap: 14px; align-items: center; }
-  .row .lbl { font-size: 12.5px; color: var(--ink-2); text-align: right;
-              font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  .row .val { font-size: 12.5px; color: var(--ink);
-              font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
-  .track { background: var(--surface-2); border-radius: 3px; height: 26px; position: relative; overflow: hidden; }
-  .fill { height: 100%; border-radius: 0 3px 3px 0; }
-
-  /* stacked */
-  .stack { display: flex; height: 26px; border-radius: 3px; overflow: hidden; background: var(--surface-2); gap: 2px; }
-  .seg { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;
-         color: #fff; min-width: 0;
-         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  .seg:first-child { border-radius: 3px 0 0 3px; }
-  .seg:last-child  { border-radius: 0 3px 3px 0; }
-
-  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--border); }
-  .lg { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink-2); }
-  .sw { width: 11px; height: 11px; border-radius: 2px; flex: none; }
-
-  /* ---------- matrix ---------- */
-  .cellgrid { display: grid; gap: 3px; grid-template-columns: 176px repeat(9, minmax(30px, 1fr)); font-size: 11px; }
-  .cellgrid .hd { color: var(--ink-3); text-align: center; padding-bottom: 4px; line-height: 1.3; }
-  .cellgrid .rl { color: var(--ink-2); text-align: right; padding-right: 10px; align-self: center; font-size: 12px; }
-  .cl { aspect-ratio: 1.5 / 1; min-height: 26px; border-radius: 3px; display: flex; align-items: center;
-        justify-content: center; font-weight: 620; color: #fff; font-size: 11.5px; }
+  /* ---------- recall matrix ---------- */
+  .cellgrid { display: grid; gap: 3px; font-size: 12px; min-width: 620px; }
+  .cellgrid .hd { color: var(--ink-3); text-align: center; padding-bottom: 4px; font-size: 11px; }
+  .cellgrid .rn { color: var(--ink); text-align: left; padding-right: 12px; white-space: nowrap; font-size: 12.5px; }
+  .cg-cell {
+    height: 30px; display: flex; align-items: center; justify-content: center;
+    border-radius: 3px; font-weight: 620; color: #fff;
+  }
   .c2 { background: var(--tier-1); }
   .c1 { background: color-mix(in srgb, var(--tier-1) 46%, var(--surface-2)); color: var(--ink); }
-  .c0 { background: var(--surface-2); color: var(--ink-3); border: 1px dashed var(--border-2); }
+  .c0 { background: var(--surface-2); color: var(--ink-3); }
 
-  /* ---------- scatter ---------- */
-  figure { margin: 0; }
-  .plot { width: 100%; height: auto; display: block; }
-  .plot text { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+  /* ---------- stacked bars ---------- */
+  .barrow { display: grid; grid-template-columns: 190px 1fr 128px; gap: 14px; align-items: center; margin-bottom: 10px; }
+  .barrow .vlabel { font-size: 12.5px; color: var(--ink); text-align: right; }
+  .stack { display: flex; height: 30px; border-radius: 3px; overflow: hidden; gap: 2px; }
+  .seg { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 640; color: #fff;
+         font-family: ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; min-width: 0; }
+  .s1 { background: var(--tier-1); }
+  .s2 { background: var(--tier-2); }
+  .s3 { background: var(--tier-3); color: #23180a; }
+  .aside { font-size: 12.5px; color: var(--ink-2); font-family: ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; }
+  .aside b { color: var(--ink); }
 
-  /* ---------- callout ---------- */
-  .call {
-    border-left: 3px solid var(--accent); padding: 4px 0 4px 20px; margin: 28px 0;
+  .simplebar { display: grid; grid-template-columns: 190px 1fr 92px; gap: 14px; align-items: center; margin-bottom: 9px; }
+  .track { background: var(--surface-2); border-radius: 3px; height: 26px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 3px; background: var(--tier-1); }
+  .fill.warn { background: var(--tier-3); }
+
+  legend, .legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 4px 0 18px; font-size: 12.5px; color: var(--ink-2);
+                    font-family: ui-monospace, Menlo, monospace; }
+  .key { display: inline-flex; align-items: center; gap: 7px; }
+  .sw { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+
+  /* ---------- conclusions ---------- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; box-shadow: var(--shadow); }
+  .card .role {
+    font-family: ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 6px; font-weight: 650;
   }
-  .call p { color: var(--ink); font-size: 17px; margin: 0; max-width: 62ch; }
+  .card h3 { margin: 0 0 10px; font-size: 16.5px; letter-spacing: -.01em; }
+  .card p { font-size: 14px; margin: 0 0 14px; color: var(--ink-2); max-width: none; }
+  .figs { display: flex; gap: 18px; border-top: 1px solid var(--border); padding-top: 12px; flex-wrap: wrap; }
+  .fig .n { font-family: ui-monospace, Menlo, monospace; font-size: 17px; font-weight: 640; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .fig .l { font-size: 10.5px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .07em;
+            font-family: ui-monospace, Menlo, monospace; }
 
-  /* ---------- verdict cards ---------- */
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin-top: 24px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 20px; box-shadow: var(--shadow); }
-  .card h4 { margin: 0 0 3px; font-size: 15.5px; font-weight: 640; letter-spacing: -.01em;
-             font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  .card .role { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
-  .card p { font-size: 14px; margin: 0; color: var(--ink-2); }
-  .card .figs { display: flex; gap: 14px; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--border); flex-wrap: wrap; }
-  .card .fig { font-size: 11.5px; color: var(--ink-3);
-               font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  .card .fig b { display: block; font-size: 15px; color: var(--ink); font-weight: 620; font-variant-numeric: tabular-nums; }
+  ul.caveats { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 15px; max-width: 72ch; }
+  ul.caveats li { margin-bottom: 11px; }
+  ul.caveats strong { color: var(--ink); font-weight: 620; }
 
-  ul.notes { padding-left: 20px; max-width: 68ch; color: var(--ink-2); font-size: 14.5px; }
-  ul.notes li { margin-bottom: 9px; }
+  footer { border-top: 1px solid var(--border); padding-top: 22px; color: var(--ink-3); font-size: 12.5px;
+           font-family: ui-monospace, Menlo, monospace; }
 
-  a { color: var(--accent); }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
-  [title] { cursor: help; }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
-  @media (max-width: 620px) {
-    .row { grid-template-columns: 116px 1fr 58px; gap: 9px; }
-    .cellgrid { grid-template-columns: 112px repeat(9, minmax(22px, 1fr)); font-size: 10px; }
-    .wrap { padding: 0 16px 64px; }
+  @media (max-width: 720px) {
+    .barrow, .simplebar { grid-template-columns: 132px 1fr; }
+    .barrow .aside, .simplebar > span:last-child { grid-column: 2; text-align: left; }
   }
 </style>
 
 <div class="wrap">
 
 <header class="top">
-  <p class="eyebrow">Benchmark synthesis · 9 of 12 subjects</p>
-  <h1>Every reviewer finds the bug. The difference is what else they say.</h1>
+  <p class="eyebrow">Controlled benchmark · findings-quality analysis</p>
+  <h1>Finding the bug is table stakes. The gap is everything else you have to read.</h1>
   <p class="standfirst">
-    Five AI code-review tools, each run twice against nine real pull requests that shipped a
-    regression and were later reverted. 90 isolated runs, 4,158 raw findings, every finding
-    blind-graded against a frozen answer key. Catching the escaped bug turns out to be
-    close to table stakes — the honest separation is in noise discipline, severity
-    calibration, and cost, which span an order of magnitude.
+    Five code-review tools, nine merged-then-reverted pull requests, two repeats each — every finding
+    clustered and graded blind against a frozen answer key. On six of nine subjects almost every tool
+    found the escaped bug, so recall barely separates the field. What separates it is the ratio of
+    substantive findings to noise, and the price paid per substantive finding — which spans <b>5×</b>
+    across the field.
   </p>
-  <div class="scope">
-    <span class="tag">9 subjects · 3 languages · 3 size classes</span>
-    <span class="tag">90 runs · 2 repeats each</span>
-    <span class="tag">blind-graded, tool identity stripped</span>
-    <span class="tag">judge: claude-opus-4-8</span>
-    <span class="tag">$1,096 total spend</span>
+  <div class="chips">
+    <span class="chip"><b>9</b> subjects</span>
+    <span class="chip"><b>90</b> runs</span>
+    <span class="chip"><b>337</b> clusters graded blind</span>
+    <span class="chip">judge <b>claude-opus-5</b></span>
+    <span class="chip">spend <b>$1,020</b></span>
   </div>
 </header>
 
 <section>
   <h2>Headline</h2>
-  <h3>The five tools at a glance</h3>
+  <p class="claim">One tool leads on every quality axis at a third of the leading cost.</p>
+  <div class="panel scroller">
+    <table>
+      <thead>
+        <tr>
+          <th>Tool</th><th>Bug caught</th><th>Substantive</th><th>Trivia</th><th>False pos.</th>
+          <th>Calibration</th><th>Findings / run</th><th>$ / run</th><th>$ / substantive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name">anthropic /code-review</td>
+          <td class="num best">18/18</td><td class="num best">56%</td><td class="num">16%</td>
+          <td class="num">4%</td><td class="num best">0.92</td><td class="num">5.6</td>
+          <td class="num">$7.61</td><td class="num">$2.54</td>
+        </tr>
+        <tr>
+          <td class="name">superpowers</td>
+          <td class="num">14/18</td><td class="num">39%</td><td class="num best">15%</td>
+          <td class="num worst">7%</td><td class="num">0.63</td><td class="num">6.5</td>
+          <td class="num best">$2.44</td><td class="num best">$0.90</td>
+        </tr>
+        <tr>
+          <td class="name">ours (decaf-quality)</td>
+          <td class="num">16/18</td><td class="num">30%</td><td class="num">29%</td>
+          <td class="num">5%</td><td class="num worst">0.50</td><td class="num">15.8</td>
+          <td class="num worst">$21.33</td><td class="num worst">$4.57</td>
+        </tr>
+        <tr>
+          <td class="name">tag1 comprehensive</td>
+          <td class="num">15/18</td><td class="num">27%</td><td class="num">35%</td>
+          <td class="num">5%</td><td class="num">0.55</td><td class="num">18.1</td>
+          <td class="num">$16.72</td><td class="num">$3.46</td>
+        </tr>
+        <tr>
+          <td class="name">pr-review-toolkit</td>
+          <td class="num worst">12/18</td><td class="num worst">20%</td><td class="num worst">42%</td>
+          <td class="num best">3%</td><td class="num">0.47</td><td class="num worst">21.3</td>
+          <td class="num">$8.56</td><td class="num">$2.03</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
   <p>
-    Every row is 18 runs. <strong>Substantive</strong> means the graded finding was the escaped bug,
-    a human-raised issue, or another real defect verified against the code. <strong>Trivia</strong> is
-    true-but-low-value output: taste, speculation, out-of-scope, or unbounded "add more tests" lists.
+    Shares are of that tool's own graded clusters, pooled across all 90 runs. Cluster granularity varies
+    a lot by subject (18 to 95), so raw per-run counts are not comparable across subjects — every quality
+    comparison here is a share. <strong>Anthropic is the only tool that is simultaneously the most accurate
+    and among the cheapest</strong>; ours is the most expensive on both axes.
   </p>
-  <div class="panel">
-    <div class="scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>Tool</th><th>Bug caught</th><th>Substantive</th><th>Trivia</th>
-            <th>False pos.<br>per run</th><th>Severity<br>calibration</th>
-            <th>Findings<br>per run</th><th>Cost<br>per run</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="hl">
-            <td>anthropic-code-review</td><td class="best">18/18</td><td class="best">49%</td><td>25%</td>
-            <td>0.39</td><td class="best">0.88</td><td>9.8</td><td>$11.82</td>
-          </tr>
-          <tr>
-            <td>superpowers</td><td>14/18</td><td>42%</td><td class="best">21%</td>
-            <td class="best">0.11</td><td>0.63</td><td class="best">6.5</td><td class="best">$2.48</td>
-          </tr>
-          <tr>
-            <td>ours</td><td>16/18</td><td>36%</td><td>31%</td>
-            <td>0.33</td><td>0.62</td><td>15.8</td><td class="worst">$21.33</td>
-          </tr>
-          <tr>
-            <td>tag1-comprehensive-review</td><td>15/18</td><td>32%</td><td>37%</td>
-            <td>0.39</td><td>0.61</td><td>18.1</td><td>$16.72</td>
-          </tr>
-          <tr>
-            <td>pr-review-toolkit</td><td class="worst">12/18</td><td class="worst">25%</td><td class="worst">42%</td>
-            <td>0.28</td><td class="worst">0.51</td><td class="worst">21.3</td><td>$8.56</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="call">
-    <p>
-      The spread that matters isn't recall. It's that one tool spends a quarter of its output on
-      trivia and another spends nearly half — and that the most expensive run costs
-      <strong>8.6&times;</strong> the cheapest.
-    </p>
-  </div>
 </section>
 
 <section>
   <h2>Recall</h2>
-  <h3>Finding the escaped bug is close to table stakes</h3>
-  <p>
-    Each cell shows how many of the two repeats caught that subject's escaped bug.
-    On <strong>six of nine subjects the field is saturated</strong> — nine or ten of ten runs found it,
-    with a seventh at eight of ten. The large majority of all misses (12 of 15) fall on just two subjects.
-  </p>
+  <p class="claim">Six of nine subjects are saturated. The ranking rests on the other three.</p>
+  <div class="panel scroller">
+    <div class="cellgrid" style="grid-template-columns: 200px repeat(9, 1fr);">
+      <div class="hd"></div>
+      <div class="hd">1</div><div class="hd">2</div><div class="hd">3</div><div class="hd">4</div>
+      <div class="hd">5</div><div class="hd">6</div><div class="hd">7</div><div class="hd">9</div><div class="hd">10</div>
 
-  <div class="panel">
-    <p class="panel-title">Escaped bug caught, by subject</p>
-    <p class="panel-sub">Columns are subjects, labelled language / size. Value is repeats that caught it, out of 2.</p>
-    <div class="scroll">
-      <div class="cellgrid" role="table" aria-label="Bug catch by tool and subject">
-        <div></div>
-        <div class="hd">C#<br>sm</div><div class="hd">C#<br>md</div><div class="hd">C#<br>lg</div>
-        <div class="hd">TS<br>sm</div><div class="hd">TS<br>md</div><div class="hd">TS<br>lg</div>
-        <div class="hd">Go<br>sm</div><div class="hd">Go<br>lg</div><div class="hd">Rs<br>sm</div>
+      <div class="rn">anthropic /code-review</div>
+      <div class="cg-cell c2">2</div><div class="cg-cell c2">2</div><div class="cg-cell c2">2</div>
+      <div class="cg-cell c2">2</div><div class="cg-cell c2">2</div><div class="cg-cell c2">2</div>
+      <div class="cg-cell c2">2</div><div class="cg-cell c2">2</div><div class="cg-cell c2">2</div>
 
-        <div class="rl">anthropic</div>
-        <div class="cl c2" title="C# small: 2/2">2</div><div class="cl c2" title="C# medium: 2/2">2</div><div class="cl c2" title="C# large: 2/2">2</div>
-        <div class="cl c2" title="TS small: 2/2">2</div><div class="cl c2" title="TS medium: 2/2">2</div><div class="cl c2" title="TS large: 2/2">2</div>
-        <div class="cl c2" title="Go small: 2/2">2</div><div class="cl c2" title="Go large: 2/2">2</div><div class="cl c2" title="Rust small: 2/2">2</div>
+      <div class="rn">ours (decaf-quality)</div>
+      <div class="cg-cell c2">2</div><div class="cg-cell c2">2</div><div class="cg-cell c2">2</div>
+      <div class="cg-cell c0">0</div><div class="cg-cell c2">2</div><div class="cg-cell c2">2</div>
+      <div class="cg-cell c2">2</div><div class="cg-cell c2">2</div><div class="cg-cell c2">2</div>
 
-        <div class="rl">ours</div>
-        <div class="cl c2" title="C# small: 2/2">2</div><div class="cl c2" title="C# medium: 2/2">2</div><div class="cl c2" title="C# large: 2/2">2</div>
-        <div class="cl c0" title="TS small: 0/2 — missed">0</div><div class="cl c2" title="TS medium: 2/2">2</div><div class="cl c2" title="TS large: 2/2">2</div>
-        <div class="cl c2" title="Go small: 2/2">2</div><div class="cl c2" title="Go large: 2/2">2</div><div class="cl c2" title="Rust small: 2/2">2</div>
+      <div class="rn">tag1 comprehensive</div>
+      <div class="cg-cell c2">2</div><div class="cg-cell c2">2</div><div class="cg-cell c2">2</div>
+      <div class="cg-cell c0">0</div><div class="cg-cell c2">2</div><div class="cg-cell c2">2</div>
+      <div class="cg-cell c2">2</div><div class="cg-cell c1">1</div><div class="cg-cell c2">2</div>
 
-        <div class="rl">tag1</div>
-        <div class="cl c2" title="C# small: 2/2">2</div><div class="cl c2" title="C# medium: 2/2">2</div><div class="cl c2" title="C# large: 2/2">2</div>
-        <div class="cl c0" title="TS small: 0/2 — missed">0</div><div class="cl c2" title="TS medium: 2/2">2</div><div class="cl c2" title="TS large: 2/2">2</div>
-        <div class="cl c2" title="Go small: 2/2">2</div><div class="cl c1" title="Go large: 1/2">1</div><div class="cl c2" title="Rust small: 2/2">2</div>
+      <div class="rn">superpowers</div>
+      <div class="cg-cell c2">2</div><div class="cg-cell c2">2</div><div class="cg-cell c2">2</div>
+      <div class="cg-cell c0">0</div><div class="cg-cell c1">1</div><div class="cg-cell c2">2</div>
+      <div class="cg-cell c2">2</div><div class="cg-cell c1">1</div><div class="cg-cell c2">2</div>
 
-        <div class="rl">superpowers</div>
-        <div class="cl c2" title="C# small: 2/2">2</div><div class="cl c2" title="C# medium: 2/2">2</div><div class="cl c2" title="C# large: 2/2">2</div>
-        <div class="cl c0" title="TS small: 0/2 — missed">0</div><div class="cl c1" title="TS medium: 1/2">1</div><div class="cl c2" title="TS large: 2/2">2</div>
-        <div class="cl c2" title="Go small: 2/2">2</div><div class="cl c1" title="Go large: 1/2">1</div><div class="cl c2" title="Rust small: 2/2">2</div>
-
-        <div class="rl">pr-review-toolkit</div>
-        <div class="cl c2" title="C# small: 2/2">2</div><div class="cl c2" title="C# medium: 2/2">2</div><div class="cl c2" title="C# large: 2/2">2</div>
-        <div class="cl c0" title="TS small: 0/2 — missed">0</div><div class="cl c1" title="TS medium: 1/2">1</div><div class="cl c2" title="TS large: 2/2">2</div>
-        <div class="cl c2" title="Go small: 2/2">2</div><div class="cl c0" title="Go large: 0/2 — missed">0</div><div class="cl c1" title="Rust small: 1/2">1</div>
-      </div>
+      <div class="rn">pr-review-toolkit</div>
+      <div class="cg-cell c2">2</div><div class="cg-cell c2">2</div><div class="cg-cell c2">2</div>
+      <div class="cg-cell c0">0</div><div class="cg-cell c1">1</div><div class="cg-cell c2">2</div>
+      <div class="cg-cell c2">2</div><div class="cg-cell c0">0</div><div class="cg-cell c1">1</div>
     </div>
-    <div class="legend">
-      <span class="lg"><span class="sw" style="background:var(--tier-1)"></span>both repeats caught it</span>
-      <span class="lg"><span class="sw" style="background:color-mix(in srgb, var(--tier-1) 46%, var(--surface-2))"></span>one repeat</span>
-      <span class="lg"><span class="sw" style="background:var(--surface-2); border:1px dashed var(--border-2)"></span>missed entirely</span>
+    <div class="legend" style="margin-top:14px;">
+      <span class="key"><i class="sw" style="background:var(--tier-1)"></i> both repeats</span>
+      <span class="key"><i class="sw" style="background:color-mix(in srgb, var(--tier-1) 46%, var(--surface-2))"></i> one repeat</span>
+      <span class="key"><i class="sw" style="background:var(--surface-2); border:1px solid var(--border-2)"></i> neither</span>
     </div>
   </div>
-
   <p>
-    The one genuinely discriminating subject is <strong>TypeScript / small</strong>, where four of five
-    tools missed the bug in both repeats. That PR's defect was invisible in the diff: it changed the
-    token stream a public API returns, and only crashed <em>downstream</em> consumers. The single tool
-    that caught it did so by retrieving the revert commit from repository history — not by reading the
-    code. The second, Go / large, split the field 6/10.
+    <strong>Read this column-wise, not row-wise.</strong> On subjects 1, 2, 3, 6, 7 and 10 the escaped bug
+    was found by 9 or 10 of the 10 cells — those six subjects rank nobody. The entire recall spread comes
+    from three columns: <strong>subject 4</strong>, where only anthropic caught it (its git-history agent
+    pulled the revert commit; the defect was a breaking change to a public API's token stream, invisible
+    in the diff and absent from the project's own test suite), <strong>subject 9</strong>, and
+    <strong>subject 5</strong>.
   </p>
   <p>
-    Read the recall column with that in mind: <strong>the ranking rests on two subjects</strong>, so treat
-    18/18 versus 12/18 as suggestive, not settled. What follows is measured across all 90 runs and is
-    far better supported.
+    So <em>18/18 versus 12/18 is really a verdict on two or three hard PRs</em>, not on nine. Treat the
+    recall ordering as suggestive. The one claim it does support firmly: a defect that requires reasoning
+    about consumers outside the diff was found by exactly one tool, twice.
   </p>
 </section>
 
 <section>
   <h2>Signal vs. noise</h2>
-  <h3>What proportion of the output is worth reading?</h3>
-  <p>
-    Every finding was graded into one of four tiers. This is the composition of a typical run —
-    normalised, so a tool that simply says more isn't rewarded for it.
-  </p>
-
+  <p class="claim">The real spread: 56% of anthropic's output is substantive, against 20% of pr-review-toolkit's.</p>
   <div class="panel">
-    <p class="panel-title">Composition of an average run</p>
-    <p class="panel-sub">False positives (1–4%) are omitted here for legibility and charted separately below.</p>
-    <div class="rows">
-      <div class="row">
-        <span class="lbl">anthropic</span>
-        <div class="stack">
-          <div class="seg" style="width:49%; background:var(--tier-1)" title="Substantive 49%">49%</div>
-          <div class="seg" style="width:21%; background:var(--tier-2)" title="Valid minor 21%">21%</div>
-          <div class="seg" style="width:25%; background:var(--tier-3)" title="Trivia 25%">25%</div>
-        </div>
-        <span class="val">9.8/run</span>
-      </div>
-      <div class="row">
-        <span class="lbl">superpowers</span>
-        <div class="stack">
-          <div class="seg" style="width:42%; background:var(--tier-1)" title="Substantive 42%">42%</div>
-          <div class="seg" style="width:33%; background:var(--tier-2)" title="Valid minor 33%">33%</div>
-          <div class="seg" style="width:21%; background:var(--tier-3)" title="Trivia 21%">21%</div>
-        </div>
-        <span class="val">6.5/run</span>
-      </div>
-      <div class="row">
-        <span class="lbl">ours</span>
-        <div class="stack">
-          <div class="seg" style="width:36%; background:var(--tier-1)" title="Substantive 36%">36%</div>
-          <div class="seg" style="width:30%; background:var(--tier-2)" title="Valid minor 30%">30%</div>
-          <div class="seg" style="width:31%; background:var(--tier-3)" title="Trivia 31%">31%</div>
-        </div>
-        <span class="val">15.8/run</span>
-      </div>
-      <div class="row">
-        <span class="lbl">tag1</span>
-        <div class="stack">
-          <div class="seg" style="width:32%; background:var(--tier-1)" title="Substantive 32%">32%</div>
-          <div class="seg" style="width:29%; background:var(--tier-2)" title="Valid minor 29%">29%</div>
-          <div class="seg" style="width:37%; background:var(--tier-3)" title="Trivia 37%">37%</div>
-        </div>
-        <span class="val">18.1/run</span>
-      </div>
-      <div class="row">
-        <span class="lbl">pr-review-toolkit</span>
-        <div class="stack">
-          <div class="seg" style="width:25%; background:var(--tier-1)" title="Substantive 25%">25%</div>
-          <div class="seg" style="width:31%; background:var(--tier-2)" title="Valid minor 31%">31%</div>
-          <div class="seg" style="width:42%; background:var(--tier-3)" title="Trivia 42%">42%</div>
-        </div>
-        <span class="val">21.3/run</span>
-      </div>
-    </div>
     <div class="legend">
-      <span class="lg"><span class="sw" style="background:var(--tier-1)"></span><b style="font-weight:620;color:var(--ink)">Substantive</b>&nbsp;— the escaped bug, a human-raised issue, or a verified real defect</span>
-      <span class="lg"><span class="sw" style="background:var(--tier-2)"></span>Valid minor — a correct, one-shot improvement</span>
-      <span class="lg"><span class="sw" style="background:var(--tier-3)"></span>Trivia — true but low value</span>
+      <span class="key"><i class="sw" style="background:var(--tier-1)"></i> substantive</span>
+      <span class="key"><i class="sw" style="background:var(--tier-2)"></i> valid-minor</span>
+      <span class="key"><i class="sw" style="background:var(--tier-3)"></i> trivia</span>
+      <span class="key" style="color:var(--ink-3)">false positives charted separately below</span>
+    </div>
+
+    <div class="barrow">
+      <span class="vlabel">anthropic /code-review</span>
+      <div class="stack">
+        <div class="seg s1" style="flex:56">56%</div><div class="seg s2" style="flex:23">23%</div><div class="seg s3" style="flex:16">16%</div>
+      </div>
+      <span class="aside"><b>5.6</b> findings/run</span>
+    </div>
+    <div class="barrow">
+      <span class="vlabel">superpowers</span>
+      <div class="stack">
+        <div class="seg s1" style="flex:39">39%</div><div class="seg s2" style="flex:39">39%</div><div class="seg s3" style="flex:15">15%</div>
+      </div>
+      <span class="aside"><b>6.5</b> findings/run</span>
+    </div>
+    <div class="barrow">
+      <span class="vlabel">ours (decaf-quality)</span>
+      <div class="stack">
+        <div class="seg s1" style="flex:30">30%</div><div class="seg s2" style="flex:35">35%</div><div class="seg s3" style="flex:29">29%</div>
+      </div>
+      <span class="aside"><b>15.8</b> findings/run</span>
+    </div>
+    <div class="barrow">
+      <span class="vlabel">tag1 comprehensive</span>
+      <div class="stack">
+        <div class="seg s1" style="flex:27">27%</div><div class="seg s2" style="flex:33">33%</div><div class="seg s3" style="flex:35">35%</div>
+      </div>
+      <span class="aside"><b>18.1</b> findings/run</span>
+    </div>
+    <div class="barrow">
+      <span class="vlabel">pr-review-toolkit</span>
+      <div class="stack">
+        <div class="seg s1" style="flex:20">20%</div><div class="seg s2" style="flex:36">36%</div><div class="seg s3" style="flex:42">42%</div>
+      </div>
+      <span class="aside"><b>21.3</b> findings/run</span>
     </div>
   </div>
-
   <p>
-    The absolute burden compounds the ratio. A <strong>pr-review-toolkit</strong> run puts 21.3 findings
-    in front of a reader to deliver 5.1 substantive ones; <strong>anthropic</strong> delivers 4.2 out of
-    9.8. Same job, less than half the reading. <strong>tag1</strong> and <strong>ours</strong> sit in
-    between — both find slightly <em>more</em> substantive material per run than anthropic (5.9 and 5.7),
-    but bury it in two to three times the volume.
+    Bars are normalized to each tool's own graded output; the false-positive remainder is charted
+    separately. The count beside each bar is the absolute volume that share applies to — and it is where
+    the cost goes. <strong>Reading pr-review-toolkit end to end means 21.3 findings of which roughly 4 are
+    substantive; reading anthropic means 5.6 of which roughly 3 are.</strong>
   </p>
+  <p>
+    <strong>Volume is not coverage.</strong> The two highest-volume tools have the two lowest substantive
+    shares and the two worst recall records. On subject 9, pr-review-toolkit touched 40 of 56 clusters and
+    still missed the escaped bug in both repeats.
+  </p>
+</section>
 
+<section>
+  <h2>False positives</h2>
+  <p class="claim">FP rate is not the differentiator — every tool sits between 3% and 7%.</p>
   <div class="panel">
-    <p class="panel-title">False positives per run</p>
-    <p class="panel-sub">Findings the judge refuted against the code. Low across the board — these tools rarely invent problems outright.</p>
-    <div class="rows">
-      <div class="row"><span class="lbl">superpowers</span>
-        <div class="track"><div class="fill" style="width:28%; background:var(--bad)"></div></div><span class="val">0.11</span></div>
-      <div class="row"><span class="lbl">pr-review-toolkit</span>
-        <div class="track"><div class="fill" style="width:72%; background:var(--bad)"></div></div><span class="val">0.28</span></div>
-      <div class="row"><span class="lbl">ours</span>
-        <div class="track"><div class="fill" style="width:85%; background:var(--bad)"></div></div><span class="val">0.33</span></div>
-      <div class="row"><span class="lbl">anthropic</span>
-        <div class="track"><div class="fill" style="width:100%; background:var(--bad)"></div></div><span class="val">0.39</span></div>
-      <div class="row"><span class="lbl">tag1</span>
-        <div class="track"><div class="fill" style="width:100%; background:var(--bad)"></div></div><span class="val">0.39</span></div>
+    <div class="simplebar">
+      <span class="vlabel">pr-review-toolkit</span>
+      <div class="track"><div class="fill" style="width:43%"></div></div>
+      <span class="aside"><b>3%</b> · 0.56/run</span>
+    </div>
+    <div class="simplebar">
+      <span class="vlabel">anthropic /code-review</span>
+      <div class="track"><div class="fill" style="width:57%"></div></div>
+      <span class="aside"><b>4%</b> · 0.28/run</span>
+    </div>
+    <div class="simplebar">
+      <span class="vlabel">ours (decaf-quality)</span>
+      <div class="track"><div class="fill" style="width:71%"></div></div>
+      <span class="aside"><b>5%</b> · 0.78/run</span>
+    </div>
+    <div class="simplebar">
+      <span class="vlabel">tag1 comprehensive</span>
+      <div class="track"><div class="fill" style="width:71%"></div></div>
+      <span class="aside"><b>5%</b> · 0.89/run</span>
+    </div>
+    <div class="simplebar">
+      <span class="vlabel">superpowers</span>
+      <div class="track"><div class="fill warn" style="width:100%"></div></div>
+      <span class="aside"><b>7%</b> · 0.28/run</span>
     </div>
   </div>
-
   <p>
-    Outright wrongness is <strong>not</strong> where these tools differ — roughly one refuted claim every
-    three runs, for all of them. Notably the two tools with the <em>highest</em> false-positive rate are
-    also the two with the best substantive share; several of those false positives came from retrieving a
-    PR's historical review comments and re-raising issues that had already been fixed before merge. Noise,
-    not error, is the real tax.
+    <strong>This is a null result, and worth stating plainly.</strong> No tool hallucinates defects at a
+    rate that would disqualify it, and the ordering here is nearly the inverse of the quality ordering
+    above — superpowers has the highest FP <em>share</em> precisely because its denominator is small, while
+    its absolute rate (0.28/run) ties for the lowest.
+  </p>
+  <p>
+    Share and rate disagree, so read both. The tools that fire most often in absolute terms — ours at 0.78
+    and tag1 at 0.89 false positives per run — are the two with the largest rosters. Several of those were
+    traps the answer keys planted deliberately: diff patterns that look like defects but are documented
+    intent.
   </p>
 </section>
 
 <section>
   <h2>Trust</h2>
-  <h3>Can you read the top of the list and stop?</h3>
-  <p>
-    Severity calibration is the probability that a finding the tool itself labelled critical or high
-    turns out to be substantive. It answers the practical question: if I only read what it shouted about,
-    am I reading real problems?
-  </p>
+  <p class="claim">Can you read the top of the list and stop? Only for one tool.</p>
   <div class="panel">
-    <div class="rows">
-      <div class="row"><span class="lbl">anthropic</span>
-        <div class="track"><div class="fill" style="width:88%; background:var(--tier-1)"></div></div><span class="val">0.88</span></div>
-      <div class="row"><span class="lbl">superpowers</span>
-        <div class="track"><div class="fill" style="width:63%; background:var(--tier-1)"></div></div><span class="val">0.63</span></div>
-      <div class="row"><span class="lbl">ours</span>
-        <div class="track"><div class="fill" style="width:62%; background:var(--tier-1)"></div></div><span class="val">0.62</span></div>
-      <div class="row"><span class="lbl">tag1</span>
-        <div class="track"><div class="fill" style="width:61%; background:var(--tier-1)"></div></div><span class="val">0.61</span></div>
-      <div class="row"><span class="lbl">pr-review-toolkit</span>
-        <div class="track"><div class="fill" style="width:51%; background:var(--tier-1)"></div></div><span class="val">0.51</span></div>
+    <div class="simplebar">
+      <span class="vlabel">anthropic /code-review</span>
+      <div class="track"><div class="fill" style="width:92%"></div></div>
+      <span class="aside"><b>0.92</b></span>
     </div>
-    <div class="legend">
-      <span class="lg">P(substantive | the tool flagged it critical or high) · higher is better</span>
+    <div class="simplebar">
+      <span class="vlabel">superpowers</span>
+      <div class="track"><div class="fill" style="width:63%"></div></div>
+      <span class="aside"><b>0.63</b></span>
+    </div>
+    <div class="simplebar">
+      <span class="vlabel">tag1 comprehensive</span>
+      <div class="track"><div class="fill" style="width:55%"></div></div>
+      <span class="aside"><b>0.55</b></span>
+    </div>
+    <div class="simplebar">
+      <span class="vlabel">ours (decaf-quality)</span>
+      <div class="track"><div class="fill warn" style="width:50%"></div></div>
+      <span class="aside"><b>0.50</b></span>
+    </div>
+    <div class="simplebar">
+      <span class="vlabel">pr-review-toolkit</span>
+      <div class="track"><div class="fill warn" style="width:47%"></div></div>
+      <span class="aside"><b>0.47</b></span>
     </div>
   </div>
   <p>
-    This is the single widest quality gap in the study. <strong>anthropic's top-of-list is trustworthy
-    almost nine times in ten.</strong> pr-review-toolkit's is a coin flip — in one subject it stamped
-    <em>critical</em> on a stale test comment while ranking the actual reverted bug as low severity.
-    A tool that finds the bug but can't tell you it matters has moved the work, not done it.
+    Severity calibration is <span class="mono">P(judged substantive | the tool called it critical or high)</span>.
+    At <strong>0.92, nine of ten things anthropic escalates are real</strong> — you can read its top of list
+    and stop. At 0.47–0.55 a reader has to check everything, which erases much of the value of having a
+    severity field at all.
+  </p>
+  <p>
+    One caveat that cuts against the leader: <strong>anthropic does not emit severities</strong> — it emits
+    0–100 confidence scores and hard-filters below 80. Its calibration is therefore computed over a smaller,
+    self-selected set than the tools that rank a full ladder, and is not weight-comparable. The gap is real;
+    its exact size is not.
   </p>
 </section>
 
 <section>
   <h2>Cost</h2>
-  <h3>An 8.6&times; spread for overlapping results</h3>
-  <p>
-    Cost per run varies enormously, and it does not buy recall. The vertical axis below is the share of
-    output that is substantive; the horizontal axis is what a run costs.
-  </p>
-
+  <p class="claim">Accuracy and price are not correlated. The two most expensive tools are the two least accurate.</p>
   <div class="panel">
-    <p class="panel-title">Cost per run vs. substantive share</p>
-    <p class="panel-sub">Up and to the left is better: more signal, less money. Point labels carry identity.</p>
-    <figure>
-      <svg class="plot" viewBox="0 0 720 380" role="img"
-           aria-label="Scatter of cost per run against substantive share. superpowers $2.48 at 42 percent; pr-review-toolkit $8.56 at 25 percent; anthropic $11.82 at 49 percent; tag1 $16.72 at 32 percent; ours $21.33 at 36 percent.">
-        <g stroke="var(--border)" stroke-width="1">
-          <line x1="70" y1="40"  x2="700" y2="40"/>
-          <line x1="70" y1="115" x2="700" y2="115"/>
-          <line x1="70" y1="190" x2="700" y2="190"/>
-          <line x1="70" y1="265" x2="700" y2="265"/>
-        </g>
-        <line x1="70" y1="330" x2="700" y2="330" stroke="var(--border-2)" stroke-width="1"/>
-        <line x1="70" y1="40"  x2="70"  y2="330" stroke="var(--border-2)" stroke-width="1"/>
-
-        <g fill="var(--ink-3)" font-size="11" text-anchor="end">
-          <text x="60" y="44">55%</text><text x="60" y="119">45%</text>
-          <text x="60" y="194">35%</text><text x="60" y="269">25%</text>
-        </g>
-        <g fill="var(--ink-3)" font-size="11" text-anchor="middle">
-          <text x="70"  y="350">$0</text><text x="228" y="350">$6</text>
-          <text x="385" y="350">$12</text><text x="543" y="350">$18</text><text x="700" y="350">$24</text>
-        </g>
-        <text x="385" y="372" fill="var(--ink-3)" font-size="11" text-anchor="middle">cost per run (USD)</text>
-
-        <!-- superpowers 2.48 / 42% -->
-        <circle cx="135" cy="137" r="7" fill="var(--tier-1)" stroke="var(--surface)" stroke-width="2"/>
-        <text x="149" y="134" fill="var(--ink)" font-size="12" font-weight="600">superpowers</text>
-        <text x="149" y="149" fill="var(--ink-3)" font-size="11">$2.48 · 42%</text>
-
-        <!-- pr-review-toolkit 8.56 / 25% -->
-        <circle cx="295" cy="265" r="7" fill="var(--tier-1)" stroke="var(--surface)" stroke-width="2"/>
-        <text x="309" y="262" fill="var(--ink)" font-size="12" font-weight="600">pr-review-toolkit</text>
-        <text x="309" y="277" fill="var(--ink-3)" font-size="11">$8.56 · 25%</text>
-
-        <!-- anthropic 11.82 / 49% -->
-        <circle cx="380" cy="85" r="7" fill="var(--tier-1)" stroke="var(--surface)" stroke-width="2"/>
-        <text x="394" y="82" fill="var(--ink)" font-size="12" font-weight="600">anthropic</text>
-        <text x="394" y="97" fill="var(--ink-3)" font-size="11">$11.82 · 49%</text>
-
-        <!-- tag1 16.72 / 32% -->
-        <circle cx="509" cy="212" r="7" fill="var(--tier-1)" stroke="var(--surface)" stroke-width="2"/>
-        <text x="523" y="209" fill="var(--ink)" font-size="12" font-weight="600">tag1</text>
-        <text x="523" y="224" fill="var(--ink-3)" font-size="11">$16.72 · 32%</text>
-
-        <!-- ours 21.33 / 36% -->
-        <circle cx="630" cy="182" r="7" fill="var(--tier-1)" stroke="var(--surface)" stroke-width="2"/>
-        <text x="620" y="163" fill="var(--ink)" font-size="12" font-weight="600" text-anchor="end">ours</text>
-        <text x="620" y="178" fill="var(--ink-3)" font-size="11" text-anchor="end">$21.33 · 36%</text>
-      </svg>
-    </figure>
+    <svg viewBox="0 0 720 340" width="100%" height="340" role="img"
+         aria-label="Scatter of cost per run against substantive share. Superpowers $2.44 at 39%. Anthropic $7.61 at 56%. pr-review-toolkit $8.56 at 20%. tag1 $16.72 at 27%. ours $21.33 at 30%.">
+      <g stroke="var(--border)" stroke-width="1">
+        <line x1="64" y1="280" x2="700" y2="280"></line>
+        <line x1="64" y1="24"  x2="64"  y2="280"></line>
+      </g>
+      <g stroke="var(--border)" stroke-width="1" stroke-dasharray="2 4" opacity=".7">
+        <line x1="64" y1="216" x2="700" y2="216"></line>
+        <line x1="64" y1="152" x2="700" y2="152"></line>
+        <line x1="64" y1="88"  x2="700" y2="88"></line>
+      </g>
+      <g class="axis" fill="var(--ink-3)" font-size="11" font-family="ui-monospace, Menlo, monospace">
+        <text x="56" y="284" text-anchor="end">0%</text>
+        <text x="56" y="220" text-anchor="end">15%</text>
+        <text x="56" y="156" text-anchor="end">30%</text>
+        <text x="56" y="92"  text-anchor="end">45%</text>
+        <text x="56" y="28"  text-anchor="end">60%</text>
+        <text x="64"  y="302" text-anchor="middle">$0</text>
+        <text x="223" y="302" text-anchor="middle">$6</text>
+        <text x="382" y="302" text-anchor="middle">$12</text>
+        <text x="541" y="302" text-anchor="middle">$18</text>
+        <text x="700" y="302" text-anchor="middle">$24</text>
+        <text x="382" y="326" text-anchor="middle" fill="var(--ink-2)">cost per run →</text>
+        <text x="18" y="152" text-anchor="middle" fill="var(--ink-2)" transform="rotate(-90 18 152)">substantive share →</text>
+      </g>
+      <!-- superpowers 2.44 / .39 -->
+      <circle cx="129" cy="114" r="8" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"></circle>
+      <text x="143" y="110" font-size="12.5" font-family="ui-monospace, Menlo, monospace" fill="var(--ink)">superpowers</text>
+      <text x="143" y="126" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="var(--ink-3)">$2.44 · 39%</text>
+      <!-- anthropic 7.61 / .56 -->
+      <circle cx="266" cy="41" r="8" fill="var(--tier-1)" stroke="var(--surface)" stroke-width="2"></circle>
+      <text x="280" y="37" font-size="12.5" font-family="ui-monospace, Menlo, monospace" fill="var(--ink)">anthropic /code-review</text>
+      <text x="280" y="53" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="var(--ink-3)">$7.61 · 56%</text>
+      <!-- prt 8.56 / .20 -->
+      <circle cx="291" cy="195" r="8" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"></circle>
+      <text x="305" y="191" font-size="12.5" font-family="ui-monospace, Menlo, monospace" fill="var(--ink)">pr-review-toolkit</text>
+      <text x="305" y="207" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="var(--ink-3)">$8.56 · 20%</text>
+      <!-- tag1 16.72 / .27 -->
+      <circle cx="507" cy="165" r="8" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"></circle>
+      <text x="521" y="161" font-size="12.5" font-family="ui-monospace, Menlo, monospace" fill="var(--ink)">tag1</text>
+      <text x="521" y="177" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="var(--ink-3)">$16.72 · 27%</text>
+      <!-- ours 21.33 / .30 -->
+      <circle cx="629" cy="152" r="8" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"></circle>
+      <text x="619" y="136" font-size="12.5" font-family="ui-monospace, Menlo, monospace" fill="var(--ink)" text-anchor="end">ours</text>
+      <text x="619" y="152" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="var(--ink-3)" text-anchor="end">$21.33 · 30%</text>
+    </svg>
   </div>
 
-  <p>
-    <strong>superpowers</strong> and <strong>anthropic</strong> define the frontier; everything else is
-    dominated. The most expensive tool costs nearly nine times the cheapest and returns a
-    <em>lower</em> substantive share. Output tokens tell the same story — 7.1k per run for superpowers
-    against 94k for ours, a 13&times; gap.
-  </p>
-
-  <div class="panel">
-    <p class="panel-title">Resource profile per run</p>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Tool</th><th>Cost</th><th>Output tokens</th><th>Wall clock</th><th>Sub-agents</th><th>Total spend</th><th>$ / substantive</th></tr></thead>
-        <tbody>
-          <tr><td>superpowers</td><td class="best">$2.48</td><td class="best">7,111</td><td class="best">8.6 min</td><td>1.0</td><td>$45</td><td class="best">$1.04</td></tr>
-          <tr><td>pr-review-toolkit</td><td>$8.56</td><td>23,897</td><td>11.9 min</td><td>5.0</td><td>$154</td><td>$2.08</td></tr>
-          <tr class="hl"><td>anthropic-code-review</td><td>$11.82</td><td>50,204</td><td>19.1 min</td><td>10.3</td><td>$213</td><td>$3.67</td></tr>
-          <tr><td>tag1-comprehensive-review</td><td>$16.72</td><td>74,174</td><td>20.3 min</td><td>10.4</td><td>$301</td><td>$3.38</td></tr>
-          <tr><td>ours</td><td class="worst">$21.33</td><td class="worst">94,023</td><td class="worst">31.7 min</td><td class="worst">14.5</td><td>$384</td><td class="worst">$4.57</td></tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="panel scroller" style="margin-top:16px;">
+    <table>
+      <thead>
+        <tr><th>Tool</th><th>$ / run</th><th>Output tokens</th><th>Wall clock</th><th>Sub-agents</th><th>Total spend</th><th>$ / substantive</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="name">superpowers</td><td class="num best">$2.44</td><td class="num">21,730</td><td class="num">8.5 min</td><td class="num">1.0</td><td class="num">$44</td><td class="num best">$0.90</td></tr>
+        <tr><td class="name">anthropic /code-review</td><td class="num">$7.61</td><td class="num">94,858</td><td class="num">15.0 min</td><td class="num">11.8</td><td class="num">$137</td><td class="num">$2.54</td></tr>
+        <tr><td class="name">pr-review-toolkit</td><td class="num">$8.56</td><td class="num">84,742</td><td class="num">11.9 min</td><td class="num">5.0</td><td class="num">$154</td><td class="num">$2.03</td></tr>
+        <tr><td class="name">tag1 comprehensive</td><td class="num">$16.72</td><td class="num">195,418</td><td class="num">20.3 min</td><td class="num">10.4</td><td class="num">$301</td><td class="num">$3.46</td></tr>
+        <tr><td class="name">ours (decaf-quality)</td><td class="num worst">$21.33</td><td class="num worst">260,798</td><td class="num worst">31.7 min</td><td class="num worst">14.5</td><td class="num worst">$384</td><td class="num worst">$4.57</td></tr>
+      </tbody>
+    </table>
   </div>
-
   <p>
-    Sub-agent fan-out is the cost driver, and it earns surprisingly little. Across all subjects, roughly
-    <strong>three-quarters of every fan-out tool's sub-agent findings restate a sibling's</strong>.
-    superpowers, on a single agent, reached the same escaped bug as a fifteen-agent run on seven of nine
-    subjects (14 of 18 runs). Where fan-out did pay was breadth of <em>secondary</em> findings on large diffs — not recall.
+    <strong>Ours costs 2.8× anthropic and 8.7× superpowers per run, and produces the lower-quality mix of
+    the three.</strong> It also takes 31.7 minutes of wall clock against anthropic's 15.0 — for a reviewer
+    waiting on feedback, that is the difference between a coffee and a context switch.
+  </p>
+  <p>
+    Sub-agent count does not predict quality either: anthropic runs 11.8 agents to ours' 14.5 and beats it
+    on every quality axis, while superpowers reaches 39% substantive with <em>one</em> agent. What the extra
+    agents reliably buy is output volume, which is the thing being paid for.
   </p>
 </section>
 
 <section>
   <h2>Size</h2>
-  <h3>Bigger diffs produce more of everything, not proportionally more signal</h3>
-  <p>
-    Pooling all five tools by the size class of the PR under review. This is the axis the data actually
-    supports — unlike language, where a single subject carries each cell.
-  </p>
-  <div class="panel">
-    <div class="scroll">
-      <table>
-        <thead><tr><th>PR size</th><th>Subjects</th><th>Runs</th><th>Findings / run</th><th>Substantive</th><th>Trivia</th><th>Cost / run</th></tr></thead>
-        <tbody>
-          <tr><td>Small</td><td>4</td><td>40</td><td>8.5</td><td>37%</td><td>25%</td><td>$10.05</td></tr>
-          <tr><td>Medium</td><td>2</td><td>20</td><td>12.8</td><td>28%</td><td>48%</td><td>$9.96</td></tr>
-          <tr><td>Large</td><td>3</td><td>30</td><td>23.1</td><td>42%</td><td>28%</td><td>$16.51</td></tr>
-        </tbody>
-      </table>
-    </div>
+  <p class="claim">Bigger diffs cost more and yield more, but the mix barely moves.</p>
+  <div class="panel scroller">
+    <table>
+      <thead>
+        <tr><th>Diff size</th><th>Subjects</th><th>Cells</th><th>Bug caught</th><th>Substantive</th><th>Trivia</th><th>Findings / run</th><th>$ / run</th><th>$ / substantive</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="name">small</td><td class="num">4</td><td class="num">40</td><td class="num">78%</td><td class="num">38%</td><td class="num best">20%</td><td class="num">8.2</td><td class="num">$9.30</td><td class="num">$3.65</td></tr>
+        <tr><td class="name">medium</td><td class="num">2</td><td class="num">20</td><td class="num">90%</td><td class="num worst">26%</td><td class="num worst">45%</td><td class="num">11.8</td><td class="num">$9.49</td><td class="num">$3.65</td></tr>
+        <tr><td class="name">large</td><td class="num">3</td><td class="num">30</td><td class="num">87%</td><td class="num">35%</td><td class="num">27%</td><td class="num worst">21.6</td><td class="num worst">$15.27</td><td class="num best">$2.34</td></tr>
+      </tbody>
+    </table>
   </div>
   <p>
-    Volume scales sharply with diff size — <strong>2.7&times; more findings per run</strong> from small to
-    large — while the substantive share holds up (37% → 42%). That is the reassuring half: these tools do
-    not drown in a big diff, and on the largest subject every tool still found the regression.
+    Volume scales with the diff — 8.2 findings per run on small changes against 21.6 on large — and so does
+    price, but the substantive share stays in a 26–38% band with no trend. <strong>The economics actually
+    improve with size</strong>: cost per substantive finding drops from $3.65 to $2.34, because a large diff
+    has more real defects to find while the fixed cost of reading it is amortized.
   </p>
   <p>
-    The cost half is less comfortable. A large PR costs about <strong>65% more per run</strong>, and the
-    absolute noise a reader must wade through roughly doubles. The medium row looks alarming, but it rests
-    on only two subjects, one of which was deliberately constructed as a trap — read it as an artefact of
-    composition, not a property of medium-sized PRs.
+    The medium row is the weakest, and it is two subjects — one of which is a deliberate trap where the
+    obvious-looking defect had already been fixed before merge. Do not over-read it.
   </p>
 </section>
 
 <section>
   <h2>Conclusions</h2>
-  <h3>Which tool, for which job</h3>
+  <p class="claim">Five tools, five distinct roles — and one of them is not worth its price.</p>
   <div class="cards">
+
     <div class="card">
       <p class="role">Best overall</p>
-      <h4>anthropic-code-review</h4>
+      <h3>anthropic /code-review</h3>
       <p>
-        The only tool that caught every escaped bug, with the best substantive share and by far the most
-        trustworthy severity ranking. Mid-priced. Its weakness is a reliance on repository history:
-        its sole unique catch came from retrieval, and that same channel produced its false positives —
-        including one hallucinated claim that a maintainer had raised an issue.
+        Leads on every quality axis and is cheaper than three of the four others. The only tool that caught
+        every escaped bug, including subject 4's public-API break that required reasoning about consumers
+        outside the diff. Its confidence filter is what produces the clean output — though on one subject
+        that same filter discarded a true primary-bug facet its own agents had found.
       </p>
       <div class="figs">
-        <span class="fig"><b>18/18</b>bug caught</span>
-        <span class="fig"><b>0.88</b>calibration</span>
-        <span class="fig"><b>$11.82</b>per run</span>
+        <span class="fig"><span class="n">18/18</span><br><span class="l">bug caught</span></span>
+        <span class="fig"><span class="n">56%</span><br><span class="l">substantive</span></span>
+        <span class="fig"><span class="n">0.92</span><br><span class="l">calibration</span></span>
       </div>
     </div>
+
     <div class="card">
       <p class="role">Best value</p>
-      <h4>superpowers</h4>
+      <h3>superpowers</h3>
       <p>
-        A single agent at under a ninth the cost of the priciest tool, with the cleanest output in the
-        study: lowest trivia share, lowest false-positive rate, fewest findings to read. It pays for that
-        thrift in recall — it missed four of eighteen — and its severity labels are middling. The right
-        default when review runs on every PR.
+        One agent, eight minutes, $2.44 — and a substantive share second only to anthropic. It misses more
+        hard bugs (14/18) and its findings skew toward improvement suggestions rather than defects, but per
+        dollar nothing else is close: <b>$0.90</b> per substantive finding against the field's $2.03–$4.57.
+        The obvious default for a first pass.
       </p>
       <div class="figs">
-        <span class="fig"><b>14/18</b>bug caught</span>
-        <span class="fig"><b>21%</b>trivia</span>
-        <span class="fig"><b>$2.48</b>per run</span>
+        <span class="fig"><span class="n">$0.90</span><br><span class="l">$ / substantive</span></span>
+        <span class="fig"><span class="n">39%</span><br><span class="l">substantive</span></span>
+        <span class="fig"><span class="n">1.0</span><br><span class="l">sub-agents</span></span>
       </div>
     </div>
-    <div class="card">
-      <p class="role">Depth at a price</p>
-      <h4>ours</h4>
-      <p>
-        Strong recall (16/18) and the richest reasoning — its validator sub-agents repeatedly corrected
-        their own findings downward rather than inflating them, and it was the only tool to verify
-        historical review threads against merged code before re-raising them. But it is the most
-        expensive run in the study and spends a third of its output on trivia.
-      </p>
-      <div class="figs">
-        <span class="fig"><b>16/18</b>bug caught</span>
-        <span class="fig"><b>31%</b>trivia</span>
-        <span class="fig"><b>$21.33</b>per run</span>
-      </div>
-    </div>
-    <div class="card">
-      <p class="role">Breadth, unranked</p>
-      <h4>tag1-comprehensive-review</h4>
-      <p>
-        Produced the most unique true findings of any tool (5) and the highest substantive count per run,
-        so its breadth is real. But 37% trivia and mediocre calibration mean that value arrives unsorted,
-        at close to the top price.
-      </p>
-      <div class="figs">
-        <span class="fig"><b>15/18</b>bug caught</span>
-        <span class="fig"><b>5</b>unique finds</span>
-        <span class="fig"><b>$16.72</b>per run</span>
-      </div>
-    </div>
-    <div class="card">
-      <p class="role">Volume over judgement</p>
-      <h4>pr-review-toolkit</h4>
-      <p>
-        Reports the most (21.3 per run) and the least useful: lowest substantive share, highest trivia,
-        weakest recall, and a severity signal barely better than chance. It does find real defects — but
-        leaves the ranking work entirely to the reader.
-      </p>
-      <div class="figs">
-        <span class="fig"><b>12/18</b>bug caught</span>
-        <span class="fig"><b>42%</b>trivia</span>
-        <span class="fig"><b>0.51</b>calibration</span>
-      </div>
-    </div>
-  </div>
 
-  <div class="call">
-    <p>
-      If these tools are graded on finding the bug, four of five look equivalent. Graded on what a human
-      then has to read, they differ by a factor of three — and that is the axis that decides whether a
-      review tool is used twice.
-    </p>
+    <div class="card">
+      <p class="role">Most expensive, mid-pack quality</p>
+      <h3>ours (decaf-quality)</h3>
+      <p>
+        Strong recall (16/18) and the widest coverage of any tool — it found four clusters nobody else did,
+        including a human-raised logging regression on subject 9 and a clipboard path-leak on subject 6.
+        But it pays $21.33 and 31.7 minutes for a 30% substantive share and the second-worst calibration in
+        the field. The breadth is real; the price and the ranking are the problem.
+      </p>
+      <div class="figs">
+        <span class="fig"><span class="n">$21.33</span><br><span class="l">$ / run</span></span>
+        <span class="fig"><span class="n">30%</span><br><span class="l">substantive</span></span>
+        <span class="fig"><span class="n">0.50</span><br><span class="l">calibration</span></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="role">Broadest reach, weakest filter</p>
+      <h3>tag1 comprehensive</h3>
+      <p>
+        Touches more clusters per run than anyone (18.1) and tied for the most unique true findings (5), so
+        it genuinely sees things others miss. It also has the field's highest absolute false-positive rate
+        and a 35% trivia share. Useful as a wide net when someone is prepared to sort the catch.
+      </p>
+      <div class="figs">
+        <span class="fig"><span class="n">15/18</span><br><span class="l">bug caught</span></span>
+        <span class="fig"><span class="n">5</span><br><span class="l">unique finds</span></span>
+        <span class="fig"><span class="n">35%</span><br><span class="l">trivia</span></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="role">Highest volume, lowest signal</p>
+      <h3>pr-review-toolkit</h3>
+      <p>
+        The most output in the study (21.3 findings/run) and the least of it useful: 20% substantive, 42%
+        trivia, worst recall at 12/18, and one unique true finding across nine subjects. On subject 9 it
+        touched 40 of 56 clusters and still missed the escaped bug in both repeats. Volume is not coverage.
+      </p>
+      <div class="figs">
+        <span class="fig"><span class="n">12/18</span><br><span class="l">bug caught</span></span>
+        <span class="fig"><span class="n">20%</span><br><span class="l">substantive</span></span>
+        <span class="fig"><span class="n">42%</span><br><span class="l">trivia</span></span>
+      </div>
+    </div>
+
   </div>
 </section>
 
 <section>
   <h2>Method &amp; caveats</h2>
-  <ul class="notes">
-    <li><strong>Design.</strong> Nine merged pull requests that each shipped a regression and were later reverted. Each tool reviewed each PR twice in an isolated session, pinned to the same model, with no knowledge of the revert.</li>
-    <li><strong>Grading.</strong> Findings were normalised, clustered by underlying issue, then graded by a judge that saw the real diff and a frozen answer key but <em>not</em> which tool produced anything. Answer keys were written before any tool output was read, and verified against the merged code — in three subjects the fixture's own description turned out to be wrong, and the key follows the code.</li>
-    <li><strong>Language comparison is deliberately omitted.</strong> One subject per language-size cell means a single idiosyncratic PR would masquerade as a language effect. Size pools three to four subjects and is reported instead.</li>
-    <li><strong>Recall rests on two subjects.</strong> Seven of nine are saturated, so bug-catch rankings are weakly supported. Noise, calibration, and cost are measured across all 90 runs.</li>
-    <li><strong>Cluster granularity varies</strong> between subjects (18 to 95 clusters), which inflates per-run counts on some subjects. All quality comparisons here use shares rather than raw counts for that reason.</li>
-    <li><strong>Three subjects remain unrun</strong> (Go medium, Rust medium, Rust large), so the Rust and medium-size cells are thin. Conclusions may shift as those land.</li>
-    <li><strong>Two judge verdicts were overridden by hand</strong> where the judge applied its own bar inconsistently; both are logged in the per-subject records, and neither changed a bug-catch result.</li>
-  </ul>
+  <p class="claim">What this measures, and what it deliberately does not conclude.</p>
+  <div class="panel">
+    <ul class="caveats">
+      <li>
+        <strong>Subjects are merged-then-reverted PRs</strong> from dotnet, microsoft, prometheus,
+        kubernetes and BurntSushi. Each has a frozen answer key naming the escaped defect, any human-review
+        issues, and <em>known-safe</em> traps — diff patterns that look like defects but are documented
+        intent. Keys were written before any tool output was read.
+      </li>
+      <li>
+        <strong>Grading is blind and tool-blind.</strong> Findings are pooled into clusters, shuffled, and
+        stripped of tool identity before the judge sees them. Every false-positive and valid-other verdict
+        must be justified against the diff.
+      </li>
+      <li>
+        <strong>No language axis.</strong> There is one subject per language × size cell, so a single odd PR
+        would masquerade as a language effect. Size pools 3–4 subjects and is reported; language is not, and
+        should not be inferred from the per-subject pages.
+      </li>
+      <li>
+        <strong>Recall is saturated and the ranking is thin.</strong> Six of nine subjects were solved by
+        almost every cell. The bug-catch column is decided by two or three hard PRs — read it as suggestive,
+        not settled.
+      </li>
+      <li>
+        <strong>Calibration is not weight-comparable.</strong> Anthropic emits confidence scores rather than
+        severities and hard-filters below 80, so its 0.92 rests on a smaller self-selected set than tools
+        ranking a full severity ladder.
+      </li>
+      <li>
+        <strong>Two repeats per cell.</strong> Enough to expose stochasticity, not enough for a confidence
+        interval. A one-of-two result means exactly that.
+      </li>
+      <li>
+        <strong>Judge and grading rubric are in-house.</strong> Blind and tool-blind, but the definition of
+        "substantive" may still favour a particular reporting style. Verdicts are committed per subject for
+        audit.
+      </li>
+      <li>
+        <strong>Three subjects remain unrun</strong> (go/medium, rust/medium, rust/large), and per-tool
+        figures may shift when they land.
+      </li>
+    </ul>
+  </div>
 </section>
+
+<footer>
+  9 subjects · 90 runs · 337 clusters graded blind · judge claude-opus-5 · $1,020 total spend<br>
+  Source data: <span class="mono">competition/benchmark/analysis/</span> — per-subject <span class="mono">analysis.json</span>,
+  <span class="mono">metrics.json</span>, <span class="mono">report.md</span>.
+</footer>
 
 </div>
