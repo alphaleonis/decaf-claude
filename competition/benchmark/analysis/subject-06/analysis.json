@@ -4,9 +4,15 @@
  "size": "large",
  "repo": "microsoft/vscode",
  "pr": 320685,
- "judge_model": "claude-opus-4-8",
- "notes": "681 findings from 10 cells -> 95 clusters (largest subject in the set; 688-line/10-file diff). Clustering was delegated to a dedicated agent with explicit instructions to keep the six primary facets and three trap categories as separate named clusters, then verified by hand (681/681 assigned, no orphans; key clusters sampled; independent regex hunt for hidden trap assertions). Blind grading: clusters shuffled (seed 606), tool identity stripped. SUBJECT SHAPE: no single escaped bug \u2014 merged, reverted (#321516, 'TPI indicated more than normal regressions' from manual cross-platform testing), re-landed, reverted AGAIN (#323490). primary_bug is therefore an AGGREGATE of six enumerated live facets; all six were graded TP-primary. SECOND TRAP SUBJECT after subject 5, and the traps held COMPLETELY: three of the PR's five review threads (uri-list filtering, non-remote scheme rejection, basename-collision) were addressed before merge, and ZERO findings across all 681 asserted any of them as live \u2014 verified independently by regex hunt over every claim. Notably several tools explicitly recorded that they had checked the bot threads against merged code (e.g. 'raised by a bot reviewer and marked resolved but unchanged' for the one thread that genuinely survived). Two false positives total, both refuted with in-repo citations. No grader overrides applied; the single sub-60 cluster (stale_format_shadowing, 55) was graded down to trivia rather than FP because the refutation rests on Electron internals not citable in-repo.",
+ "judge_model": "claude-opus-5[1m]",
+ "notes": "Re-analysis after nib dcc-9kkz. Only the anthropic r2 cell was quarantined here (it was degenerate: 1 sub-agent against a workflow mandating five reviewers plus scorers, no code-review attribution); r1 was retained as valid and its extraction reused verbatim, as were all 8 non-anthropic cells. Only anthropic r2 was re-extracted. All 95 clusters re-graded blind.",
  "answer_key": {
+  "subject_id": 6,
+  "lang": "typescript",
+  "size": "large",
+  "repo": "microsoft/vscode",
+  "pr": 320685,
+  "review_diff": "gh pr diff 320685 -R microsoft/vscode \u2014 full PR, 688 add / 13 del across 10 files: a rework of local\u2194native and remote\u2194local copy/paste/DND. Adds a remote file-system proxy (remoteFileSystemProxy.ts, ProxyClient, ProxyServer, MainHandler + a test file) so a local window can read vscode-remote:// resources owned by another window; rewrites NativeClipboardService (adds the freedesktop `text/uri-list` LINUX_FILE_FORMAT read/write path); and changes ExplorerService.setToCopy to download remote resources to a temp dir and place local file:// temp URIs on the clipboard. Saved at subject-06/review.diff.",
   "primary_bug": {
    "id": "primary",
    "summary": "AGGREGATE REGRESSION \u2014 this subject has NO single named root cause. The feature was merged, reverted (#321516: 'TPI indicated more than normal regressions so will revisit next week', ref issue #321354), re-landed, and reverted a SECOND time (#323490). The regressions were found by manual cross-platform test-plan testing (macOS/Linux/Windows testers on issue #321354; aeschli: 'Several regressions, maybe better revert?'), not by a crash or a stack trace, and no revert names a specific defect. The recall target is therefore the substantive, merged-and-still-live defects in this rework that a competent reviewer should have flagged pre-merge. The best-evidenced facet \u2014 raised by human reviewer mjbvz and NOT addressed before merge \u2014 is ExplorerService.setToCopy's temp-file scheme: `setToCopy` awaits `resolveClipboardResources(...)` (which creates a temp folder and copies every remote resource) BEFORE `writeResources`, so an ordinary copy is blocked on a full network download of every selected remote file, and the resulting local cache paths (`environmentService.cacheHome/remote-clipboard/<uuid>/<uuid>/<name>`) are written onto the system clipboard, leaking internal temp paths to any native app the user pastes into.",
@@ -38,7 +44,8 @@
     "summary": "`bufferToResources` (clipboardService.ts ~L158-168), which does `bufferValue.split('\\n').map(f => URI.parse(f))` with no scheme filtering and swallows parse errors with `return []`, is PRE-EXISTING and UNCHANGED by this diff \u2014 it appears as context (leading-space) lines in review.diff, not as additions; the PR only adds a new call site to it. Attributing this unfiltered parsing / error-swallowing to the PR as a newly-introduced defect is a FALSE POSITIVE. (Noting it as a pre-existing weakness the PR now leans on more heavily is fair but low-value \u2014 trivia.)",
     "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts"
    }
-  ]
+  ],
+  "notes": "Fixture human_threads.count=1 = mjbvz's thread; there are also 4 Copilot BOT threads. human_issues is intentionally EMPTY because the single human thread (mjbvz's eager-temp-file creation + /tmp path leak) IS facet (a) of primary_bug \u2014 a cluster matching it should grade TP-primary, not TP-human (same convention as subject 2). Of the 4 bot threads: three were ADDRESSED before merge and are encoded as known_safe traps (uri-list filtering, non-remote scheme rejection, basename collision); the fourth (hard-coded PathCaseSensitive) was NOT addressed and is primary facet (b). This is the second trap-shaped subject after subject 5 \u2014 a tool that retrieved the PR's review threads and re-raised them without verifying against the merged code will post multiple false positives. Additional plausible valid-other / valid-minor candidates a grader may legitimately see (verify each against the diff): the proxy's error strings leak remote authority names; the new proxy subsystem's test file covers only the main handler and not the client/server round-trip; `cleanupRemoteClipboardTempDir` is best-effort so temp copies of remote files can persist on local disk after the app exits (a data-at-rest concern for remote content); the eager download has no size limit or progress/cancellation, so copying a large remote folder is unbounded; `allLocal = resources.every(r => r.scheme === Schemas.file)` gates native-format writes, so a mixed local+remote selection that failed to download degrades silently. Score cells on: (1) primary recall \u2014 at least one concrete live facet with a consequence, (2) FALSE-POSITIVE DISCIPLINE on the four known_safe items (the defining discriminator, as in subject 5), (3) valid-other yield, (4) noise on a 688-line diff."
  },
  "clusters": [
   {
@@ -59,18 +66,6 @@
      "repeat": 1,
      "subagent": "agent-a3873e3ef37f9054b",
      "severity": "medium"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": null,
-     "severity": "high"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": "agent-afba42d03b50437d5",
-     "severity": "high"
     },
     {
      "tool": "ours",
@@ -233,13 +228,31 @@
      "repeat": 2,
      "subagent": "agent-ab837631f99d125a9/adversarial-general",
      "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a69295a4f7199e0cf/bug-scan",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-af06e17e1e4eab8b4/scorer",
+     "severity": null
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
-   "judged_severity": "high",
-   "confidence": 80,
-   "rationale": "Verified: FileService.activateProvider fires onWillActivateFileSystemProvider BEFORE its `if (this.provider.has(scheme)) return` check (fileService.ts:94-104), so the listener at remoteFileSystemProxyClient.ts:62-75 runs on every vscode-remote operation. Its IIFE reaches registerProvider synchronously, which throws 'A filesystem provider for the scheme ... is already registered' (fileService.ts:52-54) \u2014 swallowed and logged at error level \u2014 while the freshly constructed provider has already been added to the window-lifetime DisposableStore. The sibling avoids this by joining one memoized promise."
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 55,
+   "rationale": "The onWillActivateFileSystemProvider listener constructs and registers a new provider with no idempotency guard and adds it to the store before registerProvider can throw, so repeat activations log errors and accumulate providers."
   },
   {
    "cluster_id": "P_CATCHDUP",
@@ -264,18 +277,6 @@
      "tool": "anthropic-code-review",
      "repeat": 1,
      "subagent": "agent-abdf1440b2ac586f7",
-     "severity": "medium"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": null,
-     "severity": "medium"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": "agent-afba42d03b50437d5",
      "severity": "medium"
     },
     {
@@ -419,9 +420,9 @@
    ],
    "verdict": "TP-primary",
    "matches": "primary",
-   "judged_severity": "high",
-   "confidence": 90,
-   "rationale": "must_flag facet (c), verified at explorerService.ts:308-322: the per-resource loop pushes each temp target into `result` as it goes, and the catch then does `result.push(...remoteResources)` unconditionally, so a failure on resource N yields a clipboard holding both temp copies and the original remote URIs for the already-copied files."
+   "judged_severity": "medium",
+   "confidence": 95,
+   "rationale": "Exactly must_flag facet (c): the catch does result.push(...remoteResources) after the loop may already have pushed temp targets, yielding duplicate and mixed-scheme clipboard entries."
   },
   {
    "cluster_id": "P_ORDER",
@@ -434,18 +435,6 @@
      "tool": "anthropic-code-review",
      "repeat": 1,
      "subagent": "agent-abdf1440b2ac586f7",
-     "severity": "low"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": null,
-     "severity": "low"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": "agent-afba42d03b50437d5",
      "severity": "low"
     },
     {
@@ -579,13 +568,31 @@
      "repeat": 2,
      "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
      "severity": "low"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a6577adb808106099/scorer",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a69295a4f7199e0cf/bug-scan",
+     "severity": null
     }
    ],
    "verdict": "TP-primary",
    "matches": "primary",
-   "judged_severity": "medium",
-   "confidence": 88,
-   "rationale": "must_flag facet (d), verified at explorerService.ts:288-316: the local pass-through loop pushes all file:// resources first, then the remote temp targets are appended, so for a mixed selection the clipboard order no longer matches the user's selection order (visible on paste ordering and on the single-target open at fileActions.ts:1270-1275)."
+   "judged_severity": "low",
+   "confidence": 95,
+   "rationale": "Exactly must_flag facet (d): the local pass-through loop pushes all file:// resources first and the remote temp targets afterwards, so clipboard order diverges from selection order."
   },
   {
    "cluster_id": "P_EAGER",
@@ -598,18 +605,6 @@
      "tool": "anthropic-code-review",
      "repeat": 1,
      "subagent": "agent-a1fefa7056d097fa8",
-     "severity": "medium"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": null,
-     "severity": "medium"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": "agent-afba42d03b50437d5",
      "severity": "medium"
     },
     {
@@ -737,13 +732,31 @@
      "repeat": 2,
      "subagent": "agent-ab837631f99d125a9/adversarial-general",
      "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a32fef1226202f55b/scorer",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a7ec1bb75c043c132/prior-pr",
+     "severity": null
     }
    ],
    "verdict": "TP-primary",
    "matches": "primary",
    "judged_severity": "high",
-   "confidence": 92,
-   "rationale": "must_flag facet (a), verified: setToCopy awaits resolveClipboardResources before writeResources (explorerService.ts:275-277), and that function creates folders and awaits `fileService.copy` per remote resource in a sequential loop with no size cap, progress, or cancellation (:308-316). Ctrl+C on a remote selection blocks on a full network download \u2014 mjbvz's unaddressed review thread."
+   "confidence": 97,
+   "rationale": "Exactly must_flag facet (a) and mjbvz's unaddressed thread: setToCopy awaits a sequential per-file fileService.copy over the network before writeResources, with no cap, progress or cancellation."
   },
   {
    "cluster_id": "filenamew_odd_byteoffset",
@@ -752,18 +765,6 @@
    "line": 247,
    "category": "bug",
    "reported_by": [
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": null,
-     "severity": "low"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": "agent-afba42d03b50437d5",
-     "severity": "low"
-    },
     {
      "tool": "ours",
      "repeat": 1,
@@ -892,10 +893,10 @@
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "high",
-   "confidence": 80,
-   "rationale": "Verified: the buffer arrives over IPC, where BufferReader.read \u2192 VSBuffer.slice uses `subarray` (buffer.ts:136-140, ipc.ts:217-221), preserving a non-zero and frequently odd byteOffset into the message buffer. `new Uint16Array(buffer.buffer.buffer, buffer.buffer.byteOffset, ...)` (clipboardService.ts:247) throws RangeError unless that offset is even; the catch at :253 swallows it, so Windows native paste nondeterministically returns nothing."
+   "confidence": 70,
+   "rationale": "new Uint16Array(buffer.buffer.buffer, byteOffset, ...) throws RangeError whenever the VSBuffer sits at an odd byteOffset, and the surrounding catch turns that into a silent empty result on the Windows read path."
   },
   {
    "cluster_id": "routing_hang_no_timeout",
@@ -1035,13 +1036,31 @@
      "repeat": 2,
      "subagent": "agent-ac3a8901a3a80976b/silent-failure-hunter",
      "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-aa2bf976671c04e18/git-history",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-adfbcf598f377b95e/scorer",
+     "severity": null
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "medium",
-   "confidence": 80,
-   "rationale": "Verified against IPCServer.getChannel (ipc.ts:896-910): with a clientFilter and no matching connection it falls back to `Event.toPromise(Event.filter(that.onDidAddConnection, ...))` \u2014 an unbounded wait. findWindowForAuthority only checks the window list, so a window that is closing or whose renderer connection is gone yields a call that never settles, unlike NodeRemoteResourceRouter which throws 'Caller not found' (electronRemoteResources.ts:29)."
+   "confidence": 70,
+   "rationale": "getRendererChannel passes a client filter to IPCServer.getChannel, whose filter branch waits on onDidAddConnection indefinitely when no connection matches, and findWindowForAuthority does no liveness check."
   },
   {
    "cluster_id": "window_ctx_magic_string",
@@ -1159,11 +1178,11 @@
      "severity": "medium"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 75,
-   "rationale": "Verified duplication: `window:${id}` is reconstructed inline at remoteFileSystemProxyMainHandler.ts:80 while the same literal is produced at mainProcessService.ts:25, windowTracker.ts:54, sharedProcessService.ts:52 and others, with no shared constant. Producer-side change would break routing silently."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "The window:${id} ctx convention is a pre-existing idiom the diff merely reuses; asking for a shared constant is unanchored taste."
   },
   {
    "cluster_id": "proxy_no_streaming_readfile",
@@ -1276,10 +1295,10 @@
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "medium",
-   "confidence": 75,
-   "rationale": "Verified: the client advertises only FileReadWrite (no FileReadStream, remoteFileSystemProxyClient.ts:81-84) and readFile returns a whole VSBuffer (:110-113) forwarded across two IPC hops from the server's `fileService.readFile` (:66-69), with no size cap. The full file materializes in the serving renderer, the main process, and the requesting renderer."
+   "confidence": 70,
+   "rationale": "Capabilities advertise only FileReadWrite and the server returns the whole VSBuffer, so a large remote file is fully materialized in three processes with no size cap."
   },
   {
    "cluster_id": "dispose_unawaited_cleanup",
@@ -1383,13 +1402,25 @@
      "repeat": 2,
      "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
      "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a69295a4f7199e0cf/bug-scan",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afc63f0a53365cb34/code-comment",
+     "severity": null
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
+   "verdict": "valid-other",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 80,
-   "rationale": "Verified: `dispose(): void` calls `this.cleanupRemoteClipboardTempDir()` without awaiting (explorerService.ts:566-568) \u2014 a floating promise whose recursive del may not complete before teardown, and whose rejection is only swallowed by the inner empty catch. One-shot fix."
+   "confidence": 75,
+   "rationale": "dispose() calls the async recursive del without awaiting, so on teardown the temp copies of remote files can outlive the process."
   },
   {
    "cluster_id": "zero_tests_clipboard_codecs",
@@ -1496,10 +1527,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 75,
-   "rationale": "Accurate and concrete: filesToPlist/plistToFiles/uriListToFiles/filePathToUtf16LE/fileNameWToFile (clipboardService.ts:170-258) are pure byte-level functions with zero coverage \u2014 the only new test file is remoteFileSystemProxy.test.ts, which tests the main handler. A named, bounded test gap on new pure logic."
+   "confidence": 65,
+   "rationale": "The five codecs are pure byte-level functions with new format logic; round-trip tests are specific, cheap and load-bearing."
   },
   {
    "cluster_id": "dead_exists_resolve",
@@ -1508,18 +1539,6 @@
    "line": 236,
    "category": "design",
    "reported_by": [
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": null,
-     "severity": "low"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": "agent-afba42d03b50437d5",
-     "severity": "low"
-    },
     {
      "tool": "ours",
      "repeat": 1,
@@ -1600,10 +1619,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 80,
-   "rationale": "Verified: the server dispatches 'exists' and 'resolve' (remoteFileSystemProxyServer.ts:36-37, 68-73) but RemoteFileSystemProxyClient only ever calls stat/readdir/readFile, and grep shows no other consumer of REMOTE_FILE_SYSTEM_PROXY_CHANNEL_NAME. Unreachable, untested surface \u2014 one-shot removal."
+   "confidence": 70,
+   "rationale": "The client only calls stat/readdir/readFile, so the server's 'exists' and 'resolve' cases are unreachable; deleting them is a bounded cleanup."
   },
   {
    "cluster_id": "no_typed_rpc_contract",
@@ -1697,11 +1716,11 @@
      "severity": "low"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 65,
-   "rationale": "Accurate: remoteFileSystemProxy.ts exports only two channel-name strings, and each of the three hops re-declares the command literals with `arg?: any` and positional casts (client :99-112, handler :47-49, server :30-40), so command/arity drift is invisible to the compiler. A shared typed contract is an available in-repo pattern (ProxyChannel)."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "Architectural preference; the diff's arg?: any channel shape matches the existing IServerChannel idiom and no concrete drift defect is named."
   },
   {
    "cluster_id": "temp_deleted_clipboard_dangling",
@@ -1710,18 +1729,6 @@
    "line": 568,
    "category": "bug",
    "reported_by": [
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": null,
-     "severity": "low"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": "agent-afba42d03b50437d5",
-     "severity": "low"
-    },
     {
      "tool": "ours",
      "repeat": 1,
@@ -1796,10 +1803,10 @@
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "medium",
-   "confidence": 80,
-   "rationale": "Verified: the clipboard holds file:// paths inside remoteClipboardTempDir (explorerService.ts:304-315), and that directory is recursively deleted on dispose (:566, :612) or on the next remote copy (:302) with no clipboard invalidation. Copy a remote file, close the window, paste into Finder/Explorer \u2192 the source no longer exists."
+   "confidence": 75,
+   "rationale": "dispose() recursively deletes remoteClipboardTempDir while the OS clipboard still holds those paths, so a native paste after the window closes resolves to files that no longer exist."
   },
   {
    "cluster_id": "win_multifile_filenamew",
@@ -1894,10 +1901,10 @@
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "medium",
-   "confidence": 80,
-   "rationale": "Verified: clipboardService.ts:88 gates the FileNameW write on `isWindows && resources.length === 1`, and readResources only ever reconstructs a single path (fileNameWToFile returns `[URI.file(path)]`). Multi-file copies silently fall through to the internal `code/file-list` format, so native Explorer paste gets nothing with no user signal \u2014 real incompleteness, not one of the must_flag facets."
+   "confidence": 85,
+   "rationale": "The FileNameW branch is gated on isWindows && resources.length === 1, so multi-file local copies fall through and paste into Explorer does nothing, with no signal to the user."
   },
   {
    "cluster_id": "P_CASESENS",
@@ -1983,13 +1990,31 @@
      "repeat": 1,
      "subagent": "agent-a30b98ca786ec327c/code-reviewer",
      "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a7ec1bb75c043c132/prior-pr",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-af9ad1807c34553f9/scorer",
+     "severity": null
     }
    ],
    "verdict": "TP-primary",
    "matches": "primary",
    "judged_severity": "medium",
-   "confidence": 90,
-   "rationale": "must_flag facet (b), verified: remoteFileSystemProxyClient.ts:81-84 unconditionally ORs in PathCaseSensitive, while the sibling derives it from the remote OS (`{ pathCaseSensitive: remoteAgentEnvironment.os === OperatingSystem.Linux }`, remoteFileSystemProviderClient.ts:56). A Windows/macOS remote is treated as case-sensitive, breaking path identity and comparison in FileService (fileService.ts:isPathCaseSensitive)."
+   "confidence": 95,
+   "rationale": "Exactly must_flag facet (b): remoteFileSystemProxyClient capabilities hard-codes FileSystemProviderCapabilities.PathCaseSensitive regardless of the remote OS."
   },
   {
    "cluster_id": "macos_binary_plist",
@@ -2003,18 +2028,6 @@
      "repeat": 1,
      "subagent": "agent-abdf1440b2ac586f7",
      "severity": "low"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": null,
-     "severity": "medium"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": "agent-afba42d03b50437d5",
-     "severity": "medium"
     },
     {
      "tool": "ours",
@@ -2077,11 +2090,11 @@
      "severity": "high"
     }
    ],
-   "verdict": "valid-other",
-   "matches": "none",
-   "judged_severity": "high",
-   "confidence": 70,
-   "rationale": "plistToFiles (clipboardService.ts:191) parses NSFilenamesPboardType with an XML `<string>` regex. AppKit serializes that pasteboard type as a binary plist (bplist00), so `clipboard.readBuffer('NSFilenamesPboardType')` on a Finder copy yields bytes the regex never matches and readResources returns [] \u2014 the macOS half of the new read path silently no-ops. External-platform claim, but concrete and consequential."
+   "verdict": "false-positive",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 55,
+   "rationale": "NSFilenamesPboardType is delivered through readBuffer as an XML property list, which is why the symmetric write path emits XML and round-trips; the asserted binary-plist-only serialization is not supported by the code."
   },
   {
    "cluster_id": "routing_test_underasserts",
@@ -2170,10 +2183,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 75,
-   "rationale": "Accurate against remoteFileSystemProxy.test.ts:441-467: the test asserts only `calledWindowCtx === 'window:2'`; the mock ignores the channel name, the forwarded command/arg are never asserted, and the return value is discarded, so a forwarding regression passes. Concrete, in-repo test improvement."
+   "confidence": 60,
+   "rationale": "The routing test never asserts the forwarded command/arg, the channel name, or the returned value, so a forwarding regression would still pass."
   },
   {
    "cluster_id": "tempdir_race_concurrent",
@@ -2259,13 +2272,31 @@
      "repeat": 2,
      "subagent": "agent-ab837631f99d125a9/adversarial-general",
      "severity": "medium"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a03207dc21e93f080/scorer",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a69295a4f7199e0cf/bug-scan",
+     "severity": null
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
-   "judged_severity": "low",
+   "matches": null,
+   "judged_severity": "medium",
    "confidence": 65,
-   "rationale": "Real and diff-verifiable: remoteClipboardTempDir is a single unsynchronized slot (explorerService.ts:50) and a second setToCopy awaits cleanupRemoteClipboardTempDir (:302), which recursively deletes the directory a still-in-flight first copy is writing into (:314). Made reachable precisely because the download is long-running (facet a), though it needs overlapping copy gestures."
+   "rationale": "resolveClipboardResources mutates the single remoteClipboardTempDir field and deletes the previous dir with no serialization, so a second copy during the first download deletes the directory the first is writing into."
   },
   {
    "cluster_id": "has_vs_read_divergence",
@@ -2274,18 +2305,6 @@
    "line": 133,
    "category": "logic",
    "reported_by": [
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": null,
-     "severity": "medium"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": "agent-afba42d03b50437d5",
-     "severity": "medium"
-    },
     {
      "tool": "ours",
      "repeat": 1,
@@ -2348,10 +2367,10 @@
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "medium",
-   "confidence": 80,
-   "rationale": "Verified: hasResources returns true on mere format presence (clipboardService.ts:133-148) while readResources filters/parses and can return [] (e.g. a text/uri-list of non-file URIs is dropped at :223, or a binary plist yields no regex matches). explorerView.ts:656 feeds hasResources into fileCopiedContextKey, so the Paste affordance is enabled for a paste that does nothing."
+   "confidence": 75,
+   "rationale": "hasResources() returns true on mere presence of a native format while readResources() parses and filters, so Paste can be enabled for a paste that produces nothing."
   },
   {
    "cluster_id": "tempdir_leak_local_only_copy",
@@ -2433,11 +2452,11 @@
      "severity": "medium"
     }
    ],
-   "verdict": "valid-other",
-   "matches": "none",
+   "verdict": "valid-minor",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 80,
-   "rationale": "Verified: cleanupRemoteClipboardTempDir is only reached inside the `remoteResources.length > 0` branch (explorerService.ts:299-302). A remote copy followed by any local-only copy leaves the previous temp tree \u2014 containing full copies of remote files \u2014 on disk until the next remote copy or dispose."
+   "confidence": 60,
+   "rationale": "cleanupRemoteClipboardTempDir() is called only inside if (remoteResources.length > 0), so a subsequent local-only copy leaves the previous temp tree behind until dispose; hoisting the call is a one-line fix."
   },
   {
    "cluster_id": "zero_tests_explorer_temp_download",
@@ -2520,10 +2539,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Names three specific uncovered scenarios on the riskiest new code \u2014 all-local passthrough, the download-failure fallback, and cleanup/dispose (explorerService.ts:287-327, 609-617). Bounded and concrete rather than a coverage sweep."
+   "confidence": 60,
+   "rationale": "Names specific load-bearing new branches (all-local passthrough, download-failure fallback, cleanup on dispose) rather than asking for coverage in general."
   },
   {
    "cluster_id": "utf16_endianness_comment",
@@ -2600,10 +2619,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
+   "matches": null,
+   "judged_severity": "nit",
    "confidence": 75,
-   "rationale": "Correct: the comment at clipboardService.ts:231 attributes the encoding to Uint16Array, when what actually makes the FileNameW buffer correct is the host being little-endian (true on Windows, the only platform reaching this code). An inaccurate comment hiding the load-bearing assumption."
+   "rationale": "new Uint8Array(encoded.buffer) depends on host little-endianness, not on any property of Uint16Array, so the added comment misstates the load-bearing assumption."
   },
   {
    "cluster_id": "zero_tests_proxy_client",
@@ -2679,11 +2698,11 @@
      "severity": "low"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
    "confidence": 65,
-   "rationale": "True and reasonably specific \u2014 the only new test file covers the main handler, leaving the register() loop-prevention guard, the throwing mutators, and the readFile VSBuffer unwrap uncovered. Bounded, though close to a coverage sweep."
+   "rationale": "Whole-class coverage ask on a thin channel-forwarding wrapper; the enumerated behaviours are near-tautological to test."
   },
   {
    "cluster_id": "urilist_all_or_nothing_parse",
@@ -2753,11 +2772,11 @@
      "severity": "high"
     }
    ],
-   "verdict": "valid-other",
-   "matches": "none",
+   "verdict": "valid-minor",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Verified: the whole `.map(line => URI.parse(line))` chain sits inside one try (clipboardService.ts:216-226), and URI.parse does throw for some inputs (uri.ts:24-45 \u2014 illegal scheme characters, or a path beginning with '//' with no authority). One bad line discards every valid file:// entry and returns []."
+   "confidence": 55,
+   "rationale": "The .map(URI.parse) sits inside one try/catch and URI.parse does throw on some malformed inputs, so one bad line discards every valid file:// entry; per-line parsing is a bounded fix."
   },
   {
    "cluster_id": "zero_tests_broad_sweep",
@@ -2828,10 +2847,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 80,
-   "rationale": "Unbounded 'the PR is essentially untested' sweep across four subsystems with no specific scenario named \u2014 exactly the coverage wish-list the rubric defaults down."
+   "confidence": 85,
+   "rationale": "Blanket restatement that duplicates the per-area coverage clusters."
   },
   {
    "cluster_id": "cut_becomes_copy",
@@ -2896,10 +2915,10 @@
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
-   "judged_severity": "critical",
-   "confidence": 85,
-   "rationale": "Verified end to end: setToCopy substitutes temp file:// URIs even when cut=true (explorerService.ts:266-277), and the move branch builds `new ResourceFileEdit(pair.source, pair.target)` where pair.source is the clipboard URI (fileActions.ts:1218, 1223-1233). Cut+Paste of a remote file therefore moves the temp copy and leaves the original remote file in place \u2014 a silent data-level regression, distinct from all must_flag facets."
+   "matches": null,
+   "judged_severity": "high",
+   "confidence": 70,
+   "rationale": "setToCopy(items, cut=true) now writes local temp file:// URIs, so the paste side no longer sees the original remote resources it must move \u2014 the source remote file is never removed, silently turning a cut into a copy."
   },
   {
    "cluster_id": "parsers_no_logging",
@@ -2964,10 +2983,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Correct for the new code: plistToFiles (:201), uriListToFiles (:224) and fileNameWToFile (:253) all swallow into `[]` with no log, while the class already holds an ILogService used elsewhere (:30, :39). A parse failure is indistinguishable from an empty clipboard \u2014 a concrete missing-log fix."
+   "confidence": 55,
+   "rationale": "All three new codecs bind catch (error) and discard it while ILogService is already injected; adding warns at the three sites makes parse failures distinguishable from an empty clipboard."
   },
   {
    "cluster_id": "plain_error_readonly_methods",
@@ -3032,10 +3051,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Verified convention gap: read-only providers throw `createFileSystemProviderError('fs is readonly', FileSystemProviderErrorCode.NoPermissions)` (chatResponseResourceFileSystemProvider.ts:122-136), while remoteFileSystemProxyClient.ts:116-138 throws plain Errors that classify as Unknown (files.ts:851)."
+   "confidence": 65,
+   "rationale": "The read-only mutators throw new Error(...) rather than createFileSystemProviderError(..., NoPermissions), so FileService classifies them as Unknown; the canonical helper is in-repo."
   },
   {
    "cluster_id": "adhoc_narrow_interfaces",
@@ -3094,10 +3113,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
-   "confidence": 65,
-   "rationale": "Structural typing already enforces compatibility at the app.ts:1306 call site where the real IWindowsMainService is passed, so the claimed drift risk does not materialize; Pick<>-derivation and returning the matched window rather than `{ id }` are style preferences."
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "Type-shape taste; findWindowForAuthority's { id } literal is functionally equivalent."
   },
   {
    "cluster_id": "authority_case_compare",
@@ -3155,11 +3174,11 @@
      "severity": "high"
     }
    ],
-   "verdict": "valid-other",
-   "matches": "none",
+   "verdict": "valid-minor",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Verified convention divergence with a concrete failure mode: windowsMainService.ts:587/648/663/680 all match windows via `isEqualAuthority` (case-insensitive), while findWindowForAuthority (remoteFileSystemProxyMainHandler.ts:70) uses `===`. A case-differing authority yields 'No window found with remote authority' instead of routing."
+   "confidence": 55,
+   "rationale": "findWindowForAuthority uses === where the codebase provides isEqualAuthority for case-insensitive comparison; a one-line substitution."
   },
   {
    "cluster_id": "dnd_remote_text_regression",
@@ -3187,18 +3206,6 @@
      "severity": "high"
     },
     {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": null,
-     "severity": "low"
-    },
-    {
-     "tool": "anthropic-code-review",
-     "repeat": 2,
-     "subagent": "agent-afba42d03b50437d5",
-     "severity": "low"
-    },
-    {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "subagent": null,
@@ -3215,13 +3222,31 @@
      "repeat": 2,
      "subagent": "agent-ab837631f99d125a9/adversarial-general",
      "severity": "info"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a304e1631d0bed109/scorer",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-aa2bf976671c04e18/git-history",
+     "severity": null
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
-   "judged_severity": "medium",
-   "confidence": 80,
-   "rationale": "Verified: dnd.ts:244-248 now sets DataTransfers.TEXT only when at least one file:// resource is present, and the retained comment says the purpose is 'allows to paste into text-capable areas'. Dragging a remote file into the terminal, an input box, or an editor as text now transfers nothing \u2014 a user-visible regression not in must_flag."
+   "matches": null,
+   "judged_severity": "high",
+   "confidence": 85,
+   "rationale": "TEXT is now set only if (nativeResources.length) after filtering to Schemas.file, so dragging a remote resource into the terminal, search box or an editor now transfers nothing."
   },
   {
    "cluster_id": "jsdoc_file_uri_contract_violated",
@@ -3277,13 +3302,31 @@
      "repeat": 2,
      "subagent": "agent-a7e63c35826b4e793/comment-analyzer",
      "severity": "critical"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a8d3d574da648b480/scorer",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-afc63f0a53365cb34/code-comment",
+     "severity": null
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 60,
-   "rationale": "Correct: the JSDoc at explorerService.ts:282-286 promises file:// URIs for all resources while the catch at :322 returns remote-scheme URIs. It identifies the fallback code but stops at 'the documented contract is false' \u2014 no user/system consequence is named, so it does not clear the must_flag facet (e) bar; graded as an inaccurate-doc fix."
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 75,
+   "rationale": "The JSDoc says 'Returns file:// URIs for all resources' while the catch path does result.push(...remoteResources); a one-shot doc correction."
   },
   {
    "cluster_id": "server_type_annotations_inaccurate",
@@ -3342,10 +3385,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Verified: the server hand-declares `{ type; size; mtime; ctime }` (remoteFileSystemProxyServer.ts:52) instead of IStat (files.ts:498, which also carries permissions) while the client annotates the same call `Promise<IStat>`, and resolve() forces `as Promise<IFileStatWithMetadata>` regardless of the runtime resolveMetadata flag. Contract inaccuracy across an IPC boundary the compiler cannot check."
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 55,
+   "rationale": "The server hand-writes a structural stat literal where the canonical IStat is adjacent, and resolve()'s cast is unconditional though resolveMetadata is a runtime flag; both are one-line annotation fixes."
   },
   {
    "cluster_id": "temp_plaintext_disk_security",
@@ -3404,10 +3447,10 @@
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "medium",
    "confidence": 75,
-   "rationale": "Verified: remote file contents are copied to `environmentService.cacheHome/remote-clipboard/<uuid>/<uuid>/<name>` (explorerService.ts:304-314) with no permission hardening, and cleanup is best-effort (`catch { }` at :609 plus an unawaited call from dispose()). Remote workspace content persists in plaintext on the local disk \u2014 a real data-at-rest exposure not in must_flag."
+   "rationale": "resolveClipboardResources copies remote file contents into environmentService.cacheHome/remote-clipboard and cleanup is best-effort (empty catch, dispose-only), so remote content persists in plaintext on local disk."
   },
   {
    "cluster_id": "unvalidated_args_uri_revive",
@@ -3465,11 +3508,11 @@
      "severity": "medium"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
    "confidence": 70,
-   "rationale": "Correct: `const args = arg as unknown[]; URI.revive(args[0] as UriComponents)` (remoteFileSystemProxyMainHandler.ts:48-49, repeated in the server's switch) indexes an optional parameter with no validation, so a malformed payload surfaces as a raw TypeError rather than a domain error on an IPC boundary. Small, one-shot hardening."
+   "rationale": "args[0] on the only internal always-array caller yields at worst a less pretty error; no reachable consequence."
   },
   {
    "cluster_id": "proxy_no_caller_auth",
@@ -3521,11 +3564,11 @@
      "severity": "high"
     }
    ],
-   "verdict": "valid-other",
-   "matches": "none",
-   "judged_severity": "high",
-   "confidence": 80,
-   "rationale": "Verified and distinct from the fixed scheme-check trap: the handler acknowledges the vscode-remote guard but shows that `call(_: unknown, command, arg)` (remoteFileSystemProxyMainHandler.ts:47) discards the caller ctx entirely and routes purely on the payload authority, with no scoping or Workspace-Trust check. Any renderer can read any file on another window's privileged remote connection \u2014 a confused-deputy gap."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 60,
+   "rationale": "Cross-window access is the feature's stated purpose and all windows are the same user's same application; the finding names no attacker or concrete pathway."
   },
   {
    "cluster_id": "zero_tests_proxy_server",
@@ -3577,11 +3620,11 @@
      "severity": "high"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 65,
-   "rationale": "Accurate and enumerated: the command-dispatch switch, the `Call not found` throw, the listen() throw and the missing-provider throws (remoteFileSystemProxyServer.ts:30-62) have no coverage; the sole new test file targets the main handler only."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "Whole-class coverage ask on a switch that delegates straight to IFileService; open-ended rather than load-bearing."
   },
   {
    "cluster_id": "P_SILENTFALLBACK",
@@ -3630,8 +3673,8 @@
    "verdict": "TP-primary",
    "matches": "primary",
    "judged_severity": "medium",
-   "confidence": 88,
-   "rationale": "must_flag facet (e), verified at explorerService.ts:317-322: the only failure signal is `logService.warn`, after which the original remote URIs are placed on the clipboard. Native paste then silently does nothing with no notification, progress, or telemetry."
+   "confidence": 95,
+   "rationale": "Exactly must_flag facet (e): the catch only calls logService.warn and returns remote URIs, so native paste degrades with no user-visible signal."
   },
   {
    "cluster_id": "default_branch_comment_wrong",
@@ -3678,10 +3721,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 75,
-   "rationale": "Verified inaccurate on both halves: an all-local single-file copy on Windows returns at clipboardService.ts:88-96 and never reaches the '// Default (Windows, or mixed local/remote)' line at :99, while macOS and Linux do reach it for any non-all-local set."
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 60,
+   "rationale": "Half correct and locally fixable: single-file Windows never reaches the '// Default (Windows, ...)' branch, so the label should read Windows multi-file."
   },
   {
    "cluster_id": "readonly_type_overclaims",
@@ -3727,11 +3770,11 @@
      "severity": "nit"
     }
    ],
-   "verdict": "false-positive",
-   "matches": "none",
+   "verdict": "trivia",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 75,
-   "rationale": "Refuted: FileReadWrite | Readonly is the codebase's canonical way to express a read-only provider \u2014 FileReadWrite is the API-shape capability, Readonly the policy bit. See localHistoryFileSystemProvider.ts:72 (`FileReadWrite | Readonly`), webWorkerFileSystemProvider.ts:14, editSessionsFileSystemProvider.ts:21, chatResponseResourceFileSystemProvider.ts:45-50. The type does not 'advertise the opposite of the intent'."
+   "confidence": 60,
+   "rationale": "FileReadWrite combined with the Readonly bit is the established vscode provider idiom, so the asserted contradiction is not one."
   },
   {
    "cluster_id": "server_jsdoc_link_rot",
@@ -3777,11 +3820,11 @@
      "severity": "nit"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Verified: the class JSDoc at remoteFileSystemProxyServer.ts:16-21 links {@link RemoteFileSystemProxyMainHandler} and {@link ElectronRemoteResourceLoader}, neither of which is imported in that file, so the links do not resolve and renames will not track them. One-shot doc fix."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "JSDoc {@link} hygiene and a wording quibble; no consequence."
   },
   {
    "cluster_id": "server_layering_inconsistent",
@@ -3827,11 +3870,11 @@
      "severity": "medium"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
+   "verdict": "valid-other",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 75,
-   "rationale": "Verified: remoteFileSystemProxyServer.ts:52/60 call `fileService.getProvider(uri.scheme)` directly while readFile/exists/resolve at :63-73 go through IFileService. getProvider does not run activateProvider (fileService.ts:88-94), so stat/readdir can throw 'No provider for scheme' where readFile would have activated it. Real inconsistency, small blast radius."
+   "confidence": 55,
+   "rationale": "stat/readdir go through fileService.getProvider(uri.scheme), bypassing provider activation and error normalization, while readFile/exists/resolve go through IFileService, so the same URI can fail on one command and succeed on another."
   },
   {
    "cluster_id": "server_no_scheme_validation",
@@ -3877,11 +3920,11 @@
      "severity": "medium"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 65,
-   "rationale": "Not the fixed-bot-comment trap \u2014 it explicitly acknowledges the vscode-remote guard exists in the main handler (:50-52) and argues for defense in depth in the renderer server, whose readFile/resolve go through IFileService and would happily serve a file:// URI. Conditional on a future caller, so a small hardening rather than a live defect."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "Explicitly hypothetical defense-in-depth; the actual guard exists at the main handler and the cluster concedes it."
   },
   {
    "cluster_id": "test_error_regex_coupling",
@@ -3928,10 +3971,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
-   "confidence": 70,
-   "rationale": "Matching a stable message prefix in assert.rejects is the prevailing style across this repo's tests; asserting the interpolated authority/scheme would be marginally stronger but nothing is refuted or missed in practice."
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "assert.rejects on a message prefix is the prevailing vscode test idiom; no defect and no bounded fix beyond taste."
   },
   {
    "cluster_id": "watch_inert_undocumented",
@@ -3978,10 +4021,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 65,
-   "rationale": "Correct: watch() returns Disposable.None and onDidChangeFile is backed by an emitter that is never fired (remoteFileSystemProxyClient.ts:73-78, 105-107), yet the provider is registered for the whole vscode-remote scheme in that window, so any watcher there is silently inert. Undocumented, and inconsistent with the throwing mutators."
+   "confidence": 55,
+   "rationale": "watch() returns Disposable.None and onDidChangeFile never fires while the provider is registered scheme-wide; documenting the deliberate no-op is a specific local fix."
   },
   {
    "cluster_id": "dnd_filter_untested",
@@ -4021,11 +4064,11 @@
      "severity": "medium"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Accurate: dnd.ts:244-248 changes user-visible DND text behavior (all-remote selections now set no TEXT at all) and no test accompanies it. A bounded, named test gap on a behavior change rather than an unbounded coverage wish."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 60,
+   "rationale": "Coverage ask requiring a full ServicesAccessor harness; the underlying behaviour change is already reported separately as a defect."
   },
   {
    "cluster_id": "duplicate_authority_first_match",
@@ -4066,10 +4109,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
+   "matches": null,
+   "judged_severity": "info",
    "confidence": 70,
-   "rationale": "Accurate description of the linear scan (remoteFileSystemProxyMainHandler.ts:68-75), but two windows on the same authority expose equivalent remote providers, so an arbitrary pick has no stated consequence. The real routing defect is the unbounded wait when the picked window has no live connection."
+   "rationale": "Two windows sharing a remote authority expose the same file system, so the arbitrary first-match pick is behaviourally indistinguishable."
   },
   {
    "cluster_id": "fromcharcode_spread_rangeerror",
@@ -4110,10 +4153,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Correct on the code (clipboardService.ts:249 spreads `u16.subarray(...)` whose length is clipboard-controlled when no NUL is present), but the failure is caught by the surrounding try and degrades to the same empty-paste result the path already has. One-shot fix (loop or TextDecoder('utf-16le')); low value on its own."
+   "confidence": 60,
+   "rationale": "String.fromCharCode(...u16.subarray(...)) spreads an externally-sized array whose length is unbounded without a null terminator; the catch turns the RangeError into an empty paste."
   },
   {
    "cluster_id": "test_fixture_weak_discrimination",
@@ -4153,11 +4196,11 @@
      "severity": "low"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Accurate for the routing test (remoteFileSystemProxy.test.ts:444-449): only one window carries an authority and it is the matching one, with no near-miss decoy, so relaxing `===` to startsWith/includes would still pass. Concrete fixture improvement."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 60,
+   "rationale": "Overlaps the under-asserting-test point and is framed around a hypothetical future regression; the fixtures already include non-matching and undefined-authority windows."
   },
   {
    "cluster_id": "client_trusts_wire_no_validation",
@@ -4192,10 +4235,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 70,
-   "rationale": "True of essentially every IChannel client in the codebase (including DiskFileSystemProviderClient), and both ends of this channel are first-party VS Code processes. Generic typing observation with no concrete pathway."
+   "confidence": 75,
+   "rationale": "Every IChannel.call in this codebase types its result by caller annotation; runtime validation on a trusted intra-app channel is an unbounded ask."
   },
   {
    "cluster_id": "clipboard_codec_design_testability",
@@ -4229,11 +4272,11 @@
      "severity": "nit"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Correct: the five codecs are private and only reachable via platform-branching public methods (clipboardService.ts:170-258), and the 'always file:// URIs' postcondition is only enforced in uriListToFiles (:223) \u2014 plistToFiles and fileNameWToFile use URI.file unconditionally. Extracting exported free functions is exactly the one-shot testability improvement valid-minor covers."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 80,
+   "rationale": "Taste-level restructuring proposal with no behavioural consequence asserted."
   },
   {
    "cluster_id": "dnd_webloc_comment_imprecise",
@@ -4267,11 +4310,11 @@
      "severity": "low"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 65,
-   "rationale": "Fair against dnd.ts:241-247: the value written to TEXT is `labelService.getUriLabel(resource, { noPrefix: true })` \u2014 a path-like label, not a URI \u2014 so the .webloc rationale does not describe what is actually transferred, and the macOS-only justification is applied to a filter that runs on every platform. Inaccurate comment."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "Wordsmithing of a rationale comment; no behavioural claim."
   },
   {
    "cluster_id": "double_paste_regression",
@@ -4303,13 +4346,37 @@
      "repeat": 1,
      "subagent": "agent-a6b25d7aa8f1970af",
      "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a120d2b5c7258740a/scorer",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a7ec1bb75c043c132/prior-pr",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-aa2bf976671c04e18/git-history",
+     "severity": null
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
-   "judged_severity": "high",
-   "confidence": 75,
-   "rationale": "Strong and code-anchored: Ctrl+V is bound via `^filesExplorer.paste` (fileActions.contribution.ts:121-126), whose `^` prefix deliberately does NOT preventDefault, so the DOM paste listener at explorerView.ts:337-343 also fires whenever `clipboardData.files.length` is non-empty. Before this PR an internal copy wrote only the custom `code/file-list` format so that guard was false; now every all-local copy writes a native file format (clipboardService.ts:73-96), so an in-app paste runs pasteFileHandler twice \u2014 and with explorer.confirmPasteNative defaulting to true (files.contribution.ts:489-492) the second pass also raises a confirmation dialog."
+   "matches": null,
+   "judged_severity": "medium",
+   "confidence": 45,
+   "rationale": "Premise is diff-verified (internal all-local copies now publish real OS file entries), but the double-fire consequence depends on whether the ctrl+V keybinding suppresses the DOM paste event, which I cannot fully confirm."
   },
   {
    "cluster_id": "empty_catch_cleanup",
@@ -4344,10 +4411,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 75,
-   "rationale": "Verified: `catch { }` with no binding and no log at explorerService.ts:611-613, followed by unconditionally clearing remoteClipboardTempDir at :615 \u2014 the only reference to the leaked directory is discarded on failure. Concrete missing-log/cleanup fix."
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 65,
+   "rationale": "catch { } binds nothing while the class already injects ILogService, and the field is cleared regardless; adding a warn is a one-line fix."
   },
   {
    "cluster_id": "native_format_interop_unverified",
@@ -4382,10 +4449,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 80,
-   "rationale": "Explicitly an 'unverifiable from the diff, needs a manual per-OS test pass' note \u2014 the unbounded manual cross-platform verification wish the rubric defaults down. No concrete defect named."
+   "confidence": 85,
+   "rationale": "Self-declared unverifiable process note; names no defect."
   },
   {
    "cluster_id": "plist_empty_string_regex",
@@ -4420,10 +4487,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
-   "confidence": 70,
-   "rationale": "Technically true of `/<string>([^<]+)<\\/string>/g` (clipboardService.ts:191), but NSFilenamesPboardType entries are file paths and an empty path is not a real input, so nothing follows."
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "<string></string> cannot represent a real file path, so dropping it has no consequence for this codec."
   },
   {
    "cluster_id": "plist_handrolled_parser",
@@ -4457,11 +4524,11 @@
      "severity": "high"
     }
    ],
-   "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "info",
-   "confidence": 65,
-   "rationale": "Partly wrong: XML text content only requires escaping & and < (> optionally), so 'handles only 3 of 5 entities' is not a defect \u2014 \" and ' need no escaping outside attributes. The reuse suggestion (plistParser.ts lives in workbench/services/themes) is taste; the real plist defect is the binary-plist read path, covered elsewhere."
+   "verdict": "valid-minor",
+   "matches": null,
+   "judged_severity": "low",
+   "confidence": 50,
+   "rationale": "The reader decodes only &lt;/&gt;/&amp; so a path another app encoded with &quot; or &apos; comes back wrong \u2014 a bounded fix at one location."
   },
   {
    "cluster_id": "stale_format_shadowing",
@@ -4495,11 +4562,11 @@
      "severity": "info"
     }
    ],
-   "verdict": "trivia",
-   "matches": "none",
+   "verdict": "false-positive",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 55,
-   "rationale": "Premise is unverified and probably wrong: writeClipboardBuffer maps to Electron's clipboard.writeBuffer (nativeHostMainService.ts:1005), which commits through a ScopedClipboardWriter that replaces the whole clipboard rather than adding a format to the existing contents. Even if formats did accumulate, readResources checks FILE_FORMAT first (:107-112), so VS Code's own read path is unaffected. [Unverified] on Electron internals \u2014 cannot cite in-repo refuting evidence, so graded down rather than as a false positive."
+   "confidence": 60,
+   "rationale": "Electron's clipboard.writeBuffer replaces the clipboard contents rather than adding a format alongside existing ones, so a later write cannot leave the earlier native format readable."
   },
   {
    "cluster_id": "test_file_name_mismatch",
@@ -4534,10 +4601,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
-   "confidence": 70,
-   "rationale": "Naming taste: the file sits under test/electron-main/ and the only electron-main source in the subsystem is the main handler, so the name is defensible. No behavior or coverage consequence beyond the separately-stated test gaps."
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 65,
+   "rationale": "Test-file naming preference; the file covers the electron-main handler, so the mismatch is cosmetic."
   },
   {
    "cluster_id": "electron_oneformat_comment",
@@ -4566,10 +4633,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
+   "matches": null,
+   "judged_severity": "info",
    "confidence": 60,
-   "rationale": "Half right: clipboard.write() does accept several predefined types, but the comment is specifically about buffer formats, and nativeHostMainService.writeClipboardBuffer (:1005) does wrap a single-format clipboard.writeBuffer call. Pedantic wording critique with no consequence."
+   "rationale": "The comment is about buffer formats, where writeBuffer really is one-format-per-call; the correction does not apply to custom buffer formats."
   },
   {
    "cluster_id": "main_handler_edge_cases_untested",
@@ -4597,11 +4664,11 @@
      "severity": "nit"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 65,
-   "rationale": "Enumerates four concrete uncovered cases against the shipped test file (empty window list, duplicate authority, a raw UriComponents payload through URI.revive, the listen() throw at remoteFileSystemProxyMainHandler.ts:42-44). Bounded, one-shot additions."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 75,
+   "rationale": "Open-ended enumeration of additional cases with no load-bearing gap identified."
   },
   {
    "cluster_id": "register_catch_swallows_failure",
@@ -4629,11 +4696,11 @@
      "severity": "high"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
+   "verdict": "valid-other",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Correct: the catch at remoteFileSystemProxyClient.ts:66-68 logs and lets the joined promise resolve, so activateProvider completes as if a provider were registered and the next access fails far from the cause with a generic 'No file system provider found'. Concrete error-handling fix (closely related to the re-registration defect)."
+   "confidence": 60,
+   "rationale": "The try/catch inside the e.join() IIFE logs and then resolves, so activation reports success with no provider registered and the caller later fails with a generic error detached from the cause."
   },
   {
    "cluster_id": "temp_uri_breaks_workspace_identity",
@@ -4661,11 +4728,11 @@
      "severity": "high"
     }
    ],
-   "verdict": "false-positive",
-   "matches": "none",
+   "verdict": "trivia",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 80,
-   "rationale": "Refuted: findValidPasteFileTarget (fileActions.ts:322-353) derives the candidate from `targetFolder.resource` + basename and increments while `explorerService.findClosest(candidate)` exists \u2014 it never consults the source URI's identity. basename is preserved by the temp copy (explorerService.ts:313), so same-folder duplicate-on-paste still auto-increments; no 'already exists' failure occurs."
+   "confidence": 50,
+   "rationale": "The identity-loss premise is real, but the asserted consequence does not follow: incremental paste naming is driven by the target folder's children, not the source URI's scheme."
   },
   {
    "cluster_id": "app_desktop_wiring_untested",
@@ -4688,10 +4755,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
    "confidence": 80,
-   "rationale": "DI wiring in app.ts/desktop.main.ts is not unit-tested anywhere in this codebase by convention; an unbounded coverage wish with no specific behavior named."
+   "rationale": "DI/channel registration is conventionally untested in this repo; an open-ended coverage ask."
   },
   {
    "cluster_id": "basename_collision_untested",
@@ -4713,11 +4780,11 @@
      "severity": "high"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
    "confidence": 70,
-   "rationale": "Correctly states that the uuid-subfolder collision avoidance EXISTS (explorerService.ts:309-313) \u2014 not the fixed-bot-comment trap \u2014 and asks for a test pinning it. Bounded, concrete."
+   "rationale": "Happy-path pin requiring a full ExplorerService harness; low-value coverage ask."
   },
   {
    "cluster_id": "cancellation_token_dropped",
@@ -4740,10 +4807,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 75,
-   "rationale": "Verified: IServerChannel.call takes a 4th cancellationToken (ipc.ts:35) and ChannelServer creates one per request (ipc.ts:424-428), but the handler's signature (remoteFileSystemProxyMainHandler.ts:47) drops it and forwards `targetChannel.call(command, arg)` with no token. Real but low-impact today since the proxy client never passes a token either."
+   "confidence": 65,
+   "rationale": "async call(_, command, arg?) omits IServerChannel's cancellationToken parameter and forwards only (command, arg); threading the token through is a one-line fix."
   },
   {
    "cluster_id": "channel_name_spelling_convention",
@@ -4766,10 +4833,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
-   "confidence": 70,
-   "rationale": "The cited convention is real (REMOTE_FILE_SYSTEM_CHANNEL_NAME = 'remoteFilesystem', remoteFileSystemProviderClient.ts:16) but this is cosmetic casing of an internal channel string with no functional consequence."
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 65,
+   "rationale": "Casing preference for a new channel-name literal, with the claimed sibling convention not demonstrated in the diff."
   },
   {
    "cluster_id": "charcodeat_surrogate_pairs",
@@ -4792,10 +4859,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
-   "confidence": 75,
-   "rationale": "The code is actually correct: JS strings are UTF-16 code-unit sequences, so writing each `charCodeAt(i)` into a Uint16Array of `path.length + 1` reproduces surrogate pairs exactly (clipboardService.ts:232-235). The finding concedes it works and asks only that the assumption be documented \u2014 a nit."
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "charCodeAt emits exactly the UTF-16 code units the format wants, so surrogate pairs are handled correctly; the cluster concedes it works."
   },
   {
    "cluster_id": "clipboard_format_literals_ifladder",
@@ -4817,11 +4884,11 @@
      "severity": "low"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 65,
-   "rationale": "Accurate: the same isMacintosh/isLinux/isWindows \u2192 format ladder is written out three times (clipboardService.ts:73-96, 115-128, 138-148), so the platform \u00d7 format matrix is not a single checkable structure. Extracting a table is the one-shot improvement valid-minor covers."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 80,
+   "rationale": "Restructuring preference; no defect asserted."
   },
   {
    "cluster_id": "explorer_writeresources_blast_radius",
@@ -4844,10 +4911,10 @@
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "medium",
-   "confidence": 75,
-   "rationale": "Verified: writeResources has non-Explorer callers \u2014 chatReferencesContentPart.ts:579 and chatInlineAnchorWidget.ts:405 both call `writeResources([resource])`. Copying a chat file reference now writes NSFilenamesPboardType / text/uri-list / FileNameW onto the OS clipboard, an unintended broadening of an unrelated action's effect."
+   "confidence": 65,
+   "rationale": "writeResources is a shared IClipboardService method; the diff makes every all-local call write native OS formats, so callers unrelated to the explorer now publish real file entries to the OS clipboard."
   },
   {
    "cluster_id": "gnome_copied_files_format",
@@ -4870,10 +4937,10 @@
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "medium",
    "confidence": 60,
-   "rationale": "Concrete interop claim about the new LINUX_FILE_FORMAT write path (clipboardService.ts:81-86): Nautilus keys clipboard paste off `x-special/gnome-copied-files` with a leading copy/cut verb line, so a plain text/uri-list payload is not honored there (KDE/Dolphin does read text/uri-list). Not verifiable in-repo, but specific and consequential for the PR's headline Linux scenario."
+   "rationale": "The new Linux write path emits only text/uri-list; GNOME/Nautilus paste keys off x-special/gnome-copied-files, so the headline Linux interop goal plausibly does not work."
   },
   {
    "cluster_id": "handrolled_routing_not_iclientrouter",
@@ -4895,11 +4962,11 @@
      "severity": "medium"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 60,
-   "rationale": "The canonical pattern does exist in-repo \u2014 NodeRemoteResourceRouter implements IClientRouter and is passed to getChannel (electronRemoteResources.ts:15-31) \u2014 and this handler instead does routing inside IServerChannel.call. The 'extra channel hop' half is dubious (a renderer cannot reach another renderer without the main process either way), so this is a convention suggestion."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 65,
+   "rationale": "Architectural rewrite proposal; a design debate rather than a one-shot patch, and no defect follows from the current shape."
   },
   {
    "cluster_id": "linux_uri_list_literal",
@@ -4922,10 +4989,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 75,
-   "rationale": "Verified duplicated constant: `Mimes.uriList = 'text/uri-list'` exists at base/common/mime.ts:14 and Mimes is already used symbolically in dnd.ts (Mimes.binary), yet clipboardService.ts:19 hard-codes the literal."
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 70,
+   "rationale": "LINUX_FILE_FORMAT = 'text/uri-list' duplicates the in-repo Mimes.uriList constant; a one-line symbolic substitution."
   },
   {
    "cluster_id": "magic_number_bytelength_guard",
@@ -4948,10 +5015,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
+   "matches": null,
+   "judged_severity": "info",
    "confidence": 75,
-   "rationale": "True that `buffer.byteLength < 4` (clipboardService.ts:241) is unexplained, but it is a sanity guard with no behavioral consequence \u2014 pure nit."
+   "rationale": "Unexplained-constant nit on a defensive length guard; no behavioural consequence."
   },
   {
    "cluster_id": "missing_trace_logging_clipboard",
@@ -4974,10 +5041,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
-   "confidence": 70,
-   "rationale": "Premise is inaccurate: readImage, readFindText and writeFindText (clipboardService.ts:34-60) also have no trace opener, so it is not a class-wide convention, and writeResources/readResources/hasResources had none before this PR either. Style nit."
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 55,
+   "rationale": "The pre-change methods had no trace opener either, so this rests on a premise not visible in the diff."
   },
   {
    "cluster_id": "no_audit_trail_server",
@@ -5000,10 +5067,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 65,
-   "rationale": "True that the server takes no ILogService, but the framing (exfiltration attribution, incident reconstruction) is speculative for a same-user, same-machine cross-window read; VS Code's sibling loaders log nothing here either. Wish-list rather than a defect."
+   "confidence": 85,
+   "rationale": "Open-ended audit-logging ask on an intra-application channel with no privilege boundary."
   },
   {
    "cluster_id": "no_command_allowlist",
@@ -5026,10 +5093,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
    "confidence": 70,
-   "rationale": "True that the handler forwards any command string, but the receiving server's switch throws `Call not found` for anything outside its five commands (remoteFileSystemProxyServer.ts:33-40), so no concrete consequence follows. Defense-in-depth taste; the substantive authorization gap is the caller-auth finding."
+   "rationale": "The target server is a closed switch that throws for anything else, so an allow-list adds no protection."
   },
   {
    "cluster_id": "no_crash_cleanup_startup_sweep",
@@ -5052,10 +5119,10 @@
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 80,
-   "rationale": "Verified: grep shows 'remote-clipboard' appears exactly once in the tree (explorerService.ts:304) \u2014 nothing sweeps stale directories at startup, and cleanup only runs on the next remote copy or on dispose (both best-effort). Crashes/kills leave full copies of remote files accumulating under cacheHome indefinitely."
+   "confidence": 70,
+   "rationale": "Cleanup happens only on the next remote copy or in dispose(), and dispose does not await, so cacheHome/remote-clipboard trees accumulate across crashes with no sweep."
   },
   {
    "cluster_id": "no_feature_flag_kill_switch",
@@ -5078,10 +5145,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 70,
-   "rationale": "Process/design wish rather than a code defect; VS Code does not gate platform wiring like this behind flags by convention, and no concrete failure is named."
+   "confidence": 85,
+   "rationale": "Open-ended 'add a kill switch' ask with no specific in-repo anchor; regenerates for every wiring change."
   },
   {
    "cluster_id": "no_telemetry_proxy_download",
@@ -5104,10 +5171,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 75,
-   "rationale": "Unbounded observability wish-list with no defect named; the diff-verifiable core (only a logService.warn on failure) is separately and better stated as the silent-fallback finding."
+   "confidence": 85,
+   "rationale": "Open-ended 'add telemetry' ask with no specific event or in-repo anchor."
   },
   {
    "cluster_id": "remote_to_remote_roundtrip",
@@ -5127,13 +5194,31 @@
      "repeat": 2,
      "subagent": "agent-a85c5bccc2202cc5c",
      "severity": "high"
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": null,
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-a35e64a00e2f841d9/scorer",
+     "severity": null
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "subagent": "agent-aa2bf976671c04e18/git-history",
+     "severity": null
     }
    ],
    "verdict": "valid-other",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "high",
-   "confidence": 80,
-   "rationale": "Verified: setToCopy now puts local temp file:// URIs on the clipboard (explorerService.ts:275-277), and pasteFileHandler builds its ResourceFileEdits from `clipboardService.readResources()` (fileActions.ts:1318, 1191-1234). A remote\u2192remote copy inside one remote workspace therefore becomes download-to-cacheHome plus re-upload instead of a provider-side copy. Distinct from must_flag facet (a), which is about the copy gesture blocking."
+   "confidence": 65,
+   "rationale": "Because setToCopy replaces every non-file:// URI with a local temp file:// URI, an ordinary copy/paste inside one remote workspace now downloads to cacheHome and re-uploads instead of copying server-side."
   },
   {
    "cluster_id": "remoteauthority_guard_comment",
@@ -5156,10 +5241,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
-   "confidence": 65,
-   "rationale": "The configured-vs-connected distinction is real (remoteFileSystemProxyClient.ts:44-53 checks environmentService.remoteAuthority), but a window with a configured remote authority is exactly the window that owns the direct provider, so the comment is materially accurate and nothing follows from the wording."
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 70,
+   "rationale": "Comment-vs-code wording quibble; environmentService.remoteAuthority is in practice exactly what determines that the window owns a remote connection."
   },
   {
    "cluster_id": "server_plain_error_no_code",
@@ -5182,10 +5267,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Verified convention gap: the codebase throws `createFileSystemProviderError(..., FileSystemProviderErrorCode.NoPermissions)` in provider paths (files.ts:845; chatResponseResourceFileSystemProvider.ts:122-136), while the proxy server throws plain Errors (remoteFileSystemProxyServer.ts:54, 62), so the code degrades to Unknown as it crosses back through FileService."
+   "confidence": 60,
+   "rationale": "throw new Error('No provider for scheme: ...') instead of createFileSystemProviderError loses the FileSystemProviderErrorCode; the helper is in-repo and the change is mechanical."
   },
   {
    "cluster_id": "temp_dir_wording_doc",
@@ -5208,10 +5293,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
-   "confidence": 70,
-   "rationale": "The comments say 'download to a temp location' while the code uses environmentService.cacheHome (explorerService.ts:304) \u2014 colloquially accurate wording, and the very next line names cacheHome. Nit."
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 80,
+   "rationale": "Comment-wording nit about 'temp' vs cacheHome; the code one line below names the actual location."
   },
   {
    "cluster_id": "tempdir_bare_slot_type",
@@ -5234,10 +5319,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
-   "judged_severity": "nit",
-   "confidence": 75,
-   "rationale": "Pure type-design taste; `URI | undefined` for a single-slot lifecycle is idiomatic in this codebase and no incorrect behavior is attributed to it (the real lifecycle defects are stated separately)."
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 80,
+   "rationale": "Preference for encoding a single-slot lifecycle in a type; no behaviour asserted."
   },
   {
    "cluster_id": "trace_logs_resource_paths",
@@ -5260,10 +5345,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 75,
-   "rationale": "Logging `resource.toString()` at trace level is the established convention for file-system providers throughout this codebase; trace is opt-in and this is not a new exposure."
+   "confidence": 80,
+   "rationale": "Trace-level logging of resource paths is the established convention across vscode's file providers."
   },
   {
    "cluster_id": "uri_revive_wire_path_untested",
@@ -5286,10 +5371,10 @@
     }
    ],
    "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Correct and specific: all three tests pass `URI.parse(...)` instances (remoteFileSystemProxy.test.ts:417, 436, 464), so URI.revive's UriComponents reconstruction branch \u2014 the one real IPC exercises \u2014 is never covered. Bounded, one-shot test addition."
+   "matches": null,
+   "judged_severity": "nit",
+   "confidence": 60,
+   "rationale": "URI.revive short-circuits on a URI instance, so passing UriComponents in one test is needed to exercise the branch real IPC actually takes."
   },
   {
    "cluster_id": "urilist_filter_untested",
@@ -5311,11 +5396,11 @@
      "severity": "critical"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 70,
-   "rationale": "Correctly notes the file:// filter DOES exist (clipboardService.ts:223) \u2014 not the fixed-bot-comment trap \u2014 and asks for a test of the comment/blank-line/mixed-scheme cases. Concrete and bounded."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 65,
+   "rationale": "Correctly avoids the known-safe trap but reduces to a narrower restatement of the codec coverage ask, framed around a hypothetical future regression."
   },
   {
    "cluster_id": "P_PATHLEAK",
@@ -5333,9 +5418,9 @@
    ],
    "verdict": "TP-primary",
    "matches": "primary",
-   "judged_severity": "high",
-   "confidence": 90,
-   "rationale": "must_flag facet (a), second half: resolveClipboardResources returns targets under `environmentService.cacheHome/remote-clipboard/<uuid>/<uuid>` (explorerService.ts:304-315) and writeResources puts those fsPaths on the OS clipboard in native formats (clipboardService.ts:73-96), exposing the internal cache path to any native paste target. This is mjbvz's unaddressed 'leaking the /tmp file path' thread."
+   "judged_severity": "medium",
+   "confidence": 95,
+   "rationale": "Exactly must_flag facet (a)'s second half (mjbvz's 'I worry about leaking the /tmp file path'): cacheHome/remote-clipboard/<uuid>/<uuid>/<name> targets are pushed onto the system clipboard."
   },
   {
    "cluster_id": "client_docstring_overclaims",
@@ -5351,11 +5436,11 @@
      "severity": "medium"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 60,
-   "rationale": "Substantively right: the Explorer copy path replaces remote URIs with local temp file:// URIs before the clipboard write (explorerService.ts:275), so the proxy client is only exercised on the download-failure fallback or cross-window paste \u2014 narrower than 'enables copy/paste and drag-and-drop between remote and local workspaces'. Doc scoping fix."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 65,
+   "rationale": "The docstring is defensible \u2014 cross-window DND and the download-failure fallback both still route through this provider; a wording quibble."
   },
   {
    "cluster_id": "client_duplicates_diskfsproviderclient",
@@ -5371,11 +5456,11 @@
      "severity": "medium"
     }
    ],
-   "verdict": "valid-minor",
-   "matches": "none",
-   "judged_severity": "low",
-   "confidence": 60,
-   "rationale": "The in-repo precedent is real \u2014 RemoteFileSystemProviderClient extends DiskFileSystemProviderClient (remoteFileSystemProviderClient.ts:19, diskFileSystemProviderClient.ts:26) \u2014 and the new client hand-rolls the same stat/readdir/readFile forwarding. Reuse is not free (the base class assumes a much wider server contract), so this is a design suggestion, not a defect."
+   "verdict": "trivia",
+   "matches": null,
+   "judged_severity": "info",
+   "confidence": 65,
+   "rationale": "Reuse-the-base-class proposal; a rewrite rather than a one-shot patch, and the proxy's read-only surface differs."
   },
   {
    "cluster_id": "clipboard_paste_arbitrary_path_read",
@@ -5392,10 +5477,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
    "confidence": 75,
-   "rationale": "This is the intended semantics of file paste and is pre-existing (bufferToResources already produced arbitrary file:// URIs, clipboardService.ts:153-168 \u2014 unchanged context in the diff). No defect introduced by this PR."
+   "rationale": "Reading user-pasted file:// paths on an explicit user gesture is the feature itself, not a boundary violation."
   },
   {
    "cluster_id": "dnd_schemas_import_unverified",
@@ -5412,10 +5497,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
    "confidence": 85,
-   "rationale": "Self-declared cannot-verify meta-note, and it is wrong on the facts: Schemas is imported at dnd.ts:18 (`import { FileAccess, Schemas } from '../../base/common/network.js'`). Noise."
+   "rationale": "Self-declared cannot-verify note about an import the diff does not touch; asserts no defect."
   },
   {
    "cluster_id": "scope_creep",
@@ -5432,10 +5517,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 75,
-   "rationale": "Meta-commentary on PR sizing; no defect named. The one substantive consequence of the extra scope (native formats written for ordinary local copies) is stated properly elsewhere."
+   "confidence": 85,
+   "rationale": "Process commentary about PR breadth; the dnd.ts filter and native read paths are part of the stated rework, and no defect is named."
   },
   {
    "cluster_id": "startup_race_channel_not_ready",
@@ -5452,10 +5537,10 @@
     }
    ],
    "verdict": "trivia",
-   "matches": "none",
+   "matches": null,
    "judged_severity": "info",
-   "confidence": 60,
-   "rationale": "The stated failure mode is wrong: ChannelServer buffers requests for not-yet-registered channels via collectPendingRequest (ipc.ts:417-421) rather than rejecting with an unknown-channel error, and IPCServer.getChannel already waits for a matching connection \u2014 so the IPC layer supplies the 'readiness wait' the finding says is missing. The residual real risk (an unbounded wait) is stated properly by the routing-hang finding."
+   "confidence": 50,
+   "rationale": "Speculative timing claim whose asserted mechanism is wrong: the renderer ChannelServer buffers requests for not-yet-registered channels rather than rejecting."
   }
  ]
 }

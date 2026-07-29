@@ -19,18 +19,6 @@
     "severity": "medium"
    },
    {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": null,
-    "severity": "high"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": "agent-afba42d03b50437d5",
-    "severity": "high"
-   },
-   {
     "tool": "ours",
     "repeat": 1,
     "subagent": null,
@@ -191,6 +179,24 @@
     "repeat": 2,
     "subagent": "agent-ab837631f99d125a9/adversarial-general",
     "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a69295a4f7199e0cf/bug-scan",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-af06e17e1e4eab8b4/scorer",
+    "severity": null
    }
   ]
  },
@@ -217,18 +223,6 @@
     "tool": "anthropic-code-review",
     "repeat": 1,
     "subagent": "agent-abdf1440b2ac586f7",
-    "severity": "medium"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": null,
-    "severity": "medium"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": "agent-afba42d03b50437d5",
     "severity": "medium"
    },
    {
@@ -385,18 +379,6 @@
     "severity": "low"
    },
    {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": null,
-    "severity": "low"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": "agent-afba42d03b50437d5",
-    "severity": "low"
-   },
-   {
     "tool": "pr-review-toolkit",
     "repeat": 1,
     "subagent": null,
@@ -527,6 +509,24 @@
     "repeat": 2,
     "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
     "severity": "low"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a6577adb808106099/scorer",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a69295a4f7199e0cf/bug-scan",
+    "severity": null
    }
   ]
  },
@@ -541,18 +541,6 @@
     "tool": "anthropic-code-review",
     "repeat": 1,
     "subagent": "agent-a1fefa7056d097fa8",
-    "severity": "medium"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": null,
-    "severity": "medium"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": "agent-afba42d03b50437d5",
     "severity": "medium"
    },
    {
@@ -680,6 +668,24 @@
     "repeat": 2,
     "subagent": "agent-ab837631f99d125a9/adversarial-general",
     "severity": "critical"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a32fef1226202f55b/scorer",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a7ec1bb75c043c132/prior-pr",
+    "severity": null
    }
   ]
  },
@@ -690,18 +696,6 @@
   "line": 247,
   "category": "bug",
   "reported_by": [
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": null,
-    "severity": "low"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": "agent-afba42d03b50437d5",
-    "severity": "low"
-   },
    {
     "tool": "ours",
     "repeat": 1,
@@ -968,6 +962,24 @@
     "repeat": 2,
     "subagent": "agent-ac3a8901a3a80976b/silent-failure-hunter",
     "severity": "critical"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-aa2bf976671c04e18/git-history",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-adfbcf598f377b95e/scorer",
+    "severity": null
    }
   ]
  },
@@ -1301,6 +1313,18 @@
     "repeat": 2,
     "subagent": "agent-af0fd7742bf6fd322/blind-hunter",
     "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a69295a4f7199e0cf/bug-scan",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-afc63f0a53365cb34/code-comment",
+    "severity": null
    }
   ]
  },
@@ -1416,18 +1440,6 @@
   "line": 236,
   "category": "design",
   "reported_by": [
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": null,
-    "severity": "low"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": "agent-afba42d03b50437d5",
-    "severity": "low"
-   },
    {
     "tool": "ours",
     "repeat": 1,
@@ -1608,18 +1620,6 @@
   "line": 568,
   "category": "bug",
   "reported_by": [
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": null,
-    "severity": "low"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": "agent-afba42d03b50437d5",
-    "severity": "low"
-   },
    {
     "tool": "ours",
     "repeat": 1,
@@ -1871,6 +1871,24 @@
     "repeat": 1,
     "subagent": "agent-a30b98ca786ec327c/code-reviewer",
     "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a7ec1bb75c043c132/prior-pr",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-af9ad1807c34553f9/scorer",
+    "severity": null
    }
   ]
  },
@@ -1886,18 +1904,6 @@
     "repeat": 1,
     "subagent": "agent-abdf1440b2ac586f7",
     "severity": "low"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": null,
-    "severity": "medium"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": "agent-afba42d03b50437d5",
-    "severity": "medium"
    },
    {
     "tool": "ours",
@@ -2132,6 +2138,24 @@
     "repeat": 2,
     "subagent": "agent-ab837631f99d125a9/adversarial-general",
     "severity": "medium"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a03207dc21e93f080/scorer",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a69295a4f7199e0cf/bug-scan",
+    "severity": null
    }
   ]
  },
@@ -2142,18 +2166,6 @@
   "line": 133,
   "category": "logic",
   "reported_by": [
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": null,
-    "severity": "medium"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": "agent-afba42d03b50437d5",
-    "severity": "medium"
-   },
    {
     "tool": "ours",
     "repeat": 1,
@@ -2995,18 +3007,6 @@
     "severity": "high"
    },
    {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": null,
-    "severity": "low"
-   },
-   {
-    "tool": "anthropic-code-review",
-    "repeat": 2,
-    "subagent": "agent-afba42d03b50437d5",
-    "severity": "low"
-   },
-   {
     "tool": "pr-review-toolkit",
     "repeat": 1,
     "subagent": null,
@@ -3023,6 +3023,24 @@
     "repeat": 2,
     "subagent": "agent-ab837631f99d125a9/adversarial-general",
     "severity": "info"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a304e1631d0bed109/scorer",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-aa2bf976671c04e18/git-history",
+    "severity": null
    }
   ]
  },
@@ -3080,6 +3098,24 @@
     "repeat": 2,
     "subagent": "agent-a7e63c35826b4e793/comment-analyzer",
     "severity": "critical"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a8d3d574da648b480/scorer",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-afc63f0a53365cb34/code-comment",
+    "severity": null
    }
   ]
  },
@@ -4001,6 +4037,30 @@
     "repeat": 1,
     "subagent": "agent-a6b25d7aa8f1970af",
     "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a120d2b5c7258740a/scorer",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a7ec1bb75c043c132/prior-pr",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-aa2bf976671c04e18/git-history",
+    "severity": null
    }
   ]
  },
@@ -4685,6 +4745,24 @@
     "repeat": 2,
     "subagent": "agent-a85c5bccc2202cc5c",
     "severity": "high"
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-a35e64a00e2f841d9/scorer",
+    "severity": null
+   },
+   {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "agent-aa2bf976671c04e18/git-history",
+    "severity": null
    }
   ]
  },

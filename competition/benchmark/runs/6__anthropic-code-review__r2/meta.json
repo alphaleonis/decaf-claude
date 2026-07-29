@@ -1,0 +1,227 @@
+{
+  "run_id": "6__anthropic-code-review__r2",
+  "subject_id": 6,
+  "lang": "typescript",
+  "size": "large",
+  "tool": "anthropic-code-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/vscode",
+  "pr": 320685,
+  "merge_sha": "f9070acd20a269fb07dd15389676bd6875b9db05",
+  "review_base": "f9070acd20a269fb07dd15389676bd6875b9db05^1",
+  "review_head": "f9070acd20a269fb07dd15389676bd6875b9db05",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1204,
+  "duration_ms": "1201729",
+  "duration_api_ms": "2780929",
+  "num_turns": "23",
+  "cost_usd": "10.388674200000002",
+  "orch_usage": {
+    "input_tokens": "833",
+    "output_tokens": "28087",
+    "cache_creation_tokens": "131474",
+    "cache_read_tokens": "318182",
+    "total_tokens": 478576
+  },
+  "session_tokens": {
+    "subagents": 19,
+    "input": 2189,
+    "output": 123600,
+    "cache_creation": 1040006,
+    "cache_read": 15215390,
+    "total": 16381185,
+    "orchestrator": {
+      "output": 28087,
+      "total": 478576,
+      "duration_s": 1202
+    },
+    "per_subagent": [
+      {
+        "output": 5851,
+        "input": 98,
+        "cache_creation": 40380,
+        "cache_read": 419398,
+        "total": 465727,
+        "duration_s": 106,
+        "agent": "agent-a03207dc21e93f080"
+      },
+      {
+        "output": 5041,
+        "input": 194,
+        "cache_creation": 40533,
+        "cache_read": 813562,
+        "total": 859330,
+        "duration_s": 95,
+        "agent": "agent-a120d2b5c7258740a"
+      },
+      {
+        "output": 4490,
+        "input": 12,
+        "cache_creation": 49525,
+        "cache_read": 206828,
+        "total": 260855,
+        "duration_s": 55,
+        "agent": "agent-a1763d0d6aaa029ca"
+      },
+      {
+        "output": 4256,
+        "input": 50,
+        "cache_creation": 32500,
+        "cache_read": 178851,
+        "total": 215657,
+        "duration_s": 58,
+        "agent": "agent-a304e1631d0bed109"
+      },
+      {
+        "output": 3121,
+        "input": 42,
+        "cache_creation": 37636,
+        "cache_read": 143580,
+        "total": 184379,
+        "duration_s": 41,
+        "agent": "agent-a32fef1226202f55b"
+      },
+      {
+        "output": 3088,
+        "input": 82,
+        "cache_creation": 30785,
+        "cache_read": 324717,
+        "total": 358672,
+        "duration_s": 50,
+        "agent": "agent-a35e64a00e2f841d9"
+      },
+      {
+        "output": 2228,
+        "input": 42,
+        "cache_creation": 20050,
+        "cache_read": 112083,
+        "total": 134403,
+        "duration_s": 40,
+        "agent": "agent-a394cfee1cd199966"
+      },
+      {
+        "output": 271,
+        "input": 4,
+        "cache_creation": 39910,
+        "cache_read": 31324,
+        "total": 71509,
+        "duration_s": 6,
+        "agent": "agent-a3f5a9862770555a8"
+      },
+      {
+        "output": 3920,
+        "input": 58,
+        "cache_creation": 28990,
+        "cache_read": 200498,
+        "total": 233466,
+        "duration_s": 62,
+        "agent": "agent-a6577adb808106099"
+      },
+      {
+        "output": 10999,
+        "input": 64,
+        "cache_creation": 85863,
+        "cache_read": 2377780,
+        "total": 2474706,
+        "duration_s": 485,
+        "agent": "agent-a69295a4f7199e0cf"
+      },
+      {
+        "output": 7990,
+        "input": 34,
+        "cache_creation": 87304,
+        "cache_read": 1231498,
+        "total": 1326826,
+        "duration_s": 278,
+        "agent": "agent-a7ec1bb75c043c132"
+      },
+      {
+        "output": 2862,
+        "input": 50,
+        "cache_creation": 29361,
+        "cache_read": 164471,
+        "total": 196744,
+        "duration_s": 58,
+        "agent": "agent-a8d3d574da648b480"
+      },
+      {
+        "output": 267,
+        "input": 18,
+        "cache_creation": 26444,
+        "cache_read": 20262,
+        "total": 46991,
+        "duration_s": 15,
+        "agent": "agent-a9a5fbc7d75040a4e"
+      },
+      {
+        "output": 16002,
+        "input": 96,
+        "cache_creation": 142033,
+        "cache_read": 4759300,
+        "total": 4917431,
+        "duration_s": 744,
+        "agent": "agent-aa2bf976671c04e18"
+      },
+      {
+        "output": 5829,
+        "input": 106,
+        "cache_creation": 43449,
+        "cache_read": 437655,
+        "total": 487039,
+        "duration_s": 94,
+        "agent": "agent-adfbcf598f377b95e"
+      },
+      {
+        "output": 3878,
+        "input": 122,
+        "cache_creation": 36271,
+        "cache_read": 527812,
+        "total": 568083,
+        "duration_s": 92,
+        "agent": "agent-af06e17e1e4eab8b4"
+      },
+      {
+        "output": 1250,
+        "input": 18,
+        "cache_creation": 17518,
+        "cache_read": 29447,
+        "total": 48233,
+        "duration_s": 15,
+        "agent": "agent-af89912481a3f2eac"
+      },
+      {
+        "output": 5393,
+        "input": 210,
+        "cache_creation": 34803,
+        "cache_read": 1012850,
+        "total": 1053256,
+        "duration_s": 131,
+        "agent": "agent-af9ad1807c34553f9"
+      },
+      {
+        "output": 8777,
+        "input": 56,
+        "cache_creation": 85177,
+        "cache_read": 1905292,
+        "total": 1999302,
+        "duration_s": 285,
+        "agent": "agent-afc63f0a53365cb34"
+      }
+    ],
+    "max_subagent_duration_s": 744,
+    "sum_subagent_duration_s": 2710
+  },
+  "input_tokens": "833",
+  "output_tokens": "28087",
+  "cache_creation_tokens": "131474",
+  "cache_read_tokens": "318182",
+  "total_tokens": 478576,
+  "session_id": "9843919c-3612-414b-a1ee-0fcf2059ff81",
+  "findings_lines": 30,
+  "invocation": "Use the Skill tool to run `code-review:code-review` — the plugin-qualified command from code-review@claude-plugins-official. It is NOT `decaf-quality:code-review`: a different tool ships a skill of the same bare name, so never invoke a bare `/code-review`, and abort rather than substituting anything else if the qualified skill does not resolve. Review pull request #320685 of the GitHub repository microsoft/vscode. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+  "finished_at": "2026-07-29T08:39:10Z"
+}

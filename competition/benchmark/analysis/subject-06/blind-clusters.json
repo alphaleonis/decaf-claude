@@ -1,667 +1,572 @@
 [
  {
-  "cluster_id": "win_multifile_filenamew",
-  "summary": "Windows native file-clipboard interop is single-file only: FileNameW is written only when resources.length === 1 (and read back as one path), so multi-file copies fall through to the VS Code custom format and native Explorer paste produces nothing, with no user signal.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 88,
-  "category": "logic"
- },
- {
-  "cluster_id": "fromcharcode_spread_rangeerror",
-  "summary": "String.fromCharCode(...u16.subarray(...)) spreads an externally-sized array, so a very long path or a payload without a null terminator can exceed the engine's argument limit and throw a RangeError that is swallowed into an empty paste.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 249,
-  "category": "bug"
- },
- {
-  "cluster_id": "server_layering_inconsistent",
-  "summary": "The server mixes abstraction levels: stat/readdir call the low-level fileService.getProvider(scheme) directly while readFile/exists/resolve go through IFileService, so provider activation, limits, events, and error normalization apply on some paths but not others.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
-  "line": 247,
-  "category": "design"
- },
- {
-  "cluster_id": "zero_tests_clipboard_codecs",
-  "summary": "The clipboard encode/decode helpers and the platform dispatch in writeResources/readResources/hasResources ship with zero unit tests despite being pure, byte-level, and format-sensitive.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 170,
-  "category": "test"
- },
- {
-  "cluster_id": "remote_to_remote_roundtrip",
-  "summary": "Discarding the original remote URIs makes remote-to-remote copy/paste regress to a download plus re-upload round-trip instead of a server-side remote copy.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 287,
-  "category": "perf"
- },
- {
   "cluster_id": "temp_plaintext_disk_security",
   "summary": "Remote file contents are materialized in plaintext under the persistent cacheHome/userDataPath with umask-default permissions and only best-effort cleanup, so potentially sensitive data persists on local disk.",
   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 573,
-  "category": "security"
- },
- {
-  "cluster_id": "dead_exists_resolve",
-  "summary": "The proxy server dispatches 'exists' and 'resolve' commands (plus resolve's IFileStatWithMetadata plumbing) that no client ever invokes \u2014 unreachable, untested, speculative surface on a cross-renderer channel.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
-  "line": 236,
-  "category": "design"
+  "line": 573
  },
  {
   "cluster_id": "clipboard_codec_design_testability",
   "summary": "The five clipboard codec helpers are private and only reachable through platform-branching public methods, and their 'always file:// URIs' contract is implicit; extracting exported free functions / a shared toFileURIs helper would make both checkable.",
   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": null,
-  "category": "design"
- },
- {
-  "cluster_id": "cancellation_token_dropped",
-  "summary": "RemoteFileSystemProxyMainHandler.call forwards command and arg but drops IServerChannel's 4th cancellationToken parameter when calling the target renderer channel.",
-  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
-  "line": null,
-  "category": "logic"
- },
- {
-  "cluster_id": "no_audit_trail_server",
-  "summary": "Cross-window remote file reads produce no audit trail on the serving side, so exfiltration through the proxy would be unattributable and an incident could not be reconstructed.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
-  "line": 30,
-  "category": "security"
- },
- {
-  "cluster_id": "macos_binary_plist",
-  "summary": "plistToFiles parses NSFilenamesPboardType with an XML-plist regex, but macOS/Finder typically serializes that pasteboard type as a binary plist, so pasting Finder-copied files silently returns nothing.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 178,
-  "category": "bug"
- },
- {
-  "cluster_id": "dnd_filter_untested",
-  "summary": "The new Schemas.file filter on the DND TEXT transfer (all-remote leaves TEXT unset, mixed selections) is a user-visible behavior change with no test.",
-  "file": "src/vs/workbench/browser/dnd.ts",
-  "line": 238,
-  "category": "test"
- },
- {
-  "cluster_id": "urilist_filter_untested",
-  "summary": "uriListToFiles does filter to file:// URIs, but that filtering (mixed vscode-remote/http entries, # comments, blank lines) has no test, so a regression dropping the filter would go unnoticed.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 815,
-  "category": "test"
- },
- {
-  "cluster_id": "no_telemetry_proxy_download",
-  "summary": "There is no telemetry or metrics on the remote-download/proxy path, so a field report of 'remote paste doesn't work' cannot be triaged between download failure, routing failure, or temp cleanup.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 287,
-  "category": "design"
- },
- {
-  "cluster_id": "plist_handrolled_parser",
-  "summary": "The hand-rolled string-concatenation plist writer and regex reader duplicate the existing plistParser.ts and handle only 3 of 5 XML entities with no schema \u2014 a fragile stringly-typed serialization.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 170,
-  "category": "design"
- },
- {
-  "cluster_id": "cut_becomes_copy",
-  "summary": "Cut (move) of a remote file degrades to a copy: setToCopy substitutes local temp file:// URIs, so the paste move-branch moves the temp copy and the original remote file is never removed.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 287,
-  "category": "bug"
- },
- {
-  "cluster_id": "magic_number_bytelength_guard",
-  "summary": "The `buffer.byteLength < 4` guard uses an unexplained magic number (one UTF-16 char plus a two-byte null terminator).",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 240,
-  "category": "doc"
- },
- {
-  "cluster_id": "P_PATHLEAK",
-  "summary": "The internal cacheHome temp path is written onto the system clipboard, leaking internal path layout to native paste targets.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 292,
-  "category": "security"
- },
- {
-  "cluster_id": "zero_tests_broad_sweep",
-  "summary": "The PR's most novel logic ships with essentially no tests \u2014 the proxy client, the proxy server dispatch, the clipboard format round-trips, and the explorerService temp-download path \u2014 with only main-handler routing covered.",
-  "file": "(multiple)",
-  "line": null,
-  "category": "test"
- },
- {
-  "cluster_id": "uri_revive_wire_path_untested",
-  "summary": "Every test passes a real URI instance, so URI.revive only exercises its instanceof fast path and the from-wire UriComponents reconstruction branch that real IPC uses is never tested.",
-  "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
-  "line": null,
-  "category": "test"
- },
- {
-  "cluster_id": "P_CATCHDUP",
-  "summary": "resolveClipboardResources' catch block pushes ALL remoteResources after the loop may already have pushed some temp targets, so a partial download failure produces duplicate and mixed-scheme clipboard entries.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 308,
-  "category": "bug"
- },
- {
-  "cluster_id": "no_crash_cleanup_startup_sweep",
-  "summary": "There is no crash cleanup and no startup sweep of stale cacheHome/remote-clipboard/* directories, so temp trees accumulate on disk indefinitely.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 567,
-  "category": "bug"
- },
- {
-  "cluster_id": "no_feature_flag_kill_switch",
-  "summary": "The main handler, per-window server/client, and native-clipboard writes are wired unconditionally with no feature flag or kill switch, leaving no runtime off-switch short of a full revert.",
-  "file": "src/vs/workbench/electron-browser/desktop.main.ts",
-  "line": 289,
-  "category": "design"
- },
- {
-  "cluster_id": "routing_test_underasserts",
-  "summary": "The 'routes call to correct window' test asserts only the selected window ctx \u2014 it never varies the target id nor asserts the forwarded command/arg, the channel name, or the propagated return value, so a forwarding regression would still pass.",
-  "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
-  "line": 441,
-  "category": "test"
- },
- {
-  "cluster_id": "adhoc_narrow_interfaces",
-  "summary": "The testability interfaces (IRemoteFileSystemProxyWindowsService / IRemoteFileSystemProxyIPCServer) use anonymous inline shapes that are not Pick<>-derived from the real services and are re-declared verbatim in the tests, and findWindowForAuthority returns a freshly-built `{ id: number }` literal rather than the matched window.",
-  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
-  "line": 13,
-  "category": "design"
- },
- {
-  "cluster_id": "temp_uri_breaks_workspace_identity",
-  "summary": "Replacing the copied remote URI with a local temp file:// URI breaks the source's workspace identity, so same-folder duplicate/rename-on-paste in a remote workspace fails with 'already exists' instead of auto-incrementing.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 287,
-  "category": "bug"
- },
- {
-  "cluster_id": "authority_case_compare",
-  "summary": "findWindowForAuthority compares remoteAuthority with strict === instead of the codebase's case-insensitive isEqualAuthority, so a case-differing authority fails to match the owning window.",
-  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
-  "line": 68,
-  "category": "logic"
- },
- {
-  "cluster_id": "dnd_remote_text_regression",
-  "summary": "Narrowing DataTransfers.TEXT to file:// resources means dragging a remote (SSH/WSL/container) resource into an in-app text target such as the terminal, search, or an editor now sets no text at all.",
-  "file": "src/vs/workbench/browser/dnd.ts",
-  "line": 238,
-  "category": "bug"
- },
- {
-  "cluster_id": "proxy_no_caller_auth",
-  "summary": "The main handler ignores the caller's connection context and routes purely on the payload URI's authority with no authorization, scoping, or Workspace-Trust check, so any renderer can read arbitrary files from another window's privileged remote connection (confused deputy).",
-  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
-  "line": 42,
-  "category": "security"
- },
- {
-  "cluster_id": "parsers_no_logging",
-  "summary": "plistToFiles/uriListToFiles/fileNameWToFile (and readResources) all catch and return [] with no logging at all, so a parser bug is indistinguishable from an empty clipboard and a regression stays permanently invisible.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 201,
-  "category": "design"
- },
- {
-  "cluster_id": "server_type_annotations_inaccurate",
-  "summary": "The server's stat() hand-declares the structural literal { type; size; mtime; ctime } instead of the canonical IStat (dropping permissions the client's typed stat claims), and resolve() carries a forced `as Promise<IFileStatWithMetadata>` cast that the runtime resolveMetadata flag does not guarantee.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
-  "line": 247,
-  "category": "design"
- },
- {
-  "cluster_id": "window_ctx_magic_string",
-  "summary": "The `window:${id}` connection-context format is an untyped cross-process contract reconstructed inline here and duplicated across many sites, documented only in a comment with no shared constant, so a producer-side change breaks routing silently.",
-  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
-  "line": 356,
-  "category": "design"
- },
- {
-  "cluster_id": "P_SILENTFALLBACK",
-  "summary": "On remote-download failure the code falls back to remote URIs with only a logService.warn \u2014 no notification, progress, or telemetry \u2014 so native paste silently degrades with no user-visible signal.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 287,
-  "category": "design"
- },
- {
-  "cluster_id": "no_command_allowlist",
-  "summary": "The main handler is a pure untyped passthrough with no command allow-list, so it forwards any command string to another renderer's file-serving channel; the only structural check is the URI scheme.",
-  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
-  "line": 323,
-  "category": "design"
- },
- {
-  "cluster_id": "jsdoc_file_uri_contract_violated",
-  "summary": "resolveClipboardResources' JSDoc promises it returns file:// URIs for all resources, but the catch path returns the original remote-scheme URIs, so the documented contract is false exactly in the failure case.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 282,
-  "category": "doc"
- },
- {
-  "cluster_id": "remoteauthority_guard_comment",
-  "summary": "The loop-prevention guard comment says the window 'has its own remote connection' but the code only checks the static remoteAuthority config value, papering over the connected-versus-configured distinction.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": 44,
-  "category": "doc"
- },
- {
-  "cluster_id": "utf16_endianness_comment",
-  "summary": "The comment 'Uint16Array naturally uses the platform's char encoding (UTF-16)' is technically wrong and hides the load-bearing assumption: correctness depends on the host being little-endian, not on any encoding property of Uint16Array.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 231,
-  "category": "doc"
- },
- {
-  "cluster_id": "client_duplicates_diskfsproviderclient",
-  "summary": "The client hand-rolls stat/readdir/readFile channel forwarding that duplicates the canonical DiskFileSystemProviderClient base class the sibling RemoteFileSystemProviderClient extends.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": null,
-  "category": "design"
- },
- {
-  "cluster_id": "P_CASESENS",
-  "summary": "RemoteFileSystemProxyClient.capabilities hard-codes FileSystemProviderCapabilities.PathCaseSensitive instead of deriving it from the remote OS the way the sibling RemoteFileSystemProviderClient does.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": 84,
-  "category": "bug"
- },
- {
-  "cluster_id": "tempdir_leak_local_only_copy",
-  "summary": "cleanupRemoteClipboardTempDir is called only inside the `remoteResources.length > 0` branch, so a remote copy followed by a local-only copy leaves the previous temp directory on disk.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 299,
-  "category": "bug"
- },
- {
-  "cluster_id": "clipboard_paste_arbitrary_path_read",
-  "summary": "Pasting clipboard-supplied file:// paths allows user-gesture-driven reads of arbitrary local paths.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": null,
-  "category": "security"
- },
- {
-  "cluster_id": "P_EAGER",
-  "summary": "ExplorerService.setToCopy eagerly downloads every selected remote resource to a local temp directory before the clipboard write returns, blocking the Ctrl+C/Ctrl+X gesture with no size/count cap, no progress UI, no cancellation, and a sequential loop.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 266,
-  "category": "perf"
- },
- {
-  "cluster_id": "dnd_webloc_comment_imprecise",
-  "summary": "The .webloc rationale comment is imprecise: it says 'remote URIs' when the value placed in TEXT is a getUriLabel label, states macOS .webloc creation as definite OS behavior, and justifies only the macOS case though the filter applies on all platforms.",
-  "file": "src/vs/workbench/browser/dnd.ts",
-  "line": null,
-  "category": "doc"
- },
- {
-  "cluster_id": "zero_tests_proxy_client",
-  "summary": "RemoteFileSystemProxyClient is entirely untested \u2014 the loop-prevention register() guard, the read-only throwing mutators, the readFile VSBuffer unwrap, and the capabilities contract all lack coverage.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": null,
-  "category": "test"
- },
- {
-  "cluster_id": "routing_hang_no_timeout",
-  "summary": "The forwarded call can hang forever: findWindowForAuthority does no liveness check and IPCServer.getChannel falls back to an unbounded wait for a future matching connection, so routing to a closing, crashed, or not-yet-started window never resolves or rejects (unlike the fail-fast NodeRemoteResourceRouter).",
-  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
-  "line": 356,
-  "category": "bug"
- },
- {
-  "cluster_id": "client_docstring_overclaims",
-  "summary": "The class docstring's claim that it 'enables copy/paste and drag-and-drop of files between remote and local workspaces' is unscoped \u2014 the Explorer copy path pre-downloads to file:// URIs and never exercises this class.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": 33,
-  "category": "doc"
- },
- {
-  "cluster_id": "server_plain_error_no_code",
-  "summary": "The server's stat/readdir/readFile throw a plain Error instead of createFileSystemProviderError with a FileSystemProviderErrorCode, so the typed error code is lost as it propagates back through FileService.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
-  "line": 56,
-  "category": "design"
- },
- {
-  "cluster_id": "scope_creep",
-  "summary": "The PR goes beyond the linked bug: DND drag-text filtering, native-format read paths, and writing native formats for purely-local copies are additional scope.",
-  "file": "src/vs/workbench/browser/dnd.ts",
-  "line": 241,
-  "category": "design"
- },
- {
-  "cluster_id": "gnome_copied_files_format",
-  "summary": "GNOME/Nautilus paste expects the x-special/gnome-copied-files format with a copy/cut verb line rather than plain text/uri-list, so the Linux write path may not be honored by the main Linux file managers.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": null,
-  "category": "bug"
- },
- {
-  "cluster_id": "unvalidated_args_uri_revive",
-  "summary": "`const args = arg as unknown[]` then `URI.revive(args[0] as UriComponents)` indexes an unvalidated optional parameter, so a missing or malformed arg surfaces as a raw TypeError instead of a clean domain error (the proxy server repeats the same cast).",
-  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
-  "line": 44,
-  "category": "bug"
- },
- {
-  "cluster_id": "missing_trace_logging_clipboard",
-  "summary": "The rewritten writeResources/readResources/hasResources omit the class-wide logService.trace('NativeClipboardService#method') opener present on every other public method.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 62,
-  "category": "style"
- },
- {
-  "cluster_id": "charcodeat_surrogate_pairs",
-  "summary": "filePathToUtf16LE uses charCodeAt so non-BMP characters pass through as raw code units \u2014 it works only by luck for UTF-16LE and the assumption is not expressed as an invariant.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 229,
-  "category": "logic"
- },
- {
-  "cluster_id": "provider_reregistration_leak",
-  "summary": "RemoteFileSystemProxyClient.register constructs and registers a new provider inside the onWillActivateFileSystemProvider listener with no idempotency guard, so every vscode-remote operation after the first throws 'already registered' (swallowed and logged at error level) and leaks a provider into the window-lifetime DisposableStore.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": 110,
-  "category": "bug"
- },
- {
-  "cluster_id": "zero_tests_proxy_server",
-  "summary": "RemoteFileSystemProxyServer is entirely untested \u2014 the command-dispatch switch, the unknown-command throw, the listen() throw, and the missing-provider throws all lack coverage.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
-  "line": 36,
-  "category": "test"
- },
- {
-  "cluster_id": "channel_name_spelling_convention",
-  "summary": "The new channel-name string values spell 'FileSystem' as two camelCased words while the closest sibling channel-name constants collapse it to 'Filesystem'.",
-  "file": "src/vs/platform/files/common/remoteFileSystemProxy.ts",
-  "line": 11,
-  "category": "style"
- },
- {
-  "cluster_id": "register_catch_swallows_failure",
-  "summary": "The registration catch logs at error but the async IIFE resolves normally, so activation appears to succeed with no provider and the next access fails with a generic 'No file system provider found' far from the cause.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": 112,
-  "category": "logic"
- },
- {
-  "cluster_id": "handrolled_routing_not_iclientrouter",
-  "summary": "Routing is hand-rolled inside IServerChannel.call instead of implementing the codebase's canonical IClientRouter (as NodeRemoteResourceRouter and URLHandlerRouter do), which also adds an extra channel hop.",
-  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
-  "line": 75,
-  "category": "design"
- },
- {
-  "cluster_id": "electron_oneformat_comment",
-  "summary": "The rationale comment 'Electron's clipboard API only supports one buffer format per call' over-generalizes and misattributes the limit \u2014 clipboard.write() can set several formats, and the restriction belongs to the writeClipboardBuffer wrapper.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 71,
-  "category": "doc"
- },
- {
-  "cluster_id": "test_fixture_weak_discrimination",
-  "summary": "The window fixtures lack discriminating power \u2014 only one window carries a matching remoteAuthority and there is no near-miss/decoy authority \u2014 so an implementation ignoring the authority, or a regression from strict equality to startsWith/includes, would still pass.",
-  "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
-  "line": 441,
-  "category": "test"
- },
- {
-  "cluster_id": "dnd_schemas_import_unverified",
-  "summary": "Schemas is used in dnd.ts with no visible import in the shown diff hunk \u2014 flagged as a cannot-verify-from-diff note.",
-  "file": "src/vs/workbench/browser/dnd.ts",
-  "line": 244,
-  "category": "bug"
- },
- {
-  "cluster_id": "temp_dir_wording_doc",
-  "summary": "The 'temp'/'temp directory' wording in the comments could send a maintainer to os.tmpdir() when the copies actually live under environmentService.cacheHome.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": null,
-  "category": "doc"
- },
- {
-  "cluster_id": "server_jsdoc_link_rot",
-  "summary": "The server class JSDoc has two {@link} targets that are not imported (so they won't resolve and a rename won't flag them), explains the design solely by pointing at ElectronRemoteResourceLoader, and overstates 'Registered in every renderer process'.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
-  "line": 20,
-  "category": "doc"
- },
- {
-  "cluster_id": "readonly_type_overclaims",
-  "summary": "The client implements IFileSystemProviderWithFileReadWriteCapability and advertises FileReadWrite while carrying Readonly as a runtime capability bit and throwing on all mutators, so the type advertises the opposite of the intent; the intentional combination also lacks a doc comment.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": 137,
-  "category": "design"
- },
- {
-  "cluster_id": "linux_uri_list_literal",
-  "summary": "LINUX_FILE_FORMAT hard-codes the raw 'text/uri-list' string, duplicating the Mimes.uriList constant that is referenced symbolically elsewhere, including in dnd.ts which this PR also touches.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 19,
-  "category": "style"
- },
- {
-  "cluster_id": "native_format_interop_unverified",
-  "summary": "Whether NSFilenamesPboardType, text/uri-list, and FileNameW written via Electron's writeBuffer are actually honored by Finder / GNOME-KDE file managers / Explorer is unverifiable from the diff and needs a manual per-OS test pass.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": null,
-  "category": "test"
- },
- {
-  "cluster_id": "has_vs_read_divergence",
-  "summary": "hasResources() reports true on mere presence of a native clipboard format while readResources() filters/parses to file:// URIs and can return [], so the Explorer Paste affordance is enabled for a paste that silently does nothing.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 133,
-  "category": "logic"
- },
- {
-  "cluster_id": "explorer_writeresources_blast_radius",
-  "summary": "The native OS clipboard write now applies to every writeResources([localFile]) caller, so unrelated callers such as chat widgets now populate the native file clipboard \u2014 a broadened, untracked blast radius.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 63,
-  "category": "design"
- },
- {
-  "cluster_id": "filenamew_odd_byteoffset",
-  "summary": "fileNameWToFile constructs a Uint16Array over the delivered VSBuffer's backing store at a byteOffset that is frequently odd, which throws RangeError; the surrounding catch swallows it so Windows native paste silently returns nothing.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 247,
-  "category": "bug"
- },
- {
-  "cluster_id": "basename_collision_untested",
-  "summary": "The happy-path uuid-subfolder collision avoidance (two remote files sharing a basename getting distinct targets) exists but has no test pinning it.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 556,
-  "category": "test"
- },
- {
-  "cluster_id": "plain_error_readonly_methods",
-  "summary": "writeFile/mkdir/delete/rename throw a plain Error instead of createFileSystemProviderError / NotSupportedError with NoPermissions, so the error classifies as Unknown and bypasses downstream error-code handling; the message is also developer-oriented.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": 116,
-  "category": "design"
- },
- {
-  "cluster_id": "app_desktop_wiring_untested",
-  "summary": "The DI wiring in app.ts and desktop.main.ts (channel registration, server + client instantiation) has no test coverage.",
-  "file": "src/vs/code/electron-main/app.ts",
-  "line": 1306,
-  "category": "test"
- },
- {
-  "cluster_id": "dispose_unawaited_cleanup",
-  "summary": "The synchronous dispose() calls the async cleanupRemoteClipboardTempDir() without awaiting it \u2014 a floating promise whose deletion may never complete before teardown.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 567,
-  "category": "bug"
- },
- {
-  "cluster_id": "clipboard_format_literals_ifladder",
-  "summary": "The four clipboard formats are loose string literals and the platform-to-format selection is an if-ladder repeated in write/read/has, so the platform x format matrix is not a single checkable structure.",
-  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 17,
-  "category": "design"
- },
- {
-  "cluster_id": "empty_catch_cleanup",
-  "summary": "cleanupRemoteClipboardTempDir uses a literal empty `catch { }` that does not bind or log the error, so a failed del() silently leaves temp copies behind (and the field is reset regardless, discarding the only reference).",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 609,
-  "category": "bug"
- },
- {
-  "cluster_id": "no_typed_rpc_contract",
-  "summary": "The proxy RPC boundary has no shared typed contract: the shared module exports only channel-name strings, each of the three hops re-types the command literals and takes `arg?: any` with positional unchecked casts, so command/arity drift is invisible to the compiler.",
-  "file": "src/vs/platform/files/common/remoteFileSystemProxy.ts",
-  "line": 11,
-  "category": "design"
- },
- {
-  "cluster_id": "client_trusts_wire_no_validation",
-  "summary": "stat/readFile trust the wire with no revival or validation \u2014 IChannel.call<T> infers T from the caller's own annotation, so `const buffer: VSBuffer` and `Promise<IStat>` are unverified against what the server actually returns.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": 165,
-  "category": "design"
- },
- {
-  "cluster_id": "temp_deleted_clipboard_dangling",
-  "summary": "The temp directory backing the OS clipboard is recursively deleted on dispose() or on the next remote copy, while the clipboard still points at those paths, so a later native paste yields missing/empty files.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 568,
-  "category": "bug"
+  "line": null
  },
  {
   "cluster_id": "test_error_regex_coupling",
   "summary": "The assert.rejects regexes match only the fixed error-message prefix (never the interpolated authority/scheme), coupling the tests to prose that is not a stable contract while missing wrong-value bugs.",
   "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
-  "line": 48,
-  "category": "test"
+  "line": 48
  },
  {
-  "cluster_id": "double_paste_regression",
-  "summary": "writeResources now writes OS-native file clipboard formats on ordinary internal local copies, so an in-app Ctrl+V also satisfies the explorer DOM paste listener's clipboardData.files guard, firing the paste a second time (double paste + spurious confirm dialog).",
+  "cluster_id": "scope_creep",
+  "summary": "The PR goes beyond the linked bug: DND drag-text filtering, native-format read paths, and writing native formats for purely-local copies are additional scope.",
+  "file": "src/vs/workbench/browser/dnd.ts",
+  "line": 241
+ },
+ {
+  "cluster_id": "charcodeat_surrogate_pairs",
+  "summary": "filePathToUtf16LE uses charCodeAt so non-BMP characters pass through as raw code units \u2014 it works only by luck for UTF-16LE and the assumption is not expressed as an invariant.",
   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 72,
-  "category": "bug"
+  "line": 229
  },
  {
-  "cluster_id": "server_no_scheme_validation",
-  "summary": "The renderer-side proxy server performs no scheme validation of its own \u2014 the vscode-remote-only guardrail lives solely in the main-process handler \u2014 a defense-in-depth gap that would become an arbitrary local-file-read confused deputy if any future caller forwarded a file:// URI.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
-  "line": 247,
-  "category": "security"
+  "cluster_id": "window_ctx_magic_string",
+  "summary": "The `window:${id}` connection-context format is an untyped cross-process contract reconstructed inline here and duplicated across many sites, documented only in a comment with no shared constant, so a producer-side change breaks routing silently.",
+  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+  "line": 356
  },
  {
-  "cluster_id": "P_ORDER",
-  "summary": "resolveClipboardResources pushes all local resources first and remote temp targets after, so clipboard order no longer matches the user's selection order for mixed selections.",
+  "cluster_id": "no_feature_flag_kill_switch",
+  "summary": "The main handler, per-window server/client, and native-clipboard writes are wired unconditionally with no feature flag or kill switch, leaving no runtime off-switch short of a full revert.",
+  "file": "src/vs/workbench/electron-browser/desktop.main.ts",
+  "line": 289
+ },
+ {
+  "cluster_id": "clipboard_paste_arbitrary_path_read",
+  "summary": "Pasting clipboard-supplied file:// paths allows user-gesture-driven reads of arbitrary local paths.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": null
+ },
+ {
+  "cluster_id": "P_CASESENS",
+  "summary": "RemoteFileSystemProxyClient.capabilities hard-codes FileSystemProviderCapabilities.PathCaseSensitive instead of deriving it from the remote OS the way the sibling RemoteFileSystemProviderClient does.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": 84
+ },
+ {
+  "cluster_id": "linux_uri_list_literal",
+  "summary": "LINUX_FILE_FORMAT hard-codes the raw 'text/uri-list' string, duplicating the Mimes.uriList constant that is referenced symbolically elsewhere, including in dnd.ts which this PR also touches.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 19
+ },
+ {
+  "cluster_id": "utf16_endianness_comment",
+  "summary": "The comment 'Uint16Array naturally uses the platform's char encoding (UTF-16)' is technically wrong and hides the load-bearing assumption: correctness depends on the host being little-endian, not on any encoding property of Uint16Array.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 231
+ },
+ {
+  "cluster_id": "dnd_webloc_comment_imprecise",
+  "summary": "The .webloc rationale comment is imprecise: it says 'remote URIs' when the value placed in TEXT is a getUriLabel label, states macOS .webloc creation as definite OS behavior, and justifies only the macOS case though the filter applies on all platforms.",
+  "file": "src/vs/workbench/browser/dnd.ts",
+  "line": null
+ },
+ {
+  "cluster_id": "dispose_unawaited_cleanup",
+  "summary": "The synchronous dispose() calls the async cleanupRemoteClipboardTempDir() without awaiting it \u2014 a floating promise whose deletion may never complete before teardown.",
   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 287,
-  "category": "logic"
+  "line": 567
  },
  {
-  "cluster_id": "default_branch_comment_wrong",
-  "summary": "The '// Default (Windows, or mixed local/remote)' comment is inaccurate on both halves: Windows single-file never reaches it, and macOS/Linux also fall through for any non-all-local set.",
+  "cluster_id": "gnome_copied_files_format",
+  "summary": "GNOME/Nautilus paste expects the x-special/gnome-copied-files format with a copy/cut verb line rather than plain text/uri-list, so the Linux write path may not be honored by the main Linux file managers.",
   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 99,
-  "category": "doc"
+  "line": null
  },
  {
-  "cluster_id": "urilist_all_or_nothing_parse",
-  "summary": "uriListToFiles runs `.map(URI.parse)` over every line inside a single try/catch, so one malformed line discards every valid file:// entry and returns an empty list.",
+  "cluster_id": "dnd_schemas_import_unverified",
+  "summary": "Schemas is used in dnd.ts with no visible import in the shown diff hunk \u2014 flagged as a cannot-verify-from-diff note.",
+  "file": "src/vs/workbench/browser/dnd.ts",
+  "line": 244
+ },
+ {
+  "cluster_id": "macos_binary_plist",
+  "summary": "plistToFiles parses NSFilenamesPboardType with an XML-plist regex, but macOS/Finder typically serializes that pasteboard type as a binary plist, so pasting Finder-copied files silently returns nothing.",
   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 216,
-  "category": "bug"
+  "line": 178
+ },
+ {
+  "cluster_id": "client_trusts_wire_no_validation",
+  "summary": "stat/readFile trust the wire with no revival or validation \u2014 IChannel.call<T> infers T from the caller's own annotation, so `const buffer: VSBuffer` and `Promise<IStat>` are unverified against what the server actually returns.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": 165
+ },
+ {
+  "cluster_id": "plain_error_readonly_methods",
+  "summary": "writeFile/mkdir/delete/rename throw a plain Error instead of createFileSystemProviderError / NotSupportedError with NoPermissions, so the error classifies as Unknown and bypasses downstream error-code handling; the message is also developer-oriented.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": 116
+ },
+ {
+  "cluster_id": "routing_hang_no_timeout",
+  "summary": "The forwarded call can hang forever: findWindowForAuthority does no liveness check and IPCServer.getChannel falls back to an unbounded wait for a future matching connection, so routing to a closing, crashed, or not-yet-started window never resolves or rejects (unlike the fail-fast NodeRemoteResourceRouter).",
+  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+  "line": 356
+ },
+ {
+  "cluster_id": "no_audit_trail_server",
+  "summary": "Cross-window remote file reads produce no audit trail on the serving side, so exfiltration through the proxy would be unattributable and an incident could not be reconstructed.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+  "line": 30
  },
  {
   "cluster_id": "zero_tests_explorer_temp_download",
   "summary": "ExplorerService.resolveClipboardResources and the temp-dir lifecycle are untested \u2014 no coverage of the all-local passthrough, the download-failure fallback, or cleanup/dispose behavior.",
   "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 556,
-  "category": "test"
+  "line": 556
  },
  {
-  "cluster_id": "stale_format_shadowing",
-  "summary": "writeClipboardBuffer writes one format without clearing the others, so a mixed/remote copy after an all-local copy can leave a stale native format on the clipboard and a native paste yields the previously-copied files.",
+  "cluster_id": "win_multifile_filenamew",
+  "summary": "Windows native file-clipboard interop is single-file only: FileNameW is written only when resources.length === 1 (and read back as one path), so multi-file copies fall through to the VS Code custom format and native Explorer paste produces nothing, with no user signal.",
   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 100,
-  "category": "bug"
+  "line": 88
  },
  {
-  "cluster_id": "main_handler_edge_cases_untested",
-  "summary": "Main-handler edge cases are untested: empty windows list, duplicate remoteAuthority, a plain UriComponents payload exercising URI.revive, and the listen() guard throw.",
-  "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
-  "line": null,
-  "category": "test"
+  "cluster_id": "dnd_filter_untested",
+  "summary": "The new Schemas.file filter on the DND TEXT transfer (all-remote leaves TEXT unset, mixed selections) is a user-visible behavior change with no test.",
+  "file": "src/vs/workbench/browser/dnd.ts",
+  "line": 238
  },
  {
-  "cluster_id": "test_file_name_mismatch",
-  "summary": "The file is named remoteFileSystemProxy.test.ts but only tests the main handler, so its name implies coverage of the whole proxy subsystem; the codebase convention names test files after the source file under test.",
-  "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
-  "line": 1,
-  "category": "test"
- },
- {
-  "cluster_id": "tempdir_race_concurrent",
-  "summary": "Overlapping setToCopy calls race the single unsynchronized remoteClipboardTempDir field, so a second copy's cleanup deletes the directory a still-running first copy is writing into.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 302,
-  "category": "bug"
- },
- {
-  "cluster_id": "watch_inert_undocumented",
-  "summary": "watch()/onDidChangeFile are permanently inert with no comment or capability flag saying so, while the provider is registered scheme-wide for vscode-remote \u2014 and it mixes conventions (mutators throw, watch silently returns Disposable.None).",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": 78,
-  "category": "design"
- },
- {
-  "cluster_id": "tempdir_bare_slot_type",
-  "summary": "remoteClipboardTempDir is a bare `URI | undefined` slot whose single-slot create-before-destroy lifecycle is maintained purely by convention rather than expressed in a type.",
-  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
-  "line": 50,
-  "category": "design"
- },
- {
-  "cluster_id": "plist_empty_string_regex",
-  "summary": "plistToFiles' `<string>([^<]+)</string>` regex requires at least one character, so a well-formed empty `<string></string>` element is silently dropped and the output length no longer matches the input.",
+  "cluster_id": "zero_tests_clipboard_codecs",
+  "summary": "The clipboard encode/decode helpers and the platform dispatch in writeResources/readResources/hasResources ship with zero unit tests despite being pure, byte-level, and format-sensitive.",
   "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
-  "line": 178,
-  "category": "bug"
+  "line": 170
  },
  {
-  "cluster_id": "trace_logs_resource_paths",
-  "summary": "The new logService.trace calls log full resource paths (user data) on every proxied operation.",
-  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
-  "line": 164,
-  "category": "security"
+  "cluster_id": "app_desktop_wiring_untested",
+  "summary": "The DI wiring in app.ts and desktop.main.ts (channel registration, server + client instantiation) has no test coverage.",
+  "file": "src/vs/code/electron-main/app.ts",
+  "line": 1306
  },
  {
-  "cluster_id": "duplicate_authority_first_match",
-  "summary": "Authority-to-window routing is a first-match linear scan, so when two windows share a remote authority the selection is arbitrary; the code never establishes that authority-to-window is 1:1.",
-  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
-  "line": 346,
-  "category": "logic"
+  "cluster_id": "no_typed_rpc_contract",
+  "summary": "The proxy RPC boundary has no shared typed contract: the shared module exports only channel-name strings, each of the three hops re-types the command literals and takes `arg?: any` with positional unchecked casts, so command/arity drift is invisible to the compiler.",
+  "file": "src/vs/platform/files/common/remoteFileSystemProxy.ts",
+  "line": 11
  },
  {
-  "cluster_id": "proxy_no_streaming_readfile",
-  "summary": "The proxy advertises only FileReadWrite (no streaming), so readFile returns the entire file as one VSBuffer forwarded across two IPC hops with no size cap \u2014 the whole file materializes in memory in each process.",
+  "cluster_id": "server_no_scheme_validation",
+  "summary": "The renderer-side proxy server performs no scheme validation of its own \u2014 the vscode-remote-only guardrail lives solely in the main-process handler \u2014 a defense-in-depth gap that would become an arbitrary local-file-read confused deputy if any future caller forwarded a file:// URI.",
   "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
-  "line": 69,
-  "category": "perf"
+  "line": 247
+ },
+ {
+  "cluster_id": "P_SILENTFALLBACK",
+  "summary": "On remote-download failure the code falls back to remote URIs with only a logService.warn \u2014 no notification, progress, or telemetry \u2014 so native paste silently degrades with no user-visible signal.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 287
  },
  {
   "cluster_id": "startup_race_channel_not_ready",
   "summary": "The target window's proxy server channel may not be registered yet when the main handler routes to it during startup, so the call rejects with an unknown-channel error until renderer init finishes, with no retry or readiness wait.",
   "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
-  "line": null,
-  "category": "bug"
+  "line": null
+ },
+ {
+  "cluster_id": "server_plain_error_no_code",
+  "summary": "The server's stat/readdir/readFile throw a plain Error instead of createFileSystemProviderError with a FileSystemProviderErrorCode, so the typed error code is lost as it propagates back through FileService.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+  "line": 56
+ },
+ {
+  "cluster_id": "no_telemetry_proxy_download",
+  "summary": "There is no telemetry or metrics on the remote-download/proxy path, so a field report of 'remote paste doesn't work' cannot be triaged between download failure, routing failure, or temp cleanup.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 287
+ },
+ {
+  "cluster_id": "handrolled_routing_not_iclientrouter",
+  "summary": "Routing is hand-rolled inside IServerChannel.call instead of implementing the codebase's canonical IClientRouter (as NodeRemoteResourceRouter and URLHandlerRouter do), which also adds an extra channel hop.",
+  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+  "line": 75
+ },
+ {
+  "cluster_id": "zero_tests_broad_sweep",
+  "summary": "The PR's most novel logic ships with essentially no tests \u2014 the proxy client, the proxy server dispatch, the clipboard format round-trips, and the explorerService temp-download path \u2014 with only main-handler routing covered.",
+  "file": "(multiple)",
+  "line": null
+ },
+ {
+  "cluster_id": "tempdir_leak_local_only_copy",
+  "summary": "cleanupRemoteClipboardTempDir is called only inside the `remoteResources.length > 0` branch, so a remote copy followed by a local-only copy leaves the previous temp directory on disk.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 299
+ },
+ {
+  "cluster_id": "client_docstring_overclaims",
+  "summary": "The class docstring's claim that it 'enables copy/paste and drag-and-drop of files between remote and local workspaces' is unscoped \u2014 the Explorer copy path pre-downloads to file:// URIs and never exercises this class.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": 33
+ },
+ {
+  "cluster_id": "provider_reregistration_leak",
+  "summary": "RemoteFileSystemProxyClient.register constructs and registers a new provider inside the onWillActivateFileSystemProvider listener with no idempotency guard, so every vscode-remote operation after the first throws 'already registered' (swallowed and logged at error level) and leaks a provider into the window-lifetime DisposableStore.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": 110
+ },
+ {
+  "cluster_id": "trace_logs_resource_paths",
+  "summary": "The new logService.trace calls log full resource paths (user data) on every proxied operation.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": 164
+ },
+ {
+  "cluster_id": "remote_to_remote_roundtrip",
+  "summary": "Discarding the original remote URIs makes remote-to-remote copy/paste regress to a download plus re-upload round-trip instead of a server-side remote copy.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 287
+ },
+ {
+  "cluster_id": "unvalidated_args_uri_revive",
+  "summary": "`const args = arg as unknown[]` then `URI.revive(args[0] as UriComponents)` indexes an unvalidated optional parameter, so a missing or malformed arg surfaces as a raw TypeError instead of a clean domain error (the proxy server repeats the same cast).",
+  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+  "line": 44
+ },
+ {
+  "cluster_id": "adhoc_narrow_interfaces",
+  "summary": "The testability interfaces (IRemoteFileSystemProxyWindowsService / IRemoteFileSystemProxyIPCServer) use anonymous inline shapes that are not Pick<>-derived from the real services and are re-declared verbatim in the tests, and findWindowForAuthority returns a freshly-built `{ id: number }` literal rather than the matched window.",
+  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+  "line": 13
+ },
+ {
+  "cluster_id": "has_vs_read_divergence",
+  "summary": "hasResources() reports true on mere presence of a native clipboard format while readResources() filters/parses to file:// URIs and can return [], so the Explorer Paste affordance is enabled for a paste that silently does nothing.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 133
+ },
+ {
+  "cluster_id": "no_command_allowlist",
+  "summary": "The main handler is a pure untyped passthrough with no command allow-list, so it forwards any command string to another renderer's file-serving channel; the only structural check is the URI scheme.",
+  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+  "line": 323
+ },
+ {
+  "cluster_id": "tempdir_race_concurrent",
+  "summary": "Overlapping setToCopy calls race the single unsynchronized remoteClipboardTempDir field, so a second copy's cleanup deletes the directory a still-running first copy is writing into.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 302
+ },
+ {
+  "cluster_id": "tempdir_bare_slot_type",
+  "summary": "remoteClipboardTempDir is a bare `URI | undefined` slot whose single-slot create-before-destroy lifecycle is maintained purely by convention rather than expressed in a type.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 50
+ },
+ {
+  "cluster_id": "dead_exists_resolve",
+  "summary": "The proxy server dispatches 'exists' and 'resolve' commands (plus resolve's IFileStatWithMetadata plumbing) that no client ever invokes \u2014 unreachable, untested, speculative surface on a cross-renderer channel.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+  "line": 236
+ },
+ {
+  "cluster_id": "fromcharcode_spread_rangeerror",
+  "summary": "String.fromCharCode(...u16.subarray(...)) spreads an externally-sized array, so a very long path or a payload without a null terminator can exceed the engine's argument limit and throw a RangeError that is swallowed into an empty paste.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 249
+ },
+ {
+  "cluster_id": "stale_format_shadowing",
+  "summary": "writeClipboardBuffer writes one format without clearing the others, so a mixed/remote copy after an all-local copy can leave a stale native format on the clipboard and a native paste yields the previously-copied files.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 100
+ },
+ {
+  "cluster_id": "P_ORDER",
+  "summary": "resolveClipboardResources pushes all local resources first and remote temp targets after, so clipboard order no longer matches the user's selection order for mixed selections.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 287
+ },
+ {
+  "cluster_id": "P_EAGER",
+  "summary": "ExplorerService.setToCopy eagerly downloads every selected remote resource to a local temp directory before the clipboard write returns, blocking the Ctrl+C/Ctrl+X gesture with no size/count cap, no progress UI, no cancellation, and a sequential loop.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 266
+ },
+ {
+  "cluster_id": "urilist_filter_untested",
+  "summary": "uriListToFiles does filter to file:// URIs, but that filtering (mixed vscode-remote/http entries, # comments, blank lines) has no test, so a regression dropping the filter would go unnoticed.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 815
+ },
+ {
+  "cluster_id": "cancellation_token_dropped",
+  "summary": "RemoteFileSystemProxyMainHandler.call forwards command and arg but drops IServerChannel's 4th cancellationToken parameter when calling the target renderer channel.",
+  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+  "line": null
+ },
+ {
+  "cluster_id": "proxy_no_streaming_readfile",
+  "summary": "The proxy advertises only FileReadWrite (no streaming), so readFile returns the entire file as one VSBuffer forwarded across two IPC hops with no size cap \u2014 the whole file materializes in memory in each process.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+  "line": 69
+ },
+ {
+  "cluster_id": "remoteauthority_guard_comment",
+  "summary": "The loop-prevention guard comment says the window 'has its own remote connection' but the code only checks the static remoteAuthority config value, papering over the connected-versus-configured distinction.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": 44
+ },
+ {
+  "cluster_id": "server_type_annotations_inaccurate",
+  "summary": "The server's stat() hand-declares the structural literal { type; size; mtime; ctime } instead of the canonical IStat (dropping permissions the client's typed stat claims), and resolve() carries a forced `as Promise<IFileStatWithMetadata>` cast that the runtime resolveMetadata flag does not guarantee.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+  "line": 247
+ },
+ {
+  "cluster_id": "explorer_writeresources_blast_radius",
+  "summary": "The native OS clipboard write now applies to every writeResources([localFile]) caller, so unrelated callers such as chat widgets now populate the native file clipboard \u2014 a broadened, untracked blast radius.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 63
+ },
+ {
+  "cluster_id": "readonly_type_overclaims",
+  "summary": "The client implements IFileSystemProviderWithFileReadWriteCapability and advertises FileReadWrite while carrying Readonly as a runtime capability bit and throwing on all mutators, so the type advertises the opposite of the intent; the intentional combination also lacks a doc comment.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": 137
+ },
+ {
+  "cluster_id": "missing_trace_logging_clipboard",
+  "summary": "The rewritten writeResources/readResources/hasResources omit the class-wide logService.trace('NativeClipboardService#method') opener present on every other public method.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 62
+ },
+ {
+  "cluster_id": "no_crash_cleanup_startup_sweep",
+  "summary": "There is no crash cleanup and no startup sweep of stale cacheHome/remote-clipboard/* directories, so temp trees accumulate on disk indefinitely.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 567
+ },
+ {
+  "cluster_id": "clipboard_format_literals_ifladder",
+  "summary": "The four clipboard formats are loose string literals and the platform-to-format selection is an if-ladder repeated in write/read/has, so the platform x format matrix is not a single checkable structure.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 17
+ },
+ {
+  "cluster_id": "empty_catch_cleanup",
+  "summary": "cleanupRemoteClipboardTempDir uses a literal empty `catch { }` that does not bind or log the error, so a failed del() silently leaves temp copies behind (and the field is reset regardless, discarding the only reference).",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 609
+ },
+ {
+  "cluster_id": "temp_uri_breaks_workspace_identity",
+  "summary": "Replacing the copied remote URI with a local temp file:// URI breaks the source's workspace identity, so same-folder duplicate/rename-on-paste in a remote workspace fails with 'already exists' instead of auto-incrementing.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 287
+ },
+ {
+  "cluster_id": "plist_handrolled_parser",
+  "summary": "The hand-rolled string-concatenation plist writer and regex reader duplicate the existing plistParser.ts and handle only 3 of 5 XML entities with no schema \u2014 a fragile stringly-typed serialization.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 170
+ },
+ {
+  "cluster_id": "client_duplicates_diskfsproviderclient",
+  "summary": "The client hand-rolls stat/readdir/readFile channel forwarding that duplicates the canonical DiskFileSystemProviderClient base class the sibling RemoteFileSystemProviderClient extends.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": null
+ },
+ {
+  "cluster_id": "electron_oneformat_comment",
+  "summary": "The rationale comment 'Electron's clipboard API only supports one buffer format per call' over-generalizes and misattributes the limit \u2014 clipboard.write() can set several formats, and the restriction belongs to the writeClipboardBuffer wrapper.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 71
+ },
+ {
+  "cluster_id": "jsdoc_file_uri_contract_violated",
+  "summary": "resolveClipboardResources' JSDoc promises it returns file:// URIs for all resources, but the catch path returns the original remote-scheme URIs, so the documented contract is false exactly in the failure case.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 282
+ },
+ {
+  "cluster_id": "plist_empty_string_regex",
+  "summary": "plistToFiles' `<string>([^<]+)</string>` regex requires at least one character, so a well-formed empty `<string></string>` element is silently dropped and the output length no longer matches the input.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 178
+ },
+ {
+  "cluster_id": "duplicate_authority_first_match",
+  "summary": "Authority-to-window routing is a first-match linear scan, so when two windows share a remote authority the selection is arbitrary; the code never establishes that authority-to-window is 1:1.",
+  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+  "line": 346
+ },
+ {
+  "cluster_id": "default_branch_comment_wrong",
+  "summary": "The '// Default (Windows, or mixed local/remote)' comment is inaccurate on both halves: Windows single-file never reaches it, and macOS/Linux also fall through for any non-all-local set.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 99
+ },
+ {
+  "cluster_id": "register_catch_swallows_failure",
+  "summary": "The registration catch logs at error but the async IIFE resolves normally, so activation appears to succeed with no provider and the next access fails with a generic 'No file system provider found' far from the cause.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": 112
+ },
+ {
+  "cluster_id": "basename_collision_untested",
+  "summary": "The happy-path uuid-subfolder collision avoidance (two remote files sharing a basename getting distinct targets) exists but has no test pinning it.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 556
+ },
+ {
+  "cluster_id": "P_CATCHDUP",
+  "summary": "resolveClipboardResources' catch block pushes ALL remoteResources after the loop may already have pushed some temp targets, so a partial download failure produces duplicate and mixed-scheme clipboard entries.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 308
+ },
+ {
+  "cluster_id": "double_paste_regression",
+  "summary": "writeResources now writes OS-native file clipboard formats on ordinary internal local copies, so an in-app Ctrl+V also satisfies the explorer DOM paste listener's clipboardData.files guard, firing the paste a second time (double paste + spurious confirm dialog).",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 72
+ },
+ {
+  "cluster_id": "temp_deleted_clipboard_dangling",
+  "summary": "The temp directory backing the OS clipboard is recursively deleted on dispose() or on the next remote copy, while the clipboard still points at those paths, so a later native paste yields missing/empty files.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 568
+ },
+ {
+  "cluster_id": "filenamew_odd_byteoffset",
+  "summary": "fileNameWToFile constructs a Uint16Array over the delivered VSBuffer's backing store at a byteOffset that is frequently odd, which throws RangeError; the surrounding catch swallows it so Windows native paste silently returns nothing.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 247
+ },
+ {
+  "cluster_id": "temp_dir_wording_doc",
+  "summary": "The 'temp'/'temp directory' wording in the comments could send a maintainer to os.tmpdir() when the copies actually live under environmentService.cacheHome.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": null
+ },
+ {
+  "cluster_id": "parsers_no_logging",
+  "summary": "plistToFiles/uriListToFiles/fileNameWToFile (and readResources) all catch and return [] with no logging at all, so a parser bug is indistinguishable from an empty clipboard and a regression stays permanently invisible.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 201
+ },
+ {
+  "cluster_id": "watch_inert_undocumented",
+  "summary": "watch()/onDidChangeFile are permanently inert with no comment or capability flag saying so, while the provider is registered scheme-wide for vscode-remote \u2014 and it mixes conventions (mutators throw, watch silently returns Disposable.None).",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": 78
+ },
+ {
+  "cluster_id": "server_layering_inconsistent",
+  "summary": "The server mixes abstraction levels: stat/readdir call the low-level fileService.getProvider(scheme) directly while readFile/exists/resolve go through IFileService, so provider activation, limits, events, and error normalization apply on some paths but not others.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+  "line": 247
+ },
+ {
+  "cluster_id": "magic_number_bytelength_guard",
+  "summary": "The `buffer.byteLength < 4` guard uses an unexplained magic number (one UTF-16 char plus a two-byte null terminator).",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 240
+ },
+ {
+  "cluster_id": "server_jsdoc_link_rot",
+  "summary": "The server class JSDoc has two {@link} targets that are not imported (so they won't resolve and a rename won't flag them), explains the design solely by pointing at ElectronRemoteResourceLoader, and overstates 'Registered in every renderer process'.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+  "line": 20
+ },
+ {
+  "cluster_id": "test_file_name_mismatch",
+  "summary": "The file is named remoteFileSystemProxy.test.ts but only tests the main handler, so its name implies coverage of the whole proxy subsystem; the codebase convention names test files after the source file under test.",
+  "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
+  "line": 1
+ },
+ {
+  "cluster_id": "routing_test_underasserts",
+  "summary": "The 'routes call to correct window' test asserts only the selected window ctx \u2014 it never varies the target id nor asserts the forwarded command/arg, the channel name, or the propagated return value, so a forwarding regression would still pass.",
+  "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
+  "line": 441
+ },
+ {
+  "cluster_id": "channel_name_spelling_convention",
+  "summary": "The new channel-name string values spell 'FileSystem' as two camelCased words while the closest sibling channel-name constants collapse it to 'Filesystem'.",
+  "file": "src/vs/platform/files/common/remoteFileSystemProxy.ts",
+  "line": 11
+ },
+ {
+  "cluster_id": "proxy_no_caller_auth",
+  "summary": "The main handler ignores the caller's connection context and routes purely on the payload URI's authority with no authorization, scoping, or Workspace-Trust check, so any renderer can read arbitrary files from another window's privileged remote connection (confused deputy).",
+  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+  "line": 42
+ },
+ {
+  "cluster_id": "authority_case_compare",
+  "summary": "findWindowForAuthority compares remoteAuthority with strict === instead of the codebase's case-insensitive isEqualAuthority, so a case-differing authority fails to match the owning window.",
+  "file": "src/vs/platform/files/electron-main/remoteFileSystemProxyMainHandler.ts",
+  "line": 68
+ },
+ {
+  "cluster_id": "urilist_all_or_nothing_parse",
+  "summary": "uriListToFiles runs `.map(URI.parse)` over every line inside a single try/catch, so one malformed line discards every valid file:// entry and returns an empty list.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": 216
+ },
+ {
+  "cluster_id": "zero_tests_proxy_client",
+  "summary": "RemoteFileSystemProxyClient is entirely untested \u2014 the loop-prevention register() guard, the read-only throwing mutators, the readFile VSBuffer unwrap, and the capabilities contract all lack coverage.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyClient.ts",
+  "line": null
+ },
+ {
+  "cluster_id": "dnd_remote_text_regression",
+  "summary": "Narrowing DataTransfers.TEXT to file:// resources means dragging a remote (SSH/WSL/container) resource into an in-app text target such as the terminal, search, or an editor now sets no text at all.",
+  "file": "src/vs/workbench/browser/dnd.ts",
+  "line": 238
+ },
+ {
+  "cluster_id": "zero_tests_proxy_server",
+  "summary": "RemoteFileSystemProxyServer is entirely untested \u2014 the command-dispatch switch, the unknown-command throw, the listen() throw, and the missing-provider throws all lack coverage.",
+  "file": "src/vs/platform/files/electron-browser/remoteFileSystemProxyServer.ts",
+  "line": 36
+ },
+ {
+  "cluster_id": "cut_becomes_copy",
+  "summary": "Cut (move) of a remote file degrades to a copy: setToCopy substitutes local temp file:// URIs, so the paste move-branch moves the temp copy and the original remote file is never removed.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 287
+ },
+ {
+  "cluster_id": "P_PATHLEAK",
+  "summary": "The internal cacheHome temp path is written onto the system clipboard, leaking internal path layout to native paste targets.",
+  "file": "src/vs/workbench/contrib/files/browser/explorerService.ts",
+  "line": 292
+ },
+ {
+  "cluster_id": "test_fixture_weak_discrimination",
+  "summary": "The window fixtures lack discriminating power \u2014 only one window carries a matching remoteAuthority and there is no near-miss/decoy authority \u2014 so an implementation ignoring the authority, or a regression from strict equality to startsWith/includes, would still pass.",
+  "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
+  "line": 441
+ },
+ {
+  "cluster_id": "main_handler_edge_cases_untested",
+  "summary": "Main-handler edge cases are untested: empty windows list, duplicate remoteAuthority, a plain UriComponents payload exercising URI.revive, and the listen() guard throw.",
+  "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
+  "line": null
+ },
+ {
+  "cluster_id": "uri_revive_wire_path_untested",
+  "summary": "Every test passes a real URI instance, so URI.revive only exercises its instanceof fast path and the from-wire UriComponents reconstruction branch that real IPC uses is never tested.",
+  "file": "src/vs/platform/files/test/electron-main/remoteFileSystemProxy.test.ts",
+  "line": null
+ },
+ {
+  "cluster_id": "native_format_interop_unverified",
+  "summary": "Whether NSFilenamesPboardType, text/uri-list, and FileNameW written via Electron's writeBuffer are actually honored by Finder / GNOME-KDE file managers / Explorer is unverifiable from the diff and needs a manual per-OS test pass.",
+  "file": "src/vs/workbench/services/clipboard/electron-browser/clipboardService.ts",
+  "line": null
  }
 ]
