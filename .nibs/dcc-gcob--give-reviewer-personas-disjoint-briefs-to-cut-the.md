@@ -169,10 +169,13 @@ arithmetic has to be done in output tokens rather than report text to see why:**
 | | per ours run |
 |---|---|
 | written sub-agent report text | ~23,600 tokens |
-| total run output | 260,800 tokens |
-| report text as a share of output | **9.1%** |
-| all non-finding prose | ~5,900 tokens = **2.3% of output** |
-| saving if every dismissed-item list, probe request and positive note were deleted | **~$0.48 of $21.33** |
+| total run output | 367,100 tokens |
+| report text as a share of output | **6.4%** |
+| all non-finding prose | ~5,900 tokens = **1.6% of output** |
+| saving if every dismissed-item list, probe request and positive note were deleted | **~$0.34 of $21.33** |
+
+*(Denominator restated 2026-07-29: the earlier 260,800 came from a stale `ws_output` that
+undercounted every tool by 35-49%. The lever is smaller than first corrected, not larger.)*
 
 So trimming report format cannot close a 2× per-agent gap — it is worth about fifty cents a run.
 
