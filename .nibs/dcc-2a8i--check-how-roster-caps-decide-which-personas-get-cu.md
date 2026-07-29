@@ -6,9 +6,9 @@ status: todo
 type: task
 priority: normal
 created_at: 2026-07-28T23:33:37Z
-updated_at: 2026-07-29T16:33:26Z
-parent: dcc-hyxw
-order: az
+updated_at: 2026-07-29T18:29:35Z
+parent: dcc-1x90
+order: a0
 ---
 
 `code-review`'s Step 2b.5 resolves a `midN`/`highN` cap by keeping the floor plus the

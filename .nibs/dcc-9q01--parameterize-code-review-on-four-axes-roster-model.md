@@ -3,16 +3,15 @@
 version: 1
 title: Parameterize code-review on four axes (roster / models / evidence / reach) with named presets
 status: todo
-type: feature
+type: epic
 priority: high
 estimate: l
 tags:
     - code-review
     - design
 created_at: 2026-07-29T16:29:22Z
-updated_at: 2026-07-29T16:30:21Z
-parent: dcc-hyxw
-order: ao
+updated_at: 2026-07-29T18:29:03Z
+order: zzzs
 ---
 
 # Why
