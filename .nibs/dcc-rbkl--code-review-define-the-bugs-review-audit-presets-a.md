@@ -2,14 +2,14 @@
 # dcc-rbkl
 version: 1
 title: 'code-review: define the bugs / review / audit presets and wire them into the auto loops'
-status: todo
+status: in-progress
 type: feature
 priority: high
 estimate: m
 tags:
     - code-review
 created_at: 2026-07-29T18:29:16Z
-updated_at: 2026-07-29T18:44:12Z
+updated_at: 2026-07-29T19:04:21Z
 parent: dcc-9q01
 blocked_by:
     - dcc-evph
@@ -54,15 +54,15 @@ pass-through updated.
 
 # Acceptance
 
-- [ ] [run] `rg -n "bugs|review|audit" -A6 decaf-quality/skills/code-review/SKILL.md` — expect: the
+- [x] [run] `rg -n "bugs|review|audit" -A6 decaf-quality/skills/code-review/SKILL.md` — expect: the
       three presets defined as axis settings, each stating its deliverable
-- [ ] [run] `rg -n "preset" decaf-quality/skills/auto-code-review/SKILL.md` — expect: the loop
+- [x] [run] `rg -n "preset" decaf-quality/skills/auto-code-review/SKILL.md` — expect: the loop
       selects a preset per iteration, with the narrowing rule stated
-- [ ] [run] `rg -rn "code-review with arguments" decaf-build/skills/*/SKILL.md` — expect: every
+- [x] [run] `rg -rn "code-review with arguments" decaf-build/skills/*/SKILL.md` — expect: every
       pass-through updated or explicitly confirmed compatible
 - [ ] [manual] Running each preset on one real changeset produces visibly different reports, and
       each matches its stated deliverable
-- [ ] [manual] The Step 2b.5 shed order differs by preset — rank by drop cost for `bugs`/`review`,
+- [x] [manual] The Step 2b.5 shed order differs by preset — rank by drop cost for `bugs`/`review`,
       by drop cost **+** minor yield for `audit`, so `consistency-reviewer` does not lead the cut
       when the suggestion tier is part of the deliverable. Moved here from #dcc-2a8i, which could
       not satisfy it before presets existed
@@ -70,3 +70,45 @@ pass-through updated.
 # Notes
 
 Depends on all four axes existing. Blocked by #dcc-evph, #dcc-1x90, #dcc-jt58, #dcc-xewu.
+
+## Done 2026-07-29
+
+**Presets are now the primary interface**, named for what they deliver rather than how hard they
+try — `bugs` / `review` / `audit`, each a point in the four-axis space, each axis still overridable
+after it (`review models=high`, `audit roster=8`).
+
+The legacy ladder is retained as aliases that resolve before anything runs: `mid` → `review`,
+`high` → `review models=high`, `max` → `audit`, `modeN` → `+ roster=N`. `tools.json` and every
+existing invocation keep working.
+
+**`low` needed an explicit axis override, and that is worth knowing.** It resolves to
+`bugs roster=2 evidence=norm` — not plain `bugs`. With two reviewers corroboration is scarce, and
+`evidence=strong` would demand a lone reviewer score ≥80 unaided, emptying the report on the one
+mode whose purpose is fast feedback. A preset is a default, not a straitjacket, and this is the case
+that proves it.
+
+**The audit shed order landed** (the criterion moved here from #dcc-2a8i). Under `bugs`/`review`,
+Step 2b.5 ranks by substantive drop cost, shedding `consistency` and `knowledge` first. Under
+`audit` it ranks by drop cost **plus** minor yield — `consistency` moves to mid-table and
+`test-reviewer` rises to first, because ranking `audit` by substantive drop cost alone would cut
+exactly the personas it was chosen for.
+
+**Auto-loop integration.** `auto-code-review` now picks a preset per iteration rather than reusing
+one:
+
+- iteration 2: `review roster=4|6|uncapped reach=narrow`, by fix-delta size
+- iteration 3+: `bugs roster=3`, scoped to the newest delta
+
+`reach=narrow` on every re-review matters more than the roster does: the first pass already reported
+what the surrounding code lacks, and a later pass re-reporting the same absences is noise triage has
+to reject again each round. **`audit` is never inherited into a re-review** — otherwise every
+iteration re-surfaces the whole backlog and the loop cannot converge.
+
+Pass-throughs updated in `auto-dev`, `auto-tdd`, `batch-dev` and `auto-deliver`, which were still on
+the pre-legacy `quick|std|max` spelling. Examples updated across both READMEs and the internal
+callers in `resolve-code-review` and `resolve-refactor`.
+
+### Unverified
+
+Every axis value in the preset table is a first estimate. The presets are the unit #dcc-gxuk
+measures; the cross-product is not and never will be.

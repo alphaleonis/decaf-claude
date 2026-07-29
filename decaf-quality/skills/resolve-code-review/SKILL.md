@@ -481,11 +481,11 @@ AskUserQuestion with:
 - question: "Run a quick code review on the modified files to verify fixes?"
 - header: "Re-review"
 - options:
-  - label: "Yes", description: "Run /decaf-quality:code-review low on modified files"
+  - label: "Yes", description: "Run /decaf-quality:code-review bugs on modified files"
   - label: "No", description: "Done for now"
 ```
 
-If the user chooses "Yes", invoke `/decaf-quality:code-review low <modified-files>`.
+If the user chooses "Yes", invoke `/decaf-quality:code-review bugs <modified-files>`.
 
 ## Auto Mode Decision Criteria
 

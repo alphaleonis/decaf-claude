@@ -82,7 +82,7 @@ Analyze and improve existing code without changing its behavior. The three core 
 Runs parallel specialized reviewer agents over a diff — uncommitted changes, a path, or an ADO/GitHub PR — and consolidates them into one deduplicated report with severity, confidence, and a verdict, written under `.decaf/code-reviews/`. This step only *reports*: hand the findings to [`resolve-code-review`](#resolve-code-review) to work through them one at a time, or skip straight to [`auto-code-review`](#auto-code-review) to run the whole review → fix → re-review loop hands-off.
 ```
 /decaf-quality:code-review                 # uncommitted changes; mode chosen interactively
-/decaf-quality:code-review high            # deeper roster, session-model end-to-end
+/decaf-quality:code-review audit           # everything tiered, including pre-existing
 /decaf-quality:code-review 42              # review PR #42
 /decaf-quality:code-review --spec docs/design.md
 ```
@@ -92,7 +92,7 @@ Modes `low | mid | high | max` trade roster size and model tier; append a number
 The hands-off loop: it runs [`code-review`](#code-review), triages, fixes via subagent, and re-reviews, iterating until the code stabilizes or the iteration cap is hit. Use it when you want issues *fixed*, not just reported; for manual control over each fix, run `code-review` then [`resolve-code-review`](#resolve-code-review) instead.
 ```
 /decaf-quality:auto-code-review
-/decaf-quality:auto-code-review max --max-iterations 5
+/decaf-quality:auto-code-review audit --max-iterations 5
 ```
 
 ### resolve-code-review

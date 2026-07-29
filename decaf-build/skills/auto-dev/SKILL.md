@@ -1,7 +1,7 @@
 ---
 name: auto-dev
 description: Direct development with automated review. Plans implementation, executes via subagent, then auto-reviews. Use for work that isn't test-driven (UI, config, styling, infrastructure, scaffolding).
-argument-hint: "<feature description> [--review quick|std|max] [--max-iterations N] [--spec <path>] [--report]"
+argument-hint: "<feature description> [--review bugs|review|audit] [--max-iterations N] [--spec <path>] [--report]"
 ---
 
 # Auto Dev
@@ -19,7 +19,7 @@ Same structure as `auto-tdd` but without the TDD workflow — for work where tes
 Parse `$ARGUMENTS`:
 
 1. **Feature description** (required): Everything that isn't a flag — describes what to build
-2. **Review mode**: `--review quick|std|max` (default: `std`) — passed to auto-review
+2. **Review preset**: `--review bugs|review|audit` (default: `review`) — passed to auto-review
 3. **Max review iterations**: `--max-iterations N` (default: 3) — passed to auto-review
 4. **Spec path**: `--spec <path>` — passed to auto-review for spec compliance checking
 5. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). When set, this skill contributes the implementation-phase record: the implementation subagent's harness-reported usage (tokens / tool calls / duration, verbatim from the Agent tool result), changeset stats (files changed, +/− lines, new files), and a one-line scope description.

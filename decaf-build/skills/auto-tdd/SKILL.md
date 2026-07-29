@@ -1,7 +1,7 @@
 ---
 name: auto-tdd
 description: TDD-first development with automated review. Runs a TDD session (plan → red-green-refactor) then auto-review on the result. Use when building features test-first with quality gates.
-argument-hint: "<feature description> [--review quick|std|max] [--max-iterations N] [--spec <path>] [--report]"
+argument-hint: "<feature description> [--review bugs|review|audit] [--max-iterations N] [--spec <path>] [--report]"
 ---
 
 # Auto TDD
@@ -17,7 +17,7 @@ Build a feature with TDD, then auto-review the result: **plan → TDD → review
 Parse `$ARGUMENTS`:
 
 1. **Feature description** (required): Everything that isn't a flag — describes what to build
-2. **Review mode**: `--review quick|std|max` (default: `std`) — passed to auto-review
+2. **Review preset**: `--review bugs|review|audit` (default: `review`) — passed to auto-review
 3. **Max review iterations**: `--max-iterations N` (default: 3) — passed to auto-review
 4. **Spec path**: `--spec <path>` — passed to auto-review for spec compliance checking
 5. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). When set, this skill contributes the implementation-phase record: the TDD subagent's harness-reported usage (tokens / tool calls / duration, verbatim from the Agent tool result), changeset stats (files changed, +/− lines, new files), and a one-line scope description.
