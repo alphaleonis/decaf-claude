@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Run parallel code review agents and consolidate findings into a unified report
-argument-hint: "[low|mid|high|max][N] [--spec <path>] [--report] [PR#] [path] [instructions]"
+argument-hint: "[low|mid|high|max][N] [roster=N] [models=low|norm|high] [--spec <path>] [--report] [PR#] [path] [instructions]"
 ---
 
 # Code Review
@@ -11,22 +11,53 @@ This command orchestrates code review agents and consolidates their findings int
 ## Argument Parsing
 
 Parse `$ARGUMENTS` to determine:
-1. **Mode**: `low`, `mid`, `high`, or `max`. The legacy keywords `quick` and `std` are accepted as aliases for `low` and `mid`. When no mode keyword is given, the mode is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `mid`.
-   - **Roster cap (optional)**: an integer suffixed directly to the mode keyword — `mid4`, `high6`, `max8` (alias forms `std4` etc.) — caps the **review-wave roster** at that many agents. It applies to `mid`, `high`, and `max`; on `low` it is ignored (the floor is already exactly two agents). The cap **counts the two floor agents** (so `mid4` = floor + the 2 best-fitting specialists) but **not** the Step 5.6 validators, and it does **not** change the mode's model tiering or validation policy. Applied in Step 2b.5.
+1. **Mode**: `low`, `mid`, `high`, or `max` — a named point in the axis space defined under [Review axes](#review-axes) below. The legacy keywords `quick` and `std` are accepted as aliases for `low` and `mid`. When no mode keyword is given, the mode is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `mid`.
+   - **Roster cap (optional)**: an integer suffixed directly to the mode keyword — `mid4`, `high6`, `max8` (alias forms `std4` etc.) — sets the `roster` axis directly. It applies to `mid`, `high`, and `max`; on `low` it is ignored (the floor is already exactly two agents). The cap **counts the two floor agents** (so `mid4` = floor + the 2 best-fitting specialists) but **not** the Step 5.6 validators, and it does **not** change the mode's `models` policy or validation policy. Applied in Step 2b.5.
+   - **Per-axis override (optional)**: `roster=<N>` and `models=<low|norm|high>` set an axis directly, overriding whatever the mode implies. `roster=6` and `mid6` mean the same thing; the long form exists so an axis can be set without picking a mode. Later arguments win.
 2. **Spec**: `--spec <path | work-item-ID>` — a specification/plan document, or an ADO work item ID whose Description and Acceptance Criteria serve as the spec. When omitted, spec discovery (Step 1.5) may find one automatically.
 3. **`--report`**: collect session metrics for skill-tuning comparisons — record per-agent usage from every reviewer/validator tool result and append a **Session Metrics** section to the consolidated review file (Step 6). See `@../../conventions/session-report.md` for the exact section format and the truth discipline. Orchestrating skills (`auto-code-review`) pass this through; standalone, the enriched consolidated file is the deliverable.
 4. **PR number**: A pull request number (e.g., `123`, `PR#123`, `#123`) — review that PR instead of local changes
 5. **Scope**: Specific file/directory path, or all uncommitted changes (ignored when PR number is provided)
 6. **Instructions**: Any additional review instructions
 
-The mode ladder factors two independent dials — **roster size** (which agents run) and **model assignment** (which tier each agent runs on). Roster grows across the bottom half of the ladder; models upgrade across the top half. A trailing integer (`mid4`, `high6`) is a third, manual dial: it **caps roster size** directly — keeping the floor plus the best-fitting specialists up to that count — without touching model assignment or validation (see Step 2b.5):
+## Review axes
 
-| Mode | Roster | Models | Use Case |
-|------|--------|--------|----------|
-| `low` | quick + broad (2) | broad on the session model, quick mid-tier; validation skipped | Fast feedback from two generalists |
-| `mid` (default) | floor + gate-matched specialists (typically 4-9) | judgment agents on the session model; volume agents mid-tier; validators cheap-tier | Cost-aware default — corroborated findings at the lowest specialist cost |
-| `high` | floor + gate-matched specialists (same roster as `mid`) | session model end-to-end, except quick and consistency (mid-tier); validators stay on the session model | Strict quality — keeps the deep single-finder catches that ride the volume agents |
-| `max` | All agents except hard-gate exclusions | all on the session model | Maximum coverage and fidelity |
+A review is configured along four axes. A mode keyword is shorthand for a point in that space, not
+a thing in its own right — so read the axes first and the modes as presets over them.
+
+| axis | values | controls | where it is applied |
+|------|--------|----------|---------------------|
+| `roster` | integer | how many personas review | Step 2b.5 |
+| `models` | `low` / `norm` / `high` | model policy **per role** | Step 2d |
+| `evidence` | `strong` / `norm` / `any` | how well-evidenced a finding must be to survive | Step 5 confidence gate |
+| `reach` | `narrow` / `norm` / `wide` | what counts as reportable at all | reviewer briefs, Step 6 sections |
+
+**All four point the same way.** Less output ← `small` · `low` · `strong` · `narrow` … `large` ·
+`high` · `any` · `wide` → more output. An axis never reads backwards against its neighbours.
+
+`models` names a **policy across roles**, not a single model — mechanical work stays on a cheap tier
+at every level, including `high`. Never confuse a `models` value with a model name; Step 2d owns the
+mapping and is the only place model names appear.
+
+**`evidence` and `reach` are defined here but not yet accepted as arguments.** `evidence` lands with
+the pre-consolidation screen; `reach` lands with the reviewer-brief scoping work. Until then a mode
+keyword fixes them at `norm` and they are not settable. Do not add partial handling for them here —
+the axis is the contract, and a knob that parses but does nothing is worse than an absent one.
+
+### Modes as axis settings
+
+| Mode | `roster` | `models` | Use Case |
+|------|----------|----------|----------|
+| `low` | 2 (quick + broad) | special-cased: broad on the session model, quick mid-tier; validation skipped | Fast feedback from two generalists |
+| `mid` (default) | gate-matched (typically 4-9) | `norm` | Cost-aware default — corroborated findings at the lowest specialist cost |
+| `high` | gate-matched (same as `mid`) | `high` | Strict quality — keeps the deep single-finder catches that ride the volume agents |
+| `max` | all agents except hard-gate exclusions | `high` | Maximum coverage |
+
+`high` and `max` differ only in `roster`. They previously differed in models too — `max` down-tiered
+nothing at all — but that policy is retired: mechanical lanes stay cheap at every level, because a
+top-tier model re-deriving a quotable convention violation buys nothing. A run that genuinely wants
+every agent on the session model should say so with `models=high` and accept that quick, consistency
+and the verification agents remain down-tiered.
 
 ## Execution Steps
 
@@ -152,7 +183,7 @@ Current roster gates (authoritative text lives in each agent's `## Dispatch Gate
 
 Skip this step when no cap was parsed. In `low` mode a cap is always a no-op (the roster is already the two-agent floor) — note it if one was given and move on.
 
-The cap bounds the **review-wave roster** — the agents launched in Step 3 — at `N`. Validators (Step 5.6) are not counted, and the mode's model tiering (Step 2d) and validation policy are unchanged: a `mid4` roster is a 4-agent roster reviewed and validated under `mid` rules. Resolve the cap against the roster Step 2b produced:
+The cap bounds the **review-wave roster** — the agents launched in Step 3 — at `N`. Validators (Step 5.6) are not counted, and the mode's `models` policy (Step 2d) and validation policy are unchanged: a `mid4` roster is a 4-agent roster reviewed and validated under `mid` rules. Resolve the cap against the roster Step 2b produced:
 
 1. **The floor is never dropped.** `quick-reviewer` and `broad-reviewer` always run; they consume two of the `N` slots.
 2. **Explicitly-requested agents are pinned.** Any agent the user named ("include security") is kept ahead of the ranking and consumes a slot. If the floor plus pins already exceed `N`, the pins win — record `roster cap N exceeded by explicitly-requested agents (kept K)` and dispatch those K; skip the ranking.
@@ -197,24 +228,24 @@ This is the audit trail for the gating: when the roster turns out wrong, the sta
 
 #### Step 2d: Model dispatch policy
 
-Agents declare `model: inherit` and stay model-agnostic; the orchestrator decides models at dispatch time via the Agent tool's `model` parameter. Three tiers, named by **role**, not model version (update the example model names here when the landscape changes; never hard-pin models in agent frontmatter):
+Agents declare `model: inherit` and stay model-agnostic; the orchestrator decides models at dispatch time via the Agent tool's `model` parameter. Three **role tiers**, named by role rather than model version (update the example model names here when the landscape changes; never hard-pin models in agent frontmatter):
 
 - **Judgment agents** — `knowledge-reviewer`, `design-reviewer`, `security-reviewer`, `spec-compliance-reviewer`, `adversarial-reviewer` — carry the deep, cross-cutting reasoning.
 - **Volume agents** — `quick-reviewer`, `broad-reviewer`, `consistency-reviewer`, `test-reviewer`, `performance-reviewer`, `data-migration-reviewer`, `prior-feedback-reviewer`, and the stack reviewers (`dotnet`, `typescript`, `cpp`, `go`, `rust`) — do pattern-matching, sibling comparison, and idiom checks.
 - **Verification agents** — the Step 5.6 `finding-validator`s — score one already-stated claim against a fixed rubric and return a verdict. They originate nothing and read one finding's worth of code, so the task is rubric application over a bounded input rather than open-ended search. This is the largest single line item in a review's sub-agent output, which is what makes its tier worth separating.
 
-Apply the split by mode (mid-tier = the platform's mid-tier model, `sonnet`; cheap tier = the platform's cheap tier, `haiku`):
+Apply the split by the **`models` axis** (mid-tier = the platform's mid-tier model, `sonnet`; cheap tier = the platform's cheap tier, `haiku`). This is the only place in the skill where model names appear — everywhere else names the axis value:
 
-- **`low`:** `broad-reviewer` inherits the session model; `quick-reviewer` runs mid-tier. With a two-agent roster, broad is the only deep net — down-tiering it would leave `low` with no deep finder at all.
-- **`mid` (cost-aware — the default):** judgment agents inherit the session model; volume agents run mid-tier; **validators run the cheap tier**. The pattern-match and consistency findings the volume agents surface are well within the mid-tier's reach, while deep behavioral, design, and security findings stay on the top-tier judgment agents. Validators go cheaper still because scoring one stated claim against a rubric is the narrowest task in the review — the reference implementation this mode is calibrated against runs the same job on a cheap-tier model and posts the best severity calibration in the field. The trade this mode accepts: a deep cross-file catch that only a volume agent (especially `broad`) would make may be lost to the down-tier.
-- **`high` (strict quality):** every agent inherits the session model **except** `quick-reviewer` and `consistency-reviewer` (mid-tier — their lanes are cheap pattern matches and quotable facts). Validators inherit the session model — `high` deliberately does *not* take `mid`'s cheap-validator trade, because a validator's `refuted` verdict silently removes a finding and this is the mode chosen when that risk is least acceptable. This keeps the deep single-finder catches that ride `broad` and `performance` on the top tier.
-- **`max` (maximum fidelity):** no down-tiering — **every** agent inherits the session model, so a top-tier session reviews end-to-end on the top model.
+- **`models=low` (cheapest):** judgment agents inherit the session model; volume **and** verification agents run the cheap tier. Reserved for runs where breadth matters more than depth on the volume lanes.
+- **`models=norm` (cost-aware — the default):** judgment agents inherit the session model; volume agents run mid-tier; **verification agents run the cheap tier**. The pattern-match and consistency findings the volume agents surface are well within the mid-tier's reach, while deep behavioral, design, and security findings stay on the top-tier judgment agents. Verification goes cheaper still because scoring one stated claim against a rubric is the narrowest task in the review — the reference implementation this policy is calibrated against runs the same job on a cheap-tier model and posts the best severity calibration in the field. The trade: a deep cross-file catch that only a volume agent (especially `broad`) would make may be lost to the down-tier.
+- **`models=high` (strict quality):** every agent inherits the session model **except** `quick-reviewer` and `consistency-reviewer` (mid-tier — their lanes are cheap pattern matches and quotable facts) and the verification agents (mid-tier — measurably the right tier for rubric application and for clustering, where the mid tier matches the top tier's accuracy). `high` deliberately does *not* take `norm`'s cheap-verification trade, because a `refuted` verdict silently removes a finding and this is the policy chosen when that risk is least acceptable.
+- **`low` mode is special-cased**, not a `models` value: `broad-reviewer` inherits the session model and `quick-reviewer` runs mid-tier. With a two-agent roster, broad is the only deep net — down-tiering it would leave `low` with no deep finder at all.
 - **Never tier *up*:** an agent is never dispatched on a model more expensive than the session model. If the session is already at or below a tier it would be assigned (e.g. a `sonnet` session for a mid-tier agent, or a `haiku` session for any agent), that agent inherits the session model instead of being forced onto the named tier. Tiering only ever lowers cost, never raises it — this applies to the cheap tier exactly as it does to the mid tier.
 - **Fallback:** if the harness's Agent tool exposes no `model` parameter, dispatch without overrides — a working review on the session model beats a broken dispatch.
 
-Tiering is independent of any roster cap (Step 2b.5): the cap decides *which* agents run; tiering decides *which model* each runs on. A `mid4` roster still applies `mid` tiering to its four agents.
+`models` is independent of `roster` (Step 2b.5): `roster` decides *which* agents run, `models` decides *which model* each runs on. A `mid4` roster still applies `mid`'s `models=norm` policy to its four agents.
 
-Note any tiering applied (which agents ran on which tier) in the team announcement and the report header.
+Note the resolved axis settings — `roster`, `models`, and which agents ran on which tier — in the team announcement and the report header.
 
 ### Step 3: Launch Review Agents in Parallel
 
@@ -365,7 +396,7 @@ Independent re-verification of the primary findings that most need it — the co
 
    **Waive** (corroboration is the verification) any non-Critical primary already found by **2+ independent finders including at least one specialist, all at anchor 100** — mark it `corroborated ×N — validation waived` in the report rather than spending a validator to re-confirm what independent agreement already established. Pre-existing and minor-bucket findings are never validated.
 2. **Budget cap — 15 validators.** If more than 15 findings qualify, validate the highest-severity 15 (Critical first, then High, Medium, Low; ties broken by anchor descending), dropping only from the Medium/Low tail. **Never leave a Critical unvalidated** — if Criticals alone exceed 15, raise the cap to include all of them. Record the unvalidated and waived counts.
-3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Agent calls, every call with `run_in_background: false` — same synchronous-dispatch rule as Step 3; verdicts come back as tool results). When `--report` is set, record each validator's usage from its tool result, same as Step 3 reviewers. Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. **Working-tree safety applies to this wave too** — it is a second parallel wave on one shared tree, so validators are bound by the same read-only rule as Step 3 reviewers; `finding-validator` carries it in its own instructions, so do not paste the Step 3 block in (its `### Probe Requests` markdown channel would contradict the validator's JSON-only output). A validator that can only settle a finding by mutating code returns `uncertain` with a `probe_request` instead (see step 4 below). Model follows Step 2d (validators are verification agents — cheap-tier `haiku` in `mid`, the session model in `high`/`max`).
+3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Agent calls, every call with `run_in_background: false` — same synchronous-dispatch rule as Step 3; verdicts come back as tool results). When `--report` is set, record each validator's usage from its tool result, same as Step 3 reviewers. Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. **Working-tree safety applies to this wave too** — it is a second parallel wave on one shared tree, so validators are bound by the same read-only rule as Step 3 reviewers; `finding-validator` carries it in its own instructions, so do not paste the Step 3 block in (its `### Probe Requests` markdown channel would contradict the validator's JSON-only output). A validator that can only settle a finding by mutating code returns `uncertain` with a `probe_request` instead (see step 4 below). Model follows Step 2d (validators are verification agents — cheap tier under `models=low`/`norm`, mid-tier under `models=high`).
 4. **Process verdicts:**
    - `confirmed` — keep the finding; apply any corrections the validator supplied (line, file, pre_existing reattribution — a reattributed finding moves to Pre-existing Issues)
    - `refuted` — remove from findings; record under Considered But Not Flagged as `refuted by validator: <reason>`
@@ -412,8 +443,8 @@ FILENAME=".decaf/code-reviews/CODE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 
 <The review-team list from Step 2c: each gated agent with its one-line inclusion
 or exclusion reason. Note how the mode was chosen (explicit / asked with the
-recommendation / default non-interactive) and any model tiering Step 2d applied
-(which agents ran on which tier). If a roster cap (Step 2b.5) was in effect, state
+recommendation / default non-interactive) and the resolved `models` policy Step 2d applied
+(which agents ran on which tier). If a `roster` cap (Step 2b.5) was in effect, state
 the cap value, the specialists kept, and each gate-matched agent dropped to the
 cap — including any hard-gate coverage traded away.>
 
@@ -590,7 +621,7 @@ Keep this lightweight — match on file path + category only. Skip this step if 
 ```
 /decaf-quality:code-review                              # mode chosen interactively (default mid), uncommitted changes
 /decaf-quality:code-review low                          # Low mode (2 agents) - fast feedback
-/decaf-quality:code-review mid                          # Mid mode - gated roster, cost-aware tiering
+/decaf-quality:code-review mid                          # Mid mode - gated roster, models=norm
 /decaf-quality:code-review mid4                         # Mid mode, roster capped at 4 (floor + 2 best-fit specialists)
 /decaf-quality:code-review high                         # High mode - gated roster, session model end-to-end
 /decaf-quality:code-review high6 src/                   # High mode on a directory, roster capped at 6

@@ -10,7 +10,7 @@ tags:
     - code-review
     - design
 created_at: 2026-07-29T16:29:22Z
-updated_at: 2026-07-29T18:29:03Z
+updated_at: 2026-07-29T18:37:26Z
 order: zzzs
 ---
 
@@ -185,3 +185,22 @@ off-preset combinations comes from real use, not from the benchmark.
 
 Terminology settled with the operator 2026-07-29. Supersedes the sweep ordering recorded in
 #dcc-hyxw `# Sequencing`, which reserved the next benchmark spend for #dcc-c2uc + #dcc-1xtt.
+
+## Current Focus
+
+Completed dcc-evph: Shipped as a vocabulary refactor. A `## Review axes` section now defines all four axes, their
+values, their shared direction (`small`/`low`/`strong`/`narrow` → less output) and where each is
+applied. `models` replaces the tier vocabulary throughout, with Step 2d the only place model names
+appear. Modes are restated as points in the axis space, and `roster=<N>` / `models=<...>` work as
+direct overrides.
+
+`evidence` and `reach` are defined but deliberately not settable — their mechanisms land in
+#dcc-xewu and #dcc-jt58, and an argument that parses but does nothing is worse than an absent one.
+
+Scope changed during the work: replacing the mode ladder with presets moved to #dcc-rbkl, where the
+presets are actually defined. Keeping modes as the interface here means every intermediate state of
+the epic is a working skill, and the benchmark's `mid --report` invocation keeps working unchanged.
+
+One deliberate behavior change: `max`'s no-down-tiering policy is retired. `high` and `max` now
+differ only in `roster`, and mechanical lanes stay cheap at every level. A `max` run is cheaper than
+it was.
