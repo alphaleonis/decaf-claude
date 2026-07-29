@@ -17,7 +17,7 @@ td:first-child,th:first-child,.tool{text-align:left} .tool{font-weight:600}
 svg .ax{stroke:var(--muted)} svg .grid{stroke:var(--line)} svg .pt{fill:var(--accent)}
 svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);font-size:11px}
 .wrap>section{overflow-x:auto} code{background:var(--card);padding:1px 4px;border-radius:4px;font-size:12.5px}
-.legend{color:var(--muted);font-size:12px;margin-top:4px}
+.legend{color:var(--muted);font-size:12px;margin-top:4px} .n{color:var(--muted);font-size:11.5px}
 .glossary dl{margin:6px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
 .glossary dt{font-weight:600;white-space:nowrap} .glossary dd{margin:0;color:var(--muted);font-size:13px}
 .glossary h3{margin:0 0 8px} @media(max-width:560px){.glossary dl{grid-template-columns:1fr}.glossary dd{margin:0 0 6px}}
@@ -26,7 +26,7 @@ svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);fon
 <p class="sub">microsoft/vscode#320685 · judge: <code>claude-opus-5[1m]</code> ·
 95 distinct issues · no human threads (bug + FP discipline only)</p>
 
-<section><h2>Leaderboard</h2><table><thead><tr><th>tool</th><th>escaped bug</th><th>valid /run</th><th>suggestions /run</th><th>unique valid</th><th>trivia /run</th><th>invalid /run</th><th>precision</th><th>sev. calibration</th><th>subagent distinct.</th><th>cost /run</th><th>~agents</th></tr></thead><tbody><tr><td class='tool'>superpowers</td><td>100%</td><td>9.0</td><td>1.5</td><td>1</td><td>2</td><td>0</td><td>75%</td><td>88%</td><td>—</td><td>$2.80</td><td>1</td></tr><tr><td class='tool'>pr-review-toolkit</td><td>100%</td><td>9.5</td><td>12.5</td><td>0</td><td>18</td><td>0</td><td>23%</td><td>29%</td><td>28%</td><td>$7.32</td><td>5</td></tr><tr><td class='tool'>anthropic-code-review</td><td>100%</td><td>9.0</td><td>2.0</td><td>1</td><td>1</td><td>0</td><td>74%</td><td>75%</td><td>31%</td><td>$11.00</td><td>14</td></tr><tr><td class='tool'>tag1-comprehensive-review</td><td>100%</td><td>16.0</td><td>14.5</td><td>2</td><td>14</td><td>2</td><td>34%</td><td>44%</td><td>32%</td><td>$21.79</td><td>12</td></tr><tr><td class='tool'>ours</td><td>100%</td><td>13.5</td><td>9.0</td><td>1</td><td>13</td><td>2</td><td>37%</td><td>59%</td><td>27%</td><td>$29.50</td><td>21</td></tr></tbody></table>
+<section><h2>Leaderboard</h2><table><thead><tr><th>tool</th><th>escaped bug</th><th>valid /run</th><th>suggestions /run</th><th>unique valid</th><th>trivia /run</th><th>invalid /run</th><th>precision</th><th>sev. calibration</th><th>subagent distinct.</th><th>cost /run</th><th>~agents</th></tr></thead><tbody><tr><td class='tool'>superpowers</td><td>100%</td><td>9.0</td><td>1.5</td><td>1</td><td>2</td><td>0</td><td>75%</td><td>88% <span class='n'>7/8</span></td><td>—</td><td>$2.80</td><td>1</td></tr><tr><td class='tool'>pr-review-toolkit</td><td>100%</td><td>9.5</td><td>12.5</td><td>0</td><td>18</td><td>0</td><td>23%</td><td>27% <span class='n'>4/15</span></td><td>28%</td><td>$7.32</td><td>5</td></tr><tr><td class='tool'>anthropic-code-review</td><td>100%</td><td>9.0</td><td>2.0</td><td>1</td><td>1</td><td>0</td><td>74%</td><td>75% <span class='n'>3/4</span></td><td>31%</td><td>$11.00</td><td>14</td></tr><tr><td class='tool'>tag1-comprehensive-review</td><td>100%</td><td>16.0</td><td>14.5</td><td>2</td><td>14</td><td>2</td><td>34%</td><td>100% <span class='n'>6/6</span></td><td>32%</td><td>$21.79</td><td>12</td></tr><tr><td class='tool'>ours</td><td>100%</td><td>13.5</td><td>9.0</td><td>1</td><td>13</td><td>2</td><td>37%</td><td>80% <span class='n'>8/10</span></td><td>27%</td><td>$29.50</td><td>21</td></tr></tbody></table>
 <p class="legend">Every tool reviewed the PR twice; "/run" columns are averaged across the two runs. Definitions below.</p>
 <div class="card glossary"><h3>How to read this</h3><dl>
 <dt>run (cell)</dt><dd>one review = one tool running once. Each tool reviewed this PR twice, so 2 runs per tool; "/run" numbers are averaged across the two.</dd>
@@ -38,7 +38,7 @@ svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);fon
 <dt>trivia /run</dt><dd>true-but-valueless findings per run — taste-only, speculative, out-of-scope, duplicative, or an unbounded suggestion class. The attention tax.</dd>
 <dt>invalid /run</dt><dd>false positives per run — findings asserting a problem that isn't real (refuted against the code). Actively misleading.</dd>
 <dt>precision</dt><dd>substantive precision: valid ÷ everything reported (suggestions and trivia both count against it). Higher = less to read per real defect.</dd>
-<dt>sev. calibration</dt><dd>when the tool itself labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop.</dd>
+<dt>sev. calibration</dt><dd>when the tool's <em>consolidated report</em> labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop. Severities a sub-agent claimed privately don't count — the reader never sees them. The fraction beside the percentage is the count it rests on; below ~20 flagged findings, read it as a direction, not a score.</dd>
 <dt>subagent distinct.</dt><dd>for multi-agent tools, distinct issues ÷ total sub-agent findings. Low = many agents re-finding the same things.</dd>
 <dt>Jaccard (overlap, below)</dt><dd>how similar two tools' valid-finding sets are: shared ÷ combined. 1.00 = identical, 0.00 = no overlap.</dd>
 <dt>verdict labels</dt><dd>each issue in the drill-down is graded: <strong>TP-primary</strong> = caught the escaped bug; <strong>TP-human</strong> = matched a human review thread; <strong>valid-other</strong> = a different real defect; <strong>valid-minor</strong> = correct improvement suggestion; <strong>trivia</strong> = true but not worth attention; <strong>false-positive</strong> = not real. ("valid" findings = TP-primary + TP-human + valid-other.)</dd>
@@ -154,9 +154,10 @@ svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);fon
 </ul>
 <p>  it is anthropic&#x27;s only unique catch. If it were downgraded, anthropic&#x27;s unique-true drops to zero.</p>
 <ul>
-<li><strong>Anthropic emits confidence scores, not severities</strong>, so its calibration is computed over few</li>
+<li><strong>Anthropic emits confidence scores, not severities</strong>, so its calibration rests on 4 consolidated</li>
 </ul>
-<p>  severity-tagged clusters. Tracked in dcc-hmp6.</p>
+<p>  critical/high clusters against ours&#x27; 10 — not weight-comparable. The metric now counts only the</p>
+<p>  consolidated report (#dcc-hmp6); the thin denominator is a separate, unresolved limitation.</p>
 <ul>
 <li><strong>Nine cells&#x27; extractions were reused</strong> (all eight non-anthropic plus anthropic r1); only</li>
 </ul>

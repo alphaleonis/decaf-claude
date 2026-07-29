@@ -90,8 +90,9 @@ it only 1.8×.
   framing because it states the load-bearing fact (the 5-minute timeout now fatally bounds startup
   in all modes). A stricter reading would call it a comment nit and drop ours' or whoever's credit
   accordingly. This is the single most consequential judgment call in the subject.
-- **Anthropic emits confidence scores, not severities**, so its calibration of 1.00 rests on few
-  severity-tagged clusters and is not weight-comparable. Tracked in dcc-hmp6.
+- **Anthropic emits confidence scores, not severities**, so its consolidated report tagged nothing
+  here critical/high and calibration is undefined for it on this subject — the earlier 1.00 came
+  from a sub-agent's private label, which the metric no longer counts (#dcc-hmp6).
 - **The eight non-anthropic cells reuse the 17 Jul extraction.**
 - **Cluster count moved 56 → 56** (two dissolved, two added) with a changed verdict vocabulary, so
   headline counts are not comparable to the previous version.

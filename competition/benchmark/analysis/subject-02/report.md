@@ -53,9 +53,9 @@ sprays the whole changeset: fixture naming, declaration order, attribute placeme
 
 `tag1` is the same shape at lower volume (140 findings, 6.0 trivia/cell, precision 0.21).
 
-`ours` sits in the middle — 68 findings, 3.5 trivia/cell, precision 0.23 — but has this subject's
-**worst calibration by far, 0.25**. Of the clusters ours ranked critical/high, three of four were
-not substantive. Two of its three false positives are direct hits on `known_safe` entries: it
+`ours` sits in the middle — 68 findings, 3.5 trivia/cell, precision 0.23 — and is the only tool
+here whose consolidated report ranked anything critical/high that was not substantive
+(**calibration 0.50, 1/2**). Two of its three false positives are direct hits on `known_safe` entries: it
 asserted the deliberate static-property exclusion is a defect (`c6`, `c17`) when both new lookups
 specify `BindingFlags.Instance` precisely because DataAnnotations validates instance properties.
 That is the answer key's designed trap, and ours walked into it twice.
@@ -80,8 +80,9 @@ emitting half as many findings.
 Every tool caught the bug, so cost-per-bug is just cost: superpowers **$1.72**, anthropic
 **$5.58**, pr-review-toolkit **$5.64**, ours **$11.25**, tag1 **$12.54**.
 
-Ours is **2.0× anthropic** here while producing twice the findings, more false positives, and a
-quarter of the severity calibration. Against superpowers it is 6.5× the cost for the same catch
+Ours is **2.0× anthropic** here while producing twice the findings, more false positives, and the
+subject's only miscalibrated top-of-list (0.50 against 1.00 for every other tool that ranked
+anything critical/high). Against superpowers it is 6.5× the cost for the same catch
 and 3.5× the trivia. There is no defensible cost story for ours on this subject.
 
 The corrected anthropic figure ($5.58) is close to the study-wide clean-cell average ($7.13) and
@@ -92,10 +93,10 @@ report was reading as anthropic's cost.
 
 - **All five tools caught the primary bug**, so this subject discriminates on noise and cost only.
   Do not read recall as informative here.
-- **Anthropic emits confidence scores, not severities.** Its `severity_calibration` of 1.00 rests
-  on very few explicitly severity-tagged clusters and is not comparable in weight to ours' 0.25,
-  computed over a fuller severity ladder. Applying a severity-based metric to a tool that does not
-  rank by severity is a known limitation — tracked in dcc-hmp6.
+- **Anthropic emits confidence scores, not severities**, so its consolidated report tagged nothing
+  here critical/high and `severity_calibration` is undefined for it on this subject — the earlier
+  1.00 came from a sub-agent's private label, which the metric no longer counts (#dcc-hmp6).
+  Applying a severity-based metric to a tool that does not rank by severity remains a limitation.
 - **The eight non-anthropic cells reuse the 17 Jul extraction.** Their bundles are unchanged, but
   they were not re-extracted, so any extraction error there persists.
 - **Cluster count moved 36 → 34** and the verdict vocabulary changed (the old run predates the

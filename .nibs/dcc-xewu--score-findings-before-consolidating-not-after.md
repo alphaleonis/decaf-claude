@@ -9,7 +9,7 @@ estimate: l
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-07-29T11:24:12Z
+updated_at: 2026-07-29T11:46:05Z
 parent: dcc-hyxw
 order: "n"
 ---
@@ -24,7 +24,7 @@ a large one.
 Anthropic inverts the order: a **Haiku** agent scores every issue against a 0–100 rubric and
 everything below 80 is discarded **before** its orchestrator does any real reasoning. On a
 discrete 0/25/50/75/100 ladder that means only findings scored exactly 100 survive. It posts the
-study's best calibration (0.88 vs ours' 0.62) at half the cost.
+study's best calibration (0.90, 9/10, vs ours' 0.70, 21/30) at half the cost.
 
 Same insight, opposite order — and the order is where the cost difference lives.
 
@@ -64,7 +64,7 @@ no anchor, so the whole downstream contract has to be re-checked.
 - [ ] [manual] Downstream contract re-verified: `auto-code-review` Step 3c and
       `resolve-code-review` Step 2 still receive severity, anchor and validation state for every
       finding they triage
-- [ ] [manual] Re-measured on benchmark subjects: calibration against the 0.62 baseline, cost
+- [ ] [manual] Re-measured on benchmark subjects: calibration against the 0.70 baseline (21/30), cost
       against $21.33/run, and escaped-bug recall against 16/18 — with an explicit judgement that
       recall did not regress
 

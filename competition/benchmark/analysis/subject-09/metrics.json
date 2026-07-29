@@ -54,7 +54,9 @@
       "valid_other_mean": 2.0,
       "trivia_per_cell": 0.5,
       "nitpick_per_cell": 0.5,
-      "severity_calibration": 1.0,
+      "severity_calibration": null,
+      "severity_calibration_substantive": 0,
+      "severity_calibration_flagged": 0,
       "unique_true": [
         "c60"
       ],
@@ -110,7 +112,9 @@
       "valid_other_mean": 4.5,
       "trivia_per_cell": 8.5,
       "nitpick_per_cell": 8.5,
-      "severity_calibration": 0.45,
+      "severity_calibration": 1.0,
+      "severity_calibration_substantive": 5,
+      "severity_calibration_flagged": 5,
       "unique_true": [
         "c5"
       ],
@@ -166,7 +170,9 @@
       "valid_other_mean": 4.5,
       "trivia_per_cell": 10.0,
       "nitpick_per_cell": 10.0,
-      "severity_calibration": 0.57,
+      "severity_calibration": 0.67,
+      "severity_calibration_substantive": 2,
+      "severity_calibration_flagged": 3,
       "unique_true": [],
       "unique_true_n": 0,
       "mean_cost_usd": 9.97,
@@ -221,6 +227,8 @@
       "trivia_per_cell": 0.0,
       "nitpick_per_cell": 0.0,
       "severity_calibration": 0.0,
+      "severity_calibration_substantive": 0,
+      "severity_calibration_flagged": 1,
       "unique_true": [],
       "unique_true_n": 0,
       "mean_cost_usd": 3.21,
@@ -274,7 +282,9 @@
       "valid_other_mean": 3.0,
       "trivia_per_cell": 5.0,
       "nitpick_per_cell": 5.0,
-      "severity_calibration": 0.6,
+      "severity_calibration": 1.0,
+      "severity_calibration_substantive": 2,
+      "severity_calibration_flagged": 2,
       "unique_true": [
         "c59"
       ],

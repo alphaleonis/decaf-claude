@@ -82,7 +82,7 @@ justified itself with the unique braceMatching catch; ours' fan-out — the most
 board — produced the same secondary set as the $3 tool plus the c7 FP, and did not reach the primary.
 
 **Cost–quality verdict.** anthropic is the clear winner: the only tool to catch the escaped bug (2/2),
-precision 0.88, severity calibration 1.0, at $8.06 — with the caveat that the catch is
+precision 0.88, severity calibration 1.0 (2/2), at $8.06 — with the caveat that the catch is
 retrieval-driven and came bundled with a hallucinated FP. superpowers is the value floor: $3.14,
 precision 0.55, zero FPs, the whole real secondary layer — but no primary. ours and tag1 are the
 cautionary tale of this subject: ~$19/cell, 0/2 on the escaped bug, and (for ours) the highest FP

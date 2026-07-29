@@ -55,6 +55,8 @@
       "trivia_per_cell": 1.0,
       "nitpick_per_cell": 1.0,
       "severity_calibration": 0.75,
+      "severity_calibration_substantive": 3,
+      "severity_calibration_flagged": 4,
       "unique_true": [
         "double_paste_regression"
       ],
@@ -110,7 +112,9 @@
       "valid_other_mean": 9.5,
       "trivia_per_cell": 13.0,
       "nitpick_per_cell": 13.0,
-      "severity_calibration": 0.59,
+      "severity_calibration": 0.8,
+      "severity_calibration_substantive": 8,
+      "severity_calibration_flagged": 10,
       "unique_true": [
         "P_PATHLEAK"
       ],
@@ -166,7 +170,9 @@
       "valid_other_mean": 7.5,
       "trivia_per_cell": 18.0,
       "nitpick_per_cell": 18.0,
-      "severity_calibration": 0.29,
+      "severity_calibration": 0.27,
+      "severity_calibration_substantive": 4,
+      "severity_calibration_flagged": 15,
       "unique_true": [],
       "unique_true_n": 0,
       "mean_cost_usd": 7.32,
@@ -221,6 +227,8 @@
       "trivia_per_cell": 1.5,
       "nitpick_per_cell": 1.5,
       "severity_calibration": 0.88,
+      "severity_calibration_substantive": 7,
+      "severity_calibration_flagged": 8,
       "unique_true": [
         "gnome_copied_files_format"
       ],
@@ -276,7 +284,9 @@
       "valid_other_mean": 12.0,
       "trivia_per_cell": 14.5,
       "nitpick_per_cell": 14.5,
-      "severity_calibration": 0.44,
+      "severity_calibration": 1.0,
+      "severity_calibration_substantive": 6,
+      "severity_calibration_flagged": 6,
       "unique_true": [
         "explorer_writeresources_blast_radius",
         "no_crash_cleanup_startup_sweep"

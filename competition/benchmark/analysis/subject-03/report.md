@@ -61,7 +61,8 @@ findings, 8.0 trivia/cell) and is the only tool to touch 29 clusters.
 
 `ours` sits mid-field on noise (147 findings, 5.5 trivia/cell, precision 0.27) and — worth noting
 after subject 2 — recorded **zero false positives** here, avoiding all three `known_safe` traps.
-Its calibration recovered to 0.60 from subject 2's 0.25.
+Its calibration is 0.50 (1/2), flat against subject 2 — too few critical/high clusters either way
+to read a trend.
 
 `anthropic` was the tightest of the fan-out tools: 35 findings, 11 clusters, 2.5 trivia/cell,
 precision 0.35, no false positives.
@@ -104,8 +105,9 @@ whole benchmark, sitting in the anthropic column.
 - **The `must_flag` rule is deliberately broad** — three distinct clusters qualified. A stricter
   rule requiring the `compareTypesForCast` mechanism specifically would have separated the field.
 - **Anthropic emits confidence scores, not severities**, so its `severity_calibration` of 1.00
-  rests on few severity-tagged clusters and is not weight-comparable to ours' 0.60. Same
-  limitation as subject 2; tracked in dcc-hmp6.
+  rests on a single consolidated critical/high cluster (1/1) and is not weight-comparable to
+  ours' 0.50 (1/2). Same limitation as subject 2; the metric definition is settled in #dcc-hmp6,
+  the thin denominators are not.
 - **The eight non-anthropic cells reuse the 17/22 Jul extraction.** Bundles are unchanged, but any
   extraction error there persists.
 - **Cluster count moved 33 → 34** with a changed verdict vocabulary (the old run predates the
