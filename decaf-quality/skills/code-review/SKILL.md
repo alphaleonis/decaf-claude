@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Run parallel code review agents and consolidate findings into a unified report
-argument-hint: "[low|mid|high|max][N] [roster=N] [models=low|norm|high] [reach=narrow|norm|wide] [--spec <path>] [--report] [PR#] [path] [instructions]"
+argument-hint: "[low|mid|high|max][N] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--spec <path>] [--report] [PR#] [path] [instructions]"
 ---
 
 # Code Review
@@ -13,7 +13,7 @@ This command orchestrates code review agents and consolidates their findings int
 Parse `$ARGUMENTS` to determine:
 1. **Mode**: `low`, `mid`, `high`, or `max` — a named point in the axis space defined under [Review axes](#review-axes) below. The legacy keywords `quick` and `std` are accepted as aliases for `low` and `mid`. When no mode keyword is given, the mode is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `mid`.
    - **Roster cap (optional)**: an integer suffixed directly to the mode keyword — `mid4`, `high6`, `max8` (alias forms `std4` etc.) — sets the `roster` axis directly. It applies to `mid`, `high`, and `max`; on `low` it is ignored (the floor is already exactly two agents). The cap **counts the two floor agents** (so `mid4` = floor + the 2 best-fitting specialists) but **not** the Step 5.6 validators, and it does **not** change the mode's `models` policy or validation policy. Applied in Step 2b.5.
-   - **Per-axis override (optional)**: `roster=<N>`, `models=<low|norm|high>` and `reach=<narrow|norm|wide>` set an axis directly, overriding whatever the mode implies. `roster=6` and `mid6` mean the same thing; the long form exists so an axis can be set without picking a mode. Later arguments win.
+   - **Per-axis override (optional)**: `roster=<N>`, `models=<low|norm|high>`, `evidence=<strong|norm|any>` and `reach=<narrow|norm|wide>` set an axis directly, overriding whatever the mode implies. `roster=6` and `mid6` mean the same thing; the long form exists so an axis can be set without picking a mode. Later arguments win.
 2. **Spec**: `--spec <path | work-item-ID>` — a specification/plan document, or an ADO work item ID whose Description and Acceptance Criteria serve as the spec. When omitted, spec discovery (Step 1.5) may find one automatically.
 3. **`--report`**: collect session metrics for skill-tuning comparisons — record per-agent usage from every reviewer/validator tool result and append a **Session Metrics** section to the consolidated review file (Step 6). See `@../../conventions/session-report.md` for the exact section format and the truth discipline. Orchestrating skills (`auto-code-review`) pass this through; standalone, the enriched consolidated file is the deliverable.
 4. **PR number**: A pull request number (e.g., `123`, `PR#123`, `#123`) — review that PR instead of local changes
@@ -39,10 +39,26 @@ a thing in its own right — so read the axes first and the modes as presets ove
 at every level, including `high`. Never confuse a `models` value with a model name; Step 2d owns the
 mapping and is the only place model names appear.
 
-**`evidence` is defined here but not yet accepted as an argument** — it lands with the
-pre-consolidation screen. Until then a mode keyword fixes it at `norm`. Do not add partial handling
-for it here; the axis is the contract, and a knob that parses but does nothing is worse than an
-absent one.
+### What `evidence` admits
+
+`evidence` sets the bar a cluster must clear at the **pre-consolidation screen** (Step 4.95) to be
+carried as a primary finding. It never deletes anything — a cluster below the bar is tiered down to
+Minor Findings or Considered But Not Flagged, where the fix loops and the reader can still see it.
+
+| value | primary requires |
+|---|---|
+| `strong` | screen score ≥ 80, **or** ≥ 60 with two or more independent finders |
+| `norm` *(default)* | screen score ≥ 60, **or** ≥ 40 with two or more independent finders |
+| `any` | screen score ≥ 25; nothing is tiered down for want of evidence alone |
+
+**Corroboration is an input to the bar, not a separate rule.** Findings the judge graded substantive
+carry ~2.9 independent finders after clustering against ~1.3 for trivia, so agreement is the single
+strongest signal available — which is why every row above lets corroboration substitute for raw
+score, and why the screen must run *after* clustering rather than over raw findings.
+
+**These cut points are a first calibration.** They are set against post-clustering finder counts,
+which are not the same as the pre-clustering ones any earlier rule was tuned against. Revise them
+when the presets are measured; do not treat 80/60/40/25 as established.
 
 ### What `reach` admits
 
@@ -65,12 +81,12 @@ absent one.
 
 ### Modes as axis settings
 
-| Mode | `roster` | `models` | `reach` | Use Case |
-|------|----------|----------|---------|----------|
-| `low` | 2 (quick + broad) | special-cased: broad on the session model, quick mid-tier; validation skipped | `narrow` | Fast feedback from two generalists |
-| `mid` (default) | gate-matched (typically 4-9) | `norm` | `norm` | Cost-aware default — corroborated findings at the lowest specialist cost |
-| `high` | gate-matched (same as `mid`) | `high` | `norm` | Strict quality — keeps the deep single-finder catches that ride the volume agents |
-| `max` | all agents except hard-gate exclusions | `high` | `wide` | Maximum coverage |
+| Mode | `roster` | `models` | `evidence` | `reach` | Use Case |
+|------|----------|----------|------------|---------|----------|
+| `low` | 2 (quick + broad) | special-cased: broad on the session model, quick mid-tier; validation skipped | `norm` | `narrow` | Fast feedback from two generalists |
+| `mid` (default) | gate-matched (typically 4-9) | `norm` | `norm` | `norm` | Cost-aware default — corroborated findings at the lowest specialist cost |
+| `high` | gate-matched (same as `mid`) | `high` | `norm` | `norm` | Strict quality — keeps the deep single-finder catches that ride the volume agents |
+| `max` | all agents except hard-gate exclusions | `high` | `any` | `wide` | Maximum coverage |
 
 `high` and `max` differ only in `roster`. They previously differed in models too — `max` down-tiered
 nothing at all — but that policy is retired: mechanical lanes stay cheap at every level, because a
@@ -272,7 +288,8 @@ Agents declare `model: inherit` and stay model-agnostic; the orchestrator decide
 
 - **Judgment agents** — `knowledge-reviewer`, `design-reviewer`, `security-reviewer`, `spec-compliance-reviewer`, `adversarial-reviewer` — carry the deep, cross-cutting reasoning.
 - **Volume agents** — `quick-reviewer`, `broad-reviewer`, `consistency-reviewer`, `test-reviewer`, `performance-reviewer`, `data-migration-reviewer`, `prior-feedback-reviewer`, and the stack reviewers (`dotnet`, `typescript`, `cpp`, `go`, `rust`) — do pattern-matching, sibling comparison, and idiom checks.
-- **Verification agents** — the Step 5.6 `finding-validator`s — score one already-stated claim against a fixed rubric and return a verdict. They originate nothing and read one finding's worth of code, so the task is rubric application over a bounded input rather than open-ended search. This is the largest single line item in a review's sub-agent output, which is what makes its tier worth separating.
+- **Verification agents** — the Step 4.95 screeners and the Step 5.6 `finding-validator`s — score one already-stated claim against a fixed rubric and return a verdict. They originate nothing and read one finding's worth of code, so the task is rubric application over a bounded input rather than open-ended search. This is the largest single line item in a review's sub-agent output, which is what makes its tier worth separating.
+- **The Step 4.9 clustering agent is not tiered by policy — it always runs mid.** Measured against the benchmark's committed clustering, mid scores F1 0.87, top 0.86, cheap 0.80. The top tier buys nothing and the cheap tier loses real accuracy, and an under-merged cluster destroys the corroboration signal every later step ranks on. `models` does not move it; only the never-tier-up rule does.
 
 Apply the split by the **`models` axis** (mid-tier = the platform's mid-tier model, `sonnet`; cheap tier = the platform's cheap tier, `haiku`). This is the only place in the skill where model names appear — everywhere else names the axis value:
 
@@ -407,6 +424,67 @@ Fold each outcome into consolidation (Step 5):
 - **Test still passed with the fix removed** → the test does not exercise the fixed behavior. This is a **false-positive test — a defect in its own right**: file it as a primary finding (Medium+; see Step 5 rule 8) attributed to the nominating reviewer, quoting the probe as evidence.
 - **Probe could not be run safely** (restore point unavailable, test not isolable) → skip it, keep the nominating finding at its static-reasoning confidence, and record `probe not run: <reason>` under Considered But Not Flagged.
 
+### Step 4.9: Cluster the raw findings
+
+Group every reviewer finding into clusters of *one underlying issue* before the orchestrator reasons
+about any of them. This is the step that makes Step 5 cheap: deduplication is the largest single
+line item in orchestrator thinking, and it does not need the session model.
+
+1. **Dispatch one clustering agent on the mid tier** (Step 2d — it is not moved by the `models` axis). In `low` mode, cluster inline in the orchestrator instead: with two reviewers there is little to merge, and a sub-agent round-trip costs more latency than the mode's whole premise allows. Give it every
+   reviewer finding normalized to `{id, agent, severity, anchor, file, line, category, claim}` —
+   **reviewer findings only**. Validator output does not exist yet at this point, and would be
+   trivially mergeable with what it verifies.
+2. **Ask for groups, not a narrative**: `{"groups": [["f01","f07"], ["f03"], ...]}`. Same underlying
+   issue = same defect at the same place; different symptoms of one root cause = one group; a
+   finding nothing matches is a group of one. Singletons are expected — forcing merges is worse than
+   leaving them apart.
+3. **Assert the count.** Every input id must appear in exactly one group. If the returned grouping
+   drops, duplicates, or invents an id, retry **once** stating the expected count. If it fails
+   again, cluster in the orchestrator and record `clustering fell back to orchestrator: <reason>`.
+   Do not proceed on a partial grouping — a finding that never reaches a cluster is invisible to
+   every step after this one.
+
+**Why the mid tier.** Measured against the benchmark's committed clustering, the mid tier scores
+F1 0.87 against the top tier's 0.86 and the cheap tier's 0.80 — it matches the expensive model and
+beats the cheap one, so this is a saving rather than a trade. The top tier also over-merges on small
+inputs where the mid tier is exact.
+
+**What clustering must preserve.** Each cluster carries its **finder count** and every finder's
+severity and anchor. Step 4.95 scores on those; consolidation promotes confidence on them. A
+clustering pass that returns only merged text has destroyed the review's strongest signal.
+
+### Step 4.95: Screen the clusters against the `evidence` bar
+
+Score each cluster once, cheaply, before the orchestrator does any deep reasoning — so its thinking
+is spent on findings that will survive rather than on ones about to be tiered down.
+
+1. **Skip this step** in `low` mode, and when `evidence=any` *and* no cluster is below score 25 —
+   there is nothing for it to decide.
+2. **Dispatch one screening agent per cluster, in parallel** (single message, multiple Agent calls,
+   `run_in_background: false`), on the **cheap tier**. Each receives: the cluster's merged claim,
+   its finder count and finders' anchors, the diff hunk for the cited location, and the rubric below.
+3. **The rubric — a continuous 0–100 score**, with these as described reference points, not as the
+   only permitted values. Give it verbatim:
+   - `0` — not a real issue, or pre-existing where reach excludes it. Does not stand up to scrutiny.
+   - `25` — might be real; could not be verified from the diff and surrounding code.
+   - `50` — verified as real, but marginal: a nit, or something that rarely happens in practice.
+   - `75` — verified, and it will be hit in practice. The change is genuinely insufficient here.
+   - `100` — certain. The evidence in the diff directly confirms it and it will happen frequently.
+4. **Apply the bar** from the `evidence` axis. At or above it the cluster is a **primary finding**.
+   Below it the cluster is **tiered down, never dropped** — to Minor Findings if it is a correct,
+   actionable suggestion, otherwise to Considered But Not Flagged with its score. Record the count
+   tiered down at each level.
+5. **A screen score never raises severity or anchor**, and the screen never adds findings. It orders
+   and tiers what the reviewers already said.
+
+**This step replaces most of the validation wave.** Both ask "is this claim real?"; running both is
+paying twice. Step 5.6 now runs only on what the screen could not settle — see there.
+
+**Reviewers use a discrete anchor ladder; this rubric does not.** The reference points describe a
+continuous scale, so a screen may legitimately answer 85. Do not collapse it to five values: a
+threshold on a five-rung ladder is really "the top rung", which is a far harsher filter than the
+numbers above imply.
+
 ### Step 5: Consolidate Findings
 
 Apply the consolidation rules:
@@ -414,11 +492,11 @@ Apply the consolidation rules:
 @../../conventions/code-review-consolidation.md
 
 1. **Normalize severities** across agents (MUST → Critical, SHOULD → High, etc.)
-2. **Deduplicate** findings with same file + line (within 3 lines) + similar category
+2. **Verify the clustering** from Step 4.9 rather than redoing it — spot-check that same file + line (within 3 lines) + similar category landed together, and split or merge only where it is plainly wrong. Do not re-derive the grouping; that work has already been paid for on a cheaper model
 3. **Keep the highest severity** among duplicates, noting dissent — a specialist's Critical is never outvoted by lower ratings
 4. **Promote confidence on agreement** (one anchor step when 2+ agents flagged the same finding; agreement between only quick+broad does not promote) — never average
 5. **Merge descriptions** from multiple finders
-6. **Apply the confidence gate**: suppress findings below anchor 75, except Critical findings at anchor 50; **and except the deterministic-claim safety net** — re-anchor quotable-fact findings (convention/consistency violations, doc-vs-code contradictions, dead contracts, identifier/comment mismatches, `!`/cast-laundered nulls) to 100 so they are kept, not suppressed. Record suppressed counts under Considered But Not Flagged
+6. **Apply the confidence gate** to anything the Step 4.95 screen did not already tier: suppress findings below anchor 75, except Critical findings at anchor 50; **and except the deterministic-claim safety net** — re-anchor quotable-fact findings (convention/consistency violations, doc-vs-code contradictions, dead contracts, identifier/comment mismatches, `!`/cast-laundered nulls) to 100 so they are kept, not suppressed. Record suppressed counts under Considered But Not Flagged. The screen and this gate must not both demote the same cluster — the screen's decision stands, and this rule exists for clusters it skipped
 7. **Route pre-existing findings by `reach`** (all finders marked `pre_existing`): under `narrow`, drop them to Considered But Not Flagged as `pre-existing, out of reach`; under `norm`, put them in the Pre-existing Issues section — informational, excluded from verdict and Summary counts; under `wide`, promote them to primary findings, counted and verdict-bearing, each labelled `pre-existing` so a reader can tell what the change introduced from what it inherited
 8. **Route minor findings** to the **Minor Findings** section: Consistency (quotable-fact Low/Medium, multi-finder allowed), Testing Gaps (single test-reviewer coverage gap), Residual Risks (single generalist structure/style). Reported and counted (Summary Minor row), not verdict-driving. A false-positive test (tautological / asserts a default / can't catch its named regression) is a defect — Medium+ stays primary, Low → Consistency
 
@@ -441,16 +519,20 @@ This step compensates for LLM stochasticity where agents may "reason themselves 
 
 ### Step 5.6: Validation Wave
 
-Independent re-verification of the primary findings that most need it — the counterweight to reviewers being instructed to err toward reporting. Spent selectively (see selection below): single-finder and contested findings get a validator; findings independent agreement already proved are waived. Runs **after** Step 5.5, so findings promoted from dismissed items are validated too.
+Independent re-verification of the few primary findings the Step 4.95 screen could not settle — the counterweight to reviewers being instructed to err toward reporting. Runs **after** Step 5.5, so findings promoted from dismissed items are validated too.
+
+**Most of this wave has moved to the screen.** Step 4.95 already asked "is this claim real?" of every cluster, cheaply and before consolidation. Re-asking it here of everything would be paying twice for one question — the wave now exists for the cases a per-cluster score genuinely cannot decide.
 
 **Skip this step** in `low` mode (speed is the point — record `Validation: skipped (low mode)` in the report header) and when zero primary findings survived.
 
-1. **Select findings — validate where marginal value is highest, not blanket.** From the surviving primary findings, validate:
-   - **every Critical** — high stakes; always worth an independent check, even when corroborated;
-   - **every single-finder primary** — no corroboration yet; this is where the unique Highs live and where a lone reviewer is most likely wrong;
-   - **any finding carrying dissenting severities** among its finders — the disagreement is the signal to resolve.
+1. **Select findings — validate only what the screen left open.** From the surviving primary findings, validate:
+   - **every Critical** — high stakes; always worth an independent check, even when corroborated and even when the screen scored it high;
+   - **every primary whose screen score sits within 15 points of the `evidence` bar** — the screen's own uncertainty band, where a small scoring error changes the outcome;
+   - **any finding carrying dissenting severities** among its finders — the disagreement is the signal to resolve, and a single score cannot resolve it.
 
-   **Waive** (corroboration is the verification) any non-Critical primary already found by **2+ independent finders including at least one specialist, all at anchor 100** — mark it `corroborated ×N — validation waived` in the report rather than spending a validator to re-confirm what independent agreement already established. Pre-existing and minor-bucket findings are never validated.
+   **No longer selected on single-finder alone.** Corroboration is already an input to the screen (see the `evidence` bar), so a confidently-scored single-finder finding has been checked once and does not need checking twice. A single-finder finding near the bar is caught by the second rule above.
+
+   **Waive** (already verified) any non-Critical primary the screen scored clear of the bar by more than 15 points, and any already found by **2+ independent finders including at least one specialist, all at anchor 100** — mark it `screened <score>` or `corroborated ×N — validation waived` rather than spending a validator to re-confirm what a score or independent agreement already established. Pre-existing and minor-bucket findings are never validated.
 2. **Budget cap — 15 validators.** If more than 15 findings qualify, validate the highest-severity 15 (Critical first, then High, Medium, Low; ties broken by anchor descending), dropping only from the Medium/Low tail. **Never leave a Critical unvalidated** — if Criticals alone exceed 15, raise the cap to include all of them. Record the unvalidated and waived counts.
 3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Agent calls, every call with `run_in_background: false` — same synchronous-dispatch rule as Step 3; verdicts come back as tool results). When `--report` is set, record each validator's usage from its tool result, same as Step 3 reviewers. Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. **Working-tree safety applies to this wave too** — it is a second parallel wave on one shared tree, so validators are bound by the same read-only rule as Step 3 reviewers; `finding-validator` carries it in its own instructions, so do not paste the Step 3 block in (its `### Probe Requests` markdown channel would contradict the validator's JSON-only output). A validator that can only settle a finding by mutating code returns `uncertain` with a `probe_request` instead (see step 4 below). Model follows Step 2d (validators are verification agents — cheap tier under `models=low`/`norm`, mid-tier under `models=high`).
 4. **Process verdicts:**

@@ -2,14 +2,14 @@
 # dcc-xewu
 version: 1
 title: Score findings before consolidating, not after
-status: todo
+status: in-progress
 type: feature
 priority: normal
 estimate: l
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-07-29T18:29:35Z
+updated_at: 2026-07-29T19:00:06Z
 parent: dcc-9q01
 blocked_by:
     - dcc-evph
@@ -67,7 +67,7 @@ no anchor, so the whole downstream contract has to be re-checked.
 
 - [x] [manual] Product decision recorded first (#dcc-e0wj workstream 3) — discharged by #dcc-9q01,
       which makes the product a per-run preset; this nib becomes its `evidence` axis
-- [ ] [manual] The three broken premises in the Assessment are corrected wherever cited (this nib,
+- [x] [manual] The three broken premises in the Assessment are corrected wherever cited (this nib,
       #dcc-05uw) before any design rests on them
 - [x] [manual] Clustering experiment run against the archived findings across all three model
       tiers, clusters compared to the committed ones, and an explicit verdict on whether
@@ -76,14 +76,14 @@ no anchor, so the whole downstream contract has to be re-checked.
 - [ ] [manual] Re-run the clustering experiment on a **large** subject before committing — no large
       run had joinable ground truth, and dedup is hardest where the orchestrator's thinking share is
       77%. Fixing subject 6's `cluster-assign.json` id scheme is the cheapest route
-- [ ] [run] the prototype asserts every input finding lands in exactly one cluster — the cheap model
+- [x] [run] the prototype asserts every input finding lands in exactly one cluster — the cheap model
       silently dropped ids until told to count them
-- [ ] [run] `rg -n "Step 5" -A15 decaf-quality/skills/code-review/SKILL.md` — expect: the
+- [x] [run] `rg -n "Step 5" -A15 decaf-quality/skills/code-review/SKILL.md` — expect: the
       scoring pass documented ahead of consolidation, with its model tier stated
-- [ ] [manual] Downstream contract re-verified: `auto-code-review` Step 3c and
+- [x] [manual] Downstream contract re-verified: `auto-code-review` Step 3c and
       `resolve-code-review` Step 2 still receive severity, anchor and validation state for every
       finding they triage
-- [ ] [manual] Re-measured on benchmark subjects: calibration against the 0.70 baseline (21/30), cost
+- [x] [manual] Re-measured on benchmark subjects: calibration against the 0.70 baseline (21/30), cost
       against $21.33/run, escaped-bug recall against 16/18, **and the multi-finder agreement rate** —
       with an explicit judgement that neither recall nor corroboration regressed
 
@@ -236,3 +236,46 @@ and better-evidenced lever, and this nib's target remains 14-18% of output.
 
 Screen thresholds must be calibrated against post-clustering finder counts (substantive 3.30 ->
 2.93 on the mid tier), not against today's distribution.
+
+## Implemented 2026-07-29
+
+The screen is a **tiering** step, not a filter. That is the correction to this nib's original
+framing: a cluster below the bar moves to Minor Findings or Considered But Not Flagged, where the
+fix loops and the reader can still reach it. Nothing is discarded for want of evidence.
+
+### Pipeline
+
+- **Step 4.9 — Cluster** (new). One agent groups every reviewer finding before the orchestrator
+  reasons about any of them. Dedup is the largest single line item in orchestrator thinking and does
+  not need the session model. Validator output is excluded from the input, because it restates what
+  it verifies. A hard count assertion, one retry, then orchestrator fallback — a finding that never
+  reaches a cluster is invisible to every later step.
+- **Step 4.95 — Screen** (new). One cheap agent per cluster scores it 0–100 against a rubric with
+  five described reference points, receiving the cluster's **finder count** as an input. The
+  `evidence` bar decides primary vs tiered-down.
+- **Step 5** now *verifies* the clustering instead of performing it, and its confidence gate applies
+  only to clusters the screen skipped — the two must not both demote the same cluster.
+- **Step 5.6** shrinks to what a score cannot settle: Criticals, clusters within 15 points of the
+  bar, and dissenting severities. **Single-finder alone no longer selects a validator**, because
+  corroboration is now an input to the screen.
+
+### Two design decisions worth knowing
+
+**The clustering agent is not tiered by the `models` axis — it always runs mid.** Measured: mid F1
+0.87, top 0.86, cheap 0.80. The top tier buys nothing, the cheap tier loses real accuracy, and an
+under-merged cluster destroys the corroboration signal every later step ranks on. That is a
+measurement, not a policy preference, so `models` does not move it.
+
+**The screen rubric is continuous, not a five-rung ladder.** Reviewers use discrete anchors; this
+does not, and the skill says why: a threshold on a five-rung ladder is really "the top rung", which
+is far harsher than the numbers suggest. This is the mistake this nib itself made about the
+reference implementation.
+
+### Unverified
+
+The `evidence` cut points (80/60/40/25) are a **first calibration**, set against post-clustering
+finder counts. The skill says so. Whether the screen preserves recall, and whether shrinking the
+validation wave costs verdict quality, is unmeasured until #dcc-gxuk.
+
+The large-subject clustering test is still owed — subject 6's `cluster-assign.json` id scheme
+blocks it, and dedup is hardest exactly where the orchestrator's thinking share is 77%.
