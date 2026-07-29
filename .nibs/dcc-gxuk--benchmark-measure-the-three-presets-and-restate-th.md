@@ -26,27 +26,46 @@ default until this runs.
 It also subsumes the sweep that was reserved for #dcc-c2uc and #dcc-1xtt. Both landed unverified;
 both get re-measured here under whatever the new default is.
 
-# What to run
+# What to run — scoped 2026-07-29
 
-Re-run **`ours` only** — the other four tools are unaffected — once per preset:
+**Three presets on one subject per size class**, `ours-*` only. The other tools are unaffected by
+the redesign and stay archived.
 
-| preset | cells | note |
+| target | subjects | cells |
 |---|---|---|
-| `bugs` | 9-18 | expected to be much cheaper; the recall risk lives here |
-| `review` | 9-18 | the new default; this is the one that replaces the committed baseline |
-| `audit` | 9-18 | expected dearest; check it is not merely `review` with noise |
+| `ours-bugs` | 1 (csharp/small), 5 (typescript/medium), 9 (go/large) | 6 |
+| `ours-review` | same | 6 |
+| `ours-audit` | same | 6 |
 
-[Estimate] ~$18/cell before the redesign's savings, so ~$160 single-repeat or ~$320 full **per
-preset**. Two repeats is what makes a 1-of-2 result distinguishable from noise; single-repeat gives
-that up.
+**18 cells.** One subject per size band is the minimum that both compares the presets on identical
+code *and* exercises the size-derived roster across all three bands — the axis most likely to
+misbehave, since it changes default coverage without anyone having measured it.
 
-Then `/bench-analyze` per subject. Note this **re-clusters and re-grades across all five tools**, so
-the other tools' verdicts can shift even though their runs did not — the same effect that moved
-figures during the #dcc-9kkz repair.
+```
+bash competition/benchmark/scripts/bench_next.sh --tool ours-bugs
+bash competition/benchmark/scripts/bench_next.sh --tool ours-review
+bash competition/benchmark/scripts/bench_next.sh --tool ours-audit
+```
+
+**The harness runs the dev plugin, not the installed one.** `tools.json` invokes
+`/decaf-quality-dev:code-review`, a renamed copy at `~/.claude/skills/decaf-quality-dev/` with all
+114 internal `decaf-quality:` references rewritten. Without that rewrite the new orchestrator would
+dispatch the *stable* plugin's agents and the run would measure a chimera. Refresh the copy after
+any skill edit — it is a snapshot, not a link.
+
+**Retired targets.** `pr-review-toolkit` and `tag1-comprehensive-review` are no longer run. Their
+pending cells are marked `obsolete`; their 36 graded cells stay committed and stay in the analysis,
+because cluster membership is pooled across whatever tools are present and removing them would
+shift every other tool's numbers.
+
+**Also still pending, and not part of this scope:** 12 cells for `anthropic-code-review` and
+`superpowers` on subjects 8, 11 and 12 — the three never-run subjects. `bench_next` without
+`--tool` will pick those up first. Run them only if widening the study is the intent.
 
 # What must be measured, not just recorded
 
-- **Bug-catch per preset** against 16/18. `bugs` narrowing `reach` and `roster` is exactly the
+- **Bug-catch per preset** against the archived 16/18 — but see the caveat below; that figure is
+  from a different configuration and only three subjects are being run here. `bugs` narrowing `reach` and `roster` is exactly the
   configuration that could lose an escaped defect.
 - **Severity calibration** against 0.70 (21/30) — and read the denominator; anthropic's own figure
   rests on n=10.
@@ -85,3 +104,17 @@ anyone checking what it counted.
 - [ ] [manual] `tools.json` records which preset each run used — the archived cells predate all of
       this and are not comparable
 - [ ] [manual] Synthesis page and per-subject reports restated, and the cross-product limit stated
+
+## Baseline caveat — read before quoting any comparison
+
+**The archived `ours` column is not a baseline for these runs.** It measured the pre-axis skill at
+`mid --report`, before `roster`, `models`, `evidence` and `reach` existed. It is a different tool
+that happens to share a name.
+
+Three of the four axes changed default behavior in ways that move the numbers on their own:
+smaller default rosters on small diffs, a cheaper `max`, a screen that tiers findings before
+consolidation, and a validation wave that no longer selects on single-finder. Attributing a
+difference to any one of them from this run is not possible — 18 cells over 3 subjects supports
+"the presets differ, and here is how", not "intervention X caused Y".
+
+Say that wherever the results are published.
