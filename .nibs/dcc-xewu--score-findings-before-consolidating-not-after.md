@@ -69,8 +69,8 @@ no anchor, so the whole downstream contract has to be re-checked.
       #dcc-05uw) before any design rests on them
 - [x] [manual] Clustering experiment run against the archived findings across all three model
       tiers, clusters compared to the committed ones, and an explicit verdict on whether
-      `cluster-then-screen` is viable — **PASSED 2026-07-29**: sonnet F1 0.90 (best of the three,
-      beating opus), and the corroboration signal is preserved. Put clustering on the mid tier
+      `cluster-then-screen` is viable — **PASSED 2026-07-29**: sonnet F1 0.87 matches opus 0.86 at a
+      fraction of the cost, haiku trails at 0.80, corroboration preserved. Clustering runs mid-tier
 - [ ] [manual] Re-run the clustering experiment on a **large** subject before committing — no large
       run had joinable ground truth, and dedup is hardest where the orchestrator's thinking share is
       77%. Fixing subject 6's `cluster-assign.json` id scheme is the cheapest route
@@ -165,76 +165,72 @@ outlier", not "fix our excess".
   scrapped on measurement like #dcc-gcob was.
 - Sequence #dcc-2a8i (the `roster` axis) ahead of it — bigger target, better evidence, measured.
 
-## Gating experiment — RUN 2026-07-29, PASSED. Move clustering to the MID tier, not the cheap one
+## Gating experiment — RUN 2026-07-29, PASSED. Clustering belongs on the mid tier
 
-Replayed archived `ours` sub-agent findings through a clustering pass and scored against the
-committed reference clustering. 8 runs, 227 findings, 83 reference clusters (subjects 1/4/5/7 — the
-ones whose `findings.json` carries an inline `cluster_id`). Run three times, once per model tier,
-with an identical prompt and identical inputs. Reproduce with
+Replayed archived `ours` reviewer findings through a clustering pass and scored against the
+committed reference clustering. 8 runs, 190 findings, 83 reference clusters (subjects 1/4/5/7 — the
+ones whose `findings.json` carries an inline `cluster_id`). Run once per model tier under an
+identical prompt and identical inputs. Reproduce with
 `analysis/scripts/cluster_replay.py build|score <workdir>`.
 
-### Agreement with the reference clustering
-
-| model | precision | recall | F1 | pairs wrongly merged | wrongly split |
+| model | precision | recall | F1 | substantive finders kept | 2+ preserved |
 |---|---|---|---|---|---|
-| haiku | 0.83 | 0.81 | 0.82 | 62 | 70 |
-| **sonnet** | **0.97** | 0.83 | **0.90** | **9** | 61 |
-| opus | 0.89 | 0.85 | 0.87 | 39 | 55 |
+| haiku | 0.88 | 0.73 | 0.80 | 2.81 of 3.30 | 67% of 67% |
+| **sonnet** | 0.96 | 0.79 | **0.87** | 2.93 | 63% |
+| opus | 0.88 | 0.85 | 0.86 | 2.96 | 67% |
 
-**Sonnet beats Opus** — and not marginally: Opus wrongly merges 39 pairs to Sonnet's 9. On the small
-inputs Opus and Haiku both over-merge (3 groups where the reference has 4); Sonnet is exact. So
-clustering is not a task where the top tier earns its price, and moving it off Opus is a quality
-*improvement* as well as a saving.
+**Sonnet matches Opus at a fraction of the cost** — 0.87 against 0.86 is inside the noise of an
+8-run sample, and the corroboration signal survives about equally. **Haiku is measurably behind**
+at 0.80, mostly on recall: it splits apart a quarter more of what belongs together.
 
-### Corroboration survival
+So clustering is a task the top tier does not win, which is what makes moving it off the session
+model a saving rather than a trade. **Decision: mid tier** (operator, 2026-07-29).
 
-| model | substantive finders | 2+ | trivia finders | 2+ | substantive:trivia gap |
-|---|---|---|---|---|---|
-| *reference* | 3.96 | 78% | 2.00 | 40% | 1.95x |
-| haiku | 3.56 | 74% | 1.64 | 36% | 2.06x |
-| sonnet | 3.70 | 78% | 1.64 | 40% | 1.95x |
-| opus | 3.70 | 78% | 1.68 | 40% | 1.95x |
+### Two corrections to earlier runs of this experiment
 
-All three approximately preserve the signal a screen would rank on. Sonnet and Opus reproduce the
-reference distribution almost exactly; Haiku shaves a little off both sides.
+Both overstated the result, in different directions. Recorded so the numbers above are not
+re-litigated from the older ones.
 
-### Correction to the first run of this experiment
+1. **"Clustering sharpens the signal (1.95x -> 3.08x)" — withdrawn.** That pass used two prompts
+   across its batches; the weaker one caused silent dropping of findings, which shrank trivia
+   clusters and manufactured the separation.
+2. **"Sonnet beats Opus, and not marginally" — withdrawn.** That pass fed the models validator
+   output as if it were reviewer output. Validators restate the finding they are checking, so they
+   are trivially mergeable, and 16% of the input was validator findings. Opus merged them (correctly)
+   and was scored wrong for it; Sonnet's apparent precision advantage was largely this artifact.
+   With validators excluded the two are tied.
 
-An earlier pass reported that clustering **sharpened** the signal — the substantive-to-trivia gap
-widening from 1.95x to 3.08x. **That was an artifact and is withdrawn.** That run used two different
-prompts across its two batches, and the weaker one caused the model to silently drop findings, which
-shrank trivia clusters and inflated the apparent separation. Under one prompt with no dropped ids
-the gap is preserved, not sharpened. The conclusion survives; the dramatic version of it does not.
+### A bias that remains, and cuts toward Opus
 
-### Verdict
+The reference clustering is itself an LLM product and it **under-merges**. Reading Opus's disputed
+merges from the contaminated run: several were the same file:line describing the same defect in
+different words, and in one case a validator confirming the very finding it was split from. The
+metric rewards agreeing with the reference, so a model that merges correctly where the reference did
+not is penalized.
 
-**The gate passes**, with a sharper recommendation than "a cheap model can do it": put clustering on
-the **mid tier**. It is the most accurate of the three *and* cheaper than the status quo. Haiku is
-usable — F1 0.82, signal roughly intact — but the worse trade when mid-tier is available.
+This does not change the decision. If the bias were corrected Opus would gain, not Sonnet — and Opus
+is already only a hair ahead at many times the price. But it does mean **F1 0.87 understates how good
+mid-tier clustering actually is**, and that the reference should not be treated as truth in any
+follow-up.
 
-Four limits carry forward:
+### Limits carried forward
 
 1. **Large runs are untested.** Subject 6's `cluster-assign.json` uses positional ids
    (`ours__r1__N`) that do not join to its `findings.json` (`f00NN`), so no large run had usable
    ground truth. Dedup is hardest exactly where the orchestrator's thinking share is 77%. **Test a
    large run before committing.**
-2. **The reference is itself an LLM product.** F1 0.90 means "agrees with the bench-analyze
-   clustering", not "correct". Both could be wrong together.
-3. **Findings get silently dropped without a hard check.** Fixed here by instruction, but a screen
-   that never sees a finding cannot tier it — the prototype needs an assertion, not a prompt line.
-   Haiku also mis-named its output files, following the example loosely.
-4. **Only dedup was tested.** Severity normalization, confidence promotion and validator selection
-   are untouched by this result.
-
-`subject-05-r2` scored poorly for all three models (0.53 / 0.55 / 0.58), so per-run variance is a
-property of the changeset rather than of the model — mild evidence the metric measures something
-real.
+2. **The prototype needs a hard count assertion.** Models silently dropped findings until told to
+   count, and Haiku mis-reported its own counts even when told. A screen that never sees a finding
+   cannot tier it.
+3. **Only dedup was tested** — not severity normalization, confidence promotion or validator
+   selection, which are the rest of the orchestrator's residual.
+4. `subject-05-r2` scored poorly for every model (0.53-0.82), so per-run variance is a property of
+   the changeset rather than the model.
 
 ### What this does not change
 
-The sequencing in the Assessment above stands. The gate makes this nib *buildable*, not *next* —
-#dcc-2a8i (the `roster` axis) is still the larger and better-evidenced lever, and this nib's target
-remains 14-18% of output.
+The gate makes this nib *buildable*, not *next* — #dcc-2a8i (the `roster` axis) is still the larger
+and better-evidenced lever, and this nib's target remains 14-18% of output.
 
-Screen thresholds must be calibrated against post-clustering finder counts (substantive 3.96 ->
-3.70 on the mid tier), not against today's distribution.
+Screen thresholds must be calibrated against post-clustering finder counts (substantive 3.30 ->
+2.93 on the mid tier), not against today's distribution.

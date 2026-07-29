@@ -21,7 +21,29 @@ Between the two, a cheap-model agent reads each `<run>.input.json` and writes
 `<run>.result.json` as {"groups": [["F00","F07"], ["F03"], ...]}. Ground truth is only available
 for runs whose findings.json carries an inline `cluster_id` (subjects 1, 4, 5, 7).
 """
-import json, glob, os, sys, random, collections, itertools
+import json, glob, os, sys, random, collections, itertools, re
+
+BARE_AGENT = re.compile(r"^agent-[0-9a-f]+$")
+VERIFIER = {"finding-validator", "validator", "scorer"}
+
+
+def load_personas(analysis_path):
+    try:
+        return json.load(open(os.path.join(os.path.dirname(analysis_path), "agent-personas.json")))
+    except (OSError, ValueError):
+        return {}
+
+
+def persona_of(subagent, personas, sid, repeat):
+    tail = subagent.split("/")[-1]
+    if not BARE_AGENT.match(tail):
+        return tail
+    run = personas.get(f"{int(sid.split('-')[1])}__ours__r{repeat}", {})
+    return run.get(subagent.split("/")[0]) or run.get(subagent)
+
+
+def is_verifier(p):
+    return p in VERIFIER
 
 POS = {"TP-primary", "TP-human", "valid-other"}
 MINOR = {"valid-minor"}
@@ -42,8 +64,13 @@ def build(work):
         if not any(x.get("cluster_id") for x in F):
             continue               # no inline ground truth for this subject
         for rep in (1, 2):
+            pers = load_personas(os.path.join(ANALYSIS, sid, "analysis.json"))
+            # Validators run AFTER consolidation, so a pre-consolidation clusterer never sees them.
+            # They also restate the finding they are checking, which makes them trivially mergeable
+            # and inflates every score — 16% of the input before this filter.
             sub = [x for x in F if x["tool"] == "ours" and x["repeat"] == rep
-                   and x.get("subagent") and x.get("cluster_id")]
+                   and x.get("subagent") and x.get("cluster_id")
+                   and not is_verifier(persona_of(x["subagent"], pers, sid, rep))]
             if len(sub) < 10:
                 continue
             items = [{"id": f"F{i:02d}", "file": x.get("file"), "line": x.get("line"),
