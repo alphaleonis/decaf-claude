@@ -5,9 +5,9 @@ title: Check how roster caps decide which personas get cut, and whether that ran
 status: draft
 type: task
 created_at: 2026-07-28T23:33:37Z
-updated_at: 2026-07-28T23:33:37Z
+updated_at: 2026-07-29T11:24:12Z
 parent: dcc-hyxw
-order: "n"
+order: az
 ---
 
 `code-review`'s Step 2b.5 resolves a `midN`/`highN` cap by keeping the floor plus the
