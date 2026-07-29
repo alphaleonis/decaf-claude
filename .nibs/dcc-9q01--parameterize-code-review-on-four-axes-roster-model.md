@@ -10,7 +10,7 @@ tags:
     - code-review
     - design
 created_at: 2026-07-29T16:29:22Z
-updated_at: 2026-07-29T18:47:52Z
+updated_at: 2026-07-29T19:29:22Z
 order: zzzs
 ---
 
@@ -204,3 +204,72 @@ autonomous loop is often the only reader that code gets. Never fires by default.
 
 Implemented in the orchestrator rather than across fifteen agents; the seven whose scope includes
 absences carry a short note so their briefs do not contradict the dispatch directive.
+
+## RESUME HERE — state at 2026-07-29
+## RESUME HERE — state at 2026-07-29
+
+**All code is written. Nothing has been measured. The next action costs tokens and was deferred to
+the week of 2026-08-03.**
+
+### Where things stand
+
+| child | state |
+|---|---|
+| #dcc-evph — axis vocabulary | **done** |
+| #dcc-1x90 — roster axis | **done** (with #dcc-2a8i, its measurement) |
+| #dcc-jt58 — reach axis | **done** |
+| #dcc-xewu — evidence axis | **code done**, open on a large-run clustering test |
+| #dcc-rbkl — presets + auto loops | **code done**, open on running each preset once |
+| #dcc-gxuk — measure the presets | **not started — this is the next action** |
+
+### The one command to resume
+
+```
+bash competition/benchmark/scripts/bench_next.sh --tool ours-bugs
+bash competition/benchmark/scripts/bench_next.sh --tool ours-review
+bash competition/benchmark/scripts/bench_next.sh --tool ours-audit
+```
+
+18 cells queued: three presets x subjects 1 (csharp/small), 5 (typescript/medium), 9 (go/large),
+2 repeats. Then `/bench-analyze` per subject. Full plan and what must be measured: **#dcc-gxuk**.
+
+### Pre-flight — four things that will bite
+
+1. **Refresh the dev plugin first.** `bash scripts/install-dev-plugin.sh`. The harness invokes
+   `/decaf-quality-dev:code-review`, a *snapshot* copy at `~/.claude/skills/decaf-quality-dev/`.
+   It is stale the moment `decaf-quality/` changes. `claude plugin details decaf-quality-dev` shows
+   the branch@sha it was built from — check that against `git rev-parse --short HEAD`.
+2. **Always pass `--tool`.** 12 unrelated cells are still pending (`anthropic-code-review` and
+   `superpowers` on subjects 8, 11, 12 — the never-run subjects). A bare `bench_next` runs those
+   first.
+3. **The dev plugin only loads on a NEW session.** It is skills-dir, resolved at startup.
+4. **Nothing is verified.** Four axes changed default behavior: smaller rosters on small diffs, a
+   cheaper `max`, a pre-consolidation screen, and a validation wave that no longer selects on
+   single-finder. All landed on the strength of measurement of the *old* runs, not of the new code.
+
+### Do not compare against the archived `ours` column
+
+It measured the pre-axis skill at `mid --report` — a different tool that happens to share a name.
+18 cells over 3 subjects supports *"the presets differ, and here is how"*. It does not support
+attributing any difference to a particular axis. This is stated in #dcc-gxuk and METHODOLOGY §0.5;
+keep it stated wherever results are published.
+
+### Also live but unrelated to the presets
+
+- **#dcc-c2uc** and **#dcc-1xtt** are landed and unverified in the *stable* plugin. The sweep once
+  reserved for them is superseded — they get re-measured inside the preset runs.
+- **#dcc-3v3m** — subject 10's extraction captured no severity labels.
+- **#dcc-xewu** still owes a large-subject clustering test; subject 6's `cluster-assign.json` uses
+  positional ids that do not join to its `findings.json`. Cheap to fix, and worth doing before the
+  run since dedup is hardest on large diffs.
+
+### Session-level facts worth not rediscovering
+
+- Three published figures were wrong and were corrected this session — severity calibration
+  (#dcc-hmp6), the 77% restatement rate (#dcc-gcob), and output tokens per run, understated 35-49%
+  for every tool. All three erred in the direction of making ours look worse.
+- **#dcc-gcob was scrapped on measurement**, not built: corroboration is the discriminator, and
+  disjoint briefs would have deleted it.
+- The clustering experiment ran three times. The first two results were artifacts — dropped findings
+  in one, validator contamination in the other. The surviving finding: sonnet 0.87, opus 0.86,
+  haiku 0.80, so clustering belongs on the mid tier.
