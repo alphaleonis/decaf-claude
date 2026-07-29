@@ -164,8 +164,9 @@ small count — re-measure rather than trusting 0.85.
 ## 2. Cost / fan-out efficiency
 $21.33/run vs **$7.61** (restated on the repaired data, #dcc-9kkz; the published $11.82 was a
 blended column); 14.5 sub-agents vs 11.8, by role 9.4 reviewers + 5.1 validators vs 5 reviewers +
-~7 auxiliary. Across all subjects ~77% of sub-agent findings
-restate a sibling's. Cost scales with **diff** size, not repo size — see the scaling section below (the earlier
+~7 auxiliary. Across all subjects ~47% of sub-agent findings restate a sibling's (the 77% first
+cited here counted validator rows, consolidated-report rows and cross-repeat determinism —
+corrected in #dcc-gcob). Cost scales with **diff** size, not repo size — see the scaling section below (the earlier
 "scaled steeply with repo size" reading compared subject 1 to subject 6, which differ 10× in
 diff *and* 3× in repo, and picked the wrong variable). superpowers stayed ~flat at $2.5.
 
@@ -363,7 +364,7 @@ legitimately explored beyond the diff. One data point; do not build on it.
       with repo size (superpowers +0.63, tag1 +0.64, pr-review-toolkit +0.58 against ours
       +0.31), so this is a point in ours favour, not against it. n=9 subjects.
 - [ ] → **#dcc-gcob** — ours emits 19.5k output per agent against anthropic's 9.6k (2.0×); disjoint
-      briefs are the proposed fix for the 77% restatement rate
+      briefs were the proposed fix for the restatement rate — scrapped, see #dcc-gcob
 - [ ] → **#dcc-lf4a** — shared-context-file pattern as the documented default (small prize;
       the orchestrator already does it on large diffs)
 - [ ] → **#dcc-xewu** (deferred) — cheap pre-consolidation confidence filter, anthropic's
@@ -442,9 +443,16 @@ pass over raw findings instead of an expensive pass over consolidated ones.
 **Note:** this is also workstream 1's calibration lever; an early cheap filter is what makes a
 trustworthy top-of-list possible. The two workstreams converge here.
 
-## 3. Disjoint briefs — attack the 77% restatement
+## 3. Disjoint briefs — attack the restatement rate — **SCRAPPED, see #dcc-gcob**
 
-**Basis:** ~77% of sub-agent findings restate a sibling's, and ours emits ~19.5k output per agent
+> **Do not build this.** Measured before implementing: the restatement figure was wrong and the
+> redundancy is load-bearing. Reviewer-to-reviewer restatement is **47%**, not 77%. Substantive
+> clusters average **2.80** finders against trivia's 1.32, and **62%** of all restatement lands on
+> substantive findings — so disjoint briefs delete agreement about real defects, and 72% of
+> substantive findings would fall to a single finder, where 84% of trivia already sits. The
+> per-agent output gap is real; territory is not its cause. Full measurement in #dcc-gcob.
+
+**Basis (as originally reasoned):** ~77% of sub-agent findings restate a sibling's, and ours emits ~19.5k output per agent
 against anthropic's 9.6k — a 2.0× gap. Anthropic's five agents have genuinely disjoint jobs (CLAUDE.md
 compliance, shallow bug scan, git history, prior PR comments, code comments). Ours has `broad`,
 `quick`, `knowledge`, `consistency` and `adversarial` sweeping overlapping general ground.

@@ -111,3 +111,5 @@ tier, so a re-run is not silently compared against a differently-configured base
 
 **Do not treat the cost saving as banked.** The change is in the default path from the next session
 restart onward; its effect on verdict quality is unknown until the re-run.
+
+**Sweep order (decided 2026-07-29):** this change and its sibling are measured together in the *next* benchmark spend, before any further roster or persona change lands — otherwise the results cannot be attributed. #dcc-gcob was scrapped rather than queued behind it. See #dcc-hyxw `# Sequencing`.

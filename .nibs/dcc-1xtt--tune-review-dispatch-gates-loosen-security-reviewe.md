@@ -139,3 +139,5 @@ The six reworded agent `description:` frontmatter lines initially contained a `"
 is invalid in a YAML plain scalar and broke the frontmatter in all six files. Caught and fixed by
 parsing every agent's frontmatter; all 23 now load. Worth a guard if agent descriptions keep
 growing — none exists today.
+
+**Sweep order (decided 2026-07-29):** this change and its sibling are measured together in the *next* benchmark spend, before any further roster or persona change lands — otherwise the results cannot be attributed. #dcc-gcob was scrapped rather than queued behind it. See #dcc-hyxw `# Sequencing`.
