@@ -62,6 +62,10 @@ pass-through updated.
       pass-through updated or explicitly confirmed compatible
 - [ ] [manual] Running each preset on one real changeset produces visibly different reports, and
       each matches its stated deliverable
+- [ ] [manual] The Step 2b.5 shed order differs by preset — rank by drop cost for `bugs`/`review`,
+      by drop cost **+** minor yield for `audit`, so `consistency-reviewer` does not lead the cut
+      when the suggestion tier is part of the deliverable. Moved here from #dcc-2a8i, which could
+      not satisfy it before presets existed
 
 # Notes
 
