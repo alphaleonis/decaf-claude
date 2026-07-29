@@ -4,7 +4,8 @@
     "name": "decaf-quality:code-review (mid, --report)",
     "requires_plugin": "decaf-quality",
     "install_hint": "claude plugin marketplace add <path-to-this-repo>; claude plugin install decaf-quality@decaf",
-    "model_policy": "tiers off the session model: judgment agents on session model, volume agents + validators mid-tier",
+    "model_policy": "tiers off the session model: judgment agents on session model, volume agents mid-tier, validators cheap-tier",
+  "model_policy_note": "The 18 archived `ours` runs (2026-07-16..22) predate the cheap validator tier and ran validators mid-tier. Any re-run under the current policy is NOT tier-comparable to them on cost or on the validator confirmed/refuted/uncertain distribution — that comparison is the point of nib dcc-c2uc, so record which policy each run used.",
     "findings_file": ".decaf/code-reviews/CODE_REVIEW_*.md",
     "invocation": "Use the Skill tool to run /decaf-quality:code-review with arguments: mid --report {PR}. This reviews pull request #{PR} of the GitHub repository {REPO} (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity."
   },
