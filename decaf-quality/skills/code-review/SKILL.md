@@ -129,20 +129,22 @@ Current roster gates (authoritative text lives in each agent's `## Dispatch Gate
 | `decaf-quality:knowledge-reviewer` | Any substantive change; skip only purely mechanical diffs |
 | `decaf-quality:consistency-reviewer` | Any substantive change; skip purely mechanical diffs and changes with no sibling code to compare against |
 | `decaf-quality:design-reviewer` | Public API/contract, data model, module boundary, or concurrency surface changes |
-| `decaf-quality:security-reviewer` | Security-adjacent surface (auth, crypto, user input, network, file I/O, serialization, secrets/config, privileges) — judged from diff content; lean toward spawning when unsure |
+| `decaf-quality:security-reviewer` | A concrete trust-boundary trigger in the diff — handler/route/middleware, parsing of data crossing a process/user/network boundary, an identity or permission check (or its absence on a new path), crypto/randomness, secrets/config, path building from non-constant input, privilege or subprocess boundaries, network client behavior, dependency manifests. Decided by pointing at lines, not by judging the change "security-related"; spawn on the first match |
 | `decaf-quality:test-reviewer` | **Hard gate**: test files present in changeset |
 | `decaf-quality:spec-compliance-reviewer` | **Hard gate**: a spec is available — provided via `--spec` or discovered in Step 1.5 |
 | `decaf-quality:adversarial-reviewer` | ≥50 changed executable lines, OR high-risk domain (auth, payments, data mutations, external APIs) at any size |
 | `decaf-quality:performance-reviewer` | DB/ORM queries, loops with I/O or allocation, async/concurrent code, data pipelines, or caching logic in the diff |
 | `decaf-quality:data-migration-reviewer` | **Hard gate**: migration artifacts in the diff (EF `Migrations/*.cs`, ModelSnapshot, `.sql` DDL/backfill scripts) |
-| `decaf-quality:dotnet-reviewer` | **Hard gate**: C# files in changeset |
-| `decaf-quality:typescript-reviewer` | **Hard gate**: TypeScript/JavaScript files in changeset |
-| `decaf-quality:cpp-reviewer` | **Hard gate**: C/C++ files in changeset |
-| `decaf-quality:go-reviewer` | **Hard gate**: Go files in changeset |
-| `decaf-quality:rust-reviewer` | **Hard gate**: Rust files in changeset |
+| `decaf-quality:dotnet-reviewer` | **Hard gate**: C# files in changeset — **plus** an idiom-surface judgment gate (async/`Task`, disposal, EF Core, deferred LINQ, nullable annotations, threading) |
+| `decaf-quality:typescript-reviewer` | **Hard gate**: TS/JS files in changeset — **plus** an idiom-surface judgment gate (promises, type escape hatches, coercion, unvalidated runtime-boundary data, event-loop blocking, shared mutable state) |
+| `decaf-quality:cpp-reviewer` | **Hard gate**: C/C++ files in changeset — **plus** an idiom-surface judgment gate (lifetime/ownership, RAII, UB constructs, exception safety, concurrency) |
+| `decaf-quality:go-reviewer` | **Hard gate**: Go files in changeset — **plus** an idiom-surface judgment gate (goroutines, channels/`select`, `defer`, `context`, slice/map aliasing, typed-nil interfaces, shared state) |
+| `decaf-quality:rust-reviewer` | **Hard gate**: Rust files in changeset — **plus** an idiom-surface judgment gate (`unsafe`, panic paths, async hazards, lock discipline, ownership changes, error-context erasure) |
 | `decaf-quality:prior-feedback-reviewer` | **Hard gate**: reviewing a PR AND prior human review threads exist |
 
-**Hard negative gates apply in ALL modes, including `max`.** An agent whose domain is absent from the changeset is never spawned — there is no point running the test-reviewer with no tests in the diff, or (once stack-specific agents exist) a C# persona on a Rust project. `max` opens the judgment gates, not the hard ones.
+**Hard negative gates apply in ALL modes, including `max`.** An agent whose domain is absent from the changeset is never spawned — there is no point running the test-reviewer with no tests in the diff, or a C# persona on a Rust project. `max` opens the judgment gates, not the hard ones.
+
+**The stack reviewers carry both kinds of gate, and the order matters.** The hard gate (does the changeset contain this language?) is checked first and is absolute — `max` cannot spawn `go-reviewer` on a Rust project. The idiom-surface judgment gate is checked second, and only decides whether a diff *in that language* has anything language-specific to review: in `mid`/`high` a Go diff with no goroutines, channels, `defer`, `context`, or aliasing gets no `go-reviewer`, because what is left is ordinary logic the floor already covers. `max` opens that second gate, so its behavior is unchanged — any diff containing the language still gets its stack reviewer. Do not collapse the two into one gate: dropping the hard half would let `max` spawn every stack reviewer on every diff, and dropping the judgment half restores the file-presence firing this split exists to fix.
 
 **User override:** explicit user instructions beat gates — "include security" spawns the security-reviewer regardless of triage; "skip knowledge" excludes it.
 
