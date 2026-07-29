@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-07-29T11:05:26Z
+updated_at: 2026-07-29T11:24:51Z
 blocked_by:
     - dcc-9kkz
 order: zzzV
@@ -60,16 +60,42 @@ the full 9-subject × 2-repeat sweep, ~$160 single-repeat (giving up stochastici
 blind re-grading. Prefer interventions that can share one re-run.
 
 # Sequencing
+Ordered **free work first, then cheap-and-safe paid work, then the big lever, then the parked
+items** — so every question that can be settled without API spend is settled before any re-run is
+bought, and the riskiest change lands last when the baseline is already improved.
 
-1. #dcc-hmp6 — settle the yardstick first: it decides what `severity_calibration` measures, and
-   three children below score themselves against it
-2. #dcc-3fl5 — the only intervention needing **no** re-runs; either closes a question or
-   justifies spend
-3. #dcc-c2uc — best safe saving; can share a re-run with the gate changes
-4. #dcc-1xtt — cheap, independently testable per gate
-5. #dcc-gcob — larger design change; needs its own re-run
-6. #dcc-xewu — **parked**: blocked on the product decision in #dcc-e0wj workstream 3
-7. #dcc-lf4a — small and free, but low single-digit percent; do not let it displace the above
+1. **#dcc-hmp6** — settle the yardstick. It is a *decision*, not a measurement, so it costs
+   nothing, and three children below score themselves on calibration against a committed baseline.
+   Changing what `severity_calibration` measures after they run would invalidate their results.
+2. **#dcc-3fl5** — the only intervention needing **no** re-runs: the 18 archived `ours` runs
+   already contain the answer. It either closes a question or justifies spending on the rest, and
+   it carries a decision rule fixed in advance so a small number cannot be read post-hoc.
+3. **#dcc-c2uc** — the biggest safe saving: the validation wave is 17.3% of sub-agent output and
+   anthropic does the same job on Haiku. Low risk, coverage unchanged. **Shares one re-run with 4.**
+4. **#dcc-1xtt** — cheap and independently testable per gate; loosening `security-reviewer` costs
+   more, not less, so pair it with 3 in the same re-run to net out.
+5. **#dcc-gcob** — the big lever, and **the repair raised its rank** (see below). Needs its own
+   re-run and carries the highest risk in the epic: stripping overlap can cost corroboration, and
+   ours' calibration (0.50) is already its weakest metric.
+6. **#dcc-lf4a** — small and free to implement, but low single-digit percent of session output;
+   do not let it displace the above.
+7. **#dcc-2a8i** — `draft`. Its premise weakened with the repair: if per-agent verbosity rather
+   than roster size is the dominant driver, the cap's *drop order* matters less than it looked.
+   Refine it before picking it up, or fold it into 5.
+8. **#dcc-xewu** — **parked**, blocked on the product decision in #dcc-e0wj workstream 3. A hard
+   pre-consolidation filter commits to the "short trustworthy list" product; that call comes first.
+
+### What the #dcc-9kkz repair changed about this ordering
+
+The contaminated cells made ours look like it ran **41% more agents each emitting 43% more** than
+anthropic. On clean data it runs only **23% more agents (14.5 vs 11.8)** but each emits **2.0× more
+(19.5k vs 9.6k)**.
+
+So the dominant cost driver is **per-agent verbosity, not roster size**. That promotes #dcc-gcob
+from "larger design change" to the best-evidenced lever in the epic, and correspondingly discounts
+everything that works by trimming the roster — including #dcc-2a8i and the roster-reduction half of
+#dcc-1xtt. It does not change the sequencing, because gcob's *risk* is unchanged and the free work
+still comes first, but it changes what to expect from each.
 
 # Acceptance
 
