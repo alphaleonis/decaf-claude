@@ -154,13 +154,31 @@ by careful brief-writing — it is the dominant effect, and it is what the inter
 clusters and demotes ~2 to single-finder. The damage is collective. That asymmetry is why disjoint
 briefs read as safe when reasoned about one agent at a time, and are not in aggregate.
 
-### The cost problem is real; this was the wrong lever
+### The cost problem is real, and report format is NOT the lever
 
-The 19.5k vs 9.6k per-agent output gap stands. It is not caused by territorial overlap. A quarter of
-reviewer report text is non-finding prose — Considered But Not Flagged 20.1%, probe requests 3.6%,
-positive observations 1.4% — and #dcc-3fl5 measured CBNF as yielding 7 promotions across 18 runs,
-none substantive. Recorded here rather than opened as a follow-up (operator's call, 2026-07-29); it
-is the obvious place to look if the per-agent gap is attacked again.
+The 19.5k vs 9.6k per-agent output gap stands, and territorial overlap is not its cause.
+
+A quarter of reviewer *report text* is non-finding prose — Considered But Not Flagged 20.1%, probe
+requests 3.6%, positive observations 1.4% — and #dcc-3fl5 measured CBNF as yielding 7 promotions
+across 18 runs, none substantive. That looks like an obvious replacement lever. **It is not, and the
+arithmetic has to be done in output tokens rather than report text to see why:**
+
+| | per ours run |
+|---|---|
+| written sub-agent report text | ~23,600 tokens |
+| total run output | 260,800 tokens |
+| report text as a share of output | **9.1%** |
+| all non-finding prose | ~5,900 tokens = **2.3% of output** |
+| saving if every dismissed-item list, probe request and positive note were deleted | **~$0.48 of $21.33** |
+
+So trimming report format cannot close a 2× per-agent gap — it is worth about fifty cents a run.
+
+**What this implies is more useful than the lever it kills.** Reviewers do not *write* twice as much
+as anthropic's agents; 91% of their output never reaches the report at all. The per-agent gap is a
+**reasoning** gap — thinking and tool use before the write-up — not a verbosity gap. No nib in
+#dcc-hyxw currently targets that, and no measured lever for it exists.
+
+Recorded here rather than opened as a follow-up (operator's call, 2026-07-29).
 
 ### Known defect left in place
 
