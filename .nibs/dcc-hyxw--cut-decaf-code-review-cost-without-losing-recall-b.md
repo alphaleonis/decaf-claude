@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-07-29T11:48:53Z
+updated_at: 2026-07-29T12:03:50Z
 blocked_by:
     - dcc-9kkz
 order: zzzV
@@ -116,32 +116,27 @@ still comes first, but it changes what to expect from each.
 
 ## Current Focus
 
-Completed dcc-hmp6: Settled on **consolidated-report severity, pooled across subjects** — option 1, not the option 2
-this nib predicted. The max-over-sub-agents variant is dropped from the published metrics rather
-than renamed and kept: it stays derivable from `analysis.json`, and a second severity column on the
-leaderboard would invite the misreading the nib was filed about.
+Completed dcc-3fl5: **Third branch of the pre-set rule: a suggestion amplifier, not a safety net.** Step 5.5 promotes
+0.39 findings per run — 7 across the 18 archived `ours` runs, from 891 CBNF bullets. Three were
+graded `valid-minor`, four `trivia`, and **none substantive**. The channel has never recovered a
+real defect in this corpus.
 
-Aggregation turned out to matter as much as the severity source and was changed with it: the old
-published figure macro-averaged per-subject ratios over denominators running 0-25, which let a
-one-cluster subject outweigh a twenty-cluster one and dropped subjects where a tool flagged
-nothing. Now pooled, with `k/n` published beside every ratio.
+Its own best case is the indictment: on subject 9 repeat 2 three reviewers each independently
+traced every constructor and ruled out a nil-deref; Step 5.5 overrode all three and shipped it, and
+the blind judge graded it trivia. On the evidence the step is not rescuing findings reviewers
+talked themselves out of — it is overriding reviewers who dismissed correctly.
 
-Restated: anthropic 0.92 → **0.90 (9/10)**, tag1 0.55 → **0.79 (19/24)**, ours 0.50 → **0.70
-(21/30)**, superpowers 0.63 → **0.65 (17/26)**, pr-review-toolkit 0.47 → **0.48 (23/48)**.
-superpowers is the single-agent control and moves only by the macro→pooled change.
+**This nib's cost premise was wrong and no removal case follows from it.** CBNF sections are 19.8%
+of sub-agent report text but only ~1.8% of a run's 260.8k output tokens, so deleting the reviewer
+section would not move $21.33/run. The orchestrator's Step 5.5 pass over 49.5 bullets/run is the
+real cost and is not isolated by this analysis. Per the rule, the keep/drop call moves to #dcc-e0wj
+workstream 3 — carrying the note that promoted items are ranked like any other finding and land
+ahead of explicit dismissals, which makes the severity contract a cheaper lever than deletion.
 
-Two corrections to the nib's own premise: its table predated the #dcc-9kkz repair, and the
-"0.77 vs 0.88" it cited compared a pooled figure against a macro one. The ours-to-anthropic gap
-narrows 0.42 → 0.20, not "40% of the headline". And the denominators are the real weakness —
-anthropic's figure rests on 10 clusters across 9 subjects, Wilson intervals overlap ours', and the
-0.90/0.79/0.70 ordering is not resolved by this corpus. That caveat is now in METHODOLOGY, the
-per-subject glossary, the synthesis page, and a `THIN` warning in the aggregator.
-
-Shipped: `_calibration` rewritten, aggregation pooled, `k/n` rendered; 9 subjects' metrics.json and
-report.html regenerated, 8 report.md narratives restated; METHODOLOGY definition rewritten;
-synthesis-data.json and synthesis-report.html updated; #dcc-e0wj, #dcc-05uw, #dcc-hyxw, #dcc-xewu,
-#dcc-gcob, #dcc-c2uc restated and #dcc-9kkz's figures marked historical. Incidentally fixed
-`aggregate_synthesis.py` emitting a hash-seed-ordered `cells` array, so the file is now
-byte-reproducible. Filed #dcc-3v3m for subject 10's missing severity labels.
-
-Not done: the synthesis page was not re-published as an Artifact — no URL is recorded in the repo.
+Shipped `analysis/scripts/cbnf_yield.py` (deterministic candidate finder + cost meter, `--json`)
+and `analysis/cbnf-adjudication.json` (the read of each candidate against that run's actual
+bullets, with the borderline calls marked). A similarity threshold was tried as the decision rule
+and rejected — it identified 2 of 7 at 0.5 and traded errors both ways at 0.3 — so the script
+reports candidates and defers to the committed adjudication, flagging any unadjudicated one rather
+than dropping it. Undercount risk stated: a promotion merged into a sub-agent's cluster would be
+invisible.

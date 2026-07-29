@@ -1,0 +1,87 @@
+{
+  "_README": [
+    "Hand adjudication of the orphan clusters cbnf_yield.py finds: consolidated-report clusters that",
+    "no sub-agent flagged in the same run. An orphan is only a CANDIDATE promotion — the orchestrator",
+    "can also synthesize a finding across agents, and extraction can miss a sub-agent finding. Deciding",
+    "which is which requires reading the cluster against that run's actual CBNF bullets.",
+    "",
+    "A token-containment score was tried as the decision rule and rejected: at the 0.5 threshold it",
+    "identified 2 of the 7 real promotions, and lowering it to 0.3 admitted two non-promotions while",
+    "still missing two real ones. The score tracks vocabulary overlap, not claim identity — a reviewer",
+    "dismissing X in prose about X scores the same as one dismissing Y in prose about X.",
+    "",
+    "promotion: true  = the consolidated report carries a claim a sub-agent had explicitly dismissed.",
+    "promotion: false = no CBNF bullet in that run makes the claim; orchestrator-originated, or the",
+    "                   sub-agent finding was lost in extraction.",
+    "Adjudicated 2026-07-29 against runs/<sid>__ours__r<rep>/findings/subagent-*.md. Judgement calls,",
+    "not computed results — the borderline ones say so in `note`."
+  ],
+  "adjudications": {
+    "1/1/c8": {
+      "promotion": true,
+      "confidence": "clear",
+      "dismissed_by": ["subagent-06", "subagent-10", "subagent-02"],
+      "note": "Three reviewers listed the `!=` spacing nit under CBNF; none flagged it. subagent-06 explicitly deferred it to quick-reviewer's domain, and quick-reviewer did not raise it — so the report's Minor finding can only have come from Step 5.5."
+    },
+    "2/1/c3": {
+      "promotion": true,
+      "confidence": "clear",
+      "dismissed_by": ["subagent-07"],
+      "note": "subagent-07 recorded the unfixed sibling call site in DefaultClientValidationService as out of its domain rather than flagging it. Same claim, same file and line, in the final report."
+    },
+    "3/1/c6": {
+      "promotion": true,
+      "confidence": "reframed",
+      "dismissed_by": ["subagent-13", "subagent-08"],
+      "note": "subagent-13 dismissed the unconditional-true __UniversalCanon branch as matching documented pre-existing semantics. The report keeps the observation but re-aims it as a doc/code mismatch. Same underlying observation, different charge — counted as a promotion because the item reached the report only via the dismissal."
+    },
+    "4/1/c8": {
+      "promotion": true,
+      "confidence": "clear",
+      "dismissed_by": ["subagent-04"],
+      "note": "subagent-04 verified the CRLF normalization with `git show | cat -A` and dismissed it; the report carries it as a Minor finding."
+    },
+    "9/2/c13": {
+      "promotion": true,
+      "confidence": "polarity flipped",
+      "dismissed_by": ["subagent-08"],
+      "note": "subagent-08 recorded the cross-package coupling comment as a POSITIVE ('good cross-file invariant comment ... no action'). The report inverts it into a drift risk. Counted: the report's finding exists only because Step 5.5 re-read that note."
+    },
+    "9/2/c27": {
+      "promotion": false,
+      "confidence": "clear",
+      "dismissed_by": [],
+      "note": "No CBNF bullet in the run raises the missing -race test for the shared n.node field. Nearest bullets are a TOCTOU analysis, a missing AddFunc, and a doc-comment nit — different claims."
+    },
+    "9/2/c31": {
+      "promotion": true,
+      "confidence": "clear",
+      "dismissed_by": ["subagent-17", "subagent-12", "subagent-05"],
+      "note": "The cleanest instance in the corpus. THREE reviewers independently traced every constructor and dismissed the nil-deref as impossible by construction; the report shipped it anyway as a 'landmine (non-nil only by construction today)'. The judge graded it trivia — the three reviewers were right."
+    },
+    "9/2/c44": {
+      "promotion": false,
+      "confidence": "weak",
+      "dismissed_by": [],
+      "note": "Nearest bullet (subagent-08, klog.FlushAndExit test seam) concerns the exitFunc's inferability, not the test's error discarding or its use of the exported constructor. Different claim; treated as orchestrator-originated."
+    },
+    "9/2/c49": {
+      "promotion": false,
+      "confidence": "clear",
+      "dismissed_by": [],
+      "note": "Nothing in the run's CBNF bullets concerns discarded `_, _ =` setup errors in the test helpers."
+    },
+    "9/2/c56": {
+      "promotion": false,
+      "confidence": "borderline",
+      "dismissed_by": [],
+      "note": "subagent-12 USED the nanosecond-poll fact to rule out a different concern (newNodeManager returning nil,nil). The report turns the same observation into a test-quality finding. Step 5.5 mined a bullet's reasoning rather than promoting a dismissed item — not a promotion under the definition, but the closest miss."
+    },
+    "10/2/c2": {
+      "promotion": true,
+      "confidence": "clear",
+      "dismissed_by": ["subagent-09"],
+      "note": "subagent-09 spotted the /pull/ vs issue URL mismatch, hedged it ('may be a mislabeled link'), and left it under CBNF. The report carries it."
+    }
+  }
+}
