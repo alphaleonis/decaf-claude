@@ -17,7 +17,7 @@ Automated loop: **review → triage → fix → re-review** until stable.
 
 Parse `$ARGUMENTS`:
 
-1. **Review mode**: `low`, `mid` (default), `high`, or `max` — passed to `/code-review` for the first iteration. The legacy keywords `quick` and `std` are accepted as aliases for `low` and `mid`. A roster-cap suffix on the mode (`mid4`, `high6`) is accepted and forwarded verbatim to `/code-review` for the first iteration. Always pass the resolved mode explicitly to `/code-review` — the review runs in a subagent, where `/code-review`'s interactive mode selection cannot reach the user. Re-reviews (Step 5) run **capped** `mid` scoped to modified files — the cap scales with the fix delta's size and complexity, and third-and-later reviews are minimal (see Step 5.4).
+1. **Review preset**: `bugs`, `review` (default), or `audit` — passed to `/code-review` for the first iteration. The legacy mode keywords `low`/`mid`/`high`/`max` and their aliases `quick` and `std` are accepted as aliases for `low` and `mid`. A roster-cap suffix on the mode (`mid4`, `high6`) is accepted and forwarded verbatim to `/code-review` for the first iteration. Always pass the resolved mode explicitly to `/code-review` — the review runs in a subagent, where `/code-review`'s interactive mode selection cannot reach the user. Re-reviews (Step 5) run **capped** `mid` scoped to modified files — the cap scales with the fix delta's size and complexity, and third-and-later reviews are minimal (see Step 5.4).
 2. **Max iterations**: `--max-iterations N` (default: 3) — hard cap on review-fix cycles
 3. **Spec**: `--spec <path | work-item-ID>` — passed through to `/code-review`
 4. **`--report`**: produce a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). Forward `--report` to **every** `/code-review` invocation (first pass and re-reviews), keep the session ledger through the loop (Steps 1–5), and write the report folder in Step 6.5. Callers (`auto-tdd`/`auto-dev`) may pass an implementation-phase record to include.
@@ -29,7 +29,7 @@ Parse `$ARGUMENTS`:
 ### Step 1: Initialize
 
 1. Set `iteration = 1`, `maxIterations` from args (default 3)
-2. Set `reviewMode` from args (default `mid`)
+2. Set `reviewPreset` from args (default `review`)
 3. Build `codeReviewArgs` — the full argument string to pass to `/code-review` (mode + spec + `--report` if set + scope + instructions); the mode is always present, even when defaulted
 4. Record the initial commit/diff baseline for measuring change magnitude later. **Also establish a recoverable snapshot** before any fix/probe phase mutates the uncommitted tree: `SNAPSHOT=$(git stash create)` — this records a commit object of the current uncommitted state *without* touching the working tree or the stash stack (empty output = tree already clean, so `HEAD` is the restore point). Keep `SNAPSHOT` for the loop; if work is ever lost to a bad revert or probe, restore it with `git checkout <SNAPSHOT> -- <path>` (or `git stash apply <SNAPSHOT>`). Prefer this over auto-committing WIP, so the user keeps control of their commit history.
 5. **Detect test infrastructure:**
@@ -38,13 +38,13 @@ Parse `$ARGUMENTS`:
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
 6. **Detect work item tracking system** from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.) — store as `deferSystem`
-7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (mode + cap + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5.4 delta classification + chosen `reReviewMode`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
+7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (mode + cap + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5.4 delta classification + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
 8. Inform the user:
 
 ```
 ## Auto Code Review Starting
 
-**Mode**: {reviewMode} | **Max iterations**: {maxIterations} | **Test infra**: {Yes (framework) | No}
+**Mode**: {reviewPreset} | **Max iterations**: {maxIterations} | **Test infra**: {Yes (framework) | No}
 **Scope**: {scope description}
 
 Starting review-fix loop...
@@ -62,9 +62,9 @@ Launch a **general-purpose subagent** using the Agent tool:
 > 2. The verdict (APPROVED or NEEDS_CHANGES)
 > 3. The count of findings by severity
 
-**Subsequent iterations** (iteration > 1) — use `{reReviewMode}` (computed in Step 5.4), scoped to modified files:
+**Subsequent iterations** (iteration > 1) — use `{reReviewPreset}` (computed in Step 5.4), scoped to modified files:
 
-> Run the `/decaf-quality:code-review {reReviewMode} {--report if set} {modifiedFileList}` skill using the Skill tool.
+> Run the `/decaf-quality:code-review {reReviewPreset} {--report if set} {modifiedFileList}` skill using the Skill tool.
 > Focus the review on regressions and new issues introduced by the previous round of fixes.
 > For each behavior-changing fix, probe the boundary behavior of the changed decision point (inputs on and *between* the cases its new tests pin), not only the finding it addressed.
 > When complete, report:
@@ -72,7 +72,7 @@ Launch a **general-purpose subagent** using the Agent tool:
 > 2. The verdict (APPROVED or NEEDS_CHANGES)
 > 3. The count of findings by severity
 
-Re-reviews stay in the `mid` family, never `low`: `mid` runs the validation wave, and an autonomous fixer must not consume unvalidated findings. But they run **capped** (`mid3`–`mid6`, per Step 5.4): session evidence shows verdict-driving regressions in fix deltas are caught by the floor plus the best-fitting judgment specialists, while the rest of an uncapped roster re-verifies known-clean territory at full price.
+Re-reviews keep the screen and validation wave, never dropping to the two-agent floor: an autonomous fixer must not consume unscreened, unvalidated findings. But they run **capped** (`mid3`–`mid6`, per Step 5.4): session evidence shows verdict-driving regressions in fix deltas are caught by the floor plus the best-fitting judgment specialists, while the rest of an uncapped roster re-verifies known-clean territory at full price.
 
 Wait for the subagent to complete.
 
@@ -254,18 +254,22 @@ If re-review is **not** warranted → go to **Step 6**.
 
 Otherwise:
 
-4. **Set `reReviewMode` — conservative by default.** Classify the fix delta first: count changed **executable production lines** (exclude docs, comments, test files, generated files) and note **complexity signals** (concurrency, API/contract surface, parsing or validation logic, security-adjacent code, data mutations).
+4. **Set `reReviewPreset` — conservative by default.** A re-review asks a different question from the first pass: *what did the fixes break?* — not *what else is wrong with this code?* So it narrows rather than repeating. Classify the fix delta first: count changed **executable production lines** (exclude docs, comments, test files, generated files) and note **complexity signals** (concurrency, API/contract surface, parsing or validation logic, security-adjacent code, data mutations).
    - **First re-review** (this will be iteration 2):
-     - `mid4` — the delta is docs/comments/tests-only, or small behavioral (< ~25 executable production lines) with no complexity signals
-     - `mid6` — moderate behavioral delta (≥ ~25 executable production lines) **or** any complexity signal present
-     - uncapped `mid` — only for a large delta (≥ ~150 executable production lines) or a high-risk domain (auth, payments/financial, external API integration)
-   - **Later re-reviews** (this will be iteration ≥ 3): always `mid3`, scoped to the newest fix round's delta only. By the third pass the changeset's character is known; a minimal wave is regression insurance on the latest fixes, not fresh discovery. (`/code-review`'s roster cap counts the floor, so `mid3` = floor + the single best-fitting specialist — and gated dispatch picks that specialist to fit the delta.)
+     - `review roster=4 reach=narrow` — the delta is docs/comments/tests-only, or small behavioral (< ~25 executable production lines) with no complexity signals
+     - `review roster=6 reach=narrow` — moderate behavioral delta (≥ ~25 executable production lines) **or** any complexity signal present
+     - `review reach=narrow` (uncapped roster) — only for a large delta (≥ ~150 executable production lines) or a high-risk domain (auth, payments/financial, external API integration)
+   - **Later re-reviews** (this will be iteration ≥ 3): always `bugs roster=3`, scoped to the newest fix round's delta only. By the third pass the changeset's character is known; a minimal wave is regression insurance on the latest fixes, not fresh discovery. (`roster` counts the floor, so `roster=3` = floor + the single best-fitting specialist — and gated dispatch picks that specialist to fit the delta.)
+
+   **`reach=narrow` on every re-review, and it matters more than the roster.** The first pass already reported what the surrounding code is missing; a later pass re-reporting the same absences is noise the triage step has to reject again each round. Narrowing to defects introduced by the fixes is what stops the loop re-litigating its own backlog.
+
+   **Never inherit `audit` into a re-review.** If the first pass ran `audit` — the case where pre-existing defects are promoted to primary and get fixed — later passes still narrow. Otherwise every iteration re-surfaces the whole backlog and the loop cannot converge.
 
 Then:
 - Record this iteration's summary in history
 - Increment `iteration`
 - Set `modifiedFileList` to the files modified by fixes
-- Report: `Substantial changes detected ({X} fixes, {Y} lines changed). Re-reviewing modified files ({reReviewMode})...`
+- Report: `Substantial changes detected ({X} fixes, {Y} lines changed). Re-reviewing modified files ({reReviewPreset})...`
 - Go to **Step 2**
 
 ### Step 6: Final Summary
@@ -315,7 +319,7 @@ The report records; cross-session comparison and tuning decisions stay with the 
 ## Notes
 
 - Always use literal Unicode emoji characters (🔴🟠🟡🟢), never `:shortcode:` syntax
-- The first code review uses the user's specified mode (default `mid`); all re-reviews use **capped** `mid` (`mid3`–`mid6` per Step 5.4's fix-delta classification) scoped to modified files — the validation wave still runs
+- The first code review uses the user's specified preset (default `review`); all re-reviews narrow — a capped `roster` **and** `reach=narrow` per Step 5.4's fix-delta classification, dropping to `bugs roster=3` from the third pass scoped to modified files — the validation wave still runs
 - Re-reviews scope to only modified files to catch regressions, not re-review unchanged code
 - Subagents get fresh context windows — this enables multiple iterations without context exhaustion
 - The main context stays lean: it only reads review files and builds plans

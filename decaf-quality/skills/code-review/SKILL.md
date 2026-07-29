@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Run parallel code review agents and consolidate findings into a unified report
-argument-hint: "[low|mid|high|max][N] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--spec <path>] [--report] [PR#] [path] [instructions]"
+argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--spec <path>] [--report] [PR#] [path] [instructions]"
 ---
 
 # Code Review
@@ -11,7 +11,7 @@ This command orchestrates code review agents and consolidates their findings int
 ## Argument Parsing
 
 Parse `$ARGUMENTS` to determine:
-1. **Mode**: `low`, `mid`, `high`, or `max` — a named point in the axis space defined under [Review axes](#review-axes) below. The legacy keywords `quick` and `std` are accepted as aliases for `low` and `mid`. When no mode keyword is given, the mode is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `mid`.
+1. **Preset**: `bugs`, `review`, or `audit` — a named point in the axis space defined under [Review axes](#review-axes) below. The legacy mode keywords `low`/`mid`/`high`/`max` (and their aliases `quick`/`std`) still resolve; see [Legacy mode keywords](#legacy-mode-keywords). When none is given, the preset is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `review`.
    - **Roster cap (optional)**: an integer suffixed directly to the mode keyword — `mid4`, `high6`, `max8` (alias forms `std4` etc.) — sets the `roster` axis directly. It applies to `mid`, `high`, and `max`; on `low` it is ignored (the floor is already exactly two agents). The cap **counts the two floor agents** (so `mid4` = floor + the 2 best-fitting specialists) but **not** the Step 5.6 validators, and it does **not** change the mode's `models` policy or validation policy. Applied in Step 2b.5.
    - **Per-axis override (optional)**: `roster=<N>`, `models=<low|norm|high>`, `evidence=<strong|norm|any>` and `reach=<narrow|norm|wide>` set an axis directly, overriding whatever the mode implies. `roster=6` and `mid6` mean the same thing; the long form exists so an axis can be set without picking a mode. Later arguments win.
 2. **Spec**: `--spec <path | work-item-ID>` — a specification/plan document, or an ADO work item ID whose Description and Acceptance Criteria serve as the spec. When omitted, spec discovery (Step 1.5) may find one automatically.
@@ -79,20 +79,40 @@ when the presets are measured; do not treat 80/60/40/25 as established.
   analysis reaches the report. Do not expect `narrow` to cut cost on this axis; expect it to cut
   reading.
 
-### Modes as axis settings
+### Presets
 
-| Mode | `roster` | `models` | `evidence` | `reach` | Use Case |
-|------|----------|----------|------------|---------|----------|
-| `low` | 2 (quick + broad) | special-cased: broad on the session model, quick mid-tier; validation skipped | `norm` | `narrow` | Fast feedback from two generalists |
-| `mid` (default) | gate-matched (typically 4-9) | `norm` | `norm` | `norm` | Cost-aware default — corroborated findings at the lowest specialist cost |
-| `high` | gate-matched (same as `mid`) | `high` | `norm` | `norm` | Strict quality — keeps the deep single-finder catches that ride the volume agents |
-| `max` | all agents except hard-gate exclusions | `high` | `any` | `wide` | Maximum coverage |
+A preset is a named point in the axis space, chosen for what it *delivers* rather than for how hard
+it tries. Pick the deliverable; the axes follow.
 
-`high` and `max` differ only in `roster`. They previously differed in models too — `max` down-tiered
-nothing at all — but that policy is retired: mechanical lanes stay cheap at every level, because a
-top-tier model re-deriving a quotable convention violation buys nothing. A run that genuinely wants
-every agent on the session model should say so with `models=high` and accept that quick, consistency
-and the verification agents remain down-tiered.
+| preset | `roster` | `models` | `evidence` | `reach` | what you get |
+|---|---|---|---|---|---|
+| **`bugs`** | size-derived, capped at 4 | `low` | `strong` | `narrow` | high-confidence defects introduced by the changed lines. Short enough to read completely |
+| **`review`** *(default)* | size-derived | `norm` | `norm` | `norm` | the above plus actionable minor findings — convention drift, stale comments, change-introduced gaps |
+| **`audit`** | all gate-matched | `high` | `any` | `wide` | everything, tiered: pre-existing defects, absent tests and docs, residual risks |
+
+Any axis can be overridden after a preset — `review models=high`, `audit roster=8`. Later arguments
+win, so the preset sets defaults rather than locking anything.
+
+**The axis values are a first estimate.** The presets are the unit that gets measured; the
+cross-product is not, and never will be — four axes at three-ish values is ~100 combinations at
+benchmark prices. Feel for off-preset combinations comes from use, not from the study.
+
+### Legacy mode keywords
+
+The mode ladder is retained as aliases so existing invocations keep working. They resolve before
+anything else runs:
+
+| legacy | resolves to |
+|---|---|
+| `low` (alias `quick`) | `bugs roster=2 evidence=norm` — plus its own model rule: `broad-reviewer` on the session model, `quick-reviewer` mid-tier, validation skipped |
+| `mid` (alias `std`) | `review` |
+| `high` | `review models=high` |
+| `max` | `audit` |
+| `modeN` (`mid4`, `high6`, …) | the mode above, plus `roster=N` |
+
+**`low` overrides `evidence` back to `norm` deliberately.** With two reviewers corroboration is
+scarce, and `strong` would demand a lone reviewer score ≥80 on its own — which would empty the
+report on the one mode whose whole purpose is fast feedback.
 
 ## Execution Steps
 
@@ -163,28 +183,28 @@ From the diffstat plus a skim of the diff (do not deep-read files for triage), d
 2. **Executable lines changed** — exclude generated files and lockfiles from the count
 3. **Character of the change**: mechanical (formatting, renames, typos) vs. substantive; security-adjacent surface touched; API/contract/boundary/concurrency surface touched; untrusted-input parsing/evaluation present; substantially AI-generated (stated by the user, PR authored by a bot/agent, or known from session context)
 
-#### Step 2a.5: Select the mode (when none was given)
+#### Step 2a.5: Select the preset (when none was given)
 
-Skip this step entirely when the user gave an explicit mode (including via alias) — an explicit mode is never second-guessed.
+Skip this step entirely when the user gave an explicit preset or legacy mode — an explicit choice is never second-guessed.
 
 First compute the **recommendation** from the Step 2a classification:
 
-- **`high`** — the change parses or evaluates untrusted input, is substantially AI-generated, or touches a high-risk domain (auth, payments/financial, data mutations, external API integration) with ≥50 executable lines. These are the changesets where the deep single-finder catches justify the model premium.
-- **`low`** — small (<50 executable lines), mechanical or low-risk, no specialist surface.
-- **`mid`** — everything else.
+- **`audit`** — the change parses or evaluates untrusted input, is substantially AI-generated, or touches a high-risk domain (auth, payments/financial, data mutations, external API integration) with ≥50 executable lines. These are the changesets where the deep single-finder catches justify the premium, and where pre-existing weaknesses in the touched code matter.
+- **`bugs`** — small (<50 executable lines), mechanical or low-risk, no specialist surface.
+- **`review`** — everything else.
 
 Then:
 
-- **Interactive invocation** (the user invoked this skill directly in a conversation): ask via `AskUserQuestion` — one question, the four modes as options, the recommended one first and marked `(Recommended)`, each option's description naming its roster size and model policy in one line. Use the answer.
-- **Non-interactive invocation** (running inside another skill or subagent, or no user is available to answer): use `mid` without asking — the caller overrides by passing a mode explicitly. Record how the mode was chosen either way (`asked`, `explicit`, or `default (non-interactive)`) for the report's Agent Selection Rationale.
+- **Interactive invocation** (the user invoked this skill directly in a conversation): ask via `AskUserQuestion` — one question, the three presets as options, the recommended one first and marked `(Recommended)`, each option's description naming **what it delivers** rather than its axis values. The deliverable is the choice; the axes are the mechanism.
+- **Non-interactive invocation** (running inside another skill or subagent, or no user is available to answer): use `review` without asking — the caller overrides by passing a preset explicitly. Record how it was chosen either way (`asked`, `explicit`, or `default (non-interactive)`) for the report's Agent Selection Rationale.
 
-#### Step 2b: Evaluate dispatch gates per mode
+#### Step 2b: Evaluate dispatch gates per preset
 
-| Mode | Rule |
-|------|------|
-| `low` | Floor only: `quick-reviewer` + `broad-reviewer` |
-| `mid` (default) / `high` | Floor + every agent whose dispatch gate matches the changeset |
-| `max` | Floor + all agents **except** those excluded by a hard negative gate |
+| Preset | Rule |
+|--------|------|
+| `bugs` at `roster=2` (legacy `low`) | Floor only: `quick-reviewer` + `broad-reviewer` |
+| `bugs` / `review` (default) | Floor + every agent whose dispatch gate matches the changeset, then the `roster` cap |
+| `audit` | Floor + all agents **except** those excluded by a hard negative gate |
 
 Current roster gates (authoritative text lives in each agent's `## Dispatch Gate` section — keep this table in sync when adding agents):
 
@@ -250,7 +270,9 @@ The cap bounds the **review-wave roster** — the agents launched in Step 3 — 
 2. **Then the other well-sampled personas, by measured drop cost**: `test-reviewer` (0.94), `broad`/floor, `design-reviewer` (0.50). These have ≥12 runs of evidence and their ranks are stable (swing ≤4 under jackknife).
 3. **Then the rarely-dispatched specialists, by categorical fit** — the **stack reviewer** for the dominant changed language; `data-migration-reviewer` with migration artifacts; `prior-feedback-reviewer` re-reviewing a PR with prior threads; `spec-compliance-reviewer` for an `explicit` or `linked` spec; `security-reviewer` on a trust-boundary trigger. **Rank these by category, not by measurement.** Each fires in ≤9 of 18 runs, so its measured figure swings up to 13 ranks under jackknife and cannot order anything — but by construction it only fires when its domain is present, so its *gate* is the evidence of fit.
    - **Do not promote `security-reviewer` on its measured figure.** It tops the drop-cost table at 2.00/run on **n=3**, the least trustworthy number in it.
-4. **`knowledge-reviewer` and `consistency-reviewer` — rank last.** Measured drop cost 0.17 and 0.00: they are the two personas whose findings another persona reliably also finds. They are precision-safe and broaden coverage, so they shed first rather than being cut from the gate. `consistency-reviewer` earns its slot back on runs whose deliverable includes the suggestion tier — it yields 1.6 valid-minor findings per run — which is a preset distinction the preset work item introduces.
+4. **`knowledge-reviewer` and `consistency-reviewer` — rank last under `bugs` and `review`.** Measured drop cost 0.17 and 0.00: they are the two personas whose findings another persona reliably also finds. They are precision-safe and broaden coverage, so they shed first rather than being cut from the gate.
+
+**Under `audit`, rank by drop cost *plus* minor yield instead.** The suggestion tier is part of what `audit` delivers, so a persona that produces it is not shedding material. `consistency-reviewer` moves from last to mid-table on that ordering (0.00 drop cost but 1.6 valid-minor findings per run), and `test-reviewer` rises to first (2.1/run). Ranking `audit` by substantive drop cost alone would cut exactly the personas it was chosen for.
 
 **Hard-gate agents are not exempt from the cap.** A tight enough cap can drop the stack reviewer on a C#-heavy diff or the test-reviewer on a test-bearing diff — a real coverage trade, not a gate decision. Rank such agents by rule 1/2 so they survive unless the cap is severe, and always name the trade in the announcement. If the cap forces dropping a hard-gate agent whose domain dominates the diff, surface it prominently — the user most likely wants a higher `N`.
 
@@ -761,18 +783,17 @@ Keep this lightweight — match on file path + category only. Skip this step if 
 
 ```
 /decaf-quality:code-review                              # mode chosen interactively (default mid), uncommitted changes
-/decaf-quality:code-review low                          # Low mode (2 agents) - fast feedback
-/decaf-quality:code-review mid                          # Mid mode - gated roster, models=norm
-/decaf-quality:code-review mid4                         # Mid mode, roster capped at 4 (floor + 2 best-fit specialists)
-/decaf-quality:code-review high                         # High mode - gated roster, session model end-to-end
-/decaf-quality:code-review high6 src/                   # High mode on a directory, roster capped at 6
-/decaf-quality:code-review max                          # Max mode - all applicable agents, session model
-/decaf-quality:code-review --spec docs/design.md        # spec compliance check, mode chosen interactively
-/decaf-quality:code-review high --spec docs/design.md   # High mode with spec compliance
-/decaf-quality:code-review mid src/Tools/MyTool.cs      # Mid mode, specific file
-/decaf-quality:code-review max src/                     # Max mode, directory
-/decaf-quality:code-review mid focus on null safety     # Mid mode with custom instructions
-/decaf-quality:code-review 42                           # review PR #42, mode chosen interactively
-/decaf-quality:code-review max #42                      # Max mode, review PR #42
-/decaf-quality:code-review low PR#123                   # Low mode, review PR #123
+/decaf-quality:code-review                              # preset chosen interactively (default review)
+/decaf-quality:code-review bugs                         # high-confidence defects in the changed lines only
+/decaf-quality:code-review review                       # default — defects plus actionable minor findings
+/decaf-quality:code-review audit                        # everything tiered, including pre-existing
+/decaf-quality:code-review review roster=4              # default deliverable, roster held to 4
+/decaf-quality:code-review review models=high           # default deliverable, session model where it matters
+/decaf-quality:code-review audit reach=norm             # audit's breadth, but no pre-existing hunt
+/decaf-quality:code-review bugs src/Tools/MyTool.cs     # bugs preset, specific file
+/decaf-quality:code-review audit src/                   # audit preset, directory
+/decaf-quality:code-review review focus on null safety  # default preset with custom instructions
+/decaf-quality:code-review audit #42                    # audit preset, review PR #42
+/decaf-quality:code-review review --spec docs/design.md # default preset with a spec
+/decaf-quality:code-review mid4                         # legacy — resolves to review roster=4
 ```

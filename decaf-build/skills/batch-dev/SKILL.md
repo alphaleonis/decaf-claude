@@ -1,7 +1,7 @@
 ---
 name: batch-dev
 description: Orchestrate execution of MULTIPLE nibs in one run. Selects a queue, understands the nibs collectively (including how they fit together), then chooses the best execution mechanism per cluster — single series agent, parallel fan-out, scripted workflow, or agent team — and dispatches with ONE approval gate. Use when the user wants to work several nibs together (in parallel or series) rather than one at a time. Complements /decaf-build:auto-dev and /decaf-build:auto-tdd (which handle a single nib).
-argument-hint: "<nib-id...> | --filter <expr> | --ready  [--review quick|std|max] [--max-iterations N] [--base-branch <name>] [--report] [--unattended]"
+argument-hint: "<nib-id...> | --filter <expr> | --ready  [--review bugs|review|audit] [--max-iterations N] [--base-branch <name>] [--report] [--unattended]"
 ---
 
 # Batch Dev
@@ -36,7 +36,7 @@ Parse `$ARGUMENTS`:
    - `--filter <expr>` — a nibs search/filter expression resolved via `nibs list`/`nibs query`.
    - `--ready` — all ready/unblocked nibs (`nibs list --json --ready`).
    - If none given, ask the user which nibs to batch.
-2. `--review quick|std|max` (default `std`) — passed to per-nib review.
+2. `--review bugs|review|audit` (default: `review`) — passed to per-nib review.
 3. `--max-iterations N` (default `3`) — review iteration cap.
 4. `--base-branch <name>` — override the batch branch name (default derived in Phase 6).
 5. `--report` — produce a comparison-grade session report for skill tuning. Forwarded to each

@@ -9,19 +9,18 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 ### Code review
 | Skill | Purpose |
 |-------|---------|
-| `code-review` | Orchestrate review agents (`low` / `mid` / `high` / `max` modes, plus an optional `modeN` roster cap), consolidate findings, write a timestamped report to `.decaf/code-reviews/` |
+| `code-review` | Orchestrate review agents (`bugs` / `review` / `audit` presets over four axes, each overridable), consolidate findings, write a timestamped report to `.decaf/code-reviews/` |
 | `resolve-code-review` | Walk through the findings one at a time and decide a resolution for each — fix (optionally TDD), skip, dismiss, or defer to a work item. `auto` mode resolves autonomously after one upfront confirmation. |
 | `auto-code-review` | The full loop: review → triage → fix (via subagent) → re-review, iterating until the code stabilizes or the iteration cap is hit |
 | `resolve-pr-feedback` | Walk through unresolved PR review threads (ADO or GitHub) and resolve each — fix, reply, decline with evidence, or escalate. Replies are drafted, batch-approved, signed, and posted with matching thread-status changes. |
 
 ```
 /decaf-quality:code-review                 # mode chosen interactively (default mid), uncommitted changes
-/decaf-quality:code-review low             # 2 generalists, fast feedback
-/decaf-quality:code-review mid             # gated roster, models=norm (cost-aware)
-/decaf-quality:code-review high            # gated roster, models=high
-/decaf-quality:code-review max             # all applicable agents, models=high
-/decaf-quality:code-review mid4            # mid mode, roster=4 (floor + 2 best-fit specialists)
-/decaf-quality:code-review roster=6 models=high   # axes set directly, without a mode keyword
+/decaf-quality:code-review bugs            # high-confidence defects in the changed lines only
+/decaf-quality:code-review review          # default — defects plus actionable minor findings
+/decaf-quality:code-review audit           # everything tiered, including pre-existing
+/decaf-quality:code-review review roster=4 # preset with one axis overridden
+/decaf-quality:code-review roster=6 models=high   # axes set directly, without a preset
 /decaf-quality:code-review 42              # review PR #42
 /decaf-quality:code-review --spec docs/design.md
 
@@ -29,7 +28,7 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 /decaf-quality:resolve-code-review auto high   # autonomously resolve Critical+High
 
 /decaf-quality:auto-code-review            # review-fix-recheck loop until stable
-/decaf-quality:auto-code-review max --max-iterations 5
+/decaf-quality:auto-code-review audit --max-iterations 5
 
 /decaf-quality:resolve-pr-feedback         # current branch's PR, interactive
 /decaf-quality:resolve-pr-feedback auto 42 # resolve all feedback on PR 42, drafts approved before posting

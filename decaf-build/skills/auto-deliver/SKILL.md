@@ -1,7 +1,7 @@
 ---
 name: auto-deliver
 description: Autonomously drive a whole plan to completion — loop SELECT → BREAKDOWN → EXECUTE → VERIFY → RECONCILE → LEARN → REPLAN → MERGE, one phase at a time, WITHOUT stopping at phase boundaries. Use when you have a phased plan (work items in a tracker) and want it built end-to-end unattended. Stops only when the plan is complete (or it genuinely cannot proceed).
-argument-hint: "<plan reference or root work-item id> [--base-branch <name>] [--review quick|std|max] [--report] [--tracker nibs|ado|github|markdown]"
+argument-hint: "<plan reference or root work-item id> [--base-branch <name>] [--review bugs|review|audit] [--report] [--tracker nibs|ado|github|markdown]"
 ---
 
 # Auto-Deliver
