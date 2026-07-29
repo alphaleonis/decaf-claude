@@ -7,7 +7,7 @@ type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-28T21:26:25Z
+updated_at: 2026-07-29T11:06:08Z
 order: zzw
 ---
 
@@ -21,12 +21,14 @@ $1,096 spend. On the headline metrics `ours` loses to the built-in `anthropic-co
 | escaped bug caught | 18/18 | 16/18 |
 | substantive share | 49% | 36% |
 | severity calibration | **0.88** | **0.62** † |
-| cost | $11.82 | **$21.33** |
+| cost | $11.82 † | **$21.33** |
 | findings emitted | 9.8 | 15.8 |
 
-† **Superseded — see workstream 1.** That 0.62 is max-severity-over-sub-agents, not what the
-consolidated report tells a reader. On the artifact a reader actually sees, ours is **0.77** and
-anthropic **0.88**. The gap is real but ~40% of the headline.
+† **Superseded on two counts.** (1) That 0.62 is max-severity-over-sub-agents, not what the
+consolidated report tells a reader — on the artifact a reader sees, ours is **0.77**. (2) Every
+anthropic figure in this table came from a column blended with contaminated cells (#dcc-9kkz).
+Clean: anthropic **$7.61/run**, calibration **0.92**, 56% substantive share, 18/18 recall. Ours is
+unchanged, so the cost ratio is **2.8×**, not 1.8×.
 
 But the naive reading ("ours reports more, but not what you want") is **wrong**, and the
 correction is what makes this actionable. Ours finds *more* of what you want, at every PR size:
@@ -146,8 +148,9 @@ bucket is 3 of them. The mechanism is traced and certain, but the *size* of the 
 small count — re-measure rather than trusting 0.85.
 
 ## 2. Cost / fan-out efficiency
-$21.33/run vs $11.82; 14.5 sub-agents vs 10.3 (by role: 9.4 reviewers + 5.1 validators vs 5
-reviewers + ~5 auxiliary). Across all subjects ~77% of sub-agent findings
+$21.33/run vs **$7.61** (restated on the repaired data, #dcc-9kkz; the published $11.82 was a
+blended column); 14.5 sub-agents vs 11.8, by role 9.4 reviewers + 5.1 validators vs 5 reviewers +
+~7 auxiliary. Across all subjects ~77% of sub-agent findings
 restate a sibling's. Cost scales with **diff** size, not repo size — see the scaling section below (the earlier
 "scaled steeply with repo size" reading compared subject 1 to subject 6, which differ 10× in
 diff *and* 3× in repo, and picked the wrong variable). superpowers stayed ~flat at $2.5.
@@ -162,7 +165,7 @@ Corrected, per run:
 |---|---|---|---|---|---|---|
 | superpowers | 1.0 | 6,175 | 32,456 | 19% | 26,281 | 2.44 |
 | pr-review-toolkit | 5.0 | 21,296 | 126,074 | 17% | 20,956 | 8.56 |
-| anthropic | 10.3 | 45,114 | 186,380 | 24% | **13,671** | 11.82 |
+| anthropic | 11.8 | 24,191 | 137,369 | 18% | **9,609** | 7.61 |
 | tag1 | 10.4 | 61,303 | 264,463 | 23% | 19,555 | 16.72 |
 | **ours** | **14.5** | 84,533 | **367,084** | 23% | 19,486 | 21.33 |
 
@@ -170,10 +173,10 @@ Corrected, per run:
 money is. Session output predicts billed cost at **r = 0.967** (orchestrator output alone:
 0.874), so session output is the right cost proxy.
 
-**Ours emits ~2× anthropic's total output**, on both dimensions at once. Splitting the agent
-counts by role: ours runs **9.4 reviewers + 5.1 validators** per run, anthropic **5 reviewers +
-~5 auxiliary** (Haiku triage and scorers). So ours runs roughly **twice the reviewers**, each
-emitting 43% more (19.5k vs 13.7k). Anthropic's per-agent figure is the field's outlier *low* —
+**Ours emits ~2.7× anthropic's total output**, and on the corrected data the split is lopsided:
+ours runs only **23% more agents** (14.5 vs 11.8) but each emits **2.0× more** (19.5k vs 9.6k).
+By role, ours runs **9.4 reviewers + 5.1 validators** per run against anthropic's **5 reviewers +
+~7 auxiliary** (Haiku triage and scorers). Anthropic's per-agent figure is the field's outlier *low* —
 consistent with its narrow single-purpose briefs and its explicit "avoid reading extra context
 beyond the changes" instruction. Note superpowers' lone agent emits the most of anyone (26.3k),
 so per-agent verbosity is not inherently bad — what makes ours expensive is paying it ~9 times
@@ -345,7 +348,7 @@ legitimately explored beyond the diff. One data point; do not build on it.
       220 files) and cost $19.21 vs $17.35 — an 11% spread. Notably the *other* tools do scale
       with repo size (superpowers +0.63, tag1 +0.64, pr-review-toolkit +0.58 against ours
       +0.31), so this is a point in ours favour, not against it. n=9 subjects.
-- [ ] → **#dcc-gcob** — ours emits 19.5k output per agent against anthropic's 13.7k; disjoint
+- [ ] → **#dcc-gcob** — ours emits 19.5k output per agent against anthropic's 9.6k (2.0×); disjoint
       briefs are the proposed fix for the 77% restatement rate
 - [ ] → **#dcc-lf4a** — shared-context-file pattern as the documented default (small prize;
       the orchestrator already does it on large diffs)
@@ -370,8 +373,8 @@ crashed external consumers. anthropic caught it by pulling the revert commit fro
 - [ ] Evaluate adding a history/blame retrieval step — **scope it to the changed files.**
       Unscoped retrieval would flip ours from diff-scaled to repo-scaled. anthropic runs the most
       history-based agents of any tool and still has the lowest repo sensitivity (partial
-      r = 0.119 vs ours 0.403) precisely because every channel is bounded to the modified files.
-      Measured table and the rule: #dcc-gcob
+      r = 0.572 vs ours 0.403 — and note ours is now the LOWEST in the field, so this is a
+      property to protect rather than one to acquire). Measured table and the rule: #dcc-gcob
 - [ ] **Trade-off to weigh:** that same retrieval channel produced anthropic's worst false
       positive — a hallucinated claim that "a maintainer flagged this on the PR" when the PR had
       no such comment. Any retrieval must verify claims against merged code before reporting.
@@ -428,7 +431,7 @@ trustworthy top-of-list possible. The two workstreams converge here.
 ## 3. Disjoint briefs — attack the 77% restatement
 
 **Basis:** ~77% of sub-agent findings restate a sibling's, and ours emits ~19.5k output per agent
-against anthropic's 13.7k. Anthropic's five agents have genuinely disjoint jobs (CLAUDE.md
+against anthropic's 9.6k — a 2.0× gap. Anthropic's five agents have genuinely disjoint jobs (CLAUDE.md
 compliance, shallow bug scan, git history, prior PR comments, code comments). Ours has `broad`,
 `quick`, `knowledge`, `consistency` and `adversarial` sweeping overlapping general ground.
 
@@ -503,7 +506,9 @@ Do not regress these while optimizing:
 
 **#dcc-9kkz: 11 of 18 anthropic cells did not run anthropic.** Seven executed `decaf-quality`
 (ours) under anthropic's label; four are unattributed. Across the 9 valid cells anthropic
-averages **$7.13/run**, not the published $11.82 — so **ours is ~3.0× more expensive, not 1.8×**.
+now averages **$7.61/run** across all 18 clean cells, not the published $11.82 — so **ours is ~2.8×
+more expensive, not 1.8×**. Anthropic also sweeps recall (18/18) and posts 0.92 calibration and a
+56% substantive share, all better than the blended figures.
 
 - **Unaffected** — every ours-only finding here: the per-persona roster analysis, the severity
   calibration root cause, and the diff-vs-repo cost scaling.

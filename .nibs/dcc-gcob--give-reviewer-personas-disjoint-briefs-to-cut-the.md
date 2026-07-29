@@ -9,7 +9,7 @@ estimate: l
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-07-28T21:07:42Z
+updated_at: 2026-07-29T11:04:12Z
 parent: dcc-hyxw
 order: as
 ---
@@ -17,7 +17,7 @@ order: as
 # Why
 
 **~77% of sub-agent findings restate a sibling's**, and ours emits ~19.5k output tokens per agent
-against anthropic's 13.7k — the field's outlier low. Ours runs roughly **twice** anthropic's
+against anthropic's 9.6k — a **2.0× gap**, and the field's outlier low. Ours runs only 23% more
 reviewer count (9.4 vs 5), so the redundancy is paid nine times over.
 
 Anthropic's five agents have genuinely **disjoint** jobs: CLAUDE.md compliance, a shallow bug
@@ -79,25 +79,31 @@ Measured residual repo-sensitivity, after controlling for diff size (n=9 subject
 
 | tool | partial r(cost, repo files \| diff) |
 |---|---|
-| anthropic | **0.119** |
 | **ours** | **0.403** |
+| anthropic | 0.572 |
 | pr-review-toolkit | 0.595 |
 | tag1 | 0.770 |
 | superpowers | 0.831 |
 
-Anthropic runs the *most* history-based agents of any tool in the study and still has the lowest
-repo sensitivity, because every repo-touching channel is scoped to the modified files:
+**Corrected on the repaired data (#dcc-9kkz).** An earlier version of this table had anthropic at
+0.119 and cited it as the exemplar — that figure came from the contaminated cells and is wrong.
+On clean data **ours has the lowest repo sensitivity in the field**, and anthropic sits mid-pack
+at 0.572 despite scoping every repo-touching channel to the modified files:
 
 - "Read the git blame and history of the code **modified**"
 - "Read previous pull requests that touched **these files**"
 - "CLAUDE.md files in the directories **whose files the pull request modified**"
 
-superpowers is the counterexample at 0.831 — one agent, a diff range, and free rein.
+So the scoping discipline is still the right design rule — it is what keeps a history channel
+bounded — but it is no longer demonstrated by anthropic being exemplary. The evidence now rests
+on the counterexamples: superpowers at 0.831 (one agent, a diff range, free rein) and tag1 at
+0.770, both of which explore unbounded.
 
 **Rule: scoped retrieval stays diff-scaled; unscoped exploration becomes repo-scaled.** Every
 brief written under this nib must name its scope in terms of the changed files. Ours currently
-scales with the change under review (r = +0.80 on diff LOC, +0.31 on repo files) — that is a
-property worth not losing, and it is the one axis where ours beats every tool except anthropic.
+scales with the change under review (r = +0.80 on diff LOC, +0.31 on repo files) — and that is
+now the **best** such property in the field, so this nib is defending a lead rather than chasing
+one.
 
 Treat a rise in partial r(cost, repo | diff) above the 0.403 baseline as a **regression**, and
 measure it in the same re-run as the restatement rate.
