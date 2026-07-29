@@ -105,6 +105,8 @@ Extract for each finding:
 
 Pre-existing Issues, **Testing Gaps**, and **Residual Risks** are **not** auto-triaged — the loop fixes the change under review, not the backlog or those awareness lists. Carry them into the final summary as awareness items.
 
+**Exception — `reach=wide`.** Under that reach the review promotes pre-existing defects into the primary Findings list (labelled `pre-existing`) rather than into the informational section, because the operator asked for them: an autonomous loop is often the only reader that code will get. Triage them like any other primary finding. This is the one case where the loop is *meant* to touch the backlog, and it only happens when `reach=wide` was chosen explicitly or came from a preset that implies it — never by default.
+
 **Minor — Consistency findings ARE triaged.** They are verified, change-introduced, and usually a single mechanical edit, so the loop acts on the unambiguous ones. Parse the Consistency one-liners (`file:line — title (agent)`) from the **Minor Findings → Consistency** bucket alongside the `### #N` primaries; the fix subagent reads the cited location to determine the edit. Apply the action criteria below (mechanical edit → `fix`; needs a design choice → `defer`/`skip`).
 
 **3b. Identify similar findings** — group findings that share the same underlying pattern (e.g., "missing null check", "missing empty collection guard"). Track these groups for batch fixing.

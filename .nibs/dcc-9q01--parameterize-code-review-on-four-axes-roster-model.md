@@ -10,7 +10,7 @@ tags:
     - code-review
     - design
 created_at: 2026-07-29T16:29:22Z
-updated_at: 2026-07-29T18:41:36Z
+updated_at: 2026-07-29T18:47:52Z
 order: zzzs
 ---
 
@@ -188,15 +188,19 @@ Terminology settled with the operator 2026-07-29. Supersedes the sweep ordering 
 
 ## Current Focus
 
-Completed dcc-1x90: Step 2b.5 now resolves the `roster` axis on every mid/high review rather than only when a cap was
-typed, deriving a default N from changed executable lines (4 / 6 / uncapped), and ranks survivors by
-measured drop cost instead of a hand-written category rule. adversarial-reviewer moves first among
-specialists; rarely-dispatched specialists stay ranked by category because their gate is the
-evidence of fit and their measured figures are unstable; security-reviewer is barred from promotion
-on n=3.
+Completed dcc-jt58: `reach=<narrow|norm|wide>` is settable and acts in three places: a dispatch-side block telling
+reviewers what to hunt, Step 5 routing of pre-existing findings, and report-section gating. Modes
+map onto it (low→narrow, mid/high→norm, max→wide).
 
-Behavior change: an uncapped mid on a small changeset now runs 4 agents rather than every
-gate-matched one — intended, but a real reduction in default coverage and unverified until
-#dcc-gxuk.
+The open question is answered, and the answer is that it is two different mechanisms. Absences
+(missing tests, undocumented decisions) are a dispatch-side saving, because hunting for them is a
+separate search activity — that is where the money is, since `test` is the largest category ours
+produces for the fewest substantive findings. Pre-existing defects are a reporting rule and save
+nothing, because you cannot know a defect is pre-existing without analysing it.
 
-The audit-preset ordering variant moved to #dcc-rbkl.
+Interaction worth knowing: under `reach=wide` auto-code-review now triages and fixes pre-existing
+defects. Its standing "fix the change, not the backlog" rule yields to an explicit wide, because an
+autonomous loop is often the only reader that code gets. Never fires by default.
+
+Implemented in the orchestrator rather than across fifteen agents; the seven whose scope includes
+absences carry a short note so their briefs do not contradict the dispatch directive.

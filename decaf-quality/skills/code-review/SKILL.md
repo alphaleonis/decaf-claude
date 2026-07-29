@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Run parallel code review agents and consolidate findings into a unified report
-argument-hint: "[low|mid|high|max][N] [roster=N] [models=low|norm|high] [--spec <path>] [--report] [PR#] [path] [instructions]"
+argument-hint: "[low|mid|high|max][N] [roster=N] [models=low|norm|high] [reach=narrow|norm|wide] [--spec <path>] [--report] [PR#] [path] [instructions]"
 ---
 
 # Code Review
@@ -13,7 +13,7 @@ This command orchestrates code review agents and consolidates their findings int
 Parse `$ARGUMENTS` to determine:
 1. **Mode**: `low`, `mid`, `high`, or `max` — a named point in the axis space defined under [Review axes](#review-axes) below. The legacy keywords `quick` and `std` are accepted as aliases for `low` and `mid`. When no mode keyword is given, the mode is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `mid`.
    - **Roster cap (optional)**: an integer suffixed directly to the mode keyword — `mid4`, `high6`, `max8` (alias forms `std4` etc.) — sets the `roster` axis directly. It applies to `mid`, `high`, and `max`; on `low` it is ignored (the floor is already exactly two agents). The cap **counts the two floor agents** (so `mid4` = floor + the 2 best-fitting specialists) but **not** the Step 5.6 validators, and it does **not** change the mode's `models` policy or validation policy. Applied in Step 2b.5.
-   - **Per-axis override (optional)**: `roster=<N>` and `models=<low|norm|high>` set an axis directly, overriding whatever the mode implies. `roster=6` and `mid6` mean the same thing; the long form exists so an axis can be set without picking a mode. Later arguments win.
+   - **Per-axis override (optional)**: `roster=<N>`, `models=<low|norm|high>` and `reach=<narrow|norm|wide>` set an axis directly, overriding whatever the mode implies. `roster=6` and `mid6` mean the same thing; the long form exists so an axis can be set without picking a mode. Later arguments win.
 2. **Spec**: `--spec <path | work-item-ID>` — a specification/plan document, or an ADO work item ID whose Description and Acceptance Criteria serve as the spec. When omitted, spec discovery (Step 1.5) may find one automatically.
 3. **`--report`**: collect session metrics for skill-tuning comparisons — record per-agent usage from every reviewer/validator tool result and append a **Session Metrics** section to the consolidated review file (Step 6). See `@../../conventions/session-report.md` for the exact section format and the truth discipline. Orchestrating skills (`auto-code-review`) pass this through; standalone, the enriched consolidated file is the deliverable.
 4. **PR number**: A pull request number (e.g., `123`, `PR#123`, `#123`) — review that PR instead of local changes
@@ -39,19 +39,38 @@ a thing in its own right — so read the axes first and the modes as presets ove
 at every level, including `high`. Never confuse a `models` value with a model name; Step 2d owns the
 mapping and is the only place model names appear.
 
-**`evidence` and `reach` are defined here but not yet accepted as arguments.** `evidence` lands with
-the pre-consolidation screen; `reach` lands with the reviewer-brief scoping work. Until then a mode
-keyword fixes them at `norm` and they are not settable. Do not add partial handling for them here —
-the axis is the contract, and a knob that parses but does nothing is worse than an absent one.
+**`evidence` is defined here but not yet accepted as an argument** — it lands with the
+pre-consolidation screen. Until then a mode keyword fixes it at `norm`. Do not add partial handling
+for it here; the axis is the contract, and a knob that parses but does nothing is worse than an
+absent one.
+
+### What `reach` admits
+
+| value | admits |
+|---|---|
+| `narrow` | defects **introduced by the changed lines**. Reviewers do not hunt for absences, and a pre-existing defect noticed in passing is recorded under Considered But Not Flagged rather than reported |
+| `norm` *(default)* | the above, plus defects in code the change directly touches or relies on, plus **change-introduced absences** — a new function with no test, a new decision with no rationale. Pre-existing defects go to the informational Pre-existing Issues section |
+| `wide` | the above, plus **pre-existing defects reported as findings**, absences anywhere across the touched surface, and residual risks |
+
+**`reach` acts in two different places, and knowing which matters for cost.**
+
+- **Absences are a dispatch-side saving.** Hunting for a missing test or an undocumented decision is
+  a separate search activity, so `narrow` genuinely spends less. This is where the money is:
+  `test` is the largest finding category ours produces (41 clusters over the benchmark) and yields
+  6 substantive ones, and `test-reviewer` has the roster's worst tokens-per-substantive.
+- **Pre-existing is a reporting rule, not a saving.** A reviewer cannot know a defect is pre-existing
+  without analysing it, so nothing is saved by excluding it — `reach` only decides whether the
+  analysis reaches the report. Do not expect `narrow` to cut cost on this axis; expect it to cut
+  reading.
 
 ### Modes as axis settings
 
-| Mode | `roster` | `models` | Use Case |
-|------|----------|----------|----------|
-| `low` | 2 (quick + broad) | special-cased: broad on the session model, quick mid-tier; validation skipped | Fast feedback from two generalists |
-| `mid` (default) | gate-matched (typically 4-9) | `norm` | Cost-aware default — corroborated findings at the lowest specialist cost |
-| `high` | gate-matched (same as `mid`) | `high` | Strict quality — keeps the deep single-finder catches that ride the volume agents |
-| `max` | all agents except hard-gate exclusions | `high` | Maximum coverage |
+| Mode | `roster` | `models` | `reach` | Use Case |
+|------|----------|----------|---------|----------|
+| `low` | 2 (quick + broad) | special-cased: broad on the session model, quick mid-tier; validation skipped | `narrow` | Fast feedback from two generalists |
+| `mid` (default) | gate-matched (typically 4-9) | `norm` | `norm` | Cost-aware default — corroborated findings at the lowest specialist cost |
+| `high` | gate-matched (same as `mid`) | `high` | `norm` | Strict quality — keeps the deep single-finder catches that ride the volume agents |
+| `max` | all agents except hard-gate exclusions | `high` | `wide` | Maximum coverage |
 
 `high` and `max` differ only in `roster`. They previously differed in models too — `max` down-tiered
 nothing at all — but that policy is retired: mechanical lanes stay cheap at every level, because a
@@ -296,6 +315,22 @@ Follow your own output format instructions.
 Return your complete report as your final message — it is your return value.
 Do not send it via SendMessage and do not write it to a file.
 
+## Review reach: {reach}
+[Include exactly one of the three, matching the resolved `reach` axis:]
+
+- narrow — Report only defects **introduced by the changed lines**. Do not go looking for what is
+  absent: no missing-test hunts, no missing-documentation hunts, no residual-risk survey. If you
+  notice a pre-existing defect while analysing the change, put it under Considered But Not Flagged
+  with `pre-existing, out of reach` — do not report it as a finding. A defect the change *exposes*
+  or *makes reachable* is introduced, not pre-existing; report it.
+- norm — Report defects introduced by the change, and defects in code the change directly touches
+  or relies on. Report absences the change itself creates — a new function with no test, a new
+  non-obvious decision with no rationale — but do not survey the surrounding code for pre-existing
+  gaps. Mark any pre-existing defect you find `pre_existing`; it is recorded, not counted.
+- wide — Everything under `norm`, plus: report pre-existing defects as findings in their own right,
+  survey the touched surface for absent tests and documentation, and record residual risks. Use
+  this when nothing else will look at this code — an autonomous fix loop has no second reader.
+
 ## Working-tree safety (all reviewers — non-negotiable)
 You are READ-ONLY with respect to tracked source: report issues, do not change code. You share ONE working tree with every other reviewer in this wave, and they are all running right now — anything you write, they read.
 - NEVER modify a tracked file. Not temporarily, not even if you restore it immediately and perfectly. A sibling reading during your edit sees a state the change under review was never in and reports it as a defect — this has produced a false Critical and a bogus "the entire changeset is unimplemented". Restoring the bytes afterwards does not close that window.
@@ -384,7 +419,7 @@ Apply the consolidation rules:
 4. **Promote confidence on agreement** (one anchor step when 2+ agents flagged the same finding; agreement between only quick+broad does not promote) — never average
 5. **Merge descriptions** from multiple finders
 6. **Apply the confidence gate**: suppress findings below anchor 75, except Critical findings at anchor 50; **and except the deterministic-claim safety net** — re-anchor quotable-fact findings (convention/consistency violations, doc-vs-code contradictions, dead contracts, identifier/comment mismatches, `!`/cast-laundered nulls) to 100 so they are kept, not suppressed. Record suppressed counts under Considered But Not Flagged
-7. **Separate pre-existing findings** (all finders marked `pre_existing`) into the Pre-existing Issues section — informational, excluded from verdict and Summary counts
+7. **Route pre-existing findings by `reach`** (all finders marked `pre_existing`): under `narrow`, drop them to Considered But Not Flagged as `pre-existing, out of reach`; under `norm`, put them in the Pre-existing Issues section — informational, excluded from verdict and Summary counts; under `wide`, promote them to primary findings, counted and verdict-bearing, each labelled `pre-existing` so a reader can tell what the change introduced from what it inherited
 8. **Route minor findings** to the **Minor Findings** section: Consistency (quotable-fact Low/Medium, multi-finder allowed), Testing Gaps (single test-reviewer coverage gap), Residual Risks (single generalist structure/style). Reported and counted (Summary Minor row), not verdict-driving. A false-positive test (tautological / asserts a default / can't catch its named regression) is a defect — Medium+ stays primary, Low → Consistency
 
 ### Step 5.5: Review "Considered But Not Flagged" Items
@@ -517,6 +552,7 @@ Critical/High/Medium/Low are **primary** findings and drive the verdict. **Minor
 ---
 
 ## Pre-existing Issues
+[Under `reach=norm` only. `narrow` omits this section — those findings went to Considered But Not Flagged. `wide` omits it too, because pre-existing findings are promoted into the primary Findings list, each labelled `pre-existing`.]
 
 [Findings every finder marked pre-existing — issues in code this change did not
 introduce. Informational only; excluded from the verdict and Summary counts.
@@ -543,12 +579,14 @@ mismatches, and Low-severity false-positive tests. Multi-finder items allowed.]
 - `path/to/file.cs:42` — <title> (knowledge-reviewer)
 
 ### Testing Gaps
+[Absent under `reach=narrow` — reviewers were told not to hunt for missing tests. Under `norm` this holds only gaps the change itself creates; under `wide`, gaps anywhere across the touched surface.]
 
 [Single-finder Medium/Low *coverage* gaps where the test itself is not broken.]
 
 - `path/to/file.cs:42` — <title> (test-reviewer)
 
 ### Residual Risks
+[Absent under `reach=narrow` and `norm` — surveying for residual risk is a `wide` activity.]
 
 [Single-finder Medium/Low structure/style observations with no nameable consequence.]
 
