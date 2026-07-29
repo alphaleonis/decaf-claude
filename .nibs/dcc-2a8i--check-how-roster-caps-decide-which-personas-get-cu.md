@@ -2,11 +2,11 @@
 # dcc-2a8i
 version: 1
 title: Check how roster caps decide which personas get cut, and whether that ranking is optimal
-status: todo
+status: completed
 type: task
 priority: normal
 created_at: 2026-07-28T23:33:37Z
-updated_at: 2026-07-29T18:29:35Z
+updated_at: 2026-07-29T18:41:36Z
 parent: dcc-1x90
 order: a0
 ---
@@ -199,17 +199,29 @@ yield, which moves `consistency` from last to mid-table. This nib is the `roster
 
 ## Acceptance
 
-- [ ] [run] `rg -n "Rank the gate-matched specialists" -A12 decaf-quality/skills/code-review/SKILL.md`
+- [x] [run] `rg -n "Rank the gate-matched specialists" -A12 decaf-quality/skills/code-review/SKILL.md`
       — expect: the order is stated as measured drop cost, not agent category, and names its source
-- [ ] [run] `python3 competition/benchmark/analysis/scripts/roster_yield.py` — expect: exit 0; the
+- [x] [run] `python3 competition/benchmark/analysis/scripts/roster_yield.py` — expect: exit 0; the
       per-persona figures the ranking cites are reproducible from committed data
-- [ ] [manual] `adversarial-reviewer` ranks ahead of `security-reviewer` among specialists, or the
+- [x] [manual] `adversarial-reviewer` ranks ahead of `security-reviewer` among specialists, or the
       decision to keep the current order is recorded with a reason
-- [ ] [manual] The order differs by preset (`bugs` / `review` / `audit`) per #dcc-9q01, with
-      `consistency-reviewer` not leading the cut under `audit`
-- [ ] [manual] Under-sampled personas are handled explicitly — the ranking does not promote
+- [x] [manual] Under-sampled personas are handled explicitly — the ranking does not promote
       `security-reviewer` on n=3, and personas below the n>=12 stability threshold are ranked by
       their gate rather than by their measured figure
-- [ ] [manual] The default roster scales with changeset size, or the decision to keep a fixed `N`
+- [x] [manual] The default roster scales with changeset size, or the decision to keep a fixed `N`
       is recorded against the size table (drop cost ~0 on small diffs, 3.20 for `adversarial` on
       large ones)
+
+## Summary
+
+Measurement complete and acted on. The drop-cost table, its stability analysis and the size slice
+are recorded here; the ranking they justify shipped in #dcc-1x90.
+
+Two errors confirmed and fixed: adversarial-reviewer was ranked mid-tier and behind
+security-reviewer despite being the most load-bearing persona measured, and the "categorical
+coverage the generalists cannot substitute" premise did not hold as a class. One rule survived with
+a caveat — shedding consistency and knowledge first is right for a bug hunt and wrong for an audit,
+which made drop order preset-dependent.
+
+The preset-dependent ordering criterion moved to #dcc-rbkl; it cannot be satisfied before presets
+exist.

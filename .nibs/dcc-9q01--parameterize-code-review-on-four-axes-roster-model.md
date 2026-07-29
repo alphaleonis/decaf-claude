@@ -10,7 +10,7 @@ tags:
     - code-review
     - design
 created_at: 2026-07-29T16:29:22Z
-updated_at: 2026-07-29T18:37:26Z
+updated_at: 2026-07-29T18:41:36Z
 order: zzzs
 ---
 
@@ -188,19 +188,15 @@ Terminology settled with the operator 2026-07-29. Supersedes the sweep ordering 
 
 ## Current Focus
 
-Completed dcc-evph: Shipped as a vocabulary refactor. A `## Review axes` section now defines all four axes, their
-values, their shared direction (`small`/`low`/`strong`/`narrow` → less output) and where each is
-applied. `models` replaces the tier vocabulary throughout, with Step 2d the only place model names
-appear. Modes are restated as points in the axis space, and `roster=<N>` / `models=<...>` work as
-direct overrides.
+Completed dcc-1x90: Step 2b.5 now resolves the `roster` axis on every mid/high review rather than only when a cap was
+typed, deriving a default N from changed executable lines (4 / 6 / uncapped), and ranks survivors by
+measured drop cost instead of a hand-written category rule. adversarial-reviewer moves first among
+specialists; rarely-dispatched specialists stay ranked by category because their gate is the
+evidence of fit and their measured figures are unstable; security-reviewer is barred from promotion
+on n=3.
 
-`evidence` and `reach` are defined but deliberately not settable — their mechanisms land in
-#dcc-xewu and #dcc-jt58, and an argument that parses but does nothing is worse than an absent one.
+Behavior change: an uncapped mid on a small changeset now runs 4 agents rather than every
+gate-matched one — intended, but a real reduction in default coverage and unverified until
+#dcc-gxuk.
 
-Scope changed during the work: replacing the mode ladder with presets moved to #dcc-rbkl, where the
-presets are actually defined. Keeping modes as the interface here means every intermediate state of
-the epic is a working skill, and the benchmark's `mid --report` invocation keeps working unchanged.
-
-One deliberate behavior change: `max`'s no-down-tiering policy is retired. `high` and `max` now
-differ only in `roster`, and mechanical lanes stay cheap at every level. A `max` run is cheaper than
-it was.
+The audit-preset ordering variant moved to #dcc-rbkl.

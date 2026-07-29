@@ -2,14 +2,14 @@
 # dcc-1x90
 version: 1
 title: 'code-review: roster axis — measured drop order, roster scaled to changeset size'
-status: in-progress
+status: completed
 type: feature
 priority: high
 estimate: m
 tags:
     - code-review
 created_at: 2026-07-29T18:29:16Z
-updated_at: 2026-07-29T18:38:52Z
+updated_at: 2026-07-29T18:41:36Z
 parent: dcc-9q01
 blocked_by:
     - dcc-evph
@@ -109,3 +109,32 @@ default coverage, unverified until #dcc-gxuk. An explicit `roster=` or `modeN` o
 
 The `audit`-preset ordering (rank by drop cost **+** minor yield, which moves `consistency`
 mid-table) needs the presets to exist. It lands with #dcc-rbkl; the hook is named in rule 4.
+
+## Current Focus
+
+Completed dcc-2a8i: Measurement complete and acted on. The drop-cost table, its stability analysis and the size slice
+are recorded here; the ranking they justify shipped in #dcc-1x90.
+
+Two errors confirmed and fixed: adversarial-reviewer was ranked mid-tier and behind
+security-reviewer despite being the most load-bearing persona measured, and the "categorical
+coverage the generalists cannot substitute" premise did not hold as a class. One rule survived with
+a caveat — shedding consistency and knowledge first is right for a bug hunt and wrong for an audit,
+which made drop order preset-dependent.
+
+The preset-dependent ordering criterion moved to #dcc-rbkl; it cannot be satisfied before presets
+exist.
+
+## Summary
+
+Step 2b.5 now resolves the `roster` axis on every mid/high review rather than only when a cap was
+typed, deriving a default N from changed executable lines (4 / 6 / uncapped), and ranks survivors by
+measured drop cost instead of a hand-written category rule. adversarial-reviewer moves first among
+specialists; rarely-dispatched specialists stay ranked by category because their gate is the
+evidence of fit and their measured figures are unstable; security-reviewer is barred from promotion
+on n=3.
+
+Behavior change: an uncapped mid on a small changeset now runs 4 agents rather than every
+gate-matched one — intended, but a real reduction in default coverage and unverified until
+#dcc-gxuk.
+
+The audit-preset ordering variant moved to #dcc-rbkl.
