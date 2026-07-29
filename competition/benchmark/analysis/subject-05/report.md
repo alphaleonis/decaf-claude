@@ -84,7 +84,7 @@ corroboration.
 **Cost–quality verdict.** No tool is strictly dominant here. anthropic is the value pick: caught the
 primary at correct severity in both reps, cited the revert, 1.0 calibration, one lone validator FP,
 at $8.76. ours is the depth pick: only tool to find isFirstChunk and terminal-event-hang, zero FPs,
-best knowledge-layer — but at 2.7× anthropic's cost and with noisier severity (calibration 0.57).
+best knowledge-layer — but at 2.7× anthropic's cost and with noisier severity (calibration 0.50, 2/4).
 superpowers is cheap and clean but unreliable (1/2 primary). pr-review-toolkit and tag1 caught the
 substance but drowned it: prt in particular found the primary and then mis-ranked it below a logging
 nit, which on a real PR would bury the one finding that mattered.

@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-07-29T11:24:51Z
+updated_at: 2026-07-29T11:48:53Z
 blocked_by:
     - dcc-9kkz
 order: zzzV
@@ -18,7 +18,9 @@ order: zzzV
 # Why
 
 The controlled benchmark (#dcc-z1xw) and the analysis in #dcc-e0wj establish that `ours` costs
-$21.33/run against anthropic's $7.61 while losing on severity calibration (0.50 vs 0.92; both restated on the repaired data, #dcc-9kkz). The
+$21.33/run against anthropic's $7.61 while losing on severity calibration (0.70 vs 0.90 — restated
+on the repaired data, #dcc-9kkz, and on the settled metric definition, #dcc-hmp6; at n=10 for
+anthropic that gap is not one this corpus resolves confidently). The
 per-persona analysis (`analysis/scripts/roster_yield.py`) then showed **no persona is dead
 weight** — every one participates in substantive clusters — so the cost has to come out of
 *how* the roster works, not *which* agents are in it.
@@ -76,7 +78,8 @@ bought, and the riskiest change lands last when the baseline is already improved
    more, not less, so pair it with 3 in the same re-run to net out.
 5. **#dcc-gcob** — the big lever, and **the repair raised its rank** (see below). Needs its own
    re-run and carries the highest risk in the epic: stripping overlap can cost corroboration, and
-   ours' calibration (0.50) is already its weakest metric.
+   ours' calibration (0.70, 21/30) is its weakest metric against anthropic, though no longer by
+   the margin the pre-#dcc-hmp6 figure suggested.
 6. **#dcc-lf4a** — small and free to implement, but low single-digit percent of session output;
    do not let it displace the above.
 7. **#dcc-2a8i** — `draft`. Its premise weakened with the repair: if per-agent verbosity rather
@@ -110,3 +113,35 @@ still comes first, but it changes what to expect from each.
       data (#dcc-9kkz) is the **lowest in the field**, ahead of anthropic 0.572 and superpowers
       0.831. #dcc-gcob and any history-retrieval work are the two that can break this; both must
       keep every evidence channel scoped to the changed files
+
+## Current Focus
+
+Completed dcc-hmp6: Settled on **consolidated-report severity, pooled across subjects** — option 1, not the option 2
+this nib predicted. The max-over-sub-agents variant is dropped from the published metrics rather
+than renamed and kept: it stays derivable from `analysis.json`, and a second severity column on the
+leaderboard would invite the misreading the nib was filed about.
+
+Aggregation turned out to matter as much as the severity source and was changed with it: the old
+published figure macro-averaged per-subject ratios over denominators running 0-25, which let a
+one-cluster subject outweigh a twenty-cluster one and dropped subjects where a tool flagged
+nothing. Now pooled, with `k/n` published beside every ratio.
+
+Restated: anthropic 0.92 → **0.90 (9/10)**, tag1 0.55 → **0.79 (19/24)**, ours 0.50 → **0.70
+(21/30)**, superpowers 0.63 → **0.65 (17/26)**, pr-review-toolkit 0.47 → **0.48 (23/48)**.
+superpowers is the single-agent control and moves only by the macro→pooled change.
+
+Two corrections to the nib's own premise: its table predated the #dcc-9kkz repair, and the
+"0.77 vs 0.88" it cited compared a pooled figure against a macro one. The ours-to-anthropic gap
+narrows 0.42 → 0.20, not "40% of the headline". And the denominators are the real weakness —
+anthropic's figure rests on 10 clusters across 9 subjects, Wilson intervals overlap ours', and the
+0.90/0.79/0.70 ordering is not resolved by this corpus. That caveat is now in METHODOLOGY, the
+per-subject glossary, the synthesis page, and a `THIN` warning in the aggregator.
+
+Shipped: `_calibration` rewritten, aggregation pooled, `k/n` rendered; 9 subjects' metrics.json and
+report.html regenerated, 8 report.md narratives restated; METHODOLOGY definition rewritten;
+synthesis-data.json and synthesis-report.html updated; #dcc-e0wj, #dcc-05uw, #dcc-hyxw, #dcc-xewu,
+#dcc-gcob, #dcc-c2uc restated and #dcc-9kkz's figures marked historical. Incidentally fixed
+`aggregate_synthesis.py` emitting a hash-seed-ordered `cells` array, so the file is now
+byte-reproducible. Filed #dcc-3v3m for subject 10's missing severity labels.
+
+Not done: the synthesis page was not re-published as an Artifact — no URL is recorded in the repo.

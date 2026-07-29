@@ -9,7 +9,7 @@ estimate: l
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-07-29T11:24:12Z
+updated_at: 2026-07-29T11:45:03Z
 parent: dcc-hyxw
 order: aw
 ---
@@ -43,7 +43,8 @@ than one *concern* (bugs, design, knowledge) applied to all evidence.
 **Redundancy is also what produces corroboration, and corroboration drives the anchors.**
 Consolidation promotes confidence on agreement (Step 5 rule 4), which is what carries a finding
 over the confidence gate and up the ranking. Ours' calibration is already the weak metric
-(0.62 vs 0.88); stripping overlap could make it worse even while output drops.
+(0.70 vs 0.90, restated per #dcc-hmp6); stripping overlap could make it worse even while output
+drops.
 
 This exact error has been made once already in #dcc-e0wj: `performance-reviewer` looked
 droppable because it never *uniquely* found anything, when it was in fact among the finders on 7

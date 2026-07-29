@@ -105,8 +105,24 @@ stripped and clusters shuffled before grading.
 - **Trivia rate** = trivia clusters per cell (replaces the old nitpick/noise rate).
 - **FP rate** = false-positives per cell; **FP share** = `FP / all findings`.
 - **Signal density** = `(TP + valid-other) / all findings`.
-- **Severity calibration** = P(judged substantive | the tool flagged the cluster critical/high) — "can
-  you trust the tool's top-of-list and stop reading?" Uses the tool's own max severity per cluster.
+- **Severity calibration** = P(judged substantive | the tool's **consolidated report** ranked the
+  cluster critical/high) — "can you trust the tool's top-of-list and stop reading?" Only the severity
+  a reader actually sees counts: `reported_by` entries with `subagent: null`. A sub-agent's private
+  claim is excluded, because it never reached the reader and so is not evidence about the artifact's
+  top-of-list. Counting it (the definition through 2026-07-29) measured sub-agent over-claiming
+  instead, which penalized fan-out tools in proportion to how many agents they run — see #dcc-hmp6.
+
+  Aggregated across subjects by **pooling** (`Σ substantive / Σ flagged`), not by averaging the
+  per-subject ratios. Per-subject denominators run 0–25 clusters, so a mean of ratios would let a
+  subject with one flagged cluster outweigh one with twenty, and would silently drop the subjects
+  where a tool flagged nothing — leaving each tool averaged over a different set of subjects.
+  Reports publish `k/n` beside the ratio.
+
+  **Read the denominator.** The corpus yields 10–48 flagged clusters per tool over 9 subjects;
+  `anthropic-code-review` emits confidence scores rather than severities and lands at n=10, where a
+  single cluster moves the figure by 0.10. Treat the column as a direction, not a score, and do not
+  rank tools on differences smaller than the interval that n supports. Subject 10's extraction
+  captured no severities at all, so every tool is undefined there.
 
 **Overlap & uniqueness:**
 - **Unique-true** = TP/valid clusters found by **only this tool**.

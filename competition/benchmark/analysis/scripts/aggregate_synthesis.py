@@ -65,6 +65,9 @@ def main():
         c = cost.get((sid, tool, rep), {})
         rows.append({"subject": sid, "size": size, "lang": lang, "tool": tool, "repeat": rep,
                      **e, "caught": e["tp_primary"] > 0, **c})
+    # cells are accumulated through a set, whose iteration order varies between interpreter runs;
+    # sort so re-running on unchanged inputs produces an identical file and diffs stay readable
+    rows.sort(key=lambda r: (r["subject"], r["tool"], r["repeat"]))
 
     tools = sorted({r["tool"] for r in rows})
     mean = lambda xs: round(st.mean(xs), 4) if xs else None
@@ -90,13 +93,18 @@ def main():
             "subagents_per_cell": mean([r["subagents"] for r in rs if r.get("subagents")]),
         }
 
-    # severity calibration + unique-true come straight from the per-subject metrics
-    cal, uniq = defaultdict(list), defaultdict(int)
+    # severity calibration + unique-true come straight from the per-subject metrics.
+    # Calibration POOLS (sum substantive / sum flagged) instead of averaging the per-subject
+    # ratios: denominators run 0-25 clusters per subject, so a mean of ratios lets a subject
+    # where the tool flagged one cluster weigh as much as one where it flagged twenty, and
+    # silently drops the subjects where it flagged nothing — leaving each tool averaged over a
+    # different set of subjects.
+    cal, uniq = defaultdict(lambda: [0, 0]), defaultdict(int)
     for path in sorted(glob.glob(os.path.join(a.analysis_dir, "subject-*", "metrics.json"))):
         m = json.load(open(path))
         for tool, t in m["tools"].items():
-            if t.get("severity_calibration") is not None:
-                cal[tool].append(t["severity_calibration"])
+            cal[tool][0] += t.get("severity_calibration_substantive") or 0
+            cal[tool][1] += t.get("severity_calibration_flagged") or 0
             uniq[tool] += t.get("unique_true_n", 0)
 
     out = {
@@ -104,7 +112,10 @@ def main():
         "total_cost_usd": round(sum(r.get("cost_usd") or 0 for r in rows), 2),
         "subjects": subjects,
         "tools": {t: {**tool_block([r for r in rows if r["tool"] == t]),
-                      "severity_calibration": mean(cal[t]), "unique_true": uniq[t]} for t in tools},
+                      "severity_calibration": round(cal[t][0] / cal[t][1], 4) if cal[t][1] else None,
+                      "severity_calibration_substantive": cal[t][0],
+                      "severity_calibration_flagged": cal[t][1],
+                      "unique_true": uniq[t]} for t in tools},
         "by_size": {sz: {"subjects": len({r["subject"] for r in rows if r["size"] == sz}),
                          **tool_block([r for r in rows if r["size"] == sz])}
                     for sz in ("small", "medium", "large") if any(r["size"] == sz for r in rows)},
@@ -130,6 +141,14 @@ def main():
         flag = "OK " if abs(s - 1.0) < 0.005 else "BAD"
         print(f"  {flag} {t:28s} tiers sum {s:.3f}  substantive_share {b['substantive_share']:.3f} "
               f"(must equal precision_mean in per-subject metrics)")
+    print()
+    for t in tools:
+        b = out["tools"][t]
+        n = b["severity_calibration_flagged"]
+        cal_s = "—" if b["severity_calibration"] is None else f"{b['severity_calibration']:.2f}"
+        # n < 20 means the ratio moves by >=0.05 per cluster; do not rank tools on it
+        print(f"  {'OK ' if n >= 20 else 'THIN'} {t:28s} calibration {cal_s} "
+              f"({b['severity_calibration_substantive']}/{n} consolidated crit/high clusters)")
     print(f"\n  {out['n_subjects']} subjects · {out['n_cells']} cells · ${out['total_cost_usd']:,.0f}")
     sat = sum(1 for v in out["caught_by_subject"].values() if v >= 9)
     print(f"  subjects where >=9/10 cells caught the bug: {sat}/{out['n_subjects']} "

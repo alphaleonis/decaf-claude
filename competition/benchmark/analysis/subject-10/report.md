@@ -81,9 +81,12 @@ scales with the diff, still spent $17.35 on 33 lines.
 
 - **`human_issues` is empty** — solo-maintainer repo with no review threads — so `TP-human` cannot
   occur and the subject scores only on recall, noise, and FP discipline.
-- **Severity calibration is unavailable for four of five tools**: too few clusters carried a
-  critical/high severity tag for the metric's denominator. Only anthropic's 1.00 computed, on a
-  very small base. Do not read the calibration column here.
+- **Severity calibration is unavailable for all five tools.** This subject's extraction did not
+  capture severity labels — 76 of 78 `reported_by` entries carry an empty severity, and every
+  consolidated-report entry is among them — so no tool has a denominator. anthropic's earlier 1.00
+  came from the one sub-agent `critical` in the subject, which the metric no longer counts
+  (#dcc-hmp6). The column is blank by design here;
+  the missing severities are an extraction gap, not a property of the tools.
 - **The eight non-anthropic cells reuse the 16 Jul extraction.** Bundles are unchanged, but any
   extraction error there persists.
 - **Cluster count moved 20 → 18** with a changed verdict vocabulary, so headline counts are not

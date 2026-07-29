@@ -10,7 +10,7 @@ tags:
     - benchmark
     - validity
 created_at: 2026-07-28T21:15:14Z
-updated_at: 2026-07-29T11:07:05Z
+updated_at: 2026-07-29T11:46:16Z
 order: zzzk
 ---
 
@@ -61,6 +61,12 @@ twice what was believed, which makes #dcc-hyxw more urgent, not less.
 **Quality — robust.** Bug-catch and calibration hold across all three groups (7/7, 7/7, 4/4;
 calibration 0.89, 0.89, 0.83 against the published 0.88). Conclusions about *what* anthropic
 finds survive; conclusions about *what it costs* do not.
+
+*Historical note:* every calibration figure in this nib is under the max-over-sub-agents
+definition in force at the time. #dcc-hmp6 later replaced it with the consolidated-report
+definition and pooled aggregation; anthropic's published figure is now **0.90 (9/10)**. The
+three-group robustness check above was not recomputed — it was evidence about cell contamination,
+not about the metric.
 
 **Downstream, needing restatement once cells are re-run:**
 
@@ -144,7 +150,8 @@ wired into `run_cell.sh`, which checks each cell's dominant `attributionPlugin` 
 
 Impact was larger than first assessed, and in one place it reversed a conclusion. Anthropic's
 published $11.82/run and 0.88 calibration were a blended column: clean figures are **$7.61 and
-0.92**, with 18/18 recall and a 56% substantive share — so ours is **2.8×** more expensive, not
+0.92** (that 0.92 under the then-current metric definition; **0.90** since #dcc-hmp6), with 18/18
+recall and a 56% substantive share — so ours is **2.8×** more expensive, not
 1.8×. Per-agent output was the biggest miss: anthropic emits 9.6k, not the 13.7k recorded, making
 the gap to ours **2.0×** rather than 43%. And repo-size sensitivity inverted — anthropic is 0.572,
 not 0.119, which means **ours now has the lowest in the field (0.403)**, so #dcc-gcob is defending

@@ -153,6 +153,7 @@
   .s2 { background: var(--tier-2); }
   .s3 { background: var(--tier-3); color: #23180a; }
   .aside { font-size: 12.5px; color: var(--ink-2); font-family: ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; }
+  .den { color: var(--ink-3); font-size: .82em; font-weight: 400; }
   .aside b { color: var(--ink); }
 
   .simplebar { display: grid; grid-template-columns: 190px 1fr 92px; gap: 14px; align-items: center; margin-bottom: 9px; }
@@ -228,31 +229,31 @@
         <tr>
           <td class="name">anthropic /code-review</td>
           <td class="num best">18/18</td><td class="num best">56%</td><td class="num">16%</td>
-          <td class="num">4%</td><td class="num best">0.92</td><td class="num">5.6</td>
+          <td class="num">4%</td><td class="num best">0.90 <span class="den">9/10</span></td><td class="num">5.6</td>
           <td class="num">$7.61</td><td class="num">$2.54</td>
         </tr>
         <tr>
           <td class="name">superpowers</td>
           <td class="num">14/18</td><td class="num">39%</td><td class="num best">15%</td>
-          <td class="num worst">7%</td><td class="num">0.63</td><td class="num">6.5</td>
+          <td class="num worst">7%</td><td class="num">0.65 <span class="den">17/26</span></td><td class="num">6.5</td>
           <td class="num best">$2.44</td><td class="num best">$0.90</td>
         </tr>
         <tr>
           <td class="name">ours (decaf-quality)</td>
           <td class="num">16/18</td><td class="num">30%</td><td class="num">29%</td>
-          <td class="num">5%</td><td class="num worst">0.50</td><td class="num">15.8</td>
+          <td class="num">5%</td><td class="num">0.70 <span class="den">21/30</span></td><td class="num">15.8</td>
           <td class="num worst">$21.33</td><td class="num worst">$4.57</td>
         </tr>
         <tr>
           <td class="name">tag1 comprehensive</td>
           <td class="num">15/18</td><td class="num">27%</td><td class="num">35%</td>
-          <td class="num">5%</td><td class="num">0.55</td><td class="num">18.1</td>
+          <td class="num">5%</td><td class="num">0.79 <span class="den">19/24</span></td><td class="num">18.1</td>
           <td class="num">$16.72</td><td class="num">$3.46</td>
         </tr>
         <tr>
           <td class="name">pr-review-toolkit</td>
           <td class="num worst">12/18</td><td class="num worst">20%</td><td class="num worst">42%</td>
-          <td class="num best">3%</td><td class="num">0.47</td><td class="num worst">21.3</td>
+          <td class="num best">3%</td><td class="num worst">0.48 <span class="den">23/48</span></td><td class="num worst">21.3</td>
           <td class="num">$8.56</td><td class="num">$2.03</td>
         </tr>
       </tbody>
@@ -427,45 +428,50 @@
 
 <section>
   <h2>Trust</h2>
-  <p class="claim">Can you read the top of the list and stop? Only for one tool.</p>
+  <p class="claim">Can you read the top of the list and stop? For three tools, mostly — for one, not at all.</p>
   <div class="panel">
     <div class="simplebar">
       <span class="vlabel">anthropic /code-review</span>
-      <div class="track"><div class="fill" style="width:92%"></div></div>
-      <span class="aside"><b>0.92</b></span>
-    </div>
-    <div class="simplebar">
-      <span class="vlabel">superpowers</span>
-      <div class="track"><div class="fill" style="width:63%"></div></div>
-      <span class="aside"><b>0.63</b></span>
+      <div class="track"><div class="fill" style="width:90%"></div></div>
+      <span class="aside"><b>0.90</b> <span class="den">9/10</span></span>
     </div>
     <div class="simplebar">
       <span class="vlabel">tag1 comprehensive</span>
-      <div class="track"><div class="fill" style="width:55%"></div></div>
-      <span class="aside"><b>0.55</b></span>
+      <div class="track"><div class="fill" style="width:79%"></div></div>
+      <span class="aside"><b>0.79</b> <span class="den">19/24</span></span>
     </div>
     <div class="simplebar">
       <span class="vlabel">ours (decaf-quality)</span>
-      <div class="track"><div class="fill warn" style="width:50%"></div></div>
-      <span class="aside"><b>0.50</b></span>
+      <div class="track"><div class="fill" style="width:70%"></div></div>
+      <span class="aside"><b>0.70</b> <span class="den">21/30</span></span>
+    </div>
+    <div class="simplebar">
+      <span class="vlabel">superpowers</span>
+      <div class="track"><div class="fill" style="width:65%"></div></div>
+      <span class="aside"><b>0.65</b> <span class="den">17/26</span></span>
     </div>
     <div class="simplebar">
       <span class="vlabel">pr-review-toolkit</span>
-      <div class="track"><div class="fill warn" style="width:47%"></div></div>
-      <span class="aside"><b>0.47</b></span>
+      <div class="track"><div class="fill warn" style="width:48%"></div></div>
+      <span class="aside"><b>0.48</b> <span class="den">23/48</span></span>
     </div>
   </div>
   <p>
-    Severity calibration is <span class="mono">P(judged substantive | the tool called it critical or high)</span>.
-    At <strong>0.92, nine of ten things anthropic escalates are real</strong> — you can read its top of list
-    and stop. At 0.47–0.55 a reader has to check everything, which erases much of the value of having a
-    severity field at all.
+    Severity calibration is <span class="mono">P(judged substantive | the tool's consolidated report called
+    it critical or high)</span>. Only the ranking a reader actually sees counts — a sub-agent's private
+    severity claim is excluded, because it never reaches the artifact. At <strong>0.90, nine of the ten
+    things anthropic escalates are real</strong>; tag1 and ours land in the 0.70–0.79 band, where the top of
+    the list is worth reading first but not worth trusting alone. At <strong>0.48 pr-review-toolkit's
+    critical label carries no information</strong> — a reader has to check everything, which erases the
+    value of having a severity field at all.
   </p>
   <p>
-    One caveat that cuts against the leader: <strong>anthropic does not emit severities</strong> — it emits
-    0–100 confidence scores and hard-filters below 80. Its calibration is therefore computed over a smaller,
-    self-selected set than the tools that rank a full ladder, and is not weight-comparable. The gap is real;
-    its exact size is not.
+    Two caveats, and the first cuts against the leader. <strong>Anthropic does not emit severities</strong>
+    — it emits 0–100 confidence scores and hard-filters below 80, so its figure rests on ten flagged
+    clusters against ours' thirty and pr-review-toolkit's forty-eight. Second, <strong>these denominators
+    are small enough that the ranking between adjacent tools is not resolvable</strong>: at n=10 a single
+    cluster moves anthropic by 0.10, and the 0.90/0.79/0.70 ordering is within that noise. The distance
+    from pr-review-toolkit to the rest is the part this corpus supports.
   </p>
 </section>
 
@@ -591,7 +597,7 @@
       <div class="figs">
         <span class="fig"><span class="n">18/18</span><br><span class="l">bug caught</span></span>
         <span class="fig"><span class="n">56%</span><br><span class="l">substantive</span></span>
-        <span class="fig"><span class="n">0.92</span><br><span class="l">calibration</span></span>
+        <span class="fig"><span class="n">0.90</span><br><span class="l">calibration</span></span>
       </div>
     </div>
 
@@ -617,13 +623,14 @@
       <p>
         Strong recall (16/18) and the widest coverage of any tool — it found four clusters nobody else did,
         including a human-raised logging regression on subject 9 and a clipboard path-leak on subject 6.
-        But it pays $21.33 and 31.7 minutes for a 30% substantive share and the second-worst calibration in
-        the field. The breadth is real; the price and the ranking are the problem.
+        But it pays $21.33 and 31.7 minutes for a 30% substantive share — nearly 16 findings a run, of which
+        fewer than five are worth acting on. Its consolidated top-of-list is respectable (0.70); the volume
+        underneath it is the problem, and so is the price.
       </p>
       <div class="figs">
         <span class="fig"><span class="n">$21.33</span><br><span class="l">$ / run</span></span>
         <span class="fig"><span class="n">30%</span><br><span class="l">substantive</span></span>
-        <span class="fig"><span class="n">0.50</span><br><span class="l">calibration</span></span>
+        <span class="fig"><span class="n">0.70</span><br><span class="l">calibration</span></span>
       </div>
     </div>
 
@@ -687,9 +694,16 @@
         not settled.
       </li>
       <li>
-        <strong>Calibration is not weight-comparable.</strong> Anthropic emits confidence scores rather than
-        severities and hard-filters below 80, so its 0.92 rests on a smaller self-selected set than tools
-        ranking a full severity ladder.
+        <strong>Calibration counts only the consolidated report</strong> — the severities a reader actually
+        sees, not what an individual sub-agent claimed privately. The earlier definition took the maximum
+        across every sub-agent, which measured over-claiming inside the fan-out and penalized tools in
+        proportion to how many agents they run.
+      </li>
+      <li>
+        <strong>Calibration denominators are small and not weight-comparable.</strong> Anthropic emits
+        confidence scores rather than severities and hard-filters below 80, so its 0.90 rests on ten flagged
+        clusters against pr-review-toolkit's forty-eight. Adjacent tools in that column are not separated by
+        this corpus. Subject 10's extraction captured no severities at all and contributes nothing.
       </li>
       <li>
         <strong>Two repeats per cell.</strong> Enough to expose stochasticity, not enough for a confidence

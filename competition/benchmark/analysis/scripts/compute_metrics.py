@@ -102,6 +102,7 @@ def main():
         distinctness = (n_distinct / n_inst) if n_inst else None
         mean_cost = _mean([rr["cost_usd"] for rr in rep_rows])
         n_tp_total = sum(rr["tp_primary"] + rr["tp_human"] + rr["valid_other"] for rr in rep_rows)
+        cal_substantive, cal_flagged = _calibration(t, clusters)
         out_tools[t] = {
             "repeats": rep_rows,
             "bug_catch_repeats": bug_hits, "n_repeats": len(reps),
@@ -113,7 +114,9 @@ def main():
             "valid_other_mean": rnd(_mean(valids)),
             "trivia_per_cell": rnd(_mean(nits)),
             "nitpick_per_cell": rnd(_mean(nits)),         # legacy alias of trivia_per_cell
-            "severity_calibration": _calibration(t, clusters),
+            "severity_calibration": rnd(cal_substantive / cal_flagged) if cal_flagged else None,
+            "severity_calibration_substantive": cal_substantive,
+            "severity_calibration_flagged": cal_flagged,
             "unique_true": unique_true, "unique_true_n": len(unique_true),
             "mean_cost_usd": rnd(mean_cost),
             "cost_per_bug_caught": rnd(mean_cost / (bug_hits / nrep)) if bug_hits else None,
@@ -148,17 +151,26 @@ def main():
         print(js)
 
 def _calibration(tool, clusters):
-    """P(judged substantive | tool's own max severity for the cluster was critical/high)."""
+    """(substantive, flagged) for P(judged substantive | the CONSOLIDATED report said critical/high).
+
+    Only `reported_by` entries with `subagent is None` count — those are the consolidated
+    artifact a reader actually sees. A sub-agent's private claim never reached the reader, so it
+    is not evidence about whether the report's top-of-list can be trusted; counting it measured
+    sub-agent over-claiming instead, which systematically penalized fan-out tools.
+
+    Returns raw counts, not a ratio, so cross-subject aggregation can pool them.
+    """
     flagged = 0; substantive = 0
     for c in clusters:
         sevs = [SEV_RANK.get((rb.get("severity") or "").lower(), 0)
-                for rb in c.get("reported_by", []) if rb.get("tool") == tool]
+                for rb in c.get("reported_by", [])
+                if rb.get("tool") == tool and rb.get("subagent") is None]
         if not sevs or max(sevs) < SEV_RANK["high"]:
             continue
         flagged += 1
         if c.get("verdict") in POS:
             substantive += 1
-    return rnd(substantive / flagged) if flagged else None
+    return substantive, flagged
 
 
 def _mean(xs):

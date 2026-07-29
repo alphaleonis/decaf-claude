@@ -17,7 +17,7 @@ td:first-child,th:first-child,.tool{text-align:left} .tool{font-weight:600}
 svg .ax{stroke:var(--muted)} svg .grid{stroke:var(--line)} svg .pt{fill:var(--accent)}
 svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);font-size:11px}
 .wrap>section{overflow-x:auto} code{background:var(--card);padding:1px 4px;border-radius:4px;font-size:12.5px}
-.legend{color:var(--muted);font-size:12px;margin-top:4px}
+.legend{color:var(--muted);font-size:12px;margin-top:4px} .n{color:var(--muted);font-size:11.5px}
 .glossary dl{margin:6px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
 .glossary dt{font-weight:600;white-space:nowrap} .glossary dd{margin:0;color:var(--muted);font-size:13px}
 .glossary h3{margin:0 0 8px} @media(max-width:560px){.glossary dl{grid-template-columns:1fr}.glossary dd{margin:0 0 6px}}
@@ -26,7 +26,7 @@ svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);fon
 <p class="sub">dotnet/efcore#32770 · judge: <code>claude-opus-4-8</code> ·
 26 distinct issues · human threads present</p>
 
-<section><h2>Leaderboard</h2><table><thead><tr><th>tool</th><th>escaped bug</th><th>valid /run</th><th>suggestions /run</th><th>unique valid</th><th>trivia /run</th><th>invalid /run</th><th>precision</th><th>sev. calibration</th><th>subagent distinct.</th><th>cost /run</th><th>~agents</th></tr></thead><tbody><tr><td class='tool'>superpowers</td><td>100%</td><td>4.0</td><td>7.5</td><td>0</td><td>0</td><td>0</td><td>34%</td><td>40%</td><td>—</td><td>$1.66</td><td>1</td></tr><tr><td class='tool'>anthropic-code-review</td><td>100%</td><td>2.5</td><td>1.5</td><td>0</td><td>0</td><td>0</td><td>58%</td><td>100%</td><td>18%</td><td>$4.63</td><td>12</td></tr><tr><td class='tool'>pr-review-toolkit</td><td>100%</td><td>4.0</td><td>12.0</td><td>0</td><td>4</td><td>0</td><td>20%</td><td>31%</td><td>14%</td><td>$6.86</td><td>5</td></tr><tr><td class='tool'>tag1-comprehensive-review</td><td>100%</td><td>4.0</td><td>8.5</td><td>0</td><td>4</td><td>0</td><td>24%</td><td>38%</td><td>15%</td><td>$11.68</td><td>10</td></tr><tr><td class='tool'>ours</td><td>100%</td><td>4.0</td><td>8.5</td><td>0</td><td>1</td><td>0</td><td>30%</td><td>60%</td><td>14%</td><td>$14.70</td><td>16</td></tr></tbody></table>
+<section><h2>Leaderboard</h2><table><thead><tr><th>tool</th><th>escaped bug</th><th>valid /run</th><th>suggestions /run</th><th>unique valid</th><th>trivia /run</th><th>invalid /run</th><th>precision</th><th>sev. calibration</th><th>subagent distinct.</th><th>cost /run</th><th>~agents</th></tr></thead><tbody><tr><td class='tool'>superpowers</td><td>100%</td><td>4.0</td><td>7.5</td><td>0</td><td>0</td><td>0</td><td>34%</td><td>40% <span class='n'>2/5</span></td><td>—</td><td>$1.66</td><td>1</td></tr><tr><td class='tool'>anthropic-code-review</td><td>100%</td><td>2.5</td><td>1.5</td><td>0</td><td>0</td><td>0</td><td>58%</td><td>100% <span class='n'>1/1</span></td><td>18%</td><td>$4.63</td><td>12</td></tr><tr><td class='tool'>pr-review-toolkit</td><td>100%</td><td>4.0</td><td>12.0</td><td>0</td><td>4</td><td>0</td><td>20%</td><td>44% <span class='n'>4/9</span></td><td>14%</td><td>$6.86</td><td>5</td></tr><tr><td class='tool'>tag1-comprehensive-review</td><td>100%</td><td>4.0</td><td>8.5</td><td>0</td><td>4</td><td>0</td><td>24%</td><td>75% <span class='n'>3/4</span></td><td>15%</td><td>$11.68</td><td>10</td></tr><tr><td class='tool'>ours</td><td>100%</td><td>4.0</td><td>8.5</td><td>0</td><td>1</td><td>0</td><td>30%</td><td>60% <span class='n'>3/5</span></td><td>14%</td><td>$14.70</td><td>16</td></tr></tbody></table>
 <p class="legend">Every tool reviewed the PR twice; "/run" columns are averaged across the two runs. Definitions below.</p>
 <div class="card glossary"><h3>How to read this</h3><dl>
 <dt>run (cell)</dt><dd>one review = one tool running once. Each tool reviewed this PR twice, so 2 runs per tool; "/run" numbers are averaged across the two.</dd>
@@ -38,7 +38,7 @@ svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);fon
 <dt>trivia /run</dt><dd>true-but-valueless findings per run — taste-only, speculative, out-of-scope, duplicative, or an unbounded suggestion class. The attention tax.</dd>
 <dt>invalid /run</dt><dd>false positives per run — findings asserting a problem that isn't real (refuted against the code). Actively misleading.</dd>
 <dt>precision</dt><dd>substantive precision: valid ÷ everything reported (suggestions and trivia both count against it). Higher = less to read per real defect.</dd>
-<dt>sev. calibration</dt><dd>when the tool itself labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop.</dd>
+<dt>sev. calibration</dt><dd>when the tool's <em>consolidated report</em> labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop. Severities a sub-agent claimed privately don't count — the reader never sees them. The fraction beside the percentage is the count it rests on; below ~20 flagged findings, read it as a direction, not a score.</dd>
 <dt>subagent distinct.</dt><dd>for multi-agent tools, distinct issues ÷ total sub-agent findings. Low = many agents re-finding the same things.</dd>
 <dt>Jaccard (overlap, below)</dt><dd>how similar two tools' valid-finding sets are: shared ÷ combined. 1.00 = identical, 0.00 = no overlap.</dd>
 <dt>verdict labels</dt><dd>each issue in the drill-down is graded: <strong>TP-primary</strong> = caught the escaped bug; <strong>TP-human</strong> = matched a human review thread; <strong>valid-other</strong> = a different real defect; <strong>valid-minor</strong> = correct improvement suggestion; <strong>trivia</strong> = true but not worth attention; <strong>false-positive</strong> = not real. ("valid" findings = TP-primary + TP-human + valid-other.)</dd>
@@ -100,19 +100,20 @@ svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);fon
 <p>fan-out premium bought zero marginal recall.</p>
 <p><strong>Where the tools actually differ: noise discipline.</strong> The valid set being identical, the spread</p>
 <p>is in what else got said. anthropic-code-review is the disciplined outlier: ~3–6 consolidated</p>
-<p>findings per cell, 1.5 valid-minor and 0.5 trivia per cell, severity calibration 1.0 (everything</p>
-<p>it flagged critical/high was substantive), precision 0.58. Its consolidation gate visibly works —</p>
+<p>findings per cell, 1.5 valid-minor and 0.5 trivia per cell, severity calibration 1.0 (1/1 —</p>
+<p>the one cluster it flagged critical/high was substantive), precision 0.58. Its consolidation gate visibly works —</p>
 <p>it even scored the underscore-collision cluster at 50 and told the reader it was below threshold.</p>
 <p>superpowers is nearly as clean (0.5 trivia/cell) while still surfacing all four valid clusters —</p>
 <p>remarkable for a single-agent run. At the other end, pr-review-toolkit shipped 12 valid-minor and</p>
-<p>4 trivia clusters per cell (precision 0.20, severity calibration 0.31 — its &quot;critical&quot; label means</p>
+<p>4 trivia clusters per cell (precision 0.20, severity calibration 0.44 on 4/9 — its &quot;critical&quot; label means</p>
 <p>little: it stamped critical on a stale test comment), and tag1-comprehensive-review sat close</p>
 <p>behind (8.5 minor, 3.5 trivia, plus the subject&#x27;s only false positive — a claim that expression</p>
 <p>columns share a sentinel <code>&quot;_&quot;</code> cache entry, refuted because the not-found path never inserts</p>
 <p>anything). ours landed mid-pack on volume (8.5 minor, 1.0 trivia) with zero FPs; its minors were</p>
 <p>disproportionately convention-anchored (.editorconfig cites, sibling-idiom comparisons), which is</p>
 <p>the valid-minor tier working as designed, but its severity ceiling was noisy — four &quot;critical&quot;</p>
-<p>consolidated findings of which only one is the actual bug (calibration 0.6).</p>
+<p>consolidated findings of which only one is the actual bug (calibration 0.6 — 3 of the 5 it ranked</p>
+<p>critical/high were substantive).</p>
 <p><strong>Suggestion tier.</strong> Thirteen clusters graded valid-minor — an unusually rich haul, and almost all</p>
 <p>convention-anchored: the <code>RowIds</code> field naming (all five tools), <code>!=</code> spacing, <code>rowidkey</code> casing,</p>
 <p>out-var idiom, whitespace churn, Console.WriteLine-instead-of-asserts, the defective test comments,</p>

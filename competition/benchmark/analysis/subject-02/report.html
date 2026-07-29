@@ -17,7 +17,7 @@ td:first-child,th:first-child,.tool{text-align:left} .tool{font-weight:600}
 svg .ax{stroke:var(--muted)} svg .grid{stroke:var(--line)} svg .pt{fill:var(--accent)}
 svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);font-size:11px}
 .wrap>section{overflow-x:auto} code{background:var(--card);padding:1px 4px;border-radius:4px;font-size:12.5px}
-.legend{color:var(--muted);font-size:12px;margin-top:4px}
+.legend{color:var(--muted);font-size:12px;margin-top:4px} .n{color:var(--muted);font-size:11.5px}
 .glossary dl{margin:6px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
 .glossary dt{font-weight:600;white-space:nowrap} .glossary dd{margin:0;color:var(--muted);font-size:13px}
 .glossary h3{margin:0 0 8px} @media(max-width:560px){.glossary dl{grid-template-columns:1fr}.glossary dd{margin:0 0 6px}}
@@ -26,7 +26,7 @@ svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);fon
 <p class="sub">dotnet/aspnetcore#67075 · judge: <code>claude-opus-5[1m]</code> ·
 34 distinct issues · no human threads (bug + FP discipline only)</p>
 
-<section><h2>Leaderboard</h2><table><thead><tr><th>tool</th><th>escaped bug</th><th>valid /run</th><th>suggestions /run</th><th>unique valid</th><th>trivia /run</th><th>invalid /run</th><th>precision</th><th>sev. calibration</th><th>subagent distinct.</th><th>cost /run</th><th>~agents</th></tr></thead><tbody><tr><td class='tool'>superpowers</td><td>100%</td><td>1.0</td><td>0.0</td><td>0</td><td>1</td><td>1</td><td>33%</td><td>100%</td><td>—</td><td>$1.72</td><td>1</td></tr><tr><td class='tool'>anthropic-code-review</td><td>100%</td><td>2.5</td><td>1.0</td><td>1</td><td>2</td><td>0</td><td>50%</td><td>100%</td><td>21%</td><td>$5.58</td><td>10</td></tr><tr><td class='tool'>pr-review-toolkit</td><td>100%</td><td>3.0</td><td>3.5</td><td>0</td><td>14</td><td>2</td><td>14%</td><td>67%</td><td>28%</td><td>$5.64</td><td>5</td></tr><tr><td class='tool'>ours</td><td>100%</td><td>2.5</td><td>3.5</td><td>0</td><td>4</td><td>2</td><td>23%</td><td>25%</td><td>25%</td><td>$11.25</td><td>10</td></tr><tr><td class='tool'>tag1-comprehensive-review</td><td>100%</td><td>2.5</td><td>2.0</td><td>0</td><td>6</td><td>2</td><td>21%</td><td>100%</td><td>29%</td><td>$12.54</td><td>11</td></tr></tbody></table>
+<section><h2>Leaderboard</h2><table><thead><tr><th>tool</th><th>escaped bug</th><th>valid /run</th><th>suggestions /run</th><th>unique valid</th><th>trivia /run</th><th>invalid /run</th><th>precision</th><th>sev. calibration</th><th>subagent distinct.</th><th>cost /run</th><th>~agents</th></tr></thead><tbody><tr><td class='tool'>superpowers</td><td>100%</td><td>1.0</td><td>0.0</td><td>0</td><td>1</td><td>1</td><td>33%</td><td>100% <span class='n'>1/1</span></td><td>—</td><td>$1.72</td><td>1</td></tr><tr><td class='tool'>anthropic-code-review</td><td>100%</td><td>2.5</td><td>1.0</td><td>1</td><td>2</td><td>0</td><td>50%</td><td>—</td><td>21%</td><td>$5.58</td><td>10</td></tr><tr><td class='tool'>pr-review-toolkit</td><td>100%</td><td>3.0</td><td>3.5</td><td>0</td><td>14</td><td>2</td><td>14%</td><td>100% <span class='n'>2/2</span></td><td>28%</td><td>$5.64</td><td>5</td></tr><tr><td class='tool'>ours</td><td>100%</td><td>2.5</td><td>3.5</td><td>0</td><td>4</td><td>2</td><td>23%</td><td>50% <span class='n'>1/2</span></td><td>25%</td><td>$11.25</td><td>10</td></tr><tr><td class='tool'>tag1-comprehensive-review</td><td>100%</td><td>2.5</td><td>2.0</td><td>0</td><td>6</td><td>2</td><td>21%</td><td>100% <span class='n'>1/1</span></td><td>29%</td><td>$12.54</td><td>11</td></tr></tbody></table>
 <p class="legend">Every tool reviewed the PR twice; "/run" columns are averaged across the two runs. Definitions below.</p>
 <div class="card glossary"><h3>How to read this</h3><dl>
 <dt>run (cell)</dt><dd>one review = one tool running once. Each tool reviewed this PR twice, so 2 runs per tool; "/run" numbers are averaged across the two.</dd>
@@ -38,7 +38,7 @@ svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);fon
 <dt>trivia /run</dt><dd>true-but-valueless findings per run — taste-only, speculative, out-of-scope, duplicative, or an unbounded suggestion class. The attention tax.</dd>
 <dt>invalid /run</dt><dd>false positives per run — findings asserting a problem that isn't real (refuted against the code). Actively misleading.</dd>
 <dt>precision</dt><dd>substantive precision: valid ÷ everything reported (suggestions and trivia both count against it). Higher = less to read per real defect.</dd>
-<dt>sev. calibration</dt><dd>when the tool itself labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop.</dd>
+<dt>sev. calibration</dt><dd>when the tool's <em>consolidated report</em> labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop. Severities a sub-agent claimed privately don't count — the reader never sees them. The fraction beside the percentage is the count it rests on; below ~20 flagged findings, read it as a direction, not a score.</dd>
 <dt>subagent distinct.</dt><dd>for multi-agent tools, distinct issues ÷ total sub-agent findings. Low = many agents re-finding the same things.</dd>
 <dt>Jaccard (overlap, below)</dt><dd>how similar two tools' valid-finding sets are: shared ÷ combined. 1.00 = identical, 0.00 = no overlap.</dd>
 <dt>verdict labels</dt><dd>each issue in the drill-down is graded: <strong>TP-primary</strong> = caught the escaped bug; <strong>TP-human</strong> = matched a human review thread; <strong>valid-other</strong> = a different real defect; <strong>valid-minor</strong> = correct improvement suggestion; <strong>trivia</strong> = true but not worth attention; <strong>false-positive</strong> = not real. ("valid" findings = TP-primary + TP-human + valid-other.)</dd>
@@ -113,9 +113,9 @@ svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);fon
 <p>sprays the whole changeset: fixture naming, declaration order, attribute placement, unbounded</p>
 <p>&quot;also test generics/indexers/explicit interface impls&quot; asks. Nothing it uniquely found was true.</p>
 <p><code>tag1</code> is the same shape at lower volume (140 findings, 6.0 trivia/cell, precision 0.21).</p>
-<p><code>ours</code> sits in the middle — 68 findings, 3.5 trivia/cell, precision 0.23 — but has this subject&#x27;s</p>
-<p><strong>worst calibration by far, 0.25</strong>. Of the clusters ours ranked critical/high, three of four were</p>
-<p>not substantive. Two of its three false positives are direct hits on <code>known_safe</code> entries: it</p>
+<p><code>ours</code> sits in the middle — 68 findings, 3.5 trivia/cell, precision 0.23 — and is the only tool</p>
+<p>here whose consolidated report ranked anything critical/high that was not substantive</p>
+<p>(<strong>calibration 0.50, 1/2</strong>). Two of its three false positives are direct hits on <code>known_safe</code> entries: it</p>
 <p>asserted the deliberate static-property exclusion is a defect (<code>c6</code>, <code>c17</code>) when both new lookups</p>
 <p>specify <code>BindingFlags.Instance</code> precisely because DataAnnotations validates instance properties.</p>
 <p>That is the answer key&#x27;s designed trap, and ours walked into it twice.</p>
@@ -132,8 +132,9 @@ svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);fon
 <h2>Cost versus catch</h2>
 <p>Every tool caught the bug, so cost-per-bug is just cost: superpowers <strong>$1.72</strong>, anthropic</p>
 <p><strong>$5.58</strong>, pr-review-toolkit <strong>$5.64</strong>, ours <strong>$11.25</strong>, tag1 <strong>$12.54</strong>.</p>
-<p>Ours is <strong>2.0× anthropic</strong> here while producing twice the findings, more false positives, and a</p>
-<p>quarter of the severity calibration. Against superpowers it is 6.5× the cost for the same catch</p>
+<p>Ours is <strong>2.0× anthropic</strong> here while producing twice the findings, more false positives, and the</p>
+<p>subject&#x27;s only miscalibrated top-of-list (0.50 against 1.00 for every other tool that ranked</p>
+<p>anything critical/high). Against superpowers it is 6.5× the cost for the same catch</p>
 <p>and 3.5× the trivia. There is no defensible cost story for ours on this subject.</p>
 <p>The corrected anthropic figure ($5.58) is close to the study-wide clean-cell average ($7.13) and</p>
 <p>less than half what the contaminated cells recorded — which is what the earlier version of this</p>
@@ -144,11 +145,11 @@ svg .lbl{fill:var(--fg);font-size:11px} svg .tick,svg .axl{fill:var(--muted);fon
 </ul>
 <p>  Do not read recall as informative here.</p>
 <ul>
-<li><strong>Anthropic emits confidence scores, not severities.</strong> Its <code>severity_calibration</code> of 1.00 rests</li>
+<li><strong>Anthropic emits confidence scores, not severities</strong>, so its consolidated report tagged nothing</li>
 </ul>
-<p>  on very few explicitly severity-tagged clusters and is not comparable in weight to ours&#x27; 0.25,</p>
-<p>  computed over a fuller severity ladder. Applying a severity-based metric to a tool that does not</p>
-<p>  rank by severity is a known limitation — tracked in dcc-hmp6.</p>
+<p>  here critical/high and <code>severity_calibration</code> is undefined for it on this subject — the earlier</p>
+<p>  1.00 came from a sub-agent&#x27;s private label, which the metric no longer counts (#dcc-hmp6).</p>
+<p>  Applying a severity-based metric to a tool that does not rank by severity remains a limitation.</p>
 <ul>
 <li><strong>The eight non-anthropic cells reuse the 17 Jul extraction.</strong> Their bundles are unchanged, but</li>
 </ul>

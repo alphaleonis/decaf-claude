@@ -91,8 +91,9 @@ $5.58 (169-line diff) → $11.00 (688) → $10.19 (1,560).
   subject on precision, noise and unique catches, not recall.
 - **`double_paste_regression` is graded at confidence 45** — the lowest verdict in the subject, and
   it is anthropic's only unique catch. If it were downgraded, anthropic's unique-true drops to zero.
-- **Anthropic emits confidence scores, not severities**, so its calibration is computed over few
-  severity-tagged clusters. Tracked in dcc-hmp6.
+- **Anthropic emits confidence scores, not severities**, so its calibration rests on 4 consolidated
+  critical/high clusters against ours' 10 — not weight-comparable. The metric now counts only the
+  consolidated report (#dcc-hmp6); the thin denominator is a separate, unresolved limitation.
 - **Nine cells' extractions were reused** (all eight non-anthropic plus anthropic r1); only
   anthropic r2 was re-extracted.
 - **The judge changed** from `claude-opus-4-8` to `claude-opus-5[1m]` between versions of this file,

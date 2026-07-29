@@ -74,6 +74,12 @@ def main():
     def minor_pc(m):
         v = m.get("valid_minor_per_cell")
         return "—" if v is None else f"{v:,.1f}"
+    def calib(m):
+        # always show the denominator — these counts are small enough that a bare percentage
+        # reads far more precise than it is
+        v, k, n = (m.get("severity_calibration"), m.get("severity_calibration_substantive"),
+                   m.get("severity_calibration_flagged"))
+        return "—" if v is None else f"{pct(v)} <span class='n'>{k}/{n}</span>"
     cols = [("escaped bug", lambda m: pct(m["bug_catch_rate"])),
             ("valid /run", valid_pc),
             ("suggestions /run", minor_pc),
@@ -81,7 +87,7 @@ def main():
             ("trivia /run", lambda m: num(m.get("trivia_per_cell", m.get("nitpick_per_cell")))),
             ("invalid /run", lambda m: num(m["fp_per_cell"])),
             ("precision", lambda m: pct(m["precision_mean"])),
-            ("sev. calibration", lambda m: pct(m.get("severity_calibration"))),
+            ("sev. calibration", calib),
             ("subagent distinct.", lambda m: pct(m["subagent_distinctness"])),
             ("cost /run", lambda m: money(m["mean_cost_usd"])),
             ("~agents", lambda m: num(m["mean_subagents"]))]
@@ -102,7 +108,7 @@ def main():
 <dt>trivia /run</dt><dd>true-but-valueless findings per run — taste-only, speculative, out-of-scope, duplicative, or an unbounded suggestion class. The attention tax.</dd>
 <dt>invalid /run</dt><dd>false positives per run — findings asserting a problem that isn't real (refuted against the code). Actively misleading.</dd>
 <dt>precision</dt><dd>substantive precision: valid ÷ everything reported (suggestions and trivia both count against it). Higher = less to read per real defect.</dd>
-<dt>sev. calibration</dt><dd>when the tool itself labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop.</dd>
+<dt>sev. calibration</dt><dd>when the tool's <em>consolidated report</em> labeled a finding critical/high, how often the judge agreed it was substantive. High = you can read the tool's top findings and stop. Severities a sub-agent claimed privately don't count — the reader never sees them. The fraction beside the percentage is the count it rests on; below ~20 flagged findings, read it as a direction, not a score.</dd>
 <dt>subagent distinct.</dt><dd>for multi-agent tools, distinct issues ÷ total sub-agent findings. Low = many agents re-finding the same things.</dd>
 <dt>Jaccard (overlap, below)</dt><dd>how similar two tools' valid-finding sets are: shared ÷ combined. 1.00 = identical, 0.00 = no overlap.</dd>
 <dt>verdict labels</dt><dd>each issue in the drill-down is graded: <strong>TP-primary</strong> = caught the escaped bug; <strong>TP-human</strong> = matched a human review thread; <strong>valid-other</strong> = a different real defect; <strong>valid-minor</strong> = correct improvement suggestion; <strong>trivia</strong> = true but not worth attention; <strong>false-positive</strong> = not real. ("valid" findings = TP-primary + TP-human + valid-other.)</dd>
@@ -158,7 +164,7 @@ td:first-child,th:first-child,.tool{{text-align:left}} .tool{{font-weight:600}}
 svg .ax{{stroke:var(--muted)}} svg .grid{{stroke:var(--line)}} svg .pt{{fill:var(--accent)}}
 svg .lbl{{fill:var(--fg);font-size:11px}} svg .tick,svg .axl{{fill:var(--muted);font-size:11px}}
 .wrap>section{{overflow-x:auto}} code{{background:var(--card);padding:1px 4px;border-radius:4px;font-size:12.5px}}
-.legend{{color:var(--muted);font-size:12px;margin-top:4px}}
+.legend{{color:var(--muted);font-size:12px;margin-top:4px}} .n{{color:var(--muted);font-size:11.5px}}
 .glossary dl{{margin:6px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}}
 .glossary dt{{font-weight:600;white-space:nowrap}} .glossary dd{{margin:0;color:var(--muted);font-size:13px}}
 .glossary h3{{margin:0 0 8px}} @media(max-width:560px){{.glossary dl{{grid-template-columns:1fr}}.glossary dd{{margin:0 0 6px}}}}

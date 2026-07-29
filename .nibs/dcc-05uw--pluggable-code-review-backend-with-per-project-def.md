@@ -7,7 +7,7 @@ type: feature
 priority: normal
 estimate: l
 created_at: 2026-07-28T18:48:19Z
-updated_at: 2026-07-29T11:03:32Z
+updated_at: 2026-07-29T11:45:49Z
 order: zzy
 ---
 
@@ -24,11 +24,15 @@ the field, and for many jobs a cheaper one loses little.
 
 | backend | $/run | escaped bug caught | useful findings/run | trivia share | calibration |
 |---|---|---|---|---|---|
-| superpowers | **$2.48** | 14/18 | 5.0 | **21%** | 0.63 |
-| anthropic-code-review | $7.61 ‡ | **18/18** | 6.3 | 25% | **0.92** ‡ |
-| pr-review-toolkit | $8.56 | 12/18 | 11.7 | 42% | 0.51 |
-| tag1-comprehensive-review | $16.72 | 15/18 | 11.2 | 37% | 0.61 |
-| ours | $21.33 | 16/18 | 10.5 | 31% | 0.62 |
+| superpowers | **$2.48** | 14/18 | 5.0 | **21%** | 0.65 (17/26) |
+| anthropic-code-review | $7.61 ‡ | **18/18** | 6.3 | 25% | **0.90** (9/10) ‡ |
+| pr-review-toolkit | $8.56 | 12/18 | 11.7 | 42% | 0.48 (23/48) |
+| tag1-comprehensive-review | $16.72 | 15/18 | 11.2 | 37% | 0.79 (19/24) |
+| ours | $21.33 | 16/18 | 10.5 | 31% | 0.70 (21/30) |
+
+Calibration is restated on the settled definition — consolidated report only, pooled across
+subjects (#dcc-hmp6). Read the denominators before ranking on that column: anthropic's figure
+rests on ten flagged clusters, where one cluster is worth 0.10.
 
 `superpowers` costs **8.6× less than ours** and still caught the escaped bug in 14 of 18 runs,
 with the cleanest output in the study (lowest trivia share, lowest false-positive rate, fewest
@@ -119,13 +123,14 @@ both axes `auto-code-review`'s triage table needs (severity × anchor × validat
 
 - **superpowers → confidence.** One uncorroborated reviewer with no verification step *is*
   anchor 75 by ours' own definition. Severity maps directly (Critical→Critical,
-  Important→High, Minor→the Minor bucket). Caveat: its severity calibration measured 0.63,
-  barely above ours' 0.62 — the labels transfer, but deserve no more trust than ours.
+  Important→High, Minor→the Minor bucket). Caveat: its severity calibration measured 0.65
+  (17/26), *below* ours' 0.70 — the labels transfer, but deserve no more trust than ours, and
+  on the restated metric slightly less.
 - **anthropic → severity.** Its confidence rubric uses discrete anchors 0/25/50/75/100 and
   step 6 discards everything under 80 — so on that ladder **only findings scored exactly 100
   are ever emitted**: "definitely a real issue, that will happen frequently in practice."
   Mapping all of them to `(High, anchor 100)` restates the rubric rather than guessing it;
-  measured calibration 0.88 corroborates. What is genuinely lost is remediation text.
+  measured calibration 0.90 (9/10) corroborates. What is genuinely lost is remediation text.
 
 **Anthropic is three different products; only one is dispatchable.** `/review` is a harness
 builtin (GitHub PR). `claude ultrareview` / `/code-review ultra` is a cloud-hosted multi-agent

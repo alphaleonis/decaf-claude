@@ -7,7 +7,7 @@ type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-29T11:06:08Z
+updated_at: 2026-07-29T11:44:37Z
 order: zzw
 ---
 
@@ -20,14 +20,16 @@ $1,096 spend. On the headline metrics `ours` loses to the built-in `anthropic-co
 |---|---|---|
 | escaped bug caught | 18/18 | 16/18 |
 | substantive share | 49% | 36% |
-| severity calibration | **0.88** | **0.62** † |
+| severity calibration | **0.90** (9/10) | **0.70** (21/30) † |
 | cost | $11.82 † | **$21.33** |
 | findings emitted | 9.8 | 15.8 |
 
-† **Superseded on two counts.** (1) That 0.62 is max-severity-over-sub-agents, not what the
-consolidated report tells a reader — on the artifact a reader sees, ours is **0.77**. (2) Every
+† **Superseded on two counts, and both are now fixed in the metric itself.** (1) That 0.62 was
+max-severity-over-sub-agents, macro-averaged over subjects. `severity_calibration` now counts only
+the consolidated report and pools across subjects (#dcc-hmp6), which restates ours at **0.70
+(21/30)** and anthropic at **0.90 (9/10)**. (2) Every
 anthropic figure in this table came from a column blended with contaminated cells (#dcc-9kkz).
-Clean: anthropic **$7.61/run**, calibration **0.92**, 56% substantive share, 18/18 recall. Ours is
+Clean: anthropic **$7.61/run**, calibration **0.90**, 56% substantive share, 18/18 recall. Ours is
 unchanged, so the cost ratio is **2.8×**, not 1.8×.
 
 But the naive reading ("ours reports more, but not what you want") is **wrong**, and the
@@ -52,7 +54,9 @@ Synthesis: `competition/benchmark/analysis/synthesis-report.html` · data:
 # Workstreams (ranked by leverage)
 
 ## 1. Severity calibration — the single widest gap
-`P(substantive | tool said critical/high)` = 0.62 vs anthropic's 0.88.
+`P(substantive | the consolidated report said critical/high)` = 0.70 (21/30) vs anthropic's 0.90
+(9/10) — restated on the settled metric definition (#dcc-hmp6); the figures below were computed
+before both that change and the #dcc-9kkz data repair, and are restated in place.
 
 > **The premise below was wrong and is corrected in "Root cause" — this is *not* a
 > consolidation failure. Consolidation measurably *improves* calibration; the over-claiming
@@ -65,42 +69,47 @@ reader-facing problem is real; the attribution was not.
 
 ### Root cause (measured over the 9 graded subjects)
 
-**1. The headline 0.62 does not measure what a reader sees.** `compute_metrics.py::_calibration`
-takes the **max severity across every `reported_by` entry**, which includes each sub-agent's own
-claim. A reader never sees those — they see the consolidated report. Splitting the two:
+**1. The headline 0.62 did not measure what a reader sees.** `compute_metrics.py::_calibration`
+took the **max severity across every `reported_by` entry**, which includes each sub-agent's own
+claim. A reader never sees those — they see the consolidated report. Splitting the two, pooled over
+the 9 graded subjects on the repaired data:
 
 | tool | max-over-agents | consolidated report only |
 |---|---|---|
-| superpowers | 0.65 | 0.65 |
-| pr-review-toolkit | 0.47 | 0.50 |
-| anthropic | 0.83 | **0.88** |
-| tag1 | 0.55 | 0.79 |
-| **ours** | 0.65 | **0.77** |
+| superpowers | 0.65 (17/26) | 0.65 (17/26) |
+| pr-review-toolkit | 0.42 (27/64) | 0.48 (23/48) |
+| anthropic | 0.86 (12/14) | **0.90 (9/10)** |
+| tag1 | 0.47 (31/66) | 0.79 (19/24) |
+| **ours** | 0.52 (31/60) | **0.70 (21/30)** |
 
 `superpowers` is the control: one agent, so consolidated *is* the max, and the two agree exactly.
-The fan-out tools all improve, ours most of all — **consolidation raises calibration from 0.65 to
-0.77**, and halves the number of critical/high claims (60 → 30). It is doing the ranking job,
-not failing it. The real gap to anthropic is **0.77 vs 0.88**, roughly 40% of what was believed.
+The fan-out tools all improve, ours most of all — **consolidation raises calibration from 0.52 to
+0.70**, and halves the number of critical/high claims (60 → 30). It is doing the ranking job,
+not failing it. The real gap to anthropic is **0.70 vs 0.90**, about half of what was believed —
+and at n=10 for anthropic, not a gap this corpus resolves confidently. `severity_calibration` now
+uses the consolidated definition (#dcc-hmp6), so these are the published figures.
 
-**2. The residual gap is entirely a category-boundary problem.** Of ours' 30 consolidated
-critical/high clusters, 23 were judged substantive. Split by category:
+**2. The residual gap is a category-boundary problem.** Of ours' 30 consolidated critical/high
+clusters, 21 were judged substantive. Split by category:
 
 | category | flagged crit/high | substantive | miss |
 |---|---|---|---|
-| logic | 10 | 9 | 1 |
+| logic | 10 | 8 | 2 |
 | bug | 9 | 8 | 1 |
 | perf | 3 | 3 | 0 |
 | **doc** | **3** | **0** | **3** |
-| design | 2 | 1 | 1 |
-| test | 2 | 1 | 1 |
-| security | 1 | 1 | 0 |
+| **design** | **2** | **0** | **2** |
+| test | 2 | 2 | 0 |
+| **security** | **1** | **0** | **1** |
 
-**Behavioral findings are already well calibrated** — logic + bug = 17/19 = **0.89**, matching
-anthropic's overall figure. Non-behavioral ones are not: doc + test + design = 2/7 = **0.29**.
-Ours does not have a general ranking problem; it ranks non-behavioral findings as if behavioral.
+**Behavioral findings are well calibrated** — logic + bug = 16/19 = **0.84**, close to anthropic's
+0.90 and inside its interval. Non-behavioral ones are not: doc + design + security = 0/6, and the
+only non-behavioral category that holds up is `test` (2/2). Ours does not have a general ranking
+problem; it ranks non-behavioral findings as if behavioral. **Every single doc, design and security
+finding it escalated was non-substantive.**
 
-**3. The mechanism, traced end to end.** `knowledge-reviewer=critical` appears in **4 of the 7**
-miscalibrated clusters — in three of them as the *sole* critical against a chorus of low/medium:
+**3. The mechanism, traced end to end.** `knowledge-reviewer=critical` appears in **8 of the 9**
+miscalibrated clusters — in several as the *sole* critical against a chorus of low/medium:
 
 - `decaf-quality/agents/knowledge-reviewer.md:41` — "**MUST severity is reserved for RULE 0**
   (knowledge loss)", so every missing-decision-log / undocumented-assumption /
@@ -118,20 +127,25 @@ shipped as **Critical** on the knowledge-reviewer's MUST alone.
 
 | variant | calibration | flagged |
 |---|---|---|
-| as shipped | 0.77 | 23/30 |
-| **cap `doc` category at Medium** | **0.85** | 23/27 |
-| demote a lone Critical against 2+ Low dissent | 0.77 | 23/30 |
+| as shipped | 0.70 | 21/30 |
+| cap `doc` at Medium | 0.78 | 21/27 |
+| **cap `doc` + `design` at Medium** | **0.84** | 21/25 |
+| cap `doc` + `design` + `security` at Medium | 0.88 | 21/24 |
+| demote a lone Critical against 2+ Low dissent | 0.70 | 21/30 |
 
 Capping doc at Medium **loses zero substantive findings** — across all 9 subjects and every tool
-there are only 2 substantive doc-category clusters (against 24 valid-minor and 26 trivia), and
-neither was among ours' critical/high set. It closes most of the remaining gap to 0.88.
+there are only 2 substantive doc-category clusters (against 24 valid-minor and 28 trivia), and
+neither was among ours' critical/high set. Extending the cap to `design` costs nothing either:
+ours flagged 2 design clusters critical/high and both graded trivia. Together they take ours to
+0.84, level with anthropic's 0.90 once anthropic's n=10 interval is accounted for.
 
 The dissent-based demotion does **nothing** here: `knowledge-reviewer` rates these critical in
 *both* repeats, so a "lone critical" test never fires. Rule 3 is not the lever; the MUST→Critical
 mapping is.
 
 - [x] Determine why consolidated severity diverges from judged severity — done; and the divergence
-      is much smaller than the headline metric implies (0.77, not 0.62)
+      is much smaller than the old headline metric implied (0.70, not 0.62; the metric itself is
+      now fixed — #dcc-hmp6)
 - [x] Look for a systematic bias — found: non-behavioral categories ranked as behavioral, via
       `knowledge-reviewer`'s MUST → Critical normalization
 - [ ] Prototype a stricter severity contract in the consolidation step and re-measure — scoped:
@@ -399,7 +413,7 @@ throughout this nib is **9.4 reviewers + 5.1 validators** per run. Two consequen
 **Basis:** validators are 17.3% of sub-agent output (~13% of session output) and are classified
 as *volume* agents in Step 2d, so in `mid` they already run mid-tier. Anthropic does the same job
 — score a claim against a fixed 0–100 rubric — with **Haiku**, and posts the study's best
-calibration (0.88).
+calibration (0.90, on 10 flagged clusters).
 
 **Change:** add a cheap tier to Step 2d's role split and put the validation wave on it.
 
@@ -508,7 +522,9 @@ Do not regress these while optimizing:
 (ours) under anthropic's label; four are unattributed. Across the 9 valid cells anthropic
 now averages **$7.61/run** across all 18 clean cells, not the published $11.82 — so **ours is ~2.8×
 more expensive, not 1.8×**. Anthropic also sweeps recall (18/18) and posts 0.92 calibration and a
-56% substantive share, all better than the blended figures.
+56% substantive share, all better than the blended figures. (That 0.92, and the per-group figures
+below, are under the pre-#dcc-hmp6 max-over-sub-agents definition — kept as recorded at the time.
+The published figure is now 0.90 on the consolidated definition.)
 
 - **Unaffected** — every ours-only finding here: the per-persona roster analysis, the severity
   calibration root cause, and the diff-vs-repo cost scaling.

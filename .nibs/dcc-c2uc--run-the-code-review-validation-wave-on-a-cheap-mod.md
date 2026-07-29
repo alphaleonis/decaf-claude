@@ -9,7 +9,7 @@ estimate: m
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-07-29T11:24:12Z
+updated_at: 2026-07-29T11:45:49Z
 parent: dcc-hyxw
 order: ak
 ---
@@ -22,7 +22,8 @@ refute findings the reviewers already raised.
 
 Step 2d classifies validators as *volume* agents, so in `mid` they already run mid-tier. But
 anthropic does the identical job — score a claim against a fixed 0–100 rubric — on **Haiku**, and
-posts the study's best severity calibration (0.88 vs ours' 0.62). That is direct evidence the
+posts the study's best severity calibration (0.90, 9/10, vs ours' 0.70, 21/30 — #dcc-hmp6). That
+is direct evidence the
 task does not need a mid-tier model.
 
 Validators are ~13% of session output, so this is the largest saving available that does not

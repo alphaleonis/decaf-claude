@@ -31,19 +31,20 @@ fan-out premium bought zero marginal recall.
 
 **Where the tools actually differ: noise discipline.** The valid set being identical, the spread
 is in what else got said. anthropic-code-review is the disciplined outlier: ~3–6 consolidated
-findings per cell, 1.5 valid-minor and 0.5 trivia per cell, severity calibration 1.0 (everything
-it flagged critical/high was substantive), precision 0.58. Its consolidation gate visibly works —
+findings per cell, 1.5 valid-minor and 0.5 trivia per cell, severity calibration 1.0 (1/1 —
+the one cluster it flagged critical/high was substantive), precision 0.58. Its consolidation gate visibly works —
 it even scored the underscore-collision cluster at 50 and told the reader it was below threshold.
 superpowers is nearly as clean (0.5 trivia/cell) while still surfacing all four valid clusters —
 remarkable for a single-agent run. At the other end, pr-review-toolkit shipped 12 valid-minor and
-4 trivia clusters per cell (precision 0.20, severity calibration 0.31 — its "critical" label means
+4 trivia clusters per cell (precision 0.20, severity calibration 0.44 on 4/9 — its "critical" label means
 little: it stamped critical on a stale test comment), and tag1-comprehensive-review sat close
 behind (8.5 minor, 3.5 trivia, plus the subject's only false positive — a claim that expression
 columns share a sentinel `"_"` cache entry, refuted because the not-found path never inserts
 anything). ours landed mid-pack on volume (8.5 minor, 1.0 trivia) with zero FPs; its minors were
 disproportionately convention-anchored (.editorconfig cites, sibling-idiom comparisons), which is
 the valid-minor tier working as designed, but its severity ceiling was noisy — four "critical"
-consolidated findings of which only one is the actual bug (calibration 0.6).
+consolidated findings of which only one is the actual bug (calibration 0.6 — 3 of the 5 it ranked
+critical/high were substantive).
 
 **Suggestion tier.** Thirteen clusters graded valid-minor — an unusually rich haul, and almost all
 convention-anchored: the `RowIds` field naming (all five tools), `!=` spacing, `rowidkey` casing,
