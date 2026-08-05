@@ -2,7 +2,7 @@
 # dcc-9q01
 version: 1
 title: Parameterize code-review on four axes (roster / models / evidence / reach) with named presets
-status: todo
+status: in-progress
 type: epic
 priority: high
 estimate: l
@@ -10,7 +10,7 @@ tags:
     - code-review
     - design
 created_at: 2026-07-29T16:29:22Z
-updated_at: 2026-07-29T19:29:22Z
+updated_at: 2026-08-05T22:43:30Z
 order: zzzs
 ---
 
@@ -188,22 +188,20 @@ Terminology settled with the operator 2026-07-29. Supersedes the sweep ordering 
 
 ## Current Focus
 
-Completed dcc-jt58: `reach=<narrow|norm|wide>` is settable and acts in three places: a dispatch-side block telling
-reviewers what to hunt, Step 5 routing of pre-existing findings, and report-section gating. Modes
-map onto it (low→narrow, mid/high→norm, max→wide).
+Completed dcc-xewu: Cluster-then-screen is built and its gating experiment is complete at both scales.
 
-The open question is answered, and the answer is that it is two different mechanisms. Absences
-(missing tests, undocumented decisions) are a dispatch-side saving, because hunting for them is a
-separate search activity — that is where the money is, since `test` is the largest category ours
-produces for the fewest substantive findings. Pre-existing defects are a reporting rule and save
-nothing, because you cannot know a defect is pre-existing without analysing it.
+Step 4.9 (cluster) and 4.95 (screen) ship; Step 5 verifies rather than re-derives the grouping,
+and Step 5.6 no longer selects validators on single-finder alone. Clustering runs mid-tier on
+measurement (F1 0.87 mid, 0.86 top, 0.80 cheap), and the large-subject test that was owed is done:
+subject 6 clusters as well as the small subjects once run-to-run variance is accounted for.
 
-Interaction worth knowing: under `reach=wide` auto-code-review now triages and fixes pre-existing
-defects. Its standing "fix the change, not the backlog" rule yields to an explicit wide, because an
-autonomous loop is often the only reader that code gets. Never fires by default.
-
-Implemented in the orchestrator rather than across fifteen agents; the seven whose scope includes
-absences carry a short note so their briefs do not contradict the dispatch directive.
+Two things leave here unresolved and belong to #dcc-gxuk, which measures the presets:
+- The `evidence` cut points (80/60/40/25) remain a first calibration, and the control run showed
+  they should be expressed relative to a run's own corroboration distribution rather than as an
+  absolute finder count — small and large diffs have different distributions and an absolute bar
+  misreads one of them.
+- Whether the screen preserves recall, and whether the shrunken validation wave costs verdict
+  quality, is still unmeasured.
 
 ## RESUME HERE — state at 2026-07-29
 ## RESUME HERE — state at 2026-07-29
