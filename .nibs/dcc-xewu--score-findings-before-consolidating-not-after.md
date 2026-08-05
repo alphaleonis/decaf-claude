@@ -9,7 +9,7 @@ estimate: l
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-08-05T22:28:52Z
+updated_at: 2026-08-05T22:37:11Z
 parent: dcc-9q01
 blocked_by:
     - dcc-evph
@@ -217,9 +217,10 @@ follow-up.
 
 ### Limits carried forward
 
-1. **Large runs are untested.** Dedup is hardest exactly where the orchestrator's thinking share
-   is 77%. **Test a large run before committing.** (The blocker — subject 6's unjoinable id scheme
-   — was cleared 2026-08-06; the two tasks are built but not yet run. See below.)
+1. ~~**Large runs are untested.**~~ **Cleared 2026-08-06.** Subject 6 ran at the mid tier against
+   an 8-run same-prompt control: per-run F1 0.78/0.76 against a small/medium spread of 0.51-0.95,
+   so large diffs are not a clustering risk. The live question moved to how the `evidence` bar is
+   expressed — see the control-run section.
 2. **The prototype needs a hard count assertion.** Models silently dropped findings until told to
    count, and Haiku mis-reported its own counts even when told. A screen that never sees a finding
    cannot tier it.
@@ -381,3 +382,58 @@ pooled distribution.
 
 `analysis/cluster-replay/` — the two result files and the prompt. Inputs regenerate deterministically
 from `cluster_replay.py build` under its fixed seed; agent outputs do not, so they are committed.
+
+## Control run 2026-08-06 — there is no demonstrated size effect
+
+All 8 small/medium tasks re-run under the same committed `PROMPT.md` and the same mid tier as
+subject 6, so prompt and model are now held fixed across the size comparison. All 10 runs passed
+the count assertion under independent verification; `dropped` is 0 everywhere.
+
+| group | runs | pooled F1 | precision | recall |
+|---|---|---|---|---|
+| small/medium (subjects 1/4/5/7) | 8 | 0.84 | 0.87 | 0.81 |
+| large (subject 6) | 2 | 0.77 | 0.75 | 0.78 |
+| *published 2026-07-29, unknown prompt* | *8* | *0.87* | | |
+
+### The 0.77-vs-0.87 gap decomposes into prompt plus noise, not size
+
+- **~3 points is prompt.** Same 8 tasks, same tier: 0.87 under the lost prompt, 0.84 under this
+  one. [Inference] — the two runs differ in prompt AND in sampling, and nothing separates those.
+- **The rest is inside run-to-run variance.** Per-run F1 across the 8 small/medium tasks spans
+  **0.51 to 0.95** (mean 0.797, sd 0.161). Subject 6's runs are 0.78 and 0.76 — both inside that
+  range, and the difference of means is **0.027, or 0.17 sd**. Three small/medium runs
+  (04-r2 0.74, 07-r2 0.62, 05-r2 0.51) score *below* subject 6's mean.
+
+So the earlier "large runs might cluster worse" framing does not survive the control. Pooled F1
+weights by pair count, which is why the group figures separate (0.84 vs 0.77) while the runs
+themselves do not. With n=2 large runs this cannot establish a size effect in either direction —
+what it does establish is that **nothing here justifies treating large diffs as a clustering risk**,
+which is what the limit carried forward was asking.
+
+### The real large-diff finding is corroboration, and it points the other way
+
+Post-clustering share of clusters with 2+ finders:
+
+| tier | small/medium | large |
+|---|---|---|
+| substantive | 67% | 62% |
+| valid-minor | 48% | 6% |
+| trivia/FP | 16% | 0% |
+
+On the small subjects, finder count barely separates substantive from valid-minor — 67% against
+48%. On the large subject the same signal is nearly clean: 62% / 6% / 0%, with trivia corroborated
+exactly never. **Corroboration is a much sharper discriminator on large diffs than on small ones**,
+even though the absolute counts are lower there (substantive 2.15 finders against 2.96).
+
+That sharpens, and partly reverses, the calibration note recorded earlier today. The risk is not
+that large diffs degrade the signal — it is that an `evidence` bar expressed as an **absolute**
+finder count reads two different distributions as if they were one. Tuned at the small subjects'
+2.96 it will tier down real findings on a large diff; tuned at 2.15 it will admit corroborated
+trivia on a small one. #dcc-gxuk should calibrate the cut points against corroboration relative to
+the run's own distribution, not against a pooled absolute.
+
+### Artifacts
+
+All 10 result files and the prompt are in `analysis/cluster-replay/`. Score them split, not pooled:
+copy each group's tasks into its own workdir with a filtered `manifest.json` — `score` pools
+whatever the manifest lists, and one blended number across both sizes answers nothing.
