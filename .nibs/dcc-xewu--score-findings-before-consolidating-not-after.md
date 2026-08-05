@@ -9,7 +9,7 @@ estimate: l
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-07-29T19:00:06Z
+updated_at: 2026-08-05T22:19:41Z
 parent: dcc-9q01
 blocked_by:
     - dcc-evph
@@ -217,10 +217,9 @@ follow-up.
 
 ### Limits carried forward
 
-1. **Large runs are untested.** Subject 6's `cluster-assign.json` uses positional ids
-   (`ours__r1__N`) that do not join to its `findings.json` (`f00NN`), so no large run had usable
-   ground truth. Dedup is hardest exactly where the orchestrator's thinking share is 77%. **Test a
-   large run before committing.**
+1. **Large runs are untested.** Dedup is hardest exactly where the orchestrator's thinking share
+   is 77%. **Test a large run before committing.** (The blocker — subject 6's unjoinable id scheme
+   — was cleared 2026-08-06; the two tasks are built but not yet run. See below.)
 2. **The prototype needs a hard count assertion.** Models silently dropped findings until told to
    count, and Haiku mis-reported its own counts even when told. A screen that never sees a finding
    cannot tier it.
@@ -277,5 +276,53 @@ The `evidence` cut points (80/60/40/25) are a **first calibration**, set against
 finder counts. The skill says so. Whether the screen preserves recall, and whether shrinking the
 validation wave costs verdict quality, is unmeasured until #dcc-gxuk.
 
-The large-subject clustering test is still owed — subject 6's `cluster-assign.json` id scheme
-blocks it, and dedup is hardest exactly where the orchestrator's thinking share is 77%.
+The large-subject clustering test is still owed — dedup is hardest exactly where the orchestrator's
+thinking share is 77%. Subject 6 no longer blocks it (2026-08-06); the tasks are built, not run.
+
+## Subject 6 unblocked 2026-08-06 — the large-run clustering test can now be built
+
+`findings.json` now carries an inline `cluster_id` for 661 of its 694 findings, so
+`cluster_replay.py build` picks the subject up and emits two large tasks:
+
+| task | findings | reference clusters |
+|---|---|---|
+| subject-06-r1 | 49 | 33 |
+| subject-06-r2 | 61 | 40 |
+
+Against 190 findings across the existing 8 tasks. **Do not silently pool them** — 110 new findings
+from one large TypeScript diff would be 37% of the sample and would restate the published F1 0.87
+into a differently-weighted number. Report subject 6 as its own row; the question is whether the
+mid-tier decision survives scale, not what the new global F1 is.
+
+### It was a re-key, not a re-cluster
+
+The reference clustering was never lost. `cluster-assign.json`'s values map onto `analysis.json`'s
+95 `cluster_id`s at 95/95. Only the finding-side key was unjoinable: the assign map uses the
+composite ids the per-run extracts carry (`ours__r1__N`), while `findings.json` had been rebuilt
+with positional `f00NN` ids. `extract/<tool>__r<N>.json` bridges the two — it carries the composite
+id and sits in the same order as `findings.json`.
+
+That order is the whole basis of the re-key, so `analysis/scripts/backfill_cluster_ids.py` verifies
+it position by position on file+line and skips any run that disagrees anywhere. For the `ours` runs
+— the only ones the replay consumes — it matched 183/183. Each backfilled finding records
+`cluster_id_source` for audit.
+
+### The check caught a real problem: subject 6's `anthropic-code-review` r2 is two different datasets
+
+`extract/anthropic-code-review__r2.json` holds 20 findings, none with a subagent.
+`findings.json` holds 33 for that run, 23 of them with a subagent. They agree on **1** file+line
+pair out of 20 — so this is not a reordering, it is a re-extraction that `extract/` and
+`cluster-assign.json` never caught up with. Those 33 findings are the only ones left without a
+`cluster_id`.
+
+Harmless here — the replay filters `tool == "ours"` — but subject 6's `analysis.json` clusters
+still cite the stale anthropic r2 findings in `reported_by`, so any published anthropic number for
+subject 6 rests on a finding set that `findings.json` no longer contains. Filed separately; it is a
+data-integrity question about the benchmark, not about clustering.
+
+### Still owed
+
+The two tasks are built but **not run**. Run them at the mid tier (the tier decision is already
+made; the open question is whether it holds at scale), then `cluster_replay.py score`. The build is
+deterministic under a fixed seed, so the workdir need not be committed — but the resulting numbers
+should land here.
