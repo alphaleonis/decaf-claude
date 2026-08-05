@@ -2,14 +2,14 @@
 # dcc-xewu
 version: 1
 title: Score findings before consolidating, not after
-status: in-progress
+status: completed
 type: feature
 priority: normal
 estimate: l
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-08-05T22:37:11Z
+updated_at: 2026-08-05T22:43:23Z
 parent: dcc-9q01
 blocked_by:
     - dcc-evph
@@ -73,9 +73,12 @@ no anchor, so the whole downstream contract has to be re-checked.
       tiers, clusters compared to the committed ones, and an explicit verdict on whether
       `cluster-then-screen` is viable — **PASSED 2026-07-29**: sonnet F1 0.87 matches opus 0.86 at a
       fraction of the cost, haiku trails at 0.80, corroboration preserved. Clustering runs mid-tier
-- [ ] [manual] Re-run the clustering experiment on a **large** subject before committing — no large
-      run had joinable ground truth, and dedup is hardest where the orchestrator's thinking share is
-      77%. Fixing subject 6's `cluster-assign.json` id scheme is the cheapest route
+- [x] [manual] Re-run the clustering experiment on a **large** subject before committing —
+      **DONE 2026-08-06**: subject 6 re-keyed and run at the mid tier against an 8-run same-prompt
+      control. Per-run F1 0.78/0.76 against a small/medium spread of 0.51-0.95 (mean 0.797, sd
+      0.161), so large diffs are not a clustering risk. Corroboration separates *better* there
+      (2+ finders: 62/6/0% by tier against 67/48/16%), which moved the open question to how the
+      `evidence` bar is expressed — handed to #dcc-gxuk
 - [x] [run] the prototype asserts every input finding lands in exactly one cluster — the cheap model
       silently dropped ids until told to count them
 - [x] [run] `rg -n "Step 5" -A15 decaf-quality/skills/code-review/SKILL.md` — expect: the
@@ -437,3 +440,20 @@ the run's own distribution, not against a pooled absolute.
 All 10 result files and the prompt are in `analysis/cluster-replay/`. Score them split, not pooled:
 copy each group's tasks into its own workdir with a filtered `manifest.json` — `score` pools
 whatever the manifest lists, and one blended number across both sizes answers nothing.
+
+## Summary
+
+Cluster-then-screen is built and its gating experiment is complete at both scales.
+
+Step 4.9 (cluster) and 4.95 (screen) ship; Step 5 verifies rather than re-derives the grouping,
+and Step 5.6 no longer selects validators on single-finder alone. Clustering runs mid-tier on
+measurement (F1 0.87 mid, 0.86 top, 0.80 cheap), and the large-subject test that was owed is done:
+subject 6 clusters as well as the small subjects once run-to-run variance is accounted for.
+
+Two things leave here unresolved and belong to #dcc-gxuk, which measures the presets:
+- The `evidence` cut points (80/60/40/25) remain a first calibration, and the control run showed
+  they should be expressed relative to a run's own corroboration distribution rather than as an
+  absolute finder count — small and large diffs have different distributions and an absolute bar
+  misreads one of them.
+- Whether the screen preserves recall, and whether the shrunken validation wave costs verdict
+  quality, is still unmeasured.
