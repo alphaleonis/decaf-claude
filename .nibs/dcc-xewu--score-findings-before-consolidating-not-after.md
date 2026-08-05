@@ -9,7 +9,7 @@ estimate: l
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-08-05T22:19:41Z
+updated_at: 2026-08-05T22:28:52Z
 parent: dcc-9q01
 blocked_by:
     - dcc-evph
@@ -326,3 +326,58 @@ The two tasks are built but **not run**. Run them at the mid tier (the tier deci
 made; the open question is whether it holds at scale), then `cluster_replay.py score`. The build is
 deterministic under a fixed seed, so the workdir need not be committed — but the resulting numbers
 should land here.
+
+## Large-run result 2026-08-06 — F1 0.77, and the corroboration signal survives
+
+Subject 6 ran at the mid tier. Both runs passed the count assertion under independent check
+(nothing dropped, duplicated or invented), so the `dropped` column is 0 and no finding went
+missing.
+
+| run | n | ref clusters | predicted | precision | recall | F1 |
+|---|---|---|---|---|---|---|
+| subject-06-r1 | 49 | 33 | 34 | 0.73 | 0.83 | 0.78 |
+| subject-06-r2 | 61 | 40 | 38 | 0.76 | 0.76 | 0.76 |
+| **pooled** | 110 | 73 | 72 | 0.75 | 0.78 | **0.77** |
+
+| tier | clusters | finders before | after | 2+ before | 2+ after |
+|---|---|---|---|---|---|
+| substantive | 26 | 2.31 | 2.15 | 65% | 62% |
+| valid-minor | 18 | 1.11 | 1.06 | 11% | 6% |
+| trivia/FP | 29 | 1.03 | 1.00 | 3% | 0% |
+
+**The experiment's own criterion passes.** What decides this is not F1, it is whether the
+corroboration gap survives clustering — and it does: substantive clusters keep 2.15 finders and 62%
+at 2+, while trivia collapses to exactly 1.00 and 0%. Retention is 93% of the substantive
+corroboration that was there to keep. A screen ranking on finder count still has something to rank
+on at large-diff scale.
+
+### F1 0.77 against 0.87 is NOT yet evidence that large runs cluster worse
+
+Two variables moved at once. The 2026-07-29 prompt was never recorded — only `cluster_replay.py`
+and the results survive — so this run used a prompt derived from the skill's Step 4.9 brief, now
+committed at `analysis/cluster-replay/PROMPT.md` so it cannot happen twice. The 10-point drop is
+therefore attributable to subject size, to prompt wording, or to both, and nothing here separates
+them.
+
+**The control that would separate them is cheap:** re-run the 8 existing small/medium tasks under
+`PROMPT.md`. If they reproduce ~0.87, the drop is real and belongs to scale. If they land near
+0.77, the drop is the prompt and large runs are fine. Until that runs, do not publish 0.77 as a
+size effect, and do not pool it with 0.87 — they are different measurements.
+
+### A calibration consequence that holds either way
+
+Subject 6's substantive clusters carry **2.31 finders before clustering, against 3.30 on the
+small/medium subjects**. Large diffs spread reviewers apart: they overlap less, so corroboration is
+a structurally weaker signal there regardless of how well the clusterer performs.
+
+The `evidence` cut points (80/60/40/25) were calibrated against post-clustering counts from the
+small subjects (2.93 substantive). The large-subject figure is **2.15**. A screen weighting finder
+count against a bar tuned at 2.93 will tier down more substantive clusters as the diff grows —
+precisely the wrong direction, since a large diff is where the reader most needs the primary list
+to be complete. #dcc-gxuk should read the cut points against subject size, not against a single
+pooled distribution.
+
+### Artifacts
+
+`analysis/cluster-replay/` — the two result files and the prompt. Inputs regenerate deterministically
+from `cluster_replay.py build` under its fixed seed; agent outputs do not, so they are committed.
