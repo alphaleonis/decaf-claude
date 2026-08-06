@@ -1,0 +1,619 @@
+diff --git a/src/coreclr/nativeaot/System.Private.TypeLoader/src/System.Private.TypeLoader.csproj b/src/coreclr/nativeaot/System.Private.TypeLoader/src/System.Private.TypeLoader.csproj
+index 67540af5894b7c..31628abafd0f15 100644
+--- a/src/coreclr/nativeaot/System.Private.TypeLoader/src/System.Private.TypeLoader.csproj
++++ b/src/coreclr/nativeaot/System.Private.TypeLoader/src/System.Private.TypeLoader.csproj
+@@ -117,6 +117,9 @@
+     <Compile Include="$(CompilerCommonPath)\TypeSystem\Common\CastingHelper.cs">
+       <Link>Internal\TypeSystem\CastingHelper.cs</Link>
+     </Compile>
++    <Compile Include="$(CompilerCommonPath)\TypeSystem\Canon\CastingHelper.Canon.cs">
++      <Link>Internal\TypeSystem\CastingHelper.Canon.cs</Link>
++    </Compile>
+     <Compile Include="$(CompilerCommonPath)\TypeSystem\Common\DefType.cs">
+       <Link>Internal\TypeSystem\DefType.cs</Link>
+     </Compile>
+diff --git a/src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs b/src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs
+new file mode 100644
+index 00000000000000..ee75fcc3fed19e
+--- /dev/null
++++ b/src/coreclr/tools/Common/TypeSystem/Canon/CastingHelper.Canon.cs
+@@ -0,0 +1,93 @@
++// Licensed to the .NET Foundation under one or more agreements.
++// The .NET Foundation licenses this file to you under the MIT license.
++
++namespace Internal.TypeSystem
++{
++    public static partial class CastingHelper
++    {
++        /// <summary>
++        /// Check if <paramref name="otherType"/> is a canonical type that <paramref name="thisType"/>
++        /// can be cast to. __Canon accepts any reference type; __UniversalCanon accepts any type.
++        /// Pointers, byrefs, and function pointers are not valid instantiation arguments.
++        /// </summary>
++        private static bool IsCanonicalCastTarget(TypeDesc thisType, TypeDesc otherType)
++        {
++            TypeSystemContext context = thisType.Context;
++
++            if (context.IsCanonicalDefinitionType(otherType, CanonicalFormKind.Universal))
++                return true;
++
++            if (context.IsCanonicalDefinitionType(otherType, CanonicalFormKind.Specific))
++                return thisType.IsGCPointer;
++
++            return false;
++        }
++
++        /// <summary>
++        /// Check if two type arguments can be considered matching because one (or both) is canonical.
++        /// __Canon matches any reference type; __UniversalCanon matches any type.
++        /// </summary>
++        private static bool IsCanonicalTypeArgMatch(TypeDesc type, TypeDesc otherType)
++        {
++            TypeSystemContext context = type.Context;
++
++            if (context.IsCanonicalDefinitionType(otherType, CanonicalFormKind.Universal))
++                return true;
++
++            if (context.IsCanonicalDefinitionType(otherType, CanonicalFormKind.Specific))
++                return type.IsGCPointer || context.IsCanonicalDefinitionType(type, CanonicalFormKind.Any);
++
++            if (context.IsCanonicalDefinitionType(type, CanonicalFormKind.Universal))
++                return true;
++
++            if (context.IsCanonicalDefinitionType(type, CanonicalFormKind.Specific))
++                return otherType.IsGCPointer || context.IsCanonicalDefinitionType(otherType, CanonicalFormKind.Any);
++
++            // For non-leaf types (e.g., Arg2<string> vs Arg2<__Canon>), check if they are
++            // canon-equivalent: same type definition with canon-compatible type arguments.
++            if (IsCanonEquivalent(type, otherType))
++                return true;
++
++            // For parameterized types like arrays (string[] vs __Canon[]),
++            // recursively match the element/parameter type.
++            if (type is ParameterizedType paramType && otherType is ParameterizedType otherParamType
++                && type.Category == otherType.Category)
++            {
++                if (type is ArrayType arrayType && otherType is ArrayType otherArrayType
++                    && arrayType.Rank != otherArrayType.Rank)
++                    return false;
++
++                return IsCanonicalTypeArgMatch(paramType.ParameterType, otherParamType.ParameterType);
++            }
++
++            return false;
++        }
++
++        /// <summary>
++        /// Check if two types are equivalent considering canonical type matching rules.
++        /// Same type definition with all type arguments either equal or canon-compatible.
++        /// </summary>
++        private static bool IsCanonEquivalent(TypeDesc thisType, TypeDesc otherType)
++        {
++            if (!thisType.HasSameTypeDefinition(otherType))
++                return false;
++
++            Instantiation thisInst = thisType.Instantiation;
++            Instantiation otherInst = otherType.Instantiation;
++
++            if (thisInst.Length == 0)
++                return false;
++
++            for (int i = 0; i < thisInst.Length; i++)
++            {
++                if (thisInst[i] == otherInst[i])
++                    continue;
++
++                if (!IsCanonicalTypeArgMatch(thisInst[i], otherInst[i]))
++                    return false;
++            }
++
++            return true;
++        }
++    }
++}
+diff --git a/src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs b/src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs
+new file mode 100644
+index 00000000000000..169b5df9dbf7b7
+--- /dev/null
++++ b/src/coreclr/tools/Common/TypeSystem/Canon/TypeSystemConstraintsHelpers.Canon.cs
+@@ -0,0 +1,48 @@
++// Licensed to the .NET Foundation under one or more agreements.
++// The .NET Foundation licenses this file to you under the MIT license.
++
++using System.Diagnostics;
++
++namespace Internal.TypeSystem
++{
++    public static partial class TypeSystemConstraintsHelpers
++    {
++        private static bool IsSpecialTypeMeetingConstraint(TypeDesc type, GenericConstraints constraint)
++        {
++            TypeSystemContext context = type.Context;
++
++            return constraint switch
++            {
++                GenericConstraints.ReferenceTypeConstraint => context.IsCanonicalDefinitionType(type, CanonicalFormKind.Any),
++                GenericConstraints.DefaultConstructorConstraint => context.IsCanonicalDefinitionType(type, CanonicalFormKind.Any),
++                GenericConstraints.NotNullableValueTypeConstraint => context.IsCanonicalDefinitionType(type, CanonicalFormKind.Universal),
++                _ => throw new UnreachableException()
++            };
++        }
++
++        /// <summary>
++        /// Checks if <paramref name="instantiationParam"/> can satisfy the type constraint
++        /// <paramref name="instantiatedConstraintType"/> when the param or constraint IS a canonical
++        /// definition type (__Canon or __UniversalCanon). Handles wildcard semantics only;
++        /// structural matching (interface walking, base chain, variance) is in CastingHelper.
++        /// </summary>
++        private static bool CanCastToConstraintWithCanon(TypeDesc instantiationParam, TypeDesc instantiatedConstraintType)
++        {
++            TypeSystemContext context = instantiationParam.Context;
++
++            // If the instantiation param is a canonical definition type (__Canon or __UniversalCanon),
++            // it acts as a wildcard — any concrete type substituted at runtime will be validated then.
++            if (context.IsCanonicalDefinitionType(instantiationParam, CanonicalFormKind.Any))
++                return true;
++
++            // If the constraint type itself is a canonical definition type, check compatibility directly.
++            // E.g., "where T : U" with U=__Canon means T must be a plausible match for __Canon.
++            if (context.IsCanonicalDefinitionType(instantiatedConstraintType, CanonicalFormKind.Universal))
++                return true;
++            if (context.IsCanonicalDefinitionType(instantiatedConstraintType, CanonicalFormKind.Specific))
++                return instantiationParam.IsGCPointer;
++
++            return false;
++        }
++    }
++}
+diff --git a/src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.NonCanon.cs b/src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.NonCanon.cs
+new file mode 100644
+index 00000000000000..017b3d113d1ad1
+--- /dev/null
++++ b/src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.NonCanon.cs
+@@ -0,0 +1,17 @@
++// Licensed to the .NET Foundation under one or more agreements.
++// The .NET Foundation licenses this file to you under the MIT license.
++
++namespace Internal.TypeSystem
++{
++    public static partial class CastingHelper
++    {
++        private static bool IsCanonicalCastTarget(TypeDesc thisType, TypeDesc otherType)
++            => false;
++
++        private static bool IsCanonicalTypeArgMatch(TypeDesc type, TypeDesc otherType)
++            => false;
++
++        private static bool IsCanonEquivalent(TypeDesc thisType, TypeDesc otherType)
++            => false;
++    }
++}
+diff --git a/src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.cs b/src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.cs
+index 79b36d14cd2871..9ceb1cab35d1fc 100644
+--- a/src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.cs
++++ b/src/coreclr/tools/Common/TypeSystem/Common/CastingHelper.cs
+@@ -173,6 +173,11 @@ private static bool CanCastToInternal(this TypeDesc thisType, TypeDesc otherType
+                 return true;
+             }
+ 
++            if (IsCanonicalCastTarget(thisType, otherType))
++            {
++                return true;
++            }
++
+             switch (thisType.Category)
+             {
+                 case TypeFlags.GenericParameter:
+@@ -418,14 +423,14 @@ private static bool CanCastToInterface(this TypeDesc thisType, TypeDesc otherTyp
+ 
+         private static bool CanCastToNonVariantInterface(this TypeDesc thisType, TypeDesc otherType)
+         {
+-            if (otherType.IsEquivalentTo(thisType))
++            if (otherType.IsEquivalentTo(thisType) || IsCanonEquivalent(thisType, otherType))
+             {
+                 return true;
+             }
+ 
+             foreach (var interfaceType in thisType.RuntimeInterfaces)
+             {
+-                if (interfaceType.IsEquivalentTo(otherType))
++                if (interfaceType.IsEquivalentTo(otherType) || IsCanonEquivalent(interfaceType, otherType))
+                 {
+                     return true;
+                 }
+@@ -469,6 +474,9 @@ private static bool CanCastByVarianceToInterfaceOrDelegate(this TypeDesc thisTyp
+ 
+                 if (!arg.IsEquivalentTo(targetArg))
+                 {
++                    if (IsCanonicalTypeArgMatch(arg, targetArg))
++                        continue;
++
+                     GenericVariance variance = arrayCovariance
+                         ? GenericVariance.Covariant : ((GenericParameterDesc)instantiationOpen[i]).Variance;
+ 
+@@ -541,7 +549,7 @@ private static bool CanCastToClass(this TypeDesc thisType, TypeDesc otherType, S
+ 
+                 do
+                 {
+-                    if (curType.IsEquivalentTo(otherType))
++                    if (curType.IsEquivalentTo(otherType) || IsCanonEquivalent(curType, otherType))
+                         return true;
+ 
+                     curType = curType.BaseType;
+diff --git a/src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.NonCanon.cs b/src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.NonCanon.cs
+new file mode 100644
+index 00000000000000..87a37f476525a2
+--- /dev/null
++++ b/src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.NonCanon.cs
+@@ -0,0 +1,16 @@
++// Licensed to the .NET Foundation under one or more agreements.
++// The .NET Foundation licenses this file to you under the MIT license.
++
++using System.Diagnostics;
++
++namespace Internal.TypeSystem
++{
++    public static partial class TypeSystemConstraintsHelpers
++    {
++        private static bool IsSpecialTypeMeetingConstraint(TypeDesc type, GenericConstraints constraint)
++            => false;
++
++        private static bool CanCastToConstraintWithCanon(TypeDesc instantiationParam, TypeDesc instantiatedConstraintType)
++            => false;
++    }
++}
+diff --git a/src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.cs b/src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.cs
+index 5cb42cfc22cc2b..7e8b23c109da74 100644
+--- a/src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.cs
++++ b/src/coreclr/tools/Common/TypeSystem/Common/TypeSystemConstraintsHelpers.cs
+@@ -18,7 +18,7 @@ public InstantiationContext(Instantiation typeInstantiation, Instantiation metho
+         }
+     }
+ 
+-    public static class TypeSystemConstraintsHelpers
++    public static partial class TypeSystemConstraintsHelpers
+     {
+         private static bool VerifyGenericParamConstraint(InstantiationContext genericParamContext, GenericParameterDesc genericParam,
+             InstantiationContext instantiationParamContext, TypeDesc instantiationParam)
+@@ -29,7 +29,8 @@ private static bool VerifyGenericParamConstraint(InstantiationContext genericPar
+             if ((constraints & GenericConstraints.ReferenceTypeConstraint) != 0)
+             {
+                 if (!instantiationParam.IsGCPointer
+-                    && !CheckGenericSpecialConstraint(instantiationParam, GenericConstraints.ReferenceTypeConstraint))
++                    && !CheckGenericSpecialConstraint(instantiationParam, GenericConstraints.ReferenceTypeConstraint)
++                    && !IsSpecialTypeMeetingConstraint(instantiationParam, GenericConstraints.ReferenceTypeConstraint))
+                     return false;
+             }
+ 
+@@ -37,7 +38,8 @@ private static bool VerifyGenericParamConstraint(InstantiationContext genericPar
+             if ((constraints & GenericConstraints.DefaultConstructorConstraint) != 0)
+             {
+                 if (!instantiationParam.HasExplicitOrImplicitDefaultConstructor()
+-                    && !CheckGenericSpecialConstraint(instantiationParam, GenericConstraints.DefaultConstructorConstraint))
++                    && !CheckGenericSpecialConstraint(instantiationParam, GenericConstraints.DefaultConstructorConstraint)
++                    && !IsSpecialTypeMeetingConstraint(instantiationParam, GenericConstraints.DefaultConstructorConstraint))
+                     return false;
+             }
+ 
+@@ -45,7 +47,8 @@ private static bool VerifyGenericParamConstraint(InstantiationContext genericPar
+             if ((constraints & GenericConstraints.NotNullableValueTypeConstraint) != 0)
+             {
+                 if ((!instantiationParam.IsValueType || instantiationParam.IsNullable)
+-                    && !CheckGenericSpecialConstraint(instantiationParam, GenericConstraints.NotNullableValueTypeConstraint))
++                    && !CheckGenericSpecialConstraint(instantiationParam, GenericConstraints.NotNullableValueTypeConstraint)
++                    && !IsSpecialTypeMeetingConstraint(instantiationParam, GenericConstraints.NotNullableValueTypeConstraint))
+                     return false;
+             }
+ 
+@@ -62,6 +65,9 @@ private static bool VerifyGenericParamConstraint(InstantiationContext genericPar
+                 if (CanCastConstraint(ref instantiatedConstraints, instantiatedType))
+                     continue;
+ 
++                if (CanCastToConstraintWithCanon(instantiationParam, instantiatedType))
++                    continue;
++
+                 // CanCastTo below assumes thisType is boxed and that allows additional cases
+                 // to be considered castable. But int is not castable to Nullable<int> and neither are enums.
+                 if (instantiationParam.IsValueType && instantiatedType.IsValueType && !instantiationParam.IsEquivalentTo(instantiatedType))
+diff --git a/src/coreclr/tools/ILVerification/ILVerification.projitems b/src/coreclr/tools/ILVerification/ILVerification.projitems
+index c301f2da1d298e..ef3fcb799adf79 100644
+--- a/src/coreclr/tools/ILVerification/ILVerification.projitems
++++ b/src/coreclr/tools/ILVerification/ILVerification.projitems
+@@ -36,6 +36,9 @@
+     <Compile Include="$(ToolsCommonPath)TypeSystem\Common\CastingHelper.cs">
+       <Link>TypeSystem\Common\CastingHelper.cs</Link>
+     </Compile>
++    <Compile Include="$(ToolsCommonPath)TypeSystem\Common\CastingHelper.NonCanon.cs">
++      <Link>TypeSystem\Common\CastingHelper.NonCanon.cs</Link>
++    </Compile>
+     <Compile Include="$(ToolsCommonPath)TypeSystem\Common\FunctionPointerType.cs">
+       <Link>TypeSystem\Common\FunctionPointerType.cs</Link>
+     </Compile>
+@@ -372,5 +375,8 @@
+     <Compile Include="$(ToolsCommonPath)TypeSystem\Common\TypeSystemConstraintsHelpers.cs">
+       <Link>TypeSystem\Common\TypeSystemConstraintsHelpers.cs</Link>
+     </Compile>
++    <Compile Include="$(ToolsCommonPath)TypeSystem\Common\TypeSystemConstraintsHelpers.NonCanon.cs">
++        <Link>TypeSystem\Common\TypeSystemConstraintsHelpers.NonCanon.cs</Link>
++    </Compile>
+   </ItemGroup>
+ </Project>
+diff --git a/src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/Dataflow/HandleCallAction.cs b/src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/Dataflow/HandleCallAction.cs
+index b41dbe38d250c9..e286aa17bbebd1 100644
+--- a/src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/Dataflow/HandleCallAction.cs
++++ b/src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/Dataflow/HandleCallAction.cs
+@@ -783,6 +783,10 @@ private sealed class MakeGenericTypeSite : INodeWithRuntimeDeterminedDependencie
+             {
+                 var list = new DependencyList();
+                 TypeDesc instantiatedType = _type.InstantiateSignature(typeInstantiation, methodInstantiation);
++
++                // InstantiateSignature could end up with a denormalized shape (Foo<object, __Canon>) so normalize.
++                instantiatedType = instantiatedType.NormalizeInstantiation();
++
+                 if (instantiatedType.CheckConstraints(new InstantiationContext(typeInstantiation, methodInstantiation)))
+                     RootingHelpers.TryGetDependenciesForReflectedType(ref list, factory, instantiatedType, "MakeGenericType");
+                 return list;
+diff --git a/src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs b/src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs
+index a3fb0b75b0b8a6..a1e6916ff463fd 100644
+--- a/src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs
++++ b/src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/ConstraintsValidationTest.cs
+@@ -354,5 +354,181 @@ public void TestTypeConstraints()
+                 Assert.False(instantiatedType.Instantiation.CheckValidInstantiationArguments());
+             }
+         }
++
++        [Fact]
++        public void TestCanonicalTypeConstraints()
++        {
++            TypeDesc canon = _context.CanonType;
++            TypeDesc universalCanon = _context.UniversalCanonType;
++            TypeDesc objectType = _context.GetWellKnownType(WellKnownType.Object);
++            TypeDesc stringType = _context.GetWellKnownType(WellKnownType.String);
++            TypeDesc intType = _context.GetWellKnownType(WellKnownType.Int32);
++
++            MetadataType nonVariantInterfaceConstraintType = _testModule.GetType("GenericConstraints"u8, "NonVariantInterfaceConstraint`2"u8);
++            MetadataType nonVariantGenImplType = _testModule.GetType("GenericConstraints"u8, "NonVariantGenImpl`1"u8);
++
++            TypeDesc instantiatedType;
++
++            // __Canon satisfies special constraints: class, new()
++            {
++                instantiatedType = _referenceTypeConstraintType.MakeInstantiatedType(canon);
++                Assert.True(instantiatedType.CheckConstraints());
++
++                instantiatedType = _defaultConstructorConstraintType.MakeInstantiatedType(canon);
++                Assert.True(instantiatedType.CheckConstraints());
++
++                // __Canon should NOT satisfy struct constraint
++                instantiatedType = _notNullableValueTypeConstraintType.MakeInstantiatedType(canon);
++                Assert.False(instantiatedType.CheckConstraints());
++            }
++
++            // __UniversalCanon satisfies all special constraints
++            {
++                instantiatedType = _referenceTypeConstraintType.MakeInstantiatedType(universalCanon);
++                Assert.True(instantiatedType.CheckConstraints());
++
++                instantiatedType = _defaultConstructorConstraintType.MakeInstantiatedType(universalCanon);
++                Assert.True(instantiatedType.CheckConstraints());
++
++                instantiatedType = _notNullableValueTypeConstraintType.MakeInstantiatedType(universalCanon);
++                Assert.True(instantiatedType.CheckConstraints());
++            }
++
++            // __Canon as instantiation param satisfies type constraints (wildcard — runtime will validate)
++            {
++                // NonVariantInterfaceConstraint<__Canon, object>: __Canon is wildcard, passes any type constraint
++                instantiatedType = nonVariantInterfaceConstraintType.MakeInstantiatedType(canon, objectType);
++                Assert.True(instantiatedType.CheckConstraints());
++
++                // ComplexGenericConstraint3<__Canon, object>: where T : IGen<U>, T=__Canon, U=object
++                instantiatedType = _complexGenericConstraint3Type.MakeInstantiatedType(canon, objectType);
++                Assert.True(instantiatedType.CheckConstraints());
++            }
++
++            // Invariant interface constraint with __Canon in the constraint's type args
++            // NonVariantGenImpl<string> : INonVariantGen<string>
++            // NonVariantInterfaceConstraint<T, U> where T : INonVariantGen<U>
++            // Check: NonVariantInterfaceConstraint<NonVariantGenImpl<string>, __Canon>
++            //   constraint becomes INonVariantGen<__Canon>, concrete implements INonVariantGen<string>
++            //   string is a ref type, __Canon matches ref types
++            {
++                TypeDesc nonVariantGenImplOfString = nonVariantGenImplType.MakeInstantiatedType(stringType);
++                instantiatedType = nonVariantInterfaceConstraintType.MakeInstantiatedType(nonVariantGenImplOfString, canon);
++                Assert.True(instantiatedType.CheckConstraints());
++
++                // With int (value type) — __Canon should NOT match value types
++                TypeDesc nonVariantGenImplOfInt = nonVariantGenImplType.MakeInstantiatedType(intType);
++                instantiatedType = nonVariantInterfaceConstraintType.MakeInstantiatedType(nonVariantGenImplOfInt, canon);
++                Assert.False(instantiatedType.CheckConstraints());
++            }
++
++            // Variant interface constraint with __Canon in the constraint's type args
++            // ComplexGenericConstraint3<T, U> where T : IGen<U>  (IGen<in T> is contravariant)
++            // Arg3<object> : IGen<object>
++            // ComplexGenericConstraint3<Arg3<object>, __Canon>
++            //   constraint: IGen<__Canon>. Arg3<object> implements IGen<object>.
++            //   __Canon matches object (ref type) in invariant arg position of IGen
++            {
++                TypeDesc arg3OfObject = _arg3Type.MakeInstantiatedType(objectType);
++                instantiatedType = _complexGenericConstraint3Type.MakeInstantiatedType(arg3OfObject, canon);
++                Assert.True(instantiatedType.CheckConstraints());
++            }
++
++            // Base type constraint with __Canon
++            // ComplexGenericConstraint2<T, U> where T : Arg2<Arg2<U>>
++            // Arg2<Arg2<__Canon>> — constraint has canonical subtype
++            // T=Arg2<Arg2<string>> should match because Arg2<string> canonicalizes to Arg2<__Canon>
++            {
++                TypeDesc arg2OfString = _arg2Type.MakeInstantiatedType(stringType);
++                TypeDesc arg2OfArg2OfString = _arg2Type.MakeInstantiatedType(arg2OfString);
++                instantiatedType = _complexGenericConstraint2Type.MakeInstantiatedType(arg2OfArg2OfString, canon);
++                Assert.True(instantiatedType.CheckConstraints());
++
++                // Value type should not match __Canon in base type constraint
++                TypeDesc arg2OfInt = _arg2Type.MakeInstantiatedType(intType);
++                TypeDesc arg2OfArg2OfInt = _arg2Type.MakeInstantiatedType(arg2OfInt);
++                instantiatedType = _complexGenericConstraint2Type.MakeInstantiatedType(arg2OfArg2OfInt, canon);
++                Assert.False(instantiatedType.CheckConstraints());
++            }
++
++            // Parameterized canonical types (e.g., __Canon[] as type arg in constraint)
++            // ComplexGenericConstraint3<T, U> where T : IGen<U>  (IGen<in T>)
++            // T=IGen<int[]>, U=int[] : IGen<int[]> implements IGen<int[]>, passes normally.
++            // Canonicalized: T becomes __Canon (ref type), U=int[] stays.
++            // Check: __Canon satisfies IGen<int[]>? __Canon is wildcard → true.
++            {
++                TypeDesc intArray = intType.MakeArrayType();
++                instantiatedType = _complexGenericConstraint3Type.MakeInstantiatedType(canon, intArray);
++                Assert.True(instantiatedType.CheckConstraints());
++            }
++
++            // Variance + __Canon interaction: MultipleConstraints<T, U> where T : class, IGen<U>, new()
++            // MultipleConstraints<ClassArgWithDefaultCtor, __Canon>
++            //   ClassArgWithDefaultCtor : IGen<object>
++            //   constraint: IGen<__Canon>, __Canon matches object
++            {
++                instantiatedType = _multipleConstraintsType.MakeInstantiatedType(_classArgWithDefaultCtorType, canon);
++                Assert.True(instantiatedType.CheckConstraints());
++            }
++
++            // Interface type used directly as instantiation param
++            // ComplexGenericConstraint3<IGen<string>, __Canon>: IGen<string> satisfies IGen<__Canon>
++            {
++                TypeDesc igenOfString = _iGenType.MakeInstantiatedType(stringType);
++                instantiatedType = _complexGenericConstraint3Type.MakeInstantiatedType(igenOfString, canon);
++                Assert.True(instantiatedType.CheckConstraints());
++            }
++
++            // __UniversalCanon as instantiation param should pass all type constraints
++            {
++                instantiatedType = nonVariantInterfaceConstraintType.MakeInstantiatedType(universalCanon, objectType);
++                Assert.True(instantiatedType.CheckConstraints());
++
++                instantiatedType = _complexGenericConstraint3Type.MakeInstantiatedType(universalCanon, intType);
++                Assert.True(instantiatedType.CheckConstraints());
++            }
++
++            // __Canon / __UniversalCanon as the constraint type itself
++            // SimpleGenericConstraint<T, U> where T : U
++            // T=Arg1, U=__Canon → constraint type is __Canon, a ref type should satisfy it
++            {
++                instantiatedType = _simpleGenericConstraintType.MakeInstantiatedType(_arg1Type, canon);
++                Assert.True(instantiatedType.CheckConstraints());
++
++                // Value type should not satisfy __Canon constraint
++                instantiatedType = _simpleGenericConstraintType.MakeInstantiatedType(_structArgWithDefaultCtorType, canon);
++                Assert.False(instantiatedType.CheckConstraints());
++
++                // Any type satisfies __UniversalCanon constraint
++                instantiatedType = _simpleGenericConstraintType.MakeInstantiatedType(_arg1Type, universalCanon);
++                Assert.True(instantiatedType.CheckConstraints());
++
++                instantiatedType = _simpleGenericConstraintType.MakeInstantiatedType(_structArgWithDefaultCtorType, universalCanon);
++                Assert.True(instantiatedType.CheckConstraints());
++            }
++
++            // Nested __UniversalCanon under invariant generic shape
++            // ComplexGenericConstraint2<T, U> where T : Arg2<Arg2<U>>
++            // T=Arg2<Arg2<int>>, U=__UniversalCanon → constraint is Arg2<Arg2<__UniversalCanon>>
++            {
++                TypeDesc arg2OfInt = _arg2Type.MakeInstantiatedType(intType);
++                TypeDesc arg2OfArg2OfInt = _arg2Type.MakeInstantiatedType(arg2OfInt);
++                instantiatedType = _complexGenericConstraint2Type.MakeInstantiatedType(arg2OfArg2OfInt, universalCanon);
++                Assert.True(instantiatedType.CheckConstraints());
++            }
++
++            // Array type args with __Canon in invariant position
++            // NonVariantInterfaceConstraint<T, U> where T : INonVariantGen<U>
++            // T=NonVariantGenImpl<string[]>, U=__Canon[] → constraint is INonVariantGen<__Canon[]>
++            // NonVariantGenImpl<string[]> implements INonVariantGen<string[]>
++            // string[] is a ref type, so string[] should be compatible with __Canon[]
++            {
++                TypeDesc stringArray = stringType.MakeArrayType();
++                TypeDesc canonArray = canon.MakeArrayType();
++                TypeDesc nonVariantGenImplOfStringArray = nonVariantGenImplType.MakeInstantiatedType(stringArray);
++                instantiatedType = nonVariantInterfaceConstraintType.MakeInstantiatedType(nonVariantGenImplOfStringArray, canonArray);
++                Assert.True(instantiatedType.CheckConstraints());
++            }
++        }
+     }
+ }
+diff --git a/src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/CoreTestAssembly/GenericConstraints.cs b/src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/CoreTestAssembly/GenericConstraints.cs
+index 5c050742c353dc..2cd0385f2f42de 100644
+--- a/src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/CoreTestAssembly/GenericConstraints.cs
++++ b/src/coreclr/tools/aot/ILCompiler.TypeSystem.Tests/CoreTestAssembly/GenericConstraints.cs
+@@ -68,4 +68,10 @@ public static void SimpleGenericConstraintMethod<T, U>() where T : U { }
+ 
+         public static void ComplexGenericConstraintMethod<T, U>() where T : U where U : IGen<T> { }
+     }
++
++    public interface INonVariantGen<T> { }
++
++    public class NonVariantGenImpl<T> : INonVariantGen<T> { }
++
++    public class NonVariantInterfaceConstraint<T, U> where T : INonVariantGen<U> { }
+ }
+diff --git a/src/coreclr/tools/aot/ILCompiler.TypeSystem/ILCompiler.TypeSystem.csproj b/src/coreclr/tools/aot/ILCompiler.TypeSystem/ILCompiler.TypeSystem.csproj
+index 279b463b2c7594..3bef4a5b3bc9ab 100644
+--- a/src/coreclr/tools/aot/ILCompiler.TypeSystem/ILCompiler.TypeSystem.csproj
++++ b/src/coreclr/tools/aot/ILCompiler.TypeSystem/ILCompiler.TypeSystem.csproj
+@@ -101,6 +101,9 @@
+     <Compile Include="..\..\Common\TypeSystem\Canon\TypeDesc.Canon.cs">
+       <Link>TypeSystem\Canon\TypeDesc.Canon.cs</Link>
+     </Compile>
++    <Compile Include="..\..\Common\TypeSystem\Canon\TypeSystemConstraintsHelpers.Canon.cs">
++      <Link>TypeSystem\Canon\TypeSystemConstraintsHelpers.Canon.cs</Link>
++    </Compile>
+     <Compile Include="..\..\Common\TypeSystem\Canon\TypeSystemContext.Canon.cs">
+       <Link>TypeSystem\Canon\TypeSystemContext.Canon.cs</Link>
+     </Compile>
+@@ -128,6 +131,9 @@
+     <Compile Include="..\..\Common\TypeSystem\Common\CastingHelper.cs">
+       <Link>TypeSystem\Common\CastingHelper.cs</Link>
+     </Compile>
++    <Compile Include="..\..\Common\TypeSystem\Canon\CastingHelper.Canon.cs">
++      <Link>TypeSystem\Canon\CastingHelper.Canon.cs</Link>
++    </Compile>
+     <Compile Include="..\..\Common\TypeSystem\Common\CastingHelper.TypeEquivalence.cs">
+       <Link>TypeSystem\Common\CastingHelper.TypeEquivalence.cs</Link>
+     </Compile>
+diff --git a/src/tests/nativeaot/SmokeTests/TrimmingBehaviors/Dataflow.cs b/src/tests/nativeaot/SmokeTests/TrimmingBehaviors/Dataflow.cs
+index dbdbcae08372e5..c275b2a8b2c9d0 100644
+--- a/src/tests/nativeaot/SmokeTests/TrimmingBehaviors/Dataflow.cs
++++ b/src/tests/nativeaot/SmokeTests/TrimmingBehaviors/Dataflow.cs
+@@ -28,6 +28,7 @@ public static int Run()
+         TestObjectGetTypeDataflow.Run();
+         TestMakeGenericDataflow.Run();
+         TestMakeGenericDataflowInvalid.Run();
++        TestMakeGenericConstrainedDataflow.Run();
+         TestMarshalIntrinsics.Run();
+         Regression97758.Run();
+ 
+@@ -698,6 +699,26 @@ public static void Run()
+         }
+     }
+ 
++    class TestMakeGenericConstrainedDataflow
++    {
++        struct Atom;
++
++        class Gen<T, U, V> where U : IFoo, new();
++
++        interface IFoo;
++        class Foo : IFoo;
++
++        public static object Handle<T, U>() where U : new()
++        {
++            return Activator.CreateInstance(typeof(Gen<,,>).MakeGenericType(typeof(T), typeof(U), typeof(object)));
++        }
++
++        public static void Run()
++        {
++            Handle<Atom, Foo>().ToString();
++        }
++    }
++
+     class TestMarshalIntrinsics
+     {
+         [StructLayout(LayoutKind.Sequential)]

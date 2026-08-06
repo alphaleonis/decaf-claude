@@ -45,6 +45,7 @@ for r in "${rids[@]}"; do
     exit 0
   fi
   if [ "$rc" -eq 76 ]; then echo "[$r] left PENDING — could not reconstruct full-PR review diff (see stderr)"; echo; continue; fi
+  if [ "$rc" -eq 77 ]; then echo "[$r] left PENDING — checkout could not be reset to pristine (see stderr)"; echo; continue; fi
   [ "$rc" -ne 0 ] && echo "[$r] run_cell exited $rc (recorded as failed — see runs/$r/stderr.log)"
   echo
 done
