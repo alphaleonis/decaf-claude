@@ -1,0 +1,173 @@
+{
+  "run_id": "1__ours-audit__r2",
+  "subject_id": 1,
+  "lang": "csharp",
+  "size": "small",
+  "tool": "ours-audit",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/efcore",
+  "pr": 32770,
+  "merge_sha": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "review_base": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455^1",
+  "review_head": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 720,
+  "duration_ms": "715384",
+  "duration_api_ms": "1983736",
+  "num_turns": "26",
+  "cost_usd": "10.283665549999998",
+  "orch_usage": {
+    "input_tokens": "19",
+    "output_tokens": "47148",
+    "cache_creation_tokens": "180778",
+    "cache_read_tokens": "944602",
+    "total_tokens": 1172547
+  },
+  "session_tokens": {
+    "subagents": 13,
+    "input": 152,
+    "output": 130857,
+    "cache_creation": 805807,
+    "cache_read": 3735027,
+    "total": 4671843,
+    "orchestrator": {
+      "output": 47148,
+      "total": 1172547,
+      "duration_s": 718
+    },
+    "per_subagent": [
+      {
+        "output": 5043,
+        "input": 10,
+        "cache_creation": 53270,
+        "cache_read": 195133,
+        "total": 253456,
+        "duration_s": 134,
+        "agent": "agent-a302350236e92f1e2"
+      },
+      {
+        "output": 11984,
+        "input": 22,
+        "cache_creation": 72671,
+        "cache_read": 609957,
+        "total": 694634,
+        "duration_s": 195,
+        "agent": "agent-a53d681f9a231085e"
+      },
+      {
+        "output": 7582,
+        "input": 6,
+        "cache_creation": 49562,
+        "cache_read": 83466,
+        "total": 140616,
+        "duration_s": 115,
+        "agent": "agent-a6195e82e9e402d63"
+      },
+      {
+        "output": 3810,
+        "input": 10,
+        "cache_creation": 42490,
+        "cache_read": 167509,
+        "total": 213819,
+        "duration_s": 89,
+        "agent": "agent-a79369ee9e9d48dc6"
+      },
+      {
+        "output": 479,
+        "input": 6,
+        "cache_creation": 45861,
+        "cache_read": 84517,
+        "total": 130863,
+        "duration_s": 87,
+        "agent": "agent-a895e776392961a8b"
+      },
+      {
+        "output": 12435,
+        "input": 19,
+        "cache_creation": 60751,
+        "cache_read": 480938,
+        "total": 554143,
+        "duration_s": 186,
+        "agent": "agent-a955dac3ed32aea8e"
+      },
+      {
+        "output": 1409,
+        "input": 4,
+        "cache_creation": 41114,
+        "cache_read": 33798,
+        "total": 76325,
+        "duration_s": 22,
+        "agent": "agent-a965831fc86f4b258"
+      },
+      {
+        "output": 3423,
+        "input": 6,
+        "cache_creation": 37443,
+        "cache_read": 91019,
+        "total": 131891,
+        "duration_s": 43,
+        "agent": "agent-a9b5e518a470f83db"
+      },
+      {
+        "output": 13538,
+        "input": 22,
+        "cache_creation": 62984,
+        "cache_read": 639895,
+        "total": 716439,
+        "duration_s": 180,
+        "agent": "agent-ad21d207270f50a3a"
+      },
+      {
+        "output": 4043,
+        "input": 8,
+        "cache_creation": 37898,
+        "cache_read": 120236,
+        "total": 162185,
+        "duration_s": 64,
+        "agent": "agent-ad662a3204f052886"
+      },
+      {
+        "output": 6131,
+        "input": 4,
+        "cache_creation": 42516,
+        "cache_read": 40619,
+        "total": 89270,
+        "duration_s": 91,
+        "agent": "agent-ae38eb46b5d905ed4"
+      },
+      {
+        "output": 6275,
+        "input": 8,
+        "cache_creation": 40213,
+        "cache_read": 123097,
+        "total": 169593,
+        "duration_s": 94,
+        "agent": "agent-ae92d92f926edd0a6"
+      },
+      {
+        "output": 7557,
+        "input": 8,
+        "cache_creation": 38256,
+        "cache_read": 120241,
+        "total": 166062,
+        "duration_s": 117,
+        "agent": "agent-af0282e550caf6308"
+      }
+    ],
+    "max_subagent_duration_s": 195,
+    "sum_subagent_duration_s": 1417
+  },
+  "input_tokens": "19",
+  "output_tokens": "47148",
+  "cache_creation_tokens": "180778",
+  "cache_read_tokens": "944602",
+  "total_tokens": 1172547,
+  "session_id": "bffe6362-1de2-4a2b-a100-3d9c39bd5e0d",
+  "findings_lines": 7,
+  "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: audit --report 32770. This reviews pull request #32770 of the GitHub repository dotnet/efcore (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-08-06T11:54:52Z"
+}

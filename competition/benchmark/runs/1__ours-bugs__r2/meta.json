@@ -1,0 +1,101 @@
+{
+  "run_id": "1__ours-bugs__r2",
+  "subject_id": 1,
+  "lang": "csharp",
+  "size": "small",
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/efcore",
+  "pr": 32770,
+  "merge_sha": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "review_base": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455^1",
+  "review_head": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 845,
+  "duration_ms": "841927",
+  "duration_api_ms": "1142397",
+  "num_turns": "21",
+  "cost_usd": "3.9235927999999998",
+  "orch_usage": {
+    "input_tokens": "30",
+    "output_tokens": "48055",
+    "cache_creation_tokens": "130332",
+    "cache_read_tokens": "1731745",
+    "total_tokens": 1910162
+  },
+  "session_tokens": {
+    "subagents": 5,
+    "input": 299,
+    "output": 89517,
+    "cache_creation": 312564,
+    "cache_read": 2749258,
+    "total": 3151638,
+    "orchestrator": {
+      "output": 48055,
+      "total": 1910162,
+      "duration_s": 844
+    },
+    "per_subagent": [
+      {
+        "output": 11961,
+        "input": 41,
+        "cache_creation": 38833,
+        "cache_read": 160456,
+        "total": 211291,
+        "duration_s": 128,
+        "agent": "agent-a07b5626b44d5f13e"
+      },
+      {
+        "output": 3902,
+        "input": 57,
+        "cache_creation": 34508,
+        "cache_read": 223497,
+        "total": 261964,
+        "duration_s": 84,
+        "agent": "agent-a2077efbfc11512e4"
+      },
+      {
+        "output": 7962,
+        "input": 33,
+        "cache_creation": 44384,
+        "cache_read": 104266,
+        "total": 156645,
+        "duration_s": 92,
+        "agent": "agent-a420f6b9694acd0c9"
+      },
+      {
+        "output": 7120,
+        "input": 65,
+        "cache_creation": 31462,
+        "cache_read": 228442,
+        "total": 267089,
+        "duration_s": 84,
+        "agent": "agent-a44e12ff9370fd694"
+      },
+      {
+        "output": 10517,
+        "input": 73,
+        "cache_creation": 33045,
+        "cache_read": 300852,
+        "total": 344487,
+        "duration_s": 118,
+        "agent": "agent-a4796235c48c8061b"
+      }
+    ],
+    "max_subagent_duration_s": 128,
+    "sum_subagent_duration_s": 506
+  },
+  "input_tokens": "30",
+  "output_tokens": "48055",
+  "cache_creation_tokens": "130332",
+  "cache_read_tokens": "1731745",
+  "total_tokens": 1910162,
+  "session_id": "9e529cc6-5941-44bb-a263-75e1c03e0a9b",
+  "findings_lines": 11,
+  "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs --report 32770. This reviews pull request #32770 of the GitHub repository dotnet/efcore (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-08-05T23:17:36Z"
+}

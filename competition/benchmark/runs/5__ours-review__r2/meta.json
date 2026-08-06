@@ -1,0 +1,128 @@
+{
+  "run_id": "5__ours-review__r2",
+  "subject_id": 5,
+  "lang": "typescript",
+  "size": "medium",
+  "tool": "ours-review",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/vscode",
+  "pr": 308517,
+  "merge_sha": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "review_base": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9^1",
+  "review_head": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1551,
+  "duration_ms": "1546627",
+  "duration_api_ms": "2645440",
+  "num_turns": "30",
+  "cost_usd": "11.053903699999998",
+  "orch_usage": {
+    "input_tokens": "1375",
+    "output_tokens": "55200",
+    "cache_creation_tokens": "125119",
+    "cache_read_tokens": "2782031",
+    "total_tokens": 2963725
+  },
+  "session_tokens": {
+    "subagents": 8,
+    "input": 1873,
+    "output": 187988,
+    "cache_creation": 759411,
+    "cache_read": 9225085,
+    "total": 10174357,
+    "orchestrator": {
+      "output": 55200,
+      "total": 2963725,
+      "duration_s": 1549
+    },
+    "per_subagent": [
+      {
+        "output": 21871,
+        "input": 40,
+        "cache_creation": 82655,
+        "cache_read": 1422848,
+        "total": 1527414,
+        "duration_s": 298,
+        "agent": "agent-a07ecaf195b2f5e84"
+      },
+      {
+        "output": 10545,
+        "input": 255,
+        "cache_creation": 87435,
+        "cache_read": 436573,
+        "total": 534808,
+        "duration_s": 124,
+        "agent": "agent-a1d9d4b18567bf64e"
+      },
+      {
+        "output": 8072,
+        "input": 42,
+        "cache_creation": 34473,
+        "cache_read": 155735,
+        "total": 198322,
+        "duration_s": 102,
+        "agent": "agent-a4371beb1c440014f"
+      },
+      {
+        "output": 21281,
+        "input": 26,
+        "cache_creation": 135745,
+        "cache_read": 1246270,
+        "total": 1403322,
+        "duration_s": 281,
+        "agent": "agent-a46cdb951b8d1db0a"
+      },
+      {
+        "output": 7428,
+        "input": 22,
+        "cache_creation": 63028,
+        "cache_read": 591474,
+        "total": 661952,
+        "duration_s": 176,
+        "agent": "agent-a58bf51decac62cb1"
+      },
+      {
+        "output": 34195,
+        "input": 79,
+        "cache_creation": 104125,
+        "cache_read": 1679549,
+        "total": 1817948,
+        "duration_s": 389,
+        "agent": "agent-a8f64d1a9c1488aeb"
+      },
+      {
+        "output": 11141,
+        "input": 24,
+        "cache_creation": 77416,
+        "cache_read": 699209,
+        "total": 787790,
+        "duration_s": 346,
+        "agent": "agent-ab2510066066f58af"
+      },
+      {
+        "output": 18255,
+        "input": 10,
+        "cache_creation": 49415,
+        "cache_read": 211396,
+        "total": 279076,
+        "duration_s": 193,
+        "agent": "agent-ab5f4e588e2e448bb"
+      }
+    ],
+    "max_subagent_duration_s": 389,
+    "sum_subagent_duration_s": 1909
+  },
+  "input_tokens": "1375",
+  "output_tokens": "55200",
+  "cache_creation_tokens": "125119",
+  "cache_read_tokens": "2782031",
+  "total_tokens": 2963725,
+  "session_id": "feb0933c-28ae-4eb6-b508-527b6a482fbb",
+  "findings_lines": 13,
+  "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: review --report 308517. This reviews pull request #308517 of the GitHub repository microsoft/vscode (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-08-06T10:33:34Z"
+}

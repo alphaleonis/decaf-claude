@@ -1,0 +1,19 @@
+# subagent agent-a3e93ee79f1486aa5
+
+## Summary
+
+Reviewed PR kubernetes/kubernetes #130837 (kube-proxy NodeManager consolidation) against `/tmp/pr130837.diff` and the working-tree source at HEAD, focused on `pkg/proxy/node.go`, `pkg/proxy/config/config.go`, `pkg/proxy/healthcheck/proxy_health.go`, `cmd/kube-proxy/app/server.go`, and the various proxier implementations.
+
+Two findings survived to report (both above the anchor-50 gate):
+
+1. **`pkg/proxy/config/config.go:288`** (High/confidence 50) — `NewNodeConfig`'s `cache.ResourceEventHandlerFuncs` wires `UpdateFunc` and `DeleteFunc` to node handling but never `AddFunc`, even though the `NodeHandler.OnNodeChange` doc comment says it covers "creation or modification." Every sibling registration in the same file (`EndpointSliceConfig`, `ServiceConfig`, `ServiceCIDRConfig`, and the new `NodeTopologyConfig` added in this very diff) wires `AddFunc`; `NodeConfig` is the outlier, and `handleChangeNode` still carries dead tombstone-unwrapping logic consistent with an accidental omission rather than a deliberate choice. In the common startup path this is masked because `NodeManager` separately polls the node directly in `NewNodeManager()` before the handler registers, but a delete-then-recreate of the node within a watch relist gap would be delivered as an Add and silently miss the crash-on-identity-change safety check that is this PR's whole purpose.
+
+2. **`pkg/proxy/healthcheck/proxy_health.go:176`** (Low/confidence 75) — `NodeEligible()` now takes the full write lock (`hs.lock.Lock()`) even though the old writer-side `SyncNode()` method (and the `nodeEligible` field it wrote) was removed; the function is now purely a reader via `hs.nodeManager.Node()`. This needlessly serializes `/healthz` checks against concurrent `Updated()`/`QueuedUpdate()` calls that share the same `sync.RWMutex`.
+
+## Considered But Not Flagged
+
+- `NodeManager.OnNodeDelete` now unconditionally calls `exitFunc(1)` on any delete of the tracked node, versus the old handlers which only logged/marked-unhealthy on delete. This is a real behavior change (crash vs. graceful degradation on node deletion) but reads as an intentional design decision central to this PR's stated goal ("crashes kube-proxy... when NodeIPs or PodCIDRs change"), and evaluating whether that tradeoff is sound is system-level design territory (design-reviewer), not a line-level bug.
+- `NewNodeManager` (with `watchPodCIDRs=true`) is now invoked unconditionally cross-platform in `server.go`, meaning Windows/`server_windows.go` paths using `LocalModeNodeCIDR` now block up to 5 minutes waiting for PodCIDR allocation at startup — previously this waiting behavior existed only in `server_linux.go`. Plausibly an intentional cross-platform harmonization given the PR's consolidation goal; flagged only as a note since assessing platform-behavior parity intent is design-level, not verifiable as a defect from the diff alone.
+- Double `exitFunc(1)` invocation possible within a single `OnNodeChange` call (once for PodCIDR change, once for NodeIP change) if both change simultaneously and `exitFunc` doesn't actually terminate (e.g., in tests) — not a real issue since production `exitFunc` is `os.Exit`, which terminates the process on first call.
+- Possible nil-pointer risk in `ProxyHealthServer.NodeEligible()` if `hs.nodeManager` were nil — verified no such construction path exists in the current code (`server.go` always builds a non-nil `NodeManager` before constructing the health server; hollow-proxy never calls `NewProxyHealthServer`). Not reportable.
+- Theoretical `newNodeManager` returning `(nil, nil)` if `pollTimeout` expires before the "immediate" poll condition ever runs — only reachable with a pathological sub-millisecond timeout as used in one unit test (which passes), not reachable via the real `NewNodeManager` (1s/5min). Not reportable.

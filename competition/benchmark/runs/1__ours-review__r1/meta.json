@@ -1,0 +1,137 @@
+{
+  "run_id": "1__ours-review__r1",
+  "subject_id": 1,
+  "lang": "csharp",
+  "size": "small",
+  "tool": "ours-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "dotnet/efcore",
+  "pr": 32770,
+  "merge_sha": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "review_base": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455^1",
+  "review_head": "9e69b85b90e0d490fa46dbf25ffac0c3f7747455",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 802,
+  "duration_ms": "798379",
+  "duration_api_ms": "1447505",
+  "num_turns": "21",
+  "cost_usd": "6.259743150000001",
+  "orch_usage": {
+    "input_tokens": "8138",
+    "output_tokens": "38084",
+    "cache_creation_tokens": "120678",
+    "cache_read_tokens": "1106109",
+    "total_tokens": 1273009
+  },
+  "session_tokens": {
+    "subagents": 9,
+    "input": 8250,
+    "output": 105776,
+    "cache_creation": 522317,
+    "cache_read": 3563547,
+    "total": 4199890,
+    "orchestrator": {
+      "output": 38084,
+      "total": 1273009,
+      "duration_s": 800
+    },
+    "per_subagent": [
+      {
+        "output": 2911,
+        "input": 12,
+        "cache_creation": 39133,
+        "cache_read": 234729,
+        "total": 276785,
+        "duration_s": 38,
+        "agent": "agent-a09ad877a0f5f276f"
+      },
+      {
+        "output": 4876,
+        "input": 8,
+        "cache_creation": 44734,
+        "cache_read": 147162,
+        "total": 196780,
+        "duration_s": 65,
+        "agent": "agent-a1a674c4ceb17244e"
+      },
+      {
+        "output": 4364,
+        "input": 6,
+        "cache_creation": 36019,
+        "cache_read": 90391,
+        "total": 130780,
+        "duration_s": 53,
+        "agent": "agent-a2ffa03d2c35fe640"
+      },
+      {
+        "output": 2325,
+        "input": 24,
+        "cache_creation": 39842,
+        "cache_read": 528940,
+        "total": 571131,
+        "duration_s": 72,
+        "agent": "agent-a631b411abb29e48b"
+      },
+      {
+        "output": 4,
+        "input": 2,
+        "cache_creation": 24008,
+        "cache_read": 11321,
+        "total": 35335,
+        "duration_s": 126,
+        "agent": "agent-a7d60cc5ef7407294"
+      },
+      {
+        "output": 12760,
+        "input": 20,
+        "cache_creation": 54738,
+        "cache_read": 478425,
+        "total": 545943,
+        "duration_s": 143,
+        "agent": "agent-a99db62522e13335b"
+      },
+      {
+        "output": 10158,
+        "input": 6,
+        "cache_creation": 59276,
+        "cache_read": 87263,
+        "total": 156703,
+        "duration_s": 109,
+        "agent": "agent-aa31930be68ac2a18"
+      },
+      {
+        "output": 26619,
+        "input": 24,
+        "cache_creation": 68369,
+        "cache_read": 695737,
+        "total": 790749,
+        "duration_s": 322,
+        "agent": "agent-ab732be3396bbcf7c"
+      },
+      {
+        "output": 3675,
+        "input": 10,
+        "cache_creation": 35520,
+        "cache_read": 183470,
+        "total": 222675,
+        "duration_s": 46,
+        "agent": "agent-af2f5d52ec0da66d3"
+      }
+    ],
+    "max_subagent_duration_s": 322,
+    "sum_subagent_duration_s": 974
+  },
+  "input_tokens": "8138",
+  "output_tokens": "38084",
+  "cache_creation_tokens": "120678",
+  "cache_read_tokens": "1106109",
+  "total_tokens": 1273009,
+  "session_id": "dc01ad60-1aad-4242-b5b3-be0a12d97ec3",
+  "findings_lines": 14,
+  "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: review --report 32770. This reviews pull request #32770 of the GitHub repository dotnet/efcore (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-08-06T09:26:58Z"
+}

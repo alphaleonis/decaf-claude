@@ -1,0 +1,146 @@
+{
+  "run_id": "5__ours-audit__r2",
+  "subject_id": 5,
+  "lang": "typescript",
+  "size": "medium",
+  "tool": "ours-audit",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/vscode",
+  "pr": 308517,
+  "merge_sha": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "review_base": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9^1",
+  "review_head": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1130,
+  "duration_ms": "1126840",
+  "duration_api_ms": "3046649",
+  "num_turns": "26",
+  "cost_usd": "15.062824400000004",
+  "orch_usage": {
+    "input_tokens": "28",
+    "output_tokens": "55341",
+    "cache_creation_tokens": "233669",
+    "cache_read_tokens": "1462458",
+    "total_tokens": 1751496
+  },
+  "session_tokens": {
+    "subagents": 10,
+    "input": 253,
+    "output": 167622,
+    "cache_creation": 980123,
+    "cache_read": 9030914,
+    "total": 10178912,
+    "orchestrator": {
+      "output": 55341,
+      "total": 1751496,
+      "duration_s": 1129
+    },
+    "per_subagent": [
+      {
+        "output": 229,
+        "input": 6,
+        "cache_creation": 51335,
+        "cache_read": 85191,
+        "total": 136761,
+        "duration_s": 173,
+        "agent": "agent-a048741845347be9d"
+      },
+      {
+        "output": 8342,
+        "input": 19,
+        "cache_creation": 66707,
+        "cache_read": 532078,
+        "total": 607146,
+        "duration_s": 198,
+        "agent": "agent-a0a3a2051480c9877"
+      },
+      {
+        "output": 13229,
+        "input": 15,
+        "cache_creation": 69224,
+        "cache_read": 399166,
+        "total": 481634,
+        "duration_s": 243,
+        "agent": "agent-a4395a703abcea5bb"
+      },
+      {
+        "output": 18316,
+        "input": 30,
+        "cache_creation": 85395,
+        "cache_read": 1036646,
+        "total": 1140387,
+        "duration_s": 291,
+        "agent": "agent-a4b31ad87eafc6a23"
+      },
+      {
+        "output": 31996,
+        "input": 62,
+        "cache_creation": 121152,
+        "cache_read": 2623604,
+        "total": 2776814,
+        "duration_s": 504,
+        "agent": "agent-a839a851e12f62f48"
+      },
+      {
+        "output": 9422,
+        "input": 8,
+        "cache_creation": 61733,
+        "cache_read": 142160,
+        "total": 213323,
+        "duration_s": 184,
+        "agent": "agent-a871df6396a894f64"
+      },
+      {
+        "output": 11283,
+        "input": 17,
+        "cache_creation": 72195,
+        "cache_read": 505273,
+        "total": 588768,
+        "duration_s": 188,
+        "agent": "agent-a8db7e1d1e26f8c4e"
+      },
+      {
+        "output": 7094,
+        "input": 34,
+        "cache_creation": 82947,
+        "cache_read": 1218224,
+        "total": 1308299,
+        "duration_s": 156,
+        "agent": "agent-a92103e0d69095725"
+      },
+      {
+        "output": 3171,
+        "input": 6,
+        "cache_creation": 51054,
+        "cache_read": 82325,
+        "total": 136556,
+        "duration_s": 62,
+        "agent": "agent-adc1eb0a96e92aa53"
+      },
+      {
+        "output": 9199,
+        "input": 28,
+        "cache_creation": 84712,
+        "cache_read": 943789,
+        "total": 1037728,
+        "duration_s": 315,
+        "agent": "agent-ade16ee8a9de14953"
+      }
+    ],
+    "max_subagent_duration_s": 504,
+    "sum_subagent_duration_s": 2314
+  },
+  "input_tokens": "28",
+  "output_tokens": "55341",
+  "cache_creation_tokens": "233669",
+  "cache_read_tokens": "1462458",
+  "total_tokens": 1751496,
+  "session_id": "49de7cd3-93a8-4c1a-95be-60f6e420fceb",
+  "findings_lines": 11,
+  "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: audit --report 308517. This reviews pull request #308517 of the GitHub repository microsoft/vscode (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-08-06T12:51:47Z"
+}
