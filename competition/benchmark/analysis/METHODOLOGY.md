@@ -206,6 +206,15 @@ One page per subject + one aggregate synthesis page. Inline CSS/JS, theme-aware,
 - **Human spot-check** — review ≥15–20% of verdicts, **including every `TP-primary` decision** and all
   low-confidence ones; log disagreements and the judge↔human agreement rate.
 - **One judge model + rubric** across all subjects; record the judge model/version.
+- **Cell isolation** — every cell starts from a pristine checkout. `repos/<subject_id>` is shared by
+  all 16 cells of a subject, so `run_cell.sh` does `checkout -f` + `clean -xfd` before each one and
+  refuses to run (exit 77, cell left `pending`) if anything survives. Without this a tool that writes
+  artifacts into the tree seeds the next cell: decaf writes `.decaf/code-reviews/` and its
+  recurring-findings cross-check reads that directory, so later cells harvested earlier cells'
+  findings. Competitor tools write nothing into the tree, making the leak asymmetric and inflating
+  decaf-family recall. This invalidated 27 cells and all 9 subject analyses on 2026-08-06 — see
+  `quarantine/2026-08-06-decaf-leak/README.md`. **Before grading a subject, confirm no cell's findings
+  bundle contains another cell's report file.**
 
 ## 8. Pilot first
 

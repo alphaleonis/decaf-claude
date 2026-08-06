@@ -1,0 +1,160 @@
+diff --git a/src/compiler/types.ts b/src/compiler/types.ts
+index ee7f4338a3a10..1cfe3e04ba68d 100644
+--- a/src/compiler/types.ts
++++ b/src/compiler/types.ts
+@@ -4288,6 +4288,7 @@ export interface SourceFileLike {
+     lineMap?: readonly number[];
+     /** @internal */
+     getPositionOfLineAndCharacter?(line: number, character: number, allowEdits?: true): number;
++    languageVariant?: LanguageVariant;
+ }
+ 
+ /** @internal */
+diff --git a/src/services/completions.ts b/src/services/completions.ts
+index 6d0cbf7183ed3..188f45f29ac45 100644
+--- a/src/services/completions.ts
++++ b/src/services/completions.ts
+@@ -1595,7 +1595,7 @@ function getJsxClosingTagCompletion(location: Node | undefined, sourceFile: Sour
+         switch (node.kind) {
+             case SyntaxKind.JsxClosingElement:
+                 return true;
+-            case SyntaxKind.SlashToken:
++            case SyntaxKind.LessThanSlashToken:
+             case SyntaxKind.GreaterThanToken:
+             case SyntaxKind.Identifier:
+             case SyntaxKind.PropertyAccessExpression:
+@@ -3508,7 +3508,7 @@ function getCompletionData(
+                         }
+                         break;
+ 
+-                    case SyntaxKind.SlashToken:
++                    case SyntaxKind.LessThanSlashToken:
+                         if (currentToken.parent.kind === SyntaxKind.JsxSelfClosingElement) {
+                             location = currentToken;
+                         }
+@@ -3518,7 +3518,7 @@ function getCompletionData(
+ 
+             switch (parent.kind) {
+                 case SyntaxKind.JsxClosingElement:
+-                    if (contextToken.kind === SyntaxKind.SlashToken) {
++                    if (contextToken.kind === SyntaxKind.LessThanSlashToken) {
+                         isStartingCloseTag = true;
+                         location = contextToken;
+                     }
+@@ -5805,7 +5805,7 @@ function isValidTrigger(sourceFile: SourceFile, triggerCharacter: CompletionsTri
+         case "/":
+             return !!contextToken && (isStringLiteralLike(contextToken)
+                 ? !!tryGetImportFromModuleSpecifier(contextToken)
+-                : contextToken.kind === SyntaxKind.SlashToken && isJsxClosingElement(contextToken.parent));
++                : contextToken.kind === SyntaxKind.LessThanSlashToken && isJsxClosingElement(contextToken.parent));
+         case " ":
+             return !!contextToken && isImportKeyword(contextToken) && contextToken.parent.kind === SyntaxKind.SourceFile;
+         default:
+diff --git a/src/services/services.ts b/src/services/services.ts
+index 0534598da21d7..0ca849394c29b 100644
+--- a/src/services/services.ts
++++ b/src/services/services.ts
+@@ -504,8 +504,9 @@ function createChildren(node: Node, sourceFile: SourceFileLike | undefined): rea
+         });
+         return children;
+     }
+-
++    const languageVariant = sourceFile?.languageVariant ?? LanguageVariant.Standard;
+     scanner.setText((sourceFile || node.getSourceFile()).text);
++    scanner.setLanguageVariant(languageVariant);
+     let pos = node.pos;
+     const processNode = (child: Node) => {
+         addSyntheticNodes(children, pos, child.pos, node);
+@@ -526,6 +527,7 @@ function createChildren(node: Node, sourceFile: SourceFileLike | undefined): rea
+     node.forEachChild(processNode, processNodes);
+     addSyntheticNodes(children, pos, node.end, node);
+     scanner.setText(undefined);
++    scanner.setLanguageVariant(LanguageVariant.Standard);
+     return children;
+ }
+ 
+diff --git a/src/services/utilities.ts b/src/services/utilities.ts
+index bec7d4b266d20..ceb56323ceeb6 100644
+--- a/src/services/utilities.ts
++++ b/src/services/utilities.ts
+@@ -1889,7 +1889,7 @@ export function isInsideJsxElementOrAttribute(sourceFile: SourceFile, position:
+     }
+ 
+     // <div>|</div>
+-    if (token.kind === SyntaxKind.LessThanToken && token.parent.kind === SyntaxKind.JsxClosingElement) {
++    if (token.kind === SyntaxKind.LessThanSlashToken && token.parent.kind === SyntaxKind.JsxClosingElement) {
+         return true;
+     }
+ 
+@@ -1934,6 +1934,7 @@ export function isInsideJsxElement(sourceFile: SourceFile, position: number): bo
+                 || node.kind === SyntaxKind.CloseBraceToken
+                 || node.kind === SyntaxKind.OpenBraceToken
+                 || node.kind === SyntaxKind.SlashToken
++                || node.kind === SyntaxKind.LessThanSlashToken
+             ) {
+                 node = node.parent;
+             }
+diff --git a/tests/baselines/reference/api/typescript.d.ts b/tests/baselines/reference/api/typescript.d.ts
+index 2c56042e22d0c..87942520f2ab0 100644
+--- a/tests/baselines/reference/api/typescript.d.ts
++++ b/tests/baselines/reference/api/typescript.d.ts
+@@ -5907,6 +5907,7 @@ declare namespace ts {
+      */
+     interface SourceFileLike {
+         readonly text: string;
++        languageVariant?: LanguageVariant;
+     }
+     interface SourceFileLike {
+         getLineAndCharacterOfPosition(pos: number): LineAndCharacter;
+diff --git a/tests/cases/fourslash/syntacticClassificationsJsx1.ts b/tests/cases/fourslash/syntacticClassificationsJsx1.ts
+index 8e6bfc6462ec1..40909ef7bddfd 100644
+--- a/tests/cases/fourslash/syntacticClassificationsJsx1.ts
++++ b/tests/cases/fourslash/syntacticClassificationsJsx1.ts
+@@ -18,7 +18,7 @@ verify.syntacticClassificationsAre(
+             c.jsxText(`
+     some jsx text
+ `),
+-        c.punctuation("<"), c.punctuation("/"), c.jsxCloseTagName("div"), c.punctuation(">"), c.punctuation(";"),
++        c.punctuation("</"), c.jsxCloseTagName("div"), c.punctuation(">"), c.punctuation(";"),
+     c.keyword("let"), c.identifier("y"), c.operator("="),
+         c.punctuation("<"), 
+             c.jsxSelfClosingTagName("element"), 
+@@ -26,8 +26,8 @@ verify.syntacticClassificationsAre(
+            c.punctuation("/"), c.punctuation(">")
+ ) 
+ 
+-const c2 = classification("2020");
+-verify.semanticClassificationsAre("2020",
+-    c2.semanticToken("variable.declaration", "x"), 
+-    c2.semanticToken("variable.declaration", "y"), 
++const c2 = classification("2020");
++verify.semanticClassificationsAre("2020",
++    c2.semanticToken("variable.declaration", "x"), 
++    c2.semanticToken("variable.declaration", "y"), 
+ );
+diff --git a/tests/cases/fourslash/syntacticClassificationsJsx2.ts b/tests/cases/fourslash/syntacticClassificationsJsx2.ts
+index 6c244ef4b6598..d4aff5d1ed85a 100644
+--- a/tests/cases/fourslash/syntacticClassificationsJsx2.ts
++++ b/tests/cases/fourslash/syntacticClassificationsJsx2.ts
+@@ -18,7 +18,7 @@ verify.syntacticClassificationsAre(
+             c.jsxText(`
+     some jsx text
+ `),
+-        c.punctuation("<"), c.punctuation("/"), c.jsxCloseTagName("div.name"), c.punctuation(">"), c.punctuation(";"),
++        c.punctuation("</"), c.jsxCloseTagName("div.name"), c.punctuation(">"), c.punctuation(";"),
+     c.keyword("let"), c.identifier("y"), c.operator("="),
+         c.punctuation("<"), 
+             c.jsxSelfClosingTagName("element.name"), 
+@@ -26,8 +26,8 @@ verify.syntacticClassificationsAre(
+            c.punctuation("/"), c.punctuation(">")
+ ) 
+ 
+-const c2 = classification("2020");
+-verify.semanticClassificationsAre("2020",
+-    c2.semanticToken("variable.declaration", "x"), 
+-    c2.semanticToken("variable.declaration", "y"), 
++const c2 = classification("2020");
++verify.semanticClassificationsAre("2020",
++    c2.semanticToken("variable.declaration", "x"), 
++    c2.semanticToken("variable.declaration", "y"), 
+ );

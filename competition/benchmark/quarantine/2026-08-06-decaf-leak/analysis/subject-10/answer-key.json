@@ -1,0 +1,31 @@
+{
+  "subject_id": 10,
+  "lang": "rust",
+  "size": "small",
+  "repo": "BurntSushi/ripgrep",
+  "pr": 3185,
+  "review_diff": "gh pr diff 3185 — full PR: CHANGELOG.md, crates/searcher/src/line_buffer.rs, crates/searcher/src/searcher/core.rs, crates/searcher/src/searcher/glue.rs",
+  "primary_bug": {
+    "id": "primary",
+    "summary": "The new fill loop in LineBuffer::fill reads repeatedly until the caller's buffer is full (`while !self.free_buffer().is_empty() { let readlen = rdr.read(...)?; if readlen==0 { break } self.end += readlen; }`), which breaks --line-buffered / streaming: line-buffered mode must yield what it can read immediately, not block waiting for a full buffer. Regressed real streaming use such as `journalctl -f | rg --line-buffered`.",
+    "file": "crates/searcher/src/line_buffer.rs",
+    "locus": "fill(): the added inner `while !self.free_buffer().is_empty()` read-until-full loop (~L416-421)",
+    "must_flag": "A reviewer catches this if it flags that packing the whole buffer across multiple reads defeats --line-buffered / prompt streaming (or otherwise identifies the read-loop as changing streaming/latency behavior).",
+    "source": "revert PR #3195 ('searcher: fix regression with --line-buffered flag'), regression issue #3194 ('Line buffering appears broken in 15.0.0')",
+    "difficulty": "subtle — requires reasoning about line-buffered/streaming semantics; the maintainer himself merged it and reverted only after a user bug report. Expect low recall; a genuine catch here is a strong signal."
+  },
+  "human_issues": [],
+  "known_safe": [
+    {
+      "id": "safe-core",
+      "summary": "core.rs: changing lines::preceding's 3rd arg from self.config.max_context() to self.config.before_context. This is the CORRECT fix (kept by the revert; it is what actually fixes #3184's -A/--after-context perf bug). Flagging it as incorrect/buggy is a FALSE POSITIVE.",
+      "file": "crates/searcher/src/searcher/core.rs"
+    },
+    {
+      "id": "safe-glue",
+      "summary": "glue.rs: test-expectation byte counts 262146 -> 262142. Expected consequence of the buffering change (fewer bytes searched before binary detection), not a defect.",
+      "file": "crates/searcher/src/searcher/glue.rs"
+    }
+  ],
+  "notes": "ripgrep is solo-maintained (Andrew Gallant self-merges) -> PR #3185 has no human review threads, so human_issues is empty. Score cells on: (1) primary_bug recall, (2) false-positive discipline (esp. NOT flagging the correct core.rs change), (3) any valid-other real defects, (4) noise."
+}

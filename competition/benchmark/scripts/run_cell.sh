@@ -33,9 +33,25 @@ ensure_repo() {
   git -C "$repo_dir" remote add origin "https://github.com/$repo" 2>/dev/null || true
   echo "[$RID] fetching $repo @ ${merge:0:12} (depth 2)…"
   git -C "$repo_dir" fetch -q --depth 2 origin "$merge"
-  git -C "$repo_dir" checkout -q -f "$merge"
 }
 ensure_repo
+
+# The checkout at repos/<subject_id> is SHARED by every cell of a subject, so it must be reset
+# to pristine before each cell — not just on first clone. Tools that write artifacts into the
+# tree (decaf writes .decaf/code-reviews/) would otherwise leave them for the NEXT cell to read,
+# letting a later tool harvest an earlier tool's findings and inflating its measured recall.
+# `-x` is required: .decaf/ is untracked, and a plain `clean -fd` respects ignore rules.
+reset_repo() {
+  git -C "$repo_dir" checkout -q -f "$merge"
+  git -C "$repo_dir" clean -qxfd
+  local dirty; dirty="$(git -C "$repo_dir" status --porcelain | wc -l | tr -d ' ')"
+  if [ "$dirty" != "0" ]; then
+    echo "[$RID] REFUSING: checkout $repo_dir still dirty ($dirty entries) after reset — cross-cell contamination risk" >&2
+    git -C "$repo_dir" status --porcelain >&2
+    manifest_pending "$RID"; exit 77
+  fi
+}
+reset_repo
 
 # Full-PR review range for LOCAL-diff tools. `merge^1..merge` equals the full PR only for
 # SQUASH-merges; for a rebase-merge the merge_sha is just the LAST commit, so the local diff is
