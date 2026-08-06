@@ -1,0 +1,92 @@
+{
+  "run_id": "5__ours-bugs__r1",
+  "subject_id": 5,
+  "lang": "typescript",
+  "size": "medium",
+  "tool": "ours-bugs",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "repo": "microsoft/vscode",
+  "pr": 308517,
+  "merge_sha": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "review_base": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9^1",
+  "review_head": "ba8d730bd0ebf0c6b8b65cfee3016dffbe1592c9",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 562,
+  "duration_ms": "558850",
+  "duration_api_ms": "1239198",
+  "num_turns": "16",
+  "cost_usd": "4.192063200000001",
+  "orch_usage": {
+    "input_tokens": "21",
+    "output_tokens": "18797",
+    "cache_creation_tokens": "98062",
+    "cache_read_tokens": "957798",
+    "total_tokens": 1074678
+  },
+  "session_tokens": {
+    "subagents": 4,
+    "input": 279,
+    "output": 98970,
+    "cache_creation": 417606,
+    "cache_read": 2851086,
+    "total": 3367941,
+    "orchestrator": {
+      "output": 18797,
+      "total": 1074678,
+      "duration_s": 561
+    },
+    "per_subagent": [
+      {
+        "output": 16544,
+        "input": 15,
+        "cache_creation": 119973,
+        "cache_read": 608356,
+        "total": 744888,
+        "duration_s": 291,
+        "agent": "agent-a06829b4870b214d7"
+      },
+      {
+        "output": 16695,
+        "input": 25,
+        "cache_creation": 87608,
+        "cache_read": 94406,
+        "total": 198734,
+        "duration_s": 176,
+        "agent": "agent-a45538e551cf865a0"
+      },
+      {
+        "output": 24139,
+        "input": 121,
+        "cache_creation": 55671,
+        "cache_read": 662086,
+        "total": 742017,
+        "duration_s": 300,
+        "agent": "agent-a6e4a548c3897a496"
+      },
+      {
+        "output": 22795,
+        "input": 97,
+        "cache_creation": 56292,
+        "cache_read": 528440,
+        "total": 607624,
+        "duration_s": 252,
+        "agent": "agent-a739eabc8e8fdc49a"
+      }
+    ],
+    "max_subagent_duration_s": 300,
+    "sum_subagent_duration_s": 1019
+  },
+  "input_tokens": "21",
+  "output_tokens": "18797",
+  "cache_creation_tokens": "98062",
+  "cache_read_tokens": "957798",
+  "total_tokens": 1074678,
+  "session_id": "ee11557a-bbba-4fb8-a954-765236db2768",
+  "findings_lines": 9,
+  "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs --report 308517. This reviews pull request #308517 of the GitHub repository microsoft/vscode (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-08-05T23:29:02Z"
+}

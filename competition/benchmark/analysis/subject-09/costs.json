@@ -29,6 +29,72 @@
       "findings_dir": "runs/9__anthropic-code-review__r2/findings"
     },
     {
+      "tool": "ours-audit",
+      "repeat": 1,
+      "cost_usd": 20.9342028,
+      "wall": 1343,
+      "ws_output": 204258,
+      "subagents": 11,
+      "max_subagent_s": 573,
+      "session_id": "6ad967b9-732d-41ad-9431-4af7890b0427",
+      "findings_dir": "runs/9__ours-audit__r1/findings"
+    },
+    {
+      "tool": "ours-audit",
+      "repeat": 2,
+      "cost_usd": 19.458400699999988,
+      "wall": 1404,
+      "ws_output": 198804,
+      "subagents": 13,
+      "max_subagent_s": 517,
+      "session_id": "ed126a79-d294-440d-8b12-44f26210ca31",
+      "findings_dir": "runs/9__ours-audit__r2/findings"
+    },
+    {
+      "tool": "ours-bugs",
+      "repeat": 1,
+      "cost_usd": 6.902031050000001,
+      "wall": 1255,
+      "ws_output": 126002,
+      "subagents": 4,
+      "max_subagent_s": 185,
+      "session_id": "4aa83ec5-ed1e-4b12-9d60-0271304cbee4",
+      "findings_dir": "runs/9__ours-bugs__r1/findings"
+    },
+    {
+      "tool": "ours-bugs",
+      "repeat": 2,
+      "cost_usd": 5.892074199999999,
+      "wall": 993,
+      "ws_output": 117039,
+      "subagents": 5,
+      "max_subagent_s": 332,
+      "session_id": "35682496-c7cd-41eb-9cec-09bf0faf7d2d",
+      "findings_dir": "runs/9__ours-bugs__r2/findings"
+    },
+    {
+      "tool": "ours-review",
+      "repeat": 1,
+      "cost_usd": 20.41315599999999,
+      "wall": 1439,
+      "ws_output": 267843,
+      "subagents": 12,
+      "max_subagent_s": 481,
+      "session_id": "182ca98b-a302-46fc-b13f-418d8b3a79ae",
+      "findings_dir": "runs/9__ours-review__r1/findings"
+    },
+    {
+      "tool": "ours-review",
+      "repeat": 2,
+      "cost_usd": 18.261673499999986,
+      "wall": 1507,
+      "ws_output": 293991,
+      "subagents": 18,
+      "max_subagent_s": 592,
+      "session_id": "654c945f-2661-47f2-8032-d8a57c30d653",
+      "findings_dir": "runs/9__ours-review__r2/findings"
+    },
+    {
       "tool": "ours",
       "repeat": 1,
       "cost_usd": 34.88032064999999,
