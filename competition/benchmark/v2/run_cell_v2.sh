@@ -30,10 +30,16 @@ export BENCH_ACCESS_LOG="$OUT/access.log"
 : > "$BENCH_ACCESS_LOG"
 export PATH="$V2/shim:$PATH"
 
+REPO_SLUG="$(jq -r '.repo' "$FIX")"; PRNUM="$(jq -r '.pr' "$FIX")"
+
 case "$TOOL" in
   ours-review) INVOKE="Use the Skill tool to run /decaf-quality-dev:code-review with arguments: review --report" ;;
   ours-bugs)   INVOKE="Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs --report" ;;
   ours-audit)  INVOKE="Use the Skill tool to run /decaf-quality-dev:code-review with arguments: audit --report" ;;
+  anthropic-code-review)
+    INVOKE="Use the Skill tool to run \`code-review:code-review\` — the plugin-qualified command from code-review@claude-plugins-official. It is NOT \`decaf-quality:code-review\`: a different tool ships a skill of the same bare name, so never invoke a bare /code-review, and abort rather than substituting anything else if the qualified skill does not resolve.
+
+This is pull request #$PRNUM of $REPO_SLUG. The repository is checked out locally at the exact commit under review, and the local checkout is AUTHORITATIVE — use \`git diff\` against it rather than fetching the diff remotely. Do NOT pass --comment and do NOT post anything to GitHub. Print every finding you would post, with file:line references." ;;
   *) echo "unknown tool: $TOOL" >&2; exit 2 ;;
 esac
 
