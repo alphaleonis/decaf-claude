@@ -1,0 +1,52 @@
+{
+  "subject_id": 2,
+  "repo": "dotnet/aspnetcore",
+  "pr": 67075,
+  "checkpoint": {
+    "sha": "3aa499ae7d2314f7bbf89a3232df8371cc351d2a",
+    "base": "a2a5480e4b5997ff346b8fea8f3544b0d370a126",
+    "date": "2026-07-07",
+    "selection": "final head; see notes — the indicted defect exists only in this shape"
+  },
+  "built_at": "2026-08-10",
+  "built_by": "operator + assistant",
+  "vintage": "merged 2026-07-09, after the Jan 2026 training cutoff of the benchmark model — VINTAGE-SAFE",
+  "candidates_considered": { "review_threads": 4, "post_merge_issues": 0, "follow_up_prs": 1 },
+
+  "entries": [
+    {
+      "id": "e1",
+      "statement": "GetPropertyInfo tries GetProperty(name, Public|Instance|DeclaredOnly) and, on null, falls back to GetProperty(name, Public|Instance|FlattenHierarchy). This does not fix AmbiguousMatchException: when a derived type hides a base property with `new`, DeclaredOnly succeeds and silently selects the derived member, dropping validation attributes declared on the base; and when the property exists only on a base type, DeclaredOnly returns null and the FlattenHierarchy fallback can itself throw AmbiguousMatchException — the exception the change was written to eliminate.",
+      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+      "locus": "lines 272-281 at this checkpoint: the DeclaredOnly call followed by `if (propertyInfo is null)` and the FlattenHierarchy retry",
+      "provenance": "post-merge-fix",
+      "source_ref": "https://github.com/dotnet/aspnetcore/pull/67712 — 'Revert \"Fixed AmbiguousMatchException in DataAnnotationsValidator for Hidden Members (#67075)\"', +1/-168, merged 2026-07-10 (one day after #67075)",
+      "discovered_at": "2026-07-10",
+      "admission_evidence": "Present at checkpoint. Verified in the fixture: DeclaredOnly and FlattenHierarchy each occur once in EditContextDataAnnotationsExtensions.cs. NOT present in this shape at any earlier head — FlattenHierarchy first appears at the final head; earlier heads use a catch(AmbiguousMatchException) retry with DeclaredOnly|IgnoreCase.",
+      "must_flag": "Flags that the DeclaredOnly-then-FlattenHierarchy sequence does not eliminate AmbiguousMatchException and/or silently selects the hidden derived member, losing base-class validation attributes. Either half counts.",
+      "severity_hint": "high"
+    },
+    {
+      "id": "e2",
+      "statement": "The restructuring drops BindingFlags.IgnoreCase, which the earlier exception-handling form passed. Property lookup becomes case-sensitive where it previously was not, a silent behavior change for callers relying on case-insensitive field names.",
+      "file": "src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs",
+      "locus": "lines 272-281; compare the as-opened head where the retry passed Public|Instance|IgnoreCase|DeclaredOnly",
+      "provenance": "silent-fix",
+      "source_ref": "diff between as-opened head 5882542bc000 and final head 3aa499ae7d23; no review thread raised it",
+      "discovered_at": "2026-08-10 (found while building this key)",
+      "admission_evidence": "Present at checkpoint: neither GetProperty call passes IgnoreCase. PROVISIONAL — admitted under the silent-fix bar (small, localized, defect-shaped, no thread covers it, must_flag is writable), but nobody upstream has confirmed this is a defect rather than an intentional tightening. Report separately; drop if it proves noisy.",
+      "must_flag": "Flags that IgnoreCase was dropped from the property lookup, changing case-sensitivity behavior.",
+      "severity_hint": "low"
+    }
+  ],
+
+  "rejected": [
+    {
+      "candidate": "ilonatommy: 'managing flow by exceptions is not preferred; explore cheaper alternatives'",
+      "source_ref": "PR #67075 review thread",
+      "reason": "Not a defect at this checkpoint — it is the review pressure that PRODUCED this checkpoint's code. The exception-driven form it criticizes exists only at earlier heads. Scoring a reviewer for repeating it here would be scoring them for objecting to code that is not present."
+    }
+  ],
+
+  "notes": "THIRD DISTINCT PATTERN. Subject 9's defects were INTRODUCED during review; subject 11's was REMOVED during review; subject 2's was TRANSFORMED — the as-opened head carries an exception-driven DeclaredOnly retry, and review restructured it into the DeclaredOnly-then-FlattenHierarchy form that shipped and was reverted one day later. Only the final shape matches the indicted defect, so the checkpoint is the final head, which is what v1 would have reviewed anyway. Fixture inaccuracies found: the v1 fixture records 9 human threads; the API returns 4. The head chain also has 4 gaps from ordinary (non-force) pushes."
+}
