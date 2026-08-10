@@ -6,7 +6,9 @@ status: in-progress
 type: bug
 priority: critical
 created_at: 2026-08-06T14:58:35Z
-updated_at: 2026-08-06T15:03:15Z
+updated_at: 2026-08-10T12:34:05Z
+blocked_by:
+    - dcc-ho2w
 order: zzzy
 ---
 
@@ -40,3 +42,11 @@ cross-subject synthesis are graded on contaminated data.
 - [x] `repos/*` checkouts cleaned so the next run starts from a clean tree
 - [ ] 27 cells re-run
 - [ ] 9 subjects re-analyzed and synthesis regenerated
+
+## Paused 2026-08-10
+The harness fix, the cleanup, and the subject-9 re-grade are DONE. The remaining re-runs (12 cells
+on subjects 1 and 5) are PAUSED pending the [[dcc-ho2w]] v2 decision.
+
+Reason: v2 denies reviewers post-hoc PR context, which invalidates every cell again — including
+subject 9's fresh runs. Spending ~$100 on subjects 1 and 5 now would buy numbers v2 supersedes.
+Resume only if a contamination-only comparison is wanted for its own sake.
