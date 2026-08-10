@@ -98,6 +98,14 @@ Everything in the PR's lifecycle and its aftermath is a candidate:
 **Every candidate entry must be shown present in the code at checkpoint T.** This is the single
 admission rule, applied uniformly — not a special gate for post-merge defects.
 
+**For a change-shaped finding ("X was dropped", "Y was replaced"), presence in the tree is not
+enough — it must be visible in the `base..checkpoint` DIFF.** The reviewer sees that diff and nothing
+else. A finding derived from comparing two *heads* to each other can describe a change that never
+appears in the reviewed diff, and is therefore unflaggable. This is not hypothetical: subject 2's
+original e2 claimed the restructure dropped `BindingFlags.IgnoreCase`, but the base had no
+BindingFlags at all — IgnoreCase lived only in an intermediate head. It was withdrawn after the
+first review cell reported everything else and correctly ignored it.
+
 Mechanical pre-filters narrow the candidate set before human judgment is needed:
 
 - does the thread's file exist in the checkpoint diff?
