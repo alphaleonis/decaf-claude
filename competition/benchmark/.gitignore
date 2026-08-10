@@ -4,3 +4,7 @@ repos/
 
 # Manifest write lock (flock target).
 .manifest.lock
+
+# Audit evidence bundles: large gh dumps, regenerable via v2/audit_subject.sh.
+# The verdicts they support live in v2/analysis/GROUND-TRUTH-AUDIT.md, which IS committed.
+v2/analysis/subject-*/audit/

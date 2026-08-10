@@ -229,6 +229,21 @@ The procedure turns a candidate PR into two artifacts:
 
 Every command shown has been run against subject 9. `O`/`R`/`N` are owner, repo, PR number.
 
+### Step 0 — Triage on the fix's confidence language
+
+Before spending anything, read the revert/fix PR body and ask one question: **does it name a
+mechanism, or only a symptom?**
+
+This predicted every outcome in the 12-subject audit (`v2/analysis/GROUND-TRUTH-AUDIT.md`). Subjects
+whose fix named a mechanism all survived; every subject whose fix said "I suspect", "not sure if it's
+worth", "more than normal regressions", or merely linked a CI failure turned out to have an
+unscorable defect. A symptom-only fix means nobody ever wrote down what the reviewer should have
+caught, and Step 6 will not be able to invent it.
+
+A symptom-only body is not an automatic rejection — subject 8's mechanism turned up in the re-land
+PR (see Step 5) — but it means: go looking for the mechanism *now*, and drop the subject if no source
+states one.
+
 ### Step 1 — Inventory the PR's heads
 
 ```sh
@@ -330,7 +345,14 @@ gh api graphql -f query='
       ... on PullRequest { number title url } ... on Issue { number title url } } } } } } } }'
 ```
 
-Candidate sources are listed in §3. Also diff consecutive heads (`compare/<head_i>...<head_i+1>`) to
+Candidate sources are listed in §3. **Also check the cross-references for a re-land** — a PR whose
+title reattempts this one ("Reattempt of #N", "WIP - <original title>", "Reland: …"). The re-land is
+often the *only* place the defect is stated precisely, because the revert was written in a hurry and
+the issue was written by whoever saw the symptom. Subject 8's two key entries exist only because
+#133995 enumerated the gaps; on the revert body alone ("I suspect there were existing races") it
+would have been dropped as unscorable.
+
+Also diff consecutive heads (`compare/<head_i>...<head_i+1>`) to
 surface **silent fixes** — changes the author made that corrected something nobody commented on.
 These leave no thread, so a thread-driven key misses them entirely.
 
@@ -364,6 +386,13 @@ inapplicable without judgment.
 Then adjudicate what survives **by hand**. For each candidate, the question is not "is this a real
 finding" but *"was this already true of the code at the checkpoint?"* — which requires reading the
 code at the checkpoint and at the point the finding was made. This step is irreducible; see §3.
+
+> ⚠️ **A review comment proves something was once true, never that it shipped.** Subjects 5 and 11
+> both had keys written from what reviewers said, and in both cases the merged code did the opposite
+> — subject 5's fixture indicts an idle timer that "leaves the timer running during consumer
+> processing" when the merged code clears it before `yield` and says so in a comment. Every candidate
+> drawn from a thread, a bot comment or a linked issue must be re-read **against the code at the
+> checkpoint** before admission. This is the single most common way a key goes invalid.
 
 **The `must_flag` test applies to every entry, not just silent fixes.** If a candidate cannot be
 stated as a specific thing a reviewer would have had to say, it cannot be scored — drop it. This is

@@ -2,11 +2,11 @@
 # dcc-5xad
 version: 1
 title: Audit ground truth for the remaining 9 benchmark subjects
-status: todo
+status: completed
 type: task
 priority: high
 created_at: 2026-08-10T15:05:01Z
-updated_at: 2026-08-10T17:43:40Z
+updated_at: 2026-08-10T18:27:46Z
 parent: dcc-ho2w
 order: R
 ---
@@ -25,20 +25,19 @@ graded against defects that are not in the reviewed diff.
 | 2 | aspnetcore#67075 | key built, 2 entries (one provisional silent-fix). Defect was TRANSFORMED by review. **Fixture claims 9 human threads; API returns 4.** Vintage-safe (merged 2026-07-09) |
 
 ## Remaining (9)
+## Remaining (9)
 
-Audit each: locate the defect, verify it is present in the reviewed diff, confirm the stated ground
-truth matches it, and count admissible key entries.
+All audited 2026-08-10. Verdicts and evidence: `competition/benchmark/v2/analysis/GROUND-TRUTH-AUDIT.md`.
 
-- [ ] 1 — dotnet/efcore#32770 (csharp/small) — reverted next day; 100 cross-refs (worst leak surface)
-- [ ] 3 — dotnet/runtime#127146 (csharp/large) — JIT casting; 3 human + 5 Copilot threads
-- [ ] 4 — microsoft/TypeScript#61928 (typescript/small) — bug manifests downstream, not in TS's own tests
-- [ ] 5 — microsoft/vscode#308517 (typescript/medium) — 0 human threads, bot-only; the ONLY subject with 0 cross-refs
-- [ ] 6 — microsoft/vscode#320685 (typescript/large) — reverted twice, **no single named bug** (fuzzy key expected)
-- [ ] 7 — prometheus/prometheus#13777 (go/small) — 0 threads; fixture calls this the crispest ground truth
-- [ ] 8 — kubernetes/kubernetes#129768 (go/medium) — merged then reverted in a day
-- [ ] 10 — BurntSushi/ripgrep#3185 (rust/small) — solo maintainer, 0 threads; bug isolated to 1 of 2 commits
-- [ ] 12 — rust-lang/rust#153540 (rust/large) — PARTIAL revert of one commit; ~270 diff lines are .stderr fixtures
-
+- [x] 1 — dotnet/efcore#32770 — **usable**, ~2 entries (assert/`-1` sentinel; issue #32944 stack trace)
+- [x] 3 — dotnet/runtime#127146 — **replace**, bare CI failure list, total revert
+- [x] 4 — microsoft/TypeScript#61928 — **replace**, downstream crash never stated in TS terms
+- [x] 5 — microsoft/vscode#308517 — **replace**, GROUND TRUTH INVALID (all 3 findings fixed pre-merge)
+- [x] 6 — microsoft/vscode#320685 — **replace**, no named bug ("more than normal regressions")
+- [x] 7 — prometheus/prometheus#13777 — **usable**, 1 entry; crispest defect in the corpus
+- [x] 8 — kubernetes/kubernetes#129768 — **usable**, ~2 entries; root cause only in re-land #133995
+- [x] 10 — BurntSushi/ripgrep#3185 — **usable**, 1 entry; read-loop vs `--line-buffered`
+- [x] 12 — rust-lang/rust#153540 — **usable**, ~3 entries; richest key available
 ## Replacement criterion
 
 A subject is REPLACED, not repaired, when any of these hold:
@@ -52,7 +51,35 @@ lightly force-pushed.
 
 ## Acceptance
 
-- [ ] All 9 audited against METHODOLOGY-v2.md section 4
-- [ ] Each classified: usable as-is / needs a different checkpoint / replace
-- [ ] Replacements sourced for any that fail
-- [ ] No full bench-run authorized until this is complete
+- [x] All 9 audited against METHODOLOGY-v2.md section 4 — evidence in `v2/analysis/subject-NN/audit/`
+- [x] Each classified: usable as-is / needs a different checkpoint / replace — `v2/analysis/GROUND-TRUTH-AUDIT.md`
+- [x] Replacements sourced for any that fail — scoped and handed to [[dcc-ixyy]] (5 subjects, incl. the whole TS row)
+- [x] No full bench-run authorized until this is complete — [[dcc-plsq]] now blocked by [[dcc-ixyy]]
+
+## Summary
+
+**Completed 2026-08-10** — All 9 audited. **5 of 12 subjects rejected** (3, 4, 5, 6, 11) — a worse base rate than the 2-of-3
+that motivated this. Seven survive: 1, 2, 7, 8, 9, 10, 12. Evidence per subject in
+`v2/analysis/subject-NN/audit/`, regenerable via `v2/audit_subject.sh`; verdicts and reasoning in
+`v2/analysis/GROUND-TRUTH-AUDIT.md`.
+
+**The entire TypeScript row is gone** (4, 5, 6), so the language x size grid no longer holds and no
+TypeScript claim is available from this corpus. Sourcing 5 replacements is [[dcc-ixyy]]; [[dcc-plsq]]
+is now blocked on it.
+
+Subject 5 failed the same way as 11 and for the same reason: the key was written from what reviewers
+*said* rather than what the merged code *does*. Its fixture indicts an idle timer left running during
+consumer processing; the merged code clears it before `yield` and carries a comment saying so.
+
+Subject 8 was saved by a source the methodology did not list — its re-land PR #133995 enumerated both
+gaps, where the revert body only said "I suspect". Added to Step 5.
+
+Three methodology changes landed from this: Step 0 triages on whether the fix names a mechanism or a
+symptom (which predicted every outcome here, cheaply); Step 5 now checks re-land PRs; Step 6 warns
+that a review comment proves something was once true, never that it shipped.
+
+Two corrections to earlier records: the fixtures' `human_threads.count` counts COMMENTS, not threads
+(verified on 1, 8, 12), so the subject-2 "claims 9, API returns 4" note was a mislabel and overstated
+fixture unreliability. And subjects 7 and 10 yield exactly ONE entry each, so the methodology's ">=2
+entries" replacement rule would discard subject 7 — the most valid subject in the corpus. Validity
+and richness conflict; raised for [[dcc-595v]] rather than settled here.
