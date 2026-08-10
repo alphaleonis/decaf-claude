@@ -1,0 +1,66 @@
+app-ui	L	element-hq/element-web#32812	2026-05-06	+1231/-874	10thr	Refactor and redesign user menu
+app-ui	L	element-hq/element-web#32964	2026-07-21	+560/-6	21thr	Auto Collapse Behaviour - Collapse left panel on window resize
+app-ui	L	mattermost/mattermost#33363	2026-05-06	+221/-691	6thr	refactor(color_input): migrate ColorInput to a function component
+app-ui	M	PostHog/posthog#60080	2026-05-27	+337/-7	24thr	feat(hog-charts): add Sparkline component
+app-ui	M	PostHog/posthog#60130	2026-05-26	+426/-42	22thr	feat(insights): port stickiness bar to hog-charts
+app-ui	M	PostHog/posthog#60812	2026-05-31	+357/-17	23thr	feat(replay): pin a primary property from the session replay inspector
+app-ui	M	PostHog/posthog#69166	2026-07-09	+203/-16	23thr	feat(insights): drag-to-zoom into a date range on trends charts
+app-ui	M	element-hq/element-web#33034	2026-06-02	+123/-63	5thr	Support MSC4287 m.key_backup stable prefix as well as the unstable pre
+app-ui	M	element-hq/element-web#33692	2026-07-07	+240/-160	18thr	Allow disabling legacy calls and make `Voice & Video` settings `Legacy
+app-ui	M	element-hq/element-web#33987	2026-07-15	+151/-13	6thr	Make the persistent-storage request observable and warn when it is den
+app-ui	M	element-hq/element-web#34055	2026-07-06	+123/-5	8thr	Start voice call in PiP (not in fullscreen)
+app-ui	M	element-hq/element-web#34165	2026-07-20	+203/-78	6thr	Collapsed URL previews in timeline
+app-ui	M	element-hq/element-web#34306	2026-07-21	+191/-2	12thr	Set auto on-a-call status
+app-ui	M	grafana/grafana#120978	2026-08-02	+277/-65	12thr	Navigation: Inject orgId into all navigations
+app-ui	M	grafana/grafana#122228	2026-05-06	+129/-10	15thr	Filters: Add interaction reporting
+app-ui	M	immich-app/immich#24627	2026-05-11	+127/-3	15thr	feat(web): Add metadata overlay to slideshow
+app-ui	M	immich-app/immich#26183	2026-05-01	+286/-87	5thr	feat(web): custom video player controls
+app-ui	M	immich-app/immich#26205	2026-07-23	+349/-15	9thr	feat(mobile): custom date range for map
+app-ui	M	immich-app/immich#26610	2026-06-04	+349/-26	8thr	feat: show notification and battery optimization warning
+app-ui	M	immich-app/immich#26971	2026-05-06	+112/-120	12thr	fix(web): migrate people management component to page, enabling toolti
+app-ui	M	immich-app/immich#27061	2026-07-16	+91/-20	10thr	feat(web): undo archive from toast
+app-ui	M	mattermost/mattermost#35900	2026-05-15	+234/-69	7thr	MM-67771: Update Report a Problem to email flow
+app-ui	M	mattermost/mattermost#36213	2026-05-08	+202/-3	7thr	MM-68433 - Fix DM/GM menu gating and header save in Channel Settings
+app-ui	S	element-hq/element-web#33346	2026-05-27	+67/-4	3thr	Periodically nag the user if their device remains unverified
+app-ui	S	element-hq/element-web#34225	2026-07-14	+56/-3	3thr	Add user status to dm room header
+app-ui	S	element-hq/element-web#34350	2026-07-29	+90/-5	3thr	Replace short-lived no-mobile-guide-redirect cookie with SessionStorag
+app-ui	S	element-hq/element-web#34371	2026-07-22	+15/-18	9thr	Tweak CSS bundling to dedupe more styles
+app-ui	S	grafana/grafana#117615	2026-07-17	+43/-3	10thr	SqlExpressions: Fix parsing for Table Names with spaces
+app-ui	S	grafana/grafana#124425	2026-05-20	+52/-7	16thr	Docs: Document nested tables and nested field overrides in the table v
+app-ui	S	immich-app/immich#27788	2026-05-02	+22/-18	4thr	fix(web): fix shared link /s/photos.* navigation after password login
+app-ui	S	immich-app/immich#28164	2026-07-21	+65/-5	5thr	fix(mobile): refresh asset stack after deleting viewer item
+app-ui	S	immich-app/immich#28241	2026-05-07	+20/-9	3thr	fix: periodically execute pragma optimize
+app-ui	S	immich-app/immich#28283	2026-05-09	+36/-6	3thr	feat(ci): publish PR Android APK to comment
+backend	L	PostHog/posthog#52408	2026-05-06	+1646/-41	27thr	feat(models): add fail-closed TeamScopedManager for tenant isolation
+backend	M	grafana/grafana#122269	2026-05-05	+223/-14	14thr	Auth: Use dedicated token for requests to Grafana.com
+backend	M	grafana/grafana#123793	2026-05-12	+331/-13	15thr	Provisioning: Make files API max file size configurable
+backend	M	grafana/grafana#124181	2026-05-08	+177/-12	17thr	Lease: add auto-renewal to lease objects
+backend	M	mattermost/mattermost#36758	2026-06-02	+283/-18	7thr	MM-68665: Implement FileBackendWithLinkGenerator for Azure (SAS for ex
+backend	M	mattermost/mattermost#36760	2026-06-09	+434/-0	18thr	Automate schema migration release notes process
+backend	S	grafana/grafana#122762	2026-06-12	+44/-0	6thr	Variables: propagate dashboard context headers to datasource plugin va
+backend	S	immich-app/immich#27820	2026-06-08	+38/-1	3thr	fix(web): use irot/imir tags for HEIF Orientation
+backend	S	jellyfin/jellyfin#12834	2026-05-21	+20/-13	8thr	Have device deletion take list of ids
+backend	S	jellyfin/jellyfin#14935	2026-06-18	+82/-1	4thr	Fixed "Deleting media that is still being watched in SyncPlay results 
+backend	S	mattermost/mattermost#37099	2026-06-29	+95/-1	3thr	Add CI check to prevent renumbering or renaming existing DB migrations
+contract	L	PostHog/posthog#55149	2026-05-06	+2527/-635	72thr	feat(flags): add test_evaluation endpoint
+contract	L	immich-app/immich#24205	2026-06-10	+5710/-26	45thr	feat: integrity check jobs (missing files, untracked files, checksums)
+contract	L	mattermost/mattermost#34012	2026-05-13	+2337/-28	24thr	[MM-2541] Shortcut to mark all channels as read for a team
+contract	M	PostHog/posthog#61823	2026-06-15	+199/-11	22thr	feat(hobby): support BYO AI keys and gate cloud-only replay summaries
+contract	M	mattermost/mattermost#36646	2026-05-27	+199/-9	6thr	Fixed a bug where deleted post was broadcasted by the server and rest…
+contract	M	mattermost/mattermost#36824	2026-07-08	+132/-4	10thr	model: add strict validation and tests for CommandResponse
+contract	S	element-hq/element-web#34284	2026-08-04	+83/-0	4thr	Add a Module API for accessing storage helper functions.
+contract	S	immich-app/immich#28886	2026-06-10	+52/-45	5thr	refactor(server): allow -1 rating again
+contract	S	mattermost/mattermost#34903	2026-06-17	+55/-3	3thr	Mattermost emoji reaction fix
+library	L	prometheus/prometheus#18081	2026-06-15	+1057/-96	10thr	promql: Add metric to track total samples read per query
+library	L	sveltejs/kit#15499	2026-07-07	+135/-798	13thr	breaking: remove stores
+library	M	dotnet/aspnetcore#55897	2026-08-07	+151/-10	8thr	Log whether the localization resource is found or not
+library	M	dotnet/efcore#28337	2026-07-10	+231/-0	12thr	SqlServer: Translate x.Parse
+library	M	dotnet/efcore#34127	2026-06-15	+233/-97	15thr	Use null propagation to optimize away `IS NOT NULL` checks
+library	M	prometheus/prometheus#18091	2026-08-06	+207/-4	12thr	scrape: support scraping targets via Unix Domain Sockets
+library	S	dotnet/aspnetcore#58995	2026-07-27	+15/-11	11thr	Put package assets in TFM-specific folder
+library	S	sveltejs/kit#15685	2026-07-02	+53/-24	8thr	breaking: nested server-only directories
+unclear	M	PostHog/posthog#71369	2026-07-16	+106/-19	39thr	feat(signals): add optimization lane to data warehouse scout
+unclear	M	grafana/grafana#113642	2026-06-05	+193/-0	37thr	DOCS: Added new concepts doc to data source documentation
+unclear	S	element-hq/element-web#34429	2026-07-28	+21/-6	3thr	Fix Module API api docs not regenerating on build
+unclear	S	grafana/grafana#126809	2026-06-18	+44/-30	26thr	docs: sync visualization docs with source
+unclear	S	grafana/grafana#126814	2026-07-07	+43/-23	24thr	docs: sync visualization docs with source (pt3)
