@@ -6,7 +6,7 @@ status: todo
 type: feature
 priority: critical
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T17:52:17Z
+updated_at: 2026-08-10T18:34:21Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v

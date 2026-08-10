@@ -11,7 +11,7 @@ Audited 2026-08-10 against METHODOLOGY-v2 §4. Evidence per subject in
 | # | Subject | Lang/size | Verdict | Entries | Basis |
 |---|---|---|---|---|---|
 | 1 | efcore#32770 | C# / small | **usable** | ~2 | Issue #32944's stack trace lands on `Debug.Assert(rowIdForOrdinal!=null)`. The PR replaced a `-1` sentinel with a dict populated only when a rowid is found, so a table without one trips the assert. |
-| 2 | aspnetcore#67075 | C# / medium | **usable** | 2 | Built in a prior session. Defect transformed by review; one provisional silent-fix. |
+| 2 | aspnetcore#67075 | C# / medium | **usable** | 1 | Built in a prior session. Defect transformed by review; one provisional silent-fix. |
 | 3 | runtime#127146 | C# / large | **replace** | 0–1 | Regression issue is a bare CI test-failure list, no mechanism. Total 13-file revert gives no localization. jkotas's only thread is a `.csproj` include question, not the cast failure. |
 | 4 | TypeScript#61928 | TS / small | **replace** | 0 | Escaped defect is a downstream `Maximum call stack size exceeded` in eslint; never stated in TS's own terms. Revert author: "I'm not sure if it's worth the crashing… Some things have been fixed, but not everything." DanielRosenwasser's `languageVariant` point was *applied* during review — the merged code already has it optional. |
 | 5 | vscode#308517 | TS / medium | **replace** | 0 | **Ground truth invalid** — see below. |
@@ -96,12 +96,31 @@ mechanism survived the audit (7, 10, 12, and 8 via its re-land). Every subject w
 Seven survive. **TypeScript is eliminated entirely**, so the language×size grid no longer holds and no
 claim about TypeScript review quality is available from this corpus.
 
-Two survivors are also thin: subjects 7 and 10 yield exactly **one** entry each. The methodology's
-replacement criterion ("fewer than ~2 admissible entries… too thin to discriminate") would drop them
-— but subject 7 is the single most valid subject in the corpus, with the defect perfectly localized
-and unambiguously root-caused. **Validity and richness are pulling in opposite directions, and the
-≥2 rule as written would discard the best subject.** This needs a decision rather than a silent
-application; it is raised in `dcc-595v` (scoring model) rather than settled here.
+### The ≥2-entry rule is the wrong test
+
+Three survivors yield exactly one entry: subject 2 (built, 1 entry after an invalid one was
+withdrawn), and subjects 7 and 10 by projection. The methodology's replacement criterion ("fewer than
+~2 admissible entries… too thin to discriminate") would drop all three — including subject 7, the
+single most valid subject in the corpus.
+
+The rule conflates *thin key* with *small subject*. **The right test is whether the key is complete
+for its diff, not how many entries it has.** Subject 7 is a 78-line single-file PR whose entire
+content is the defect: one entry is a *complete* key, and a second would have to be invented. Subject
+12 is a 383-line change across 18 files; one entry there would mean the key is unfinished. Judge
+entry count against diff size and against what the PR actually does, and record that judgment.
+
+What one-entry subjects genuinely cost is **per-subject precision**: with a single true positive you
+cannot separate signal from noise within that subject, and each tool's result is one coin flip.
+Recall pools across subjects fine, because it is computed over the union of entries. So one-entry
+subjects are sound for the primary caught/missed metric and should be **excluded from per-subject
+precision ranking** — not from the corpus. Settled in `dcc-595v`.
+
+## Only two of the seven survivors are actually built
+
+Surviving the audit is not the same as being usable. v2 fixtures and answer keys exist for subjects
+**2 and 9 only**. Subjects 1, 7, 8, 10 and 12 have been validated but have no checkpoint, no fixture
+and no key — each still needs the full §4 procedure. That work is `dcc-9ncz` and it, not the
+replacements, is what gates the pilot.
 
 ## Vintage
 
