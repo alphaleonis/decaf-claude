@@ -6,9 +6,11 @@ status: todo
 type: task
 priority: normal
 created_at: 2026-08-10T17:43:02Z
-updated_at: 2026-08-10T17:43:41Z
+updated_at: 2026-08-10T18:41:54Z
 parent: dcc-ho2w
-order: Zs
+blocked_by:
+    - dcc-595v
+order: D
 ---
 
 Six of ten dated subjects predate the benchmark model's Jan 2026 training cutoff, including subject

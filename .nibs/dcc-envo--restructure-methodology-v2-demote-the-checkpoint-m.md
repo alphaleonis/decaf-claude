@@ -6,9 +6,9 @@ status: todo
 type: task
 priority: normal
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-10T17:43:41Z
+updated_at: 2026-08-10T18:42:12Z
 parent: dcc-ho2w
-order: ZV
+order: Hs
 ---
 
 The document still presents the review checkpoint as v2's organizing idea. Three subjects built end
