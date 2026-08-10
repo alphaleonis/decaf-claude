@@ -1,0 +1,101 @@
+{
+  "run_id": "9__ours-bugs__r2",
+  "subject_id": 9,
+  "lang": "go",
+  "size": "large",
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "model": "claude-opus-4-8",
+  "repo": "kubernetes/kubernetes",
+  "pr": 130837,
+  "merge_sha": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "review_base": "0872760763d5877707b018a4eea870d1fc02e6a4^1",
+  "review_head": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 997,
+  "duration_ms": "993337",
+  "duration_api_ms": "1588966",
+  "num_turns": "24",
+  "cost_usd": "5.555437500000001",
+  "orch_usage": {
+    "input_tokens": "38",
+    "output_tokens": "40350",
+    "cache_creation_tokens": "129002",
+    "cache_read_tokens": "1910922",
+    "total_tokens": 2080312
+  },
+  "session_tokens": {
+    "subagents": 5,
+    "input": 333,
+    "output": 116376,
+    "cache_creation": 549232,
+    "cache_read": 4372282,
+    "total": 5038223,
+    "orchestrator": {
+      "output": 40350,
+      "total": 2080312,
+      "duration_s": 995
+    },
+    "per_subagent": [
+      {
+        "output": 16188,
+        "input": 15,
+        "cache_creation": 113948,
+        "cache_read": 613420,
+        "total": 743571,
+        "duration_s": 269,
+        "agent": "agent-a23bdb6dc494a40d5"
+      },
+      {
+        "output": 18539,
+        "input": 66,
+        "cache_creation": 84644,
+        "cache_read": 501758,
+        "total": 605007,
+        "duration_s": 210,
+        "agent": "agent-a4a86662538469ce7"
+      },
+      {
+        "output": 14970,
+        "input": 50,
+        "cache_creation": 84489,
+        "cache_read": 301235,
+        "total": 400744,
+        "duration_s": 167,
+        "agent": "agent-a6034495314bed079"
+      },
+      {
+        "output": 8804,
+        "input": 98,
+        "cache_creation": 51443,
+        "cache_read": 568399,
+        "total": 628744,
+        "duration_s": 110,
+        "agent": "agent-aa8675a02fe573f1e"
+      },
+      {
+        "output": 17525,
+        "input": 66,
+        "cache_creation": 85706,
+        "cache_read": 476548,
+        "total": 579845,
+        "duration_s": 206,
+        "agent": "agent-aac8c1cab381418f0"
+      }
+    ],
+    "max_subagent_duration_s": 269,
+    "sum_subagent_duration_s": 962
+  },
+  "input_tokens": "38",
+  "output_tokens": "40350",
+  "cache_creation_tokens": "129002",
+  "cache_read_tokens": "1910922",
+  "total_tokens": 2080312,
+  "session_id": "3e89cb23-79ff-458b-810e-0bf7182a249d",
+  "findings_lines": 11,
+  "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs --report 130837. This reviews pull request #130837 of the GitHub repository kubernetes/kubernetes (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-08-10T08:10:08Z"
+}

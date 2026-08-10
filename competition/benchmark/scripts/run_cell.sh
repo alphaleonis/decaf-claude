@@ -85,10 +85,13 @@ done
 printf '%s\n' "$prompt" > "$outdir/prompt.txt"
 
 manifest_start "$RID"
-echo "[$RID] $tool_id on $repo#$pr ($lang/$size)  model=$BENCH_MODEL"
+echo "[$RID] $tool_id on $repo#$pr ($lang/$size)  model=$BENCH_MODEL effort=$BENCH_EFFORT"
 t0="$(epoch)"
 set +e
-( cd "$repo_dir" && $CLAUDE_BIN -p "$prompt" --model "$BENCH_MODEL" $PERM_FLAGS --output-format json ) \
+# --effort is passed explicitly for the same reason as --model: left off, the cell inherits
+# whatever effort the launching shell happens to carry (settings.json effortLevel / CLAUDE_EFFORT),
+# so results would silently depend on who ran the batch and from where.
+( cd "$repo_dir" && $CLAUDE_BIN -p "$prompt" --model "$BENCH_MODEL" --effort "$BENCH_EFFORT" $PERM_FLAGS --output-format json ) \
   > "$outdir/meter.json" 2> "$outdir/stderr.log"
 rc=$?
 set -e
@@ -145,6 +148,7 @@ final="done"; { [ "$rc" -ne 0 ] || [ "$is_error" = "true" ]; } && final="failed"
 
 jq -n --arg rid "$RID" --argjson sid_ "$subject_id" --arg lang "$lang" --arg size "$size" \
   --arg tool "$tool_id" --argjson repeat "$repeat" --arg model "$BENCH_MODEL" \
+  --arg effort "$BENCH_EFFORT" \
   --arg repo "$repo" --argjson pr "$pr" --arg merge "$merge" --arg base "$base" --arg head "$head" \
   --argjson wall "$wall" --argjson rc "$rc" --arg status "$final" --arg cmd "$prompt" \
   --arg cost "${cost:-}" --arg intok "${in_tok:-}" --arg outtok "${out_tok:-}" \
@@ -152,7 +156,7 @@ jq -n --arg rid "$RID" --argjson sid_ "$subject_id" --arg lang "$lang" --arg siz
   --arg turns "${num_turns:-}" --arg durms "${dur_ms:-}" --arg durapi "${dur_api:-}" \
   --arg sid "${sid:-}" --arg iserr "$is_error" --arg subtype "${subtype:-}" \
   --argjson ws "${ws_json:-null}" \
-  '{run_id:$rid, subject_id:$sid_, lang:$lang, size:$size, tool:$tool, repeat:$repeat, model:$model,
+  '{run_id:$rid, subject_id:$sid_, lang:$lang, size:$size, tool:$tool, repeat:$repeat, model:$model, effort:$effort,
     repo:$repo, pr:$pr, merge_sha:$merge, review_base:$base, review_head:$head,
     status:$status, exit_code:$rc, is_error:$iserr, subtype:$subtype,
     wall_clock_s:$wall, duration_ms:$durms, duration_api_ms:$durapi, num_turns:$turns,
