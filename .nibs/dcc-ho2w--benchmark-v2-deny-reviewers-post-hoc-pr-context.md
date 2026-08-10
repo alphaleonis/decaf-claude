@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T19:55:42Z
+updated_at: 2026-08-10T20:06:32Z
 order: zzzzV
 ---
 
@@ -267,28 +267,28 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-ixyy: Full 12-cell grid built. Fixtures and thread sets in `v2/pooled/`; checkouts gitignored and rebuilt
-from pinned SHAs by `v2/build_pooled_repo.sh`.
+Completed dcc-y2e6: Deterministic v2 scoring core built and under test. `v2/scoring/score_pooled.py` computes the three
+axes, `check_artifacts.py` enforces cross-layer consistency, `test_score_pooled.py` has 12 passing
+self-tests, and `/bench-analyze-v2` specifies the LLM stages that feed them.
 
-**120 admitted review threads across 12 subjects**, against the anchor's 12 key entries across 7 — the
-tenfold jump in miss-detector signal that justified the instrument. Nine repos, max two each, five
-languages that fell out rather than being selected for.
+The three axes are structurally prevented from merging: there is no way to express a combined recall
+number, because merging thread recall into precision would quietly turn "reviews like a human" into
+"finds bugs". Precision is severity-weighted, since v1's was not — which let four minor findings
+outscore one revert-forcing defect.
 
-The checkpoint rule needed measuring, not assuming: threads disperse across **4 to 15 commits** per PR,
-the most-commented commit holding only ~42%. So the checkpoint is the commit the earliest review
-comment targeted — the state at which human review began — with admission applied per thread (file in
-the checkpoint diff, line in a changed hunk). That recovers 120 where a modal-commit rule gives ~92.
+Both fail-loud requirements are implemented AND tested rather than asserted. Empty or sparse
+severities, a cell contributing no cluster, a real verdict without a code citation, a thread verdict
+without an index, a stale v1 verdict name, and a missing judge_model all exit 3 instead of emitting a
+null metric. `check_artifacts.py` was verified against a synthetic reproduction of the z13k shape —
+extract and findings sharing one pair in ten — which it rejects at 10% overlap.
 
-Verified rather than asserted: merge-base correctness per subject (every checkpoint diff touches dirs
-the PR touches — the failure mode that once turned 18 files into 240); diff-size sanity, where two
-outliers were investigated and `grafana#117615`'s 3.14x proved to be genuine branch shrinkage, its
-checkpoint holding test scaffolding reviewers later consolidated; and Step 8 on all 12.
+The synthetic end-to-end run surfaced a useful property: **precision ordering and thread-recall
+ordering disagree** (two tools tied at 0.667 thread recall while their precision differed by 0.5).
+That is direct evidence the axes are not redundant, which was the argument for keeping them apart.
 
-Two silent failures caught and fixed in tooling: `find_candidates.sh` reported "0 candidates" for two
-repos that have ~100, from transient GraphQL errors swallowed by `2>/dev/null`; and
-`build_pooled_repo.sh` aborted before printing its report because `grep` exits 1 on no match under
-`set -e`. Both now fail loudly.
+One acceptance item was superseded rather than met, and is recorded as such: subject 2's four cells
+cannot validate this pipeline, because they are all one tool on the retired key-based subject and
+every cross-tool metric is undefined on a single-tool pool.
 
-Carried forward: two small-diff cells admit fewer than 5 threads (2 and 3). They stay usable for
-pooled adjudication, which does not depend on threads, but their thread-recall axis is thin. Small
-PRs with dense review are the scarcest combination in the corpus — 13 of 547 candidates.
+Note for [[dcc-vkeh]]: `run_cell_v2.sh` still resolves subjects to `v2/repos/<id>`, while pooled
+subjects live at `v2/pooled/<owner>-<repo>-<pr>/repo`. That is already its first acceptance item.
