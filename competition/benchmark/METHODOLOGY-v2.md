@@ -621,9 +621,9 @@ a fixture is wrong the day a model ships. Current state of the surviving corpus:
 
 | Model | Cutoff | Subjects out-of-window (usable) |
 |---|---|---|
-| Haiku 4.5 | 2025-07 | 2, 8, 9, 10, 12 |
-| Opus 4.8 (`BENCH_MODEL`), Sonnet 5 | 2026-01 | 2, 12 |
-| Opus 5 (the judge) | 2026-05 | 2 |
+| Haiku 4.5 — `anthropic-code-review` helpers | 2025-07 | 2, 8, 9, 10, 12 |
+| Sonnet 5 — `anthropic-code-review` review agents | 2026-01 | 2, 12 |
+| **Opus 5 — `BENCH_MODEL` and the judge** | 2026-05 | 2 |
 
 ⚠️ **The perverse consequence: weaker models have older cutoffs, so more of the corpus is clean for
 them.** Haiku 4.5 gets five usable subjects where Opus 4.8 gets two. Any comparison that pools across
@@ -633,8 +633,23 @@ both the reviewer's cutoff and the subject's merge date, and a headline number m
 in-window and out-of-window cells without showing the split.
 
 **New subjects must be out-of-window for the newest roster model *and* the judge** — currently
-merged after 2026-05. This is cheap now: pooled adjudication needs no revert, so recent PRs qualify.
-It is a hard admission rule for `dcc-ixyy`.
+merged after 2026-05, since `BENCH_MODEL` is Opus 5 and the judge is Opus 5. Verified 2026-08-10 that
+this costs nothing: ~19,000 review-approved PRs merged after that date across the candidate repos
+alone. Hard admission rule for `dcc-ixyy`.
+
+⚠️ **The anchor cannot satisfy this rule, and that is structural.** An anchor subject needs a revert
+whose mechanism was named, and defects take time to surface and be root-caused — so anchor subjects
+will always sit inside the roster's training window. Read the anchor accordingly: it answers "did
+every tool miss this defect class", and a *negative* there (everyone missed it) stays informative
+under memorization, while a positive (everyone caught it) is weak evidence because recall may explain
+it. This asymmetry is a reason the anchor never ranks.
+
+⚠️ **`BENCH_MODEL` and the judge are now the same model.** That maximizes shared-blind-spot risk:
+findings an Opus 5 reviewer believes are likely to be validated by an Opus 5 judge. It is still the
+right call — a weaker judge misgrades, which is worse — but it makes the **human review threads
+load-bearing**, because they are the only scoring signal in the design not produced by an Opus 5.
+Weight the thread axis accordingly when reading results, and keep the hand spot-check of the
+`valid-other`/`nitpick` boundary.
 
 **Pre-cutoff subjects are retained as a probe, not deleted.** Memorization is unfalsifiable in the
 abstract but its *effect size* is measurable: build **matched vintage pairs** — same repo, same size

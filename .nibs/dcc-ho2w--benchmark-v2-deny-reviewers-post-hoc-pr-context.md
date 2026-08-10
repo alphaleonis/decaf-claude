@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T19:30:14Z
+updated_at: 2026-08-10T19:32:11Z
 order: zzzzV
 ---
 
@@ -267,34 +267,27 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-f2nf: Policy written into METHODOLOGY-v2 section 6.
+Completed dcc-f2nf: **Addendum (2026-08-10): `BENCH_MODEL` moved to Opus 5, which sets the binding cutoff at 2026-05.**
 
-**Vintage is a property of a (subject, model) pair, never of a subject alone.** Fixtures store the
-merge date; status is computed at analysis time. A "vintage-safe" boolean baked into a fixture is
-wrong the day a model ships.
+Rationale: benchmarking on Opus 4.8 measured a configuration nobody runs. Opus 5 is what decaf is
+actually driven with, so the results describe the real setup.
 
-The corpus table exposed something that would have silently biased the headline result: **weaker
-models have older cutoffs, so more of the corpus is clean for them.** Haiku 4.5 (cutoff 2025-07) has
-five usable subjects where Opus 4.8 has two and the judge, Opus 5, has one. Since
-`anthropic-code-review` pins Sonnet and Haiku regardless of `BENCH_MODEL`, a pooled cross-model
-comparison is confounded in the direction of flattering the weaker model. Per-cell results must now
-carry the reviewer's cutoff and the subject's merge date, and no headline may pool in-window with
-out-of-window cells without showing the split.
+Verified before committing to it that the stricter cutoff costs nothing — roughly 19,000
+review-approved PRs merged after 2026-05 across the five candidate repos alone (mattermost, PostHog,
+grafana, immich, jellyfin). The fallback to Opus 4.7 + Sonnet 4.6 (both 2026-01) is recorded in
+config.env but is not needed.
 
-New subjects must be out of window for the newest roster model AND the judge — currently merged after
-2026-05, not merely after `BENCH_MODEL`'s 2026-01. Cheap to satisfy because pooled adjudication needs
-no revert. Hard admission rule on [[dcc-ixyy]].
+Two consequences written into METHODOLOGY-v2 section 6:
 
-Pre-cutoff subjects are **retained as probes rather than deleted**, which is what stops this policy
-from destroying 5 of 7 survivors. Memorization is unfalsifiable in the abstract, but its effect size
-is measurable via **matched vintage pairs** — same repo, same size, same application type, one either
-side of the cutoff. Unmatched pre/post comparisons confound vintage with difficulty and prove nothing.
-Until pairs exist, memorization is disclosed, not measured.
+- **The anchor cannot satisfy the vintage rule, structurally.** Anchor subjects need a revert whose
+  mechanism was named, and defects take time to surface, so they will always sit inside the training
+  window. That gives the anchor an asymmetry worth reading carefully: everyone-missed-it stays
+  informative under memorization, everyone-caught-it is weak evidence. Another reason it never ranks.
+- **`BENCH_MODEL` and the judge are now the same model**, maximizing shared-blind-spot risk — an Opus
+  5 judge is disposed to validate what an Opus 5 reviewer believes. Still the right call, since a
+  weaker judge misgrades, but it makes the human-thread axis load-bearing: it is the only scoring
+  signal in the design not produced by an Opus 5.
 
-Retirement is a change of role, not a deletion: when a cutoff advances past a subject, it stops being
-scored for that model and becomes probe material.
-
-The judge is the worst-exposed party — one of seven subjects out of window — and under pooled
-adjudication its foreknowledge biases toward rating the *famous* defect valid while judging equally
-valid unfamous findings more harshly. Mitigated by the already-decided code-citation requirement and
-adversarial re-judging; disclosed alongside results.
+`anthropic-code-review` remains unaffected by `BENCH_MODEL` — it hard-pins Sonnet review agents and
+Haiku helpers by role, so its reviewers sit at 2026-01 and 2025-07 respectively. That confound cannot
+be configured away and is accounted for per cell.
