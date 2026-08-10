@@ -6,12 +6,13 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-10T19:59:48Z
+updated_at: 2026-08-10T20:15:00Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-5xad
     - dcc-y2e6
     - dcc-fhp1
+    - dcc-3cm6
 order: 8k
 ---
 
