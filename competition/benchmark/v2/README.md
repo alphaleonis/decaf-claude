@@ -74,6 +74,21 @@ what it must not see is anything dated after the checkpoint.
 Every hole above was found by *testing*, not by writing the doc. `gh pr list` returned the revert
 PR's title verbatim; bare `gh pr view` printed `state: MERGED` and an approval.
 
+## Per-cell isolation
+
+`run_cell_v2.sh` resets the fixture checkout (`checkout -f <checkpoint>` + `clean -xfd`) before every
+cell and **refuses to run** if the tree is still dirty afterwards (exit 77) or the checkpoint is
+missing (exit 78). Review tools write into the working tree — decaf's skills drop reports in
+`.decaf/code-reviews/` and read that directory back for recurring findings — so without the reset a
+cell inherits the previous cell's artifacts. That is the v1 failure (`dcc-2cxq`) and it is the one
+thing v2 cannot afford to repeat.
+
+This guard was missing until 2026-08-10. A stray `ours-review` report sat in `v2/repos/2/` for all
+eight subsequent subject-2 cells. Checking every one of their transcripts — parents and subagent
+sidechains — showed no cell read it, so the results stand; the guard closes the hole for the next
+run. Note that the *outputs* alone could not have settled this: only the transcripts record what was
+read.
+
 ## Two rules that are easy to get wrong
 
 **Fetch the checkpoint and nothing else.** A second `fetch --depth 1` of the merge base re-shallows

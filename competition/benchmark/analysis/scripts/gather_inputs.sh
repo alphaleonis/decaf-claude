@@ -6,10 +6,10 @@ set -euo pipefail
 BENCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SID="${1:?usage: gather_inputs.sh <subject_id>}"
 PAD="$(printf '%02d' "$SID")"
-RUNS="$BENCH_DIR/runs"
+RUNS="$BENCH_DIR/v1-archive/runs"
 FIX="$(ls "$BENCH_DIR/subjects/$PAD-"*.json 2>/dev/null | head -1)"
 [ -f "$FIX" ] || { echo "no fixture for subject $SID"; exit 1; }
-OUT="$BENCH_DIR/analysis/subject-$PAD"; mkdir -p "$OUT"
+OUT="$BENCH_DIR/v1-archive/analysis/subject-$PAD"; mkdir -p "$OUT"
 merge="$(jq -r .merge_sha "$FIX")"
 
 # costs.json — per-cell cost/timing/tokens from DONE cells of this subject

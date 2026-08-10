@@ -3,10 +3,16 @@ description: Analyze one benchmark subject's findings quality (blind-graded) →
 argument-hint: "<subject_id>"
 ---
 
+> **⚠️ This command drives the retired v1 benchmark.** Its dataset is void (contamination, GitHub
+> leak, unaudited ground truth, unpinned effort) and is archived under
+> `competition/benchmark/v1-archive/` — see that README. **Never cite a v1 number**, and never
+> present its output as a tool comparison. `scripts/bench_next.sh` refuses to run without
+> `BENCH_V1_ALLOW=1`. Current work is v2: `competition/benchmark/v2/README.md`, milestone `dcc-ho2w`.
+
 Run the findings-quality analysis for **subject `$ARGUMENTS`**, following
 `competition/benchmark/analysis/METHODOLOGY.md`. Judge with the **current session model**, grade
 **blind** (tool identity hidden), verify every claim **against the real diff** (don't vibe). Output
-goes to `competition/benchmark/analysis/subject-NN/`: `analysis.json` (structured judgment),
+goes to `competition/benchmark/v1-archive/analysis/subject-NN/`: `analysis.json` (structured judgment),
 `metrics.json` (computed), `report.md` (narrative, canonical for the later cross-subject synthesis),
 `report.html` (readable page). Do NOT hand-compute metrics — the script does that.
 
@@ -47,9 +53,9 @@ schema), including `judge_model` = the current session model id.
 **6. Compute metrics** (deterministic — do not eyeball):
 ```
 python3 competition/benchmark/analysis/scripts/compute_metrics.py \
-  competition/benchmark/analysis/subject-$(printf %02d $ARGUMENTS)/analysis.json \
-  competition/benchmark/analysis/subject-$(printf %02d $ARGUMENTS)/costs.json \
-  -o competition/benchmark/analysis/subject-$(printf %02d $ARGUMENTS)/metrics.json
+  competition/benchmark/v1-archive/analysis/subject-$(printf %02d $ARGUMENTS)/analysis.json \
+  competition/benchmark/v1-archive/analysis/subject-$(printf %02d $ARGUMENTS)/costs.json \
+  -o competition/benchmark/v1-archive/analysis/subject-$(printf %02d $ARGUMENTS)/metrics.json
 ```
 
 **7. Write `report.md`** — narrative PROSE only (no big metric tables; those live in metrics.json and
