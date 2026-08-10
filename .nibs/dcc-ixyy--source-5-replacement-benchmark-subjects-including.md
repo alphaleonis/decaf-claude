@@ -6,7 +6,7 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-10T18:26:35Z
-updated_at: 2026-08-10T19:19:51Z
+updated_at: 2026-08-10T19:26:07Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-f2nf
@@ -19,11 +19,19 @@ selection criteria change completely and the corpus gets much cheaper to build.
 
 ## Selection criteria
 
-1. **A repository with genuine review discipline.** This is now the primary criterion, and it is a
-   deliberate choice against using our own PRs: the review quality there is not trusted and the
-   codebases are legacy. Reputable OSS repos give substantive human review threads, which serve as a
-   **non-scoring validity check on the judge** — an adjudicator that systematically rejects what
-   expert reviewers flagged is visibly miscalibrated.
+1. **A repository with genuine review discipline, and a PR carrying substantive human review
+   threads.** Primary criterion, and a deliberate choice against our own PRs: the review quality
+   there is not trusted and the codebases are legacy.
+
+   The threads are **scored, not decorative**. They are an independent list of things an expert
+   thought worth raising, not derived from tool output, so "reviewers flagged X and no tool flagged
+   X" is a detectable miss — precisely what pooled adjudication is structurally blind to. They also
+   double as a calibration check on the judge.
+
+   Target **>=5 admissible threads** per subject after the in-diff and `must_flag` filters. Screen
+   for this before committing to a subject: the v1 corpus averaged 3 threads per subject with one
+   subject holding 12 and two holding zero, because it was selected for reverts rather than for
+   review.
 2. **Merged after the roster's Jan-2026 training cutoff.** Trivial to satisfy now that no revert is
    required, and it removes the memorization exposure that most of the current corpus carries.
 3. **A substantive change** — real logic, not a rename or a lockfile bump.
@@ -67,5 +75,5 @@ than as a shortlist:
 - [ ] Grid filled: a subject per cell, or an explicit note where a cell is deliberately empty
 - [ ] Every subject from a review-disciplined repo and merged post-cutoff, both recorded in the fixture
 - [ ] Fixtures built via METHODOLOGY-v2 section 4 **steps 1-4 only** (no key)
-- [ ] Human review threads captured per subject as the judge's validity check — stored, not scored
+- [ ] >=5 admissible human review threads per subject, triaged with the in-diff + `must_flag` filters and committed as a scored target
 - [ ] Step 8 airtightness check passes per fixture

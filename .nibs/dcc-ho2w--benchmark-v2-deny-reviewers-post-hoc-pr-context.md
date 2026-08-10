@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T19:20:58Z
+updated_at: 2026-08-10T19:26:32Z
 order: zzzzV
 ---
 
@@ -267,30 +267,31 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-595v: **Pooled adjudication is the ranking instrument.** The retrospective key becomes an anchor for one
-question only — is there a defect class every tool misses — and a null arm supplies an absolute noise
-floor. Written into METHODOLOGY-v2 section 3.
+Completed dcc-595v: **Revision (2026-08-10): human review threads are promoted from a judge-calibration check to a scored
+target — the miss detector.**
 
-The decisive evidence was density plus the verdict distribution. One v1 subject produced 800 findings
-collapsing to 98 clusters, graded 1 `TP-primary`, 2 `TP-human`, 31 `valid-other`, 58 `nitpick`, 6
-`false-positive`. Key-based scoring consumes 3 of those 98. And only 6 were *wrong* while 58 were
-*trivial*: review tools fail by immateriality, not error, which is precisely what a key cannot see.
+The original decision under-used them. Pooled adjudication is bounded by the union of tool output, so
+it cannot detect what every tool missed; I attributed that job solely to the anchor. But an expert
+review thread is an independent statement that something was worth raising, and it is *not derived
+from tool output* — so "reviewers flagged X, no tool flagged X" is a detectable miss. Threads cover
+most of the blind spot, densely, on every well-reviewed PR, where the anchor needs a revert.
 
-Pooled adjudication also dissolves three of the four v1 failures — no key means no ground truth to be
-wrong, no revert requirement means subjects can postdate the training cutoff, and no fixing PR means
-little cross-reference leak. Section 4 drops from 8 steps to 4 for pooled subjects. And v1's pipeline
-already IS pooled adjudication minus the key, so [[dcc-y2e6]] shrinks to removing that dependency.
+Scoring now has three targets, reported as separate axes:
 
-Corpus: size (S/M/L, kept for cost and wall-clock effects and because decaf derives roster size from
-executable lines) x application type (application/UI, contract-crossing, backend service, library
-internals). Language dropped as an axis. Own PRs rejected — review quality not trusted, codebases
-legacy — so subjects come from reputable review-disciplined repos merged post-cutoff. That choice
-pays a bonus: human review threads become a non-scoring validity check on the judge.
+1. the pool (tool union) — precision, noise, unique contribution
+2. admitted human review threads — recall against expert review, the miss detector
+3. the anchor key — what expert reviewers ALSO missed
 
-The grid is affordable only because of this decision: 12 cells was decorative at 1-3 key entries per
-subject and is well powered at ~50-100 clusters.
+Consequences: thread density becomes a hard corpus criterion (>=5 admissible threads per subject in
+[[dcc-ixyy]]) rather than an accident of selection; [[dcc-y2e6]] keeps a human-thread match verdict
+and computes thread recall separately; and the `gh` shim's denial of `--comments` and review-thread
+fields is now load-bearing for scoring, not only for leak hygiene.
 
-Weaknesses accepted and mitigated rather than assumed away — the judge becomes ground truth and shares
-a model family with the tools (code citations, adversarial re-judging, hand spot-checks of the
-valid-other/nitpick boundary); volume is rewarded (precision primary, findings-per-cell always
-reported); "real" is not binary (severity weighting required).
+Cost accounting, honestly: this adds back Steps 5-6 in reduced form. What stays deleted is the
+expensive, failure-prone part — researching the revert, re-land, regression issue and root cause,
+which is what invalidated 5 of 12 subjects. Threads are concrete text with file:line anchors, so the
+mechanical in-diff filter does real work and only the `must_flag` triage needs judgment.
+
+Limit to keep visible: OSS reviewers weight API design, naming and convention heavily and often
+delegate correctness to CI, so thread recall measures agreement with expert review rather than
+bug-finding. It must never be merged into a single recall number with the anchor.

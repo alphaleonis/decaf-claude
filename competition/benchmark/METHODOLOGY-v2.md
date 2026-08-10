@@ -80,16 +80,49 @@ tools do not fail by being incorrect; they fail by being immaterial.** Per-tool 
 180 findings. A key-based metric is blind to all of it, while answering only "did you find the bug" —
 when the question that decides adoption is "did you find it, and how much noise came with it."
 
-| Instrument | Measures | Ranks tools? |
-|---|---|---|
-| **Pooled adjudication** | precision, nitpick ratio, unique real findings, noise per cell | **yes — this is the ranking instrument** |
-| **Retrospective key (the anchor)** | whether a real defect class is missed by *every* tool | no — n is too small |
-| **Null arm** | absolute noise floor on a change with no known defect | no — calibrates the others |
+| Instrument | Scored against | Measures | Ranks tools? |
+|---|---|---|---|
+| **Pooled adjudication** | the union of what the tools said | precision, nitpick ratio, unique real findings, noise per cell | **yes — this is the ranking instrument** |
+| **Human review threads** | what expert reviewers said | **recall against expert human review — the miss detector** | contributes |
+| **Retrospective key (the anchor)** | what production found later | whether a defect class is missed by *every* tool, humans included | no — n is too small |
+| **Null arm** | nothing — no known defect | absolute noise floor | no — calibrates the others |
 
-Each covers another's blind spot. Pooled adjudication is bounded by the union of tool output, so if
-every tool shares a blind spot they all score full recall against a pool missing the same thing —
-which is exactly what the anchor detects. The anchor cannot rank. And pooled precision is relative to
-the pool rather than to truth, which is what the null arm fixes.
+Each covers another's blind spot, and the middle two are the reason this is not circular.
+
+Pooled adjudication is **bounded by the union of tool output**: if every tool shares a blind spot,
+they all score full recall against a pool missing the same thing. It cannot, by construction, tell
+you what was missed.
+
+**Human review threads fix most of that, and they are the reason to insist on review-disciplined
+repos.** A thread is an independent statement that something was worth raising, written by an expert,
+and *not derived from tool output*. So "expert reviewers flagged X and no tool flagged X" is a
+detectable miss — the thing pooled adjudication is blind to. This is dense signal: it exists on every
+well-reviewed PR, unlike the escaped defect, which needs a revert.
+
+Thread density therefore becomes a **corpus selection criterion**, not an accident. The v1 corpus
+averaged badly (15 threads across five subjects, 12 of them on one) because it was selected for
+reverts; selecting for review discipline means requiring substantive threads up front.
+
+The anchor still earns its place above both: it catches what expert reviewers *also* missed, which is
+a different and rarer question. And pooled precision is relative to the pool rather than to truth,
+which is what the null arm fixes.
+
+Two honest limits on thread-based scoring:
+
+- **Threads need the admission rule.** A thread written against a later push may not apply at the
+  checkpoint, and threads carry plenty of non-defects — style preferences, questions, renames,
+  approvals. Both are handled by the existing machinery (in-diff check, then the `must_flag` test),
+  and it is far cheaper here than for escaped defects: a thread is concrete text with a file:line
+  anchor, so the mechanical pre-filter does real work. What is *not* needed is the expensive part —
+  researching the revert, the re-land, the regression issue and the root cause, which is what made 5
+  of 12 subjects fail.
+- **Human review is itself biased.** OSS reviewers weight API design, naming and project convention
+  heavily and often delegate correctness to CI. So thread recall measures agreement with expert
+  review, which is *related to* but not identical with finding real bugs. Report it as its own axis;
+  never merge it into a single "recall" number with the anchor.
+
+Threads must be unreachable from inside a cell — the `gh` shim already denies `--comments` and the
+review-thread fields, and that denial is now load-bearing for scoring, not just for leak hygiene.
 
 ### Pooled adjudication
 
@@ -100,9 +133,10 @@ requirement, Steps 5-7 of section 4, and most of the leak and vintage exposure.
 
 Consequences for subject selection: a subject no longer needs a revert, a regression issue, or a
 named mechanism. It needs to be a **substantive change in a repository with genuine review
-discipline**, merged after the roster's training cutoff. Well-reviewed subjects carry a bonus — the
-human review threads become a *non-scoring* validity check on the judge. They are never the metric,
-but an adjudicator that systematically rejects what expert humans flagged is visibly miscalibrated.
+discipline, carrying real human review threads**, merged after the roster's training cutoff. The
+threads are not a bonus — they are the miss detector described above, and they double as a
+calibration check on the judge, since an adjudicator that systematically dismisses what expert
+reviewers raised is visibly miscalibrated.
 
 Known weaknesses, to be mitigated rather than assumed away:
 
