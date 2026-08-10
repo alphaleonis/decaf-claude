@@ -22,13 +22,15 @@ CP="$(jq -r '.checkpoint.sha'  "$FIX")"
 BASE="$(jq -r '.checkpoint.base' "$FIX")"
 DATE="$(jq -r '.checkpoint.date' "$FIX" | cut -c1-10)"
 
-OUT="$V2/runs/${SID}__${TOOL}"; rm -rf "$OUT"; mkdir -p "$OUT"
+SHIM="${BENCH_SHIM:-on}"; REP="${BENCH_REPEAT:-1}"
+OUT="$V2/runs/${SID}__${TOOL}__shim-${SHIM}__r${REP}"; rm -rf "$OUT"; mkdir -p "$OUT"
 
 export BENCH_CHECKPOINT_DATE="$DATE"
 export BENCH_REAL_GH="$(command -v gh)"
 export BENCH_ACCESS_LOG="$OUT/access.log"
 : > "$BENCH_ACCESS_LOG"
-export PATH="$V2/shim:$PATH"
+# BENCH_SHIM=off runs the SAME prompt with unrestricted gh — the control arm.
+if [ "$SHIM" = "on" ]; then export PATH="$V2/shim:$PATH"; fi
 
 REPO_SLUG="$(jq -r '.repo' "$FIX")"; PRNUM="$(jq -r '.pr' "$FIX")"
 
@@ -56,7 +58,7 @@ Environment notes:
 
 Report every finding with a file:line reference and a clear statement of what is wrong."
 
-echo "[$SID/$TOOL] checkpoint ${CP:0:12} (base ${BASE:0:12}), date $DATE, model $BENCH_MODEL effort $BENCH_EFFORT"
+echo "[$SID/$TOOL shim=$SHIM r$REP] checkpoint ${CP:0:12}, date $DATE, model $BENCH_MODEL effort $BENCH_EFFORT"
 t0=$(date +%s)
 set +e
 ( cd "$REPO" && claude -p "$PROMPT" \

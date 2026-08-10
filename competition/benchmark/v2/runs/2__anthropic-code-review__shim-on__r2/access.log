@@ -1,0 +1,6 @@
+2026-08-10T15:45:35Z	gh	DENY	pr view 67075 --repo dotnet/aspnetcore --json title,body,state,isDraft,author (requested field may contain post-checkpoint content)
+2026-08-10T15:45:35Z	gh	DENY	api repos/dotnet/aspnetcore/pulls/67075/comments --jq .[] | "\(.user.login) @ \(.path):\(.line): \(.body)"
+2026-08-10T15:45:40Z	gh	DENY	pr view 67075 --repo dotnet/aspnetcore --json title,state,isDraft,author,body (requested field may contain post-checkpoint content)
+2026-08-10T15:46:36Z	docs-at	ALLOW	https://learn.microsoft.com/en-us/dotnet/api/system.type.getproperty snapshot=20260707000000 http=200
+2026-08-10T15:47:00Z	docs-at	ALLOW	https://learn.microsoft.com/en-us/dotnet/api/system.type.getproperty snapshot=20260707000000 http=200
+2026-08-10T15:47:26Z	docs-at	ALLOW	https://learn.microsoft.com/en-us/dotnet/api/system.type.getproperty snapshot=20260707000000 http=200
