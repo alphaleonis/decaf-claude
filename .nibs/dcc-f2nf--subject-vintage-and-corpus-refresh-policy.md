@@ -6,7 +6,7 @@ status: completed
 type: task
 priority: normal
 created_at: 2026-08-10T17:43:02Z
-updated_at: 2026-08-10T19:30:14Z
+updated_at: 2026-08-10T19:32:11Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
@@ -82,3 +82,28 @@ The judge is the worst-exposed party — one of seven subjects out of window —
 adjudication its foreknowledge biases toward rating the *famous* defect valid while judging equally
 valid unfamous findings more harshly. Mitigated by the already-decided code-citation requirement and
 adversarial re-judging; disclosed alongside results.
+
+**Completed 2026-08-10** — **Addendum (2026-08-10): `BENCH_MODEL` moved to Opus 5, which sets the binding cutoff at 2026-05.**
+
+Rationale: benchmarking on Opus 4.8 measured a configuration nobody runs. Opus 5 is what decaf is
+actually driven with, so the results describe the real setup.
+
+Verified before committing to it that the stricter cutoff costs nothing — roughly 19,000
+review-approved PRs merged after 2026-05 across the five candidate repos alone (mattermost, PostHog,
+grafana, immich, jellyfin). The fallback to Opus 4.7 + Sonnet 4.6 (both 2026-01) is recorded in
+config.env but is not needed.
+
+Two consequences written into METHODOLOGY-v2 section 6:
+
+- **The anchor cannot satisfy the vintage rule, structurally.** Anchor subjects need a revert whose
+  mechanism was named, and defects take time to surface, so they will always sit inside the training
+  window. That gives the anchor an asymmetry worth reading carefully: everyone-missed-it stays
+  informative under memorization, everyone-caught-it is weak evidence. Another reason it never ranks.
+- **`BENCH_MODEL` and the judge are now the same model**, maximizing shared-blind-spot risk — an Opus
+  5 judge is disposed to validate what an Opus 5 reviewer believes. Still the right call, since a
+  weaker judge misgrades, but it makes the human-thread axis load-bearing: it is the only scoring
+  signal in the design not produced by an Opus 5.
+
+`anthropic-code-review` remains unaffected by `BENCH_MODEL` — it hard-pins Sonnet review agents and
+Haiku helpers by role, so its reviewers sit at 2026-01 and 2025-07 respectively. That confound cannot
+be configured away and is accounted for per cell.
