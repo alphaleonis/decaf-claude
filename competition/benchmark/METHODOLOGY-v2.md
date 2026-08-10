@@ -586,6 +586,47 @@ rate limits apply), and that limitation should be reported rather than hidden.
 MCP documentation servers (context7 and similar) serve *current* docs with no date parameter. Deny by
 default; if enabled for a run, record it in `meta.json` so affected cells are identifiable.
 
+### Build and test capability
+
+Decided 2026-08-10 (`dcc-fhp1`). Cells get a working toolchain, because a review that cannot execute
+anything is biased against exactly the defects that need execution to confirm — races, ordering,
+lifetime, hangs. Every subject-2 cell in the earlier runs reported "no dotnet SDK", and one claimed
+sub-agents had verified reflection behaviour empirically, which was neither reproducible nor true.
+
+**Restore must be frozen, or it is a time-boxing hole.** A package restore reaches the network, and
+an unpinned restore resolves *latest* — which can pull a version published after the checkpoint,
+opening through the back door what the `gh` shim closes at the front. Every subject in the corpus
+carries a pinned dependency set (`pnpm-lock.yaml`, `yarn.lock`, `go.sum`, `uv.lock`, or .NET central
+package management), so the frozen variant is always available: `pnpm install --frozen-lockfile`,
+`yarn install --immutable`, `GOFLAGS=-mod=readonly go mod download`, `uv sync --frozen`,
+`cargo fetch --locked`. `v2/detect_build.sh` reports `date_neutral: false` rather than building a
+subject without a lockfile.
+
+**The toolchain must be put on PATH deliberately.** Tools installed via a per-shell version manager
+are absent from the non-interactive shell a cell inherits — observed: `go` and `dotnet` both
+installed yet unreachable, with a stale empty `/usr/local/go/bin` on PATH masking the real one. Left
+unfixed every cell silently degrades to static analysis. `v2/toolchain.sh` fixes this and is sourced
+**before** the shim directory, so the time-boxed `gh` still wins.
+
+**Node is pinned across the corpus**, like the model and the effort. Version managers do not honour a
+project's `.nvmrc` through their shims, so a checkout resolves to the manager's default — and most
+subjects declare `engines` excluding it. One version satisfying every subject is chosen and held
+constant.
+
+**Having the runtime is not the same as being able to build.** A project may pin an SDK its
+`rollForward` policy forbids a newer one from serving: in this corpus one subject pins .NET 8.0.0
+with `latestMinor` and cannot build under SDK 10, while another pins a 9.0 preview with
+`latestMajor` and can. Detection resolves this up front rather than letting a cell discover it.
+
+Each cell records `build-capability.json`, so a run without a toolchain is **identifiable rather than
+quietly weaker**. Never compare a cell that could execute against one that could not without saying
+so.
+
+⚠️ Full test suites are expensive — one .NET unit-test project here ran past nine minutes without
+finishing. Cells are told the capability exists and to prefer the tests covering the changed code.
+There is no universal "run the tests" command: invocation is per subject, and treating it as uniform
+will silently produce cells that ran nothing.
+
 ### Tier 3 — audit, not only prevention
 
 Prevention is necessary but not sufficient — a shim gap is silent. Every run therefore produces an

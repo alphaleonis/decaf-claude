@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T20:11:33Z
+updated_at: 2026-08-10T20:39:12Z
 order: zzzzV
 ---
 
@@ -267,24 +267,32 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-c92m: Implemented as a `disposition` field (`reported` | `demoted`) carried per finding, with every
-recall-style metric computed twice and neither allowed to stand alone: `thread_recall` versus
-`thread_recall_found`, the same split on `anchor_recall`, and `demotion_gap` published as a tool
-property in its own right. Precision-style metrics count reported findings only, because a demoted
-finding costs the reader no attention.
+Completed dcc-fhp1: Cells now get a working toolchain, with restore that cannot bypass the time-boxing, and a per-cell
+record of what was actually possible.
 
-The acceptance case is verified on the real archived cell rather than a mock: the anthropic run that
-headlined "Verdict: No blocking issues found" scores **anchor_recall 0.0 / anchor_recall_found 1.0**,
-because its sub-threshold section describes key entry e1 exactly — "Verified empirically… a
-pre-existing limitation, not a regression. Per the rubric, pre-existing issues score 0."
+**The toolchains were there all along; PATH was the problem.** `go` and `dotnet` are both installed
+via mise, which activates per interactive shell — so a cell's non-interactive shell saw neither, with
+a stale empty `/usr/local/go/bin` on PATH masking the real Go. Left unfixed, every cell would have
+reported "no toolchain" and the benchmark would have silently measured static-analysis review only,
+which is exactly the bias this nib was filed about. `v2/toolchain.sh` fixes it and is sourced before
+the shim directory so the time-boxed `gh` still wins.
 
-Section markers were harvested from actual tool output rather than guessed, and recorded as examples
-rather than an allowlist, since tools reword their own headers — the extraction rule is to judge by
-whether the reader would have been shown the finding.
+Three things surfaced that would each have quietly corrupted results:
 
-Three new self-tests (18 total, all passing). `disposition_defaults_to_reported` exists so an
-analysis written before this field keeps scoring as it did.
+- **Node is too new.** Shims do not honour a project's `.nvmrc`, so every checkout resolved to v25.9.0
+  while grafana and PostHog declare `engines ">=22 <25"`. Node is now pinned corpus-wide at 24.19.0 —
+  the newest satisfying all 12 — for the same reason the model and effort are held constant.
+- **Having the runtime is not being able to build.** `jellyfin` pins .NET 8.0.0 with
+  `rollForward=latestMinor` and cannot build under the installed SDK 10, while `efcore` pins a 9.0
+  preview with `latestMajor` and can. Detection now resolves this up front instead of letting a cell
+  discover it mid-run.
+- **My own detector lied about an empty result** — an empty bash array printed as `[""]`, which a
+  consumer would read as a non-empty missing-toolchain list. Fixed; it is the same
+  empty-versus-failed confusion that has now bitten four times in this harness.
 
-Worth carrying into [[dcc-vkeh]]: a large demotion gap is not a defect to fix in the harness, it is a
-finding about the tool. The remedy for a tool that finds everything and reports nothing is a
-threshold change, not a better model — and that distinction is invisible to any headline-only metric.
+Date-neutrality holds for all 12: every subject carries a pinned dependency set, and the frozen
+restore was verified to leave `go.sum`/`go.mod` untouched.
+
+Carried forward: full test suites are expensive — one .NET project exceeded nine minutes — and
+invocation is per subject, not uniform. [[dcc-vkeh]] should capture the real per-subject test recipes,
+and [[dcc-3cm6]] should check whether cells actually used the capability rather than assuming it.
