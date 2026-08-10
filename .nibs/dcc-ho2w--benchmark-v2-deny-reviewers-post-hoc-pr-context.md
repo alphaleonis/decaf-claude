@@ -6,7 +6,7 @@ status: draft
 type: epic
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T13:47:49Z
+updated_at: 2026-08-10T14:04:45Z
 order: zzzzV
 ---
 
@@ -203,3 +203,41 @@ and post-run audited, with tripped cells quarantined rather than scored.
 The in-loop LLM approval gate was considered and rejected as the primary control — latency and cost
 per call, and an LLM cannot reliably date a page that carries no date. It belongs in the post-run
 audit instead, where it blocks nothing and reviews evidence rather than guessing.
+
+## Subject-9 checkpoint trace (2026-08-10)
+Correction: subject 9 has **13 force-pushes, not 113** — the 113 figure was total timeline items,
+not force-pushes. Earlier notes in this nib and the first draft of METHODOLOGY-v2.md were wrong.
+
+Walked all 13 heads reading `pkg/proxy/node.go` at each (via
+`repos/O/R/contents/PATH?ref=SHA` — one API call per head, no tree fetches):
+
+| Push | Date | Head | node.go | NewNodeManager | Exit path |
+|---|---|---|---|---|---|
+| #0 opened | 2025-03-15 | be7da1315a3c | 91 | no error return | 2x FlushAndExit |
+| #1 | 2025-03-15 | a0c5cb55f9c9 | 91 | no error return | 2x FlushAndExit |
+| **#2** | **2025-03-18** | **2ccd845497ee** | **167** | **returns error** | **3x Flush()** |
+| #3-#8 | to 2025-06-08 | ... | ~190 | returns error | 3x Flush() |
+| #9 | 2025-06-22 | 7841a3e74d14 | 235 | returns error | 2x FlushAndExit + 2x Flush() |
+| #10 | 2025-06-23 | 26a42d63228d | 190 | returns error | 3x Flush() |
+| #13 merged | 2025-07-11 | 46e2c22fd766 | 189 | returns error | 3x Flush() |
+
+Both defects entered in ONE push, 3 days after opening, and survived 11 more pushes over 4 months.
+Push #9 briefly restored FlushAndExit (the h1 fix) and #10 reverted it the next day.
+
+**Merge base is per-checkpoint.** Comparing a later head to the as-opened base inflates push #3 from
+18 files to 240 files / +12663-5081, because the branch absorbed master in between. Compute
+`compare/<target>...<head>` -> `merge_base_commit` for each checkpoint.
+
+| Checkpoint | Base | Diff |
+|---|---|---|
+| #0 as-opened | 18e5a4d585f6 | 11 files, +342/-426 |
+| #2 | 8559194e118f | 18 files, +745/-727 |
+| merged | merge^1 | 18 files, +757/-803 |
+
+**Recommended checkpoint for subject 9: push #2 (2ccd845497ee).** Defect present; diff is full-size
+and realistic (745 vs 757 lines at merge); 29 of 46 threads (10 unresolved) are still ahead and
+admissible, plus the escaped bug and h1 from post-merge -> ~31 candidate key entries vs 2 at the
+merged head.
+
+This resolves the earlier open question about needing two review runs for split-defect subjects:
+ONE run at the earliest head containing the defect serves both purposes.

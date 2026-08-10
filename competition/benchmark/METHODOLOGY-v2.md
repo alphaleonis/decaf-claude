@@ -37,21 +37,30 @@ Reconstruction is possible because **GitHub preserves force-pushed commits**. Ev
 recorded as a `HeadRefForcePushedEvent` carrying `beforeCommit`/`afterCommit` oids, and those commits
 stay fetchable from the repo network indefinitely.
 
-Verified on subject 9 (`kubernetes/kubernetes#130837`, opened 2025-03-15, force-pushed 113×): the
+Verified on subject 9 (`kubernetes/kubernetes#130837`, opened 2025-03-15, force-pushed 13×): the
 as-opened head `be7da1315a3c` — force-pushed away the same day, 15 months ago — fetches cleanly, and
 diffs against merge-base `18e5a4d585f6` to 11 files, +342/−426 (vs 18 files, +757/−803 as merged).
 
+**Every checkpoint has its own merge base.** Compute it per head
+(`compare/<target-branch>...<head>` → `merge_base_commit`); do not reuse the as-opened base. Long-
+lived branches absorb the target branch as it advances, so comparing a later head to the original
+base drags in every unrelated change merged in between — on subject 9 that inflates push #3 from
+18 files to **240 files, +12663/−5081**. That is a wrong diff, not a large one.
+
 ### Choosing the checkpoint
 
-Prefer PRs where review happened against a **stable head** (0–3 force-pushes) — then the checkpoint
-is simply the as-opened head and every thread attaches to it. For heavily-rewritten PRs, pick the
-head with the largest cluster of substantive threads written against it.
+**Pick the earliest head at which the defect under study is already present.** That maximizes how
+much of the PR's remaining lifecycle is admissible to the key (§3) while keeping the defect in scope.
+The as-opened head is the right choice only when the defect was there from the start.
 
-Subject 9 is the pathological case and is instructive: with 113 force-pushes over four months,
-threads target whichever version existed when written. The first thread landed three hours after the
-first force-push, and several name files (`pkg/proxy/topology.go`, `pkg/proxy/kubemark/hollow_proxy.go`)
-absent from the as-opened diff entirely. **A low force-push count should be a subject-selection
-criterion, not an afterthought.**
+Where a PR was lightly rewritten (0–3 force-pushes), the earliest head is usually as-opened and every
+thread attaches to it. Where it was heavily rewritten, locate the introducing push by walking the
+force-push heads and testing for the defect's signature — cheaply, via
+`repos/<owner>/<repo>/contents/<path>?ref=<sha>`, one file per head, no tree fetches.
+
+Threads target whichever head existed when they were written, so a thread may name a file absent from
+an earlier checkpoint (on subject 9: `pkg/proxy/topology.go`, `pkg/proxy/kubemark/hollow_proxy.go`).
+Those are excluded by the §3 admission rule, not by hand.
 
 ---
 
@@ -115,29 +124,42 @@ awkward — it maximizes how much of what the world learned is admissible.
 
 ### Worked check: subject 9
 
-Applying the admission rule to subject 9's as-opened checkpoint excludes both the primary escaped bug
-and human-issue h1:
+Walking the 13 force-push heads and reading `pkg/proxy/node.go` at each (one API call per head, no
+tree fetches) locates both defects precisely:
 
-| | As opened (2025-03-15) | As merged (2025-07-11) |
+| Push | Date | Head | `node.go` | `NewNodeManager` | Exit path |
+|---|---|---|---|---|---|
+| #0 opened | 2025-03-15 | `be7da1315a3c` | 91 | no error return | 2× `FlushAndExit` |
+| #1 | 2025-03-15 | `a0c5cb55f9c9` | 91 | no error return | 2× `FlushAndExit` |
+| **#2** | **2025-03-18** | **`2ccd845497ee`** | **167** | **returns error** | **3× `Flush()`** |
+| #3–#8 | to 2025-06-08 | … | ~190 | returns error | 3× `Flush()` |
+| #9 | 2025-06-22 | `7841a3e74d14` | 235 | returns error | 2× `FlushAndExit`, 2× `Flush()` |
+| #10 | 2025-06-23 | `26a42d63228d` | 190 | returns error | 3× `Flush()` |
+| #13 merged | 2025-07-11 | `46e2c22fd766` | 189 | returns error | 3× `Flush()` |
+
+**Both defects entered in a single push, three days after the PR opened**, and survived eleven more
+pushes and four months of review. Push #9 is worth noting on its own: `FlushAndExit` was restored on
+2025-06-22 and gone again the next day — the h1 fix existed briefly and was lost.
+
+The PR also reached its final shape at push #2. Diffs against each head's own merge base:
+
+| Checkpoint | Base | Diff |
 |---|---|---|
-| `NewNodeManager` | returns `*NodeManager` — no error path | returns an error — the fatal path |
-| Exit pattern | 2× `klog.FlushAndExit` (correct) | 3× plain `klog.Flush()` (the h1 defect) |
-| `node.go` | 92 lines | 190 lines |
+| #0 as-opened | `18e5a4d585f6` | 11 files, +342/−426 |
+| **#2** | `8559194e118f` | **18 files, +745/−727** |
+| merged | (merge^1) | 18 files, +757/−803 |
 
-Both the primary escaped bug **and** human-issue h1 were introduced *during* review. Four months and
-113 force-pushes made the PR worse in exactly the two places that later broke production.
+So **push #2 is the checkpoint to use for subject 9**: the defect is present, the diff is a full-size
+realistic review (745 lines vs 757 at merge), and 29 of the 46 threads — 10 of them unresolved — are
+still ahead of it and admissible, plus the escaped bug and h1 from post-merge. That is roughly **31
+candidate key entries, against 2 at the merged head.**
 
-The consequence: at the as-opened checkpoint, subject 9's key contains **neither** of the defects it
-is famous for. Its key would consist only of the review findings that applied to the original
-92-line `node.go`. Scoring the escaped bug requires a *later* checkpoint — one after the error path
-was introduced — which is a second review run of the same subject.
+One review run, not two. The earlier worry that split-defect subjects need a second run was wrong:
+the right checkpoint is the earliest head containing the defect, and that single point serves both
+purposes.
 
-This is not a flaw in the method; it is the method reporting honestly that the escaped bug did not
-exist yet. But it makes subject 9 a poor routine subject: 113 force-pushes, a four-month lifecycle,
-and a headline defect absent at open. It is a good stress test and a bad default.
-
-**Subject selection should prefer PRs with few force-pushes and a defect present from the first
-push** — verifiable mechanically via the presence check before any key-building effort is spent.
+Subject 9 remains awkward as a *routine* subject — locating push #2 took a deliberate walk of 13
+heads — but it is no longer disqualified, and the walk is cheap and scriptable.
 
 ---
 
@@ -236,8 +258,8 @@ subjects, and their keys carry no fast-confirmation bias at all.
   acceptable, and does an LLM-assisted first pass (human-adjudicated) bring it down enough?
 - The key mixes nits, style, and real defects. Do those get scored separately, weighted, or filtered
   at admission time?
-- Where a subject's defect postdates its earliest checkpoint (subject 9), is the second review run
-  worth its cost, or should such subjects simply be excluded at selection?
+- Checkpoint-walking cost: locating the introducing push is cheap per subject, but does it need to be
+  automated (defect-signature matching across heads) or is it fine as a manual step during curation?
 - Force-push count as a selection criterion — what is the cutoff, and how many otherwise-good
   subjects does it exclude?
 - Wayback coverage for the documentation domains that actually matter per language.
