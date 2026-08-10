@@ -2,11 +2,11 @@
 # dcc-2cxq
 version: 1
 title: Benchmark harness leaks .decaf review reports across cells
-status: in-progress
+status: completed
 type: bug
 priority: critical
 created_at: 2026-08-06T14:58:35Z
-updated_at: 2026-08-10T17:44:03Z
+updated_at: 2026-08-10T17:49:56Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-ho2w
@@ -41,8 +41,8 @@ cross-subject synthesis are graded on contaminated data.
 - [x] 27 contaminated cells invalidated back to `pending`, run dirs quarantined, metrics rows dropped
 - [x] 9 contaminated subject analyses quarantined (answer keys preserved — they are tool-independent)
 - [x] `repos/*` checkouts cleaned so the next run starts from a clean tree
-- [ ] 27 cells re-run
-- [ ] 9 subjects re-analyzed and synthesis regenerated
+- [x] ~~27 cells re-run~~ — SCRAPPED, superseded by [[dcc-ho2w]]
+- [x] ~~9 subjects re-analyzed and synthesis regenerated~~ — SCRAPPED, superseded by [[dcc-5xad]]
 
 ## Paused 2026-08-10
 The harness fix, the cleanup, and the subject-9 re-grade are DONE. The remaining re-runs (12 cells
@@ -62,3 +62,25 @@ produce numbers graded against defects that may not be in the reviewed diff.
 
 Recommend scrapping both items rather than completing them. The v1 artifacts they would have produced
 are covered by [[dcc-8tjr]] (archive) instead.
+
+## Summary
+
+**Completed 2026-08-10** — Closed with the two re-run items scrapped rather than completed.
+
+**Delivered.** Root cause found and fixed: `run_cell.sh`'s `ensure_repo()` returned early once the
+commit was present, so its `checkout -f` ran only on first clone and every later cell inherited the
+previous cell's working tree — including the untracked `.decaf/code-reviews/` that the decaf skills
+write to and read back via their recurring-findings cross-check. Competitor tools write nothing into
+the tree, so the leak asymmetrically inflated decaf-family recall. Now reset per cell (`checkout -f`
++ `clean -xfd`), refusing to run (exit 77, cell left pending) if the tree is still dirty. Verified by
+planting a report and watching it removed, then on a real cell whose bundle held only its own report.
+
+Also: 27 contaminated cells invalidated and quarantined with evidence, 9 subject analyses quarantined
+(frozen answer keys and review diffs preserved — they derive from the PR, not from tool output),
+reasoning effort pinned and recorded per cell, and subject 9 re-graded clean.
+
+**Scrapped.** The 27 v1 re-runs and 9 re-analyses. Under [[dcc-ho2w]] two of the first three subjects
+audited had invalid ground truth — subject 11 indicts a defect that was fixed during review and is
+absent from the merged code, and subject 2's fixture miscounts its own review threads. Re-running v1
+cells would have spent ~$390 producing confident numbers graded against defects that may not be in
+the reviewed diff. Superseded by the v2 milestone; the artifacts are covered by [[dcc-8tjr]].

@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T17:41:58Z
+updated_at: 2026-08-10T17:49:56Z
 order: zzzzV
 ---
 
@@ -264,3 +264,25 @@ Procedure bugs found by executing it, all fixed in the doc:
 Next: prove the pipeline end to end on subject 2 (vintage-safe, clean 2-entry key) with gh and
 WebFetch denied outright. Build the section 5 shim and `docs-at` only once the plumbing is shown to
 produce a sensible verdict.
+
+## Current Focus
+
+Completed dcc-2cxq: Closed with the two re-run items scrapped rather than completed.
+
+**Delivered.** Root cause found and fixed: `run_cell.sh`'s `ensure_repo()` returned early once the
+commit was present, so its `checkout -f` ran only on first clone and every later cell inherited the
+previous cell's working tree — including the untracked `.decaf/code-reviews/` that the decaf skills
+write to and read back via their recurring-findings cross-check. Competitor tools write nothing into
+the tree, so the leak asymmetrically inflated decaf-family recall. Now reset per cell (`checkout -f`
++ `clean -xfd`), refusing to run (exit 77, cell left pending) if the tree is still dirty. Verified by
+planting a report and watching it removed, then on a real cell whose bundle held only its own report.
+
+Also: 27 contaminated cells invalidated and quarantined with evidence, 9 subject analyses quarantined
+(frozen answer keys and review diffs preserved — they derive from the PR, not from tool output),
+reasoning effort pinned and recorded per cell, and subject 9 re-graded clean.
+
+**Scrapped.** The 27 v1 re-runs and 9 re-analyses. Under [[dcc-ho2w]] two of the first three subjects
+audited had invalid ground truth — subject 11 indicts a defect that was fixed during review and is
+absent from the merged code, and subject 2's fixture miscounts its own review threads. Re-running v1
+cells would have spent ~$390 producing confident numbers graded against defects that may not be in
+the reviewed diff. Superseded by the v2 milestone; the artifacts are covered by [[dcc-8tjr]].
