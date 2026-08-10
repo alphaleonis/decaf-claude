@@ -163,7 +163,174 @@ heads — but it is no longer disqualified, and the walk is cheap and scriptable
 
 ---
 
-## 4. How review agents run: time-boxing, not blanket denial
+---
+
+## 4. Subject construction: from PR to checkpoint + key
+
+**This section is a checklist, not an explanation.** Subjects must be built identically across
+sessions and across whoever (or whatever) builds them — a checkpoint chosen by one rule and a key
+admitted by another produce scores that cannot be compared. Follow the steps in order and record the
+evidence each one produces; where a step needs judgment, it says so explicitly and the judgment gets
+written down rather than made silently.
+
+The procedure turns a candidate PR into two artifacts:
+
+- **the review fixture** — what the reviewer is given (a commit + a diff range)
+- **the answer document** — what the judge scores against (the retrospective key)
+
+Every command shown has been run against subject 9. `O`/`R`/`N` are owner, repo, PR number.
+
+### Step 1 — Inventory the PR's heads
+
+```sh
+gh api graphql -f query='
+{ repository(owner:"O", name:"R") { pullRequest(number:N) {
+  createdAt
+  timelineItems(first:100, itemTypes:[HEAD_REF_FORCE_PUSHED_EVENT]) {
+    nodes { ... on HeadRefForcePushedEvent { createdAt beforeCommit{oid} afterCommit{oid} } } } } } }'
+```
+
+The candidate heads are: the **as-opened head** (the first event's `beforeCommit`, or the PR head if
+there were no force-pushes), then each event's `afterCommit` in order.
+
+> ⚠️ Do **not** read `timelineItems.totalCount` as the force-push count — it counts all timeline item
+> types regardless of the `itemTypes` filter. Subject 9 reports 113 there and has 13 force-pushes.
+> Count the returned nodes.
+
+### Step 2 — Locate the defect-introducing push
+
+Read the file the defect lives in at each head, cheaply — one file per head, no tree fetches:
+
+```sh
+gh api "repos/O/R/contents/<path>?ref=<sha>" --jq '.content' | base64 -d
+```
+
+Grep each for the defect's signature (a changed function signature, a swapped call, an added
+timeout). The checkpoint is the **earliest head where the signature is present**.
+
+If the defect is present at the as-opened head, stop — that is the checkpoint, and it is the ideal
+case. Record the walk either way; it is the evidence for the checkpoint choice.
+
+### Step 3 — Compute the checkpoint's own merge base
+
+```sh
+gh api "repos/O/R/compare/<target-branch>...<checkpoint-sha>" --jq '.merge_base_commit.sha'
+```
+
+**Per checkpoint, never reused.** A long-lived branch absorbs the target branch as it advances;
+reusing an earlier base drags in every unrelated change merged between (subject 9: 18 files → 240).
+
+Sanity-check the resulting diff against the merged PR's size. A checkpoint diff wildly larger than
+the merged diff means the wrong base.
+
+### Step 4 — Build the review fixture
+
+```sh
+git init -q "$REPO_DIR" && git -C "$REPO_DIR" remote add origin "https://github.com/O/R"
+git -C "$REPO_DIR" fetch -q --depth 500 origin <checkpoint-sha>
+git -C "$REPO_DIR" fetch -q --depth 1  origin <merge-base-sha>
+git -C "$REPO_DIR" checkout -q -f <checkpoint-sha>
+git -C "$REPO_DIR" clean -qxfd
+git -C "$REPO_DIR" remote remove origin
+```
+
+Depth 500 (not 2) so history exploration works offline — see §5 Tier 0. Ancestry guarantees nothing
+later is reachable at any depth. Dropping the remote prevents a later fetch from pulling newer state.
+
+Fixture fields, extending the v1 schema:
+
+```json
+{
+  "id": 9, "lang": "go", "size": "large", "repo": "kubernetes/kubernetes", "pr": 130837,
+  "checkpoint": {
+    "sha": "2ccd845497ee...", "base": "8559194e118f...",
+    "date": "2025-03-18T15:12:04Z",
+    "push_index": 2, "push_count": 13,
+    "selection": "earliest head containing the defect",
+    "diff_stat": { "files": 18, "additions": 745, "deletions": 727 }
+  }
+}
+```
+
+### Step 5 — Gather candidates for the key
+
+```sh
+gh api graphql -f query='
+{ repository(owner:"O", name:"R") { pullRequest(number:N) {
+  reviewThreads(first:100) { nodes {
+    isResolved isOutdated path line
+    comments(first:10){nodes{author{login} createdAt bodyText}} } }
+  timelineItems(first:100, itemTypes:[CROSS_REFERENCED_EVENT]) {
+    nodes { ... on CrossReferencedEvent { source {
+      ... on PullRequest { number title url } ... on Issue { number title url } } } } } } } }'
+```
+
+Candidate sources are listed in §3. Also diff consecutive heads (`compare/<head_i>...<head_i+1>`) to
+catch **silent fixes** — changes that corrected something nobody commented on. Those are real
+findings and they leave no thread.
+
+### Step 6 — Apply the admission rule mechanically, then by hand
+
+Mechanical pre-filters first (§3): file present in the checkpoint diff, line inside a changed hunk,
+`git blame` on the fix's deleted lines reaching the checkpoint head. These reject the clearly
+inapplicable without judgment.
+
+Then adjudicate what survives **by hand**. For each candidate, the question is not "is this a real
+finding" but *"was this already true of the code at the checkpoint?"* — which requires reading the
+code at the checkpoint and at the point the finding was made. This step is irreducible; see §3.
+
+Record rejections as well as admissions. A key that shows what was considered and excluded is
+auditable; one that shows only survivors is not.
+
+### Step 7 — Write the answer document
+
+`analysis/subject-NN/answer-key.json`:
+
+```json
+{
+  "subject_id": 9,
+  "checkpoint": { "sha": "2ccd845497ee...", "date": "2025-03-18T15:12:04Z" },
+  "built_at": "2026-08-10", "built_by": "operator",
+  "entries": [
+    {
+      "id": "e1",
+      "statement": "NewNodeManager returns a fatal error when NodeIPs cannot be fetched; newProxyServer propagates it, aborting kube-proxy startup where the previous code degraded to a localhost fallback.",
+      "file": "pkg/proxy/node.go", "locus": "newNodeManager poll → `return nil, err`",
+      "provenance": "post-merge-fix",
+      "source_ref": "https://github.com/kubernetes/kubernetes/pull/133059",
+      "discovered_at": "2025-07-24",
+      "admission_evidence": "present at checkpoint: error return introduced at push #2, which IS the checkpoint",
+      "must_flag": "flags that NodeIP-fetch failure now aborts startup where it was previously non-fatal",
+      "severity_hint": "critical"
+    }
+  ],
+  "rejected": [
+    {
+      "candidate": "thread: pkg/proxy/topology.go naming",
+      "source_ref": "<thread url>",
+      "reason": "file absent from the checkpoint diff — introduced after push #2"
+    }
+  ],
+  "notes": "13 force-pushes; both the escaped defect and h1 entered at push #2, 3 days after opening."
+}
+```
+
+`provenance` ∈ `review-thread` · `silent-fix` · `linked-issue` · `post-merge-fix` ·
+`post-merge-issue`. It is metadata for analysis — **not** a scoring weight. A finding is not worth
+more because production found it rather than a reviewer.
+
+### Step 8 — Verify the fixture is airtight before spending on cells
+
+```sh
+git -C "$REPO_DIR" log --oneline --all | head          # must not reach the fix/revert
+git -C "$REPO_DIR" status --porcelain                  # must be empty
+git -C "$REPO_DIR" remote -v                           # must be empty
+grep -rlE '<fix-pr-number>|<revert-pr-number>' "$REPO_DIR"   # must find nothing
+```
+
+Then run one cell and audit its access log (§5 Tier 3) before authorizing the rest.
+
+## 5. How review agents run: time-boxing, not blanket denial
 
 The requirement is **"nothing dated after the checkpoint"** — not "nothing external". Blanket-denying
 `gh` and `WebFetch` also denies legitimate reference lookup (library APIs, prior related PRs), which
@@ -234,7 +401,7 @@ happened* rather than guessing at page provenance.
 
 ---
 
-## 5. What v2 still cannot fix
+## 6. What v2 still cannot fix
 
 **Training-data memorization.** Unaffected by any of the above — it is a calendar problem. Only
 subject vintage bounds it: prefer PRs merged after the roster's newest training cutoff, and retire
@@ -252,7 +419,7 @@ subjects, and their keys carry no fast-confirmation bias at all.
 
 ---
 
-## 6. Open questions
+## 7. Open questions
 
 - Key-building is the cost centre and is not scriptable. How many hours per checkpoint is
   acceptable, and does an LLM-assisted first pass (human-adjudicated) bring it down enough?
