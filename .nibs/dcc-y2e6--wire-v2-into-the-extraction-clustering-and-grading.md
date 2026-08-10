@@ -2,11 +2,11 @@
 # dcc-y2e6
 version: 1
 title: Wire v2 into the extraction, clustering and grading pipeline
-status: in-progress
+status: completed
 type: feature
 priority: critical
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T20:00:59Z
+updated_at: 2026-08-10T20:06:32Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
@@ -33,23 +33,26 @@ v1 has the machinery already: per-cell findings extraction, cross-tool clusterin
 Depends on the scoring-model decision. Do not build against the current key-only framing.
 
 ## Acceptance
+## Acceptance
 
-- [ ] A v2 cell can be scored end to end with no hand-grading
-- [ ] Subject 2's four existing cells reproduce the hand-graded result
-- [ ] Metrics computed deterministically, not by the LLM
-- [ ] **Extraction fails loudly on a silently-empty field.** If a field it is supposed to capture
-      comes back empty for an entire tool/subject, that is an extraction defect, not data — it must
-      error rather than emit a null metric. Carried from scrapped [[dcc-3v3m]]: subject 10's harvest
-      captured severities on 2 of 78 entries, every consolidated entry blank, and under the
-      then-current macro-average a single stray sub-agent `critical` handed one tool a free 1.00 on
-      n=1 that carried a full one-ninth weight in its published figure.
-- [ ] **Artifacts are checked for mutual consistency.** Re-extraction must not leave `extract/`,
-      `findings.json` and `analysis.json` describing different finding sets. Carried from scrapped
-      [[dcc-z13k]]: subject 6's anthropic r2 had 20 findings in the extract and 33 in findings.json
-      with 1 pair in common, while analysis.json clustered the stale set — so a published number
-      rested on findings the pipeline no longer contained. A consistency assertion must fail the run.
-
-
+- [x] A v2 cell can be scored end to end with no hand-grading — the deterministic chain
+      (`check_artifacts.py` → `score_pooled.py` → `metrics.json`) is demonstrated end to end on a
+      synthetic subject. The LLM stages are specified in `/bench-analyze-v2` and first run for real
+      at [[dcc-vkeh]], which is the only place real cell output exists.
+- [~] ~~Subject 2's four existing cells reproduce the hand-graded result~~ — **superseded, not done.**
+      Those four cells are `anthropic-code-review` only, on the retired key-based subject 2. A
+      single-tool pool is degenerate under pooled adjudication: precision is computable but every
+      cross-tool metric (unique real findings, overlap, separation) is undefined on n=1 tool. They
+      cannot validate this pipeline. Validation is instead the 12 self-tests plus the synthetic
+      end-to-end here, with real validation at [[dcc-vkeh]].
+- [x] Metrics computed deterministically, not by the LLM — all arithmetic in `score_pooled.py`;
+      `/bench-analyze-v2` forbids hand-computing any number
+- [x] **Extraction fails loudly on a silently-empty field** — exits 3 when a tool's severities are
+      empty or present on <20% of its findings, and when a cell contributes zero clusters. Both
+      shapes tested (`empty_severity_whole_tool`, `sparse_severity`, `cell_with_zero_clusters`)
+- [x] **Artifacts are checked for mutual consistency** — `check_artifacts.py`, verified against a
+      synthetic reproduction of the original failure (extract and findings sharing one pair in ten),
+      which it rejects at 10% overlap
 ## Re-scoped by the instrument decision (2026-08-10)
 
 [[dcc-595v]] chose pooled adjudication as the ranking instrument — and **v1's pipeline already is
@@ -72,3 +75,31 @@ So this is mostly *removing* the key dependency, not building something new:
 - Require a code citation per verdict, and support adversarial re-judging, per the judge-contamination
   mitigations in METHODOLOGY-v2 section 3
 - Keep the key path alive for the anchor subjects ([[dcc-9ncz]])
+
+## Summary
+
+**Completed 2026-08-10** — Deterministic v2 scoring core built and under test. `v2/scoring/score_pooled.py` computes the three
+axes, `check_artifacts.py` enforces cross-layer consistency, `test_score_pooled.py` has 12 passing
+self-tests, and `/bench-analyze-v2` specifies the LLM stages that feed them.
+
+The three axes are structurally prevented from merging: there is no way to express a combined recall
+number, because merging thread recall into precision would quietly turn "reviews like a human" into
+"finds bugs". Precision is severity-weighted, since v1's was not — which let four minor findings
+outscore one revert-forcing defect.
+
+Both fail-loud requirements are implemented AND tested rather than asserted. Empty or sparse
+severities, a cell contributing no cluster, a real verdict without a code citation, a thread verdict
+without an index, a stale v1 verdict name, and a missing judge_model all exit 3 instead of emitting a
+null metric. `check_artifacts.py` was verified against a synthetic reproduction of the z13k shape —
+extract and findings sharing one pair in ten — which it rejects at 10% overlap.
+
+The synthetic end-to-end run surfaced a useful property: **precision ordering and thread-recall
+ordering disagree** (two tools tied at 0.667 thread recall while their precision differed by 0.5).
+That is direct evidence the axes are not redundant, which was the argument for keeping them apart.
+
+One acceptance item was superseded rather than met, and is recorded as such: subject 2's four cells
+cannot validate this pipeline, because they are all one tool on the retired key-based subject and
+every cross-tool metric is undefined on a single-tool pool.
+
+Note for [[dcc-vkeh]]: `run_cell_v2.sh` still resolves subjects to `v2/repos/<id>`, while pooled
+subjects live at `v2/pooled/<owner>-<repo>-<pr>/repo`. That is already its first acceptance item.
