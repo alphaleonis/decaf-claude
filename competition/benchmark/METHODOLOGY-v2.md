@@ -629,12 +629,42 @@ will silently produce cells that ran nothing.
 
 ### Tier 3 — audit, not only prevention
 
-Prevention is necessary but not sufficient — a shim gap is silent. Every run therefore produces an
-access log, and a post-run auditor checks both the log and the findings text for post-checkpoint
-references (fix/revert PR numbers, reviewer usernames, dated language). **Cells that trip the auditor
-are quarantined, not silently scored.**
+Every channel is **logged, denied at the harness level, or explicitly named as unmeasured**. Decided
+2026-08-10 (`dcc-wzbe`); `v2/leak_audit.sh` prints this per cell, including the unmeasured rows,
+because a channel without its own log has exactly the blind spot that made output-grepping undercount
+leaks.
 
-Run the auditor on the first 2–3 cells before authorizing a full run.
+| Channel | Treatment |
+|---|---|
+| `gh` | shimmed and time-boxed; every call logged with its verdict |
+| `curl` / `wget` | **shimmed**: GitHub hosts denied, everything else permitted and logged |
+| `docs-at` | shimmed; the snapshot date is now **enforced**, not merely printed |
+| WebFetch / WebSearch | denied via `--disallowedTools` (harness built-ins, not PATH-shimmable) |
+| MCP servers | denied via `--strict-mcp-config` with an empty config |
+| package registries | permitted and logged; the frozen-lockfile rule keeps versions date-neutral |
+| memorization | **unmeasured** — unfalsifiable by construction, bounded only by vintage (section 6) |
+| other HTTP clients | **unmeasured** — a language HTTP library or a package manager's own transport |
+
+Three of these were live holes, found by testing rather than reasoning:
+
+- **`curl` bypassed the entire `gh` shim.** `curl https://api.github.com/repos/O/R/pulls/N/comments`
+  returns the same review threads the shim exists to withhold. Cells need real network for package
+  restore, so the shim denies GitHub hosts and logs the rest rather than denying wholesale.
+- **`docs-at` did not enforce its own pin.** Wayback's `/web/<stamp>/` returns the *closest* snapshot,
+  which is usually a later one — a request for 2015 returned a 2021 capture, and a request for
+  2026-05-01 returned 2026-05-21. The date was printed but never checked. It now bounds the query
+  through the CDX index (`to=<stamp>&limit=-1`), taking the most recent capture **at or before** the
+  checkpoint, and still refuses if a later snapshot somehow arrives.
+- **MCP servers were inherited.** This machine has `context7` (current library docs), `playwright`
+  (a full browser, so any URL including the PR page) and `erinra` (a memory store, i.e. a cross-cell
+  contamination path) connected. Verified by invocation, not by asking: without the flag the tool
+  exists and is stopped only by a *permission* prompt — so a permissive `PERM_FLAGS` would have let
+  it through — and with the flag the tool does not exist at all.
+
+The last two rows are stated rather than implied. Cells need network, so a language HTTP client
+cannot be denied without also breaking restore; neither is a plausible route to *this* PR's review
+threads, but neither is measured, and a leak audit that silently omitted them would be claiming more
+coverage than it has.
 
 ### On the LLM-approval idea
 

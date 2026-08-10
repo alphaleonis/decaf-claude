@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T20:39:12Z
+updated_at: 2026-08-10T21:15:01Z
 order: zzzzV
 ---
 
@@ -267,32 +267,32 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-fhp1: Cells now get a working toolchain, with restore that cannot bypass the time-boxing, and a per-cell
-record of what was actually possible.
+Completed dcc-wzbe: Three live holes, all found by testing rather than reasoning about the design.
 
-**The toolchains were there all along; PATH was the problem.** `go` and `dotnet` are both installed
-via mise, which activates per interactive shell — so a cell's non-interactive shell saw neither, with
-a stale empty `/usr/local/go/bin` on PATH masking the real Go. Left unfixed, every cell would have
-reported "no toolchain" and the benchmark would have silently measured static-analysis review only,
-which is exactly the bias this nib was filed about. `v2/toolchain.sh` fixes it and is sourced before
-the shim directory so the time-boxed `gh` still wins.
+**`curl` bypassed the entire `gh` shim.** `curl https://api.github.com/repos/O/R/pulls/N/comments`
+returns exactly the review threads the shim exists to withhold — and those threads are now a *scored
+target*, so this was a hole in scoring, not just hygiene. Cells need real network for package restore
+([[dcc-fhp1]]), so `curl`/`wget` are shimmed to deny GitHub hosts and log everything else, rather
+than denied outright.
 
-Three things surfaced that would each have quietly corrupted results:
+**`docs-at` printed its pin without enforcing it.** Wayback's `/web/<stamp>/` returns the *closest*
+snapshot, usually a later one: a request for 2015 returned a 2021 capture, and 2026-05-01 returned
+2026-05-21. Enforcing the date naively made it refuse almost everything, so it now bounds the query
+through the CDX index and takes the most recent capture at or before the checkpoint — with the
+redirect check kept as a second line of defence.
 
-- **Node is too new.** Shims do not honour a project's `.nvmrc`, so every checkout resolved to v25.9.0
-  while grafana and PostHog declare `engines ">=22 <25"`. Node is now pinned corpus-wide at 24.19.0 —
-  the newest satisfying all 12 — for the same reason the model and effort are held constant.
-- **Having the runtime is not being able to build.** `jellyfin` pins .NET 8.0.0 with
-  `rollForward=latestMinor` and cannot build under the installed SDK 10, while `efcore` pins a 9.0
-  preview with `latestMajor` and can. Detection now resolves this up front instead of letting a cell
-  discover it mid-run.
-- **My own detector lied about an empty result** — an empty bash array printed as `[""]`, which a
-  consumer would read as a non-empty missing-toolchain list. Fixed; it is the same
-  empty-versus-failed confusion that has now bitten four times in this harness.
+**MCP servers were inherited by every cell.** This machine has `context7` (current library docs),
+`playwright` (a full browser, so any URL including the PR page) and `erinra` (a memory store, i.e. a
+cross-cell contamination path) connected. Verified by invocation rather than by asking the model:
+without `--strict-mcp-config` the tool exists and is stopped only by a *permission* prompt, so a
+permissive `PERM_FLAGS` would have let it through; with the flag the tool does not exist at all.
 
-Date-neutrality holds for all 12: every subject carries a pinned dependency set, and the frozen
-restore was verified to leave `go.sum`/`go.mod` untouched.
+`v2/leak_audit.sh` prints per-cell coverage including the unmeasured rows — memorization, and HTTP
+clients other than curl/wget — because a leak audit that omitted them would claim more coverage than
+it has.
 
-Carried forward: full test suites are expensive — one .NET project exceeded nine minutes — and
-invocation is per subject, not uniform. [[dcc-vkeh]] should capture the real per-subject test recipes,
-and [[dcc-3cm6]] should check whether cells actually used the capability rather than assuming it.
+Note for [[dcc-3cm6]]: writing this reporter reproduced the harness's recurring bug a **fifth** time.
+`grep -c` prints `0` AND exits 1, so `|| echo 0` appended a second zero and every count rendered as
+"0\n0"; separately, `grep DENY` matched the control arm's `would=[DENY ...]` annotation and listed a
+PASS as a denial. Both are the empty-versus-failed confusion. The review should treat it as a class
+to sweep, not five incidents.

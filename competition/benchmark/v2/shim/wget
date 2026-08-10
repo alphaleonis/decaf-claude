@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Network shim for benchmark v2 cells (nib dcc-wzbe).
+#
+# The `gh` shim time-boxes the GitHub CLI, but `curl https://api.github.com/...` bypasses it
+# entirely — same data, no shim. Cells also need real network for package restore (dcc-fhp1), so
+# blanket denial is not an option. This denies the LEAK hosts and logs everything else.
+#
+# Required env: BENCH_ACCESS_LOG. BENCH_REAL_CURL may point at the real binary.
+set -uo pipefail
+REAL="${BENCH_REAL_WGET:-/usr/bin/wget}"
+LOG="${BENCH_ACCESS_LOG:-/dev/null}"
+SELF="$(basename "$0")"
+
+args="$*"
+case "$args" in
+  *github.com*|*githubusercontent.com*|*api.github.com*|*ghproxy*|*github.io*)
+    printf '%s\t%s\tDENY\t%s\n' "$(date -u +%FT%TZ)" "$SELF" "$args" >> "$LOG"
+    echo "$SELF: GitHub is not reachable from this review environment." >&2
+    echo "The change under review is checked out locally; use git history instead." >&2
+    exit 1 ;;
+  *web.archive.org*)
+    # docs-at's own fetch. Allowed, and already date-enforced by that script.
+    printf '%s\t%s\tALLOW\twayback %s\n' "$(date -u +%FT%TZ)" "$SELF" "$args" >> "$LOG"
+    exec "$REAL" "$@" ;;
+esac
+
+# Everything else — package registries, docs hosts — is permitted but RECORDED, because a channel
+# without its own log has the same blind spot that made output-grepping undercount leaks.
+printf '%s\t%s\tALLOW\t%s\n' "$(date -u +%FT%TZ)" "$SELF" "$args" >> "$LOG"
+exec "$REAL" "$@"

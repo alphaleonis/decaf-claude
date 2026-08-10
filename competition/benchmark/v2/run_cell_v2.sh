@@ -52,6 +52,8 @@ export BENCH_ACCESS_LOG="$OUT/access.log"
 # a pass-through LOGGER, so the control arm is measurable; without it the arm produces no access log
 # at all and "0 accesses" is an artifact rather than a measurement.
 export BENCH_ENFORCING_SHIM="$V2/shim/gh"
+export BENCH_REAL_CURL="$(command -v curl)"
+export BENCH_REAL_WGET="$(command -v wget)"
 
 # Build toolchains. Sourced BEFORE the shim dir is prepended, so the time-boxed `gh` still wins.
 # Without this a cell inherits a non-interactive PATH where go and dotnet are absent even though both
@@ -99,9 +101,14 @@ Report every finding with a file:line reference and a clear statement of what is
 echo "[$SID/$TOOL shim=$SHIM r$REP] checkpoint ${CP:0:12}, date $DATE, model $BENCH_MODEL effort $BENCH_EFFORT"
 t0=$(date +%s)
 set +e
+# MCP servers are a live, unmeasured leak channel: this machine has context7 (CURRENT library docs),
+# playwright (a full browser, so any URL including the PR page), erinra (a memory store, i.e. a
+# cross-cell contamination path) and others connected. A cell inherits all of them by default.
+# --strict-mcp-config with an empty config file disables every one (dcc-wzbe).
 ( cd "$REPO" && claude -p "$PROMPT" \
     --model "$BENCH_MODEL" --effort "$BENCH_EFFORT" \
     --disallowedTools WebFetch WebSearch \
+    --strict-mcp-config --mcp-config "$V2/shim/no-mcp.json" \
     $PERM_FLAGS --output-format json ) > "$OUT/meter.json" 2> "$OUT/stderr.log"
 rc=$?
 set -e
