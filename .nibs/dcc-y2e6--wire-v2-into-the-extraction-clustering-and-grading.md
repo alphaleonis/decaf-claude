@@ -6,7 +6,7 @@ status: todo
 type: feature
 priority: critical
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T19:20:28Z
+updated_at: 2026-08-10T19:26:07Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
@@ -60,8 +60,13 @@ a verdict vocabulary: that is what produced subject 9's 98 clusters and its
 So this is mostly *removing* the key dependency, not building something new:
 
 - Make the key optional rather than required — pooled cells have none
-- Replace `TP-primary`/`TP-human` with verdicts that do not presuppose a key, keeping `valid-other`,
-  `nitpick` and `false-positive`, which already carry the signal
+- Replace `TP-primary` with verdicts that do not presuppose a key, keeping `valid-other`, `nitpick`
+  and `false-positive`, which already carry the signal
+- **Keep a human-thread match verdict** (v1 called it `TP-human`). Human review threads are now a
+  scored target in their own right — the miss detector — so the pipeline must compute recall against
+  the admitted threads per subject and report it as a SEPARATE axis. Never merge it into one "recall"
+  number with the anchor: agreement with expert review is related to, but not the same as, finding
+  real bugs, and OSS reviewers skew toward API design and convention over correctness
 - Add severity weighting (v1's precision was unweighted, so four minor findings outscored one
   revert-forcing defect)
 - Require a code citation per verdict, and support adversarial re-judging, per the judge-contamination

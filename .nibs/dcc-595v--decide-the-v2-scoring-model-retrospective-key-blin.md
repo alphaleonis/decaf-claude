@@ -6,7 +6,7 @@ status: completed
 type: research
 priority: critical
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T19:20:58Z
+updated_at: 2026-08-10T19:26:32Z
 parent: dcc-ho2w
 order: "9"
 ---
@@ -174,3 +174,32 @@ Weaknesses accepted and mitigated rather than assumed away — the judge becomes
 a model family with the tools (code citations, adversarial re-judging, hand spot-checks of the
 valid-other/nitpick boundary); volume is rewarded (precision primary, findings-per-cell always
 reported); "real" is not binary (severity weighting required).
+
+**Completed 2026-08-10** — **Revision (2026-08-10): human review threads are promoted from a judge-calibration check to a scored
+target — the miss detector.**
+
+The original decision under-used them. Pooled adjudication is bounded by the union of tool output, so
+it cannot detect what every tool missed; I attributed that job solely to the anchor. But an expert
+review thread is an independent statement that something was worth raising, and it is *not derived
+from tool output* — so "reviewers flagged X, no tool flagged X" is a detectable miss. Threads cover
+most of the blind spot, densely, on every well-reviewed PR, where the anchor needs a revert.
+
+Scoring now has three targets, reported as separate axes:
+
+1. the pool (tool union) — precision, noise, unique contribution
+2. admitted human review threads — recall against expert review, the miss detector
+3. the anchor key — what expert reviewers ALSO missed
+
+Consequences: thread density becomes a hard corpus criterion (>=5 admissible threads per subject in
+[[dcc-ixyy]]) rather than an accident of selection; [[dcc-y2e6]] keeps a human-thread match verdict
+and computes thread recall separately; and the `gh` shim's denial of `--comments` and review-thread
+fields is now load-bearing for scoring, not only for leak hygiene.
+
+Cost accounting, honestly: this adds back Steps 5-6 in reduced form. What stays deleted is the
+expensive, failure-prone part — researching the revert, re-land, regression issue and root cause,
+which is what invalidated 5 of 12 subjects. Threads are concrete text with file:line anchors, so the
+mechanical in-diff filter does real work and only the `must_flag` triage needs judgment.
+
+Limit to keep visible: OSS reviewers weight API design, naming and convention heavily and often
+delegate correctness to CI, so thread recall measures agreement with expert review rather than
+bug-finding. It must never be merged into a single recall number with the anchor.
