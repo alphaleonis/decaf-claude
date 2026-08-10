@@ -6,10 +6,11 @@ status: in-progress
 type: bug
 priority: critical
 created_at: 2026-08-06T14:58:35Z
-updated_at: 2026-08-10T12:34:05Z
+updated_at: 2026-08-10T17:44:03Z
+parent: dcc-ho2w
 blocked_by:
     - dcc-ho2w
-order: zzzy
+order: Zz
 ---
 
 The per-subject checkout `repos/<subject_id>` is shared by all 16 cells of a subject.
@@ -50,3 +51,14 @@ on subjects 1 and 5) are PAUSED pending the [[dcc-ho2w]] v2 decision.
 Reason: v2 denies reviewers post-hoc PR context, which invalidates every cell again — including
 subject 9's fresh runs. Spending ~$100 on subjects 1 and 5 now would buy numbers v2 supersedes.
 Resume only if a contamination-only comparison is wanted for its own sake.
+
+## Superseded by benchmark v2
+The harness fix, cleanup, quarantine, and the subject-9 re-grade are DONE and stand.
+
+The two remaining acceptance items — "27 cells re-run" and "9 subjects re-analyzed" — are **superseded
+by [[dcc-ho2w]]**. Those were v1 re-runs against v1 ground truth, and two of the first three subjects
+audited under v2 turned out to have invalid ground truth. Re-running v1 cells would spend ~$390 to
+produce numbers graded against defects that may not be in the reviewed diff.
+
+Recommend scrapping both items rather than completing them. The v1 artifacts they would have produced
+are covered by [[dcc-8tjr]] (archive) instead.

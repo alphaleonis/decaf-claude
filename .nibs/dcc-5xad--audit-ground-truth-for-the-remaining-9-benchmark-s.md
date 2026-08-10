@@ -6,8 +6,9 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-10T15:05:01Z
-updated_at: 2026-08-10T15:05:01Z
-order: zzzzk
+updated_at: 2026-08-10T17:43:40Z
+parent: dcc-ho2w
+order: R
 ---
 
 Three subjects have been through the [[dcc-ho2w]] v2 key-building procedure as a proof of concept.
