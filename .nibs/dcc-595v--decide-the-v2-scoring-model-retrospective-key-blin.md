@@ -2,11 +2,11 @@
 # dcc-595v
 version: 1
 title: Decide what the benchmark measures, and on what kind of code
-status: todo
+status: completed
 type: research
 priority: critical
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T18:48:20Z
+updated_at: 2026-08-10T19:20:58Z
 parent: dcc-ho2w
 order: "9"
 ---
@@ -127,11 +127,50 @@ Consequences:
   true positive cannot separate signal from noise. Recall pools across subjects fine.
 
 ## Acceptance
+## Acceptance
 
-- [ ] Instrument decided: which of anchor / pooled adjudication / null arm are in, and which one ranks
-- [ ] Corpus axis decided, with the language grid explicitly kept or dropped
+- [x] Instrument decided — pooled adjudication ranks; retrospective key demoted to a blind-spot
+      anchor; null arm added for an absolute noise floor. Written into METHODOLOGY-v2 section 3.
+- [x] Corpus axis decided — size (S/M/L) x application type; language explicitly dropped as an axis.
+      Own PRs rejected: review quality there is not trusted and the codebases are legacy, so subjects
+      come from reputable, review-disciplined repos merged post-cutoff.
 - [x] Feasibility spot-check done on application/SPA candidates against the Step 0 screen — `v2/analysis/STEP0-FEASIBILITY.md`; viable at ~4.5% vs infra ~9%
-- [ ] Verdict vocabulary and severity treatment specified
-- [ ] Judge-contamination position stated explicitly
-- [ ] Written into METHODOLOGY-v2.md, replacing the key-only framing
-- [ ] [[dcc-9ncz]] and [[dcc-ixyy]] re-scoped to match, or closed if the decision obsoletes them
+- [x] Verdict vocabulary and severity treatment specified — keep `valid-other` / `nitpick` /
+      `false-positive`, drop the key-presupposing `TP-*`, add severity weighting. Detail in [[dcc-y2e6]].
+- [x] Judge-contamination position stated explicitly — mitigated, not merely disclosed: code citation
+      required per verdict, adversarial re-judging, hand spot-check of the `valid-other`/`nitpick`
+      boundary, plus human review threads as a non-scoring calibration check on the judge.
+- [x] Written into METHODOLOGY-v2.md, replacing the key-only framing
+- [x] [[dcc-9ncz]] and [[dcc-ixyy]] re-scoped to match — ixyy rebuilt around the size x type grid,
+      9ncz demoted to anchor-only at normal priority, [[dcc-mjj5]] filed for the null arm, [[dcc-y2e6]]
+      reduced to removing the key dependency from the existing pipeline
+
+## Summary
+
+**Completed 2026-08-10** — **Pooled adjudication is the ranking instrument.** The retrospective key becomes an anchor for one
+question only — is there a defect class every tool misses — and a null arm supplies an absolute noise
+floor. Written into METHODOLOGY-v2 section 3.
+
+The decisive evidence was density plus the verdict distribution. One v1 subject produced 800 findings
+collapsing to 98 clusters, graded 1 `TP-primary`, 2 `TP-human`, 31 `valid-other`, 58 `nitpick`, 6
+`false-positive`. Key-based scoring consumes 3 of those 98. And only 6 were *wrong* while 58 were
+*trivial*: review tools fail by immateriality, not error, which is precisely what a key cannot see.
+
+Pooled adjudication also dissolves three of the four v1 failures — no key means no ground truth to be
+wrong, no revert requirement means subjects can postdate the training cutoff, and no fixing PR means
+little cross-reference leak. Section 4 drops from 8 steps to 4 for pooled subjects. And v1's pipeline
+already IS pooled adjudication minus the key, so [[dcc-y2e6]] shrinks to removing that dependency.
+
+Corpus: size (S/M/L, kept for cost and wall-clock effects and because decaf derives roster size from
+executable lines) x application type (application/UI, contract-crossing, backend service, library
+internals). Language dropped as an axis. Own PRs rejected — review quality not trusted, codebases
+legacy — so subjects come from reputable review-disciplined repos merged post-cutoff. That choice
+pays a bonus: human review threads become a non-scoring validity check on the judge.
+
+The grid is affordable only because of this decision: 12 cells was decorative at 1-3 key entries per
+subject and is well powered at ~50-100 clusters.
+
+Weaknesses accepted and mitigated rather than assumed away — the judge becomes ground truth and shares
+a model family with the tools (code citations, adversarial re-judging, hand spot-checks of the
+valid-other/nitpick boundary); volume is rewarded (precision primary, findings-per-cell always
+reported); "real" is not binary (severity weighting required).
