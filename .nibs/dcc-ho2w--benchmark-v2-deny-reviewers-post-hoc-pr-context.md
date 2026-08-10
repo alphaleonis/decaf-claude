@@ -6,7 +6,7 @@ status: draft
 type: epic
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T12:32:37Z
+updated_at: 2026-08-10T12:37:25Z
 order: zzzzV
 ---
 
@@ -87,9 +87,9 @@ runs are invalidated.
 - **Prior-PR discussion is clipped.** Ancestry gives prior PRs' code and merge messages offline, but
   not their GitHub conversation. Accept, or find a way to snapshot pre-dated discussion too?
 - **Training-data contamination** is unfalsifiable — a model may have memorized a PR and its revert.
-  "After the model cutoff" is not one date (`anthropic-code-review` hard-pins Sonnet and Haiku, which
-  may differ from Opus). Implies the subject set is a ROLLING asset needing periodic refresh. Which
-  of the current 12 subjects are already unsafe? Unknown.
+  RESOLVED which subjects are unsafe: see "Model cutoffs and subject vintage" below — 6 of 10 predate
+  the binding Jan 2026 cutoff, including subject 9. Open question is now what to DO about it
+  (options listed in that section), and at what cadence the corpus gets refreshed.
 - Does denying PR access change what PR-native tools are, such that we measure a different tool?
 - Do we keep `superpowers` comparable, given it was always local-diff-only?
 
@@ -102,3 +102,66 @@ runs are invalidated.
       thread language, and inspect the gh-attempt log. Full re-run is NOT authorized until this passes
 - [ ] Subject-vintage policy vs model cutoffs decided (may force subject replacement)
 - [ ] Full re-run (dependent item — separate decision from building the harness)
+
+## Model cutoffs and subject vintage (2026-08-10)
+Source: https://platform.claude.com/docs/en/about-claude/models/overview — the page carries TWO
+cutoffs per model and they differ. For contamination the **training data cutoff** is the relevant
+one: memorization only requires the data to be in training at all.
+
+| Model | Reliable knowledge cutoff | Training data cutoff |
+|---|---|---|
+| Claude Opus 5 | May 2026 | May 2026 |
+| Claude Sonnet 5 | Jan 2026 | Jan 2026 |
+| Claude Fable 5 | Jan 2026 | Jan 2026 |
+| Claude Opus 4.8 | Jan 2026 | Jan 2026 |
+| Claude Opus 4.7 | Jan 2026 | Jan 2026 |
+| Claude Sonnet 4.6 | Aug 2025 | Jan 2026 |
+| Claude Opus 4.6 | May 2025 | Aug 2025 |
+| Claude Haiku 4.5 | Feb 2025 | Jul 2025 |
+
+(Opus 3 — Aug 2023 — is not on the page; it is retired.)
+
+Models in play: `BENCH_MODEL=claude-opus-4-8` (training Jan 2026) is the session model for every
+cell. `anthropic-code-review` hard-pins Sonnet and Haiku regardless of `BENCH_MODEL`; decaf's
+`models=low` puts reviewers on haiku, `models=high` on opus/sonnet. So the **binding cutoff for
+most cells is Jan 2026**.
+
+## Subject merge dates vs the Jan 2026 cutoff
+
+Dates are the merge commit's committer date from each `repos/<id>` checkout.
+
+| Subject | Repo | PR | Merged | vs Jan 2026 |
+|---|---|---|---|---|
+| 1 | dotnet/efcore | 32770 | 2024-01-27 | IN TRAINING |
+| 7 | prometheus/prometheus | 13777 | 2024-03-15 | IN TRAINING |
+| 4 | microsoft/TypeScript | 61928 | 2025-06-25 | IN TRAINING |
+| 9 | kubernetes/kubernetes | 130837 | 2025-07-11 | IN TRAINING |
+| 8 | kubernetes/kubernetes | 129768 | 2025-09-08 | IN TRAINING |
+| 10 | BurntSushi/ripgrep | 3185 | 2025-10-14 | IN TRAINING |
+| 3 | dotnet/runtime | 127146 | 2026-04-21 | after cutoff |
+| 5 | microsoft/vscode | 308517 | 2026-04-08 | after cutoff |
+| 6 | microsoft/vscode | 320685 | 2026-06-11 | after cutoff |
+| 2 | dotnet/aspnetcore | 67075 | 2026-07-09 | after cutoff |
+
+**Six of ten subjects predate the binding cutoff**, including subject 9 — whose revert (#132958)
+and take-2 (#133059) also landed in 2025. Every *catch* on those six now has a second
+unfalsifiable explanation alongside the `gh` lookup. A *miss* is still sound evidence (memorization
+cannot cause a miss), so `ours-bugs` 0/2 on subject 9 survives this.
+
+Only subjects 2, 3, 5, 6 are vintage-safe for a Jan-2026-cutoff model. Note only ONE of them
+(subject 5) is in the current 3-subject variant comparison.
+
+**The judge is contaminated too.** This session graded subject 9 on `claude-opus-5[1m]` — training
+cutoff May 2026, so the judge may know the revert as well. The frozen answer key is
+human-confirmed, which limits the damage, but blind grading does not neutralize memorization.
+
+## Implications to decide
+
+- Vintage-safe subjects are a *decreasing* resource: every model release moves the cutoff forward
+  and retires more of the corpus. The subject set needs a refresh cadence, not a one-time fix.
+- The cutoff is per model, not per benchmark: pinning Haiku (Jul 2025) and Opus 4.8 (Jan 2026) in
+  the same run means the same subject is in-training for one reviewer and not the other.
+- Options: (a) restrict the corpus to post-cutoff PRs and accept a smaller/rolling set;
+  (b) keep old subjects but report them separately as "possibly memorized"; (c) accept it and
+  document, since the `gh` fix removes the *verifiable* leak and memorization is unfalsifiable
+  either way.
