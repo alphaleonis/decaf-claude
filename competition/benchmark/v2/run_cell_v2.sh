@@ -52,7 +52,17 @@ export BENCH_ACCESS_LOG="$OUT/access.log"
 # a pass-through LOGGER, so the control arm is measurable; without it the arm produces no access log
 # at all and "0 accesses" is an artifact rather than a measurement.
 export BENCH_ENFORCING_SHIM="$V2/shim/gh"
+
+# Build toolchains. Sourced BEFORE the shim dir is prepended, so the time-boxed `gh` still wins.
+# Without this a cell inherits a non-interactive PATH where go and dotnet are absent even though both
+# are installed, and every cell silently degrades to static-analysis-only review (dcc-fhp1).
+. "$V2/toolchain.sh"
+
 if [ "$SHIM" = "on" ]; then export PATH="$V2/shim:$PATH"; else export PATH="$V2/shim-log:$PATH"; fi
+
+# Record what the cell could actually do, so a run without a toolchain is identifiable rather than
+# quietly weaker evidence than one with.
+bash "$V2/detect_build.sh" "$(dirname "$REPO")" > "$OUT/build-capability.json" 2>/dev/null ||   echo '{"error":"detection failed"}' > "$OUT/build-capability.json"
 
 REPO_SLUG="$(jq -r '.repo' "$FIX")"; PRNUM="$(jq -r '.pr' "$FIX")"
 
@@ -77,6 +87,12 @@ Environment notes:
 - The repository is checked out locally at the change under review. Full git history is available — use \`git log\`, \`git blame\`, and \`git show\` freely to understand prior work.
 - Network documentation lookup is available through \`docs-at <url>\`, which returns the page as it existed at the time of this change. Use it for library and framework API reference. WebFetch and WebSearch are unavailable.
 - \`gh\` is restricted to information that existed at the time of this change.
+- A build toolchain IS available (node, go, dotnet, python, cargo as the project requires). You may
+  build the project and run its tests to confirm or refute a finding. Restore dependencies with the
+  project's frozen/locked command (\`pnpm install --frozen-lockfile\`, \`go mod download\` under
+  \`GOFLAGS=-mod=readonly\`, \`dotnet restore\`, \`uv sync --frozen\`) so no dependency resolves to a
+  version published after this change. Note that full test suites can take many minutes; prefer the
+  tests covering the changed code.
 
 Report every finding with a file:line reference and a clear statement of what is wrong."
 
