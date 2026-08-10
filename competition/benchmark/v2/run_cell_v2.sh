@@ -29,8 +29,11 @@ export BENCH_CHECKPOINT_DATE="$DATE"
 export BENCH_REAL_GH="$(command -v gh)"
 export BENCH_ACCESS_LOG="$OUT/access.log"
 : > "$BENCH_ACCESS_LOG"
-# BENCH_SHIM=off runs the SAME prompt with unrestricted gh — the control arm.
-if [ "$SHIM" = "on" ]; then export PATH="$V2/shim:$PATH"; fi
+# BENCH_SHIM=off runs the SAME prompt with unrestricted gh — the control arm. It still goes through
+# a pass-through LOGGER, so the control arm is measurable; without it the arm produces no access log
+# at all and "0 accesses" is an artifact rather than a measurement.
+export BENCH_ENFORCING_SHIM="$V2/shim/gh"
+if [ "$SHIM" = "on" ]; then export PATH="$V2/shim:$PATH"; else export PATH="$V2/shim-log:$PATH"; fi
 
 REPO_SLUG="$(jq -r '.repo' "$FIX")"; PRNUM="$(jq -r '.pr' "$FIX")"
 
@@ -72,4 +75,8 @@ t1=$(date +%s)
 jq -r '.result // empty' "$OUT/meter.json" > "$OUT/final-output.md" 2>/dev/null || true
 cost=$(jq -r '.total_cost_usd // "?"' "$OUT/meter.json" 2>/dev/null)
 echo "[$SID/$TOOL] rc=$rc wall=$((t1-t0))s cost=\$$cost -> $OUT"
-echo "[$SID/$TOOL] external accesses: $(wc -l < "$BENCH_ACCESS_LOG") ($(grep -c DENY "$BENCH_ACCESS_LOG" || true) denied)"
+if [ "$SHIM" = "on" ]; then
+  echo "[$SID/$TOOL] external accesses: $(wc -l < "$BENCH_ACCESS_LOG") ($(grep -c 'DENY' "$BENCH_ACCESS_LOG" || true) denied)"
+else
+  echo "[$SID/$TOOL] external accesses: $(wc -l < "$BENCH_ACCESS_LOG") (unrestricted; $(grep -c 'would=\[DENY' "$BENCH_ACCESS_LOG" || true) would have been DENIED by the shim)"
+fi
