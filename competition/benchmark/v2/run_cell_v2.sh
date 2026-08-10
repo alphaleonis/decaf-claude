@@ -25,6 +25,25 @@ DATE="$(jq -r '.checkpoint.date' "$FIX" | cut -c1-10)"
 SHIM="${BENCH_SHIM:-on}"; REP="${BENCH_REPEAT:-1}"
 OUT="$V2/runs/${SID}__${TOOL}__shim-${SHIM}__r${REP}"; rm -rf "$OUT"; mkdir -p "$OUT"
 
+# Return the fixture checkout to the checkpoint before every cell. Review tools write artifacts into
+# the working tree — decaf's skills drop reports in `.decaf/code-reviews/`, and their
+# recurring-findings cross-check reads that directory back — so a cell that inherits the previous
+# cell's tree can harvest its findings. This is the v1 failure (dcc-2cxq) and it must not recur here.
+# The fixture has no remote by construction, so the checkpoint must already be a local object.
+reset_repo() {
+  if ! git -C "$REPO" cat-file -e "${CP}^{commit}" 2>/dev/null; then
+    echo "[$SID/$TOOL] REFUSING: checkpoint $CP absent from $REPO — rebuild the fixture" >&2; exit 78
+  fi
+  git -C "$REPO" checkout -q -f "$CP"
+  git -C "$REPO" clean -qxfd
+  local dirty; dirty="$(git -C "$REPO" status --porcelain | wc -l | tr -d ' ')"
+  if [ "$dirty" != "0" ]; then
+    echo "[$SID/$TOOL] REFUSING: $REPO still dirty ($dirty entries) after reset — contamination risk" >&2
+    git -C "$REPO" status --porcelain >&2; exit 77
+  fi
+}
+reset_repo
+
 export BENCH_CHECKPOINT_DATE="$DATE"
 export BENCH_REAL_GH="$(command -v gh)"
 export BENCH_ACCESS_LOG="$OUT/access.log"

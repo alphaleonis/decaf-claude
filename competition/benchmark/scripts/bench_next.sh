@@ -3,6 +3,24 @@
 # Usage: bench_next.sh [--count N] [--tool <id>] [--subject <id>] [<run_id>]
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
+# The v1 dataset is void on four independent counts (see v1-archive/README.md) and has been archived.
+# Running another v1 cell appends to a dataset nothing may be cited from, so refuse by default rather
+# than let a stray /bench-run quietly resume it. v2 cells run through v2/run_cell_v2.sh.
+if [ "${BENCH_V1_ALLOW:-0}" != "1" ]; then
+  cat >&2 <<'EOF'
+REFUSING: the v1 benchmark is retired and its data is archived under v1-archive/.
+
+  Its results are void (contamination, GitHub leak, unaudited ground truth, unpinned effort) and
+  the two leaks point in opposite directions, so no v1 number is citable in any form.
+
+  For v2:      bash v2/run_cell_v2.sh <subject_id> <tool_id>
+  Background:  competition/benchmark/v2/README.md, METHODOLOGY-v2.md, milestone dcc-ho2w
+
+  To re-run v1 anyway (reproducing a leak, regenerating evidence): BENCH_V1_ALLOW=1
+EOF
+  exit 3
+fi
+
 [ -f "$MANIFEST" ] || { echo "No manifest. Run /bench-init first."; exit 1; }
 
 COUNT=1; TOOL=""; SUBJECT=""; EXPLICIT=""

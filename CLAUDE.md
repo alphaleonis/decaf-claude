@@ -199,6 +199,7 @@ Current work is **benchmark v2**, milestone `dcc-ho2w`:
 | `competition/benchmark/v2/README.md` | operational — layout, running a cell, the access controls |
 | `competition/benchmark/METHODOLOGY-v2.md` | design rationale + the subject-construction procedure |
 | `competition/benchmark/README.md` | v1, behind a warning banner |
+| `competition/benchmark/v1-archive/README.md` | the archived v1 data — what it may and may not be cited for |
 
 Ground rules that cost real money to learn:
 

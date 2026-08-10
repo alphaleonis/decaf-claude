@@ -17,6 +17,11 @@
 > flattered `anthropic`), so the direction of any headline gap is *unknown*, not merely imprecise.
 > **Do not cite a v1 number.**
 >
+> The v1 data — 88 cells, 9 graded subjects, the metrics CSV, the run ledger, and both earlier
+> quarantines — is archived under [`v1-archive/`](./v1-archive) with a README stating what it may
+> still be cited for (leak mechanism, cost telemetry) and what it may not (any tool comparison).
+> `scripts/bench_next.sh` refuses to run without `BENCH_V1_ALLOW=1`.
+>
 > Current work is **benchmark v2**: [`METHODOLOGY-v2.md`](./METHODOLOGY-v2.md) and
 > [`v2/README.md`](./v2/README.md), tracked by milestone **`dcc-ho2w`**.
 > The `ours` tool no longer exists — it was retired in favour of the `ours-bugs` / `ours-review` /
