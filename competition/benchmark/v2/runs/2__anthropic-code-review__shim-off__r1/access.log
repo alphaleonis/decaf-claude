@@ -1,0 +1,2 @@
+2026-08-10T16:32:15Z	gh	PASS	would=[DENY pr view 67075 --repo dotnet/aspnetcore --json title,body,state,isDraft,author,comments (requested field may contain post-checkpoint content)]	argv=pr view 67075 --repo dotnet/aspnetcore --json title,body,state,isDraft,author,comments
+2026-08-10T16:33:49Z	gh	PASS	would=[ALLOW issue view 27095 created=2020-10-21]	argv=issue view 27095 --repo dotnet/aspnetcore --json title,body

@@ -1,51 +1,42 @@
-Review complete. I verified all findings against the actual code at the change under review. Below is every finding I would report — **terminal only, nothing posted to GitHub.**
+## Code Review — dotnet/aspnetcore PR #67075
+
+Reviewing the diff `a2a5480e..3aa499ae` (fix for `AmbiguousMatchException` in `DataAnnotationsValidator` with hidden/`new` members). Output only — nothing posted to GitHub. No CLAUDE.md exists in this repo, so CLAUDE.md compliance is N/A.
+
+### Summary of the change
+`TryGetValidatableProperty` previously called `ModelType.GetProperty(fieldName)` (default flags), which throws `AmbiguousMatchException` when a derived type hides a base property with `new`. The fix now does a two-step lookup: first `Public | Instance | DeclaredOnly` (prefers the most-derived declaration), then falls back to `Public | Instance | FlattenHierarchy` if that returns null. Six tests were added.
 
 ---
 
-## Code Review: PR #67075 / range `a2a5480e…3aa499ae`
+### Findings
 
-**What the change does:** Fixes an `AmbiguousMatchException` in `TryGetValidatableProperty` that occurred when a derived model hides (`new`) a base property with a *different* return type (e.g. `new int OrderID` shadowing `object OrderID`). The old `GetProperty(name)` threw on the ambiguity; the new code does a `DeclaredOnly` lookup first, then falls back to `FlattenHierarchy`.
+**1. The fallback path still throws `AmbiguousMatchException` — the exact bug this PR fixes — when a hidden property is *inherited* without being redeclared on the model type.**
 
-**Scope:** one production hunk + 131 lines of new tests. Findings below reflect a small, focused diff — I did not manufacture extra findings.
+`src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:276-281`
 
----
+The `DeclaredOnly` lookup only resolves ambiguity when the **model's own type** redeclares the property with `new`. If the model type inherits an already-ambiguous hidden property (a `new` shadow introduced in a mid-level ancestor, with a further-derived type used as the model that does *not* redeclare it), the first lookup returns `null` and control falls through to the `FlattenHierarchy` call, which sees two same-named properties across the hierarchy and throws `AmbiguousMatchException` again — unhandled, propagating out of `Validate()`.
 
-### Finding 1 — Correctness (highest severity)
-**`src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:278`**
-
-The `FlattenHierarchy` fallback still throws `AmbiguousMatchException` — the exact crash this PR set out to prevent — when a model *inherits* a shadowed, differently-typed property without redeclaring it at the most-derived level.
-
-**Failure scenario:**
+Concrete failing shape (not covered by the added tests):
 ```csharp
-class Base { public object Id { get; set; } }
-class Mid  : Base { public new int Id { get; set; } }
-class Leaf : Mid { }                 // does NOT redeclare Id
+class Base            { public object Tag { get; set; } }
+class Mid  : Base     { [Range(1,100)] public new string Tag { get; set; } }
+class Leaf : Mid      { }              // inherits the ambiguity, redeclares nothing
+// model = new Leaf(); field "Tag"  → DeclaredOnly on Leaf = null → FlattenHierarchy throws
 ```
-For a model of type `Leaf` validating field `"Id"`:
-- `GetProperty("Id", Public|Instance|DeclaredOnly)` on `Leaf` → `null` (Leaf declares nothing).
-- Fallback `GetProperty("Id", Public|Instance|FlattenHierarchy)` walks the chain, finds `Mid.Id` (int) **and** `Base.Id` (object), differing return types → **`AmbiguousMatchException` thrown.**
 
-The added `DeepDerivedModel` test passes only because its leaf *does* redeclare `Tag` (so the `DeclaredOnly` step returns first). An inheriting-but-not-redeclaring leaf is uncovered and still crashes validation.
+The added `DeepDerivedModel` test looks superficially like this case but redeclares `Tag` at the leaf (`class DeepDerivedModel : MidLevelModelWithShadow` with `public new int Tag`), so it always resolves via the `DeclaredOnly` branch and never exercises the null → fallback path against an inherited ambiguity. The gap is real and untested.
 
----
+A robust fix would walk the type hierarchy (`DeclaredOnly` at each level from most-derived to base, returning the first match) rather than relying on a single `FlattenHierarchy` fallback that can itself be ambiguous.
 
-### Finding 2 — Behavior change (silent)
-**`src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:272` (and `:278`)**
-
-Both new lookups specify `BindingFlags.Public | BindingFlags.Instance` only. The original `GetProperty(name)` used the default lookup flags `Public | Instance | **Static**`. Dropping `Static` means a public **static** property with validation attributes is no longer found — `propertyInfo` comes back `null` and its attributes are silently skipped.
-
-The new `IgnoresStaticProperty` test *codifies* this as intended, but the diff/commit doesn't call it out as a deliberate behavior change. Note: DataAnnotations' `Validator` does not validate static properties in practice, so this is likely benign — but it is a real, undocumented change from the prior binding behavior and worth an explicit note.
+GitHub permalink (for reference, not posted):
+`https://github.com/dotnet/aspnetcore/blob/3aa499ae7d2314f7bbf89a3232df8371cc351d2a/src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs#L275-L281`
 
 ---
 
-### Finding 3 — Altitude / simplification
-**`src/Components/Forms/src/EditContextDataAnnotationsExtensions.cs:278`**
+### Considered and dismissed (below reporting bar)
 
-The two-step `DeclaredOnly`-then-`FlattenHierarchy` approach is a shallow special-case that only rescues shadowing at the most-derived level (hence Finding 1's gap). Two issues:
+- **Dropping `BindingFlags.Static`** vs. the original default flags: this is an intentional behavior change (a public static property that previously could resolve is now ignored), and it is explicitly codified by the new `IgnoresStaticProperty` test. Validating a static property via a model-instance `FieldIdentifier` is nonsensical, so this is a safe, deliberate narrowing — not a regression.
+- **Two `GetProperty` calls instead of one**: negligible — the result is cached in `_propertyInfoCache` per `(type, field)`.
+- Test-only helper class shapes, naming, formatting — CI/linters cover these.
 
-1. **`FlattenHierarchy` is a no-op here** — it only affects *static* member visibility; on this instance-only (`BindingFlags.Instance`) path it changes nothing, which misleads the reader into thinking it aids hierarchy flattening.
-2. A **most-derived-declaring-type walk** would generalize correctly and close Finding 1: loop from `ModelType` up the `BaseType` chain doing a `Public|Instance|DeclaredOnly` lookup at each level, returning the first hit. That picks the most-derived property without ever hitting the ambiguity, at any depth.
-
----
-
-**Summary:** 1 genuine correctness bug (the fix is incomplete for multi-level un-redeclared inheritance), 1 undocumented behavior change (static properties no longer discovered), and 1 simplification that would also fully close the correctness gap.
+### Verdict
+One substantive finding: the fix is incomplete for hidden properties inherited (not redeclared) at the model type's level, where the `FlattenHierarchy` fallback re-throws the same `AmbiguousMatchException`. It's an edge case, but it re-opens the precise failure the PR targets, and the added tests don't cover it.
