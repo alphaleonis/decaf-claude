@@ -18,6 +18,26 @@ Deterministic half of the v2 pipeline. The LLM stages (extract → cluster → b
   finding real bugs — OSS reviewers skew toward API design and convention over correctness.
 - **anchor** — recall against an answer key, for anchor subjects only.
 
+## Reported vs found
+
+A tool can find a defect, verify it, and then suppress it below its own reporting bar. Every
+recall-style metric is therefore computed twice, and neither figure is allowed to stand alone:
+
+| Metric | Meaning |
+|---|---|
+| `thread_recall` / `anchor_recall` | what a user would actually have been shown |
+| `thread_recall_found` / `anchor_recall_found` | what the tool is capable of finding |
+| `demotion_gap` | the difference — a publishable tool property, not an artifact |
+
+Precision-style metrics count **reported findings only**, because a demoted finding costs the reader
+no attention. `clusters_reported` and `clusters_found` are both emitted.
+
+Verified against the real cell that motivated this: an anthropic run headlined "Verdict: No blocking
+issues found" while its sub-threshold section described the key defect exactly, verified empirically.
+It scores **anchor_recall 0.0 / anchor_recall_found 1.0**. A tool that finds everything and reports
+nothing is not the same product as one that finds nothing — and the fix for the first is a threshold
+change, not a better model.
+
 ## Verdicts
 
 `matches-key` · `matches-thread` · `valid-other` · `valid-minor` · `trivia` · `false-positive`

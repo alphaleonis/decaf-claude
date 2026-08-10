@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T20:06:32Z
+updated_at: 2026-08-10T20:11:33Z
 order: zzzzV
 ---
 
@@ -267,28 +267,24 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-y2e6: Deterministic v2 scoring core built and under test. `v2/scoring/score_pooled.py` computes the three
-axes, `check_artifacts.py` enforces cross-layer consistency, `test_score_pooled.py` has 12 passing
-self-tests, and `/bench-analyze-v2` specifies the LLM stages that feed them.
+Completed dcc-c92m: Implemented as a `disposition` field (`reported` | `demoted`) carried per finding, with every
+recall-style metric computed twice and neither allowed to stand alone: `thread_recall` versus
+`thread_recall_found`, the same split on `anchor_recall`, and `demotion_gap` published as a tool
+property in its own right. Precision-style metrics count reported findings only, because a demoted
+finding costs the reader no attention.
 
-The three axes are structurally prevented from merging: there is no way to express a combined recall
-number, because merging thread recall into precision would quietly turn "reviews like a human" into
-"finds bugs". Precision is severity-weighted, since v1's was not — which let four minor findings
-outscore one revert-forcing defect.
+The acceptance case is verified on the real archived cell rather than a mock: the anthropic run that
+headlined "Verdict: No blocking issues found" scores **anchor_recall 0.0 / anchor_recall_found 1.0**,
+because its sub-threshold section describes key entry e1 exactly — "Verified empirically… a
+pre-existing limitation, not a regression. Per the rubric, pre-existing issues score 0."
 
-Both fail-loud requirements are implemented AND tested rather than asserted. Empty or sparse
-severities, a cell contributing no cluster, a real verdict without a code citation, a thread verdict
-without an index, a stale v1 verdict name, and a missing judge_model all exit 3 instead of emitting a
-null metric. `check_artifacts.py` was verified against a synthetic reproduction of the z13k shape —
-extract and findings sharing one pair in ten — which it rejects at 10% overlap.
+Section markers were harvested from actual tool output rather than guessed, and recorded as examples
+rather than an allowlist, since tools reword their own headers — the extraction rule is to judge by
+whether the reader would have been shown the finding.
 
-The synthetic end-to-end run surfaced a useful property: **precision ordering and thread-recall
-ordering disagree** (two tools tied at 0.667 thread recall while their precision differed by 0.5).
-That is direct evidence the axes are not redundant, which was the argument for keeping them apart.
+Three new self-tests (18 total, all passing). `disposition_defaults_to_reported` exists so an
+analysis written before this field keeps scoring as it did.
 
-One acceptance item was superseded rather than met, and is recorded as such: subject 2's four cells
-cannot validate this pipeline, because they are all one tool on the retired key-based subject and
-every cross-tool metric is undefined on a single-tool pool.
-
-Note for [[dcc-vkeh]]: `run_cell_v2.sh` still resolves subjects to `v2/repos/<id>`, while pooled
-subjects live at `v2/pooled/<owner>-<repo>-<pr>/repo`. That is already its first acceptance item.
+Worth carrying into [[dcc-vkeh]]: a large demotion gap is not a defect to fix in the harness, it is a
+finding about the tool. The remedy for a tool that finds everything and reports nothing is a
+threshold change, not a better model — and that distinction is invisible to any headline-only metric.

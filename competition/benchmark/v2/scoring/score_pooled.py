@@ -35,6 +35,17 @@ ALL_VERDICTS = REAL | MINOR | NOISE | WRONG
 
 SEV_WEIGHT = {"critical": 5.0, "high": 4.0, "medium": 2.0, "low": 1.0, "nit": 0.5, "info": 0.25}
 
+# A tool can FIND a defect and then suppress it below its own reporting bar (dcc-c92m). Measured:
+# an anthropic cell headlined "Verdict: No blocking issues found" while its "Sub-threshold
+# observations (verified real, but scored below the reporting bar — not posted)" section described
+# the defect exactly, "verified empirically", scored 0 as a pre-existing limitation.
+#
+# Scoring the headline makes that a miss; scoring everything it wrote makes it a catch. Both are
+# true of different questions, so both are reported and neither is allowed to stand alone.
+# Precision-style metrics count REPORTED findings only, because a demoted finding costs the reader
+# no attention — it was never shown.
+DISPOSITIONS = {"reported", "demoted"}
+
 
 class DataDefect(Exception):
     """A pipeline defect, not a result. Never degrade to a null metric."""
@@ -67,6 +78,10 @@ def validate(A, threads, key):
             errs.append(f"{cid}: no reported_by — cluster belongs to no cell")
         for r in rb:
             seen.add((r.get("tool"), r.get("repeat")))
+        for r in rb:
+            d = r.get("disposition", "reported")
+            if d not in DISPOSITIONS:
+                errs.append(f"{cid}: disposition {d!r} not in {sorted(DISPOSITIONS)}")
         if v == "matches-thread" and c.get("matches_thread") is None:
             errs.append(f"{cid}: verdict matches-thread but no matches_thread index")
         if c.get("matches_thread") is not None and threads is None:
@@ -120,10 +135,19 @@ def score(A, threads, key):
 
     admitted_idx = [i for i, t in enumerate(threads or []) if t.get("admission") == "admitted"]
 
+    # Which clusters a tool REPORTED versus merely FOUND (reported + demoted below its own bar).
+    tool_reported = defaultdict(set)
+    for c in clusters:
+        for r in c["reported_by"]:
+            if r.get("disposition", "reported") == "reported":
+                tool_reported[r["tool"]].add(c["cluster_id"])
+
     out_tools = {}
     for tool in tools:
-        ids = tool_clusters[tool]
-        cs = [by_id[i] for i in ids]
+        ids = tool_clusters[tool]                      # found: reported + demoted
+        rep_ids = tool_reported[tool]                  # reported only
+        cs_found = [by_id[i] for i in ids]
+        cs = [by_id[i] for i in rep_ids]               # precision-style metrics use reported only
         real = [c for c in cs if c["verdict"] in REAL]
         minor = [c for c in cs if c["verdict"] in MINOR]
         noise = [c for c in cs if c["verdict"] in NOISE]
@@ -140,20 +164,27 @@ def score(A, threads, key):
         # Unique: real clusters no other tool reported.
         uniq = [c for c in real if {r["tool"] for r in c["reported_by"]} == {tool}]
 
-        # Thread recall — its own axis, never folded into pooled precision.
-        hit = {c["matches_thread"] for c in cs
-               if c["verdict"] == "matches-thread" and c.get("matches_thread") is not None}
+        # Thread recall — its own axis, never folded into pooled precision, and split by disposition.
+        def hits(pool):
+            return {c["matches_thread"] for c in pool
+                    if c["verdict"] == "matches-thread" and c.get("matches_thread") is not None}
+        hit, hit_found = hits(cs), hits(cs_found)
         thread_recall = (len(hit & set(admitted_idx)) / len(admitted_idx)) if admitted_idx else None
+        thread_recall_found = (len(hit_found & set(admitted_idx)) / len(admitted_idx)) if admitted_idx else None
 
-        anchor_recall = None
+        # Anchor recall gets the same reported/found split: a tool can find a key entry and demote it.
+        anchor_recall = anchor_recall_found = None
         if key:
             entries = key.get("entries") or []
             if entries:
-                got = {c.get("matches_key") for c in cs if c["verdict"] == "matches-key"}
-                anchor_recall = len({g for g in got if g is not None}) / len(entries)
+                def krecall(pool):
+                    got = {c.get("matches_key") for c in pool if c["verdict"] == "matches-key"}
+                    return len({g for g in got if g is not None}) / len(entries)
+                anchor_recall, anchor_recall_found = krecall(cs), krecall(cs_found)
 
         out_tools[tool] = {
-            "clusters_found": len(cs),
+            "clusters_reported": len(cs),
+            "clusters_found": len(cs_found),
             "real": len(real), "valid_minor": len(minor), "trivia": len(noise), "false_positive": len(wrong),
             "precision": round(len(real) / len(cs), 3) if cs else None,
             "precision_severity_weighted": round(wr / wall, 3) if cs else None,
@@ -166,8 +197,14 @@ def score(A, threads, key):
                 "trivia": round(len(noise) / n_reps, 2) if n_reps else None,
             },
             "thread_recall": round(thread_recall, 3) if thread_recall is not None else None,
+            "thread_recall_found": round(thread_recall_found, 3) if thread_recall_found is not None else None,
+            "demotion_gap": (round(thread_recall_found - thread_recall, 3)
+                             if thread_recall is not None and thread_recall_found is not None else None),
             "threads_hit": len(hit & set(admitted_idx)) if admitted_idx else None,
+            "real_found": len([c for c in cs_found if c["verdict"] in REAL]),
+            "demoted_real": len([c for c in cs_found if c["verdict"] in REAL]) - len(real),
             "anchor_recall": round(anchor_recall, 3) if anchor_recall is not None else None,
+            "anchor_recall_found": round(anchor_recall_found, 3) if anchor_recall_found is not None else None,
             "cost_usd": round(sum(cells[(t, r)].get("cost_usd", 0) for (t, r) in cells if t == tool), 4),
         }
         cu = out_tools[tool]["cost_usd"]

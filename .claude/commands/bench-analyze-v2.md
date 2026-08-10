@@ -24,14 +24,29 @@ tool-written report file, and emit every finding normalized to:
 
 ```json
 {"tool":"", "repeat":1, "subagent":"", "severity":"critical|high|medium|low|nit|info",
- "file":"", "line":0, "category":"", "claim":"", "raw":""}
+ "file":"", "line":0, "category":"", "claim":"", "raw":"",
+ "disposition":"reported|demoted"}
 ```
 
-Capture findings the tool **considered and chose not to headline** — sub-threshold sections,
-"minor/nitpicks" appendices, "considered but not flagged" notes — tagged `sub_threshold: true`.
-A tool that locates a defect and then reports "no blocking issues found" must not be scored as having
-missed it (`dcc-c92m`). Write one JSON array per cell to `<subject-dir>/extract/<tool>__r<n>.json`,
-then concatenate to `<subject-dir>/findings.json`.
+**`disposition` is not optional, and getting it wrong inverts the result.** A tool can find a defect,
+verify it, and then suppress it below its own reporting bar. Measured on a real cell: anthropic
+headlined `### Verdict: No blocking issues found.` while a later section described the key defect
+exactly — "Verified empirically… this is a pre-existing limitation, not a regression. Per the rubric,
+pre-existing issues score 0." Scoring the headline gives recall 0.0; scoring everything it wrote gives
+1.0. Same tool, same run.
+
+So read the **whole report**, not the verdict. Section markers observed in practice:
+
+| Tool family | Demoted-section markers seen |
+|---|---|
+| `anthropic-code-review` | `Sub-threshold observations (verified real, but scored below the reporting bar — not posted)`; `Notes on things checked and cleared (not findings)`; `Minor/cosmetic (below reporting bar)` |
+| decaf presets | `### 🔵 Minor (N)`; `Considered But Not Flagged`; `**Not a defect** (all agents agree)` |
+
+Mark a finding `demoted` when the tool states it is below its threshold, not posted, scored 0, or
+explicitly "not a finding" — and `reported` otherwise. These lists are examples, not an allowlist:
+tools reword their own headers, so judge by what the section *says* about whether the reader would
+have been shown the finding. Write one JSON array per cell to
+`<subject-dir>/extract/<tool>__r<n>.json`, then concatenate to `<subject-dir>/findings.json`.
 
 **2. Cluster.** Pool all findings and group those asserting the SAME underlying issue (same file,
 ~same line, same claim) into clusters. Be careful that "the same bug described differently" collapses
@@ -84,7 +99,14 @@ silently-empty field is how a tool once received a free 1.00 on n=1.
 
 **6. Report.** Give the operator, per tool: precision (plain and severity-weighted), trivia ratio,
 unique real findings, findings/false-positives per cell, cost per real finding, and **thread recall as
-its own line** — never folded into precision. Then two things that need a human eye:
+its own line** — never folded into precision.
+
+Report **both `thread_recall` and `thread_recall_found`, plus `demotion_gap`.** Neither is allowed to
+stand alone: as-reported is what a user would actually have seen, as-found is what the tool is capable
+of. A large gap is a real and publishable property — a tool that finds everything and reports nothing
+is not the same product as one that finds nothing, and the fix for the first is a threshold change.
+
+Then two things that need a human eye:
 
 - `threads.missed_by_every_tool` — admitted threads no tool raised. This is the miss detector's
   actual output and the reason review-disciplined repos were chosen.
