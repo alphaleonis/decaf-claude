@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T19:32:11Z
+updated_at: 2026-08-10T19:55:42Z
 order: zzzzV
 ---
 
@@ -267,27 +267,28 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-f2nf: **Addendum (2026-08-10): `BENCH_MODEL` moved to Opus 5, which sets the binding cutoff at 2026-05.**
+Completed dcc-ixyy: Full 12-cell grid built. Fixtures and thread sets in `v2/pooled/`; checkouts gitignored and rebuilt
+from pinned SHAs by `v2/build_pooled_repo.sh`.
 
-Rationale: benchmarking on Opus 4.8 measured a configuration nobody runs. Opus 5 is what decaf is
-actually driven with, so the results describe the real setup.
+**120 admitted review threads across 12 subjects**, against the anchor's 12 key entries across 7 — the
+tenfold jump in miss-detector signal that justified the instrument. Nine repos, max two each, five
+languages that fell out rather than being selected for.
 
-Verified before committing to it that the stricter cutoff costs nothing — roughly 19,000
-review-approved PRs merged after 2026-05 across the five candidate repos alone (mattermost, PostHog,
-grafana, immich, jellyfin). The fallback to Opus 4.7 + Sonnet 4.6 (both 2026-01) is recorded in
-config.env but is not needed.
+The checkpoint rule needed measuring, not assuming: threads disperse across **4 to 15 commits** per PR,
+the most-commented commit holding only ~42%. So the checkpoint is the commit the earliest review
+comment targeted — the state at which human review began — with admission applied per thread (file in
+the checkpoint diff, line in a changed hunk). That recovers 120 where a modal-commit rule gives ~92.
 
-Two consequences written into METHODOLOGY-v2 section 6:
+Verified rather than asserted: merge-base correctness per subject (every checkpoint diff touches dirs
+the PR touches — the failure mode that once turned 18 files into 240); diff-size sanity, where two
+outliers were investigated and `grafana#117615`'s 3.14x proved to be genuine branch shrinkage, its
+checkpoint holding test scaffolding reviewers later consolidated; and Step 8 on all 12.
 
-- **The anchor cannot satisfy the vintage rule, structurally.** Anchor subjects need a revert whose
-  mechanism was named, and defects take time to surface, so they will always sit inside the training
-  window. That gives the anchor an asymmetry worth reading carefully: everyone-missed-it stays
-  informative under memorization, everyone-caught-it is weak evidence. Another reason it never ranks.
-- **`BENCH_MODEL` and the judge are now the same model**, maximizing shared-blind-spot risk — an Opus
-  5 judge is disposed to validate what an Opus 5 reviewer believes. Still the right call, since a
-  weaker judge misgrades, but it makes the human-thread axis load-bearing: it is the only scoring
-  signal in the design not produced by an Opus 5.
+Two silent failures caught and fixed in tooling: `find_candidates.sh` reported "0 candidates" for two
+repos that have ~100, from transient GraphQL errors swallowed by `2>/dev/null`; and
+`build_pooled_repo.sh` aborted before printing its report because `grep` exits 1 on no match under
+`set -e`. Both now fail loudly.
 
-`anthropic-code-review` remains unaffected by `BENCH_MODEL` — it hard-pins Sonnet review agents and
-Haiku helpers by role, so its reviewers sit at 2026-01 and 2025-07 respectively. That confound cannot
-be configured away and is accounted for per cell.
+Carried forward: two small-diff cells admit fewer than 5 threads (2 and 3). They stay usable for
+pooled adjudication, which does not depend on threads, but their thread-recall axis is thin. Small
+PRs with dense review are the scarcest combination in the corpus — 13 of 547 candidates.

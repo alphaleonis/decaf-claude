@@ -6,9 +6,11 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T18:42:12Z
+updated_at: 2026-08-10T19:59:48Z
 parent: dcc-ho2w
-order: HV
+blocked_by:
+    - dcc-y2e6
+order: "6"
 ---
 
 A tool can FIND a defect and then suppress it below its own reporting bar. Measured, not theorised:

@@ -6,11 +6,11 @@ status: todo
 type: feature
 priority: critical
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T19:26:07Z
+updated_at: 2026-08-10T19:59:48Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
-order: H
+order: "4"
 ---
 
 There is currently NO v2 scoring pipeline. Zero references to `analysis/scripts/*.py` anywhere under
