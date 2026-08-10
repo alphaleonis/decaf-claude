@@ -6,9 +6,9 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-10T17:43:02Z
-updated_at: 2026-08-10T18:42:12Z
+updated_at: 2026-08-10T19:59:48Z
 parent: dcc-ho2w
-order: Hk
+order: "7"
 ---
 
 Every subject-2 cell reported the same limitation: no dotnet SDK in the container, so nothing could

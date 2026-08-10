@@ -6,11 +6,11 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-10T19:20:06Z
-updated_at: 2026-08-10T19:20:28Z
+updated_at: 2026-08-10T19:59:48Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
-order: GV
+order: 8V
 ---
 
 The third instrument from [[dcc-595v]]. Pooled adjudication measures precision **relative to the

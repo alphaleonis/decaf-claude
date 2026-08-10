@@ -6,13 +6,13 @@ status: todo
 type: task
 priority: normal
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-10T18:42:12Z
+updated_at: 2026-08-10T19:59:48Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-vkeh
     - dcc-5xad
     - dcc-ixyy
-order: Hz
+order: 8y
 ---
 
 The terminal item. Do not start until every sibling is complete — in particular the ground-truth

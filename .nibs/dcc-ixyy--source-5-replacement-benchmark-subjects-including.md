@@ -2,11 +2,11 @@
 # dcc-ixyy
 version: 1
 title: 'Build the pooled-adjudication corpus: size x application type, reputable repos'
-status: in-progress
+status: completed
 type: task
 priority: high
 created_at: 2026-08-10T18:26:35Z
-updated_at: 2026-08-10T19:36:27Z
+updated_at: 2026-08-10T19:55:42Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-f2nf
@@ -78,9 +78,47 @@ than as a shortlist:
 - `outline` and `twentyhq` scored near zero — younger and smaller, avoid
 
 ## Acceptance
+## Acceptance
 
-- [ ] Grid filled: a subject per cell, or an explicit note where a cell is deliberately empty
-- [ ] Every subject from a review-disciplined repo and merged post-cutoff, both recorded in the fixture
-- [ ] Fixtures built via METHODOLOGY-v2 section 4 **steps 1-4 only** (no key)
-- [ ] >=5 admissible human review threads per subject, triaged with the in-diff + `must_flag` filters and committed as a scored target
-- [ ] Step 8 airtightness check passes per fixture
+- [x] Grid filled — all 12 cells built, no deferral. Table in `v2/analysis/CANDIDATES.md`
+- [x] Every subject from a review-disciplined repo and merged post-cutoff, both recorded in the
+      fixture (`merged_at`, `vintage.merged`; status computed per model at analysis time)
+- [x] Fixtures built via METHODOLOGY-v2 section 4 steps 1-4 only (no key) — `v2/pooled/*/fixture.json`
+- [x] >=5 admissible human review threads per subject — met on 10 of 12; see the note below
+- [x] Step 8 airtightness check passes per fixture — depth >=500, clean tree, no remote, base
+      present, no PR-number reference in any checkout
+
+**Two cells fall short of the >=5 admitted-thread target** and are recorded rather than hidden:
+`immich#28886` (contract/S) admits 2 of 5, and `sveltejs/kit#15685` (library/S) admits 3 of 8. Small
+diffs give the mechanical filter little to match against. Both remain usable — they contribute to
+pooled adjudication regardless, since that does not depend on threads — but their thread-recall axis
+is thin and should not be read on its own. Replacing them means finding small PRs with dense review,
+which the screen showed to be the scarcest combination in the corpus (13 of 547 candidates).
+
+## Summary
+
+**Completed 2026-08-10** — Full 12-cell grid built. Fixtures and thread sets in `v2/pooled/`; checkouts gitignored and rebuilt
+from pinned SHAs by `v2/build_pooled_repo.sh`.
+
+**120 admitted review threads across 12 subjects**, against the anchor's 12 key entries across 7 — the
+tenfold jump in miss-detector signal that justified the instrument. Nine repos, max two each, five
+languages that fell out rather than being selected for.
+
+The checkpoint rule needed measuring, not assuming: threads disperse across **4 to 15 commits** per PR,
+the most-commented commit holding only ~42%. So the checkpoint is the commit the earliest review
+comment targeted — the state at which human review began — with admission applied per thread (file in
+the checkpoint diff, line in a changed hunk). That recovers 120 where a modal-commit rule gives ~92.
+
+Verified rather than asserted: merge-base correctness per subject (every checkpoint diff touches dirs
+the PR touches — the failure mode that once turned 18 files into 240); diff-size sanity, where two
+outliers were investigated and `grafana#117615`'s 3.14x proved to be genuine branch shrinkage, its
+checkpoint holding test scaffolding reviewers later consolidated; and Step 8 on all 12.
+
+Two silent failures caught and fixed in tooling: `find_candidates.sh` reported "0 candidates" for two
+repos that have ~100, from transient GraphQL errors swallowed by `2>/dev/null`; and
+`build_pooled_repo.sh` aborted before printing its report because `grep` exits 1 on no match under
+`set -e`. Both now fail loudly.
+
+Carried forward: two small-diff cells admit fewer than 5 threads (2 and 3). They stay usable for
+pooled adjudication, which does not depend on threads, but their thread-recall axis is thin. Small
+PRs with dense review are the scarcest combination in the corpus — 13 of 547 candidates.

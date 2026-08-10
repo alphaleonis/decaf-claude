@@ -6,11 +6,11 @@ status: todo
 type: task
 priority: normal
 created_at: 2026-08-10T18:35:16Z
-updated_at: 2026-08-10T19:20:06Z
+updated_at: 2026-08-10T19:59:48Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
-order: G
+order: 8w
 ---
 
 Surviving the ground-truth audit ([[dcc-5xad]]) is not the same as being usable. v2 fixtures and
