@@ -6,7 +6,7 @@ status: todo
 type: research
 priority: critical
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T18:41:40Z
+updated_at: 2026-08-10T18:43:15Z
 parent: dcc-ho2w
 order: "9"
 ---
@@ -78,6 +78,22 @@ GraphQL, and only subject 2 resembles it — as framework internals, not applica
   selection, and two or three current survivors retained as the infra anchor.
 - Contract-crossing changes are the highest-value review target and the corpus has none: the defect
   lives in the *mismatch* between two files in two languages.
+
+**Operator position (2026-08-10), treat as decided:** language is NOT a stratification axis. Rust and
+occasionally C/C++ are in the real workload, but the per-language specialists are expected to
+contribute about equally within their language, so language washes out relative to application type.
+Two consequences:
+
+- The specialist-parity expectation is untested. If it is worth testing, do it as a narrow head-to-head
+  on matched defects — not by stratifying the whole corpus, which is an indirect and expensive way to
+  answer it.
+- Contract-crossing subjects absorb the part of the language question that matters: a SPA + backend
+  change spawns `typescript-reviewer` AND `dotnet-reviewer` together, exercising the multi-specialist
+  dispatch path that no single-language subject reaches. A finding there has to span two specialists
+  territory to be found at all.
+
+Rust stays represented anyway — subjects 10 and 12 both survived the audit — without reserving a cell
+for it.
 
 **Feasibility risk to test, not assume:** application and UI repos may not satisfy the Step 0 screen
 (fix body names a mechanism). Infra projects have revert discipline, regression issues and re-land
