@@ -65,6 +65,24 @@ case "$sub" in
       esac
       i=$((i+1))
     done
+    # `list` has no single target to date-check, and its output can surface post-checkpoint items
+    # (verified: `pr list --search` returned the revert PR's title). Force a server-side date bound.
+    if [ "$action" = "list" ]; then
+      newargs=(); found_search=0; i=0; args=("$@")
+      while [ $i -lt ${#args[@]} ]; do
+        a="${args[$i]}"
+        if [ "$a" = "--search" ] || [ "$a" = "-S" ]; then
+          i=$((i+1)); newargs+=(--search "${args[$i]:-} created:<=$CUTOFF"); found_search=1
+        else
+          newargs+=("$a")
+        fi
+        i=$((i+1))
+      done
+      [ $found_search -eq 0 ] && newargs+=(--search "created:<=$CUTOFF")
+      log ALLOW "$sub list (date-bounded created:<=$CUTOFF) ${newargs[*]}"
+      exec "$REAL" "$sub" list "${newargs[@]}"
+    fi
+
     if [ -n "$num" ]; then
       c="$(created_at "$repo" "$sub" "$num")"
       if [ -z "$c" ]; then deny "$sub $action $num (cannot resolve createdAt)"; fi
