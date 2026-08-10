@@ -1,0 +1,32 @@
+{
+  "slug": "grafana/grafana#124181",
+  "repo": "grafana/grafana",
+  "pr": 124181,
+  "title": "Lease: add auto-renewal to lease objects",
+  "app_type": "backend",
+  "size": "M",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "794e331789a790ed35eed7185a817136a3565ffd",
+    "base": "1a416ef1a8724349c2c16b37f64bcf194a3d9b68",
+    "base_ref": "main",
+    "date": "2026-05-05T22:46:21Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 3,
+      "additions": 155,
+      "deletions": 0
+    }
+  },
+  "merged_at": "2026-05-08T18:15:57Z",
+  "pr_created_at": "2026-05-05T22:42:36Z",
+  "vintage": {
+    "merged": "2026-05-08",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"
+  },
+  "threads": {
+    "total": 17,
+    "admitted": 6,
+    "rejected": 11
+  }
+}

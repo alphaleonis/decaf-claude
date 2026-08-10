@@ -1,0 +1,62 @@
+[
+  {
+    "path": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts",
+    "line": 1,
+    "is_resolved": true,
+    "is_outdated": false,
+    "author": "jrasm91",
+    "created_at": "2026-06-07T21:42:37Z",
+    "against_commit": "5eb4179a0c4418609be896a6ab556e4b8b9c2c6a",
+    "body": "Why are you deleting this? Was it already in main? Has it been released yet? This will break all instances that have previously applied.",
+    "admission": "rejected",
+    "admission_reason": "line outside every changed hunk at the checkpoint"
+  },
+  {
+    "path": "open-api/immich-openapi-specs.json",
+    "line": 16607,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "jrasm91",
+    "created_at": "2026-06-07T22:28:53Z",
+    "against_commit": "b784bca0594a4e0c2dfa3a56fb05abc95b0ff2ed",
+    "body": "This is wrong/misleading. Is there a way to opt out of these values while still using int validation?",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "server/src/dtos/asset.dto.ts",
+    "line": 24,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "danieldietzler",
+    "created_at": "2026-06-08T11:18:35Z",
+    "against_commit": "a0cd0850d019cc2bec914be51cdcaaf949be5487",
+    "body": "Suggested change\n      \n    \n    \n      \n          \n            \n                  .describe('Rating in range [1-5] (starred), -1 (rejected) or null (unrated)')\n          \n          \n            \n                  .describe('Rating in range [1-5] (starred), -1 (rejected), or null (unrated)')",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts",
+    "line": 2,
+    "is_resolved": false,
+    "is_outdated": false,
+    "author": "danieldietzler",
+    "created_at": "2026-06-08T11:19:36Z",
+    "against_commit": "a0cd0850d019cc2bec914be51cdcaaf949be5487",
+    "body": "Should we convert 0 values to null at least?",
+    "admission": "rejected",
+    "admission_reason": "line outside every changed hunk at the checkpoint"
+  },
+  {
+    "path": "web/src/lib/managers/timeline-manager/timeline-month.svelte.ts",
+    "line": 1,
+    "is_resolved": false,
+    "is_outdated": false,
+    "author": "timonrieger",
+    "created_at": "2026-06-09T09:27:37Z",
+    "against_commit": "8d0510cc9a4d3619c08ceafca0daf2d7cba1ea12",
+    "body": "addressing a console error unrelated to my changes:\nUncaught (in promise) TypeError: Cannot set property hour of [object Object] which has only a getter",
+    "admission": "rejected",
+    "admission_reason": "file absent from the checkpoint diff"
+  }
+]

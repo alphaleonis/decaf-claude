@@ -1,0 +1,32 @@
+{
+  "slug": "mattermost/mattermost#36824",
+  "repo": "mattermost/mattermost",
+  "pr": 36824,
+  "title": "model: add strict validation and tests for CommandResponse",
+  "app_type": "contract",
+  "size": "M",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "e9ef9dbd001a035c19772fbdc4a7802fedd0d4c4",
+    "base": "bcf511968217cd0f65cbead926e03260bfcd1011",
+    "base_ref": "master",
+    "date": "2026-06-01T10:00:39Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 2,
+      "additions": 53,
+      "deletions": 0
+    }
+  },
+  "merged_at": "2026-07-08T07:06:18Z",
+  "pr_created_at": "2026-06-01T09:55:55Z",
+  "vintage": {
+    "merged": "2026-07-08",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"
+  },
+  "threads": {
+    "total": 10,
+    "admitted": 6,
+    "rejected": 4
+  }
+}

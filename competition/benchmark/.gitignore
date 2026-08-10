@@ -8,3 +8,7 @@ repos/
 # Audit evidence bundles: large gh dumps, regenerable via v2/audit_subject.sh.
 # The verdicts they support live in v2/analysis/GROUND-TRUTH-AUDIT.md, which IS committed.
 v2/analysis/subject-*/audit/
+
+# Pooled-subject checkouts (~3.3G), rebuilt by v2/build_pooled_repo.sh from the pinned SHAs
+# in each fixture.json. The fixtures and thread sets ARE committed.
+v2/pooled/*/repo/

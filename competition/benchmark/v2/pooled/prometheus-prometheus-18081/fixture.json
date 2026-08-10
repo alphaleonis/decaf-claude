@@ -1,0 +1,31 @@
+{
+  "slug": "prometheus/prometheus#18081",
+  "repo": "prometheus/prometheus",
+  "pr": 18081,
+  "title": "promql: Add metric to track total samples read per query",
+  "app_type": "library",
+  "size": "L",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "ec715759357ab2230118539062a37a3cb051645c",
+    "base": "efbdc3f886abbd87e5cba34cbd48c2c52eb3c553",
+    "base_ref": "main",
+    "date": "2026-03-18T04:42:16Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 11,
+      "additions": 1409,
+      "deletions": 34
+    }
+  },
+  "merged_at": "2026-06-15T12:26:57Z",
+  "pr_created_at": "2026-02-13T16:41:42Z",
+  "vintage": {
+    "merged": "2026-06-15",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"
+  },
+  "threads": {
+    "total": 10,
+    "admitted": 10
+  }
+}
