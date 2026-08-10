@@ -1,0 +1,14 @@
+{
+  "id": 9, "lang": "go", "size": "large",
+  "repo": "kubernetes/kubernetes", "pr": 130837,
+  "checkpoint": {
+    "sha": "2ccd845497ee5e4fc48334fec1f4bf2cca242d20",
+    "base": "8559194e118ffcc8a1e39df4d8c6e6630a0555ff",
+    "date": "2025-03-18T15:12:04Z",
+    "push_index": 2, "push_count": 13,
+    "selection": "earliest head containing the escaped defect",
+    "diff_stat": { "files": 18, "additions": 745, "deletions": 727 }
+  },
+  "review": { "base": "8559194e118ffcc8a1e39df4d8c6e6630a0555ff", "head": "2ccd845497ee5e4fc48334fec1f4bf2cca242d20",
+              "diff_cmd": "git diff 8559194e118ffcc8a1e39df4d8c6e6630a0555ff 2ccd845497ee5e4fc48334fec1f4bf2cca242d20" }
+}
