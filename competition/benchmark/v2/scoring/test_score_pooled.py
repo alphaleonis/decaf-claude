@@ -168,6 +168,50 @@ def t_judge_dismissed_thread_is_flagged():
     assert len(d) == 1 and d[0]["thread"] == 1, d
 
 
+def t_demotion_gap():
+    """dcc-c92m: a tool that finds a defect and suppresses it below its own bar.
+
+    Modelled on the real cell: anthropic headlined "Verdict: No blocking issues found" while its
+    sub-threshold section described the defect exactly, verified empirically, scored 0.
+    """
+    a = copy.deepcopy(BASE)
+    a["cells"] = [{"tool": "suppressor", "repeat": 1, "cost_usd": 1.0}]
+    a["clusters"] = [
+        # Found, verified, and demoted below the reporting bar.
+        {"cluster_id": "s1", "verdict": "matches-thread", "matches_thread": 0,
+         "judged_severity": "critical", "code_citation": "a.py:10",
+         "reported_by": [{"tool": "suppressor", "repeat": 1, "severity": "high",
+                          "disposition": "demoted"}]},
+        # Actually reported.
+        {"cluster_id": "s2", "verdict": "trivia", "judged_severity": "nit",
+         "reported_by": [{"tool": "suppressor", "repeat": 1, "severity": "nit",
+                          "disposition": "reported"}]},
+    ]
+    validate(a, THREADS, None)
+    m = score(a, THREADS, None)
+    s = m["tools"]["suppressor"]
+    assert s["thread_recall"] == 0.0, f"as reported it is a MISS, got {s['thread_recall']}"
+    assert s["thread_recall_found"] == 0.5, f"as found it is a CATCH, got {s['thread_recall_found']}"
+    assert s["demotion_gap"] == 0.5, s["demotion_gap"]
+    assert s["demoted_real"] == 1, s["demoted_real"]
+    assert s["clusters_reported"] == 1 and s["clusters_found"] == 2
+    # Precision counts reported only — a demoted finding costs the reader no attention.
+    assert s["precision"] == 0.0, s["precision"]
+
+
+def t_bad_disposition():
+    a = copy.deepcopy(BASE)
+    a["clusters"][0]["reported_by"][0]["disposition"] = "hidden"
+    expect_defect(a, THREADS, "disposition")
+
+
+def t_disposition_defaults_to_reported():
+    """Existing analyses without the field must keep scoring as before."""
+    m = score(BASE, THREADS, None)
+    assert m["tools"]["alpha"]["thread_recall"] == m["tools"]["alpha"]["thread_recall_found"]
+    assert m["tools"]["alpha"]["demotion_gap"] == 0.0
+
+
 for name, fn in list(globals().items()):
     if name.startswith("t_"):
         check(name[2:], fn)
