@@ -50,10 +50,20 @@ case "$sub" in
     for a in "$@"; do
       case "$a" in
         --comments) deny "$sub $action $* (--comments may contain post-checkpoint discussion)" ;;
-        *comments*|*reviews*|*timelineItems*|*reviewThreads*|*closingIssuesReferences*)
+        *comments*|*reviews*|*timelineItems*|*reviewThreads*|*closingIssuesReferences*|*mergedAt*|*mergeCommit*|*state*)
           deny "$sub $action $* (requested field may contain post-checkpoint content)" ;;
       esac
     done
+
+    # A bare `view` prints state (MERGED), reviewers and their approvals, and the milestone — all
+    # post-checkpoint facts on a PR that predates the cutoff. Observed leaking `state: MERGED` and
+    # `reviewers: ilonatommy (Approved)` for subject 2. Require an explicit safe field selection.
+    if [ "$action" = "view" ]; then
+      has_json=0; for a in "$@"; do [ "$a" = "--json" ] && has_json=1; done
+      if [ $has_json -eq 0 ]; then
+        deny "$sub view $* (bare view prints post-checkpoint state/reviewers; use --json with title,body,number,author,createdAt)"
+      fi
+    fi
     # locate a bare number argument and the -R/--repo value
     num=""; repo=""
     args=("$@"); i=0
