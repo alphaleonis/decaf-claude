@@ -64,9 +64,62 @@ Those are excluded by the §3 admission rule, not by hand.
 
 ---
 
-## 3. What v2 measures: one retrospective key
+## 3. What v2 measures: three instruments
 
-One review run per checkpoint, scored against **one retrospectively-built key**.
+**Decided 2026-08-10 (`dcc-595v`), replacing the key-only framing.** The retrospective key is one
+instrument of three, and it is not the one that ranks tools.
+
+The forcing fact is arithmetic. After the ground-truth audit the key-based corpus carries **12
+scoreable entries across 7 subjects**. Five tools x 2 repeats against 12 binary items cannot separate
+a 50%-recall tool from a 70%-recall one — that is structural, not imprecision. Meanwhile a single v1
+subject produced **800 findings collapsing to 98 distinct clusters**, of which the blind judge called
+1 `TP-primary`, 2 `TP-human`, 31 `valid-other`, 58 `nitpick` and 6 `false-positive`.
+
+Read that distribution carefully: only 6 of 98 findings were *wrong*, and 58 were *trivial*. **Review
+tools do not fail by being incorrect; they fail by being immaterial.** Per-tool volume ranged 38 to
+180 findings. A key-based metric is blind to all of it, while answering only "did you find the bug" —
+when the question that decides adoption is "did you find it, and how much noise came with it."
+
+| Instrument | Measures | Ranks tools? |
+|---|---|---|
+| **Pooled adjudication** | precision, nitpick ratio, unique real findings, noise per cell | **yes — this is the ranking instrument** |
+| **Retrospective key (the anchor)** | whether a real defect class is missed by *every* tool | no — n is too small |
+| **Null arm** | absolute noise floor on a change with no known defect | no — calibrates the others |
+
+Each covers another's blind spot. Pooled adjudication is bounded by the union of tool output, so if
+every tool shares a blind spot they all score full recall against a pool missing the same thing —
+which is exactly what the anchor detects. The anchor cannot rank. And pooled precision is relative to
+the pool rather than to truth, which is what the null arm fixes.
+
+### Pooled adjudication
+
+Run every tool on the same checkpoint. Pool all findings, cluster them into distinct claims, and have
+a judge — blind to tool identity — adjudicate each cluster. **No answer key is involved**, which is
+the point: it removes the failure mode that invalidated 5 of 12 subjects, and with it the revert
+requirement, Steps 5-7 of section 4, and most of the leak and vintage exposure.
+
+Consequences for subject selection: a subject no longer needs a revert, a regression issue, or a
+named mechanism. It needs to be a **substantive change in a repository with genuine review
+discipline**, merged after the roster's training cutoff. Well-reviewed subjects carry a bonus — the
+human review threads become a *non-scoring* validity check on the judge. They are never the metric,
+but an adjudicator that systematically rejects what expert humans flagged is visibly miscalibrated.
+
+Known weaknesses, to be mitigated rather than assumed away:
+
+- **The judge becomes the ground truth**, and it shares a model family with the tools, so shared
+  false beliefs go undetected. Require a code citation for every verdict, use adversarial
+  verification (several judges prompted to *refute*), and spot-check the `valid-other` / `nitpick`
+  boundary by hand — that is where the subjectivity concentrates.
+- **Volume is rewarded**: more findings means more chances at a unique real one. Precision is the
+  primary metric; recall-against-pool is secondary; findings-per-cell is always reported alongside.
+- **"Real" is not binary.** v1's precision was severity-unweighted, so four minor findings outscored
+  one revert-forcing defect. Severity weighting is required, not optional.
+
+### The anchor: one retrospective key
+
+The 7 audited subjects keep their keys and their value, with a narrowed job: detecting a defect class
+that *every* tool misses. That is a yes/no about the whole field, for which 12 entries is adequate.
+It is not used to rank.
 
 ### The key question
 

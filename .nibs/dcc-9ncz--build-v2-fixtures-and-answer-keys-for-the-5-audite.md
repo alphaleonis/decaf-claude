@@ -1,12 +1,12 @@
 ---
 # dcc-9ncz
 version: 1
-title: Build v2 fixtures and answer keys for the 5 audited survivors
+title: Build answer keys for the anchor subjects (blind-spot detection only)
 status: todo
 type: task
-priority: critical
+priority: normal
 created_at: 2026-08-10T18:35:16Z
-updated_at: 2026-08-10T18:42:12Z
+updated_at: 2026-08-10T19:20:06Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
@@ -22,19 +22,19 @@ currently has exactly two, both C#/Go-medium-large. Replacements ([[dcc-ixyy]]) 
 parallel; they do not block this.
 
 ## To build (METHODOLOGY-v2 section 4, all 8 steps)
+## Re-scoped by the instrument decision
 
-| # | Subject | Lang/size | Expected entries | Notes from the audit |
-|---|---|---|---|---|
-| 1 | dotnet/efcore#32770 | C# / small | ~2 | assert/`-1` sentinel; 2 threads (value-tuple, "Re-add Assert"). 100 cross-refs — the worst leak surface in the corpus, so verify the shim log carefully on the first cell |
-| 7 | prometheus/prometheus#13777 | Go / small | 1 | whole PR is the defect; merged 39 min after opening, so the as-opened head is almost certainly the checkpoint |
-| 8 | kubernetes/kubernetes#129768 | Go / medium | ~2 | both entries come from re-land #133995, not the revert; liggitt's perma-race thread is a third candidate but he argued it was acceptable — adjudicate explicitly |
-| 10 | BurntSushi/ripgrep#3185 | Rust / small | 1 | defect isolated to 1 of 2 commits; the other commit was the fix that was actually needed |
-| 12 | rust-lang/rust#153540 | Rust / large | ~3 | richest available; fix undoes one named commit (`29e9273`); 12 real threads to adjudicate |
+[[dcc-595v]] demoted the retrospective key from the ranking metric to **the anchor** — its only job is
+detecting a defect class that *every* tool misses. It is no longer on the critical path, hence the
+drop to normal priority and the move behind the corpus work.
 
-Evidence for each is already gathered under `competition/benchmark/v2/analysis/subject-NN/audit/`
-(gitignored; regenerate with `v2/audit_subject.sh <id>`). Verdict reasoning is in
-`v2/analysis/GROUND-TRUTH-AUDIT.md`.
+Practical consequence: keys are still worth building, but **the marginal value falls off fast**. The
+anchor answers a yes/no about the whole field, so a handful of high-confidence entries serves as well
+as twelve. Build in the order below and stop when the anchor is convincing rather than complete;
+subjects 7 and 12 are the strongest per unit of effort (7 is the cleanest defect in the corpus, 12 is
+the richest key).
 
+## To build (METHODOLOGY-v2 section 4, all 8 steps)
 ## Watch for
 
 - **Fetch the checkpoint and nothing else** — a second `fetch --depth 1` of the base re-shallows the

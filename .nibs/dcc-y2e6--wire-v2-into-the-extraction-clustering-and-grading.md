@@ -6,7 +6,7 @@ status: todo
 type: feature
 priority: critical
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T18:42:12Z
+updated_at: 2026-08-10T19:20:28Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
@@ -48,3 +48,22 @@ Depends on the scoring-model decision. Do not build against the current key-only
       [[dcc-z13k]]: subject 6's anthropic r2 had 20 findings in the extract and 33 in findings.json
       with 1 pair in common, while analysis.json clustered the stale set — so a published number
       rested on findings the pipeline no longer contained. A consistency assertion must fail the run.
+
+
+## Re-scoped by the instrument decision (2026-08-10)
+
+[[dcc-595v]] chose pooled adjudication as the ranking instrument — and **v1's pipeline already is
+pooled adjudication minus the key**. Extract per cell, cluster into distinct claims, blind-grade with
+a verdict vocabulary: that is what produced subject 9's 98 clusters and its
+`TP-primary`/`valid-other`/`nitpick`/`false-positive` distribution.
+
+So this is mostly *removing* the key dependency, not building something new:
+
+- Make the key optional rather than required — pooled cells have none
+- Replace `TP-primary`/`TP-human` with verdicts that do not presuppose a key, keeping `valid-other`,
+  `nitpick` and `false-positive`, which already carry the signal
+- Add severity weighting (v1's precision was unweighted, so four minor findings outscored one
+  revert-forcing defect)
+- Require a code citation per verdict, and support adversarial re-judging, per the judge-contamination
+  mitigations in METHODOLOGY-v2 section 3
+- Keep the key path alive for the anchor subjects ([[dcc-9ncz]])
