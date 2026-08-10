@@ -30,17 +30,52 @@ esac
 
 STAMP="$(printf '%s' "$CUTOFF" | tr -d '-')000000"
 
-# id_ suffix asks Wayback for the original bytes without its own banner/rewriting
-SNAP="https://web.archive.org/web/${STAMP}id_/${URL}"
+# Wayback's /web/<stamp>/ returns the CLOSEST snapshot, which is usually a LATER one — verified: a
+# request for 2015 returned 2021, and a request for 2026-05-01 returned 2026-05-21. Asking for the
+# closest and then rejecting it makes docs-at refuse almost everything.
+#
+# The CDX index can be bounded instead: `to=<stamp>` with `limit=-1` returns the most recent capture
+# at or before the checkpoint, which is exactly what a reviewer at that date could have read.
+CDX="https://web.archive.org/cdx/search/cdx?url=$(printf '%s' "$URL" | sed 's|https\?://||')&to=${STAMP:0:8}&limit=-1&output=json&fl=timestamp&filter=statuscode:200"
+picked="$(curl -sS --max-time 30 "$CDX" 2>/dev/null | grep -oE '[0-9]{14}' | tail -1)"
 
-body="$(curl -sS -L --max-time 45 -w '\n__HTTP__%{http_code}' "$SNAP" 2>/dev/null)"
-code="${body##*__HTTP__}"; body="${body%__HTTP__*}"
+if [ -z "$picked" ]; then
+  log MISS "$URL (no capture at or before $CUTOFF)"
+  cat >&2 <<EOF
+docs-at: the Wayback Machine has no capture of $URL at or before $CUTOFF.
+
+This environment can only serve documentation as it existed at the review checkpoint.
+Work from the source in the checked-out tree, its vendored dependencies, and git history.
+EOF
+  exit 1
+fi
+
+SNAP="https://web.archive.org/web/${picked}id_/${URL}"
+
+# Capture the EFFECTIVE url: Wayback redirects to its NEAREST snapshot, which may be NEWER than the
+# one requested. Verified: asking for 20150101 of vitest.dev/api returned a 2021 snapshot. Printing
+# the date is not enough — a later snapshot is post-checkpoint information, so it is refused.
+resp="$(curl -sS -L --max-time 45 -w '\n__HTTP__%{http_code}__URL__%{url_effective}' "$SNAP" 2>/dev/null)"
+meta="${resp##*__HTTP__}"; body="${resp%__HTTP__*}"
+code="${meta%%__URL__*}"; eff="${meta##*__URL__}"
+
+actual="$(printf '%s' "$eff" | grep -oE '/web/[0-9]{14}' | head -1 | tr -dc '0-9')"
+
+if [ -n "$actual" ] && [ "$actual" \> "$STAMP" ]; then
+  log DENY "$URL snapshot=$actual > checkpoint=$STAMP (Wayback served a later snapshot)"
+  cat >&2 <<EOF
+docs-at: the only archived snapshot of $URL is from ${actual:0:8}, which is AFTER this review's
+checkpoint ($CUTOFF). Serving it would leak post-checkpoint information, so it is refused.
+
+Work from the source in the checked-out tree, its vendored dependencies, and git history.
+EOF
+  exit 1
+fi
 
 if [ "$code" = "200" ] && [ -n "${body//[[:space:]]/}" ]; then
-  # report which snapshot actually came back, so a stale pin is visible rather than silent
-  actual="$(curl -sSI --max-time 20 "$SNAP" 2>/dev/null | grep -i '^x-archive-orig-date\|^link:' | head -1)"
-  log ALLOW "$URL snapshot=$STAMP http=$code"
-  printf '=== docs-at: %s\n=== snapshot pinned to %s (checkpoint %s)\n%s\n\n' "$URL" "$STAMP" "$CUTOFF" "$actual"
+  log ALLOW "$URL snapshot=${actual:-$STAMP} http=$code"
+  printf '=== docs-at: %s\n=== snapshot %s (checkpoint %s) — verified at or before the checkpoint\n\n' \
+    "$URL" "${actual:-$STAMP}" "$CUTOFF"
   printf '%s\n' "$body"
   exit 0
 fi
