@@ -2,14 +2,14 @@
 # dcc-gxuk
 version: 1
 title: 'benchmark: measure the three presets and restate the ours baseline'
-status: todo
+status: scrapped
 type: task
 priority: high
 estimate: l
 tags:
     - benchmark
 created_at: 2026-07-29T18:29:16Z
-updated_at: 2026-07-29T18:31:24Z
+updated_at: 2026-08-10T17:55:11Z
 parent: dcc-9q01
 blocked_by:
     - dcc-rbkl
@@ -118,3 +118,24 @@ difference to any one of them from this run is not possible — 18 cells over 3 
 "the presets differ, and here is how", not "intervention X caused Y".
 
 Say that wherever the results are published.
+
+## Reasons for Scrapping
+Superseded by the [[dcc-ho2w]] benchmark v2 milestone.
+
+This task IS what produced the 18 contaminated cells. Every one of them ran against a shared checkout
+whose `.decaf/code-reviews/` carried the previous cell's report, which the decaf recurring-findings
+cross-check then read — see [[dcc-2cxq]]. All 18 were invalidated and quarantined.
+
+Re-running them under v1 was explicitly scrapped: two of the first three subjects audited under v2
+had invalid ground truth, so the numbers would be graded against defects that may not be in the
+reviewed diff.
+
+The actual goal — measure the three presets and restate the `ours` baseline — is now delivered by
+[[dcc-vkeh]] (roster pilot) and [[dcc-plsq]] (full v2 run), against audited ground truth and with the
+leak controls in place.
+
+## Summary
+
+**Scrapped 2026-08-10** — Scrapped as superseded by [[dcc-ho2w]]. The 18 cells this task ran were contaminated and have been
+invalidated; re-running them under v1 was scrapped with [[dcc-2cxq]]. Measuring the three presets now
+happens under [[dcc-vkeh]] and [[dcc-plsq]] against audited ground truth.

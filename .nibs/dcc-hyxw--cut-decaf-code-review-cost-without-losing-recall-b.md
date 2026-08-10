@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-07-29T12:03:50Z
+updated_at: 2026-08-10T17:55:32Z
 blocked_by:
     - dcc-9kkz
 order: zzzV
@@ -154,3 +154,19 @@ and rejected — it identified 2 of 7 at 0.5 and traded errors both ways at 0.3 
 reports candidates and defers to the committed adjudication, flagging any unadjudicated one rather
 than dropping it. Undercount risk stated: a promotion merged into a sub-agent's cluster would be
 invisible.
+
+## ⚠️ Measured premise is VOID (2026-08-10)
+This epic's premise — `ours` at $21.33/run vs anthropic's $7.61, and 0.70 vs 0.90 severity
+calibration — comes from the v1 benchmark ([[dcc-z1xw]], scrapped) and from [[dcc-e0wj]], whose
+evidence base is void. See the warning section in dcc-e0wj for the four counts.
+
+Two leaks push in opposite directions (contamination flattered `ours`; the GitHub leak flattered
+`anthropic`), so the direction of the cost/quality gap is unknown, not merely imprecise.
+
+**This does not automatically invalidate the child interventions.** The per-persona analysis finding
+that no persona is dead weight, and the interventions that follow from how the roster works rather
+than which agents are in it, may hold on their own reasoning. But **any child whose justification is
+a measured figure must be re-justified** before it lands — check each against first principles or
+wait for [[dcc-plsq]].
+
+Live children to re-check: [[dcc-c2uc]], [[dcc-1xtt]], [[dcc-lf4a]].
