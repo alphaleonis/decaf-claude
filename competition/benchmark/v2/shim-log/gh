@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Pass-through `gh` LOGGER for the benchmark v2 CONTROL arm.
+#
+# Restricts nothing — every call is forwarded to the real gh unchanged. Its only job is to make the
+# unrestricted arm measurable: without it, the control arm produces no access log at all (the log is
+# written by the enforcing shim), so "0 external accesses" is an artifact rather than a measurement.
+#
+# Each call is annotated with the verdict the ENFORCING shim would have reached, obtained by running
+# that script as a policy oracle (BENCH_POLICY_DRYRUN=1). One copy of the policy, so the annotation
+# cannot drift out of step with what the treatment arm actually enforces.
+#
+# Required env:
+#   BENCH_CHECKPOINT_DATE  ISO-8601 date, e.g. 2026-07-07
+#   BENCH_REAL_GH          absolute path to the real gh binary
+#   BENCH_ACCESS_LOG       file to append access records to
+#   BENCH_ENFORCING_SHIM   path to the enforcing shim/gh (for the dry-run oracle)
+set -uo pipefail
+
+REAL="${BENCH_REAL_GH:-/usr/bin/gh}"
+LOG="${BENCH_ACCESS_LOG:-/dev/null}"
+ORACLE="${BENCH_ENFORCING_SHIM:-}"
+
+verdict="ORACLE-UNAVAILABLE"
+if [ -n "$ORACLE" ] && [ -x "$ORACLE" ]; then
+  # The oracle never runs gh for the *decision*, but it may call gh to resolve a createdAt.
+  # It writes no log and always exits 0 in dry-run.
+  v="$(BENCH_POLICY_DRYRUN=1 "$ORACLE" "$@" 2>/dev/null | head -1)"
+  [ -n "$v" ] && verdict="$v"
+fi
+
+printf '%s\tgh\tPASS\twould=[%s]\targv=%s\n' "$(date -u +%FT%TZ)" "$verdict" "$*" >> "$LOG"
+
+exec "$REAL" "$@"
