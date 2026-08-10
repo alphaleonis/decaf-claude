@@ -1,0 +1,23 @@
+# subagent agent-abd1dc09ea2a29d73
+
+## Sibling-Consistency Review — PR #130837 (kube-proxy node manager)
+
+Compared the new `proxy.NodeManager`, `NodeTopologyConfig`, and the four proxiers' `OnTopologyChange` against their established sibling conventions in `pkg/proxy/config/config.go`, `pkg/proxy/healthcheck/proxy_health.go`, and the rest of `pkg/proxy`. The four proxiers' `OnTopologyChange` implementations (iptables/ipvs/nftables) are symmetric with each other and correctly drop the `nodeLabels`→`topologyLabels` rename; that part of the change is clean. Six drifts survived verification against quotable sibling sources:
+
+1. **`pkg/proxy/node.go:152`** (Medium) — `NodeManager` logs via package-level `klog.InfoS`/`klog.ErrorS` despite receiving `ctx`, unlike every sibling `Config` type in `pkg/proxy/config/config.go:285` and this file's own pre-change `NodePodCIDRHandler`, which all store and log through `klog.FromContext(ctx)`.
+2. **`pkg/proxy/config/config.go:465`** (Medium) — `NodeTopologyConfig` has no `Run()` method and is never started, unlike `ServiceConfig`, `EndpointSliceConfig`, `NodeConfig`, and `ServiceCIDRConfig`, which all wait on `WaitForNamedCacheSync` and log a startup line.
+3. **`pkg/proxy/node.go:44`** (Low) — `NodeManager` implements `config.NodeHandler` with no `var _ config.NodeHandler = &NodeManager{}` compile-time assertion, unlike the two handler types it replaces (both had one) and package siblings `endpoint.go:89`, `serviceport.go:89`.
+4. **`pkg/proxy/winkernel/proxier.go:1098`** (Low) — TODO comment names a nonexistent method `OnTopologyChanged`; the real method (two lines below, and in every implementer) is `OnTopologyChange`.
+5. **`pkg/proxy/healthcheck/proxy_health.go:177`** (Medium) — `NodeEligible()` takes the full write `hs.lock.Lock()` for a pure read (only touches the independently-locked `NodeManager`), unlike sibling read-only accessor `Health()` at line 132, which correctly uses `RLock()`.
+6. **`pkg/proxy/node.go:154`** (Medium) — Fatal-exit paths use bare `klog.Flush()` + `n.exitFunc(1)` instead of the codebase-wide `klog.FlushAndExit(klog.ExitFlushTimeout, code)` idiom (28+ call sites sampled, including this file's own predecessor), dropping the bounded-flush guarantee.
+
+## Considered But Not Flagged
+
+- **`handleChangeNode` naming** (config.go:290,320) — flagged in the brief as a possible drift, but on inspection it matches the established private-handler convention exactly: `OnNodeAdd`→`handleAddNode`, `OnNodeUpdate`→`handleUpdateNode`, `OnNodeDelete`→`handleDeleteNode` all flip Object+Verb (public) to Verb+Object (private); `OnNodeChange`→`handleChangeNode` follows the same flip. Not a violation.
+- **ipvs `OnTopologyChange` omitting `needFullSync = true`** — ipvs's `Proxier` struct has never had a `needFullSync` field (confirmed via grep; only iptables/nftables have it), so this is consistent with ipvs's pre-existing sync model, not a regression.
+- **`5*time.Minute` poll timeout inlined in `NewNodeManager`** (node.go:60) — previously a named package var (`timeoutForNodePodCIDR`) in `server_linux.go`, now an inline literal with an adjacent comment. Considered as CONS_LITERAL but dropped: it's a single-use value with no other reference site in the codebase requiring a shared symbol, so there's no sibling convention being violated (anchor ~25).
+- **`NodeManager`/`NodeIPs()`/`PodCIDRs()` doc comments** ("returns the NodeIPs polled in NewNodeManager()") — technically slightly stale once `OnNodeChange` updates `n.node`, but this is internally consistent (same author, same pattern applied uniformly to both methods), not a drift against any sibling — belongs to knowledge-reviewer/quick-reviewer, not sibling-comparison.
+- **Doc-comment wording variance for `OnTopologyChange`** across iptables/nftables/ipvs ("this node's proxy relevant topology-related labels change") vs. metaproxier ("change in proxy relevant topology labels is observed") — different phrasing but not contradictory; implementer-level paraphrase, not a convention violation.
+- **`NodeManager` struct doc comment grammar** ("handles the life cycle ... handles node watch events") — a wording/typo issue, not a sibling-comparison finding; left to quick-reviewer.
+
+Files read: `/tmp/pr130837.diff`, `/home/decaf/code/decaf-claude/competition/benchmark/repos/9/pkg/proxy/node.go`, `pkg/proxy/config/config.go`, `pkg/proxy/healthcheck/proxy_health.go`, `pkg/proxy/winkernel/proxier.go`, `pkg/proxy/iptables/proxier.go`, `pkg/proxy/ipvs/proxier.go`, `pkg/proxy/nftables/proxier.go`, `pkg/proxy/metaproxier/meta_proxier.go`, `pkg/proxy/endpoint.go`, `pkg/proxy/serviceport.go`, `cmd/kube-proxy/app/server.go`.

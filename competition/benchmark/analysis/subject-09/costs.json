@@ -1,0 +1,175 @@
+{
+  "subject_id": 9,
+  "lang": "go",
+  "size": "large",
+  "repo": "kubernetes/kubernetes",
+  "pr": 130837,
+  "merge_sha": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "cells": [
+    {
+      "tool": "anthropic-code-review",
+      "repeat": 1,
+      "cost_usd": 9.916925800000001,
+      "wall": 1147,
+      "ws_output": 191063,
+      "subagents": 14,
+      "max_subagent_s": 787,
+      "session_id": "65af0a46-143f-4f3b-b01e-cf1e0c7ae389",
+      "findings_dir": "runs/9__anthropic-code-review__r1/findings"
+    },
+    {
+      "tool": "anthropic-code-review",
+      "repeat": 2,
+      "cost_usd": 10.462779699999993,
+      "wall": 1052,
+      "ws_output": 201038,
+      "subagents": 16,
+      "max_subagent_s": 466,
+      "session_id": "bba063a2-b609-453e-8d70-4c87529a6c2a",
+      "findings_dir": "runs/9__anthropic-code-review__r2/findings"
+    },
+    {
+      "tool": "ours-audit",
+      "repeat": 1,
+      "cost_usd": 22.899451150000008,
+      "wall": 1592,
+      "ws_output": 233734,
+      "subagents": 16,
+      "max_subagent_s": 485,
+      "session_id": "bc639271-e6f0-4467-a3ba-ef6719d4d35f",
+      "findings_dir": "runs/9__ours-audit__r1/findings"
+    },
+    {
+      "tool": "ours-audit",
+      "repeat": 2,
+      "cost_usd": 21.710405249999965,
+      "wall": 1239,
+      "ws_output": 238722,
+      "subagents": 19,
+      "max_subagent_s": 327,
+      "session_id": "63774b68-0a5e-4026-b748-0c0102251ca1",
+      "findings_dir": "runs/9__ours-audit__r2/findings"
+    },
+    {
+      "tool": "ours-bugs",
+      "repeat": 1,
+      "cost_usd": 5.403151249999999,
+      "wall": 887,
+      "ws_output": 94198,
+      "subagents": 4,
+      "max_subagent_s": 253,
+      "session_id": "d28526b8-1d2a-46c0-a62e-967a59aee158",
+      "findings_dir": "runs/9__ours-bugs__r1/findings"
+    },
+    {
+      "tool": "ours-bugs",
+      "repeat": 2,
+      "cost_usd": 5.555437500000001,
+      "wall": 997,
+      "ws_output": 116376,
+      "subagents": 5,
+      "max_subagent_s": 269,
+      "session_id": "3e89cb23-79ff-458b-810e-0bf7182a249d",
+      "findings_dir": "runs/9__ours-bugs__r2/findings"
+    },
+    {
+      "tool": "ours-review",
+      "repeat": 1,
+      "cost_usd": 20.59412915000001,
+      "wall": 1336,
+      "ws_output": 232277,
+      "subagents": 12,
+      "max_subagent_s": 504,
+      "session_id": "9480c6bb-cd16-4c62-b0a2-b538f1f36a51",
+      "findings_dir": "runs/9__ours-review__r1/findings"
+    },
+    {
+      "tool": "ours-review",
+      "repeat": 2,
+      "cost_usd": 20.2611585,
+      "wall": 1392,
+      "ws_output": 273685,
+      "subagents": 16,
+      "max_subagent_s": 516,
+      "session_id": "5ec3c795-9331-40ed-a0f2-bd920c541f66",
+      "findings_dir": "runs/9__ours-review__r2/findings"
+    },
+    {
+      "tool": "ours",
+      "repeat": 1,
+      "cost_usd": 34.88032064999999,
+      "wall": 2452,
+      "ws_output": 484341,
+      "subagents": 20,
+      "max_subagent_s": 879,
+      "session_id": "afa73de1-5223-482e-b800-5d4195e2ff28",
+      "findings_dir": "runs/9__ours__r1/findings"
+    },
+    {
+      "tool": "pr-review-toolkit",
+      "repeat": 1,
+      "cost_usd": 9.25743975,
+      "wall": 682,
+      "ws_output": 107305,
+      "subagents": 5,
+      "max_subagent_s": 496,
+      "session_id": "e8114b18-9e57-41f9-a408-abc69bf50da3",
+      "findings_dir": "runs/9__pr-review-toolkit__r1/findings"
+    },
+    {
+      "tool": "pr-review-toolkit",
+      "repeat": 2,
+      "cost_usd": 10.681641750000002,
+      "wall": 731,
+      "ws_output": 127737,
+      "subagents": 5,
+      "max_subagent_s": 481,
+      "session_id": "f8f3c3e6-945e-4f9f-bc50-08cce47a410b",
+      "findings_dir": "runs/9__pr-review-toolkit__r2/findings"
+    },
+    {
+      "tool": "superpowers",
+      "repeat": 1,
+      "cost_usd": 3.2293285000000003,
+      "wall": 685,
+      "ws_output": 33609,
+      "subagents": 1,
+      "max_subagent_s": 595,
+      "session_id": "7d25559e-0b51-4daa-97e8-e9c87b1a037b",
+      "findings_dir": "runs/9__superpowers__r1/findings"
+    },
+    {
+      "tool": "superpowers",
+      "repeat": 2,
+      "cost_usd": 3.20022675,
+      "wall": 609,
+      "ws_output": 40093,
+      "subagents": 1,
+      "max_subagent_s": 522,
+      "session_id": "9f252c18-d6b4-47a0-9d6d-519cda1bd126",
+      "findings_dir": "runs/9__superpowers__r2/findings"
+    },
+    {
+      "tool": "tag1-comprehensive-review",
+      "repeat": 1,
+      "cost_usd": 20.25029445,
+      "wall": 1340,
+      "ws_output": 363048,
+      "subagents": 11,
+      "max_subagent_s": 668,
+      "session_id": "d5c17aa4-fd9f-4db9-baf8-d113fb1da45b",
+      "findings_dir": "runs/9__tag1-comprehensive-review__r1/findings"
+    },
+    {
+      "tool": "tag1-comprehensive-review",
+      "repeat": 2,
+      "cost_usd": 22.11465895,
+      "wall": 1284,
+      "ws_output": 340260,
+      "subagents": 11,
+      "max_subagent_s": 621,
+      "session_id": "2e89ce2f-416c-4bf3-b5da-47725f162e01",
+      "findings_dir": "runs/9__tag1-comprehensive-review__r2/findings"
+    }
+  ]
+}
