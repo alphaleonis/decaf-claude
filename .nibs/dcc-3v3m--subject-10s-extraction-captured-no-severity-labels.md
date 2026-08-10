@@ -2,14 +2,14 @@
 # dcc-3v3m
 version: 1
 title: Subject 10's extraction captured no severity labels — calibration is blank for all five tools
-status: todo
+status: scrapped
 type: task
 priority: normal
 tags:
     - benchmark
     - metrics
 created_at: 2026-07-29T11:47:17Z
-updated_at: 2026-07-29T11:47:38Z
+updated_at: 2026-08-10T17:51:43Z
 parent: dcc-z1xw
 order: a0
 ---
@@ -55,3 +55,25 @@ happened, the bundles are committed, only the severity field was dropped on the 
       expect: `severity_calibration` non-null for more than one tool
 - [ ] [manual] Subject 10's `report.md` calibration caveat and the synthesis page restated if the
       pooled figures move
+
+## Reasons for Scrapping
+Obsolete under the [[dcc-ho2w]] v2 milestone.
+
+The specific remedy — re-harvest subject 10's severities and recompute `severity_calibration` — has
+nothing left to act on. Subject 10's v1 `analysis.json` is quarantined, the v1 published figures are
+void, v1 extraction is being replaced wholesale ([[dcc-y2e6]]), and the v2 scoring model revisits
+severity treatment from scratch ([[dcc-595v]]) rather than inheriting v1's definition.
+
+The finding underneath it is NOT obsolete and has been carried into [[dcc-y2e6]] as an acceptance
+item: extraction must fail loudly when a field it is supposed to capture comes back empty for a whole
+tool/subject, instead of emitting a metric that reads as data. That is the hazard this nib actually
+documented, and it applies to any pipeline, v1 or v2.
+
+## Summary
+
+**Scrapped 2026-08-10** — Scrapped as obsolete under the [[dcc-ho2w]] v2 milestone — see the Reasons for Scrapping section.
+
+Nothing left to act on: subject 10's v1 analysis is quarantined, the v1 figures are void, and both
+extraction and the severity definition are being rebuilt. The underlying hazard — extraction
+silently emitting an empty field that reads as data — is carried into [[dcc-y2e6]] as an acceptance
+item.

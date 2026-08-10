@@ -6,7 +6,7 @@ status: todo
 type: feature
 priority: critical
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T17:44:03Z
+updated_at: 2026-08-10T17:52:17Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
@@ -37,3 +37,14 @@ Depends on the scoring-model decision. Do not build against the current key-only
 - [ ] A v2 cell can be scored end to end with no hand-grading
 - [ ] Subject 2's four existing cells reproduce the hand-graded result
 - [ ] Metrics computed deterministically, not by the LLM
+- [ ] **Extraction fails loudly on a silently-empty field.** If a field it is supposed to capture
+      comes back empty for an entire tool/subject, that is an extraction defect, not data — it must
+      error rather than emit a null metric. Carried from scrapped [[dcc-3v3m]]: subject 10's harvest
+      captured severities on 2 of 78 entries, every consolidated entry blank, and under the
+      then-current macro-average a single stray sub-agent `critical` handed one tool a free 1.00 on
+      n=1 that carried a full one-ninth weight in its published figure.
+- [ ] **Artifacts are checked for mutual consistency.** Re-extraction must not leave `extract/`,
+      `findings.json` and `analysis.json` describing different finding sets. Carried from scrapped
+      [[dcc-z13k]]: subject 6's anthropic r2 had 20 findings in the extract and 33 in findings.json
+      with 1 pair in common, while analysis.json clustered the stale set — so a published number
+      rested on findings the pipeline no longer contained. A consistency assertion must fail the run.

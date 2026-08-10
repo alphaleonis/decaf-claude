@@ -2,11 +2,11 @@
 # dcc-z13k
 version: 1
 title: Subject 6's anthropic-code-review r2 extract and findings.json are two different datasets
-status: todo
+status: scrapped
 type: bug
 priority: normal
 created_at: 2026-08-05T22:19:46Z
-updated_at: 2026-08-05T22:20:03Z
+updated_at: 2026-08-10T17:52:18Z
 order: zzzw
 ---
 
@@ -58,3 +58,21 @@ unaffected.
 - [ ] Check the other subjects for the same extract-vs-findings drift
 - [ ] Reconcile `extract/`, `cluster-assign.json` and `analysis.json` against whichever set wins
 - [ ] State whether any published number moves, and correct it if so
+
+## Reasons for Scrapping
+Obsolete under the [[dcc-ho2w]] v2 milestone, for the same reason as [[dcc-3v3m]].
+
+Subject 6's v1 analysis is quarantined, the published anthropic-code-review figures that rested on
+the stale set are void, and extraction plus clustering are being rebuilt ([[dcc-y2e6]]). Re-extracting
+subject 6 to reconcile `extract/` with `findings.json` would repair an artifact nothing will read.
+
+The hazard is carried into [[dcc-y2e6]] as an acceptance item: the pipeline must assert that
+`extract/`, `findings.json` and `analysis.json` describe the same finding set, and fail the run when
+they diverge. Silent divergence is what let a published number rest on findings the pipeline no
+longer contained.
+
+## Summary
+
+**Scrapped 2026-08-10** — Scrapped as obsolete under [[dcc-ho2w]] — subject 6's v1 analysis is quarantined and the pipeline
+that produced the inconsistency is being replaced. The consistency hazard is carried into
+[[dcc-y2e6]] as an acceptance item.
