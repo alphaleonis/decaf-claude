@@ -1,0 +1,380 @@
+[
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/config/config.go",
+    "line": 503,
+    "category": "dead-code",
+    "claim": "NodeTopologyConfig.listerSynced is assigned from handlerRegistration.HasSynced but never read, since NodeTopologyConfig has no Run()/WaitForNamedCacheSync unlike its sibling configs, making the field dead.",
+    "raw": "`NodeTopologyConfig.listerSynced` is assigned (`= handlerRegistration.HasSynced`) but **never read**. ... so the field is dead."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/config/config.go",
+    "line": 320,
+    "category": "dead-code",
+    "claim": "handleChangeNode contains a cache.DeletedFinalStateUnknown tombstone branch that is unreachable because the function is wired only as the informer's UpdateFunc and tombstones are delivered only to DeleteFunc.",
+    "raw": "Tombstones are delivered exclusively to `DeleteFunc`, so the branch is unreachable dead code (copied from the delete path)."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/node.go",
+    "line": 130,
+    "category": "bug",
+    "claim": "NodeManager.PodCIDRs() returns the internal informer-cache-backed slice n.node.Spec.PodCIDRs directly instead of a copy, unlike Node() and NodeIPs(), creating a latent aliasing hazard.",
+    "raw": "`NodeManager.PodCIDRs()` returns `n.node.Spec.PodCIDRs` directly (the internal/informer-cache-backed slice), whereas `Node()` deep-copies ... Inconsistent copy semantics; a latent aliasing hazard."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 176,
+    "category": "performance",
+    "claim": "NodeEligible() takes the exclusive hs.lock.Lock() but reads no field that lock protects, needlessly serializing health-eligibility reads against health-status updates (an RLock or no lock would suffice).",
+    "raw": "`NodeEligible()` acquires the exclusive `hs.lock.Lock()` but reads no field that lock protects ... the pre-refactor code used `RLock`"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/node.go",
+    "line": 158,
+    "category": "logic",
+    "claim": "OnNodeChange assigns n.node = node before reading the old node's IPs and swallows the error from GetNodeHostIPs, so an update with unparseable addresses followed by a restoring update yields oldNodeIPs=nil and a spurious os.Exit(1) restart even though the effective node IP never changed.",
+    "raw": "`OnNodeChange` replaces the stored node (`n.node = node`) **before** validating the incoming node's IPs, and ignores the error from the old-value read ... → spurious `os.Exit(1)`/restart"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/node.go",
+    "line": 154,
+    "category": "race",
+    "claim": "The NodeManager handler is registered via NewNodeConfig with only UpdateFunc/DeleteFunc and no AddFunc, so client-go's replay-as-Add on the already-synced informer is discarded and a node IP change occurring between the initial poll in NewNodeManager and handler registration leaves the proxier running with a stale NodeIP.",
+    "raw": "client-go **replays the current node as an Add** to the newly-registered handler — and that replay is discarded (no `AddFunc`) ... meanwhile the proxier was built from the stale NodeIP."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": null,
+    "file": "pkg/proxy/node.go",
+    "line": null,
+    "category": "logic",
+    "claim": "Reordering node.Status.Addresses with no real IP change flips GetNodeHostIPs output and triggers a spurious os.Exit (reported by adversarial-reviewer, then dismissed by the orchestrator as not a spurious exit).",
+    "raw": "**Address-reordering spurious exit** (adversarial-reviewer, conf 50; `node.go`) ... Not a spurious exit; dismissed."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": null,
+    "file": "pkg/proxy/node.go",
+    "line": 123,
+    "category": "error-handling",
+    "claim": "NodeIPs() swallows the GetNodeHostIPs error (reported by go-reviewer, then downgraded by the orchestrator to latent-only because the sole call site has already validated the node).",
+    "raw": "**`NodeIPs()` swallows `GetNodeHostIPs` error** (go-reviewer, Medium conf 75; `node.go:123`) ... Latent only."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": null,
+    "file": "pkg/proxy/config/config.go",
+    "line": null,
+    "category": "concurrency",
+    "claim": "NodeTopologyConfig.handleNodeEvent mutates topologyLabels without a mutex (reported by go-reviewer, then dismissed by the orchestrator because informer callbacks for one registration are serial).",
+    "raw": "No concurrent access → no data race. Dismissed (go-reviewer self-rated it a design note)."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": null,
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": null,
+    "category": "bug",
+    "claim": "NodeEligible() can nil-dereference hs.nodeManager (reported by quick-reviewer and adversarial-reviewer, then dismissed by the orchestrator because construction ordering guarantees a non-nil nodeManager).",
+    "raw": "**Nil `nodeManager` deref in `NodeEligible()`** ... Construction ordering makes it safe; dismissed."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": null,
+    "file": "pkg/proxy/node.go",
+    "line": null,
+    "category": "design",
+    "claim": "NewNodeManager's WaitForNamedCacheSync has no independent timeout so startup blocks indefinitely if the API server is unreachable (reported by broad-reviewer, then dismissed by the orchestrator as pre-existing/out of reach).",
+    "raw": "**`NewNodeManager` cache-sync has no independent timeout** (broad-reviewer) ... not introduced by this change → `pre-existing, out of reach`"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": null,
+    "severity": null,
+    "file": "pkg/proxy/node.go",
+    "line": null,
+    "category": "concurrency",
+    "claim": "OnNodeChange computes the exit decision after mu is unlocked, risking a wrong exit decision (reported by adversarial-reviewer, then dismissed by the orchestrator as safe).",
+    "raw": "**`OnNodeChange` exit decision computed after `mu` is unlocked** (adversarial-reviewer): safe"
+  },
+
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-a09bc0c921db9b27b/broad-reviewer",
+    "severity": "High",
+    "file": "pkg/proxy/node.go",
+    "line": 128,
+    "category": "bug",
+    "claim": "PodCIDRs() returns a direct reference to the internal n.node.Spec.PodCIDRs slice rather than a copy, so callers can mutate NodeManager's internal state and hold a stale reference after OnNodeChange swaps the node.",
+    "raw": "return n.node.Spec.PodCIDRs  // BUG: returns reference, not copy"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-a09bc0c921db9b27b/broad-reviewer",
+    "severity": "High",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 176,
+    "category": "performance",
+    "claim": "NodeEligible() acquires the exclusive hs.lock even though it accesses none of the fields that lock protects, causing needless contention between health-check reads and health-status updates.",
+    "raw": "hs.lock.Lock()              // UNNECESSARY: acquires write lock ... The `hs.lock` protects `lastUpdatedMap` and `oldestPendingQueuedMap`, which are not accessed in `NodeEligible()`."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-a09bc0c921db9b27b/broad-reviewer",
+    "severity": "Medium",
+    "file": "pkg/proxy/config/config.go",
+    "line": 320,
+    "category": "dead-code",
+    "claim": "handleChangeNode's DeletedFinalStateUnknown tombstone handling is unreachable because the function is only registered as UpdateFunc and tombstones are delivered only to DeleteFunc.",
+    "raw": "The informer framework never delivers `DeletedFinalStateUnknown` tombstones to `UpdateFunc`—only to `DeleteFunc`."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-a09bc0c921db9b27b/broad-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/node.go",
+    "line": null,
+    "category": "design",
+    "claim": "NewNodeManager()'s WaitForNamedCacheSync has no timeout so startup hangs indefinitely when the API server is unavailable (self-dismissed as a pre-existing Kubernetes pattern).",
+    "raw": "**Cache sync timeout design:** `NewNodeManager()` lacks timeout for `WaitForNamedCacheSync()` ... This is a pre-existing pattern"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-a09bc0c921db9b27b/broad-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": null,
+    "category": "concurrency",
+    "claim": "Health() and NodeEligible() acquire hs.lock then nodeManager.mu in sequence, a lock-ordering pattern (self-dismissed: no deadlock risk since NodeManager never calls back into ProxyHealthServer).",
+    "raw": "**Lock ordering in Health() vs NodeEligible():** Multiple locks acquired in sequence (hs.lock → nodeManager.mu) pose no deadlock risk"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-a09bc0c921db9b27b/broad-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/config/config.go",
+    "line": null,
+    "category": "concurrency",
+    "claim": "NodeTopologyConfig has no internal mutex so topologyLabels is unprotected shared state (self-dismissed: no race manifests because handlers are registered before the informer starts).",
+    "raw": "**NodeTopologyConfig data race exposure:** The config has no internal mutex (topologyLabels is unprotected) ... no race manifests in the current code paths."
+  },
+
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-a0fa76a990e482a80/quick-reviewer",
+    "severity": "High",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 177,
+    "category": "concurrency",
+    "claim": "NodeEligible() uses the write lock hs.lock.Lock() in a read-only method where hs.lock.RLock() should be used, adding needless contention.",
+    "raw": "[BUG_CONCURRENCY] Incorrect mutex lock type: using write lock (Lock) instead of read lock (RLock) in read-only method"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-a0fa76a990e482a80/quick-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 180,
+    "category": "bug",
+    "claim": "hs.nodeManager.Node() in NodeEligible() can panic if nodeManager is nil, a regression from the old nodeEligible:true default (self-dismissed at confidence 50 since current initialization always sets it).",
+    "raw": "**Potential nil pointer in NodeEligible() (confidence: 50)** ... could panic if `nodeManager` is nil."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-a0fa76a990e482a80/quick-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/config/config.go",
+    "line": 566,
+    "category": "dead-code",
+    "claim": "NodeConfig.handleChangeNode's DeletedFinalStateUnknown tombstone handling is unreachable from UpdateFunc (self-dismissed at confidence 50 as harmless).",
+    "raw": "**Dead code in NodeConfig.handleChangeNode (confidence: 50)** ... tombstones appear in DeleteFunc."
+  },
+
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-ab0ba70af25b44f40/adversarial-reviewer",
+    "severity": "Medium",
+    "file": "pkg/proxy/config/config.go",
+    "line": 290,
+    "category": "race",
+    "claim": "A node IP change occurring between NewNodeManager's poll capture and NodeConfig's handler registration is silently dropped because NodeConfig registers no AddFunc to receive client-go's replay, leaving kube-proxy programming rules with a stale NodeIP until the next unrelated Update.",
+    "raw": "[ADV_COMPOSITION] node IP changes during the startup window are silently dropped → kube-proxy runs with stale NodeIPs ... NodeConfig registers only UpdateFunc/DeleteFunc — no AddFunc — so the replay is discarded"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-ab0ba70af25b44f40/adversarial-reviewer",
+    "severity": "Medium",
+    "file": "pkg/proxy/node.go",
+    "line": 167,
+    "category": "logic",
+    "claim": "Reordering a dual-stack node's Status.Addresses without any real IP change makes reflect.DeepEqual(oldNodeIPs, nodeIPs) false and triggers a spurious os.Exit(1) restart (later dismissed by the orchestrator).",
+    "raw": "[ADV_ABUSE] address reordering with no real IP change triggers a spurious os.Exit(1) — a crash the pre-change code never had"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-ab0ba70af25b44f40/adversarial-reviewer",
+    "severity": null,
+    "file": "cmd/kube-proxy/app/server.go",
+    "line": 610,
+    "category": "bug",
+    "claim": "NodeTopologyConfig has no Run/HasSynced and nodeTopologyConfig.Run(...) is never called, so initial topology labels would never be delivered (self-dismissed: the already-synced informer replays the node as an Add).",
+    "raw": "**NodeTopologyConfig has no `Run`/`HasSynced` and `nodeTopologyConfig.Run(...)` is never called (server.go:610-613).** ... Not a defect."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-ab0ba70af25b44f40/adversarial-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/node.go",
+    "line": 142,
+    "category": "concurrency",
+    "claim": "OnNodeChange's exit decision is computed on values read before mu is unlocked, potentially yielding a wrong exit decision under concurrent calls (self-dismissed: handler callbacks are delivered serially).",
+    "raw": "**Lock scope in `OnNodeChange` — exit decision computed on values read before `mu` is unlocked (node.go:142-172).** ... No race in the exit path."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-ab0ba70af25b44f40/adversarial-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/node.go",
+    "line": 123,
+    "category": "bug",
+    "claim": "PodCIDRs()/NodeIPs() return slices aliasing the shared informer-cache object and are stored into s.podCIDRs, so a caller mutation could corrupt the shared cache (self-dismissed: all consumers are read-only, latent hazard only).",
+    "raw": "Latent aliasing hazard, not a triggered defect. Low, not flagged."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-ab0ba70af25b44f40/adversarial-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 180,
+    "category": "bug",
+    "claim": "hs.nodeManager.Node() in NodeEligible could nil-deref on a hollow-proxy/healthz path (self-dismissed: healthz server only exists when NewNodeManager succeeded).",
+    "raw": "**Nil `nodeManager` deref in `NodeEligible` → `hs.nodeManager.Node()` (proxy_health.go:180).** ... No nil deref."
+  },
+
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-acc5cce790cae3127/go-reviewer",
+    "severity": "High",
+    "file": "pkg/proxy/node.go",
+    "line": 131,
+    "category": "bug",
+    "claim": "PodCIDRs() returns an uncopied slice from the internal Node object, letting callers mutate the backing array.",
+    "raw": "[GO_MEMORY_MODEL] PodCIDRs() returns uncopied slice from internal Node object — caller can mutate backing array"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-acc5cce790cae3127/go-reviewer",
+    "severity": "High",
+    "file": "pkg/proxy/node.go",
+    "line": 143,
+    "category": "error-handling",
+    "claim": "In OnNodeChange the error from utilnode.GetNodeHostIPs(n.node) is discarded with _, so oldNodeIPs may be nil and a subsequent successful call produces false change detection (and a spurious exit).",
+    "raw": "[GO_ERRORS] Error from utilnode.GetNodeHostIPs(n.node) silently dropped with _ — oldNodeIPs may be nil/empty, leading to false change detection if second call succeeds"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-acc5cce790cae3127/go-reviewer",
+    "severity": "Medium",
+    "file": "pkg/proxy/node.go",
+    "line": 123,
+    "category": "error-handling",
+    "claim": "NodeIPs() discards the GetNodeHostIPs error with _, so callers cannot distinguish 'no IPs' from 'error retrieving IPs'.",
+    "raw": "[GO_ERRORS] Error from utilnode.GetNodeHostIPs(n.node) silently dropped with _ in NodeIPs() — caller receives nil without distinguishing between 'no IPs' and 'error retrieving IPs'"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-acc5cce790cae3127/go-reviewer",
+    "severity": "Medium",
+    "file": "pkg/proxy/config/config.go",
+    "line": 532,
+    "category": "concurrency",
+    "claim": "NodeTopologyConfig.handleNodeEvent writes n.topologyLabels and reads it unsynchronized at the reflect.DeepEqual call, a potential data race with no mutex protecting the field.",
+    "raw": "[GO_MEMORY_MODEL] NodeTopologyConfig.handleNodeEvent() mutates n.topologyLabels field without synchronization — field is read unsynchronized at line 528"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-acc5cce790cae3127/go-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/config/config.go",
+    "line": 535,
+    "category": "design",
+    "claim": "NodeTopologyConfig passes its topologyLabels map reference to handlers rather than a copy (self-dismissed at confidence 25: a fresh map is allocated per call, so no persistent aliasing).",
+    "raw": "**NodeTopologyConfig map aliasing to handlers (line 535)** ... Pattern is safe but could be more explicit by passing a map copy. *Confidence: 25 — not a defect, design choice.*"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-acc5cce790cae3127/go-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/config/config.go",
+    "line": 323,
+    "category": "dead-code",
+    "claim": "NodeConfig.handleChangeNode's cache.DeletedFinalStateUnknown handling is dead code because it is registered as UpdateFunc and tombstones only reach DeleteFunc (self-dismissed at confidence 50 as a code smell).",
+    "raw": "**NodeConfig.handleChangeNode tombstone handling (lines 323-330)** ... *Confidence: 50 — code smell, not a runtime failure.*"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 1,
+    "subagent": "agent-acc5cce790cae3127/go-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/config/config.go",
+    "line": null,
+    "category": "bug",
+    "claim": "NodeConfig no longer registers an AddFunc on the informer so initial node state could be missed (self-dismissed at confidence 0: NewNodeManager handles initial state, verified safe).",
+    "raw": "**NodeConfig missing AddFunc** ... This is intentional and correct. *Confidence: 0 — verified as safe design.*"
+  }
+]

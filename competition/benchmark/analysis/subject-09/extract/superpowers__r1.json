@@ -1,0 +1,178 @@
+[
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "important",
+    "file": "pkg/proxy/config/config.go",
+    "line": 509,
+    "category": "concurrency",
+    "claim": "The eventHandlers slice in NodeTopologyConfig/NodeConfig is appended by RegisterEventHandler on the main goroutine while handleNodeEvent reads it on the informer listener goroutine with no mutex, a data race made reachable because NewNodeManager starts and cache-syncs the informer before NewNodeTopologyConfig is called; if the synthetic replay wins the race the proxier never receives its initial topology labels and the reflect.DeepEqual guard suppresses any re-notification.",
+    "raw": "Unsynchronized `eventHandlers` + possible lost initial topology notification — `config.go:509`/`515` wired at `server.go:610-611`"
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "important",
+    "file": "pkg/proxy/node.go",
+    "line": 176,
+    "category": "behavior-change",
+    "claim": "NodeManager.OnNodeDelete now calls exitFunc(1) so hard-deletion of the Node object crashes kube-proxy, whereas previously deletion was handled gracefully (nodeEligible=false with a 503 drain and a log line), an undocumented semantic change that risks a crash loop.",
+    "raw": "Behavior change: node *deletion* now crashes kube-proxy — `node.go:176-180` ... turns a previously *graceful* signal into a process exit"
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 176,
+    "category": "concurrency",
+    "claim": "NodeEligible() takes the exclusive hs.lock.Lock() even though it no longer mutates any state, where an RLock (or no lock at all) would suffice.",
+    "raw": "It now takes `hs.lock.Lock()` (write) though it mutates nothing (the cached `nodeEligible` bool it used to update is gone); `RLock` — or no `hs.lock` at all ... would suffice."
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 176,
+    "category": "robustness",
+    "claim": "NodeEligible() dereferences hs.nodeManager.Node() without a nil check, so a nil node manager would panic instead of failing gracefully.",
+    "raw": "Also, `hs.nodeManager.Node()` is dereferenced without a nil check; safe today ... but a nil manager would panic rather than fail gracefully."
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/node.go",
+    "line": 155,
+    "category": "logic",
+    "claim": "OnNodeChange can invoke exitFunc twice in a single call because the PodCIDR-change branch lacks a return, which is masked in production by os.Exit but runs both branches with an injected test exitFunc.",
+    "raw": "**`OnNodeChange` can invoke `exitFunc` twice in one call — `node.go:155` and `node.go:171`.** ... A `return` after the PodCIDR-change exit would make intent explicit."
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/healthcheck/healthcheck_test.go",
+    "line": 479,
+    "category": "test",
+    "claim": "The healthcheck tests construct the node manager via proxy.NewNodeManager, which wires the real os.Exit, so a future change to the node IP in a test tweak would kill the test process instead of producing a clean failure.",
+    "raw": "**Healthcheck tests use the real `os.Exit` — `healthcheck_test.go:479,559`.** ... the test *process* is killed instead of failing cleanly."
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/node.go",
+    "line": 143,
+    "category": "design",
+    "claim": "OnNodeChange stores the informer-owned *v1.Node pointer directly in n.node without a DeepCopy, relying on an undocumented implicit invariant that the object is never mutated.",
+    "raw": "**`OnNodeChange` stores the informer-owned `*v1.Node` directly in `n.node` (node.go:143) without a `DeepCopy`.** ... it's an implicit assumption worth a one-line comment."
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": null,
+    "severity": "minor",
+    "file": null,
+    "line": null,
+    "category": "test-coverage",
+    "claim": "No test now covers the server.Run() startup wiring (handlers registered against an already-synced informer under -race), so the integration-level coverage lost with Test_getNodeIPs / Test_waitForPodCIDR / TestProxyServer_platformSetup leaves the startup race undetected.",
+    "raw": "**Lost integration coverage.** ... nothing now covers the `server.Run()` wiring where issue #1 lives — a test that registers handlers on an *already-synced* informer (production ordering) run under `-race` would catch it."
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a52267656d120472e",
+    "severity": "important",
+    "file": "pkg/proxy/config/config.go",
+    "line": 509,
+    "category": "concurrency",
+    "claim": "The eventHandlers slice in NodeTopologyConfig/NodeConfig is appended by RegisterEventHandler on the main goroutine while handleNodeEvent reads it on the informer listener goroutine with no mutex, a data race made reachable because NewNodeManager starts and cache-syncs the informer before NewNodeTopologyConfig is called; if the synthetic replay wins the race the proxier never receives its initial topology labels and the reflect.DeepEqual guard suppresses any re-notification.",
+    "raw": "Unsynchronized `eventHandlers` + possible lost initial topology notification — `config.go:509`/`515` wired at `server.go:610-611`"
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a52267656d120472e",
+    "severity": "important",
+    "file": "pkg/proxy/node.go",
+    "line": 176,
+    "category": "behavior-change",
+    "claim": "NodeManager.OnNodeDelete now calls exitFunc(1) so hard-deletion of the Node object crashes kube-proxy, whereas previously deletion was handled gracefully (nodeEligible=false with a 503 drain and a log line), an undocumented semantic change that risks a crash loop.",
+    "raw": "Behavior change: node *deletion* now crashes kube-proxy — `node.go:176-180` ... turns a previously *graceful* signal into a process exit"
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a52267656d120472e",
+    "severity": "minor",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 176,
+    "category": "concurrency",
+    "claim": "NodeEligible() takes the exclusive hs.lock.Lock() even though it no longer mutates any state, where an RLock (or no lock at all) would suffice.",
+    "raw": "It now takes `hs.lock.Lock()` (write) though it mutates nothing (the cached `nodeEligible` bool it used to update is gone); `RLock` — or no `hs.lock` at all ... would suffice."
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a52267656d120472e",
+    "severity": "minor",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 176,
+    "category": "robustness",
+    "claim": "NodeEligible() dereferences hs.nodeManager.Node() without a nil check, so a nil node manager would panic instead of failing gracefully.",
+    "raw": "Also, `hs.nodeManager.Node()` is dereferenced without a nil check; safe today ... but a nil manager would panic rather than fail gracefully."
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a52267656d120472e",
+    "severity": "minor",
+    "file": "pkg/proxy/node.go",
+    "line": 155,
+    "category": "logic",
+    "claim": "OnNodeChange can invoke exitFunc twice in a single call because the PodCIDR-change branch lacks a return, which is masked in production by os.Exit but runs both branches with an injected test exitFunc.",
+    "raw": "**`OnNodeChange` can invoke `exitFunc` twice in one call — `node.go:155` and `node.go:171`.** ... A `return` after the PodCIDR-change exit would make intent explicit."
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a52267656d120472e",
+    "severity": "minor",
+    "file": "pkg/proxy/healthcheck/healthcheck_test.go",
+    "line": 479,
+    "category": "test",
+    "claim": "The healthcheck tests construct the node manager via proxy.NewNodeManager, which wires the real os.Exit, so a future change to the node IP in a test tweak would kill the test process instead of producing a clean failure.",
+    "raw": "**Healthcheck tests use the real `os.Exit` — `healthcheck_test.go:479,559`.** ... the test *process* is killed instead of failing cleanly."
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a52267656d120472e",
+    "severity": "minor",
+    "file": "pkg/proxy/node.go",
+    "line": 143,
+    "category": "design",
+    "claim": "OnNodeChange stores the informer-owned *v1.Node pointer directly in n.node without a DeepCopy, relying on an undocumented implicit invariant that the object is never mutated.",
+    "raw": "**`OnNodeChange` stores the informer-owned `*v1.Node` directly in `n.node` (node.go:143) without a `DeepCopy`.** ... it's an implicit assumption worth a one-line comment."
+  },
+  {
+    "tool": "superpowers",
+    "repeat": 1,
+    "subagent": "agent-a52267656d120472e",
+    "severity": "minor",
+    "file": null,
+    "line": null,
+    "category": "test-coverage",
+    "claim": "No test now covers the server.Run() startup wiring (handlers registered against an already-synced informer under -race), so the integration-level coverage lost with Test_getNodeIPs / Test_waitForPodCIDR / TestProxyServer_platformSetup leaves the startup race undetected.",
+    "raw": "**Lost integration coverage.** ... nothing now covers the `server.Run()` wiring where issue #1 lives — a test that registers handlers on an *already-synced* informer (production ordering) run under `-race` would catch it."
+  }
+]

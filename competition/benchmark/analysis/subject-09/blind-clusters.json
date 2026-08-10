@@ -1,0 +1,688 @@
+[
+ {
+  "cluster_id": "b01",
+  "file": "pkg/proxy/node.go",
+  "line": 77,
+  "category": "test",
+  "summary": "The cache.WaitForNamedCacheSync failure branch in newNodeManager (\"can not sync node informer\") has no test coverage."
+ },
+ {
+  "cluster_id": "b02",
+  "file": "pkg/proxy/config/config_test.go",
+  "line": 486,
+  "category": "test",
+  "summary": "No test covers the zone-label removal transition \u2014 a node that had topology.kubernetes.io/zone losing it, which should still fire OnTopologyChange with an empty label map."
+ },
+ {
+  "cluster_id": "b03",
+  "file": "pkg/proxy/node.go",
+  "line": 41,
+  "category": "docs",
+  "summary": "The NodeManager type doc enumerates crash triggers as changes in NodeIPs or PodCIDRs and reads as exhaustive, but omits the third trigger \u2014 OnNodeDelete's unconditional exitFunc(1) on node deletion \u2014 and the broadened crash behavior ships with no release note."
+ },
+ {
+  "cluster_id": "b04",
+  "file": "cmd/kube-proxy/app/server.go",
+  "line": 211,
+  "category": "design",
+  "summary": "newProxyServer knows too much about NodeManager internals \u2014 extracting rawNodeIPs, calling PodCIDRs(), logging, then calling detectNodeIPs externally \u2014 the encapsulation objection danwinship raised in an unresolved review thread and never addressed."
+ },
+ {
+  "cluster_id": "b05",
+  "file": "pkg/proxy/config/config.go",
+  "line": 458,
+  "category": "style",
+  "summary": "NodeTopologyHandler's interface doc says 'an abstract interface for objects' while all three sibling handler interfaces in the file say 'abstract interface of objects'."
+ },
+ {
+  "cluster_id": "b06",
+  "file": "pkg/proxy/config/config_test.go",
+  "line": 464,
+  "category": "test",
+  "summary": "The new nodeTopologyHandlerMock is unexported and has no constructor, unlike the sibling ServiceHandlerMock/EndpointSliceHandlerMock in the same file."
+ },
+ {
+  "cluster_id": "b07",
+  "file": "pkg/proxy/node.go",
+  "line": 167,
+  "category": "logic",
+  "summary": "The NodeIP change check uses order-sensitive reflect.DeepEqual on the ordered slice derived from Status.Addresses, so a mere reordering of the same address set is treated as an IP change and triggers a spurious os.Exit(1)."
+ },
+ {
+  "cluster_id": "b08",
+  "file": "pkg/proxy/config/config_test.go",
+  "line": null,
+  "category": "test-coverage",
+  "summary": "Nothing exercises the informer\u2192NodeConfig\u2192NodeManager dispatch path end to end: config_test.go never references NodeConfig/NewNodeConfig and every NodeManager test calls OnNodeChange/OnNodeDelete directly, so the handler-registration semantics \u2014 including the dropped AddFunc and the intentionally-undelivered replayed Add \u2014 would survive any regression uncaught."
+ },
+ {
+  "cluster_id": "b09",
+  "file": "pkg/proxy/winkernel/proxier.go",
+  "line": 1103,
+  "category": "style",
+  "summary": "winkernel's no-op OnTopologyChange gives its unused parameter a name instead of the blank identifier `_`, diverging from every other no-op stub in the proxy codebase."
+ },
+ {
+  "cluster_id": "b10",
+  "file": "pkg/proxy/config/config.go",
+  "line": 523,
+  "category": "duplication",
+  "summary": "The set of proxy-relevant topology labels is hardcoded to v1.LabelTopologyZone in handleNodeEvent's filter and independently re-derived by proxy.CategorizeEndpoints in another package, with no shared constant binding them, so the two copies can silently drift and any new topology label requires lockstep edits in two packages."
+ },
+ {
+  "cluster_id": "b11",
+  "file": "pkg/proxy/node.go",
+  "line": 182,
+  "category": "docs",
+  "summary": "The OnNodeSynced comment claims 'all pre-existing Nodes have been reported', which is wrong on both counts: the informer is field-selected to a single node and, with no AddFunc registered, that node is never reported to OnNodeChange."
+ },
+ {
+  "cluster_id": "b12",
+  "file": "pkg/proxy/metaproxier/meta_proxier.go",
+  "line": 131,
+  "category": "consistency",
+  "summary": "metaProxier's OnTopologyChange doc comment introduces a third distinct phrasing for the same interface method, diverging from the shared iptables/ipvs/nftables doc wording."
+ },
+ {
+  "cluster_id": "b13",
+  "file": "pkg/proxy/node.go",
+  "line": 135,
+  "category": "design",
+  "summary": "NodeInformer() hands out the raw shared informer so external code attaches its own handlers, meaning NodeManager does not own its informer's handler wiring."
+ },
+ {
+  "cluster_id": "b14",
+  "file": "pkg/proxy/node.go",
+  "line": 84,
+  "category": "behavior-change",
+  "summary": "NewNodeManager returns a hard error when the node has no usable NodeIP within the poll window and newProxyServer propagates it, so kube-proxy startup aborts (CrashLoopBackOff / deadlock against out-of-tree CCMs) where the removed getNodeIPs returned empty non-fatally and let kube-proxy start degraded via detectNodeIPs' BindAddress/localhost fallback."
+ },
+ {
+  "cluster_id": "b15",
+  "file": "pkg/proxy/node.go",
+  "line": 119,
+  "category": "docs",
+  "summary": "The NodeIPs() and PodCIDRs() doc comments say they return the values polled in NewNodeManager(), but both recompute from the live n.node that OnNodeChange reassigns on every watch event, so the stated immutable-snapshot contract contradicts the implementation."
+ },
+ {
+  "cluster_id": "b16",
+  "file": "pkg/proxy/node_test.go",
+  "line": 146,
+  "category": "test-coverage",
+  "summary": "The dual-stack (two PodCIDRs) case asserted by the deleted TestProxyServer_platformSetup was not carried forward \u2014 TestNewNodeManager supplies only a single CIDR \u2014 so dual-stack PodCIDR handling is no longer explicitly tested."
+ },
+ {
+  "cluster_id": "b17",
+  "file": "pkg/proxy/node.go",
+  "line": 131,
+  "category": "design",
+  "summary": "PodCIDRs() returns n.node.Spec.PodCIDRs directly \u2014 a slice aliasing the informer-cache-owned Node object that escapes the mutex \u2014 while the sibling Node() DeepCopies and NodeIPs() allocates a fresh slice, so a mutating caller would corrupt shared informer state or the OnNodeChange comparison baseline."
+ },
+ {
+  "cluster_id": "b18",
+  "file": "pkg/proxy/node.go",
+  "line": 90,
+  "category": "observability",
+  "summary": "The startup poll loop in newNodeManager returns false,nil on every failed attempt with no per-attempt logging, so operators see nothing during a multi-minute startup stall \u2014 an observability regression versus the deleted getNodeIPs which logged each failed attempt."
+ },
+ {
+  "cluster_id": "b19",
+  "file": "pkg/proxy/config/config.go",
+  "line": 513,
+  "category": "docs",
+  "summary": "handleNodeEvent's doc comment claims it handles 'Add, Update and Delete' events (wording copy-pasted from ServiceCIDRConfig.handleServiceCIDREvent), but it is wired only into AddFunc/UpdateFunc while DeleteFunc is an explicit no-op that never invokes it."
+ },
+ {
+  "cluster_id": "b20",
+  "file": "pkg/proxy/node_test.go",
+  "line": 311,
+  "category": "test-coverage",
+  "summary": "TestNodeManagerNode never mutates the *v1.Node returned by Node(), so a regression where Node() hands back the shared internal pointer instead of a deep copy would still pass the test."
+ },
+ {
+  "cluster_id": "b21",
+  "file": "pkg/proxy/config/config.go",
+  "line": 520,
+  "category": "docs",
+  "summary": "handleNodeEvent's zone-only topology-label filter has no comment explaining why and no back-reference to its sole consumer, proxy.CategorizeEndpoints in topology.go, so the coupling is documented in only one direction and an edit at the filter site \u2014 the side most likely to be changed \u2014 looks purely local."
+ },
+ {
+  "cluster_id": "b22",
+  "file": "pkg/proxy/node.go",
+  "line": 87,
+  "category": "logic",
+  "summary": "The consolidated startup poll in newNodeManager dropped the node.DeletionTimestamp guard that the removed waitForPodCIDR/getNodeIPs had, so kube-proxy can adopt a node already marked for deletion as its immutable IP/PodCIDR baseline instead of waiting for the replacement node object."
+ },
+ {
+  "cluster_id": "b23",
+  "file": "pkg/proxy/node.go",
+  "line": 44,
+  "category": "design",
+  "summary": "NodeManager conflates several responsibilities in one type \u2014 informer owner, startup poller, live-node snapshot provider, crash-on-change watchdog, and config.NodeHandler \u2014 violating SRP."
+ },
+ {
+  "cluster_id": "b24",
+  "file": "pkg/proxy/node_test.go",
+  "line": 74,
+  "category": "test-coverage",
+  "summary": "Adversarial subcases from the deleted Test_getNodeIPs / Test_waitForPodCIDR (a node whose only address is a malformed 'invalid-ip' string retried until fixed, the concurrent multi-goroutine fetch check, and a delete event during the wait) were not carried into the new tests, so that GetNodeHostIPs error path is no longer exercised anywhere."
+ },
+ {
+  "cluster_id": "b25",
+  "file": "pkg/proxy/node_test.go",
+  "line": 311,
+  "category": "test",
+  "summary": "TestNodeManagerNode passes time.Nanosecond poll interval and timeout, but the pre-populated node makes the very first immediate check succeed, so the polling/retry loop is never actually exercised and the nanosecond literals are misleading."
+ },
+ {
+  "cluster_id": "b26",
+  "file": "cmd/kube-proxy/app/server.go",
+  "line": 217,
+  "category": "logging",
+  "summary": "Only rawNodeIPs is logged; the effective s.NodeIPs after detectNodeIPs applies the --bind-address override is never logged, so operators using that flag cannot see the node IPs kube-proxy actually uses (a reviewer-requested log line that was never added)."
+ },
+ {
+  "cluster_id": "b27",
+  "file": "pkg/proxy/node.go",
+  "line": 60,
+  "category": "behavior-change",
+  "summary": "The startup node wait is a single flat hardcoded, non-configurable 5-minute poll timeout applied to every detect-local mode, far longer than the pre-refactor ~63s exponential backoff, silently extending the startup stall for nodes that never acquire an IP."
+ },
+ {
+  "cluster_id": "b28",
+  "file": "pkg/proxy/node.go",
+  "line": 41,
+  "category": "docs",
+  "summary": "The NodeManager doc comment omits that Node() is the authoritative live-node source consumed by the health server's eligibility check."
+ },
+ {
+  "cluster_id": "b29",
+  "file": "pkg/proxy/healthcheck/healthcheck_test.go",
+  "line": 481,
+  "category": "test",
+  "summary": "The healthcheck tests discard the error returned by proxy.NewNodeManager (`nodeManager, _ :=`), so a construction failure leaves a nil manager and surfaces later as an opaque nil-pointer panic inside OnNodeChange instead of a clear failure at the setup call site."
+ },
+ {
+  "cluster_id": "b30",
+  "file": "pkg/proxy/config/config.go",
+  "line": 320,
+  "category": "dead-code",
+  "summary": "NodeConfig.handleChangeNode retains a cache.DeletedFinalStateUnknown tombstone-unwrapping branch that is unreachable because the function is wired only to UpdateFunc, whose newObj is never a tombstone \u2014 tombstones are delivered only to DeleteFunc."
+ },
+ {
+  "cluster_id": "b31",
+  "file": "pkg/proxy/node.go",
+  "line": 179,
+  "category": "observability",
+  "summary": "The three self-induced exit paths emit only a klog line \u2014 no metric, Kubernetes Event, or reason label \u2014 so an intentional NodeManager restart cannot be distinguished from an ordinary crash and fleet-wide kube-proxy crashloops are unattributable."
+ },
+ {
+  "cluster_id": "b32",
+  "file": "pkg/proxy/node.go",
+  "line": 142,
+  "category": "concurrency",
+  "summary": "OnNodeChange releases n.mu before comparing old and new NodeIPs/PodCIDRs and calling exitFunc, so the exit decision is made on a snapshot that concurrent/rapid successive updates may have superseded."
+ },
+ {
+  "cluster_id": "b33",
+  "file": "cmd/kube-proxy/app/server.go",
+  "line": 579,
+  "category": "docs",
+  "summary": "The retained comment claiming handlers must be registered before starting the informer or events will be lost is factually wrong (client-go replays state to late-registered handlers) and was left unchanged after reviewer feedback."
+ },
+ {
+  "cluster_id": "b34",
+  "file": "pkg/proxy/healthcheck/proxy_health.go",
+  "line": 62,
+  "category": "docs",
+  "summary": "The ProxyHealthServer type doc comment still advertises capability item 3, \"sync node status\", describing the push-based SyncNode/cached nodeEligible model that this PR deleted, so the doc contradicts the new on-demand nodeManager.Node() pull and misleads readers about the API."
+ },
+ {
+  "cluster_id": "b35",
+  "file": "pkg/proxy/node.go",
+  "line": 150,
+  "category": "bug",
+  "summary": "OnNodeChange has no `return` after exitFunc(1) in the PodCIDR-change branch, so control falls through into the NodeIP comparison and a single event changing both PodCIDRs and NodeIPs calls exitFunc twice \u2014 masked in production by os.Exit but divergent under the injected test exit function."
+ },
+ {
+  "cluster_id": "b36",
+  "file": "pkg/proxy/metaproxier/meta_proxier.go",
+  "line": 131,
+  "category": "test-coverage",
+  "summary": "No proxier test references OnTopologyChange at all, so metaProxier's fan-out of the call to both the ipv4 and ipv6 sub-proxiers is untested and a dropped delegation would go unnoticed; the new by-reference map storage contract is likewise untested."
+ },
+ {
+  "cluster_id": "b37",
+  "file": "pkg/proxy/config/config.go",
+  "line": 288,
+  "category": "correctness",
+  "summary": "NewNodeConfig registers only UpdateFunc/DeleteFunc and no AddFunc while NodeManager is attached later in Run() to an already-started, already-synced informer, so client-go's synthetic replay Add and any real Node change landing in that startup window are silently dropped and the proxier keeps a stale NodeIP (bypassing the crash-on-drift safety) until the next genuine Update or resync."
+ },
+ {
+  "cluster_id": "b38",
+  "file": "pkg/proxy/node.go",
+  "line": 152,
+  "category": "style",
+  "summary": "NodeManager logs through package-level klog.InfoS/klog.ErrorS despite receiving a ctx, instead of deriving a klog.FromContext(ctx) logger like every sibling config type, so the operationally critical crash lines lose contextual fields."
+ },
+ {
+  "cluster_id": "b39",
+  "file": "pkg/proxy/node_test.go",
+  "line": 200,
+  "category": "flaky-test",
+  "summary": "TestNewNodeManager sequences its background node-mutation goroutine against newNodeManager's 10ms poll / 1s timeout using fixed wall-clock time.Sleep calls (100ms startup, 15ms spacing) instead of deterministic signaling, so the test can flake on loaded CI runners and burns the full timeout on error cases."
+ },
+ {
+  "cluster_id": "b40",
+  "file": "cmd/kube-proxy/app/server.go",
+  "line": 217,
+  "category": "test",
+  "summary": "Deleting TestProxyServer_platformSetup left newProxyServer's podCIDRs/NodeManager wiring with no test, so the newly unconditional PodCIDRs() assignment (previously nil outside ClusterCIDR mode) is unpinned."
+ },
+ {
+  "cluster_id": "b41",
+  "file": "pkg/proxy/config/config.go",
+  "line": 263,
+  "category": "docs",
+  "summary": "The OnNodeChange doc comments (NodeHandler in config.go and the mirrored comment on NodeManager.OnNodeChange in node.go) state the handler is invoked on node creation or modification, but the AddFunc-less informer wiring means it never sees a creation event \u2014 initial observation comes from NewNodeManager's bootstrap poll \u2014 so the documented contract is false."
+ },
+ {
+  "cluster_id": "b42",
+  "file": "pkg/proxy/node.go",
+  "line": 140,
+  "category": "docs",
+  "summary": "The '// update the node object' comment sits above a block that also captures oldNodeIPs/oldPodCIDRs, so it describes only the last line of the block."
+ },
+ {
+  "cluster_id": "b43",
+  "file": "pkg/proxy/node.go",
+  "line": 159,
+  "category": "test",
+  "summary": "The OnNodeChange GetNodeHostIPs-error early-return branch is untested \u2014 every TestNodeManagerOnNodeChange case supplies an updated node with valid IPs, so no test sends an address-less update."
+ },
+ {
+  "cluster_id": "b44",
+  "file": "pkg/proxy/node.go",
+  "line": 77,
+  "category": "bug",
+  "summary": "newNodeManager calls WaitForNamedCacheSync with the unbounded parent ctx (the 5-minute timeout context is created only afterwards), so an unreachable API server blocks kube-proxy startup indefinitely instead of the documented 5 minutes and healthz/livez never comes up."
+ },
+ {
+  "cluster_id": "b45",
+  "file": "pkg/proxy/node_test.go",
+  "line": 324,
+  "category": "inert-assertion",
+  "summary": "In TestNodeManagerNode a second require.NoError(t, err) placed after the void OnNodeChange/OnNodeUpdate call re-checks the stale err from newNodeManager, which cannot have been reassigned, so the assertion is inert and misleads readers into believing the node-change path was validated."
+ },
+ {
+  "cluster_id": "b46",
+  "file": "pkg/proxy/config/config.go",
+  "line": 532,
+  "category": "concurrency",
+  "summary": "NodeTopologyConfig has no mutex, so the topologyLabels field itself is written and read (including at the reflect.DeepEqual comparison) as unprotected shared state, relying on an undocumented assumption that informer dispatch for one registration is single-threaded."
+ },
+ {
+  "cluster_id": "b47",
+  "file": "pkg/proxy/node.go",
+  "line": 143,
+  "category": "error-handling",
+  "summary": "The GetNodeHostIPs error is discarded with `_` in NodeIPs() and for the old-node lookup in OnNodeChange, so a failed lookup is indistinguishable from 'node has no IPs': oldNodeIPs can be nil and produce a false change detection and spurious exitFunc(1) with no diagnostic breadcrumb."
+ },
+ {
+  "cluster_id": "b48",
+  "file": "pkg/proxy/node_test.go",
+  "line": 231,
+  "category": "test-coverage",
+  "summary": "No test exercises a single Node update that changes both PodCIDRs and NodeIPs with watchPodCIDRs=true \u2014 the path where the missing return after exitFunc(1) causes exitFunc to be invoked twice \u2014 leaving that double-exit behavior unpinned."
+ },
+ {
+  "cluster_id": "b49",
+  "file": "pkg/proxy/healthcheck/proxy_health.go",
+  "line": null,
+  "category": "concurrency",
+  "summary": "Health() and NodeEligible() acquire hs.lock and then NodeManager's internal mutex in sequence, establishing a two-lock ordering between the health server and the node manager (self-dismissed because NodeManager never calls back into ProxyHealthServer)."
+ },
+ {
+  "cluster_id": "b50",
+  "file": "pkg/proxy/config/config.go",
+  "line": 275,
+  "category": "docs",
+  "summary": "NodeConfig's type doc comment still describes a channel-based design that accepts 'set', 'add' and 'remove' node operations, which never matched the informer-driven implementation (AddEventHandlerWithResyncPeriod) and now also references an 'add' operation this PR removed."
+ },
+ {
+  "cluster_id": "b51",
+  "file": "pkg/proxy/node_test.go",
+  "line": 231,
+  "category": "test-coverage",
+  "summary": "No test covers watchPodCIDRs=false with an actual PodCIDR change asserting that kube-proxy must NOT exit, so deleting or inverting the `if n.watchPodCIDRs` guard leaves the whole suite green while crash-looping every non-LocalModeNodeCIDR deployment."
+ },
+ {
+  "cluster_id": "b52",
+  "file": "pkg/proxy/node.go",
+  "line": 56,
+  "category": "docs",
+  "summary": "Deleting NodePodCIDRHandler removed both occurrences of the https://issues.k8s.io/111321 reference \u2014 the only pointer documenting why kube-proxy must restart rather than reconfigure on a PodCIDR change under LocalModeNodeCIDR \u2014 leaving the bare watchPodCIDRs bool with no rationale anywhere in the tree."
+ },
+ {
+  "cluster_id": "b53",
+  "file": "pkg/proxy/config/config.go",
+  "line": 466,
+  "category": "correctness",
+  "summary": "NodeTopologyConfig assigns listerSynced from handlerRegistration.HasSynced but never reads it and, unlike every sibling *Config type, exposes no Run()/WaitForNamedCacheSync \u2014 and nothing ever calls one \u2014 so the dead field falsely implies a cache-sync barrier and the sync loop can start before the initial OnTopologyChange lands."
+ },
+ {
+  "cluster_id": "b54",
+  "file": "cmd/kube-proxy/app/server.go",
+  "line": 218,
+  "category": "logic",
+  "summary": "newProxyServer now assigns s.podCIDRs = s.NodeManager.PodCIDRs() unconditionally instead of only under DetectLocalMode == LocalModeNodeCIDR, so checkBadConfig/checkBadIPConfig's podCIDR heuristics fire (spurious 'node.spec.podCIDRs contains only IPv{X} addresses' warnings) in modes that never opted into NodeCIDR detection, and the field's 'only used for LocalModeNodeCIDR' comment is now false."
+ },
+ {
+  "cluster_id": "b55",
+  "file": "pkg/proxy/config/config_test.go",
+  "line": 561,
+  "category": "test",
+  "summary": "A comment in TestNewNodeTopologyConfig says the region-label event should not notify the handler, but that same event also changes the zone label so OnTopologyChange does fire \u2014 the comment contradicts the case's actual behavior and assertion."
+ },
+ {
+  "cluster_id": "b56",
+  "file": "pkg/proxy/node.go",
+  "line": 167,
+  "category": "design",
+  "summary": "OnNodeChange now calls exitFunc(1) on any post-startup NodeIP change (and PodCIDR change), a new unconditional crash trigger in every DetectLocalMode with no feature gate, debounce or cooldown, so routine node-address churn or multi-step cloud IP assignment crash-loops kube-proxy where the old code simply ignored NodeIP changes \u2014 a broadened restart surface shipped without documentation or a release note."
+ },
+ {
+  "cluster_id": "b57",
+  "file": "pkg/proxy/node.go",
+  "line": 41,
+  "category": "docs",
+  "summary": "The NodeManager type doc comment is a grammatically garbled run-on with a duplicated verb ('based on the NodeIPs and PodCIDRs handles node watch events and crashes'), a merge artifact of the two absorbed types that obscures the contract."
+ },
+ {
+  "cluster_id": "b58",
+  "file": "cmd/kube-proxy/app/server.go",
+  "line": 176,
+  "category": "docs",
+  "summary": "The new exported field ProxyServer.NodeManager has no doc comment."
+ },
+ {
+  "cluster_id": "b59",
+  "file": "pkg/proxy/config/config.go",
+  "line": 459,
+  "category": "docs",
+  "summary": "OnTopologyChange's doc says it 'provides the observed change', which reads as a delta, but the argument is actually the complete current set of proxy-relevant topology labels."
+ },
+ {
+  "cluster_id": "b60",
+  "file": "pkg/proxy/config/config.go",
+  "line": 499,
+  "category": "logic",
+  "summary": "newNodeTopologyConfig wires an empty no-op DeleteFunc, so node deletion never clears topologyLabels and the proxier keeps routing on the deleted node's stale zone label \u2014 correct today only because of the implicit cross-type dependency that NodeManager.OnNodeDelete exits the process first."
+ },
+ {
+  "cluster_id": "b61",
+  "file": "pkg/proxy/config/config.go",
+  "line": 509,
+  "category": "docs",
+  "summary": "NodeTopologyConfig.RegisterEventHandler's doc says the handler is called on Node object change, diverging from the siblings' 'on every X change' phrasing and mischaracterizing behavior, since the handler fires only when the proxy-relevant topology labels actually differ."
+ },
+ {
+  "cluster_id": "b62",
+  "file": "pkg/proxy/winkernel/proxier.go",
+  "line": 1099,
+  "category": "consistency",
+  "summary": "winkernel's OnTopologyChange doc comment uses different wording from the identical sentence shared by the iptables (proxier.go:625), nftables (proxier.go:843) and ipvs (proxier.go:852) implementations of the same interface method, breaking the cross-backend doc convention."
+ },
+ {
+  "cluster_id": "b63",
+  "file": "pkg/proxy/config/config_test.go",
+  "line": null,
+  "category": "test",
+  "summary": "NodeTopologyConfig's no-op DeleteFunc is exercised by no test (TestNewNodeTopologyConfig issues only fakeWatch.Add calls), so a regression that started emitting a topology change on node delete would go unnoticed."
+ },
+ {
+  "cluster_id": "b64",
+  "file": "pkg/proxy/winkernel/proxier.go",
+  "line": 1098,
+  "category": "docs",
+  "summary": "The TODO comment above winkernel's OnTopologyChange names a nonexistent method 'OnTopologyChanged' (the actual method, three lines below, is OnTopologyChange), so grepping the TODO's method name finds nothing; it additionally sits above the doc comment so godoc renders the method docs starting with the TODO, and the doc asserts active behavior for an empty no-op body."
+ },
+ {
+  "cluster_id": "b65",
+  "file": "pkg/proxy/node.go",
+  "line": 176,
+  "category": "design",
+  "summary": "NodeManager.OnNodeDelete unconditionally calls exitFunc(1) on any Node delete event \u2014 with no check that it is a real deletion rather than a client-go relist/DeltaFIFO artifact \u2014 crashing kube-proxy where the previous handlers degraded gracefully (nodeEligible=false, 503 drain, log only), so delete-then-recreate or a transient apiserver blip drives CrashLoopBackOff."
+ },
+ {
+  "cluster_id": "b66",
+  "file": "pkg/proxy/node.go",
+  "line": 44,
+  "category": "style",
+  "summary": "NodeManager implements config.NodeHandler without the `var _ config.NodeHandler = &NodeManager{}` compile-time assertion that the handlers it replaced and its package siblings all carry."
+ },
+ {
+  "cluster_id": "b67",
+  "file": "pkg/proxy/healthcheck/proxy_health.go",
+  "line": 176,
+  "category": "concurrency",
+  "summary": "NodeEligible() acquires the exclusive write lock hs.lock.Lock() (previously an RLock) even though, after the nodeEligible field was removed, it reads and writes none of the fields that lock guards (lastUpdatedMap/oldestPendingQueuedMap), so the acquisition is vestigial and needlessly serializes every /healthz and /livez request against Health(), Updated() and QueuedUpdate()."
+ },
+ {
+  "cluster_id": "b68",
+  "file": "pkg/proxy/healthcheck/healthcheck_test.go",
+  "line": 481,
+  "category": "test",
+  "summary": "healthcheck_test.go passes context.TODO() to NewNodeManager instead of the ktesting.NewTestContext(t) convention used by node_test.go and config_test.go in the same PR, so test logging/cancellation is not tied to the test."
+ },
+ {
+  "cluster_id": "b69",
+  "file": "pkg/proxy/config/config_test.go",
+  "line": 718,
+  "category": "test",
+  "summary": "TestNewNodeTopologyConfig registers the event handler before sharedInformers.Start(), the reverse of production ordering where handlers attach to an already-started informer, so it never exercises the handler-registration data race or the lost-initial-topology path."
+ },
+ {
+  "cluster_id": "b70",
+  "file": "pkg/proxy/node_test.go",
+  "line": null,
+  "category": "test",
+  "summary": "Every exit test injects a fake exitFunc that returns normally, unlike production os.Exit which never returns, so code after exitFunc(1) executes in tests but is dead in production \u2014 the tests exercise a path that cannot occur and cannot catch bugs in it."
+ },
+ {
+  "cluster_id": "b71",
+  "file": "pkg/proxy/healthcheck/proxy_health.go",
+  "line": 171,
+  "category": "bug",
+  "summary": "The rewrite of NodeEligible() silently dropped the previously documented \"node is eligible while kube-proxy is still starting up\" default, so before the first node sync the health server now reports a different eligibility answer than the old cached nodeEligible:true behavior."
+ },
+ {
+  "cluster_id": "b72",
+  "file": "pkg/proxy/config/config.go",
+  "line": 456,
+  "category": "design",
+  "summary": "Two independent sources of 'the current node' now exist \u2014 NodeManager.node and NodeTopologyConfig.topologyLabels \u2014 derived from the same informer through separate handler registrations, so they can be transiently inconsistent with each other."
+ },
+ {
+  "cluster_id": "b73",
+  "file": "pkg/proxy/node.go",
+  "line": 48,
+  "category": "dead-code",
+  "summary": "NodeManager.nodeLister is written at construction and never read afterwards \u2014 dead struct state that should be a local variable in newNodeManager."
+ },
+ {
+  "cluster_id": "b74",
+  "file": "pkg/proxy/node.go",
+  "line": 145,
+  "category": "bug",
+  "summary": "OnNodeChange assigns n.node = node before validating the incoming node with GetNodeHostIPs, so a transient update with empty/unparseable addresses poisons the comparison baseline (and on error it only logs and returns, leaving the manager holding an IP-less node); the next update restoring the original IPs then compares unequal and triggers a spurious exitFunc(1)."
+ },
+ {
+  "cluster_id": "b75",
+  "file": "pkg/proxy/topology.go",
+  "line": 46,
+  "category": "docs",
+  "summary": "The new cross-reference Note comment in topology.go contains a double-space typo ('to  watch') and imprecisely describes CategorizeEndpoints as watching 'other endpoint types or labels' when the actual coupling is to topology labels."
+ },
+ {
+  "cluster_id": "b76",
+  "file": "pkg/proxy/node.go",
+  "line": 120,
+  "category": "error-handling",
+  "summary": "NodeIPs() discards the GetNodeHostIPs error and silently returns nil, while newProxyServer logs \"Successfully retrieved NodeIPs\" unconditionally without checking the returned slice, so an empty/failed retrieval is reported to operators as a success."
+ },
+ {
+  "cluster_id": "b77",
+  "file": "pkg/proxy/node.go",
+  "line": 167,
+  "category": "docs",
+  "summary": "The crash-to-restart contract is undocumented at the exit sites: neither the load-bearing assumption that an external supervisor restarts the process nor the rationale for choosing hard os.Exit over live reconfiguration on NodeIP/PodCIDR change is recorded anywhere."
+ },
+ {
+  "cluster_id": "b78",
+  "file": "pkg/proxy/config/config.go",
+  "line": 485,
+  "category": "error-handling",
+  "summary": "The error returned by AddEventHandlerWithResyncPeriod is discarded with _ in both NewNodeConfig and newNodeTopologyConfig, and the possibly-nil handlerRegistration is then immediately dereferenced for .HasSynced."
+ },
+ {
+  "cluster_id": "b79",
+  "file": "pkg/proxy/healthcheck/proxy_health.go",
+  "line": 176,
+  "category": "performance",
+  "summary": "NodeEligible() calls nodeManager.Node(), which DeepCopy()s the entire v1.Node object on every health probe just to read DeletionTimestamp and Spec.Taints, moving a full-object copy that previously happened only on infrequent node events (and replaced an O(1) cached-bool read) onto the continuously polled /healthz hot path."
+ },
+ {
+  "cluster_id": "b80",
+  "file": "pkg/proxy/node_test.go",
+  "line": 2132,
+  "category": "test",
+  "summary": "TestNodeManagerNode passes a node with no addresses into OnNodeChange, which hits the GetNodeHostIPs error early-return, so the test passes only incidentally and asserts nothing about that error path."
+ },
+ {
+  "cluster_id": "b81",
+  "file": "pkg/proxy/config/config_test.go",
+  "line": 464,
+  "category": "test",
+  "summary": "nodeTopologyHandlerMock records only the last topologyLabels map with no invocation counter, so TestNewNodeTopologyConfig's 'should receive no notification' assertions (including the final require.Len check) pass identically whether the production reflect.DeepEqual dedup guard works or is deleted \u2014 the test cannot fail on the regression it exists to catch."
+ },
+ {
+  "cluster_id": "b82",
+  "file": "pkg/proxy/node.go",
+  "line": 143,
+  "category": "design",
+  "summary": "OnNodeChange stores the informer-owned *v1.Node pointer directly in n.node without DeepCopy, relying on an undocumented implicit invariant that client-go never mutates the cached object."
+ },
+ {
+  "cluster_id": "b83",
+  "file": "pkg/proxy/node.go",
+  "line": 107,
+  "category": "error-handling",
+  "summary": "newNodeManager tests pollErr but returns the closure-scoped err (`if pollErr != nil { return nil, err }`), so the real poll/timeout or context-cancellation cause is discarded and misreported as a persistent node-configuration problem, and the construction relies on an unstated invariant that every failing closure path sets err \u2014 a (nil, nil) return would nil-deref s.NodeManager in newProxyServer; a reviewer asked for this to be simplified and it never was."
+ },
+ {
+  "cluster_id": "b84",
+  "file": "pkg/proxy/node.go",
+  "line": 44,
+  "category": "test",
+  "summary": "No -race/concurrency test exercises NodeManager's shared node field written by OnNodeChange while read by Node()/NodeIPs()/PodCIDRs()/NodeEligible(), so a dropped lock or escaped shared pointer would pass every current test."
+ },
+ {
+  "cluster_id": "b85",
+  "file": "pkg/proxy/node.go",
+  "line": 167,
+  "category": "security",
+  "summary": "OnNodeChange/OnNodeDelete self-terminate with no debounce, backoff or rate limit on fields writable across a trust boundary (status.addresses, podCIDRs, the Node object itself), so a compromised kubelet or any principal with update/patch/delete on Nodes can flap them to drive kube-proxy into CrashLoopBackOff and cause a targeted dataplane outage."
+ },
+ {
+  "cluster_id": "b86",
+  "file": "pkg/proxy/node.go",
+  "line": 76,
+  "category": "resource-leak",
+  "summary": "newNodeManager starts the node SharedInformerFactory with wait.NeverStop rather than ctx.Done() and never stops it, so reflector/processor goroutines are not tied to the caller's context and leak on the cache-sync/poll error paths and from every test that constructs a NodeManager."
+ },
+ {
+  "cluster_id": "b87",
+  "file": "pkg/proxy/node_test.go",
+  "line": 97,
+  "category": "test",
+  "summary": "The node-mutation test helpers discard the errors returned by fake-client Create/Update calls, so a silent test-setup failure surfaces later as a confusing unrelated assertion failure instead of a clear setup error."
+ },
+ {
+  "cluster_id": "b88",
+  "file": "pkg/proxy/ipvs/proxier.go",
+  "line": null,
+  "category": "consistency",
+  "summary": "The ipvs proxier's OnTopologyChange does not set needFullSync=true while the iptables and nftables implementations of the same method do, an undocumented behavioral divergence discoverable only by reading all three backends."
+ },
+ {
+  "cluster_id": "b89",
+  "file": "pkg/proxy/node.go",
+  "line": 59,
+  "category": "docs",
+  "summary": "The comment on the 5-minute pollTimeout justifies the value solely by PodCIDR allocation, but that same timeout now also bounds node existence and the NodeIPs-only wait (previously ~30s and non-fatal) even when watchPodCIDRs is false, so the comment misdescribes what the constant governs."
+ },
+ {
+  "cluster_id": "b90",
+  "file": "pkg/proxy/config/config.go",
+  "line": 288,
+  "category": "docs",
+  "summary": "The deliberate omission of AddFunc in NewNodeConfig (asymmetric with the sibling NodeTopologyConfig, which wires AddFunc) is load-bearing for startup semantics but carries no explanatory comment at the registration site, so the rationale \u2014 that initial Node state is captured by NewNodeManager's poll in another file \u2014 is invisible and a maintainer restoring symmetry would silently change behavior."
+ },
+ {
+  "cluster_id": "b91",
+  "file": "pkg/proxy/healthcheck/healthcheck_test.go",
+  "line": 481,
+  "category": "test",
+  "summary": "The healthcheck tests build their NodeManager through the exported proxy.NewNodeManager, which hard-wires exitFunc to the real os.Exit instead of the injectable test seam, so any future test tweak that changes the node's IPs/Status.Addresses in OnNodeChange would call os.Exit(1) and kill the whole package's test binary rather than fail an assertion."
+ },
+ {
+  "cluster_id": "b92",
+  "file": "pkg/proxy/healthcheck/proxy_health.go",
+  "line": 74,
+  "category": "design",
+  "summary": "ProxyHealthServer/NewProxyHealthServer take the concrete parent-package type *proxy.NodeManager (adding a healthcheck->pkg/proxy import that inverts the previous layering) although only its Node() method is used, so the eligibility source is non-substitutable and every health-server test must stand up a full informer-backed NodeManager where a narrow local one-method interface would suffice."
+ },
+ {
+  "cluster_id": "b93",
+  "file": null,
+  "line": null,
+  "category": "test-coverage",
+  "summary": "With Test_getNodeIPs, Test_waitForPodCIDR and TestProxyServer_platformSetup deleted, nothing covers the server.Run() startup wiring (handlers registered against an already-synced informer under -race), leaving the startup race undetected."
+ },
+ {
+  "cluster_id": "b94",
+  "file": "pkg/proxy/config/config.go",
+  "line": 535,
+  "category": "design",
+  "summary": "handleNodeEvent hands its own retained topologyLabels map instance by reference to every registered handler (metaProxier fans the same instance out to both the ipv4 and ipv6 proxiers, which store it without copying), dropping the previous defensive copy and leaving cross-boundary safety to an unwritten never-mutate-after-publish convention."
+ },
+ {
+  "cluster_id": "b95",
+  "file": "pkg/proxy/config/config.go",
+  "line": 509,
+  "category": "concurrency",
+  "summary": "NodeTopologyConfig registers its informer handler at construction on an informer NewNodeManager has already started and synced, while consumers call RegisterEventHandler later from Run(), so eventHandlers is appended on one goroutine while ranged on the informer delivery goroutine (data race) and the replayed synthetic Add can be consumed with zero handlers, after which the reflect.DeepEqual dedup permanently suppresses the proxier's initial zone labels and topology-aware routing is silently disabled."
+ },
+ {
+  "cluster_id": "b96",
+  "file": "pkg/proxy/node.go",
+  "line": 154,
+  "category": "reliability",
+  "summary": "All three exit sites use unbounded klog.Flush() followed by exitFunc(1)/os.Exit instead of the codebase-wide bounded klog.FlushAndExit(klog.ExitFlushTimeout, 1), dropping the flush-timeout guarantee so a stalled log sink can block the process from ever exiting (and risking lost crash-reason logs) \u2014 reviewer feedback left unaddressed."
+ },
+ {
+  "cluster_id": "b97",
+  "file": "pkg/proxy/healthcheck/proxy_health.go",
+  "line": 180,
+  "category": "nil-safety",
+  "summary": "ProxyHealthServer.NodeEligible() dereferences hs.nodeManager unconditionally and newProxyHealthServer stores whatever manager it is handed without validation, while ProxyServer.Run() nil-guards the same field \u2014 an inconsistent nil contract under which any construction path with a nil *proxy.NodeManager (e.g. hollow-proxy) panics on every health probe instead of degrading like the old always-true nodeEligible bool."
+ },
+ {
+  "cluster_id": "b98",
+  "file": "pkg/proxy/node.go",
+  "line": 159,
+  "category": "logic",
+  "summary": "When GetNodeHostIPs fails on the updated node, OnNodeChange logs and returns before the NodeIP-change comparison instead of exiting like every sibling change branch, so a node losing all usable IPs does not restart kube-proxy and it keeps running on stale baseline IPs \u2014 the case a PR reviewer flagged and that was never changed."
+ }
+]

@@ -1,0 +1,12 @@
+# subagent agent-a7207c02ea3abe14a
+
+```json
+{
+  "finding": "NewNodeConfig missing AddFunc — synthetic Add on late registration dropped, stale baseline until resync",
+  "verdict": "confirmed",
+  "reason": "All four sub-claims verified directly in source. (a) pkg/proxy/config/config.go:288-294 registers only UpdateFunc/DeleteFunc on NodeConfig (no AddFunc), while NodeTopologyConfig at config.go:384-393 and ServiceCIDRConfig at config.go:382-392 both register AddFunc — confirming NodeConfig is the outlier. (b) pkg/proxy/node.go: newNodeManager starts the node informer factory and waits for cache sync at lines 76-77, then polls the lister for the baseline `node` at lines 87-104 — all completed and returned before cmd/kube-proxy/app/server.go:211 finishes NewNodeManager(); NewNodeConfig is not called until server.go:608, well after (roughly 400 lines of proxier/iptables/ipvs setup intervene), so the informer is provably already started and synced when the NodeConfig handler is registered. (c) client-go itself documents and implements the synthetic-Add replay: staging/src/k8s.io/client-go/tools/cache/shared_informer.go:701-719 states 'in order to safely join... 3. send synthetic \"Add\" events to the new handler' and does `listener.add(addNotification{newObj: item, isInInitialList: true})` for every cached object; ResourceEventHandlerFuncs.OnAdd (controller.go:257-260) is a no-op when AddFunc is nil, so this replay is silently dropped for NodeConfig. Subsequent periodic resyncs go through processDeltas' `case Sync` branch (controller.go:566-571), which calls `handler.OnUpdate(old, obj)` — NodeConfig's UpdateFunc IS registered, so a resync does redeliver the object and handleChangeNode/OnNodeChange (node.go:140) does eventually fire, bounding the staleness window. (d) The bound is not trivial: pkg/proxy/apis/config/v1alpha1/defaults.go:123 sets the default ConfigSyncPeriod to 15 minutes, so a NodeIP/PodCIDR change landing in the informer cache during the startup gap can leave kube-proxy running on a stale baseline for up to 15 minutes (or until a genuinely new Update event occurs) before the safety exit fires — undermining the exact purpose of NodeManager's watch-and-crash design for a non-trivial, realistic duration. This supports High severity rather than a benign/near-impossible race; if anything the default 15-minute window argues the severity is well-calibrated, not overstated.",
+  "corrections": {
+    "pre_existing": false
+  }
+}
+```

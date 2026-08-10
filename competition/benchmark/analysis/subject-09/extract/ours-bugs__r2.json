@@ -1,0 +1,189 @@
+[
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high",
+    "file": "pkg/proxy/config/config.go",
+    "line": null,
+    "category": "concurrency",
+    "claim": "NodeTopologyConfig has no mutex, so handleNodeEvent iterating n.eventHandlers on the informer's processor goroutine races with RegisterEventHandler appending to the same slice on the Run goroutine, producing a data race.",
+    "raw": "`NodeTopologyConfig` has **no mutex** (its sibling `ServiceCIDRConfig` in the same file *does*). `handleNodeEvent` reads `n.eventHandlers` in a `for i := range n.eventHandlers` loop on the processor goroutine, while `RegisterEventHandler` does `n.eventHandlers = append(...)` on the `Run` goroutine"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "high",
+    "file": "pkg/proxy/config/config.go",
+    "line": null,
+    "category": "bug",
+    "claim": "Because NodeTopologyConfig attaches its handler to an already-started informer, the synthetic Add replay can set topologyLabels before RegisterEventHandler(s.Proxier) runs, and the reflect.DeepEqual guard then suppresses re-delivery so the proxier never learns the initial zone label and topology-aware routing is silently disabled.",
+    "raw": "every subsequent `handleNodeEvent` hits the guard `if reflect.DeepEqual(n.topologyLabels, topologyLabels) { return }` and returns early — so the proxier is **never** told about the initial zone label until an actual zone-label change occurs"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": null,
+    "severity": "minor",
+    "file": "pkg/proxy/node.go",
+    "line": 76,
+    "category": "resource-leak",
+    "claim": "In newNodeManager the node informer factory is started with wait.NeverStop and is never stopped on the cache-sync failure path, leaving informer goroutines running (reported as Critical by go-reviewer, demoted to Minor because the error path terminates the process).",
+    "raw": "the informer factory is started with `wait.NeverStop` and is never stopped on the cache-sync error path ... Reported as Critical by go-reviewer, but demoted"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null,
+    "file": "pkg/proxy/node.go",
+    "line": 108,
+    "category": "error-handling",
+    "claim": "newNodeManager returns err instead of pollErr when wait.PollUntilContextCancel times out, so the timeout error is lost or a nil error is returned (reported then refuted by the orchestrator as intentional and comment-confirmed).",
+    "raw": "**`pkg/proxy/node.go:108` — returns `err` instead of `pollErr` on poll timeout** (quick-reviewer, anchor 100). **Refuted.**"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null,
+    "file": "pkg/proxy/node.go",
+    "line": 142,
+    "category": "concurrency",
+    "claim": "OnNodeChange compares old and new NodeIPs/PodCIDRs and calls exitFunc outside the mutex, allowing a stale-state race (reported then refuted because the comparison uses locals and events are delivered serially).",
+    "raw": "**`pkg/proxy/node.go:142-173` — `OnNodeChange` compares old/new IPs and calls `exitFunc` outside the lock** (broad-reviewer, anchor 75). **Refuted.**"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null,
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": null,
+    "category": "bug",
+    "claim": "ProxyHealthServer.NodeEligible() dereferences hs.nodeManager with no nil guard and would panic if it were nil (reported then dismissed as unreachable in the current control flow).",
+    "raw": "`NodeEligible()` dereferences `hs.nodeManager` with no nil guard** (broad-reviewer Medium; also examined and dismissed by adversarial and go). Not reachable in current control flow"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": null,
+    "severity": null,
+    "file": "pkg/proxy/config/config_test.go",
+    "line": null,
+    "category": "test",
+    "claim": "TestNewNodeTopologyConfig registers its handler before starting the informer, exercising a different ordering than production so it cannot catch the handler-registration race (recorded as a note rather than a finding because reach=narrow).",
+    "raw": "broad-reviewer noted in passing that `TestNewNodeTopologyConfig` registers its handler *before* starting the informer — i.e. it exercises a different ordering than production and would not catch finding #1."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": "agent-a23bdb6dc494a40d5/adversarial-reviewer",
+    "severity": "High",
+    "file": "cmd/kube-proxy/app/server.go",
+    "line": 611,
+    "category": "concurrency",
+    "claim": "NewNodeTopologyConfig registers an AddFunc on an already-running informer, so the async replay races RegisterEventHandler(s.Proxier); if the replay wins, the proxier misses the initial zone label and the DeepEqual cache permanently suppresses re-delivery, silently disabling topology-aware routing.",
+    "raw": "[ADV_COMPOSITION] Informer already running (started in NewNodeManager) → NewNodeTopologyConfig registers an AddFunc that triggers an async replay of the existing node → replay's handleNodeEvent races RegisterEventHandler(s.Proxier); if replay wins, proxier misses the initial zone label"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": "agent-a23bdb6dc494a40d5/adversarial-reviewer",
+    "severity": "Medium",
+    "file": "pkg/proxy/config/config.go",
+    "line": 533,
+    "category": "concurrency",
+    "claim": "handleNodeEvent iterates n.eventHandlers on the informer delivery goroutine while RegisterEventHandler appends to it from the Run goroutine with no synchronization, producing a data race on the slice.",
+    "raw": "handleNodeEvent (runs on the informer's replay/delivery goroutine) iterates n.eventHandlers while RegisterEventHandler appends to it from the Run goroutine, with no synchronization → data race on the slice (go test -race flags it; torn read can skip the proxier)."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": "agent-a4a86662538469ce7/go-reviewer",
+    "severity": "Critical",
+    "file": "pkg/proxy/node.go",
+    "line": 76,
+    "category": "resource-leak",
+    "claim": "The node informer factory is started with wait.NeverStop and has no stop-channel cleanup, so on WaitForNamedCacheSync failure the factory goroutines leak forever.",
+    "raw": "[GO_GOROUTINES] Informer factory started with wait.NeverStop but no stop-channel cleanup on cache-sync failure. If WaitForNamedCacheSync fails at line 77, the factory goroutines leak forever"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": "agent-a6034495314bed079/quick-reviewer",
+    "severity": "High",
+    "file": "pkg/proxy/node.go",
+    "line": 108,
+    "category": "error-handling",
+    "claim": "On poll timeout newNodeManager returns err (which may be nil or stale) instead of pollErr, so a timeout can be reported as (nil, nil) or with an unrelated error.",
+    "raw": "[BUG_LOGIC] Wrong variable returned on poll timeout: returns err (which may be nil or stale) instead of pollErr (the definitive timeout error)"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": "agent-aa8675a02fe573f1e/finding-validator",
+    "severity": null,
+    "file": "pkg/proxy/config/config.go",
+    "line": 510,
+    "category": "concurrency",
+    "claim": "NodeTopologyConfig lacks a mutex so eventHandlers undergoes an unsynchronized concurrent append in RegisterEventHandler and read in handleNodeEvent from different goroutines (validator verdict: confirmed).",
+    "raw": "NodeTopologyConfig has no mutex but eventHandlers undergoes unsynchronized concurrent append (RegisterEventHandler line 510) and read (handleNodeEvent line 533) from different goroutines"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": "agent-aa8675a02fe573f1e/finding-validator",
+    "severity": null,
+    "file": "pkg/proxy/config/config.go",
+    "line": 528,
+    "category": "bug",
+    "claim": "The reflect.DeepEqual guard prevents re-delivery after the synthetic replay runs before RegisterEventHandler, causing permanent loss of the initial zone label to the proxier (validator verdict: confirmed).",
+    "raw": "reflect.DeepEqual at line 528 prevents re-delivery after a race where handleNodeEvent runs before RegisterEventHandler, causing permanent loss of initial zone label"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": "agent-aac8c1cab381418f0/broad-reviewer",
+    "severity": "CRITICAL",
+    "file": "pkg/proxy/config/config.go",
+    "line": null,
+    "category": "bug",
+    "claim": "NodeTopologyConfig registers its handlers on an informer already started and synced by NewNodeManager, so the initial cached node is never delivered and proxier.topologyLabels stays empty at startup, making CategorizeEndpoints zone-unaware until the first node update.",
+    "raw": "When handlers are registered on an already-synced informer, they do not receive the initial cache contents... `proxier.topologyLabels` remains empty/uninitialized at startup"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": "agent-aac8c1cab381418f0/broad-reviewer",
+    "severity": null,
+    "file": "pkg/proxy/config/config_test.go",
+    "line": 495,
+    "category": "test",
+    "claim": "TestNewNodeTopologyConfig registers handlers before starting the informer, testing a different code path than production and masking the missed-initial-topology bug.",
+    "raw": "**Test coverage gap:** The test `TestNewNodeTopologyConfig()` registers handlers BEFORE starting the informer (lines 495-509), masking this bug. It tests a different code path than production."
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": "agent-aac8c1cab381418f0/broad-reviewer",
+    "severity": "HIGH",
+    "file": "pkg/proxy/node.go",
+    "line": 142,
+    "category": "concurrency",
+    "claim": "OnNodeChange releases n.mu before comparing old and new NodeIPs and calling exitFunc, so rapid successive node updates can compare against a stale snapshot and miss a state transition.",
+    "raw": "In `NodeManager.OnNodeChange()`, the comparison between old and new NodeIPs has a race condition window ... the `oldNodeIPs` read on line 143 might not reflect the *immediately previous* state"
+  },
+  {
+    "tool": "ours-bugs",
+    "repeat": 2,
+    "subagent": "agent-aac8c1cab381418f0/broad-reviewer",
+    "severity": "MEDIUM",
+    "file": "pkg/proxy/healthcheck/proxy_health.go",
+    "line": 180,
+    "category": "bug",
+    "claim": "ProxyHealthServer.NodeEligible() calls hs.nodeManager.Node() without a nil check on nodeManager, which would panic if a nil NodeManager were ever passed.",
+    "raw": "`NodeEligible()` calls `hs.nodeManager.Node()` without nil check ... A nil `nodeManager` would cause a panic on `hs.nodeManager.Node()`"
+  }
+]

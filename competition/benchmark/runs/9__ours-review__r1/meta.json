@@ -1,0 +1,165 @@
+{
+  "run_id": "9__ours-review__r1",
+  "subject_id": 9,
+  "lang": "go",
+  "size": "large",
+  "tool": "ours-review",
+  "repeat": 1,
+  "model": "claude-opus-4-8",
+  "effort": "high",
+  "repo": "kubernetes/kubernetes",
+  "pr": 130837,
+  "merge_sha": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "review_base": "0872760763d5877707b018a4eea870d1fc02e6a4^1",
+  "review_head": "0872760763d5877707b018a4eea870d1fc02e6a4",
+  "status": "done",
+  "exit_code": 0,
+  "is_error": "false",
+  "subtype": "success",
+  "wall_clock_s": 1336,
+  "duration_ms": "1331894",
+  "duration_api_ms": "3815939",
+  "num_turns": "31",
+  "cost_usd": "20.59412915000001",
+  "orch_usage": {
+    "input_tokens": "29",
+    "output_tokens": "55053",
+    "cache_creation_tokens": "224530",
+    "cache_read_tokens": "1641492",
+    "total_tokens": 1921104
+  },
+  "session_tokens": {
+    "subagents": 12,
+    "input": 1701,
+    "output": 232277,
+    "cache_creation": 1570791,
+    "cache_read": 21354241,
+    "total": 23159010,
+    "orchestrator": {
+      "output": 55053,
+      "total": 1921104,
+      "duration_s": 1333
+    },
+    "per_subagent": [
+      {
+        "output": 28632,
+        "input": 66,
+        "cache_creation": 160364,
+        "cache_read": 3626555,
+        "total": 3815617,
+        "duration_s": 488,
+        "agent": "agent-a06885c88a8336cd8"
+      },
+      {
+        "output": 33840,
+        "input": 54,
+        "cache_creation": 129071,
+        "cache_read": 2447142,
+        "total": 2610107,
+        "duration_s": 451,
+        "agent": "agent-a234bd415428bf899"
+      },
+      {
+        "output": 4713,
+        "input": 74,
+        "cache_creation": 27161,
+        "cache_read": 271477,
+        "total": 303425,
+        "duration_s": 62,
+        "agent": "agent-a64dc1a319c6541dd"
+      },
+      {
+        "output": 591,
+        "input": 19,
+        "cache_creation": 126675,
+        "cache_read": 714497,
+        "total": 841782,
+        "duration_s": 363,
+        "agent": "agent-a6521b471507cd75f"
+      },
+      {
+        "output": 13614,
+        "input": 74,
+        "cache_creation": 76875,
+        "cache_read": 427762,
+        "total": 518325,
+        "duration_s": 154,
+        "agent": "agent-a660953d14d632dfa"
+      },
+      {
+        "output": 11965,
+        "input": 21,
+        "cache_creation": 121065,
+        "cache_read": 926321,
+        "total": 1059372,
+        "duration_s": 281,
+        "agent": "agent-a6eb58d254c4abaa2"
+      },
+      {
+        "output": 12675,
+        "input": 46,
+        "cache_creation": 124818,
+        "cache_read": 2275762,
+        "total": 2413301,
+        "duration_s": 212,
+        "agent": "agent-a8a259d3511b0b999"
+      },
+      {
+        "output": 11641,
+        "input": 1165,
+        "cache_creation": 94464,
+        "cache_read": 1620158,
+        "total": 1727428,
+        "duration_s": 242,
+        "agent": "agent-a9b78ae069e2d0b2d"
+      },
+      {
+        "output": 12536,
+        "input": 17,
+        "cache_creation": 124147,
+        "cache_read": 630062,
+        "total": 766762,
+        "duration_s": 189,
+        "agent": "agent-a9e75964555981774"
+      },
+      {
+        "output": 8839,
+        "input": 26,
+        "cache_creation": 110767,
+        "cache_read": 1174686,
+        "total": 1294318,
+        "duration_s": 108,
+        "agent": "agent-ab952d0343ee194fd"
+      },
+      {
+        "output": 22050,
+        "input": 54,
+        "cache_creation": 148185,
+        "cache_read": 3222452,
+        "total": 3392741,
+        "duration_s": 494,
+        "agent": "agent-ac4dd3912b2bf0b20"
+      },
+      {
+        "output": 16128,
+        "input": 56,
+        "cache_creation": 102669,
+        "cache_read": 2375875,
+        "total": 2494728,
+        "duration_s": 504,
+        "agent": "agent-ae5f173e67529a20d"
+      }
+    ],
+    "max_subagent_duration_s": 504,
+    "sum_subagent_duration_s": 3548
+  },
+  "input_tokens": "29",
+  "output_tokens": "55053",
+  "cache_creation_tokens": "224530",
+  "cache_read_tokens": "1641492",
+  "total_tokens": 1921104,
+  "session_id": "9480c6bb-cd16-4c62-b0a2-b538f1f36a51",
+  "findings_lines": 9,
+  "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: review --report 130837. This reviews pull request #130837 of the GitHub repository kubernetes/kubernetes (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "finished_at": "2026-08-10T08:37:10Z"
+}
