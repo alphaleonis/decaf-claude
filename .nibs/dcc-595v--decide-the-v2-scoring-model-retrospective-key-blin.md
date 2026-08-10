@@ -6,7 +6,7 @@ status: todo
 type: research
 priority: critical
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T18:43:15Z
+updated_at: 2026-08-10T18:48:20Z
 parent: dcc-ho2w
 order: "9"
 ---
@@ -95,12 +95,28 @@ Two consequences:
 Rust stays represented anyway — subjects 10 and 12 both survived the audit — without reserving a cell
 for it.
 
-**Feasibility risk to test, not assume:** application and UI repos may not satisfy the Step 0 screen
-(fix body names a mechanism). Infra projects have revert discipline, regression issues and re-land
-PRs — which is plausibly *why* every survivor is infra. If application subjects cannot meet the
-screen, that is evidence the escaped-defect instrument is the binding constraint rather than the
-corpus, and pushes toward pooled adjudication. Cheap to test: screen a handful of candidate
-application/SPA repos before committing to either answer.
+**Feasibility: TESTED 2026-08-10, hypothesis was WRONG.** Full result:
+`v2/analysis/STEP0-FEASIBILITY.md`. 273 merged revert PRs across 9 application and 3 infra repos,
+hand-classified against Step 0. Application repos pass at ~4.5%, infra at ~9% — a screening cost
+difference, not a barrier, and application repos merge far more PRs so absolute availability is
+comparable.
+
+Domain was the wrong predictor: `mattermost` and `PostHog` match or beat kubernetes and prometheus;
+the near-zero repos (`outline`, `twentyhq`) are younger, not more application-shaped. The original
+reasoning confused project *maturity* with project *domain*.
+
+Consequences:
+
+- The corpus axis is genuinely open — nothing forces a retreat to infra-only subjects, and
+  [[dcc-ixyy]] can target application/UI/contract-crossing subjects against the existing screen.
+- Six concrete candidates already identified, four of them vintage-safe — including mattermost#30337,
+  an APIs-return-nil contract-crossing defect, the exact shape the corpus lacks. Vintage safety is
+  *easier* in application repos because they are more active.
+- What application repos lack is the k8s/rust habit of a formal **re-land PR** — the source that
+  saved subject 8. Expect that candidate class to be rarer.
+- **This does not settle the instrument.** The n=12 density problem was never a feasibility argument;
+  it is arithmetic that applies identically to application subjects. Better subjects raise relevance,
+  not ranking power. Pooled adjudication still stands or falls on its own merits.
 
 ## Also settle (from the audit)
 
@@ -114,7 +130,7 @@ application/SPA repos before committing to either answer.
 
 - [ ] Instrument decided: which of anchor / pooled adjudication / null arm are in, and which one ranks
 - [ ] Corpus axis decided, with the language grid explicitly kept or dropped
-- [ ] Feasibility spot-check done on application/SPA candidates against the Step 0 screen
+- [x] Feasibility spot-check done on application/SPA candidates against the Step 0 screen — `v2/analysis/STEP0-FEASIBILITY.md`; viable at ~4.5% vs infra ~9%
 - [ ] Verdict vocabulary and severity treatment specified
 - [ ] Judge-contamination position stated explicitly
 - [ ] Written into METHODOLOGY-v2.md, replacing the key-only framing
