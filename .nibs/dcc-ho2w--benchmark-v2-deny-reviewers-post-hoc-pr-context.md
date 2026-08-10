@@ -6,7 +6,7 @@ status: draft
 type: epic
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T12:37:25Z
+updated_at: 2026-08-10T13:47:49Z
 order: zzzzV
 ---
 
@@ -165,3 +165,41 @@ human-confirmed, which limits the damage, but blind grading does not neutralize 
   (b) keep old subjects but report them separately as "possibly memorized"; (c) accept it and
   document, since the `gh` fix removes the *verifiable* leak and memorization is unfalsifiable
   either way.
+
+## v2 methodology draft + subject-9 prototype (2026-08-10)
+Draft written to `competition/benchmark/METHODOLOGY-v2.md`. Key changes from the design discussion:
+
+**Force-pushed commits ARE recoverable** — corrects an earlier claim in this nib's discussion.
+GitHub records every force-push as `HeadRefForcePushedEvent` with before/after oids and keeps those
+commits fetchable. Verified: subject 9's as-opened head `be7da1315a3c` (force-pushed away 2025-03-15,
+15 months ago) fetches cleanly and diffs to 11 files / +342-426 against merge-base `18e5a4d585f6`.
+So reviewing the PR *as reviewed by humans* is feasible today, with no waiting.
+
+**The unit is a review CHECKPOINT, not "as opened"** — a (head SHA, threads written against it) pair.
+Subject 9 has 113 force-pushes over 4 months; its first thread postdates its first force-push by 3
+hours, and several threads name files absent from the as-opened diff. Low force-push count should be
+a subject-selection criterion.
+
+**Subject 9 fails the Track-2 presence check, and the finding matters:**
+
+| | as opened | as merged |
+|---|---|---|
+| `NewNodeManager` | returns `*NodeManager`, no error path | returns an error — the fatal path |
+| exit pattern | 2x `klog.FlushAndExit` (correct) | 3x plain `klog.Flush()` (the h1 defect) |
+| node.go | 92 lines | 190 lines |
+
+Both the primary escaped bug AND h1 were introduced DURING review. Consequence: the two tracks can
+need different checkpoints of the same subject, i.e. two review runs, not one.
+
+**Thread inventory for Track 1 (subject 9):** 46 threads, 35 resolved / 11 unresolved, 0 bot-authored,
+44 of 46 by danwinship, spanning 2025-03-15 to 2025-07-15 across 11 files.
+
+**Time-boxing replaces blanket denial.** Four tiers: git ancestry is free and safe (needs --depth 500,
+not 2); `gh` gets a PATH shim that refuses targets newer than the checkpoint and denies api/graphql/
+search; WebFetch/WebSearch are disallowed (harness built-ins, not shimmable) and replaced by a
+`docs-at` script pinning fetches to the Wayback snapshot at the checkpoint date; everything is logged
+and post-run audited, with tripped cells quarantined rather than scored.
+
+The in-loop LLM approval gate was considered and rejected as the primary control — latency and cost
+per call, and an LLM cannot reliably date a page that carries no date. It belongs in the post-run
+audit instead, where it blocks nothing and reviews evidence rather than guessing.
