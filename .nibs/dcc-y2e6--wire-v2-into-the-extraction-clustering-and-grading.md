@@ -2,11 +2,11 @@
 # dcc-y2e6
 version: 1
 title: Wire v2 into the extraction, clustering and grading pipeline
-status: todo
+status: in-progress
 type: feature
 priority: critical
 created_at: 2026-08-10T17:42:29Z
-updated_at: 2026-08-10T19:59:48Z
+updated_at: 2026-08-10T20:00:59Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
