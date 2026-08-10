@@ -1,0 +1,98 @@
+[
+  {
+    "path": "Jellyfin.Api/Controllers/DevicesController.cs",
+    "line": 136,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "nielsvanvelzen",
+    "created_at": "2024-10-17T06:53:22Z",
+    "against_commit": "92bc04f002f2a020ec080b31daaff05ea18a7fe8",
+    "body": "This really is a no-go. You should first check all devices for existence before proceeding with the delete operation. Otherwise the client can never know which devices were deleted.",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "Jellyfin.Api/Controllers/DevicesController.cs",
+    "line": 127,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "nielsvanvelzen",
+    "created_at": "2024-10-17T06:54:02Z",
+    "against_commit": "92bc04f002f2a020ec080b31daaff05ea18a7fe8",
+    "body": "Suggested change\n      \n    \n    \n      \n          \n            \n                public async Task<ActionResult> DeleteDevice([FromQuery, ParameterObsolete] string? id, [FromQuery, ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] ids)\n          \n          \n            \n                public async Task<ActionResult> DeleteDevice([FromQuery, ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] ids)\n          \n      \n    \n    \n  \n\nDashboard API's don't follow our \"no-break\" rules so we can just remove the old parameter.",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "Jellyfin.Api/Controllers/DevicesController.cs",
+    "line": 127,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "nielsvanvelzen",
+    "created_at": "2024-10-17T06:54:43Z",
+    "against_commit": "92bc04f002f2a020ec080b31daaff05ea18a7fe8",
+    "body": "IIRC we don't use CommaDelimitedArrayModelBinder for new parameters, that's just for old API's",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "Jellyfin.Api/Controllers/DevicesController.cs",
+    "line": 131,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "nielsvanvelzen",
+    "created_at": "2024-10-17T06:55:36Z",
+    "against_commit": "92bc04f002f2a020ec080b31daaff05ea18a7fe8",
+    "body": "Suggested change\n      \n    \n    \n      \n          \n            \n                    foreach (var i in allIDs)\n          \n          \n            \n                    foreach (var id in allIDs)\n          \n      \n    \n    \n  \n\nThere is no rule that you must use i for variable names in a for(each) loop",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "Jellyfin.Api/Controllers/DevicesController.cs",
+    "line": 129,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "JPVenson",
+    "created_at": "2024-10-17T20:10:45Z",
+    "against_commit": "e2093c582a8ba7143a42f7b7196fe0248d18841a",
+    "body": "Suggested change\n      \n    \n    \n      \n          \n            \n                    List<DeviceInfoDto> devices = new List<DeviceInfoDto>();\n          \n          \n            \n                    var devices = ids.Select(_deviceManager.GetDevice).ToArray();\n          \n          \n            \n                    if (devices.Any(f => f is null))\n          \n          \n            \n                    {\n          \n          \n            \n                    \treturn NotFound();\n          \n          \n            \n                    }",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "Jellyfin.Api/Controllers/DevicesController.cs",
+    "line": 144,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "JPVenson",
+    "created_at": "2024-10-17T20:52:04Z",
+    "against_commit": "c4c60ba61c9bae9597d1b4da1a42693308d1091c",
+    "body": "Suggested change\n      \n    \n    \n      \n          \n            \n                    foreach (var id in ids)\n          \n          \n            \n                    {\n          \n          \n            \n                        var existingDevice = _deviceManager.GetDevice(id);\n          \n          \n            \n                        if (existingDevice is null)\n          \n          \n            \n                        {\n          \n          \n            \n                            return NotFound();\n          \n          \n            \n                        }\n          \n          \n            \n            \n          \n          \n            \n                        devices.Add(existingDevice);\n          \n          \n            \n                    }",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "Jellyfin.Api/Controllers/DevicesController.cs",
+    "line": 127,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "nielsvanvelzen",
+    "created_at": "2024-10-18T07:29:53Z",
+    "against_commit": "fb89ec8f8396cee9c35384c8284e3ff54c1d0e26",
+    "body": "I just realized, if we rename this to id it will be backwards compatible.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                public async Task<ActionResult> DeleteDevice([FromQuery] string[] ids)\n          \n          \n            \n                public async Task<ActionResult> DeleteDevice([FromQuery] string[] id)",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "Jellyfin.Api/Controllers/DevicesController.cs",
+    "line": 132,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "nielsvanvelzen",
+    "created_at": "2026-04-16T19:24:51Z",
+    "against_commit": "8e33f2ad1d948e0096db447c88aa2da5898bd610",
+    "body": "Within a batching endpoint this would be a bad request (requesting one or multiple incorrect devices). Only if the id was a part of the path would we use a 404.",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  }
+]

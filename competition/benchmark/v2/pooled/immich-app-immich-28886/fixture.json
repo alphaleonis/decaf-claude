@@ -1,0 +1,32 @@
+{
+  "slug": "immich-app/immich#28886",
+  "repo": "immich-app/immich",
+  "pr": 28886,
+  "title": "refactor(server): allow -1 rating again",
+  "app_type": "contract",
+  "size": "S",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "5eb4179a0c4418609be896a6ab556e4b8b9c2c6a",
+    "base": "9e453440e63fcb5edc18ffef3d466cfc56cdfda7",
+    "base_ref": "main",
+    "date": "2026-06-07T21:42:37Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 7,
+      "additions": 25,
+      "deletions": 43
+    }
+  },
+  "merged_at": "2026-06-10T08:55:51Z",
+  "pr_created_at": "2026-06-06T22:47:06Z",
+  "vintage": {
+    "merged": "2026-06-10",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"
+  },
+  "threads": {
+    "total": 5,
+    "rejected": 3,
+    "admitted": 2
+  }
+}

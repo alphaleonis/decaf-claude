@@ -1,0 +1,32 @@
+{
+  "slug": "PostHog/posthog#52408",
+  "repo": "PostHog/posthog",
+  "pr": 52408,
+  "title": "feat(models): add fail-closed TeamScopedManager for tenant isolation",
+  "app_type": "backend",
+  "size": "L",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "546ea65b439bc63bf244da7300160faa871c92f9",
+    "base": "09e1708b97deaedb4507a8e28d13721532831d9b",
+    "base_ref": "master",
+    "date": "2026-03-31T04:44:04Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 23,
+      "additions": 1482,
+      "deletions": 25
+    }
+  },
+  "merged_at": "2026-05-06T13:38:44Z",
+  "pr_created_at": "2026-03-26T12:20:53Z",
+  "vintage": {
+    "merged": "2026-05-06",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"
+  },
+  "threads": {
+    "total": 27,
+    "admitted": 19,
+    "rejected": 8
+  }
+}

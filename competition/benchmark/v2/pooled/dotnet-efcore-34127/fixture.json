@@ -1,0 +1,32 @@
+{
+  "slug": "dotnet/efcore#34127",
+  "repo": "dotnet/efcore",
+  "pr": 34127,
+  "title": "Use null propagation to optimize away `IS NOT NULL` checks",
+  "app_type": "library",
+  "size": "M",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "afcfba2e91ba9be61a4ea19d74eb20343db8e903",
+    "base": "051c33a79bf884a992cf642515c3886b94e8b68d",
+    "base_ref": "main",
+    "date": "2024-07-01T11:50:25Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 8,
+      "additions": 202,
+      "deletions": 100
+    }
+  },
+  "merged_at": "2026-06-15T21:17:18Z",
+  "pr_created_at": "2024-06-30T19:42:24Z",
+  "vintage": {
+    "merged": "2026-06-15",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"
+  },
+  "threads": {
+    "total": 15,
+    "admitted": 11,
+    "rejected": 4
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "slug": "jellyfin/jellyfin#12834",
+  "repo": "jellyfin/jellyfin",
+  "pr": 12834,
+  "title": "Have device deletion take list of ids",
+  "app_type": "backend",
+  "size": "S",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "92bc04f002f2a020ec080b31daaff05ea18a7fe8",
+    "base": "4251cbc27799f50eb58fda6fb30f735bbc781a0d",
+    "base_ref": "master",
+    "date": "2024-10-17T06:53:22Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 1,
+      "additions": 21,
+      "deletions": 12
+    }
+  },
+  "merged_at": "2026-05-21T17:30:25Z",
+  "pr_created_at": "2024-10-16T21:41:03Z",
+  "vintage": {
+    "merged": "2026-05-21",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"
+  },
+  "threads": {
+    "total": 8,
+    "admitted": 8
+  }
+}

@@ -22,38 +22,48 @@ Contract-crossing — the row the corpus has never had — is thinnest but real 
 the only row that exercises multi-specialist dispatch (`typescript-reviewer` + `dotnet-reviewer`
 together), because the defect lives in the mismatch between two files in two languages.
 
-## Proposed phase 1 (6 subjects)
+## BUILT — the full 12-cell grid (2026-08-10)
 
-Deliberately **not** all 12 cells. The full grid should not be built before `dcc-vkeh` shows that
-pooled adjudication works — in particular that the judge is stable at the `valid-other`/`nitpick`
-boundary. Six subjects cover all four types and all three sizes and are enough to run the pilot.
+All twelve cells built, no deferral. Fixtures and thread sets in `v2/pooled/<owner>-<repo>-<pr>/`;
+checkouts are gitignored and rebuilt by `v2/build_pooled_repo.sh`.
 
-| Cell | Subject | Size | Threads | Why this one |
-|---|---|---|---|---|
-| contract / S | `immich-app/immich#28886` | +52/-45 | 5 | Svelte web + TS server — the operator's stack shape, smallest real contract crossing |
-| library / S | `sveltejs/kit#15685` | +53/-24 | 8 | "breaking: nested server-only directories" — server-only leakage, security-adjacent and subtle |
-| library / M | `dotnet/efcore#34127` | +233/-97 | 15 | "null propagation to optimize away `IS NOT NULL`" — C#, genuinely tricky logic |
-| backend / M | `grafana/grafana#124181` | +177/-12 | 17 | lease auto-renewal — concurrency and lifetime, the kind of thing reviews miss |
-| contract / M | `PostHog/posthog#61823` | +199/-11 | 22 | richest contract-crossing thread set available |
-| app-ui / L | `element-hq/element-web#32964` | +560/-6 | 21 | pure SPA behavior, large, 21 threads |
+| Type | S | M | L |
+|---|---|---|---|
+| contract | immich#28886 | mattermost#36824 | PostHog#55149 |
+| app-ui | grafana#117615 | immich#24627 | element-web#32964 |
+| backend | jellyfin#12834 | grafana#124181 | PostHog#52408 |
+| library | sveltejs/kit#15685 | efcore#34127 | prometheus#18081 |
 
-Spread: 6 repos, 3 sizes, 4 types, and 5 languages (TS, Svelte, C#, Go, Python) — none of which was
-designed for. Language falling out naturally is the intended behavior of dropping it as an axis.
+**120 admitted review threads across the 12 subjects** (of 218 raw), against the anchor's 12 key
+entries across 7 subjects — a tenfold increase in miss-detector signal, which was the whole argument
+for this instrument.
 
-Notably `immich#28886` and `sveltejs/kit#15685` are Svelte and `efcore#34127` is EF Core, so the
-operator's actual stack is represented without having been targeted.
+Nine distinct repos, maximum two per repo. Five languages — TS, Svelte, Go, Python, C# — none of
+which was selected for. Svelte appears twice and EF Core once, so the operator's stack is represented
+without having been targeted, which is what dropping language as an axis is meant to produce.
 
-## Deferred to phase 2
+### The checkpoint rule for pooled subjects
 
-The remaining six cells, after the pilot. `contract / L` candidates are strong but expensive —
-`PostHog#55149` carries **72 threads** at +2527/-635, which is the richest single subject found and
-likely worth its cost once the pipeline is proven.
+**Checkpoint = the commit the earliest review comment was written against** — the state at which
+human review began, so tools and humans review the same starting point and thread recall is
+meaningful.
 
-## Screening notes
+This needed deciding because threads are *not* concentrated on one commit: measured across the 12
+subjects, they disperse over **4 to 15 commits**, with the single most-commented commit holding only
+about 42% of them. So admission is applied per thread rather than by assuming one commit carries the
+set: a thread is admitted if its flagged file is in the checkpoint diff and its line falls inside a
+changed hunk. That recovers 120 threads where a modal-commit rule would have yielded ~92.
 
-- `sort:comments-desc` is used because thread count cannot be filtered server-side. It biases toward
-  large PRs, which is why the S band needed a separate pass at a >=3 thread bar rather than >=5.
-- `reviewThreads.totalCount` was verified trustworthy against counted nodes (12 = 12) — unlike
-  `timelineItems.totalCount`, which ignores its `itemTypes` filter and misled an earlier session.
-- `find_candidates.sh` exits 4 rather than emitting zero rows on a GraphQL error. Two repos initially
-  reported "0 candidates" from transient failures swallowed by `2>/dev/null`; both in fact have ~100.
+### Verification performed
+
+- **Merge-base correctness**, per subject: every checkpoint diff touches directories the PR itself
+  touches (≥50% overlap, mostly 100%). This is the real test — the failure mode is a stale base
+  dragging in unrelated target-branch changes, which turned 18 files into 240 on an earlier subject.
+- **Diff-size sanity**: two subjects exceeded their final PR size and were investigated rather than
+  waved through. `grafana#117615` (3.14×) is legitimate — its checkpoint carries test scaffolding
+  (`sqlCompletionProvider.test.ts` +48, `metaSqlExpr.test.ts` +67) that reviewers consolidated away
+  before merge. Real branch shrinkage, not a bad base.
+- **Step 8 airtightness**, all 12: history depth ≥500 (the one-fetch rule held — no re-shallowing),
+  clean working tree, no remote, merge base present, and no reference to the PR number anywhere in
+  the checkout.
+

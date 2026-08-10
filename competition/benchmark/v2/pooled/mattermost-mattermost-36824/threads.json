@@ -1,0 +1,122 @@
+[
+  {
+    "path": "server/public/model/command_response.go",
+    "line": 88,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "coderabbitai",
+    "created_at": "2026-06-01T10:00:39Z",
+    "against_commit": "e9ef9dbd001a035c19772fbdc4a7802fedd0d4c4",
+    "body": "\u26a0\ufe0f Potential issue | \ud83d\udfe1 Minor | \u26a1 Quick win\nText limit is enforced in bytes, not characters.\nThe issue specifies a 65,535 character limit, but len(o.Text) returns the byte count. Multibyte UTF-8 text under the character limit can be wrongly rejected. If the intent is a character cap, count runes instead.\n\n\ud83d\udc1b Proposed fix to count characters\n-\tmaxLength := 65535\n-\tif len(o.Text) > maxLength {\n+\tmaxLength := 65535\n+\tif utf8.RuneCountInString(o.Text) > maxLength {\n \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n \t}\nAdd the import:\n import (\n \t\"encoding/json\"\n \t\"io\"\n \t\"net/http\"\n \t\"strings\"\n+\t\"unicode/utf8\"\n\n \t\"github.com/mattermost/mattermost/server/public/utils\"\n )\n\nNote: if the 65,535 cap is actually a downstream byte-storage limit, the current len() check is correct\u2014please confirm which constraint applies.\n\n\n\ud83d\udcdd Committable suggestion\n\n\u203c\ufe0f IMPORTANT\nCarefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.\n\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n            \tmaxLength := 65535\n          \n          \n            \n            \tif len(o.Text) > maxLength {\n          \n          \n            \n            \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n          \n          \n            \n            \t}\n          \n          \n            \n            import (\n          \n          \n            \n            \t\"encoding/json\"\n          \n          \n            \n            \t\"io\"\n          \n          \n            \n            \t\"net/http\"\n          \n          \n            \n            \t\"strings\"\n          \n          \n            \n            \t\"unicode/utf8\"\n          \n          \n            \n            \n          \n          \n            \n            \t\"github.com/mattermost/mattermost/server/public/utils\"\n          \n          \n            \n            )\n          \n      \n    \n    \n  \n\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n            \tmaxLength := 65535\n          \n          \n            \n            \tif len(o.Text) > maxLength {\n          \n          \n            \n            \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n          \n          \n            \n            \t}\n          \n          \n            \n            \tmaxLength := 65535\n          \n          \n            \n            \tif utf8.RuneCountInString(o.Text) > maxLength {\n          \n          \n            \n            \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n          \n          \n            \n            \t}\n          \n      \n    \n    \n  \n\n\n\n\n\ud83e\udd16 Prompt for AI Agents\nVerify each finding against current code. Fix only still-valid issues, skip the\nrest with a brief reason, keep changes minimal, and validate.\n\nIn `@server/public/model/command_response.go` around lines 85 - 88, The length\ncheck currently uses len(o.Text) which counts bytes; change it to count\ncharacters by using utf8.RuneCountInString(o.Text) (or len([]rune(o.Text))) when\ncomparing to maxLength, update the import to include \"unicode/utf8\", and keep\nthe same error return (the check lives in CommandResponse.IsValid referencing\no.Text and maxLength); if the 65,535 constraint is actually a byte-storage\nlimit, leave the current byte-based len() check instead.\n\n\n\n\n\u2705 Addressed in commit fc34391",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "server/public/model/command_response.go",
+    "line": 83,
+    "is_resolved": true,
+    "is_outdated": false,
+    "author": "hanzei",
+    "created_at": "2026-06-23T10:30:30Z",
+    "against_commit": "fc34391ab5e2cec37b0e9b7190e018645ee20834",
+    "body": "These are new errors right? if so, please run make i18n-extract to add them to the i18n files.",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "server/public/model/command_response.go",
+    "line": 89,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "hanzei",
+    "created_at": "2026-06-23T10:31:19Z",
+    "against_commit": "fc34391ab5e2cec37b0e9b7190e018645ee20834",
+    "body": "this gets checked later during post creation. I don't think we should already do that here.",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "server/public/model/command_response.go",
+    "line": 1,
+    "is_resolved": true,
+    "is_outdated": false,
+    "author": "hanzei",
+    "created_at": "2026-06-23T10:34:05Z",
+    "against_commit": "fc34391ab5e2cec37b0e9b7190e018645ee20834",
+    "body": "Are there other fields we want to check?\n\nIconURL must be an URL, right?\nType must be one of the known post types.`\nAttachments also has a IsValid method we should check\\\nI think GotoLocation must be an URL",
+    "admission": "rejected",
+    "admission_reason": "line outside every changed hunk at the checkpoint"
+  },
+  {
+    "path": "server/public/model/command_response.go",
+    "line": 74,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "hanzei",
+    "created_at": "2026-06-23T10:35:09Z",
+    "against_commit": "fc34391ab5e2cec37b0e9b7190e018645ee20834",
+    "body": "Let's not throw an hard error. This might break existing servers. Instead log a warning, similar to the caller of MessageAttachment.IsValid(). In general, we should use that method as a guideline.",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "server/public/model/command_response.go",
+    "line": 99,
+    "is_resolved": true,
+    "is_outdated": false,
+    "author": "coderabbitai",
+    "created_at": "2026-06-29T14:41:45Z",
+    "against_commit": "f71fda4d39567cf9cc94d58fb3808c8014726f6c",
+    "body": "\ud83c\udfaf Functional Correctness | \ud83d\udfe0 Major | \u26a1 Quick win\n\n\ud83e\udde9 Analysis chain\n\ud83c\udf10 Web query:\nIn Go's net/url package, does ParseRequestURI accept absolute-path values like \"/foo\" without a scheme/host?\n\ud83d\udca1 Result:\nYes, Go's net/url.ParseRequestURI accepts absolute-path values, such as \"/foo\", without a scheme or host [1][2][3]. The function is specifically designed to parse URLs as they might be received in an HTTP request line [1][2]. According to the official documentation, ParseRequestURI interprets the input string as either an absolute URI or an absolute path [1][2]. Because absolute paths are valid request-targets in HTTP, they are accepted by this function [4][3]. It is important to note that ParseRequestURI assumes the input string does not contain a fragment suffix (#fragment), as web browsers typically strip fragments before sending the URL to a server [1][4].\nCitations:\n\n1: https://pkg.go.dev/net/url\n2: https://pkg.go.dev/net/url@go1.26.4\n3: https://stackoverflow.com/questions/51069484/url-validation-seems-broken\n4: https://github.com/golang/go/blob/go1.26.4/src/net/url/url.go\n\n\n\nReject path-only values here\nurl.ParseRequestURI accepts inputs like /foo, so these fields can still pass validation without being actual URLs. If IconURL and GotoLocation must be full URLs, require a scheme/host or switch to a stricter URL check.\n\n\ud83e\udd16 Prompt for AI Agents\nVerify each finding against current code. Fix only still-valid issues, skip the\nrest with a brief reason, keep changes minimal, and validate.\n\nIn `@server/public/model/command_response.go` around lines 87 - 99, The IconURL\nand GotoLocation validation in command_response.go still allows path-only values\nbecause url.ParseRequestURI is too permissive. Update the validation in\nCommandResponse.IsValid to require a full URL with a scheme and host, or replace\nthe current parsing with a stricter check that rejects inputs like /foo. Keep\nthe existing error handling and messages, but make sure both IconURL and\nGotoLocation are validated against full URL requirements.",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "server/public/model/command_response.go",
+    "line": 75,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "hanzei",
+    "created_at": "2026-06-30T07:00:06Z",
+    "against_commit": "9c48344aee91bc370e4cd3ba39f20d5678030705",
+    "body": "I would like to see a concrete logger instead of the global one getting used, as that carries context as well.\nLet's move this call into the two placed where CommandResponseFromHTTPBody is called (commandWebhook, DoCommandRequest) and use the request logger.",
+    "admission": "admitted",
+    "admission_reason": "line inside a changed hunk at the checkpoint"
+  },
+  {
+    "path": "server/channels/web/webhook.go",
+    "line": 122,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "coderabbitai",
+    "created_at": "2026-06-30T11:30:40Z",
+    "against_commit": "afade4fef1a4469a5bcf7389a511d0765ced7c8c",
+    "body": "\ud83e\ude7a Stability & Availability | \ud83d\udfe1 Minor | \u26a1 Quick win\n\n\ud83e\udde9 Analysis chain\n\ud83c\udfc1 Script executed:\n#!/bin/bash\nset -euo pipefail\n\necho \"== CommandResponseFromHTTPBody contract ==\"\nast-grep outline server/public/model/command_response.go --view expanded || true\nnl -ba server/public/model/command_response.go | sed -n '1,90p'\n\necho\necho \"== Compare all current callers ==\"\nrg -nC3 'CommandResponseFromHTTPBody|response == nil|IsValid\\(' \\\n  server/public/model/command_response.go \\\n  server/channels/app/command.go \\\n  server/channels/web/webhook.go\nRepository: mattermost/mattermost\nLength of output: 1478\n\n\ud83c\udfc1 Script executed:\n#!/bin/bash\nset -euo pipefail\n\necho \"== server/public/model/command_response.go ==\"\nsed -n '1,140p' server/public/model/command_response.go\n\necho\necho \"== server/channels/app/command.go (caller context) ==\"\nrg -nC4 'CommandResponseFromHTTPBody|response == nil|IsValid\\(' server/channels/app/command.go server/channels/web/webhook.go\nRepository: mattermost/mattermost\nLength of output: 6346\n\n\nGuard response before calling IsValid()\nCommandResponseFromHTTPBody can return (nil, nil) if io.ReadAll fails on the non-JSON path, so response.IsValid() may dereference nil here. Add a nil check or make the helper return an error in that case.\n\n\ud83e\udd16 Prompt for AI Agents\nVerify each finding against current code. Fix only still-valid issues, skip the\nrest with a brief reason, keep changes minimal, and validate.\n\nIn `@server/channels/web/webhook.go` around lines 120 - 122, Guard the `response`\nvalue before calling `response.IsValid()` in the webhook handling path, because\n`CommandResponseFromHTTPBody` can return a nil response when `io.ReadAll` fails.\nUpdate the code around `CommandResponseFromHTTPBody` and the `IsValid` call so\nit either checks `response != nil` before validation or changes the helper to\nreturn an error instead of `(nil, nil)` on read failure, preventing a nil\ndereference in `webhook.go`.\n\n\n\n\n\n\n\u2705 Addressed in commits afade4f to 9ef244b",
+    "admission": "rejected",
+    "admission_reason": "file absent from the checkpoint diff"
+  },
+  {
+    "path": "server/channels/app/command.go",
+    "line": 603,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "hanzei",
+    "created_at": "2026-06-30T11:42:53Z",
+    "against_commit": "9ef244bfba51156c04921b08c78291f1a730e1c9",
+    "body": "Suggested change\n      \n    \n    \n      \n          \n            \n            \t\trctx.Logger().Warn(\"Command response is not valid\", mlog.Err(appErr))\n          \n          \n            \n            \t\trctx.Logger().Warn(\"Command response is not valid. Please update your integration to be compliant.\", mlog.Err(appErr))",
+    "admission": "rejected",
+    "admission_reason": "file absent from the checkpoint diff"
+  },
+  {
+    "path": "server/channels/web/webhook.go",
+    "line": 122,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "hanzei",
+    "created_at": "2026-06-30T11:43:01Z",
+    "against_commit": "9ef244bfba51156c04921b08c78291f1a730e1c9",
+    "body": "Suggested change\n      \n    \n    \n      \n          \n            \n            \t\t\tc.Logger.Warn(\"Command response is not valid\", mlog.Err(vErr))\n          \n          \n            \n            \t\t\tc.Logger.Warn(\"Command response is not valid. Please update your integration to be compliant.\", mlog.Err(appErr))",
+    "admission": "rejected",
+    "admission_reason": "file absent from the checkpoint diff"
+  }
+]

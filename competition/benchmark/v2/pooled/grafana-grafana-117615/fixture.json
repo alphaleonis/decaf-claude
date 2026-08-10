@@ -1,0 +1,32 @@
+{
+  "slug": "grafana/grafana#117615",
+  "repo": "grafana/grafana",
+  "pr": 117615,
+  "title": "SqlExpressions: Fix parsing for Table Names with spaces",
+  "app_type": "app-ui",
+  "size": "S",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "9a73ede33d5b715c75e8de873e52c23d7874cb7e",
+    "base": "bcca6eb9533af2185fc2a5234c4e9658c7ce76ca",
+    "base_ref": "main",
+    "date": "2026-04-06T19:37:05Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 6,
+      "additions": 135,
+      "deletions": 3
+    }
+  },
+  "merged_at": "2026-07-17T16:53:37Z",
+  "pr_created_at": "2026-02-06T18:49:21Z",
+  "vintage": {
+    "merged": "2026-07-17",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"
+  },
+  "threads": {
+    "total": 10,
+    "admitted": 7,
+    "rejected": 3
+  }
+}

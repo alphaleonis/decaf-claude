@@ -1,0 +1,32 @@
+{
+  "slug": "PostHog/posthog#55149",
+  "repo": "PostHog/posthog",
+  "pr": 55149,
+  "title": "feat(flags): add test_evaluation endpoint",
+  "app_type": "contract",
+  "size": "L",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "9b0f84471e9d56e5457d132d8228c40c51d03848",
+    "base": "66cae6489326e66ac75f41eccb3da0a608f7d8df",
+    "base_ref": "master",
+    "date": "2026-04-17T19:57:23Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 18,
+      "additions": 1253,
+      "deletions": 38
+    }
+  },
+  "merged_at": "2026-05-06T19:44:38Z",
+  "pr_created_at": "2026-04-17T19:54:46Z",
+  "vintage": {
+    "merged": "2026-05-06",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"
+  },
+  "threads": {
+    "total": 72,
+    "admitted": 35,
+    "rejected": 37
+  }
+}
