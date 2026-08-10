@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T17:49:56Z
+updated_at: 2026-08-10T18:14:57Z
 order: zzzzV
 ---
 
@@ -267,22 +267,25 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-2cxq: Closed with the two re-run items scrapped rather than completed.
+Completed dcc-8tjr: Archived the v1 dataset under `v1-archive/` (88 cells, 9 graded subjects, metrics CSV, run ledger,
+and both earlier quarantines) with a README recording the four failures, the opposite-direction leaks
+that make even the gap's direction unknown, and the line between what the data may still be cited for
+(leak mechanism, cost telemetry) and what it may not (any tool comparison).
 
-**Delivered.** Root cause found and fixed: `run_cell.sh`'s `ensure_repo()` returned early once the
-commit was present, so its `checkout -f` ran only on first clone and every later cell inherited the
-previous cell's working tree — including the untracked `.decaf/code-reviews/` that the decaf skills
-write to and read back via their recurring-findings cross-check. Competitor tools write nothing into
-the tree, so the leak asymmetrically inflated decaf-family recall. Now reset per cell (`checkout -f`
-+ `clean -xfd`), refusing to run (exit 77, cell left pending) if the tree is still dirty. Verified by
-planting a report and watching it removed, then on a real cell whose bundle held only its own report.
+The concrete collision the archive breaks: `analysis/scripts/gather_inputs.sh` wrote v1 keys into
+`analysis/subject-NN/` — the same shape v2 uses — so a v2 grader could have picked one up by path
+convention alone. `analysis/` now holds only machinery. Corpus definition stayed in place because
+dcc-5xad needs it, with the caveat that `subjects/*.json` still carries the unaudited ground truth.
 
-Also: 27 contaminated cells invalidated and quarantined with evidence, 9 subject analyses quarantined
-(frozen answer keys and review diffs preserved — they derive from the PR, not from tool output),
-reasoning effort pinned and recorded per cell, and subject 9 re-graded clean.
+`bench_next.sh` refuses without `BENCH_V1_ALLOW=1`; the five bench commands carry the warning; v1
+machinery was repointed so a deliberate re-run still works.
 
-**Scrapped.** The 27 v1 re-runs and 9 re-analyses. Under [[dcc-ho2w]] two of the first three subjects
-audited had invalid ground truth — subject 11 indicts a defect that was fixed during review and is
-absent from the merged code, and subject 2's fixture miscounts its own review threads. Re-running v1
-cells would have spent ~$390 producing confident numbers graded against defects that may not be in
-the reviewed diff. Superseded by the v2 milestone; the artifacts are covered by [[dcc-8tjr]].
+Unplanned but in scope: `run_cell_v2.sh` had NO checkout reset — v2 was reproducing the exact v1
+contamination design. A stray `ours-review` report sat in `v2/repos/2/` for all eight subsequent
+subject-2 cells, including all four of the controlled test. Audited every transcript (9 parents + 18
+subagent sidechains + tool-results): `.decaf/` appears in exactly one file, the writer's own. Not
+exploited, so CONTROLLED-TEST.md's conclusion stands — but the cell outputs alone could not have
+shown that, since cells keep no transcript. v2 now resets before every cell and refuses on a dirty
+tree (77) or missing checkpoint (78), smoke-tested to preserve the 129,013-commit history.
+
+Next in the milestone: dcc-5xad (audit ground truth) and dcc-595v (decide the v2 scoring model).
