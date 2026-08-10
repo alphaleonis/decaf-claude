@@ -6,7 +6,7 @@ status: draft
 type: epic
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T14:04:45Z
+updated_at: 2026-08-10T15:05:18Z
 order: zzzzV
 ---
 
@@ -241,3 +241,26 @@ merged head.
 
 This resolves the earlier open question about needing two review runs for split-defect subjects:
 ONE run at the earliest head containing the defect serves both purposes.
+
+## Proof of concept complete (2026-08-10)
+Three subjects taken through the section 4 procedure end to end. Artifacts under
+`competition/benchmark/v2/` (fixtures, keys, airtight checkouts).
+
+**Verdict on the checkpoint idea: it changed the answer in 1 of 3 subjects**, and there only because
+the merged head turned out unscorable. Review did something different to the defect in each case —
+INTRODUCED it (9), REMOVED it (11), TRANSFORMED it (2) — so there is no default checkpoint, but
+neither is the machinery load-bearing. Demote it from v2's centrepiece to an occasional tool.
+
+**What actually earned its keep:** the leak-proofing (section 5) and the key-building discipline
+(section 4 step 6), which caught two invalid v1 ground truths before either cost a review cell. See
+[[dcc-5xad]] for the audit of the remaining 9.
+
+Procedure bugs found by executing it, all fixed in the doc:
+1. `fetch --depth 1` of the merge base after a deep fetch re-shallows the repo (129013 commits -> 7)
+2. Mechanical pre-filters rejected 0 of 46 threads on subject 9; the must_flag triage does the work
+3. Force-pushes do not enumerate all heads — ordinary pushes leave gaps in the chain
+4. A full-revert "fix" gives no line-level localization; the locus must come from the discussion
+
+Next: prove the pipeline end to end on subject 2 (vintage-safe, clean 2-entry key) with gh and
+WebFetch denied outright. Build the section 5 shim and `docs-at` only once the plumbing is shown to
+produce a sensible verdict.
