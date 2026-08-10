@@ -2,11 +2,11 @@
 # dcc-ixyy
 version: 1
 title: 'Build the pooled-adjudication corpus: size x application type, reputable repos'
-status: todo
+status: in-progress
 type: task
 priority: high
 created_at: 2026-08-10T18:26:35Z
-updated_at: 2026-08-10T19:30:14Z
+updated_at: 2026-08-10T19:36:27Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-f2nf
@@ -56,7 +56,9 @@ variable for tool behavior.
 | **Backend service** | | | |
 | **Library / framework internals** | | | |
 
-Two or three surviving audited subjects can fill library/internals cells, since that is what they are.
+The audited survivors **cannot** fill pooled cells: only subject 2 (2026-07) clears the 2026-05 rule,
+the rest are pre-cutoff. They serve as the anchor ([[dcc-9ncz]]) and as matched-pair vintage probes.
+So library/internals cells need fresh post-cutoff subjects like every other row.
 The grid is affordable now only because pooled adjudication yields ~50-100 clusters per subject rather
 than 1-3 key entries — a 12-cell grid was decorative under key-based scoring and is well powered here.
 
