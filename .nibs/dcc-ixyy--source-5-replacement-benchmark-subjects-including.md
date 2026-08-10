@@ -6,9 +6,11 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-10T18:26:35Z
-updated_at: 2026-08-10T18:27:14Z
+updated_at: 2026-08-10T18:42:12Z
 parent: dcc-ho2w
-order: T
+blocked_by:
+    - dcc-f2nf
+order: F
 ---
 
 The ground-truth audit ([[dcc-5xad]]) rejected 5 of 12 subjects. Full evidence and per-subject

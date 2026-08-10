@@ -6,9 +6,9 @@ status: todo
 type: task
 priority: normal
 created_at: 2026-08-10T17:43:02Z
-updated_at: 2026-08-10T17:43:41Z
+updated_at: 2026-08-10T18:42:12Z
 parent: dcc-ho2w
-order: Zk
+order: Hw
 ---
 
 `v2/shim-log/gh` makes `gh` measurable in the control arm, but it is a `gh` accounting instrument,
