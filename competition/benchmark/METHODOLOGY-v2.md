@@ -104,9 +104,15 @@ Mechanical pre-filters narrow the candidate set before human judgment is needed:
 - does its line range fall inside the checkpoint's changed hunks?
 - does `git blame` on the fix's deleted lines trace to a commit reachable from the checkpoint head?
 
-On subject 9 these filters alone drop the `pkg/proxy/topology.go` and
-`pkg/proxy/kubemark/hollow_proxy.go` threads, and the entire `NewNodeManager`-error-path family. What
-survives is a shortlist to adjudicate, not 46 threads plus a fix PR read from scratch.
+**Measured effectiveness: much weaker than expected.** On subject 9 at push #2 the file filter
+rejected **0 of 46** threads, because that push already touches all 18 files the merged PR touches.
+Only 13 of 46 threads carry a live line number (33 are marked outdated), so the line filter is
+inapplicable to most. Do not plan on the mechanical filters carrying the work — on a mid-PR
+checkpoint they may reject nothing at all.
+
+What actually collapses the set is the `must_flag` test applied as triage (below): on subject 9 it
+removed ~35 naming, wording, refactor-preference and test-ergonomics threads as a class, leaving ~9
+to verify individually against the checkpoint code.
 
 **The residual judgment is irreducible and must be done by hand** (human, or human-supervised LLM).
 Deciding whether a June comment describes a March defect requires reading the code at both points.
@@ -227,8 +233,7 @@ the merged diff means the wrong base.
 
 ```sh
 git init -q "$REPO_DIR" && git -C "$REPO_DIR" remote add origin "https://github.com/O/R"
-git -C "$REPO_DIR" fetch -q --depth 500 origin <checkpoint-sha>
-git -C "$REPO_DIR" fetch -q --depth 1  origin <merge-base-sha>
+git -C "$REPO_DIR" fetch -q --depth 500 origin <checkpoint-sha>   # ONE fetch only
 git -C "$REPO_DIR" checkout -q -f <checkpoint-sha>
 git -C "$REPO_DIR" clean -qxfd
 git -C "$REPO_DIR" remote remove origin
@@ -236,6 +241,12 @@ git -C "$REPO_DIR" remote remove origin
 
 Depth 500 (not 2) so history exploration works offline — see §5 Tier 0. Ancestry guarantees nothing
 later is reachable at any depth. Dropping the remote prevents a later fetch from pulling newer state.
+
+> ⚠️ **Fetch the checkpoint and nothing else.** The merge base is an ancestor of the checkpoint, so it
+> arrives with it. A second `fetch --depth 1` of the base **re-shallows the repository** and discards
+> the deep history you just fetched — observed on subject 9: 129,013 commits collapsed to 7. Verify
+> with `git rev-list --count HEAD` after building; a three-figure result means the history was
+> truncated.
 
 Fixture fields, extending the v1 schema:
 

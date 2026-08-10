@@ -1,0 +1,70 @@
+{
+  "subject_id": 9,
+  "repo": "kubernetes/kubernetes",
+  "pr": 130837,
+  "checkpoint": {
+    "sha": "2ccd845497ee5e4fc48334fec1f4bf2cca242d20",
+    "base": "8559194e118ffcc8a1e39df4d8c6e6630a0555ff",
+    "date": "2025-03-18T15:12:04Z",
+    "push_index": 2,
+    "push_count": 13,
+    "selection": "earliest head containing the escaped defect",
+    "diff_stat": { "files": 18, "additions": 745, "deletions": 727 }
+  },
+  "built_at": "2026-08-10",
+  "built_by": "operator + assistant",
+  "candidates_considered": { "review_threads": 46, "post_merge_issues": 2, "follow_up_prs": 2 },
+
+  "entries": [
+    {
+      "id": "e1",
+      "statement": "NewNodeManager returns an error when NodeIPs cannot be retrieved within the poll window, and newProxyServer propagates it, aborting kube-proxy startup. The replaced code was non-fatal: it returned possibly-empty IPs and detectNodeIPs fell back to localhost/BindAddress, letting kube-proxy start degraded.",
+      "file": "pkg/proxy/node.go",
+      "locus": "newNodeManager poll -> `return nil, err` (node.go:95); propagated at cmd/kube-proxy/app/server.go:227-229",
+      "provenance": "post-merge-fix",
+      "source_ref": "https://github.com/kubernetes/kubernetes/pull/132958 (revert), /133059 (take 2); foreshadowed pre-merge by danwinship thread on server.go:705, 2025-03-15",
+      "discovered_at": "2025-07-24",
+      "admission_evidence": "Present at checkpoint. Verified in the fixture: node.go:49 `NewNodeManager(...) (*NodeManager, error)`, node.go:95 `return nil, err`, server.go:229 `return nil, err` propagating it. Absent at pushes #0/#1, where NewNodeManager returned `*NodeManager` with no error path.",
+      "must_flag": "Flags that failure to obtain NodeIPs now ABORTS kube-proxy startup where the previous behavior was non-fatal with a localhost/BindAddress fallback. Equivalent framings count ('kube-proxy will fail to start if the node has no IPs yet', 'this should degrade rather than error', 'breaks cloud-provider startup ordering'). Merely noting that a timeout exists, or praising it, does NOT count.",
+      "must_not_require": "Do NOT require the reviewer to mention a 5-minute timeout. At this checkpoint the poll timeout is 30s (node.go:50, `30*time.Second`); the widening to 5 minutes came later. Only the fatal-vs-non-fatal claim is in scope here.",
+      "severity_hint": "critical"
+    },
+    {
+      "id": "e2",
+      "statement": "All NodeManager exit paths call plain klog.Flush() followed by exitFunc(1) instead of the codebase-standard klog.FlushAndExit(klog.ExitFlushTimeout, 1). Plain Flush() is synchronous and unbounded, so a stalled log sink can prevent the exit from being reached, and buffered logs explaining the crash can be lost.",
+      "file": "pkg/proxy/node.go",
+      "locus": "node.go:132-133, 148-149, 156-157",
+      "provenance": "post-merge-issue",
+      "source_ref": "nojnhuh, PR thread 2025-07-15: 'this PR seems to have broken creating clusters for me... previous klog.FlushAndExit() may have been more robust'",
+      "discovered_at": "2025-07-15",
+      "admission_evidence": "Present at checkpoint. Verified: 3 occurrences of `klog.Flush()` + `n.exitFunc(1)` at node.go:132/148/156, 0 occurrences of klog.FlushAndExit. Pushes #0/#1 had 2x klog.FlushAndExit and 0 plain Flush(), so the defect entered at this checkpoint.",
+      "must_flag": "Flags that the exit paths use unbounded klog.Flush() rather than the bounded klog.FlushAndExit, risking lost crash diagnostics or a hung exit.",
+      "severity_hint": "medium"
+    }
+  ],
+
+  "rejected": [
+    {
+      "candidate": "h2 - 'Successfully retrieved NodeIPs' logged unconditionally; no error logged when NodeIPs come back empty",
+      "source_ref": "danwinship thread on server.go:219, 2025-06-17",
+      "reason": "NOT present at checkpoint. The server.go log line the thread refers to does not exist at push #2; the only such log is node.go:90, inside the poll's success path. The defect was introduced after this checkpoint."
+    },
+    {
+      "candidate": "The 5-minute NodeIP poll timeout is too long / unexplained",
+      "source_ref": "adrianmoisey thread on node.go:59, 2025-03-19",
+      "reason": "NOT present at checkpoint. node.go:50 uses `30*time.Second` at push #2. The 5-minute value was introduced later. (Note: push #2 appears to have RESTORED the ~30s timeout in response to danwinship's 2025-03-15 comment.)"
+    },
+    {
+      "candidate": "Error is discarded / kube-proxy ought to fail if it cannot get node IPs",
+      "source_ref": "danwinship threads on node.go:104 and node.go:108, 2025-05-05 and 2025-05-19",
+      "reason": "Not a defect report against this checkpoint. These argue FOR the failing behavior that push #2 already implements — they are the review pressure that produced e1, not a finding about it."
+    },
+    {
+      "candidate": "~35 threads: naming, comment wording, doc phrasing, refactor preference, test ergonomics",
+      "source_ref": "danwinship, 2025-03-15 through 2025-07-07 (threads on 'upsert' naming, 'LCM' wording, FIXME placement, blank lines, deepcopy documentation, test timing tolerances, etc.)",
+      "reason": "Fail the must_flag test as a class: cannot be stated as a specific defect a reviewer would have had to flag, so no verdict can be reached against them. Excluded by the §4 Step 6 rule, not individually adjudicated."
+    }
+  ],
+
+  "notes": "13 force-pushes. Both admitted entries entered at push #2 (this checkpoint), 3 days after the PR opened, and survived 11 further pushes to merge. Push #9 (2025-06-22) briefly restored klog.FlushAndExit and push #10 removed it again the next day. IMPORTANT NEGATIVE RESULT: this checkpoint yields 2 admitted entries, whereas the v1 merged-head key had 3 (primary + h1 + h2). The retrospective-key hypothesis - that an earlier checkpoint admits more of the lifecycle's findings - did NOT hold for this subject. See METHODOLOGY-v2.md section 4 and nib dcc-ho2w."
+}
