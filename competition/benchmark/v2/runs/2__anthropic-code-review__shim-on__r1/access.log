@@ -1,0 +1,2 @@
+2026-08-10T15:37:41Z	gh	DENY	pr view 67075 --repo dotnet/aspnetcore --json title,state,isDraft,author,body (requested field may contain post-checkpoint content)
+2026-08-10T15:37:44Z	gh	DENY	pr view 67075 --repo dotnet/aspnetcore (bare view prints post-checkpoint state/reviewers; use --json with title,body,number,author,createdAt)
