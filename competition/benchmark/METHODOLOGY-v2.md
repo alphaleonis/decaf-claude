@@ -129,17 +129,23 @@ checkpoint admits more of the lifecycle. **Building two keys showed the theory i
 rule.** It depends entirely on whether the subject's defects were *introduced* or *removed* during
 review, and that is knowable only by building the key.
 
-| | Subject 9 (k8s #130837) | Subject 11 (tokio #7757) |
-|---|---|---|
-| Defects **introduced** during review | both (primary + h1, at push #2) | — |
-| Defects **removed** during review | — | the reviewer-flagged ordering bug |
-| Entries at an early checkpoint | 2 | ≥1 (the only scorable defect there is) |
-| Entries at the merged head | 3 | **0 scorable** |
-| Better checkpoint | **merged head** | **as-opened** |
+Three subjects, three patterns:
+
+| | Subject 9 (k8s #130837) | Subject 11 (tokio #7757) | Subject 2 (aspnetcore #67075) |
+|---|---|---|---|
+| What review did to the defect | **introduced** it (push #2) | **removed** it | **transformed** it |
+| Entries at an early checkpoint | 2 | ≥1 (the only scorable defect) | different, weaker shape |
+| Entries at the merged head | 3 | **0 scorable** | the indicted defect |
+| Better checkpoint | **merged head** | **as-opened** | **final head ≈ merged** |
 
 So there is no default. Locate the defect first (Step 2), then let its presence decide the
-checkpoint. A subject whose defects were introduced late is better reviewed near the merge; one whose
-defects were fixed in review is only reviewable early, or not at all.
+checkpoint.
+
+**Sobering count: the checkpoint machinery changed the answer in 1 of 3 subjects** — and in that one
+(subject 11) only because the merged head turned out to be unscorable. On this evidence the
+checkpoint idea is not v2's main value. What earned its keep across all three was the leak-proofing
+in §5 and the key-building discipline in §4 Step 6, which caught **two invalid v1 ground truths**
+(subjects 11 and 2) before either cost a review cell.
 
 ### A subject can turn out to be unscorable
 
