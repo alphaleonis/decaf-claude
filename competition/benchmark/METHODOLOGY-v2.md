@@ -26,8 +26,12 @@ already folded in (44 of subject 9's 46 threads are unfindable by construction),
 
 ## 2. What v2 reviews: the review checkpoint
 
-A **checkpoint** is a pair — a head SHA, and the review threads written against that head before the
-next push. This is the unit of review, replacing v1's "merged head".
+A **checkpoint** is a head SHA at a chosen point in the PR's life — most usefully the as-opened head.
+This is the unit of review, replacing v1's "merged head". The reviewer sees the diff at that SHA and
+nothing else.
+
+The threads written against a checkpoint are *one* input to its answer key, not the key itself; §3
+covers how the key is actually built.
 
 Reconstruction is possible because **GitHub preserves force-pushed commits**. Every force-push is
 recorded as a `HeadRefForcePushedEvent` carrying `beforeCommit`/`afterCommit` oids, and those commits
@@ -51,38 +55,68 @@ criterion, not an afterthought.**
 
 ---
 
-## 3. What v2 measures: two tracks
+## 3. What v2 measures: one retrospective key
 
-One review run per checkpoint, scored against two independent keys.
+One review run per checkpoint, scored against **one retrospectively-built key**.
 
-### Track 1 — replication
+### The key question
 
-*Did the reviewer find what the human reviewers found?* Key = the review threads written against this
-checkpoint. Available on any well-reviewed PR, so the corpus is no longer restricted to PRs that
-later proved buggy.
+Not *"what did reviewers say against this head?"* but:
 
-This repairs v1's structural flaw: at a checkpoint the human findings are **still present in the
-code**, so all of them are catchable. Subject 9's key goes from 2 entries to as many as 46.
+> **Given everything the world eventually learned about this PR, which of those findings were already
+> true of the code as it stood at checkpoint T?**
 
-Caveat: humans catch nits and style alongside real defects, and a tool that finds something the
-humans missed matches no thread. Track 1 alone would penalize the most valuable capability — hence
-Track 2.
+This subsumes what earlier drafts split into "replication" and "escape" tracks. A thread written in
+June describing a problem already present in March belongs in the key — the reviewers simply didn't
+notice it until June. A post-merge defect whose root cause existed at T belongs in it. A thread about
+code introduced *after* T is excluded, however substantive it is.
 
-### Track 2 — escape
+The escaped bug is therefore not a separate category. It is one entry among others, distinguished
+only by its provenance tag: discovered by production rather than by review.
 
-*Did the reviewer find what the humans missed?* Key = the defect fixed by the follow-up PR. Available
-only on subjects that later proved buggy.
+### Candidate sources (all of them)
 
-**Track 2 is only valid where the defect is present at the chosen checkpoint.** This is a per-subject
-determination, not an assumption — see §3.1.
+Everything in the PR's lifecycle and its aftermath is a candidate:
 
-### 3.1 The presence check (mandatory per subject)
+- review threads from every round, resolved and unresolved alike
+- changes made between pushes that fixed something nobody commented on
+- the PR description and any linked issue
+- follow-up PRs that fixed defects this PR introduced (subject 9's revert + take-2)
+- post-merge issue reports attributing a regression to this PR
 
-`git blame` the fix PR's deleted lines. If they trace to a commit reachable from the checkpoint head,
-Track 2 is valid there. Otherwise the subject is Track 1 only at that checkpoint, and Track 2 must be
-scored against a later checkpoint or the merged head.
+### The admission rule: presence at T
 
-**Subject 9 fails this check, and the finding is significant:**
+**Every candidate entry must be shown present in the code at checkpoint T.** This is the single
+admission rule, applied uniformly — not a special gate for post-merge defects.
+
+Mechanical pre-filters narrow the candidate set before human judgment is needed:
+
+- does the thread's file exist in the checkpoint diff?
+- does its line range fall inside the checkpoint's changed hunks?
+- does `git blame` on the fix's deleted lines trace to a commit reachable from the checkpoint head?
+
+On subject 9 these filters alone drop the `pkg/proxy/topology.go` and
+`pkg/proxy/kubemark/hollow_proxy.go` threads, and the entire `NewNodeManager`-error-path family. What
+survives is a shortlist to adjudicate, not 46 threads plus a fix PR read from scratch.
+
+**The residual judgment is irreducible and must be done by hand** (human, or human-supervised LLM).
+Deciding whether a June comment describes a March defect requires reading the code at both points.
+This is the expensive artifact of the whole design — and it is one-time per checkpoint, reused across
+every tool, repeat, and future run, so it amortizes well.
+
+It is safe to build with total access to the fix PR, the threads, and the post-merge issues,
+**because the reviewer never sees it.** Only the judge does.
+
+### Corollary: earlier checkpoints yield richer keys
+
+At T = merged head, only post-merge discoveries can apply. At T = as-opened, the entire lifecycle's
+learnings are candidates. **The earliest checkpoint is therefore the most valuable**, not the most
+awkward — it maximizes how much of what the world learned is admissible.
+
+### Worked check: subject 9
+
+Applying the admission rule to subject 9's as-opened checkpoint excludes both the primary escaped bug
+and human-issue h1:
 
 | | As opened (2025-03-15) | As merged (2025-07-11) |
 |---|---|---|
@@ -93,10 +127,17 @@ scored against a later checkpoint or the merged head.
 Both the primary escaped bug **and** human-issue h1 were introduced *during* review. Four months and
 113 force-pushes made the PR worse in exactly the two places that later broke production.
 
-The consequence for the design: the two tracks can require **different checkpoints of the same
-subject**, which means two review runs, not one. Budget accordingly. The comparison between them —
-what a reviewer catches early vs. what it catches on the final diff — is itself a result worth
-reporting.
+The consequence: at the as-opened checkpoint, subject 9's key contains **neither** of the defects it
+is famous for. Its key would consist only of the review findings that applied to the original
+92-line `node.go`. Scoring the escaped bug requires a *later* checkpoint — one after the error path
+was introduced — which is a second review run of the same subject.
+
+This is not a flaw in the method; it is the method reporting honestly that the escaped bug did not
+exist yet. But it makes subject 9 a poor routine subject: 113 force-pushes, a four-month lifecycle,
+and a headline defect absent at open. It is a good stress test and a bad default.
+
+**Subject selection should prefer PRs with few force-pushes and a defect present from the first
+push** — verifiable mechanically via the presence check before any key-building effort is spent.
 
 ---
 
@@ -189,9 +230,12 @@ too slowly to harvest. Track 1 partially offsets this, since it needs no fix at 
 
 ## 6. Open questions
 
-- Two tracks may need two checkpoints per subject, doubling review cost. Is the early-vs-late
-  comparison worth it, or is one track enough?
-- Track 1's key includes nits and style. Do those count, get filtered, or get scored separately?
+- Key-building is the cost centre and is not scriptable. How many hours per checkpoint is
+  acceptable, and does an LLM-assisted first pass (human-adjudicated) bring it down enough?
+- The key mixes nits, style, and real defects. Do those get scored separately, weighted, or filtered
+  at admission time?
+- Where a subject's defect postdates its earliest checkpoint (subject 9), is the second review run
+  worth its cost, or should such subjects simply be excluded at selection?
 - Force-push count as a selection criterion — what is the cutoff, and how many otherwise-good
   subjects does it exclude?
 - Wayback coverage for the documentation domains that actually matter per language.
