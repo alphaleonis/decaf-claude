@@ -224,7 +224,9 @@ nothing about the judge already knowing the answer.
 
 **Fast-confirmation bias.** If subject selection requires a confirmed follow-up fix, the corpus skews
 toward defects with obvious symptoms (crashes, leaks, regressions). Subtle design problems confirm
-too slowly to harvest. Track 1 partially offsets this, since it needs no fix at all.
+too slowly to harvest. The retrospective key partially offsets this: a PR needs review threads, not a
+confirmed follow-up fix, to be usable — so well-reviewed PRs that never broke are still valid
+subjects, and their keys carry no fast-confirmation bias at all.
 
 ---
 
