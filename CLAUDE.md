@@ -182,6 +182,33 @@ Generated **artifacts** (review reports, refactor plans, loop state) go under on
 - **Marketplace name is `decaf`; the repo/clone is `decaf-claude`** (they intentionally differ): add via `alphaleonis/decaf-claude`, install as `<plugin>@decaf` — the order is `<plugin>@<marketplace>`. The local cache dir is `~/.claude/plugins/marketplaces/decaf` (keyed by marketplace name, not repo name).
 - **Work tracking is nibs** (`.nibs/`, committed alongside the related changes). Gotchas: `nibs update` accepts only one `--body-replace-old`/`--body-replace-new` pair per call (use several calls); a task's parent must be milestone/epic/feature/bug (not `research`); `nibs list --ready` = unblocked, not-started items.
 
+## The review-tool benchmark (`competition/`)
+
+Not a plugin — a controlled comparison of Claude Code review tools (decaf's presets vs
+`anthropic-code-review`, `superpowers`, and others) across 12 real OSS PRs that shipped a defect.
+
+**v1 results are void.** Four independent leak/validity failures: cross-cell `.decaf/` contamination,
+GitHub cross-references exposing the fixing PR, unreliable ground truth (2 of the first 3 subjects
+audited were invalid), and unpinned reasoning effort. The two leaks push in *opposite* directions, so
+the direction of any v1 gap is unknown, not merely imprecise. **Never cite a v1 number.**
+
+Current work is **benchmark v2**, milestone `dcc-ho2w`:
+
+| Read | For |
+|---|---|
+| `competition/benchmark/v2/README.md` | operational — layout, running a cell, the access controls |
+| `competition/benchmark/METHODOLOGY-v2.md` | design rationale + the subject-construction procedure |
+| `competition/benchmark/README.md` | v1, behind a warning banner |
+
+Ground rules that cost real money to learn:
+
+- **A reviewer must not be able to read the answer, and it must be provable per cell.** The `gh` shim
+  time-boxes rather than denies, and every external access is logged.
+- **Ground truth is not trustworthy until audited.** Build the answer key before spending on cells.
+- **Verify claims about the corpus; don't assert them.** Several confident statements made during v2
+  design turned out wrong when checked against the API — force-push recoverability, force-push
+  counts, filter effectiveness, and one answer-key entry.
+
 ## Versioning
 
 These plugins have **no version field** in their `plugin.json` files. Changes take effect on Claude Code restart (continuous deployment via git commits).

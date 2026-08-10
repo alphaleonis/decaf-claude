@@ -1,5 +1,28 @@
 # Review-tool benchmark harness
 
+> ## ⚠️ v1 RESULTS ARE VOID — READ THIS FIRST (2026-08-10)
+>
+> Everything below describes **v1**, whose dataset is invalid on four independent counts:
+>
+> 1. **Cross-cell contamination** — `.decaf/` reports leaked between cells via a shared checkout and
+>    were read by the decaf recurring-findings cross-check, inflating decaf-family recall. Fixed in
+>    `run_cell.sh`; 27 cells invalidated (`dcc-2cxq`).
+> 2. **GitHub leak** — 11 of 12 subjects have the fixing PR cross-linked on the original's timeline.
+>    `anthropic-code-review`'s finders cited the revert PR in *both* subject-9 repeats.
+> 3. **Unreliable ground truth** — 2 of the first 3 subjects audited had invalid ground truth
+>    (`dcc-5xad`).
+> 4. **Unpinned effort** — reasoning effort was ambient and unrecorded until 2026-08-10.
+>
+> The two leaks push in **opposite** directions (contamination flattered `ours`, the GitHub leak
+> flattered `anthropic`), so the direction of any headline gap is *unknown*, not merely imprecise.
+> **Do not cite a v1 number.**
+>
+> Current work is **benchmark v2**: [`METHODOLOGY-v2.md`](./METHODOLOGY-v2.md) and
+> [`v2/README.md`](./v2/README.md), tracked by milestone **`dcc-ho2w`**.
+> The `ours` tool no longer exists — it was retired in favour of the `ours-bugs` / `ours-review` /
+> `ours-audit` presets. Nib `dcc-z1xw` referenced below is scrapped.
+
+
 Controlled cost + quality comparison of five Claude Code review tools across the same 12
 subjects (4 languages × 3 sizes). Design and subject grid live in nib **`dcc-z1xw`**.
 
