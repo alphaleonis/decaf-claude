@@ -4,11 +4,13 @@
 # orchestrator-only .usage total (diagnostic). cost_usd is the authoritative comparable.
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-cols="run_id,subject_id,lang,size,tool,repeat,model,status,is_error,wall_clock_s,max_subagent_s,duration_api_ms,num_turns,cost_usd,subagents,ws_input,ws_output,ws_cache_creation,ws_cache_read,ws_total,orch_total,findings_lines,session_id,finished_at"
+# `effort` is empty for cells run before it was pinned (2026-08-10) — those inherited an ambient
+# effort from the launching shell and no artifact records which. Empty means unknown, not "none".
+cols="run_id,subject_id,lang,size,tool,repeat,model,effort,status,is_error,wall_clock_s,max_subagent_s,duration_api_ms,num_turns,cost_usd,subagents,ws_input,ws_output,ws_cache_creation,ws_cache_read,ws_total,orch_total,findings_lines,session_id,finished_at"
 echo "$cols" > "$METRICS_CSV"
 shopt -s nullglob
 for m in "$RUNS_DIR"/*/meta.json; do
-  jq -r '[.run_id,.subject_id,.lang,.size,.tool,.repeat,.model,.status,.is_error,
+  jq -r '[.run_id,.subject_id,.lang,.size,.tool,.repeat,.model,(.effort // ""),.status,.is_error,
           .wall_clock_s,(.session_tokens.max_subagent_duration_s // ""),.duration_api_ms,.num_turns,.cost_usd,
           (.session_tokens.subagents // ""),(.session_tokens.input // ""),(.session_tokens.output // ""),
           (.session_tokens.cache_creation // ""),(.session_tokens.cache_read // ""),(.session_tokens.total // ""),

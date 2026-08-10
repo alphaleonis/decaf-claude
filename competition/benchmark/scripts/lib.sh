@@ -15,6 +15,7 @@ LOCK="$BENCH_DIR/.manifest.lock"
 
 # Defaults; config.env overrides.
 BENCH_MODEL="claude-opus-4-8"
+BENCH_EFFORT="high"
 CLAUDE_BIN="claude"
 PERM_FLAGS="--dangerously-skip-permissions"
 REPEATS=2
