@@ -266,8 +266,29 @@ gh api graphql -f query='
 ```
 
 Candidate sources are listed in §3. Also diff consecutive heads (`compare/<head_i>...<head_i+1>`) to
-catch **silent fixes** — changes that corrected something nobody commented on. Those are real
-findings and they leave no thread.
+surface **silent fixes** — changes the author made that corrected something nobody commented on.
+These leave no thread, so a thread-driven key misses them entirely.
+
+**Silent fixes are the least certain candidate class and need a higher bar than the rest.** Most
+inter-push change is not a fix: rebases, renames, feature work, CI-driven churn, and the author
+changing direction all look similar in a diff. Admitting those inflates the key with entries no
+reviewer should have raised, which depresses every tool's recall equally — unbiased, but noise.
+
+Admit a silent fix only when **all** of these hold:
+
+- it is small and localized, not a rewrite or a change of approach
+- it has a defect-fix shape — an added nil/bounds check, a corrected comparison or off-by-one, a
+  an added cleanup or release, a repaired error path — or a commit message that says so
+- no existing thread already covers it (otherwise it is that thread's entry, not a new one)
+- **you can write the `must_flag` sentence**: what a reviewer would have had to say to catch it
+
+That last one is the decisive test, because it is decidable where "was this a fix?" is not. If the
+finding cannot be stated as something a reviewer should have said, it cannot be scored, and it does
+not belong in the key regardless of how clearly the author fixed something.
+
+Tag admitted silent fixes `provenance: "silent-fix"` and **report their contribution separately in
+the first few runs**. If they prove noisy, they can be dropped from scoring without rebuilding any
+key.
 
 ### Step 6 — Apply the admission rule mechanically, then by hand
 
@@ -278,6 +299,11 @@ inapplicable without judgment.
 Then adjudicate what survives **by hand**. For each candidate, the question is not "is this a real
 finding" but *"was this already true of the code at the checkpoint?"* — which requires reading the
 code at the checkpoint and at the point the finding was made. This step is irreducible; see §3.
+
+**The `must_flag` test applies to every entry, not just silent fixes.** If a candidate cannot be
+stated as a specific thing a reviewer would have had to say, it cannot be scored — drop it. This is
+what keeps a key from accumulating vague entries ("the error handling here is weak") that no verdict
+can be reached against.
 
 Record rejections as well as admissions. A key that shows what was considered and excluded is
 auditable; one that shows only survivors is not.
