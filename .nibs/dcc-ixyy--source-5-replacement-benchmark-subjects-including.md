@@ -6,7 +6,7 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-10T18:26:35Z
-updated_at: 2026-08-10T19:26:07Z
+updated_at: 2026-08-10T19:30:14Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-f2nf
@@ -32,10 +32,15 @@ selection criteria change completely and the corpus gets much cheaper to build.
    for this before committing to a subject: the v1 corpus averaged 3 threads per subject with one
    subject holding 12 and two holding zero, because it was selected for reverts rather than for
    review.
-2. **Merged after the roster's Jan-2026 training cutoff.** Trivial to satisfy now that no revert is
-   required, and it removes the memorization exposure that most of the current corpus carries.
-3. **A substantive change** — real logic, not a rename or a lockfile bump.
-4. No fixing/reverting PR needed, so the cross-reference leak surface is largely absent by
+2. **Merged after 2026-05** — out of window for the newest roster model AND the judge (Opus 5,
+   cutoff 2026-05), not merely for `BENCH_MODEL`. Hard admission rule ([[dcc-f2nf]]). Trivial now
+   that no revert is required.
+3. **Build matched vintage pairs where cheap** — same repo, same size bucket, same application type,
+   one subject either side of the cutoff. This is the only way to measure the memorization effect
+   size rather than merely disclose it: unmatched pre/post comparisons confound vintage with
+   difficulty. A handful of pairs is enough; it does not need to cover the grid.
+4. **A substantive change** — real logic, not a rename or a lockfile bump.
+5. No fixing/reverting PR needed, so the cross-reference leak surface is largely absent by
    construction. The `gh` shim still applies: review threads leak human findings a tool could parrot.
 
 ## Grid: size x application type
