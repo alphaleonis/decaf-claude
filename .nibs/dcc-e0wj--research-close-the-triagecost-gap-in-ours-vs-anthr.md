@@ -7,7 +7,7 @@ type: research
 priority: high
 estimate: l
 created_at: 2026-07-28T18:47:46Z
-updated_at: 2026-07-29T11:44:37Z
+updated_at: 2026-08-10T17:55:32Z
 order: zzw
 ---
 
@@ -557,3 +557,26 @@ The direction of the error makes this programme **more** urgent, not less.
   orchestrator and its sub-agents (workstream 2)
 - #dcc-05uw — pluggable review backend (complementary: that nib is about *choosing* a cheaper
   backend per project; this one is about making the deep backend better)
+
+## ⚠️ Evidence base is VOID (2026-08-10)
+**Do not act on the numbers in this nib.** Every figure here derives from the v1 benchmark
+([[dcc-z1xw]], now scrapped), whose dataset is invalid on four independent counts:
+
+1. **Cross-cell contamination** ([[dcc-2cxq]]) — `.decaf/` reports leaked between cells and were read
+   by the decaf recurring-findings cross-check. This inflated `ours` recall specifically, since
+   competitor tools write nothing into the tree. The comparison table's `ours` column is therefore
+   biased in the direction that flatters it, while the cost column is unaffected.
+2. **GitHub leak** — `anthropic-code-review`'s finders cited the revert PR in BOTH subject-9 repeats.
+   Its 18/18 escaped-bug figure is substantially lookup, not review.
+3. **Unreliable ground truth** — 2 of the first 3 subjects audited under v2 were invalid
+   ([[dcc-5xad]]).
+4. **Unpinned effort** — effort was ambient and unrecorded until 2026-08-10, so cells span an unknown
+   mix.
+
+Note the two leaks push in OPPOSITE directions: contamination flattered `ours`, the GitHub leak
+flattered `anthropic`. The net direction of the headline gap is therefore unknown, not merely
+uncertain.
+
+**The research question stands; its answer must be re-derived** from v2 data ([[dcc-plsq]]). The
+candidate interventions below may still be sound on first-principles grounds — but each one whose
+justification is a measured number needs re-checking before it is implemented.

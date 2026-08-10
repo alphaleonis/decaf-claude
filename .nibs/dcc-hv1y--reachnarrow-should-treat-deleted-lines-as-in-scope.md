@@ -6,7 +6,7 @@ status: todo
 type: bug
 priority: high
 created_at: 2026-08-10T12:15:14Z
-updated_at: 2026-08-10T12:15:14Z
+updated_at: 2026-08-10T17:55:47Z
 order: zzzz
 ---
 
@@ -32,5 +32,6 @@ work in this region.
 - [ ] Reviewer briefs at `narrow` ask what the change removed, not only what it added
 - [ ] The distinction is drawn between "pre-existing defect the diff did not touch" (out of scope at
       narrow, correctly) and "behavior the diff deleted" (in scope at every level)
-- [ ] Re-run `ours-bugs` on subject 9 and check whether the primary bug surfaces; record the result
-      either way, since a continued miss points at the model tier instead
+- [ ] Re-check `ours-bugs` on a v2 subject once [[dcc-vkeh]] lands, and record the result either way —
+      a continued miss points at the model tier instead. (Was: re-run on subject 9 under v1. Subject
+      9's v1 cells are invalidated, and its v2 checkpoint at push #2 carries only 2 key entries.)
