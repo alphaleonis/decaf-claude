@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T19:26:32Z
+updated_at: 2026-08-10T19:30:14Z
 order: zzzzV
 ---
 
@@ -267,31 +267,34 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-595v: **Revision (2026-08-10): human review threads are promoted from a judge-calibration check to a scored
-target — the miss detector.**
+Completed dcc-f2nf: Policy written into METHODOLOGY-v2 section 6.
 
-The original decision under-used them. Pooled adjudication is bounded by the union of tool output, so
-it cannot detect what every tool missed; I attributed that job solely to the anchor. But an expert
-review thread is an independent statement that something was worth raising, and it is *not derived
-from tool output* — so "reviewers flagged X, no tool flagged X" is a detectable miss. Threads cover
-most of the blind spot, densely, on every well-reviewed PR, where the anchor needs a revert.
+**Vintage is a property of a (subject, model) pair, never of a subject alone.** Fixtures store the
+merge date; status is computed at analysis time. A "vintage-safe" boolean baked into a fixture is
+wrong the day a model ships.
 
-Scoring now has three targets, reported as separate axes:
+The corpus table exposed something that would have silently biased the headline result: **weaker
+models have older cutoffs, so more of the corpus is clean for them.** Haiku 4.5 (cutoff 2025-07) has
+five usable subjects where Opus 4.8 has two and the judge, Opus 5, has one. Since
+`anthropic-code-review` pins Sonnet and Haiku regardless of `BENCH_MODEL`, a pooled cross-model
+comparison is confounded in the direction of flattering the weaker model. Per-cell results must now
+carry the reviewer's cutoff and the subject's merge date, and no headline may pool in-window with
+out-of-window cells without showing the split.
 
-1. the pool (tool union) — precision, noise, unique contribution
-2. admitted human review threads — recall against expert review, the miss detector
-3. the anchor key — what expert reviewers ALSO missed
+New subjects must be out of window for the newest roster model AND the judge — currently merged after
+2026-05, not merely after `BENCH_MODEL`'s 2026-01. Cheap to satisfy because pooled adjudication needs
+no revert. Hard admission rule on [[dcc-ixyy]].
 
-Consequences: thread density becomes a hard corpus criterion (>=5 admissible threads per subject in
-[[dcc-ixyy]]) rather than an accident of selection; [[dcc-y2e6]] keeps a human-thread match verdict
-and computes thread recall separately; and the `gh` shim's denial of `--comments` and review-thread
-fields is now load-bearing for scoring, not only for leak hygiene.
+Pre-cutoff subjects are **retained as probes rather than deleted**, which is what stops this policy
+from destroying 5 of 7 survivors. Memorization is unfalsifiable in the abstract, but its effect size
+is measurable via **matched vintage pairs** — same repo, same size, same application type, one either
+side of the cutoff. Unmatched pre/post comparisons confound vintage with difficulty and prove nothing.
+Until pairs exist, memorization is disclosed, not measured.
 
-Cost accounting, honestly: this adds back Steps 5-6 in reduced form. What stays deleted is the
-expensive, failure-prone part — researching the revert, re-land, regression issue and root cause,
-which is what invalidated 5 of 12 subjects. Threads are concrete text with file:line anchors, so the
-mechanical in-diff filter does real work and only the `must_flag` triage needs judgment.
+Retirement is a change of role, not a deletion: when a cutoff advances past a subject, it stops being
+scored for that model and becomes probe material.
 
-Limit to keep visible: OSS reviewers weight API design, naming and convention heavily and often
-delegate correctness to CI, so thread recall measures agreement with expert review rather than
-bug-finding. It must never be merged into a single recall number with the anchor.
+The judge is the worst-exposed party — one of seven subjects out of window — and under pooled
+adjudication its foreknowledge biases toward rating the *famous* defect valid while judging equally
+valid unfamous findings more harshly. Mitigated by the already-decided code-citation requirement and
+adversarial re-judging; disclosed alongside results.

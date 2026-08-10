@@ -610,13 +610,49 @@ happened* rather than guessing at page provenance.
 
 ## 6. What v2 still cannot fix
 
-**Training-data memorization.** Unaffected by any of the above — it is a calendar problem. Only
-subject vintage bounds it: prefer PRs merged after the roster's newest training cutoff, and retire
-subjects as cutoffs advance. See the cutoff and vintage tables in nib `dcc-ho2w`. Six of ten current
-dated subjects are already inside the benchmark model's training window.
+**Training-data memorization.** Unaffected by any of the above — it is a calendar problem. Vintage
+*bounds* it; nothing available to us removes it. You can prove a tool did not call `gh`; you cannot
+prove it did not recall. Policy decided 2026-08-10 (`dcc-f2nf`):
 
-**The judge is also contaminated.** Blind grading hides which *tool* produced a cluster; it does
-nothing about the judge already knowing the answer.
+**Vintage is a property of a (subject, model) pair — never of a subject alone.** A subject is
+in-window for a model if it merged before that model's training cutoff. Store the subject's merge
+date in the fixture and compute the status at analysis time; a boolean "vintage-safe" flag baked into
+a fixture is wrong the day a model ships. Current state of the surviving corpus:
+
+| Model | Cutoff | Subjects out-of-window (usable) |
+|---|---|---|
+| Haiku 4.5 | 2025-07 | 2, 8, 9, 10, 12 |
+| Opus 4.8 (`BENCH_MODEL`), Sonnet 5 | 2026-01 | 2, 12 |
+| Opus 5 (the judge) | 2026-05 | 2 |
+
+⚠️ **The perverse consequence: weaker models have older cutoffs, so more of the corpus is clean for
+them.** Haiku 4.5 gets five usable subjects where Opus 4.8 gets two. Any comparison that pools across
+models — and `anthropic-code-review` pins Sonnet and Haiku regardless of `BENCH_MODEL` — is
+confounded by this, in the direction of *flattering the weaker model*. Per-cell results must carry
+both the reviewer's cutoff and the subject's merge date, and a headline number must never pool
+in-window and out-of-window cells without showing the split.
+
+**New subjects must be out-of-window for the newest roster model *and* the judge** — currently
+merged after 2026-05. This is cheap now: pooled adjudication needs no revert, so recent PRs qualify.
+It is a hard admission rule for `dcc-ixyy`.
+
+**Pre-cutoff subjects are retained as a probe, not deleted.** Memorization is unfalsifiable in the
+abstract but its *effect size* is measurable: build **matched vintage pairs** — same repo, same size
+bucket, same application type, one either side of the cutoff — and the performance difference between
+them is attributable to vintage rather than difficulty. Unmatched pre/post comparisons across
+different subjects confound vintage with difficulty and should not be read as evidence either way.
+Until such pairs exist, treat memorization as disclosed, not measured.
+
+**Retirement is a change of role, not a deletion.** When a model release moves a cutoff past a
+subject's merge date, that subject stops being scored for that model and becomes probe material.
+Graceful degradation; the corpus does not fall off a cliff on release day.
+
+**The judge is also contaminated, and currently worst of all** — Opus 5's May-2026 cutoff leaves
+exactly one of seven subjects out of window. Blind grading hides which *tool* produced a cluster; it
+does nothing about the judge knowing the answer. Under pooled adjudication this biases toward rating
+the *famous* defect valid while judging equally-valid unfamous findings more harshly, which inflates
+whichever tool happened to name it. Mitigations already decided: a code citation is required for
+every verdict, and adversarial re-judging applies. Disclose the judge's cutoff alongside results.
 
 **Fast-confirmation bias.** If subject selection requires a confirmed follow-up fix, the corpus skews
 toward defects with obvious symptoms (crashes, leaks, regressions). Subtle design problems confirm
