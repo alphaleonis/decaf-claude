@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T18:14:57Z
+updated_at: 2026-08-10T18:27:46Z
 order: zzzzV
 ---
 
@@ -267,25 +267,28 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-8tjr: Archived the v1 dataset under `v1-archive/` (88 cells, 9 graded subjects, metrics CSV, run ledger,
-and both earlier quarantines) with a README recording the four failures, the opposite-direction leaks
-that make even the gap's direction unknown, and the line between what the data may still be cited for
-(leak mechanism, cost telemetry) and what it may not (any tool comparison).
+Completed dcc-5xad: All 9 audited. **5 of 12 subjects rejected** (3, 4, 5, 6, 11) — a worse base rate than the 2-of-3
+that motivated this. Seven survive: 1, 2, 7, 8, 9, 10, 12. Evidence per subject in
+`v2/analysis/subject-NN/audit/`, regenerable via `v2/audit_subject.sh`; verdicts and reasoning in
+`v2/analysis/GROUND-TRUTH-AUDIT.md`.
 
-The concrete collision the archive breaks: `analysis/scripts/gather_inputs.sh` wrote v1 keys into
-`analysis/subject-NN/` — the same shape v2 uses — so a v2 grader could have picked one up by path
-convention alone. `analysis/` now holds only machinery. Corpus definition stayed in place because
-dcc-5xad needs it, with the caveat that `subjects/*.json` still carries the unaudited ground truth.
+**The entire TypeScript row is gone** (4, 5, 6), so the language x size grid no longer holds and no
+TypeScript claim is available from this corpus. Sourcing 5 replacements is [[dcc-ixyy]]; [[dcc-plsq]]
+is now blocked on it.
 
-`bench_next.sh` refuses without `BENCH_V1_ALLOW=1`; the five bench commands carry the warning; v1
-machinery was repointed so a deliberate re-run still works.
+Subject 5 failed the same way as 11 and for the same reason: the key was written from what reviewers
+*said* rather than what the merged code *does*. Its fixture indicts an idle timer left running during
+consumer processing; the merged code clears it before `yield` and carries a comment saying so.
 
-Unplanned but in scope: `run_cell_v2.sh` had NO checkout reset — v2 was reproducing the exact v1
-contamination design. A stray `ours-review` report sat in `v2/repos/2/` for all eight subsequent
-subject-2 cells, including all four of the controlled test. Audited every transcript (9 parents + 18
-subagent sidechains + tool-results): `.decaf/` appears in exactly one file, the writer's own. Not
-exploited, so CONTROLLED-TEST.md's conclusion stands — but the cell outputs alone could not have
-shown that, since cells keep no transcript. v2 now resets before every cell and refuses on a dirty
-tree (77) or missing checkpoint (78), smoke-tested to preserve the 129,013-commit history.
+Subject 8 was saved by a source the methodology did not list — its re-land PR #133995 enumerated both
+gaps, where the revert body only said "I suspect". Added to Step 5.
 
-Next in the milestone: dcc-5xad (audit ground truth) and dcc-595v (decide the v2 scoring model).
+Three methodology changes landed from this: Step 0 triages on whether the fix names a mechanism or a
+symptom (which predicted every outcome here, cheaply); Step 5 now checks re-land PRs; Step 6 warns
+that a review comment proves something was once true, never that it shipped.
+
+Two corrections to earlier records: the fixtures' `human_threads.count` counts COMMENTS, not threads
+(verified on 1, 8, 12), so the subject-2 "claims 9, API returns 4" note was a mislabel and overstated
+fixture unreliability. And subjects 7 and 10 yield exactly ONE entry each, so the methodology's ">=2
+entries" replacement rule would discard subject 7 — the most valid subject in the corpus. Validity
+and richness conflict; raised for [[dcc-595v]] rather than settled here.
