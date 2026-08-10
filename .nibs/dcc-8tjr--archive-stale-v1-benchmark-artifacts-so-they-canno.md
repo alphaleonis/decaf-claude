@@ -6,7 +6,7 @@ status: todo
 type: task
 priority: critical
 created_at: 2026-08-10T17:41:58Z
-updated_at: 2026-08-10T17:43:40Z
+updated_at: 2026-08-10T17:52:18Z
 parent: dcc-ho2w
 order: I
 ---
@@ -43,4 +43,4 @@ Both may be moot once v1 data is archived — scrap them explicitly rather than 
       still be cited for
 - [ ] No v2 path convention can reach a v1 key, extract, or findings file
 - [ ] Every `repos/*` checkout verified clean of tool-written artifacts
-- [ ] dcc-z13k and dcc-3v3m each closed or scrapped with a reason
+- [x] dcc-z13k and dcc-3v3m each closed or scrapped with a reason — both scrapped 2026-08-10; their hazards carried into [[dcc-y2e6]]
