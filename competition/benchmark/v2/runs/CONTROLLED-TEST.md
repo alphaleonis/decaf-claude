@@ -58,12 +58,45 @@ The `gh api .../comments` call denied in shim-on r2 is precisely how shim-off r1
 post-checkpoint comment. The control blocks the observed leak channel, and the tool substituted
 checkpoint-pinned documentation rather than losing the capability.
 
-## Measurement gap found
+## Measurement gap found — and closed
 
-With the shim off there is **no access log at all** — logging is performed by the shim. The control
-arm's "0 external accesses" is an artifact, not a measurement. Leak detection in the unshimmed arm
-had to be done by grepping outputs for post-checkpoint markers, which only catches leaks the tool
-chooses to cite. A future control arm needs independent logging (a wrapper that logs and forwards).
+With the shim off there was **no access log at all**, because the log is written by the shim. The
+control arm's "0 external accesses" was an artifact. `v2/shim-log/gh` now forwards every call
+unchanged and logs it, annotated with the verdict the enforcing shim would have reached (obtained by
+running that shim as an oracle under `BENCH_POLICY_DRYRUN=1`, so there is one copy of the policy).
+
+### Arm B rerun under the wrapper (2026-08-10)
+
+| r | accesses | would-DENY | e1 reported? | post-checkpoint text cited in output? |
+|---|---|---|---|---|
+| 1 | 2 | 1 | **yes** (Finding 1) | **no** |
+| 2 | 1 | 1 | **yes** (Finding 1) | **no** |
+
+Calls made:
+
+```
+r1  PASS would=[DENY]  pr view 67075 --json title,body,state,isDraft,author,comments
+r1  PASS would=[ALLOW] issue view 27095 (created 2020-10-21 — the original bug report)
+r2  PASS would=[DENY]  pr view 67075 --json title,body,state,isDraft,author,url
+```
+
+**The leak surface is narrow and consistent**: exactly one would-be-denied call per cell, in both
+cases `pr view --json …state…`. The `issue view 27095` call is the shim working as intended in the
+other direction — a 2020 bug report is legitimate context and would have been allowed.
+
+### The finding that matters: output-grepping undercounts leaks
+
+r1 requested `--json …,comments` and received them. That field returns **2 post-checkpoint issue
+comments** (ilonatommy, 2026-07-09) on top of pre-checkpoint ones. So r1 *did* read post-checkpoint
+content — and cited none of it (0 markers in its output).
+
+Under the previous method — grepping outputs for post-checkpoint markers — this cell would have been
+scored **"no leak"**. It leaked. **Output-grepping only detects leaks a tool volunteers**, so every
+leak measurement taken before the wrapper existed is a lower bound, including the earlier arm-B runs
+now archived under `_archive/*__unlogged`.
+
+This does not overturn the detection result (e1 still reported in 4 of 4, now 6 of 6 across both
+arm-B generations). It overturns the *leak accounting* those runs appeared to support.
 
 ## Caveats
 
