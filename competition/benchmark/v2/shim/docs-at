@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Date-pinned documentation fetch for benchmark v2 cells.
+#
+# Replaces WebFetch (which is a harness built-in and cannot be PATH-shimmed, so it is denied via
+# --disallowedTools). Fetches a URL as it existed at the review checkpoint, via the Wayback Machine,
+# so the agent keeps library/API documentation lookup without seeing anything published later.
+#
+# Usage: docs-at <url>
+#
+# Required env:
+#   BENCH_CHECKPOINT_DATE  ISO-8601 date, e.g. 2026-07-07
+#   BENCH_ACCESS_LOG       file to append access records to
+set -uo pipefail
+
+CUTOFF="${BENCH_CHECKPOINT_DATE:?BENCH_CHECKPOINT_DATE not set}"
+LOG="${BENCH_ACCESS_LOG:-/dev/null}"
+URL="${1:-}"
+
+log() { printf '%s\tdocs-at\t%s\t%s\n' "$(date -u +%FT%TZ)" "$1" "${*:2}" >> "$LOG"; }
+
+if [ -z "$URL" ]; then echo "usage: docs-at <url>" >&2; exit 2; fi
+
+case "$URL" in
+  *github.com*|*githubusercontent.com*)
+    log DENY "$URL (github host)"
+    echo "docs-at: GitHub is not reachable from this review environment." >&2
+    echo "Use the local git history and the checked-out working tree instead." >&2
+    exit 1 ;;
+esac
+
+STAMP="$(printf '%s' "$CUTOFF" | tr -d '-')000000"
+
+# id_ suffix asks Wayback for the original bytes without its own banner/rewriting
+SNAP="https://web.archive.org/web/${STAMP}id_/${URL}"
+
+body="$(curl -sS -L --max-time 45 -w '\n__HTTP__%{http_code}' "$SNAP" 2>/dev/null)"
+code="${body##*__HTTP__}"; body="${body%__HTTP__*}"
+
+if [ "$code" = "200" ] && [ -n "${body//[[:space:]]/}" ]; then
+  # report which snapshot actually came back, so a stale pin is visible rather than silent
+  actual="$(curl -sSI --max-time 20 "$SNAP" 2>/dev/null | grep -i '^x-archive-orig-date\|^link:' | head -1)"
+  log ALLOW "$URL snapshot=$STAMP http=$code"
+  printf '=== docs-at: %s\n=== snapshot pinned to %s (checkpoint %s)\n%s\n\n' "$URL" "$STAMP" "$CUTOFF" "$actual"
+  printf '%s\n' "$body"
+  exit 0
+fi
+
+log MISS "$URL snapshot=$STAMP http=$code"
+cat >&2 <<EOF
+docs-at: no archived snapshot of $URL at or before $CUTOFF (http=$code).
+
+This environment can only serve documentation as it existed at the review checkpoint.
+Work from the source in the checked-out tree, its vendored dependencies, and git history.
+EOF
+exit 1

@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# Time-boxed `gh` shim for benchmark v2 cells.
+#
+# Placed early on PATH so a review agent's `gh` calls land here instead of the real binary.
+# Allows read-only lookups of things that ALREADY EXISTED at the checkpoint; refuses anything
+# created after it, and refuses query surfaces that cannot be date-bounded at all.
+#
+# Required env:
+#   BENCH_CHECKPOINT_DATE  ISO-8601 date, e.g. 2026-07-07
+#   BENCH_REAL_GH          absolute path to the real gh binary
+#   BENCH_ACCESS_LOG       file to append access records to
+set -uo pipefail
+
+REAL="${BENCH_REAL_GH:-/usr/bin/gh}"
+CUTOFF="${BENCH_CHECKPOINT_DATE:?BENCH_CHECKPOINT_DATE not set}"
+LOG="${BENCH_ACCESS_LOG:-/dev/null}"
+
+log() { printf '%s\tgh\t%s\t%s\n' "$(date -u +%FT%TZ)" "$1" "${*:2}" >> "$LOG"; }
+
+deny() {
+  log DENY "$*"
+  echo "gh: '$*' is not available in this review environment." >&2
+  echo "Only pre-checkpoint read-only lookups are permitted (pr view/diff, issue view, pr list)." >&2
+  exit 1
+}
+
+# created_at of a PR or issue, or empty if it can't be resolved
+created_at() { # $1=repo (may be empty) $2=kind(pr|issue) $3=number
+  local repoarg=() ; [ -n "$1" ] && repoarg=(-R "$1")
+  "$REAL" "$2" view "$3" "${repoarg[@]}" --json createdAt --jq '.createdAt' 2>/dev/null
+}
+
+sub="${1:-}"; shift || true
+
+case "$sub" in
+  api|graphql|search|auth|secret|ssh-key|gpg-key|config|alias|extension|codespace|gist|release|workflow|run)
+    deny "$sub $*" ;;
+  pr|issue)
+    action="${1:-}"; shift || true
+    case "$action" in
+      view|list) ;;
+      diff)
+        # `gh pr diff N` returns the CURRENT/merged diff, which for any checkpoint before the final
+        # head is future information. The agent already has the correct diff locally via git.
+        deny "$sub diff $* (use the local git diff; gh returns the merged state)" ;;
+      *) deny "$sub $action $*" ;;
+    esac
+
+    # Discussion carries post-checkpoint content even on a PR that predates the cutoff.
+    for a in "$@"; do
+      case "$a" in
+        --comments) deny "$sub $action $* (--comments may contain post-checkpoint discussion)" ;;
+        *comments*|*reviews*|*timelineItems*|*reviewThreads*|*closingIssuesReferences*)
+          deny "$sub $action $* (requested field may contain post-checkpoint content)" ;;
+      esac
+    done
+    # locate a bare number argument and the -R/--repo value
+    num=""; repo=""
+    args=("$@"); i=0
+    while [ $i -lt ${#args[@]} ]; do
+      a="${args[$i]}"
+      case "$a" in
+        -R|--repo) i=$((i+1)); repo="${args[$i]:-}" ;;
+        [0-9]*)    [ -z "$num" ] && num="$a" ;;
+      esac
+      i=$((i+1))
+    done
+    if [ -n "$num" ]; then
+      c="$(created_at "$repo" "$sub" "$num")"
+      if [ -z "$c" ]; then deny "$sub $action $num (cannot resolve createdAt)"; fi
+      if [[ "${c:0:10}" > "$CUTOFF" ]]; then
+        log DENY "$sub $action $num created=$c > cutoff=$CUTOFF"
+        echo "gh: $sub #$num was created ${c:0:10}, after this review's checkpoint ($CUTOFF)." >&2
+        echo "Information created after the checkpoint is not available." >&2
+        exit 1
+      fi
+      log ALLOW "$sub $action $num created=${c:0:10}"
+    else
+      log ALLOW "$sub $action $*"
+    fi
+    exec "$REAL" "$sub" "$action" "$@"
+    ;;
+  repo)
+    action="${1:-}"
+    case "$action" in view) log ALLOW "repo view"; shift; exec "$REAL" repo view "$@" ;; *) deny "repo $*" ;; esac ;;
+  ""|--help|-h|help) log ALLOW "help"; exec "$REAL" --help ;;
+  *) deny "$sub $*" ;;
+esac
