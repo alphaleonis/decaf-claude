@@ -122,11 +122,40 @@ every tool, repeat, and future run, so it amortizes well.
 It is safe to build with total access to the fix PR, the threads, and the post-merge issues,
 **because the reviewer never sees it.** Only the judge does.
 
-### Corollary: earlier checkpoints yield richer keys
+### Whether an earlier checkpoint helps is subject-dependent — measured, not assumed
 
-At T = merged head, only post-merge discoveries can apply. At T = as-opened, the entire lifecycle's
-learnings are candidates. **The earliest checkpoint is therefore the most valuable**, not the most
-awkward — it maximizes how much of what the world learned is admissible.
+The plausible theory was: at T = merged head only post-merge discoveries apply, so an earlier
+checkpoint admits more of the lifecycle. **Building two keys showed the theory is wrong as a general
+rule.** It depends entirely on whether the subject's defects were *introduced* or *removed* during
+review, and that is knowable only by building the key.
+
+| | Subject 9 (k8s #130837) | Subject 11 (tokio #7757) |
+|---|---|---|
+| Defects **introduced** during review | both (primary + h1, at push #2) | — |
+| Defects **removed** during review | — | the reviewer-flagged ordering bug |
+| Entries at an early checkpoint | 2 | ≥1 (the only scorable defect there is) |
+| Entries at the merged head | 3 | **0 scorable** |
+| Better checkpoint | **merged head** | **as-opened** |
+
+So there is no default. Locate the defect first (Step 2), then let its presence decide the
+checkpoint. A subject whose defects were introduced late is better reviewed near the merge; one whose
+defects were fixed in review is only reviewable early, or not at all.
+
+### A subject can turn out to be unscorable
+
+Subject 11's *escaped* defect — `spawn_blocking` hangs, which forced a revert and a point release —
+**was never diagnosed**. The reporter bisected to the merge commit but had no minimum reproducer, and
+the maintainer records that the hang persisted with `NUM_SHARDS` set to 1. There is no defect
+statement, so no `must_flag` can be written, so it cannot be scored.
+
+This is not a gap in the method; it is the method refusing to grade reviewers against a defect nobody
+has identified. **Expect to discover it only while building the key** — and treat "the subject is
+unscorable" as a valid, publishable outcome of Step 6 rather than a failure.
+
+It also caught a **misattributed v1 ground truth**: subject 11's fixture states the ordering bug as
+the escaped defect, fusing a real reviewer finding (fixed during review — the code is absent from the
+merged diff) with a real but undiagnosed production hang. Scoring against that key on the merged head
+would have graded tools against a defect not present in the diff they reviewed.
 
 ### Worked check: subject 9
 
@@ -199,6 +228,12 @@ gh api graphql -f query='
 The candidate heads are: the **as-opened head** (the first event's `beforeCommit`, or the PR head if
 there were no force-pushes), then each event's `afterCommit` in order.
 
+> ⚠️ **Force-pushes do not enumerate all heads.** Ordinary pushes move the head without emitting a
+> timeline event, so the chain has gaps — a later event's `beforeCommit` will not match the previous
+> event's `afterCommit`. On subject 11, four such gaps appear among 18 force-pushes. Treat the
+> force-push heads as *samples*, and fall back to the PR's commit list when the introducing push must
+> be located precisely.
+
 > ⚠️ Do **not** read `timelineItems.totalCount` as the force-push count — it counts all timeline item
 > types regardless of the `itemTypes` filter. Subject 9 reports 113 there and has 13 force-pushes.
 > Count the returned nodes.
@@ -213,6 +248,11 @@ gh api "repos/O/R/contents/<path>?ref=<sha>" --jq '.content' | base64 -d
 
 Grep each for the defect's signature (a changed function signature, a swapped call, an added
 timeout). The checkpoint is the **earliest head where the signature is present**.
+
+> ⚠️ **A full revert gives no line-level localization.** Where the follow-up "fix" simply reverts the
+> whole PR (subject 11: `rt: revert #7757`, −340 lines, deleting the added file), blame tells you
+> nothing — every line was deleted. Derive the signature from the review discussion or the linked
+> issue instead. If neither states a mechanism, see Step 6: the subject may not be scorable at all.
 
 If the defect is present at the as-opened head, stop — that is the checkpoint, and it is the ideal
 case. Record the walk either way; it is the evidence for the checkpoint choice.
