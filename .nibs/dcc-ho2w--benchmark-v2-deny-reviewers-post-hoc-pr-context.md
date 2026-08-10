@@ -2,11 +2,11 @@
 # dcc-ho2w
 version: 1
 title: 'Benchmark v2: deny reviewers post-hoc PR context'
-status: draft
-type: epic
+status: in-progress
+type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T15:05:18Z
+updated_at: 2026-08-10T17:41:58Z
 order: zzzzV
 ---
 
