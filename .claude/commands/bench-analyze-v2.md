@@ -29,9 +29,18 @@ indistinguishable once they reach `analysis.json` as "contributed no clusters".
 
 ## Stages
 
-**1. Extract — one subagent per cell, in parallel.** Read that cell's **`cell-report.md`** (the
-tool's complete main-chain output, recovered from the transcript) plus any tool-written report file,
-and emit every finding normalized to:
+**1. Extract — one subagent per cell, in parallel.** Read **both** of that cell's captured layers —
+**`cell-report.md`** (the tool's complete main-chain output, recovered from the transcript) and
+**`tool-artifacts/`** (whatever the tool wrote into the working tree, e.g.
+`.decaf/code-reviews/CODE_REVIEW_*.md`) — and emit every finding normalized to:
+
+> **Both layers, every time.** For a tool that files a report, the terminal output is a summary and
+> the report is the finding set: the `ours-audit` pilot probe printed 4,919 chars and filed 41,419
+> bytes, so the terminal alone is ~12% of that tool. For a tool that prints everything, the two
+> overlap almost completely — dedupe by `file:line` + claim, and never count a finding twice because
+> it appears in both. `tool-artifacts.tsv` lists what was captured and what was skipped and why; a
+> cell with an empty `tool-artifacts/` and a manifest showing changed paths is a capture failure, not
+> a tool that wrote nothing.
 
 > **Read `cell-report.md`, not `final-output.md`.** `final-output.md` is `.result` — the session's
 > final assistant message only. A tool that prints its report and then keeps working leaves the

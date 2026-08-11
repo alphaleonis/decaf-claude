@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-11T14:10:26Z
+updated_at: 2026-08-11T15:42:05Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-5xad
@@ -167,3 +167,45 @@ MAIN-CHAIN output from the transcript into `cell-report.md` and prints what frac
 sub-agent produced but the orchestrator never surfaced is not something the reader was shown, and
 that reported-vs-found split is itself a scored axis ([[dcc-c92m]]). `/bench-analyze-v2` now extracts
 from `cell-report.md`.
+
+
+## All seven tools measured — one efcore repeat, shim on (2026-08-11)
+
+| Tool | cost | wall | isolation | terminal capture | files it wrote |
+|---|---|---|---|---|---|
+| `ours-audit` | $28.52 | 1851s | CLEAN | 62% | 41,419-byte CODE_REVIEW |
+| `pr-review-toolkit` | $19.57 | 1384s | CLEAN | 93% | — |
+| `ours-review` | $17.84 | 1528s | CLEAN | 56% | CODE_REVIEW (lost — captured before the fix existed) |
+| `comprehensive-review` | $17.61 | 1925s | CLEAN | 20% | — |
+| `ours-bugs` | $7.99 | 1249s | CLEAN | 70% | CODE_REVIEW (lost) |
+| `superpowers` | $4.28 | 804s | CLEAN | 99% | — |
+| `anthropic-code-review` | $3.37 | 699s | CLEAN | 84% | — |
+| **total** | **$99.18** | | 7/7 clean | | |
+
+Every tool runs, every cell is isolation-clean, and no cell had an access denied. Acceptance item 1
+is met: `run_cell_v2.sh` addresses pooled fixtures and all seven roster tools have a working
+invocation.
+
+The archived v1-era costs were not a usable predictor. `ours-review` cost $17.84 against $4.16
+archived, `anthropic-code-review` $3.37 against $2.85. The difference is not the tool, it is v2
+handing every tool a build toolchain ([[dcc-fhp1]]): the expensive cells all compiled EF Core and ran
+queries against SQLite, and the two cheapest did not.
+
+## Third silent defect — the report file is deleted by the next cell
+
+`ours-audit` filed 41,419 bytes to `.decaf/code-reviews/CODE_REVIEW_*.md` and printed 4,919 chars.
+The file lives inside the checkout, and `reset_repo()` wipes the checkout before the next cell, so it
+was scheduled to be destroyed unread. Scoring the terminal alone would have seen about 12% of that
+tool, and the loss lands on precisely the tools that file a full report — the opposite direction to
+the `.result` truncation, which deletes findings from tools that keep talking after reporting. Two
+biases in opposite directions across different tools do not cancel; they scramble a ranking.
+
+`v2/capture_tool_artifacts.sh` copies anything the tool left in the working tree into
+`<cell>/tool-artifacts/` before the next reset can reach it, with a manifest recording every skip and
+its reason. It filters build output and dependency trees, caps file size, and sweeps `.decaf/` by
+name as well — because `git status` cannot see a report written to a path the SUBJECT repo gitignores,
+and the report's location is chosen by the tool, not the subject. Both behaviors were verified by
+planting files and watching the manifest.
+
+`ours-bugs` and `ours-review` probe reports are lost; they ran before the fix existed. Probes are not
+scored, so nothing is affected beyond those two rows of this table.
