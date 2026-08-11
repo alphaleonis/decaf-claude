@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-11T17:57:21Z
+updated_at: 2026-08-11T19:36:12Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-5xad
@@ -276,3 +276,48 @@ match the code, so the feature cannot be enabled by following the docs). `NULL-A
 exactly this: a null-arm finding the judge rates valid is a real result worth keeping, not an error
 to suppress — it means the tool found something the project missed. The blind grader decides;
 nothing here pre-judges it.
+
+
+## Pair 2, and the failure mode that actually killed a cell: tmpfs exhaustion
+
+| cell | cost | wall | isolation | capture | artifacts |
+|---|---|---|---|---|---|
+| `prometheus#18081` x `ours-audit` r1 | $30.79 | 1774s | CLEAN (1 DENY) | 65% | **73,701 bytes** |
+| `prometheus#18081` x `comprehensive-review` r1 | $18.68 | 3733s | **ABORTED** | — | — |
+
+`ours-audit` cost 1.08x its efcore cell, confirming the size multiplier from the other direction:
+1.13x for the light tool, 1.08x for the heaviest. Diff size is not what drives cell cost.
+
+Its captured report is **73,701 bytes against a 5,062-char terminal output** — scoring the terminal
+alone would have seen 6.4% of that cell. The artifact capture is load-bearing on every decaf cell,
+not an efcore quirk.
+
+**The comprehensive-review cell aborted after 62 minutes with $18.68 spent and no output.** Cause,
+identified by the operator and confirmed by measurement: `/tmp` on this machine is **tmpfs — 7.8G of
+RAM against 15Gi total**. The cell checked out two full worktrees of a 14,360-commit repo
+(`/tmp/cr-base`, `/tmp/cr-head`) and built Go output beside them, tmpfs filled, the machine ran out
+of memory and Claude Code stopped responding. `terminal_reason: aborted_streaming`.
+
+This does not look like resource exhaustion in the artifacts. It looks like a cell that produced
+nothing — the same shape as a crash, a hang, or a tool with no findings. Swap has since been enabled
+(16Gi), which prevents the hard hang but not tmpfs filling.
+
+`v2/cell_tmp.sh` adds two defenses, because neither suffices alone:
+
+- **`TMPDIR` per cell on disk** (`/var/tmp/bench-v2/<cell>`, ext4, 860G) — redirects every tool that
+  respects it.
+- **A post-cell sweep** — because a tool that hard-codes `/tmp/cr-base`, as comprehensive-review
+  does, ignores `TMPDIR`. It removes the cell's TMPDIR, the cell's own Claude scratchpad under
+  `/tmp/claude-*/<slug>`, every git worktree outside the checkout, and any top-level `/tmp` entry
+  absent from a snapshot taken before the run. Scoped by that diff, so a blanket wipe is impossible
+  and another process's files are never in scope; everything removed is recorded in
+  `tmp-cleanup.tsv`.
+
+Plus a **preflight that refuses below 4096MB free** (exit 80). Starting a cell on a tight tmpfs buys
+a 40-minute hang and a spend; refusing buys an immediate, legible stop.
+
+All paths verified by planting: a stray `/tmp` dir, a registered worktree, a cell TMPDIR and a cell
+scratchpad were each removed, the harness's own scratchpad survived, and the refusal fired at exit 80.
+
+The failed cell's directory was deleted so `run_pilot.sh` re-runs it; its $18.68 is spent and
+unrecoverable.
