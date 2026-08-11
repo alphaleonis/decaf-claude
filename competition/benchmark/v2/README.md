@@ -34,6 +34,7 @@ v2/
 │   ├── subject-NN/answer-key.json   anchor keys: entries[] + rejected[] with admission evidence
 │   ├── CANDIDATES.md                how the pooled corpus was selected and what it covers
 │   ├── GROUND-TRUTH-AUDIT.md        the 12-subject audit that ended the key-only design
+│   ├── NULL-ARM.md                  per-subject nullness verdicts and the line-level reasoning
 │   └── HARNESS-REVIEW.md            the pre-pilot review of this harness (dcc-3cm6)
 ├── runs/<sid>__<tool>__shim-<on|off>__r<n>/
 │   ├── final-output.md              the review
@@ -156,10 +157,11 @@ Built and validated:
 
 - **the 12-subject pooled corpus** — size × application type, 9 repos, 120 admitted threads of 218
   (`dcc-ixyy`); a checkout was destroyed and rebuilt byte-identically from its committed fixture
-- **the null arm** — 3 subjects, one per size bucket (`dcc-mjj5`)
+- **the null arm** — 3 subjects, one per size bucket (`dcc-mjj5`), each re-adjudicated at line level
+  over its *full* file list and recorded in `analysis/NULL-ARM.md` (`dcc-nvrt`)
 - **the ground-truth audit** — all 12 anchor candidates; 5 unusable, TypeScript eliminated
   (`dcc-5xad`)
-- **the scoring pipeline** — `scoring/score_pooled.py` with 21 self-tests, and `check_artifacts.py`
+- **the scoring pipeline** — `scoring/score_pooled.py` with 25 self-tests, and `check_artifacts.py`
   asserting the layers describe one finding set (`dcc-y2e6`)
 - **found-vs-reported** — every recall metric computed twice, per tool and corpus-wide (`dcc-c92m`)
 - **leak controls** — DENY path exercised by a real reviewer, control arm instrumented, and the
@@ -170,7 +172,6 @@ Not done:
 
 - **no cross-tool comparison** has ever run under v2 — the pilot, `dcc-vkeh`
 - **anchor keys exist for 2 of 7 subjects**; the other 5 are validated but unbuilt (`dcc-9ncz`)
-- **the null arm's file probe covered 12 of 33 files** on the large subject (`dcc-nvrt`)
 
 ## Vintage: 5 of 12 subjects are not poolable
 

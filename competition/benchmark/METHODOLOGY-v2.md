@@ -152,7 +152,14 @@ quantifies exactly that: given nothing to find, how much does each still say?
    link — a change can ship a defect nobody ever traced back to it. File-level overlap is a *screen,
    not a verdict*: shared and generated files (dependency manifests, translation bundles, CI config,
    append-only registries) are touched by every later fix, so a hit there is adjudicated by asking
-   whether the fix touched the same **lines**, not the same file.
+   whether the fix touched the same **lines**, not the same file. The line test compares the PR's
+   *added* line texts against each later fix's *removed* line texts, which is immune to the drift
+   between the two commits.
+
+   ⚠️ **The probe must cover every file, and say so.** It capped at 12 and reported nothing about the
+   remainder, so the first adjudication covered 12 of 33 files on the large subject. Lifting the cap
+   surfaced 5 more files carrying later fixes — including the only production file that subject
+   meaningfully changes, at index 29. A partial probe reads exactly like a clean one (`dcc-nvrt`).
 3. **Soak time recorded.** A defect needs time to surface, so nullness is a function of how long the
    change has been in production, and that number is published rather than assumed.
 4. Size and application type matched to a scored subject, so the floor is comparable rather than
@@ -168,6 +175,11 @@ merge commit yields an empty diff, because the merge is already on that branch.
 finding as genuinely valid, that is a real result worth keeping rather than an error to suppress: it
 means a tool found something the project has not yet noticed. Those are reported separately from the
 noise count.
+
+It follows that **nullness is a claim with a date, not a property of the subject.** Each null
+fixture carries a `nullness` block — verdict, adjudication date, probe coverage — and the reasoning
+per file is in `v2/analysis/NULL-ARM.md`. Re-run `v2/verify_null.sh` before citing a noise floor;
+all three subjects are NULL as of 2026-08-11, at ~99 days of soak.
 
 ⚠️ Soak time and vintage pull against each other: nullness wants an old change, the vintage rule
 wants a recent one. For null subjects soak wins and vintage is recorded rather than binding — a

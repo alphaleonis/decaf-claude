@@ -11,7 +11,7 @@
     "base": "eca0e60db89a81bec706bad6e238c58e0fcec85f",
     "base_ref": "main",
     "date": "2026-05-04T04:00:03Z",
-    "selection": "merge commit \u2014 post-review state that shipped with no known defect",
+    "selection": "merge commit — post-review state that shipped with no known defect",
     "diff_stat": {
       "files": 33,
       "additions": 456,
@@ -27,5 +27,21 @@
   "threads": {
     "total": 3,
     "not-scored": 3
+  },
+  "nullness": {
+    "verdict": "NULL",
+    "adjudicated": "2026-08-11",
+    "nib": "dcc-nvrt",
+    "soak_days": 99,
+    "coverage": {
+      "files": 33,
+      "probed": 33,
+      "excluded_shared_or_generated": 0,
+      "files_with_later_fix_shaped_commits": 8
+    },
+    "method": "PR-added line texts vs each later fix's removed line texts — drift-immune; file overlap is a screen, not a verdict",
+    "note": "8 files carry later fixes, all disjoint from the lines this PR added; the one production file (global-exception.filter.ts) was changed by #28806 for where error logging happens, which this PR never touched",
+    "record": "v2/analysis/NULL-ARM.md",
+    "recheck": "nullness is a claim with a date, not a property; re-run v2/verify_null.sh before citing this subject"
   }
 }

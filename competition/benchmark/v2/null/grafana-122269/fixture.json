@@ -11,7 +11,7 @@
     "base": "b262acddf7dd4c8e8663605221e9d0ed56839867",
     "base_ref": "main",
     "date": "2026-05-05T13:55:23Z",
-    "selection": "merge commit \u2014 post-review state that shipped with no known defect",
+    "selection": "merge commit — post-review state that shipped with no known defect",
     "diff_stat": {
       "files": 17,
       "additions": 223,
@@ -27,5 +27,21 @@
   "threads": {
     "total": 14,
     "not-scored": 14
+  },
+  "nullness": {
+    "verdict": "NULL",
+    "adjudicated": "2026-08-11",
+    "nib": "dcc-nvrt",
+    "soak_days": 99,
+    "coverage": {
+      "files": 17,
+      "probed": 12,
+      "excluded_shared_or_generated": 5,
+      "files_with_later_fix_shaped_commits": 2
+    },
+    "method": "PR-added line texts vs each later fix's removed line texts — drift-immune; file overlap is a screen, not a verdict",
+    "note": "registry.go and setting.go carry later fixes in unrelated domains; both disjoint from the lines this PR added",
+    "record": "v2/analysis/NULL-ARM.md",
+    "recheck": "nullness is a claim with a date, not a property; re-run v2/verify_null.sh before citing this subject"
   }
 }
