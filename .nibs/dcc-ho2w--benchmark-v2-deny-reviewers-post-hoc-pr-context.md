@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-11T12:01:12Z
+updated_at: 2026-08-11T12:23:31Z
 order: zzzzV
 ---
 
@@ -267,21 +267,33 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-qwt3: Split the thread axis into two populations, enforced by construction. Every thread in the pooled
-corpus now carries `origin: human|bot` (86 human / 34 bot admitted — exact census match), classified
-by GitHub GraphQL actor `__typename` against the committed `v2/pooled/bot-authors.json` —
-`derive_bot_authors.py` re-derives it per corpus (REST `users/` is unusable: it resolves same-named
-orgs or 404s; GraphQL types the actual actor), `annotate_thread_origin.py` applies it and refuses
-unknown authors. Two hand-audited facts surfaced: `hex-security-app` was renamed `parameter-app`
-(recorded in the list's `manual` section, preserved across re-runs) and a TENTH bot the census's
-admitted-only scope missed — `cursor`, one rejected thread on grafana#117615.
+Completed dcc-2gu2: Rebuilt the screen on the human-thread criterion and ran it for all nine target cells; full record in
+`CANDIDATES.md` ("Re-screen under the human-thread criterion"), raw rows in
+`candidate-pool-human.tsv`. `find_candidates.sh` is now two-phase: top-100-by-comments search, then
+per-candidate thread-author typing (GraphQL `__typename` ∪ the committed bot list — refuses to run
+without the list). Output adds human count, bot share, and distinct-human-reviewer count; a range
+form of `merged_after` beats the 100-result cap for complete coverage of a repo.
 
-`score_pooled.py`: `thread_recall` is human-only; bot hits score a separate `incumbent_agreement`
-(+`_found`) axis; corpus miss-detector and judge-calibration fields are human-only; an admitted
-thread without origin is a DataDefect (exit 3). Six new self-tests, all watched fail first (the
-mixed-population recall really did read 0.333 where human-only reads 0.5). `build_pooled_fixture.py`
-stamps origin at build time; a deleted author gets origin null, which the scorer refuses rather than
-defaulting into either axis.
+Pool: 298 candidates at ≥5 raw human threads across the ten repos; 132 classified by type. vvf0's
+raw-thread feasibility counts marked superseded in CANDIDATES.md. Recommendations: replace backend M
+→ grafana#125982, backend L → PostHog#59630, contract L → PostHog#67924, app-ui M → immich#29965
+(all four same-repo matched vintage pairs for ryo4), app-ui L → element-web#33184, library S →
+sveltejs/kit#16507; keep-thin app-ui S (only 1-reviewer candidates, immich cap) and contract S (the
+screen's sole candidate IS the incumbent); backend S has NO viable candidate — verified by complete
+jellyfin sweep (212 PRs, three windows; best is 4 human threads / 1 reviewer) plus hand-checking
+every unclear S row (all docs-only). Near-misses recorded in case ryo4 prefers a relaxed bar.
+
+## Key Decisions
+
+- The screen classifies bot authors by GraphQL actor type ∪ committed list, not the list alone — a
+  fixed list cannot know bots that appear in new candidates; the list covers renamed apps the live
+  API can no longer type.
+- Screen counts RAW human threads; every replacement must re-verify ≥5 human threads AT ADMISSION
+  when its fixture is built (element-web#32964: 13 raw human but 1 admitted — the gap is real).
+- An S-band zero from the comment-sorted window is the least trustworthy zero the screen produces;
+  decisions resting on one need the sliced complete sweep (done for jellyfin/backend S).
+- The stale "PostHog yields 0 at min 5" example replaced: the same query returned 0 on 2026-08-10
+  and 65 on 2026-08-11 — the top-100 window shifts day to day.
 
 ## Key Decisions
 

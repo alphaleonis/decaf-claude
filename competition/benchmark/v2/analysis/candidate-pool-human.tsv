@@ -1,0 +1,298 @@
+library	dotnet/aspnetcore#67388	2026-07-30	L	+6630/-1	53f	54thr	47hum	12%bot	3rev	Device Bound Session Credentials (DBSC) for cookie authentication (pro
+library	dotnet/aspnetcore#66487	2026-06-23	L	+3131/-279	15f	46thr	24hum	47%bot	4rev	Implement async validation support for Microsoft.Extensions.Validation
+library	dotnet/aspnetcore#67098	2026-07-07	L	+4719/-43	75f	49thr	15hum	69%bot	4rev	Circuit can be paused by Blazor when inactivity is detected
+library	dotnet/aspnetcore#65772	2026-07-10	L	+3326/-37	49f	67thr	55hum	17%bot	5rev	CacheBoundary support for Blazor
+library	dotnet/aspnetcore#64535	2026-07-23	L	+6293/-342	20f	16thr	10hum	37%bot	4rev	Respect IModelNameProvider when matching OpenAPI parameters
+library	dotnet/aspnetcore#67228	2026-06-29	L	+1532/-1	6f	34thr	13hum	61%bot	2rev	Add For Loop Analyzer for variables used in closures.
+library	dotnet/aspnetcore#66585	2026-06-05	L	+1541/-3	30f	26thr	25hum	3%bot	2rev	Implement Cross-Site Request Forgery Algorithm based on Fetch Metadata
+library	dotnet/aspnetcore#67530	2026-07-17	L	+1529/-3	7f	26thr	17hum	34%bot	2rev	Adding analyzer to warn about JSInterop calls not wrapped in a try cat
+library	dotnet/aspnetcore#64404	2026-06-12	L	+685/-1	3f	9thr	9hum	0%bot	4rev	OpenAPI: Fix duplicate xml documentation ids for Generic properties an
+library	dotnet/aspnetcore#66692	2026-06-22	M	+407/-39	10f	17thr	11hum	35%bot	4rev	Allow OpenAPI registration to resolve document names upon request
+library	dotnet/aspnetcore#67022	2026-06-09	L	+1276/-3	17f	28thr	5hum	82%bot	2rev	Add fuzzing infrastructure for ASP.NET Core
+library	dotnet/aspnetcore#66680	2026-06-16	M	+359/-39	10f	24thr	12hum	50%bot	5rev	Make Virtualize component CSP-compliant
+library	dotnet/aspnetcore#66832	2026-06-16	L	+484/-19	14f	22thr	19hum	13%bot	1rev	Fix TempData and SupplyParameterFromSession persistence for streaming 
+library	dotnet/aspnetcore#67987	2026-07-24	L	+4680/-5462	101f	14thr	10hum	28%bot	1rev	Streamline localization in Microsoft.Extensions.Validation
+library	dotnet/aspnetcore#66527	2026-06-23	M	+158/-1	6f	18thr	9hum	50%bot	2rev	Add `ConfigureHostApplicationBuilder` virtual method on WebApplication
+library	dotnet/aspnetcore#67324	2026-07-16	L	+3380/-3442	79f	15thr	12hum	20%bot	3rev	Improve Blazor SSR client-side form validation
+library	dotnet/aspnetcore#68066	2026-08-11	L	+1309/-1	9f	13thr	9hum	30%bot	2rev	Add serving of .well-known/passkey-endpoints to Identity
+library	dotnet/aspnetcore#66808	2026-06-18	L	+523/-120	22f	12thr	7hum	41%bot	2rev	Batch small Helix work items to reduce per-item overhead (-53% compute
+library	dotnet/aspnetcore#67323	2026-07-07	L	+1631/-618	29f	9thr	6hum	33%bot	2rev	Improve Blazor async form validation
+library	dotnet/aspnetcore#67083	2026-08-10	L	+1932/-449	56f	19thr	11hum	42%bot	2rev	Migrate Components.Testing from xUnit v3 to MSTest on MTP
+library	dotnet/aspnetcore#55897	2026-08-07	M	+151/-10	2f	8thr	6hum	25%bot	2rev	Log whether the localization resource is found or not
+library	dotnet/aspnetcore#67436	2026-07-09	L	+666/-18	23f	18thr	11hum	38%bot	2rev	Add TLS channel binding token access to `ITlsConnectionFeature`
+library	dotnet/aspnetcore#67176	2026-06-24	L	+1244/-1	6f	18thr	6hum	66%bot	1rev	Adding StateHasChanged analyzer to flag unnecessary calls.
+library	dotnet/aspnetcore#67413	2026-07-01	M	+203/-0	5f	7thr	5hum	28%bot	1rev	Improve QuickGrid diagnostics for mismatched GridSort types
+library	dotnet/aspnetcore#67461	2026-07-07	M	+303/-11	2f	10thr	10hum	0%bot	3rev	feat: adds support for describing SSE in OpenAPI 3.2.0
+library	dotnet/aspnetcore#67821	2026-07-24	L	+1855/-11	6f	9thr	5hum	44%bot	3rev	 Handle passing a Func expression to Map* in ValidationsGenerator and 
+library	dotnet/aspnetcore#67956	2026-07-23	L	+59634/-6794	99f	5thr	5hum	0%bot	2rev	Move the abstract `Validatable*Info` from Microsoft.Extensions.Validat
+library	dotnet/aspnetcore#64859	2026-08-06	M	+404/-3	2f	7thr	7hum	0%bot	2rev	fix: Ensure OpenAPI request bodies include (#59042)
+library	dotnet/aspnetcore#66727	2026-06-02	M	+54/-68	2f	8thr	7hum	12%bot	2rev	Fix possible deadlock in UnixCertificateManager and MacOSCertificateMa
+library	dotnet/aspnetcore#67776	2026-07-14	L	+490/-410	43f	13thr	10hum	23%bot	2rev	Fix API for CacheView
+library	dotnet/aspnetcore#66412	2026-06-01	L	+292/-435	32f	9thr	5hum	44%bot	1rev	Use SDK Asset Groups for Assets.Internal and Identity UI
+library	dotnet/aspnetcore#67367	2026-06-29	M	+52/-48	8f	7thr	6hum	14%bot	2rev	Fix culture persistence to not have public API
+library	dotnet/aspnetcore#66919	2026-06-03	M	+432/-51	13f	9thr	8hum	11%bot	2rev	Add dotnet-user-jwts --file support for file-based apps
+library	dotnet/aspnetcore#65245	2026-06-09	S	+49/-3	2f	5thr	5hum	0%bot	3rev	Handle `DescriptionAttribute` for nullable value types in OpenAPI gene
+library	dotnet/aspnetcore#66951	2026-06-08	L	+1527/-8	7f	7thr	5hum	28%bot	1rev	Verify Minimal API unions support in RDF and RDG as endpoint parameter
+library	dotnet/aspnetcore#64457	2026-07-23	M	+106/-2	4f	5thr	5hum	0%bot	2rev	Ignore From when serializing a JsonPatchDocument for add, remove, rep…
+library	dotnet/aspnetcore#67977	2026-08-06	M	+308/-13	9f	11thr	9hum	18%bot	1rev	Improve Sections warning messaging
+library	dotnet/aspnetcore#67934	2026-07-22	M	+263/-123	5f	9thr	7hum	22%bot	1rev	Fix Virtualize scroll jump from native/JS anchoring double-compensatio
+library	dotnet/efcore#38550	2026-07-15	L	+10496/-2859	110f	48thr	12hum	75%bot	2rev	Cosmos: Modernize materializer & subdocument projectionbinding
+library	dotnet/efcore#38474	2026-06-25	M	+303/-97	16f	47thr	9hum	80%bot	1rev	Unskip tests that aren't failing anymore
+library	dotnet/efcore#38662	2026-07-17	L	+1793/-1118	55f	37thr	16hum	56%bot	2rev	Cosmos: Modernize serialization in query pipeline
+library	dotnet/efcore#34127	2026-06-15	M	+233/-97	14f	15thr	10hum	33%bot	2rev	Use null propagation to optimize away `IS NOT NULL` checks
+library	dotnet/efcore#38440	2026-06-22	L	+9473/-40842	241f	20thr	5hum	75%bot	2rev	Make type mapping generic so that it can create value comparers for Na
+library	dotnet/efcore#38433	2026-06-17	L	+892/-485	21f	17thr	7hum	58%bot	1rev	Honor explicit store type when discovering Dictionary<string,object>
+library	dotnet/efcore#28337	2026-07-10	M	+231/-0	6f	12thr	10hum	16%bot	3rev	SqlServer: Translate x.Parse
+library	dotnet/efcore#35327	2026-06-12	M	+397/-73	14f	7thr	5hum	28%bot	2rev	Translate to NULLIF
+library	dotnet/efcore#38676	2026-07-24	M	+321/-0	10f	9thr	5hum	44%bot	2rev	Handle out-of-order split include rows during concurrent inserts
+app-ui	element-hq/element-web#33692	2026-07-07	M	+240/-160	32f	18thr	16hum	11%bot	2rev	Allow disabling legacy calls and make `Voice & Video` settings `Legacy
+app-ui	element-hq/element-web#33184	2026-06-04	L	+3019/-548	24f	21thr	20hum	4%bot	4rev	[Labs] Sign in with QR on new EW using generated QR for MSC4108 v2024
+app-ui	element-hq/element-web#34337	2026-08-05	L	+1749/-1375	44f	30thr	18hum	40%bot	2rev	Emoji picker to shared components
+app-ui	element-hq/element-web#32964	2026-07-21	L	+560/-6	18f	21thr	13hum	38%bot	2rev	Auto Collapse Behaviour - Collapse left panel on window resize
+app-ui	element-hq/element-web#34198	2026-07-13	L	+3600/-14	71f	14thr	14hum	0%bot	2rev	Ongoing call tiles - Implement the view-models and store
+app-ui	element-hq/element-web#34055	2026-07-06	M	+123/-5	5f	8thr	8hum	0%bot	2rev	Start voice call in PiP (not in fullscreen)
+-	element-hq/element-web#33426	2026-06-02	L	+759/-342	17f	7thr	7hum	0%bot	1rev	Apply new design and display logic to logout confirmation dialog
+-	element-hq/element-web#34150	2026-07-13	L	+588/-210	25f	16thr	16hum	0%bot	1rev	Sending URL Preview Bundles (MSC 4095)
+app-ui	element-hq/element-web#33987	2026-07-15	M	+151/-13	2f	6thr	6hum	0%bot	1rev	Make the persistent-storage request observable and warn when it is den
+-	element-hq/element-web#33668	2026-06-01	L	+1146/-684	13f	7thr	7hum	0%bot	1rev	Refactor EventTile using the MVVM pattern - #7b
+app-ui	element-hq/element-web#33034	2026-06-02	M	+123/-63	6f	5thr	5hum	0%bot	1rev	Support MSC4287 m.key_backup stable prefix as well as the unstable pre
+-	element-hq/element-web#33968	2026-06-29	L	+4936/-4451	8f	5thr	5hum	0%bot	1rev	Sticky Header for Room List Sections
+app-ui	element-hq/element-web#34165	2026-07-20	M	+203/-78	14f	6thr	6hum	0%bot	1rev	Collapsed URL previews in timeline
+-	grafana/grafana#125185	2026-06-18	L	+5798/-198	46f	21thr	21hum	0%bot	1rev	Alerting: Add Config k8s resource for external Alertmanager sync
+unclear	grafana/grafana#113642	2026-06-05	M	+193/-0	1f	37thr	22hum	40%bot	5rev	DOCS: Added new concepts doc to data source documentation
+app-ui	grafana/grafana#121375	2026-06-18	L	+5335/-88	52f	34thr	15hum	55%bot	3rev	feat: local query history
+unclear	grafana/grafana#126813	2026-07-07	M	+63/-81	6f	37thr	26hum	29%bot	3rev	Docs: sync visualization docs with source (pt2)
+contract	grafana/grafana#127048	2026-07-13	L	+1952/-162	23f	13thr	8hum	38%bot	2rev	QueryVariable: Redesign the query variable editor
+-	grafana/grafana#129599	2026-08-10	L	+3493/-94	35f	17thr	7hum	58%bot	1rev	Unified Storage: VectorStore write service for external vector collect
+backend	grafana/grafana#124578	2026-06-19	M	+259/-15	6f	13thr	13hum	0%bot	4rev	Authz: Fix missing service identity permissions for provisioning resou
+-	grafana/grafana#127485	2026-07-30	L	+1483/-98	23f	24thr	14hum	41%bot	1rev	Search: add bounded post-filter authz mode (part 2)
+backend	grafana/grafana#128730	2026-07-24	L	+2310/-121	25f	20thr	9hum	55%bot	2rev	Unified Storage: Hybrid search
+-	grafana/grafana#127399	2026-07-14	L	+584/-42	5f	31thr	28hum	9%bot	1rev	Provisioning: allow Git Sync option for root-level saves and new folde
+-	grafana/grafana#127697	2026-07-16	L	+2082/-267	21f	20thr	10hum	50%bot	1rev	unified-storage: setup ingest path for stats
+backend	grafana/grafana#127983	2026-07-10	M	+497/-0	15f	23thr	16hum	30%bot	3rev	Provisioning: Attribute Git Sync commits to the acting user
+-	grafana/grafana#128706	2026-07-28	L	+1266/-3	15f	28thr	6hum	78%bot	1rev	poc(alerting): Start Assistant investigations from alert instances
+contract	grafana/grafana#123178	2026-07-14	L	+1286/-105	30f	19thr	8hum	57%bot	3rev	Correlations: Implement Legacy to App Platform workflow
+-	grafana/grafana#130227	2026-08-10	L	+2117/-197	45f	17thr	7hum	58%bot	1rev	Unified Storage: embed content versioning + folder titles in breadcrum
+app-ui	grafana/grafana#126019	2026-06-22	L	+727/-2	4f	18thr	7hum	61%bot	2rev	TraceView: Detect pruned span summaries in trace model
+backend	grafana/grafana#129869	2026-08-04	L	+786/-35	14f	14thr	9hum	35%bot	2rev	Apiserver: Enforce global maxAllowedVersion persist cap in apistore.en
+app-ui	grafana/grafana#126790	2026-06-25	M	+263/-17	12f	19thr	12hum	36%bot	2rev	Provisioning: add option to disable webhook in repository and connecti
+backend	grafana/grafana#127894	2026-07-10	M	+258/-24	12f	17thr	12hum	29%bot	1rev	MySQL: Preserve SQLCommenter tags in stripSQLComments
+contract	grafana/grafana#127167	2026-07-14	L	+1781/-600	17f	15thr	8hum	46%bot	2rev	Navigation: Allow reordering of megamenu and hiding items
+app-ui	grafana/grafana#120978	2026-08-02	M	+277/-65	14f	12thr	6hum	50%bot	2rev	Navigation: Inject orgId into all navigations
+backend	grafana/grafana#125475	2026-06-09	L	+409/-141	14f	21thr	19hum	9%bot	2rev	Provisioning: Consistently use request context in Connector.Connect
+-	grafana/grafana#127474	2026-06-30	L	+1144/-142	20f	24thr	24hum	0%bot	1rev	feat: add publisher for nats
+contract	grafana/grafana#128702	2026-07-24	L	+812/-73	13f	16thr	6hum	62%bot	3rev	Trace View: Check for the existence of logs when showing the trace-to-
+-	grafana/grafana#125928	2026-06-11	L	+835/-85	15f	13thr	11hum	15%bot	1rev	Provisioning: Add branch, commit and pull request options sections
+backend	grafana/grafana#123696	2026-07-24	L	+3708/-209	17f	29thr	14hum	51%bot	2rev	Azure monitor: Azure Metrics Batch API Implementation backend
+-	grafana/grafana#124299	2026-06-12	L	+597/-390	34f	17thr	14hum	17%bot	1rev	Browse Dashboards: Change messaging of delete/move modal and add count
+-	grafana/grafana#127209	2026-06-30	L	+662/-238	43f	19thr	13hum	31%bot	1rev	Provisioning: Add Github Enterprise frontend
+-	grafana/grafana#129214	2026-08-05	L	+745/-55	11f	21thr	13hum	38%bot	1rev	Dashboards: improve auto layout indication
+-	grafana/grafana#129035	2026-07-24	L	+1200/-6	11f	22thr	15hum	31%bot	1rev	Test: Unit test various pure-ish utils lacking coverage
+unclear	grafana/grafana#126814	2026-07-07	S	+43/-23	7f	24thr	15hum	37%bot	2rev	docs: sync visualization docs with source (pt3)
+contract	grafana/grafana#127821	2026-07-14	L	+2030/-93	24f	18thr	5hum	72%bot	3rev	Global template variables: Management UX
+app-ui	grafana/grafana#129154	2026-07-31	M	+470/-13	7f	16thr	16hum	0%bot	4rev	docs(skills): add panel-testing-strategy skill
+unclear	grafana/grafana#125282	2026-06-16	M	+58/-56	5f	16thr	11hum	31%bot	2rev	Docs: Variables docs improvements 
+-	grafana/grafana#125816	2026-06-22	L	+1940/-76	18f	21thr	13hum	38%bot	1rev	Provisioning: Add the Resources to migrate table with per-resource sel
+backend	grafana/grafana#127288	2026-07-01	L	+577/-1018	17f	15thr	11hum	26%bot	2rev	Provisioning: follow up on webhook handler refactor
+unclear	grafana/grafana#127184	2026-07-03	L	+364/-309	29f	26thr	21hum	19%bot	2rev	Docs: Remove references to variables & annotations in dashboard settin
+contract	grafana/grafana#126867	2026-07-16	L	+896/-30	22f	17thr	7hum	58%bot	2rev	feat(assistant): support Workspace fullscreen mode
+app-ui	grafana/grafana#129361	2026-07-29	L	+675/-34	12f	15thr	9hum	40%bot	2rev	Home: Add team filter dropdown to the firing alerts tab
+backend	grafana/grafana#126118	2026-07-28	L	+866/-11	13f	12thr	7hum	41%bot	2rev	Provisioning: Add optional ip ratelimiter for webhooks
+-	grafana/grafana#125811	2026-06-16	L	+720/-52	14f	17thr	13hum	23%bot	1rev	Provisioning: Add Migrate to GitOps overview stat cards
+app-ui	grafana/grafana#127858	2026-07-20	L	+1918/-716	18f	11thr	7hum	36%bot	3rev	Home: Wire the homepage enabled-solution card to live Kubernetes data
+app-ui	grafana/grafana#128823	2026-07-21	M	+217/-67	9f	14thr	8hum	42%bot	1rev	Homepage: Alerts card list item rework
+-	grafana/grafana#124797	2026-06-10	L	+656/-344	23f	8thr	8hum	0%bot	1rev	Restore dashboards: Paginate deleted dashboards
+app-ui	grafana/grafana#126896	2026-06-24	M	+302/-54	4f	15thr	14hum	6%bot	2rev	Snapshots: Add lazy loading to the Snapshots list UI when using k8s AP
+app-ui	grafana/grafana#127972	2026-07-20	M	+192/-12	13f	10thr	5hum	50%bot	3rev	Panels: Copy + Paste Keyboard Shortcuts
+backend	grafana/grafana#125982	2026-06-18	M	+463/-27	9f	21thr	21hum	0%bot	4rev	Folder scope apiextensions
+-	grafana/grafana#126565	2026-06-17	L	+1967/-27	45f	8thr	6hum	25%bot	1rev	Unified: opt-in chunked writes for resource migration
+contract	grafana/grafana#125228	2026-06-25	L	+2388/-329	56f	8thr	6hum	25%bot	2rev	DashboardTemplate: Frontend wiring for templates (banners, save flow, 
+backend	grafana/grafana#127642	2026-07-03	L	+1657/-174	9f	10thr	10hum	0%bot	2rev	Search: post-rank authorization for paginated search and federation
+app-ui	grafana/grafana#126023	2026-06-12	L	+791/-48	17f	10thr	5hum	50%bot	2rev	Provisioning: Add commit signing configuration UI (GPG, SSH, S/MIME)
+-	grafana/grafana#127661	2026-07-02	L	+864/-12	16f	12thr	12hum	0%bot	1rev	Home: Stubbed homepage recommendations
+-	grafana/grafana#129150	2026-07-28	L	+1721/-54	23f	19thr	10hum	47%bot	1rev	Text: New editor
+-	grafana/grafana#127128	2026-06-25	L	+1241/-88	23f	10thr	7hum	30%bot	1rev	Playlist: Manage playlists in a provisioning repository
+unclear	grafana/grafana#127829	2026-07-03	S	+49/-3	1f	19thr	10hum	47%bot	2rev	Docs: Explain Git Sync resource and repository limits
+app-ui	grafana/grafana#129174	2026-07-28	L	+823/-324	18f	14thr	10hum	28%bot	2rev	Dashboards: Increase nesting depth to 4 and allow nested tabs
+contract	grafana/grafana#123697	2026-07-24	L	+773/-91	30f	14thr	9hum	35%bot	2rev	Azure monitor: Azure Metrics Batch API Implementation frontend
+-	grafana/grafana#124059	2026-06-23	L	+974/-34	15f	10thr	9hum	10%bot	1rev	Dashboards Mutation API: Add support for section variables
+-	grafana/grafana#128921	2026-07-24	L	+429/-96	9f	10thr	6hum	40%bot	1rev	Explore: Add Prometheus metrics explorer sidebar
+app-ui	grafana/grafana#126376	2026-06-26	M	+387/-93	15f	5thr	5hum	0%bot	1rev	UnifiedHomepage: Show skeleton until extensions are loaded to avoid fl
+contract	grafana/grafana#128963	2026-07-24	L	+461/-151	12f	8thr	5hum	37%bot	2rev	Homepage: Incident card rework
+backend	grafana/grafana#126006	2026-06-10	M	+298/-76	7f	6thr	6hum	0%bot	2rev	Search: auto-create vector backfill jobs from the reconciler
+contract	grafana/grafana#123719	2026-07-01	L	+5949/-7	42f	10thr	8hum	20%bot	4rev	Dashboards: CUJ instrumentation framework + canonical journey
+app-ui	grafana/grafana#129499	2026-07-29	L	+1845/-185	38f	15thr	11hum	26%bot	2rev	Text: New editor
+-	grafana/grafana#126291	2026-06-22	L	+572/-267	41f	9thr	9hum	0%bot	1rev	Canvas: Consolidate unsafely shared code, make `@grafana/ui` dependenc
+backend	immich-app/immich#28686	2026-07-22	L	+1980/-33	9f	42thr	42hum	0%bot	4rev	feat(server): new search schemas and query builders
+contract	immich-app/immich#24205	2026-06-10	L	+5710/-26	66f	45thr	44hum	2%bot	2rev	feat: integrity check jobs (missing files, untracked files, checksums)
+contract	immich-app/immich#28230	2026-06-01	L	+3168/-176	43f	24thr	24hum	0%bot	2rev	feat(server): hls with real-time transcoding
+-	immich-app/immich#26109	2026-06-03	L	+1932/-130	30f	16thr	16hum	0%bot	1rev	feat(mobile): Android. Immich as a gallery / image viewer app
+-	immich-app/immich#28593	2026-06-04	L	+1159/-8	31f	19thr	19hum	0%bot	1rev	feat: user upload heatmap
+app-ui	immich-app/immich#29965	2026-08-10	M	+388/-73	18f	19thr	19hum	0%bot	2rev	fix(mobile): decode remote thumbnails at displayed size
+contract	immich-app/immich#26523	2026-06-04	L	+17474/-8	42f	16thr	16hum	0%bot	2rev	feat(mobile): ocr support
+backend	immich-app/immich#29258	2026-06-26	M	+158/-98	14f	9thr	9hum	0%bot	3rev	feat: webhook workflow action
+app-ui	immich-app/immich#26205	2026-07-23	M	+349/-15	13f	9thr	9hum	0%bot	1rev	feat(mobile): custom date range for map
+contract	immich-app/immich#28886	2026-06-10	S	+52/-45	11f	5thr	5hum	0%bot	3rev	refactor(server): allow -1 rating again
+app-ui	immich-app/immich#27061	2026-07-16	M	+91/-20	10f	10thr	10hum	0%bot	1rev	feat(web): undo archive from toast
+app-ui	immich-app/immich#26610	2026-06-04	M	+349/-26	12f	8thr	8hum	0%bot	1rev	feat: show notification and battery optimization warning
+app-ui	immich-app/immich#29870	2026-08-10	M	+336/-43	5f	5thr	5hum	0%bot	1rev	fix(mobile): don't let a frozen sync block syncing on resume
+contract	immich-app/immich#28312	2026-06-01	M	+449/-36	14f	6thr	6hum	0%bot	1rev	feat(web): hls player
+-	immich-app/immich#29388	2026-06-30	L	+717/-7	21f	9thr	9hum	0%bot	1rev	feat: new feature message
+unclear	immich-app/immich#29911	2026-07-14	S	+26/-1	1f	7thr	7hum	0%bot	3rev	feat: system integrity docs
+unclear	immich-app/immich#29295	2026-07-22	M	+117/-33	2f	5thr	5hum	0%bot	3rev	feat: exif metadata workflow filter
+app-ui	immich-app/immich#28164	2026-07-21	S	+65/-5	6f	5thr	5hum	0%bot	1rev	fix(mobile): refresh asset stack after deleting viewer item
+app-ui	immich-app/immich#29820	2026-07-16	S	+61/-0	2f	5thr	5hum	0%bot	1rev	feat(web): add wake lock when uploading assets
+backend	jellyfin/jellyfin#16121	2026-06-07	L	+1089/-251	16f	13thr	13hum	0%bot	3rev	Implement search providers
+backend	jellyfin/jellyfin#16944	2026-06-03	M	+257/-36	2f	10thr	10hum	0%bot	2rev	Add lockhelper for UserManager
+backend	jellyfin/jellyfin#17044	2026-07-05	L	+1832/-100	23f	10thr	10hum	0%bot	2rev	Fixes for multi version handling
+backend	jellyfin/jellyfin#17079	2026-07-02	M	+159/-2	3f	6thr	6hum	0%bot	2rev	Close sessions for lost WebSockets to prevent zombie SyncPlay groups
+backend	jellyfin/jellyfin#17087	2026-06-17	M	+92/-11	4f	5thr	5hum	0%bot	1rev	improve book resolution from filename
+backend	jellyfin/jellyfin#17576	2026-08-10	M	+164/-12	6f	5thr	5hum	0%bot	2rev	Bugfix: #17547 | Batching MediaSourceCount into one call
+contract	mattermost/mattermost#35495	2026-07-21	L	+12168/-337	113f	58thr	28hum	51%bot	3rev	[MM-67163] Scheduled Recaps
+contract	mattermost/mattermost#36338	2026-06-29	L	+20924/-1486	155f	87thr	72hum	17%bot	4rev	Mattermost Blocks
+contract	mattermost/mattermost#34877	2026-06-01	L	+2066/-340	22f	33thr	17hum	48%bot	3rev	[MM-67113] Add license preview/diff view when uploading a new license
+-	mattermost/mattermost#36143	2026-06-30	L	+3107/-287	31f	61thr	34hum	44%bot	1rev	MM-67755: WYSIWYG editor for message composition
+contract	mattermost/mattermost#36809	2026-06-18	L	+4488/-86	79f	18thr	18hum	0%bot	3rev	[MM-69055] Add rank property field type
+app-ui	mattermost/mattermost#36575	2026-06-14	L	+3216/-313	68f	30thr	28hum	6%bot	2rev	[MM-68780] MBE Phase 8b: registerChannelIconOverride
+app-ui	mattermost/mattermost#36569	2026-06-11	L	+1256/-72	12f	24thr	20hum	16%bot	2rev	[MM-68779] MBE Phase 8a: Webapp — registerChannelTypeOption
+-	mattermost/mattermost#37362	2026-07-16	L	+4823/-162	61f	16thr	11hum	31%bot	1rev	Session Attributes: System Console management page and permission-poli
+contract	mattermost/mattermost#36726	2026-06-11	L	+1413/-129	32f	24thr	19hum	20%bot	2rev	Route Calls pushes through a VoIP token if present
+-	mattermost/mattermost#36282	2026-06-29	L	+631/-0	1f	26thr	18hum	30%bot	1rev	Server: Create product documentation automation
+contract	mattermost/mattermost#36903	2026-06-12	L	+5339/-92	72f	21thr	13hum	38%bot	2rev	MM - 69063 -  team abac backend and security gate
+-	mattermost/mattermost#35591	2026-07-07	L	+3171/-760	41f	30thr	21hum	30%bot	1rev	Support pluggable channel settings tabs
+backend	mattermost/mattermost#36870	2026-06-11	M	+431/-0	5f	14thr	11hum	21%bot	3rev	Added pre-migration infra and a pre-migration for fixing schema ID mig
+-	mattermost/mattermost#36518	2026-07-02	L	+7170/-283	138f	19thr	10hum	47%bot	1rev	MM-67412: System Console — Board Attributes screen (PSAv2-based)
+-	mattermost/mattermost#36772	2026-06-16	L	+4118/-1757	24f	14thr	6hum	57%bot	1rev	Mm 68846 masking from visual to canonical walker
+contract	mattermost/mattermost#37299	2026-07-16	L	+3334/-104	40f	24thr	18hum	25%bot	2rev	Property owners for property fields and values, new audit logs for cpa
+-	mattermost/mattermost#36560	2026-08-08	L	+661/-1	10f	14thr	8hum	42%bot	1rev	Add Playwright E2E tests for demo plugin webapp components
+contract	mattermost/mattermost#36934	2026-06-09	L	+2153/-168	48f	14thr	5hum	64%bot	2rev	[MM-68988][MM-68989][MM-68990][MM-68991][MM-68997][MM-68998] Session A
+app-ui	mattermost/mattermost#36581	2026-06-15	L	+1007/-33	19f	10thr	9hum	10%bot	2rev	[MM-68781] MBE Phase 8d: registerChannelDecorator — slotted channel de
+unclear	mattermost/mattermost#37440	2026-07-13	M	+259/-1	5f	9thr	6hum	33%bot	1rev	ci: add docs PR preview workflows
+contract	mattermost/mattermost#36945	2026-06-26	M	+485/-15	15f	14thr	6hum	57%bot	2rev	Mm 68291 send wipe
+backend	mattermost/mattermost#36760	2026-06-09	M	+434/-0	2f	18thr	11hum	38%bot	1rev	Automate schema migration release notes process
+contract	mattermost/mattermost#37030	2026-07-02	L	+1208/-39	20f	11thr	8hum	27%bot	2rev	[MM-69075] Revoke non-compliant personal access tokens
+backend	mattermost/mattermost#36782	2026-06-22	L	+2965/-337	19f	10thr	6hum	40%bot	3rev	PSAv2 endpoint improvements
+-	mattermost/mattermost#37395	2026-07-16	L	+857/-15	8f	7thr	6hum	14%bot	1rev	Audit logs for cpa
+unclear	mattermost/mattermost#37286	2026-07-02	M	+353/-142	8f	16thr	9hum	43%bot	2rev	ci: auto-build missing buildenv images for in-flight Go version bumps
+backend	mattermost/mattermost#36758	2026-06-02	M	+283/-18	5f	7thr	5hum	28%bot	1rev	MM-68665: Implement FileBackendWithLinkGenerator for Azure (SAS for ex
+contract	mattermost/mattermost#36824	2026-07-08	M	+132/-4	5f	10thr	7hum	30%bot	1rev	model: add strict validation and tests for CommandResponse
+backend	mattermost/mattermost#37367	2026-07-13	M	+375/-33	2f	6thr	5hum	16%bot	1rev	[MM-69699] Strip metadata from single post consume hooks
+backend	mattermost/mattermost#36888	2026-06-09	M	+410/-14	14f	12thr	10hum	16%bot	1rev	MM-68830: Preserve unknown permissions during migrations on downgrade
+contract	mattermost/mattermost#36966	2026-06-10	M	+254/-39	10f	11thr	11hum	0%bot	2rev	MM-69104: Elide plugin_statuses_changed payload
+-	mattermost/mattermost#37295	2026-07-10	L	+1273/-166	38f	7thr	6hum	14%bot	1rev	[MM-69561] Add ability to rotate (regenerate) Personal Access Tokens
+contract	mattermost/mattermost#36572	2026-06-02	L	+602/-52	20f	7thr	5hum	28%bot	2rev	Board channel bookmarks with target_id and readonly bookmark API
+backend	mattermost/mattermost#37302	2026-07-14	L	+484/-66	6f	10thr	10hum	0%bot	2rev	MM-69390: Migrate from archived gopkg.in/mail.v2 to github.com/wneesse
+app-ui	mattermost/mattermost#36586	2026-06-16	M	+186/-1	6f	6thr	5hum	16%bot	2rev	[MM-68783] MBE Phase 8f: registerPostDecorator (slotted post decoratio
+-	mattermost/mattermost#37413	2026-07-14	L	+621/-62860	45f	6thr	5hum	16%bot	1rev	Remove deprecated Playwright/Cypress v1 dispatch
+backend	mattermost/mattermost#37388	2026-07-31	M	+434/-20	15f	7thr	6hum	14%bot	2rev	MM-69445: Markdown fixes
+library	prometheus/prometheus#18300	2026-07-15	M	+357/-95	8f	20thr	20hum	0%bot	2rev	tsdb: optimize head chunk access paths
+library	prometheus/prometheus#18919	2026-06-29	L	+1883/-4	12f	30thr	30hum	0%bot	1rev	discovery/oci: add native Oracle Cloud Infrastructure service discover
+library	prometheus/prometheus#18619	2026-06-29	M	+203/-74	2f	18thr	18hum	0%bot	3rev	PromQL: use start timestamps for rate extrapolation
+library	prometheus/prometheus#18091	2026-08-06	M	+207/-4	5f	12thr	12hum	0%bot	2rev	scrape: support scraping targets via Unix Domain Sockets
+library	prometheus/prometheus#18557	2026-07-02	M	+171/-2	4f	21thr	21hum	0%bot	2rev	promql: detect and warn on overlapping start timestamps
+library	prometheus/prometheus#18609	2026-06-30	L	+2954/-301	34f	18thr	18hum	0%bot	1rev	Add histogram chunk encoding with Start Timestamp support
+library	prometheus/prometheus#18289	2026-06-02	S	+44/-30	2f	10thr	10hum	0%bot	2rev	tsdb: complete TestHistogramCounterResetHeader for integer histograms…
+library	prometheus/prometheus#19089	2026-07-21	M	+243/-48	16f	7thr	7hum	0%bot	4rev	PromQL: add experimental `start_timestamp()` function
+library	prometheus/prometheus#18081	2026-06-15	L	+1057/-96	11f	10thr	10hum	0%bot	2rev	promql: Add metric to track total samples read per query
+library	prometheus/prometheus#18625	2026-06-29	L	+1227/-102	19f	9thr	9hum	0%bot	2rev	UI: Support arithmetics in duration expression
+library	prometheus/prometheus#18905	2026-06-30	L	+1820/-348	11f	6thr	6hum	0%bot	2rev	tsdb: add support for compacting a list of selected series 
+library	prometheus/prometheus#18769	2026-06-12	L	+837/-59	28f	7thr	7hum	0%bot	1rev	tsdb: add chunk_encoding config field for runtime encoding selection
+library	sveltejs/kit#16464	2026-07-29	M	+339/-98	21f	24thr	19hum	20%bot	3rev	feat: custom server entry points during development
+library	sveltejs/kit#15934	2026-06-02	L	+1078/-102	66f	9thr	6hum	33%bot	3rev	feat: explicit environment variables
+library	sveltejs/kit#16449	2026-07-25	L	+1419/-292	33f	20thr	17hum	15%bot	1rev	feat: use `goto` for shallow routing, deprecate `push/replaceState`
+library	sveltejs/kit#15999	2026-06-10	L	+1482/-700	60f	16thr	7hum	56%bot	1rev	feat: include nested query data in responses (explicit version)
+library	sveltejs/kit#16162	2026-07-01	L	+471/-165	39f	16thr	14hum	12%bot	2rev	breaking: allow `handleError` to influence status code
+library	sveltejs/kit#16664	2026-08-10	L	+677/-271	45f	21thr	20hum	4%bot	1rev	breaking: pass all errors through `handleError`, update the function c
+library	sveltejs/kit#16161	2026-07-02	L	+598/-134	22f	12thr	12hum	0%bot	1rev	breaking: add `paths.origin`, remove `prerender.origin`
+library	sveltejs/kit#16289	2026-07-10	M	+222/-141	23f	15thr	12hum	20%bot	2rev	breaking: deprecate `invalidate`/`invalidateAll`
+library	sveltejs/kit#16382	2026-07-20	M	+74/-35	11f	14thr	8hum	42%bot	2rev	breaking: consistent special filename patterns
+library	sveltejs/kit#16189	2026-07-06	L	+787/-269	49f	12thr	10hum	16%bot	2rev	breaking: remove param files in folder in favor of `params.js/ts` file
+library	sveltejs/kit#16490	2026-07-24	M	+109/-91	4f	8thr	7hum	12%bot	2rev	chore: replace `ssrLoadModule` with the `RunnableDevEnvironment` API
+library	sveltejs/kit#16430	2026-07-20	M	+145/-133	14f	8thr	6hum	25%bot	2rev	breaking: remove leading `/` from `AssetPath` and `Path`
+library	sveltejs/kit#15499	2026-07-07	L	+135/-798	47f	13thr	13hum	0%bot	3rev	breaking: remove stores
+library	sveltejs/kit#16265	2026-07-08	M	+128/-184	20f	8thr	6hum	25%bot	2rev	breaking: remove `experimental.handleRenderingErrors` flag
+library	sveltejs/kit#15944	2026-06-02	M	+261/-47	16f	6thr	5hum	16%bot	1rev	feat: support passing Svelte(Kit) config via Vite plugin
+library	sveltejs/kit#16507	2026-08-10	S	+25/-11	6f	11thr	9hum	18%bot	2rev	fix: prerender errors during development
+library	sveltejs/kit#16505	2026-08-10	L	+567/-7	3f	10thr	8hum	20%bot	6rev	docs: add migration guide
+library	sveltejs/kit#15936	2026-06-08	L	+329/-277	13f	10thr	9hum	10%bot	1rev	fix: skip client build if all routes have CSR disabled
+library	sveltejs/kit#15685	2026-07-02	S	+53/-24	14f	8thr	6hum	25%bot	2rev	breaking: nested server-only directories
+library	sveltejs/kit#16301	2026-07-12	L	+206/-297	14f	8thr	6hum	25%bot	3rev	chore: remove generated root.svelte file
+library	sveltejs/kit#16709	2026-08-10	M	+194/-106	37f	9thr	7hum	22%bot	3rev	chore: add universal `#app/paths` subpath import
+library	sveltejs/kit#15876	2026-06-15	M	+52/-55	9f	6thr	6hum	0%bot	3rev	chore: Supply chain hardening
+library	sveltejs/kit#16372	2026-07-20	M	+443/-8	12f	7thr	7hum	0%bot	2rev	feat: add `$app/manifest` module
+library	sveltejs/kit#16462	2026-07-21	S	+38/-12	5f	7thr	6hum	14%bot	1rev	fix: default cookies to `secure: false` during development
+library	sveltejs/kit#16267	2026-07-13	M	+94/-57	15f	10thr	10hum	0%bot	3rev	breaking: replace `EnvVarConfig.static` with `EnvVarConfig.availabilit
+library	sveltejs/kit#16360	2026-07-17	L	+434/-202	81f	8thr	8hum	0%bot	2rev	breaking: remove `$lib` in favor of `#lib`
+library	sveltejs/kit#16458	2026-07-24	L	+756/-598	77f	7thr	6hum	14%bot	2rev	breaking: overhaul tsconfig
+library	sveltejs/kit#16198	2026-07-01	M	+293/-12	11f	6thr	5hum	16%bot	1rev	breaking: forbid external redirects by default
+library	sveltejs/kit#16576	2026-08-04	M	+429/-51	17f	7thr	6hum	14%bot	2rev	breaking: change `preloadCode(pathname)` to `preloadCode(routeId)`, ma
+library	sveltejs/kit#16412	2026-07-19	M	+201/-144	5f	6thr	6hum	0%bot	1rev	feat: production sourcemaps
+library	sveltejs/kit#16025	2026-06-12	S	+54/-1	8f	6thr	6hum	0%bot	1rev	fix: don't emit the unused bundle and stylesheet files when using `bun
+library	sveltejs/kit#16396	2026-07-18	M	+96/-94	22f	9thr	9hum	0%bot	2rev	docs: use per-hook headings on the hooks page
+library	sveltejs/kit#15928	2026-06-22	S	+39/-14	1f	5thr	5hum	0%bot	3rev	chore: tighten up client.js types
+library	sveltejs/kit#16244	2026-07-06	L	+288/-262	21f	7thr	7hum	0%bot	1rev	fix: avoid externalising `node:async_hooks` for the browser
+contract	PostHog/posthog#57759	2026-06-04	L	+3883/-299	52f	65thr	14hum	78%bot	2rev	feat(signals): scout fleet + per-scout scheduling (5/7)
+contract	PostHog/posthog#67924	2026-07-16	L	+4852/-4	47f	86thr	79hum	8%bot	2rev	feat(pulse): add product skeleton and on-demand brief pipeline
+backend	PostHog/posthog#57760	2026-06-04	L	+1939/-201	22f	50thr	5hum	90%bot	3rev	feat(signals): hardening + canonical sync (6/7)
+backend	PostHog/posthog#59630	2026-06-04	L	+2174/-30	23f	65thr	59hum	9%bot	2rev	feat(subscriptions): AI report pipeline primitive (planner, HogQL, syn
+-	PostHog/posthog#62705	2026-06-17	L	+4229/-2717	41f	57thr	54hum	5%bot	1rev	chore(endpoints): refactor Endpoints and make easier to work with
+-	PostHog/posthog#73874	2026-08-03	L	+12946/-4294	148f	63thr	7hum	88%bot	1rev	feat(canvas): build and securely deliver cloud artifacts
+-	PostHog/posthog#59664	2026-07-13	L	+1045/-0	9f	34thr	10hum	70%bot	1rev	chore(devex): per-product backend coverage report on PRs
+-	PostHog/posthog#72799	2026-07-22	L	+4640/-6	41f	50thr	5hum	90%bot	1rev	refactor: Move Stripe Projects provisioning to separate folder
+contract	PostHog/posthog#61545	2026-06-23	L	+6491/-846	83f	50thr	31hum	38%bot	3rev	feat(signals): artefacts as report response log
+backend	PostHog/posthog#62561	2026-06-18	L	+2138/-34	16f	46thr	35hum	23%bot	2rev	feat(flags): add remote config endpoint to the rust service
+backend	PostHog/posthog#59631	2026-06-04	L	+1040/-302	16f	46thr	43hum	6%bot	2rev	feat(subscriptions): scheduled AI delivery via Temporal (email + Slack
+contract	PostHog/posthog#72843	2026-07-23	L	+2887/-172	37f	43thr	10hum	76%bot	2rev	feat(data-warehouse): add person-property sync management + backfill
+contract	PostHog/posthog#59632	2026-06-08	L	+3587/-1940	62f	38thr	29hum	23%bot	2rev	feat(subscriptions): AI subscription API, validation, telemetry, and U
+-	PostHog/posthog#69690	2026-07-13	L	+1226/-242	14f	31thr	18hum	41%bot	1rev	feat(s3): Role based authentication for s3 batch export
+-	PostHog/posthog#61317	2026-06-24	L	+52732/-100	186f	68thr	63hum	7%bot	1rev	feat(cohorts): stream-native cohorts mvp
+-	PostHog/posthog#67329	2026-07-09	L	+4554/-952	33f	33thr	18hum	45%bot	1rev	fix(approvals): make feature-flag approval policies non-bypassable
+-	PostHog/posthog#67419	2026-07-07	L	+3436/-21	42f	57thr	7hum	87%bot	1rev	feat(conversations): add zendesk historical ticket import
+-	PostHog/posthog#79009	2026-08-07	L	+1224/-131	22f	31thr	26hum	16%bot	1rev	feat(desktop): run HTML artifact scripts in isolated webviews
+contract	PostHog/posthog#66804	2026-07-08	L	+1718/-305	30f	33thr	31hum	6%bot	2rev	feat(subscriptions): code-computed timezone-aware AI report window
+contract	PostHog/posthog#72680	2026-07-31	L	+2182/-104	40f	31thr	9hum	70%bot	2rev	feat(stamphog): Review Self-driving inbox PRs with StampHog behind a p
+contract	PostHog/posthog#63443	2026-06-16	L	+2166/-80	39f	22thr	17hum	22%bot	2rev	feat(insights): add slope graph as a trends chart type
+contract	PostHog/posthog#71936	2026-08-05	L	+1442/-121	15f	29thr	21hum	27%bot	2rev	feat(aio): verify gateway-relayed OTLP traces
+-	PostHog/posthog#68474	2026-07-06	L	+991/-42	11f	33thr	26hum	21%bot	1rev	feat(toolbar): filter heatmap and clickmap to a selected page area
+contract	PostHog/posthog#63149	2026-06-12	L	+1156/-124	18f	31thr	26hum	16%bot	3rev	feat(replay vision): embeddings for reasonings and results, max ai cha
+-	PostHog/posthog#62035	2026-06-15	L	+1660/-5	16f	28thr	12hum	57%bot	1rev	feat(gateway): project gateway credentials into HyperCache
+-	PostHog/posthog#74912	2026-08-03	L	+3352/-2	14f	31thr	27hum	12%bot	1rev	feat(growth): classify companies with versioned LLM label configs
+contract	PostHog/posthog#66797	2026-07-07	L	+1010/-84	22f	30thr	25hum	16%bot	2rev	feat(subscriptions): degraded AI report status + in-app report viewer
+-	PostHog/posthog#71029	2026-07-23	L	+1790/-23	16f	29thr	5hum	82%bot	1rev	feat(signals): prefer recently-active area owners when suggesting revi
+-	PostHog/posthog#56190	2026-06-12	L	+567/-51	8f	40thr	37hum	7%bot	1rev	feat(auth): wire project secret API key auth into EndpointViewSet
+contract	PostHog/posthog#60496	2026-06-03	L	+2097/-182	40f	33thr	31hum	6%bot	2rev	feat(dashboards): add session replay dashboard widget (9/11)
+-	PostHog/posthog#75259	2026-07-31	L	+763/-64	17f	26thr	23hum	11%bot	1rev	feat(tasks): add chart render endpoint for task run living artifacts
+contract	PostHog/posthog#74691	2026-08-07	L	+2845/-0	55f	20thr	17hum	15%bot	2rev	feat(data-quality): add the data_quality product with checks and their
+-	PostHog/posthog#62669	2026-06-19	L	+3150/-431	50f	23thr	13hum	43%bot	1rev	feat(alerts): add SQL (HogQL) insight alerts
+-	PostHog/posthog#69575	2026-07-10	L	+905/-25	31f	42thr	42hum	0%bot	1rev	feat(mcp-analytics): separate mcp properties in the taxonomic filter
+-	PostHog/posthog#77178	2026-08-06	L	+433/-520	13f	25thr	25hum	0%bot	1rev	feat(billing): render the billing line graph with quill charts
+contract	PostHog/posthog#61746	2026-06-08	L	+1327/-123	23f	34thr	31hum	8%bot	2rev	feat(dashboards): validate and persist widgetFilters on list widgets (
+-	PostHog/posthog#72442	2026-07-21	L	+1988/-215	50f	22thr	13hum	40%bot	1rev	feat(empty-state): add shared ProductEmptyState gate with MCP analytic
+app-ui	PostHog/posthog#69166	2026-07-09	M	+203/-16	12f	23thr	20hum	13%bot	1rev	feat(insights): drag-to-zoom into a date range on trends charts
+-	PostHog/posthog#72410	2026-07-30	L	+3121/-26	45f	42thr	10hum	76%bot	1rev	feat(review_hog): add review-outcome telemetry
+-	PostHog/posthog#62021	2026-06-17	L	+809/-67	23f	26thr	23hum	11%bot	1rev	feat(quill-charts): drag-to-zoom on TimeSeriesLineChart
+unclear	PostHog/posthog#64806	2026-06-26	L	+1300/-1	24f	23thr	10hum	56%bot	2rev	feat(capture): verify AI-gateway provenance at the edge
+-	PostHog/posthog#66819	2026-07-08	L	+675/-66	11f	25thr	22hum	12%bot	1rev	feat(subscriptions): freeze the AI report query plan for deterministic
+-	PostHog/posthog#78691	2026-08-07	L	+8997/-464	104f	22thr	19hum	13%bot	1rev	feat(comments): canvas commenting and historical version replay
+-	PostHog/posthog#63338	2026-06-22	L	+1817/-176	65f	20thr	10hum	50%bot	1rev	feat(flags): add archived state and flag list UX improvements
+app-ui	PostHog/posthog#69087	2026-07-08	L	+590/-117	86f	17thr	17hum	0%bot	2rev	perf(frontend): render hoggie illustrations as PNGs instead of inline 
+contract	PostHog/posthog#61823	2026-06-15	M	+199/-11	15f	22thr	17hum	22%bot	1rev	feat(hobby): support BYO AI keys and gate cloud-only replay summaries
+contract	PostHog/posthog#73492	2026-08-03	L	+1392/-18	55f	26thr	14hum	46%bot	2rev	feat(auth): org setting to enforce verified email domains
+-	PostHog/posthog#74074	2026-07-31	L	+4263/-548	43f	32thr	14hum	56%bot	1rev	feat(mcp-analytics): tool-centric intent analytics with per-call attri
+-	PostHog/posthog#60677	2026-06-02	L	+1239/-33	30f	14thr	7hum	50%bot	1rev	feat(growth): add promoted product sidebar entry and experiment plumbi
+contract	PostHog/posthog#71038	2026-07-20	L	+2782/-24	34f	28thr	11hum	60%bot	2rev	feat(workflows): suppress repeatedly-bouncing email addresses
+-	PostHog/posthog#65727	2026-06-25	L	+13474/-7448	55f	27thr	13hum	51%bot	1rev	feat(engineering-analytics): CI health revamp + run/PR detail pages
+-	PostHog/posthog#66101	2026-07-09	L	+5757/-36	50f	22thr	12hum	45%bot	1rev	feat(slack): add approvals and artifact creation
+-	PostHog/posthog#59468	2026-06-23	L	+1201/-56	25f	24thr	14hum	41%bot	1rev	feat(data-warehouse): add data warehouse table trigger for workflows
+-	PostHog/posthog#69205	2026-07-10	L	+869/-239	24f	23thr	18hum	21%bot	1rev	feat(subscriptions): tabbed overview and optional first send
+-	PostHog/posthog#63907	2026-06-18	L	+974/-50	37f	18thr	16hum	11%bot	1rev	feat(insights): add Metric trends display type
+-	PostHog/posthog#63093	2026-06-13	L	+1009/-342	11f	30thr	29hum	3%bot	1rev	feat(mcp-analytics): per-tool drill-down on the tool quality tab
+-	PostHog/posthog#68045	2026-07-03	L	+509/-41	9f	22thr	18hum	18%bot	1rev	feat(stamphog): reduce denials that humans approve unchanged
+contract	PostHog/posthog#54738	2026-06-11	L	+908/-37	9f	23thr	14hum	39%bot	2rev	feat(cohorts): add used-in references endpoint and UI
+contract	PostHog/posthog#57321	2026-06-01	L	+1294/-4	31f	24thr	16hum	33%bot	2rev	feat(flags): implement early exit functionality for feature flag condi
+contract	PostHog/posthog#60524	2026-06-03	L	+3292/-380	50f	43thr	41hum	4%bot	2rev	feat(dashboards): add error tracking dashboard widget (8/11)
+contract	PostHog/posthog#64869	2026-06-22	L	+956/-30	19f	19thr	16hum	15%bot	2rev	feat(self-driving): BE for Wizard for Self-driving
+app-ui	PostHog/posthog#65533	2026-06-24	M	+151/-115	15f	16thr	15hum	6%bot	1rev	fix(legends): fix lifecycle legend interactivity and stickiness legend
+app-ui	PostHog/posthog#61809	2026-06-09	M	+310/-112	9f	19thr	16hum	15%bot	2rev	refactor(insights): use trends line chart in MCP app
+contract	PostHog/posthog#67240	2026-07-15	L	+4692/-965	20f	29thr	26hum	10%bot	2rev	feat(flags): copy dependencies across projects
+contract	PostHog/posthog#67554	2026-07-21	L	+1869/-386	36f	20thr	7hum	65%bot	2rev	feat(data-modeling): wire per-node freshness targets into live schedul
