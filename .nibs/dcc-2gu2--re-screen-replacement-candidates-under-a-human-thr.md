@@ -2,11 +2,11 @@
 # dcc-2gu2
 version: 1
 title: Re-screen replacement candidates under a human-thread density criterion
-status: todo
+status: completed
 type: task
 priority: high
 created_at: 2026-08-11T11:40:14Z
-updated_at: 2026-08-11T11:40:14Z
+updated_at: 2026-08-11T12:23:31Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-qwt3
@@ -60,9 +60,39 @@ silent-failure rule; the script already exits 4 on a failed query).
 
 ## Acceptance
 
-- [ ] `find_candidates.sh` screens on human threads against the committed bot list; raw count, human
+- [x] `find_candidates.sh` screens on human threads against the committed bot list; raw count, human
       count, bot share and distinct-human-reviewer count all in its output
-- [ ] Screen run for all nine cells; per-cell result recorded in `CANDIDATES.md` — a candidate list,
+- [x] Screen run for all nine cells; per-cell result recorded in `CANDIDATES.md` — a candidate list,
       or an explicit none-found with the query
-- [ ] [[dcc-vvf0]]'s candidate counts marked superseded by the new per-cell numbers
-- [ ] A recommendation per cell: replace with X / no viable candidate / keep as-is
+- [x] [[dcc-vvf0]]'s candidate counts marked superseded by the new per-cell numbers
+- [x] A recommendation per cell: replace with X / no viable candidate / keep as-is
+
+## Summary
+
+**Completed 2026-08-11** — Rebuilt the screen on the human-thread criterion and ran it for all nine target cells; full record in
+`CANDIDATES.md` ("Re-screen under the human-thread criterion"), raw rows in
+`candidate-pool-human.tsv`. `find_candidates.sh` is now two-phase: top-100-by-comments search, then
+per-candidate thread-author typing (GraphQL `__typename` ∪ the committed bot list — refuses to run
+without the list). Output adds human count, bot share, and distinct-human-reviewer count; a range
+form of `merged_after` beats the 100-result cap for complete coverage of a repo.
+
+Pool: 298 candidates at ≥5 raw human threads across the ten repos; 132 classified by type. vvf0's
+raw-thread feasibility counts marked superseded in CANDIDATES.md. Recommendations: replace backend M
+→ grafana#125982, backend L → PostHog#59630, contract L → PostHog#67924, app-ui M → immich#29965
+(all four same-repo matched vintage pairs for ryo4), app-ui L → element-web#33184, library S →
+sveltejs/kit#16507; keep-thin app-ui S (only 1-reviewer candidates, immich cap) and contract S (the
+screen's sole candidate IS the incumbent); backend S has NO viable candidate — verified by complete
+jellyfin sweep (212 PRs, three windows; best is 4 human threads / 1 reviewer) plus hand-checking
+every unclear S row (all docs-only). Near-misses recorded in case ryo4 prefers a relaxed bar.
+
+## Key Decisions
+
+- The screen classifies bot authors by GraphQL actor type ∪ committed list, not the list alone — a
+  fixed list cannot know bots that appear in new candidates; the list covers renamed apps the live
+  API can no longer type.
+- Screen counts RAW human threads; every replacement must re-verify ≥5 human threads AT ADMISSION
+  when its fixture is built (element-web#32964: 13 raw human but 1 admitted — the gap is real).
+- An S-band zero from the comment-sorted window is the least trustworthy zero the screen produces;
+  decisions resting on one need the sliced complete sweep (done for jellyfin/backend S).
+- The stale "PostHog yields 0 at min 5" example replaced: the same query returned 0 on 2026-08-10
+  and 65 on 2026-08-11 — the top-100 window shifts day to day.

@@ -703,7 +703,7 @@ named mechanism. Evidence and the built grid are in `v2/analysis/CANDIDATES.md`.
 #### Step P1 — Find candidates
 
 ```sh
-v2/find_candidates.sh <owner/repo> [merged_after] [min_threads]     # default 2026-06-01, 5 threads
+v2/find_candidates.sh <owner/repo> [merged_after] [min_human_threads]   # default 2026-06-01, 5 human
 ```
 
 Admission rules the script enforces, all from §2 and §5:
@@ -712,15 +712,26 @@ Admission rules the script enforces, all from §2 and §5:
   the judge (both Opus 5). The bound is the day after the published month, not the first of it; §5
   explains why. The twelve built subjects were screened under the earlier 2026-05-01 reading, so five
   of them are `in-window` and not poolable — see §5 for the table.
-- **≥5 review threads** — threads are the miss detector, so density is a selection criterion
+- **≥5 HUMAN review threads** — threads are the miss detector, so density is a selection criterion,
+  and the criterion counts *human* threads (`dcc-2gu2`). The original screen counted raw threads,
+  which is now substantially a measure of which review bots a repo has installed: one subject passed
+  the >=5 bar with 4 of its 5 admitted threads bot-written (`dcc-qwt3`). A thread author is a bot iff
+  its GraphQL actor type is `Bot` or its login is in the committed `v2/pooled/bot-authors.json`. The
+  script also reports bot share and distinct human reviewer count per candidate; prefer ≥2 distinct
+  reviewers — one reviewer supplied 66% of the current corpus's human defect statements, a
+  single point of failure the axis should not repeat.
 - non-bot author, ≥20 changed lines
 
 ⚠️ The search returns at most 100 results and cannot filter on thread count server-side, so the
 script takes the top 100 by *comment* volume as a proxy. A zero therefore means "none in that
-window", not "none in the repo" — PostHog/posthog returns 0 at `min_threads=5` and 100 at
-`min_threads=1`. The script exits 4 with the payload on a failed query rather than emitting zero
-rows, because "no candidates" and "the query failed" are otherwise the same output — observed on two
-repos that have ~100 candidates each.
+window", not "none in the repo" — and the window itself shifts: the same PostHog query returned 0
+rows one day and 66 the next. Comment-sort also systematically disadvantages small PRs, so an
+S-band zero is the least trustworthy zero the screen can produce. For a decision that rests on a
+zero, slice the period with the range form of `merged_after` (`2026-06-01..2026-06-30`) until every
+window holds <100 merged PRs — that is complete coverage, and it is how the backend-S none-found
+result was verified on jellyfin (`analysis/CANDIDATES.md`). The script exits 4 with the payload on a
+failed query rather than emitting zero rows, because "no candidates" and "the query failed" are
+otherwise the same output — observed on two repos that have ~100 candidates each.
 
 #### Step P2 — Classify by application type
 
