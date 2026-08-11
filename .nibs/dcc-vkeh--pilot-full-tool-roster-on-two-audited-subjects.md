@@ -6,7 +6,7 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-11T11:30:36Z
+updated_at: 2026-08-11T11:40:44Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-5xad
@@ -69,3 +69,13 @@ cannot carry a validation.
 - [ ] Judge stability measured by a blind re-judge of a sample, with the disagreement rate reported
 - [ ] Tools measurably separate on pooled precision, or a written explanation of why they do not
 - [ ] Thread recall reported as its own axis, plus any threads the judge dismissed
+
+
+## Pilot subjects (2026-08-11, post-census)
+
+Run the pilot on **library M — dotnet/efcore#34127** (10 human threads of 11, 9% bot, citable) and
+**library L — prometheus/prometheus#18081** (10 of 10 human, 0% bot, citable): the only two cells
+clean on every axis at once — vintage, human-thread density, and bot share ([[dcc-qwt3]],
+`v2/analysis/THREAD-AXIS.md`). The pilot does NOT wait for the corpus repair ([[dcc-2gu2]],
+[[dcc-ryo4]], [[dcc-scc3]]) — only for [[dcc-qwt3]]'s axis split, so thread recall is computed
+against human threads from the first cell.
