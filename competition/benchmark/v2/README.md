@@ -35,6 +35,8 @@ v2/
 │   ├── CANDIDATES.md                how the pooled corpus was selected and what it covers
 │   ├── GROUND-TRUTH-AUDIT.md        the 12-subject audit that ended the key-only design
 │   ├── NULL-ARM.md                  per-subject nullness verdicts and the line-level reasoning
+│   ├── THREAD-AXIS.md               what the 120 admitted threads are — 28% are competing-tool output
+│   ├── thread-classification.tsv    every admitted thread, classified (auditable)
 │   └── HARNESS-REVIEW.md            the pre-pilot review of this harness (dcc-3cm6)
 ├── runs/<sid>__<tool>__shim-<on|off>__r<n>/
 │   ├── final-output.md              the review
@@ -171,6 +173,8 @@ Built and validated:
 Not done:
 
 - **no cross-tool comparison** has ever run under v2 — the pilot, `dcc-vkeh`
+- **the thread axis is 28% automated-reviewer output** and must be split before any recall
+  number is reported (`dcc-qwt3`, `analysis/THREAD-AXIS.md`) — this blocks the pilot
 - **anchor keys exist for 4 of 7 subjects** — 2, 7, 9, 12, totalling 5 entries; subjects 1, 8 and 10
   are validated but unbuilt (`dcc-9ncz`)
 
