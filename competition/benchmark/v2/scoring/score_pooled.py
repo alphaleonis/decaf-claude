@@ -6,7 +6,7 @@ Usage: score_pooled.py <analysis.json> [--threads threads.json] [--key answer-ke
 All arithmetic lives here, never in the LLM. The LLM stages produce `analysis.json` (extraction,
 clustering, blind grading); this turns it into numbers.
 
-Three axes, deliberately never merged into one "recall" (METHODOLOGY-v2 section 3):
+Three axes, deliberately never merged into one "recall" (METHODOLOGY-v2 section 2):
 
   pooled    — precision, trivia ratio, unique real findings, noise per cell. Scored against the
               union of what the tools said, so it CANNOT see what everything missed.
@@ -24,6 +24,7 @@ guarded because both already produced published numbers that were wrong:
 """
 import json, sys, argparse
 from collections import defaultdict
+import vintage
 
 # Verdicts. `matches-thread` and `matches-key` are v1's TP-human / TP-primary, renamed so nothing
 # presupposes a key — pooled subjects have none.
@@ -51,7 +52,7 @@ class DataDefect(Exception):
     """A pipeline defect, not a result. Never degrade to a null metric."""
 
 
-def validate(A, threads, key):
+def validate(A, threads, key, allow_silent_cells=False):
     errs = []
     clusters = A.get("clusters") or []
     cells = A.get("cells") or []
@@ -62,6 +63,15 @@ def validate(A, threads, key):
 
     if not A.get("judge_model"):
         errs.append("judge_model absent: results are not attributable to a grader")
+
+    # Vintage is load-bearing for how a result may be reported (METHODOLOGY-v2 section 5), so a
+    # subject that cannot be classified must say so rather than emit an unqualified number.
+    if not A.get("merged_at"):
+        errs.append("merged_at absent: vintage cannot be computed, so the result cannot be shown "
+                    "to be safe to pool — copy it from the subject's fixture.json")
+    elif A.get("judge_model") and vintage.classify(A["merged_at"], A["judge_model"]) == vintage.UNKNOWN:
+        errs.append(f"no published training cutoff for judge_model {A['judge_model']!r}: add it to "
+                    f"scoring/vintage.py MODEL_CUTOFFS before scoring against this judge")
 
     declared = {(c["tool"], c["repeat"]) for c in cells}
     seen = set()
@@ -86,15 +96,28 @@ def validate(A, threads, key):
             errs.append(f"{cid}: verdict matches-thread but no matches_thread index")
         if c.get("matches_thread") is not None and threads is None:
             errs.append(f"{cid}: matches_thread set but no threads.json supplied")
+        # Symmetric with matches-thread. Without this a `matches-key` cluster carrying no
+        # `matches_key` is silently dropped by krecall's None filter and contributes 0 to anchor
+        # recall, which is indistinguishable from the tool having missed the entry.
+        if v == "matches-key" and c.get("matches_key") is None:
+            errs.append(f"{cid}: verdict matches-key but no matches_key index")
+        if c.get("matches_key") is not None and not key:
+            errs.append(f"{cid}: matches_key set but no answer key supplied")
 
     orphans = seen - declared
     if orphans:
         errs.append(f"clusters reference cells absent from the cell list: {sorted(orphans)}")
     silent = declared - seen
-    if silent:
+    if silent and not allow_silent_cells:
         # A cell that contributed no cluster at all is usually an extraction failure, not a tool
         # that found nothing — the tool still wrote a report.
-        errs.append(f"cells contributing zero clusters (extraction defect?): {sorted(silent)}")
+        #
+        # On the NULL ARM the opposite is true: a tool that reported nothing against a change with
+        # no known defect is the best possible result and the headline number (dcc-mjj5). Scoring a
+        # null subject therefore requires --allow-silent-cells, which is refused by default so the
+        # guard still fires everywhere it was designed to.
+        errs.append(f"cells contributing zero clusters (extraction defect?): {sorted(silent)}"
+                    " — if this is the null arm, pass --allow-silent-cells")
 
     # Per-tool empty-field guard.
     by_tool = defaultdict(list)
@@ -109,6 +132,21 @@ def validate(A, threads, key):
         if rows and got / len(rows) < 0.2:
             errs.append(f"tool {tool!r}: severity present on only {got}/{len(rows)} findings (<20%)")
 
+    # The two guards above cover the TOOL-REPORTED severity, which /bench-synthesize uses for its
+    # calibration axis but which no metric here reads. `precision_severity_weighted` is computed from
+    # the JUDGED severity, and an absent one silently defaults to weight 1.0 — the same weight as
+    # `low` — so a cluster the judge never rated was indistinguishable from one rated low. Guard the
+    # field the metric actually depends on (dcc-3cm6).
+    ungraded = [c.get("cluster_id", "?") for c in clusters if not c.get("judged_severity")]
+    if ungraded:
+        errs.append(f"{len(ungraded)} cluster(s) with no judged_severity, which "
+                    f"precision_severity_weighted would silently weight as 'low': "
+                    f"{sorted(ungraded)[:5]}")
+    badsev = sorted({(c.get("judged_severity") or "").lower() for c in clusters
+                     if c.get("judged_severity")} - set(SEV_WEIGHT))
+    if badsev:
+        errs.append(f"judged_severity values outside {sorted(SEV_WEIGHT)}: {badsev}")
+
     if threads is not None:
         admitted = [t for t in threads if t.get("admission") == "admitted"]
         if not admitted:
@@ -117,6 +155,12 @@ def validate(A, threads, key):
         bad = {i for i in idxs if not isinstance(i, int) or i < 0 or i >= len(threads)}
         if bad:
             errs.append(f"matches_thread indexes out of range: {sorted(bad)}")
+
+    if key:
+        ids = {e.get("id") for e in (key.get("entries") or [])}
+        unknown = {c.get("matches_key") for c in clusters if c.get("matches_key") is not None} - ids
+        if unknown:
+            errs.append(f"matches_key values naming no entry in the key: {sorted(map(str, unknown))}")
 
     if errs:
         raise DataDefect("; ".join(errs))
@@ -220,21 +264,45 @@ def score(A, threads, key):
                               "thread_path": (threads[mt] or {}).get("path")})
 
     # Threads no tool reported at all — the miss detector's actual output.
-    hit_any = {c["matches_thread"] for c in clusters
-               if c["verdict"] == "matches-thread" and c.get("matches_thread") is not None}
+    #
+    # Split by disposition for the same reason every per-tool recall is (dcc-c92m): computed over all
+    # clusters, a thread that every tool FOUND and every tool DEMOTED counts as hit, so the field
+    # that answers "what did the whole field miss" was silently giving the `found` reading. Both are
+    # true of different questions; neither may stand alone.
+    def hit_any_over(pred):
+        return {c["matches_thread"] for c in clusters
+                if c["verdict"] == "matches-thread" and c.get("matches_thread") is not None
+                and any(pred(r) for r in c["reported_by"])}
+    hit_any_found = hit_any_over(lambda r: True)
+    hit_any = hit_any_over(lambda r: r.get("disposition", "reported") == "reported")
     missed = [i for i in admitted_idx if i not in hit_any]
+    missed_found = [i for i in admitted_idx if i not in hit_any_found]
+
+    # Vintage travels with the metrics so a downstream synthesis cannot pool an in-window subject
+    # into a headline without seeing it (dcc-vvf0). Computed here, never read from the fixture:
+    # status is a property of the (subject, model) pair and changes when a model ships.
+    vin = None
+    if A.get("merged_at") and A.get("judge_model"):
+        vin = vintage.describe(A["merged_at"], A["judge_model"])
 
     return {
         "subject": A.get("subject"),
         "instrument": A.get("instrument", "pooled-adjudication"),
         "judge_model": A.get("judge_model"),
+        "vintage": vin,
         "n_clusters": len(clusters),
         "n_cells": len(cells),
         "threads": {
             "admitted": len(admitted_idx),
+            # "reported": what a user would have been shown. "found": what the field is capable of.
             "hit_by_any_tool": len(hit_any & set(admitted_idx)),
+            "hit_by_any_tool_found": len(hit_any_found & set(admitted_idx)),
             "missed_by_every_tool": len(missed),
+            "missed_by_every_tool_found": len(missed_found),
             "missed_index": missed,
+            "missed_index_found": missed_found,
+            # Reported by nobody, though somebody found it — a threshold problem, not a blind spot.
+            "demoted_by_every_tool_that_found_it": sorted(set(missed) - set(missed_found)),
             "judge_dismissed_reported_threads": dismissed,
         },
         "tools": out_tools,
@@ -247,12 +315,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("analysis")
     ap.add_argument("--threads"); ap.add_argument("--key"); ap.add_argument("-o", "--out")
+    ap.add_argument("--allow-silent-cells", action="store_true",
+                    help="permit a cell that produced no cluster — required for the NULL ARM, where "
+                         "a tool reporting nothing is the result, not an extraction failure")
     a = ap.parse_args()
     A = json.load(open(a.analysis))
     threads = json.load(open(a.threads)) if a.threads else None
     key = json.load(open(a.key)) if a.key else None
     try:
-        validate(A, threads, key)
+        validate(A, threads, key, allow_silent_cells=a.allow_silent_cells)
     except DataDefect as e:
         print(f"DATA DEFECT — refusing to emit metrics:\n  {e}", file=sys.stderr)
         sys.exit(3)

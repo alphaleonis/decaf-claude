@@ -5,17 +5,29 @@
 #
 # Emits TSV: repo#pr, mergedAt, size band, +add/-del, files, review threads, title.
 #
-# Selection rules it enforces (METHODOLOGY-v2 sections 3 and 6):
+# Selection rules it enforces (METHODOLOGY-v2 sections 2 and 5):
 #   - merged after the cutoff of the newest roster model AND the judge (both Opus 5, 2026-05)
 #   - carries real human review threads, since those are a scored target (the miss detector)
 # Sorted by comment volume, because thread count cannot be filtered server-side and comments
 # correlate with it. Size bands follow the v1 convention: S <100, M 100-500, L >500 changed lines.
 #
+# ⚠️ THE DEFAULT IS 2026-06-01, NOT 2026-05-01 (dcc-vvf0). Anthropic publishes no day-level training
+# cutoff, so Opus 5's "2026-05" can only be read conservatively: the model may have seen anything up
+# to 2026-05-31, and a subject is provably out-of-window only if it merged on 2026-06-01 or later.
+# The original 2026-05-01 default admitted five subjects that merged inside May 2026; those are kept
+# and flagged (see scoring/vintage.py), but no NEW subject should join them.
+#
+# ⚠️ SAMPLING CAP, stated because a zero here is not proof of absence: GitHub search returns at most
+# 100 results and cannot filter on review-thread count, so this takes the top 100 by COMMENT volume
+# as a proxy and filters those. A repo whose discussion happens in issue comments rather than code
+# review can return 0 candidates while still having qualifying PRs outside the window — observed on
+# PostHog/posthog, which yields 0 at min_threads=5 but 100 at min_threads=1.
+#
 # AUDITOR tool: uses the real `gh` deliberately. Never run inside a review cell.
 set -euo pipefail
 
 REPO="${1:?usage: find_candidates.sh <owner/repo> [merged_after] [min_threads]}"
-AFTER="${2:-2026-05-01}"
+AFTER="${2:-2026-06-01}"
 MIN_THREADS="${3:-5}"
 
 # Fail loudly. A transient GraphQL error silently swallowed by `2>/dev/null` produces zero rows,
