@@ -199,6 +199,15 @@ fi
 # rather than assumed away.
 bash "$V2/extract_cell_report.sh" "$OUT" || \
   echo "[$SUBJ_ID/$TOOL] WARNING: could not extract cell-report.md — score from the transcript by hand" >&2
+
+# Several tools write their real report into the working tree and print only a summary, and
+# reset_repo() deletes it before the next cell. The ours-audit probe filed a 41,419-byte
+# CODE_REVIEW_*.md while its terminal output ran to 4,919 chars — scoring the terminal alone would
+# have seen about 12% of that tool. Copy anything the tool left behind out of the checkout while it
+# still exists. MUST stay ahead of the next cell's reset, which is why it lives here and not in the
+# scoring stage.
+bash "$V2/capture_tool_artifacts.sh" "$OUT" "$REPO" || \
+  echo "[$SUBJ_ID/$TOOL] WARNING: tool-artifact capture failed — a file-writing tool will be under-scored" >&2
 echo "[$SUBJ_ID/$TOOL] rc=$rc wall=$((t1-t0))s cost=\$$cost -> $OUT"
 # Suppression justified: `grep -c` prints 0 and EXITS 1 when nothing matches, which under `set -e`
 # would abort the run on the good outcome. The count is still printed, so zero is a measurement.

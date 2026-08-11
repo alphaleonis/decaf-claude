@@ -1,0 +1,40 @@
+2026-08-11T14:12:15Z	fs	ALLOW	Bash (no path)
+2026-08-11T14:12:16Z	fs	ALLOW	Bash /dev/null ./.git/* /dev/null
+2026-08-11T14:12:20Z	fs	ALLOW	Bash (no path)
+2026-08-11T14:12:21Z	fs	ALLOW	Bash (no path)
+2026-08-11T14:12:59Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-11T14:13:02Z	fs	ALLOW	Bash (no path)
+2026-08-11T14:13:39Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-11T14:13:40Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressions/SqlBinaryExpression.cs src/EFCore.Relational/Query/SqlExpressions/SqlBinaryExpression.cs
+2026-08-11T14:13:43Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressions/SqlBinaryExpression.cs
+2026-08-11T14:13:44Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-11T14:13:47Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressions/SqlBinaryExpression.cs
+2026-08-11T14:13:48Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-11T14:14:56Z	fs	ALLOW	Bash /dev/null src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-11T14:14:59Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-11T14:15:01Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-11T14:15:16Z	fs	ALLOW	Bash /tmp/repro /tmp/repro /OutputType /TargetFramework /Nullable /LangVersion /ImplicitUsings /PropertyGroup Include="/home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo/src/EFCore.Sqlite/EFCore.Sqlite.csproj / /ItemGroup /Project
+2026-08-11T14:15:34Z	fs	ALLOW	Bash src/EFCore.Sqlite/EFCore.Sqlite.csproj
+2026-08-11T14:15:41Z	fs	ALLOW	Bash /tmp/repro /TargetFramework /TargetFramework
+2026-08-11T14:15:48Z	fs	ALLOW	Bash artifacts/obj/EFCore.Sqlite/Debug/ /dev/null /dev/null /dev/null
+2026-08-11T14:15:52Z	fs	ALLOW	Bash artifacts/obj/EFCore.Sqlite/Debug/net8.0/ artifacts/bin /dev/null / /dev/null
+2026-08-11T14:17:58Z	fs	ALLOW	Bash artifacts/obj/EFCore.Sqlite/Debug/net8.0/ artifacts/ /dev/null
+2026-08-11T14:18:01Z	fs	ALLOW	Bash artifacts/obj/EFCore.Sqlite/Debug/net8.0/ref/ artifacts/bin/EFCore.Sqlite/Debug/net8.0/
+2026-08-11T14:18:07Z	fs	ALLOW	Bash src/EFCore.Sqlite/EFCore.Sqlite.csproj
+2026-08-11T14:18:24Z	fs	ALLOW	Bash /tmp/repro src/EFCore.Sqlite/EFCore.Sqlite.csproj src/EFCore.Sqlite.Core/EFCore.Sqlite.Core.csproj
+2026-08-11T14:18:33Z	fs	ALLOW	Bash /tmp/repro
+2026-08-11T14:18:43Z	fs	ALLOW	Bash /tmp/repro
+2026-08-11T14:18:59Z	fs	ALLOW	Bash /tmp/repro /
+2026-08-11T14:19:33Z	fs	ALLOW	Bash /tmp/repro
+2026-08-11T14:20:19Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressions/SqlExpressionFactory.cs
+2026-08-11T14:20:24Z	fs	ALLOW	Bash (no path)
+2026-08-11T14:20:27Z	fs	ALLOW	Bash src/EFCore.Relational/ src/EFCore.Relational/Query/ISqlExpressionFactory.cs
+2026-08-11T14:20:30Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressionFactory.cs
+2026-08-11T14:21:00Z	fs	ALLOW	Bash /tmp/repro Source=/tmp/repro/t.db
+2026-08-11T14:21:20Z	fs	ALLOW	Bash /tmp /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo /tmp/efcore-base
+2026-08-11T14:21:26Z	fs	ALLOW	Bash /tmp/repro-base /tmp/repro/Program.cs /tmp/repro-base/ /tmp/repro/runtimeconfig.template.json /tmp/repro-base/ /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo /tmp/efcore-base /tmp/repro/repro.csproj /tmp/repro-base/repro.csproj /tmp/repro/t.db /tmp/repro-base/t.db /tmp/repro-base/Program.cs /tmp/repro-base
+2026-08-11T14:22:17Z	fs	ALLOW	Bash (no path)
+2026-08-11T14:22:51Z	fs	ALLOW	Bash src/EFCore.Relational/ src/EFCore.SqlServer/ src/EFCore.Sqlite.Core/
+2026-08-11T14:22:52Z	fs	ALLOW	Bash src/EFCore.Relational/Query/QuerySqlGenerator.cs src/EFCore.Relational/Query/SqlExpressions/*.cs
+2026-08-11T14:23:09Z	fs	ALLOW	Bash /tmp/efcore-base
+2026-08-11T14:23:16Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
