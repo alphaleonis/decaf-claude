@@ -6,9 +6,9 @@ status: todo
 type: bug
 priority: high
 created_at: 2026-08-11T11:30:28Z
-updated_at: 2026-08-11T11:30:28Z
+updated_at: 2026-08-11T11:40:14Z
 parent: dcc-ho2w
-order: "y"
+order: 8g
 ---
 
 The pooled corpus's thread axis is justified in METHODOLOGY-v2 §2 as the miss detector, on the claim
