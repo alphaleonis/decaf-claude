@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-11T15:42:05Z
+updated_at: 2026-08-11T16:47:28Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-5xad
@@ -16,6 +16,7 @@ blocked_by:
     - dcc-suz4
     - dcc-vvf0
     - dcc-qwt3
+    - dcc-13wh
 order: 8k
 ---
 
@@ -209,3 +210,35 @@ planting files and watching the manifest.
 
 `ours-bugs` and `ours-review` probe reports are lost; they ran before the fix existed. Probes are not
 scored, so nothing is affected beyond those two rows of this table.
+
+
+## PAUSED 2026-08-11 — awaiting the spend decision ([[dcc-13wh]])
+
+Everything up to the matrix is done, probed and committed (`b9de687`, `39a9e4f`). Nothing is running.
+
+**Ready to launch, unchanged, whenever the scope is decided:**
+
+```sh
+cd competition/benchmark
+setsid nohup bash -c '
+  bash v2/run_pilot.sh dotnet-efcore-34127,prometheus-prometheus-18081 \
+    ours-bugs,ours-review,ours-audit,anthropic-code-review,superpowers,pr-review-toolkit,comprehensive-review 2
+  bash v2/run_pilot.sh grafana-122269 \
+    ours-bugs,ours-review,ours-audit,anthropic-code-review,superpowers,pr-review-toolkit,comprehensive-review 1
+' > /tmp/pilot.log 2>&1 < /dev/null &
+```
+
+`run_pilot.sh` is resumable, so a partial run loses nothing and a reduced scope can be widened later
+without re-running what already succeeded. `setsid` is not optional: a background shell started by a
+Claude Code session dies with it, which already killed one cell at ~20 minutes.
+
+**Done:** acceptance item 1 — pooled fixtures addressable, all 7 roster tools with working
+invocations, 7/7 isolation-clean.
+**Not started:** items 2-5 — the matrix, judge stability, tool separation, thread recall.
+
+**State of the corpus:** `dotnet-efcore-34127` restored to its checkpoint, 0 dirty entries, 1
+worktree. The `ours-audit` probe's 41,419-byte report is preserved outside the checkout at
+`v2/runs/dotnet-efcore-34127__ours-audit__shim-on__r0/tool-artifacts/`.
+
+**`r0` cells are probes and must never be scored.** They predate the worktree and artifact-capture
+fixes, and two of them ran with another tool's worktree present.
