@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-11T16:47:28Z
+updated_at: 2026-08-11T17:57:21Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-5xad
@@ -242,3 +242,37 @@ worktree. The `ours-audit` probe's 41,419-byte report is preserved outside the c
 
 **`r0` cells are probes and must never be scored.** They predate the worktree and artifact-capture
 fixes, and two of them ran with another tool's worktree present.
+
+
+## Matrix pair 1 (2026-08-11) — both fixtures validated, size multiplier measured
+
+Operator authorized the matrix two cells at a time. Pair 1 deliberately spent on the two fixtures
+that had never run a v2 cell, rather than taking the matrix in order: a build failure there would
+have made every later cell on those subjects silently degraded evidence ([[dcc-fhp1]]).
+
+| cell | cost | wall | isolation | capture | artifacts |
+|---|---|---|---|---|---|
+| `prometheus#18081` x `superpowers` r1 | $4.82 | 753s | CLEAN | 99% | none written |
+| `grafana#122269` (null) x `superpowers` r1 | $3.46 | 716s | CLEAN | 99% | none written |
+
+Both fixtures build (`go`; `js`+`go`), both cells verified claims by execution, and both are scored
+matrix cells — nothing spent here was a probe.
+
+**The 1.5x size multiplier for prometheus was wrong.** Measured 1.13x on cost and 0.94x on wall
+against the efcore cell for the same tool, despite prometheus being +1409 lines to efcore's +202.
+Diff size is not the cost driver; how much the tool builds and verifies is. The null subject measured
+0.81x. Re-projecting the 35-cell matrix on the two measured multipliers gives **~$500** against the
+~$600 quoted, of which $8.28 is spent.
+
+### First null-arm data point
+
+`superpowers` on a change with no known defect: **0 Critical, 5 Important, 5 Minor**, verdict "Ready
+to merge? With fixes."
+
+Zero Critical is the discrimination the null arm exists to detect — the same tool reported Criticals
+on both scored subjects. The ten it did raise are the noise floor, and some look genuinely valid
+(a feature flag guarding the server but not `grafana-cli`; a documented toggle name that does not
+match the code, so the feature cannot be enabled by following the docs). `NULL-ARM.md` anticipates
+exactly this: a null-arm finding the judge rates valid is a real result worth keeping, not an error
+to suppress — it means the tool found something the project missed. The blind grader decides;
+nothing here pre-judges it.

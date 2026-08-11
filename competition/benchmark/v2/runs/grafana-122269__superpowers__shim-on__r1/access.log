@@ -1,0 +1,47 @@
+2026-08-11T17:44:31Z	fs	ALLOW	Read /home/decaf/.claude/plugins/cache/claude-plugins-official/superpowers/6.2.0/skills/requesting-code-review/code-reviewer.md
+2026-08-11T17:44:36Z	fs	ALLOW	Bash (no path)
+2026-08-11T17:45:08Z	fs	ALLOW	Bash (no path)
+2026-08-11T17:45:09Z	fs	ALLOW	Bash (no path)
+2026-08-11T17:45:14Z	fs	ALLOW	Bash conf/defaults.ini pkg/api pkg/cmd pkg/services/pluginsintegration pkg/setting
+2026-08-11T17:45:15Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/toggles_gen.go pkg/services/featuremgmt/toggles_gen.csv
+2026-08-11T17:45:42Z	fs	ALLOW	Bash (no path)
+2026-08-11T17:45:42Z	fs	ALLOW	Bash (no path)
+2026-08-11T17:45:47Z	fs	ALLOW	Bash (no path)
+2026-08-11T17:45:48Z	fs	ALLOW	Bash (no path)
+2026-08-11T17:45:55Z	fs	ALLOW	Bash pkg/tests/ pkg/cmd/grafana/main.go /dev/null
+2026-08-11T17:45:57Z	fs	ALLOW	Bash pkg/cmd/grafana-server/commands/cli.go pkg/cmd/grafana-server/commands/target.go pkg/tests/testinfra/testinfra.go
+2026-08-11T17:46:01Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/target.go /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/tests/testinfra/testinfra.go
+2026-08-11T17:46:35Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/toggles_gen.csv
+2026-08-11T17:46:37Z	fs	ALLOW	Bash pkg/services/featuremgmt/ pkg/services/featuremgmt/registry_test.go pkg/services/featuremgmt/toggles_gen_test.go /dev/null
+2026-08-11T17:46:42Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/feature-toggles/index.md
+2026-08-11T17:46:43Z	fs	ALLOW	Bash pkg/services/featuremgmt/toggles_gen.json
+2026-08-11T17:46:52Z	fs	ALLOW	Bash ./pkg/setting/...
+2026-08-11T17:47:49Z	fs	ALLOW	Bash pkg/setting/
+2026-08-11T17:47:50Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-11T17:48:00Z	fs	ALLOW	Bash pkg/setting/setting_test.go conf/defaults.ini conf/sample.ini
+2026-08-11T17:48:12Z	fs	ALLOW	Bash _test.go:.*//
+2026-08-11T17:48:12Z	fs	ALLOW	Bash pkg/services/pluginsintegration/pluginconfig/config.go
+2026-08-11T17:48:18Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/commands.go pkg/server/wire.go
+2026-08-11T17:48:25Z	fs	ALLOW	Bash pkg/server/wire.go
+2026-08-11T17:48:30Z	fs	ALLOW	Bash pkg/
+2026-08-11T17:48:34Z	fs	ALLOW	Bash /^func /{fn=$0 /ProvidePluginManagementConfig/{print pkg/server/wire_gen.go
+2026-08-11T17:48:50Z	fs	ALLOW	Bash pkg/services/featuremgmt/openfeature.go
+2026-08-11T17:48:51Z	fs	ALLOW	Bash pkg/
+2026-08-11T17:49:11Z	fs	ALLOW	Bash pkg/plugins/
+2026-08-11T17:49:12Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/registry.go
+2026-08-11T17:49:19Z	fs	ALLOW	Bash pkg/api/grafana_com_proxy.go pkg/cmd/grafana-cli/commands/install_command_test.go
+2026-08-11T17:49:41Z	fs	ALLOW	Bash ./pkg/services/featuremgmt/
+2026-08-11T17:49:59Z	fs	ALLOW	Bash ./pkg/cmd/... ./pkg/api/... ./pkg/services/pluginsintegration/... ./pkg/cmd/grafana-cli/...
+2026-08-11T17:52:10Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/utils/command_line_mock.go pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-11T17:52:18Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/utils/command_line_mock.go
+2026-08-11T17:52:25Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-11T17:52:32Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-11T17:52:37Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-11T17:52:40Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md docs/sources
+2026-08-11T17:52:49Z	fs	ALLOW	Bash docs/AGENTS.md docs/README.md /dev/null docs/sources: docs/sources docs/sources
+2026-08-11T17:52:53Z	fs	ALLOW	Bash docs/sources docs/AGENTS.md
+2026-08-11T17:53:07Z	fs	ALLOW	Bash pkg/api/ pkg/
+2026-08-11T17:53:26Z	fs	ALLOW	Bash pkg/setting/*.go conf/ docs/ pkg/
+2026-08-11T17:53:34Z	fs	ALLOW	Bash pkg/setting/*_test.go pkg/setting/*_test.go
+2026-08-11T17:54:00Z	fs	ALLOW	Bash api/gnet\ pkg/tests/ pkg/tests/
+2026-08-11T17:54:24Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/setting/setting.go
