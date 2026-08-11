@@ -1,0 +1,38 @@
+[
+  {
+    "path": "Emby.Server.Implementations/Chapters/ChapterManager.cs",
+    "line": 111,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "Bond-009",
+    "created_at": "2026-05-02T16:32:13Z",
+    "against_commit": "1dd8541ed5832414c326f0c2662a899e1ec96259",
+    "body": "Suggested change\n      \n    \n    \n      \n          \n            \n                    return sum / (chapters.Count - 1);\n          \n          \n            \n                    return sum / chapters.Count;",
+    "admission": "not-scored",
+    "admission_reason": "null subject \u2014 checkpoint is the merged state, after review"
+  },
+  {
+    "path": "MediaBrowser.Providers/MediaInfo/FFProbeVideoInfo.cs",
+    "line": 633,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "Bond-009",
+    "created_at": "2026-05-02T16:34:50Z",
+    "against_commit": "1dd8541ed5832414c326f0c2662a899e1ec96259",
+    "body": "Suggested change\n      \n    \n    \n      \n          \n            \n            \n          \n          \n            \n                        for (int i = 0; i < chapterCount - 1; i++)",
+    "admission": "not-scored",
+    "admission_reason": "null subject \u2014 checkpoint is the merged state, after review"
+  },
+  {
+    "path": "MediaBrowser.Providers/MediaInfo/FFProbeVideoInfo.cs",
+    "line": 641,
+    "is_resolved": true,
+    "is_outdated": true,
+    "author": "Bond-009",
+    "created_at": "2026-05-02T16:35:50Z",
+    "against_commit": "1dd8541ed5832414c326f0c2662a899e1ec96259",
+    "body": "Suggested change\n      \n    \n    \n      \n          \n            \n            \n          \n          \n            \n                        }\n          \n          \n            \n                        \n          \n          \n            \n                        chapters[chapterCount] = new ChapterInfo\n          \n          \n            \n                        {\n          \n          \n            \n                            StartPositionTicks = Math.Min(runtime, currentChapterTicks);\n          \n          \n            \n                        };",
+    "admission": "not-scored",
+    "admission_reason": "null subject \u2014 checkpoint is the merged state, after review"
+  }
+]

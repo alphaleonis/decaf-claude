@@ -12,3 +12,6 @@ v2/analysis/subject-*/audit/
 # Pooled-subject checkouts (~3.3G), rebuilt by v2/build_pooled_repo.sh from the pinned SHAs
 # in each fixture.json. The fixtures and thread sets ARE committed.
 v2/pooled/*/repo/
+
+# Null-arm checkouts, rebuilt from the pinned SHAs in each fixture.json.
+v2/null/*/repo/

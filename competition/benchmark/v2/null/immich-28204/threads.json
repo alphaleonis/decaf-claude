@@ -1,0 +1,38 @@
+[
+  {
+    "path": "e2e/src/specs/server/api/user-admin.e2e-spec.ts",
+    "line": 111,
+    "is_resolved": false,
+    "is_outdated": false,
+    "author": "timonrieger",
+    "created_at": "2026-05-03T11:29:43Z",
+    "against_commit": "ac51f88fa6fbc2cd2e0eb93701253106e5c7640d",
+    "body": "quotaSizeInBytes is nullish, so it has been removed from the test. badRequest swallowed that before.",
+    "admission": "not-scored",
+    "admission_reason": "null subject \u2014 checkpoint is the merged state, after review"
+  },
+  {
+    "path": "server/src/controllers/user.controller.spec.ts",
+    "line": 47,
+    "is_resolved": false,
+    "is_outdated": false,
+    "author": "timonrieger",
+    "created_at": "2026-05-03T11:31:29Z",
+    "against_commit": "ac51f88fa6fbc2cd2e0eb93701253106e5c7640d",
+    "body": "\"received object\" because typeof null === 'object'",
+    "admission": "not-scored",
+    "admission_reason": "null subject \u2014 checkpoint is the merged state, after review"
+  },
+  {
+    "path": "server/src/controllers/asset.controller.spec.ts",
+    "line": 232,
+    "is_resolved": false,
+    "is_outdated": false,
+    "author": "timonrieger",
+    "created_at": "2026-05-03T11:32:53Z",
+    "against_commit": "ac51f88fa6fbc2cd2e0eb93701253106e5c7640d",
+    "body": "added exact validation messages for each test to protect against regressions",
+    "admission": "not-scored",
+    "admission_reason": "null subject \u2014 checkpoint is the merged state, after review"
+  }
+]
