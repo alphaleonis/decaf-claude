@@ -75,7 +75,41 @@ for p in "${PATTERNS[@]}"; do
   fi
 done
 
+
+# The OTHER unmeasured channel named by leak_audit.sh: git's own transport. The fixture has no
+# remote, but nothing stops a cell adding one and fetching the merged state — which the curl/wget
+# shims never see, because git does not go through them. Both pilot probes created worktrees
+# unprompted, so cells demonstrably reach for git plumbing; this checks the one shape that could
+# actually reach post-checkpoint history.
+#
+# Deliberately narrow. A bare `git fetch` in a remote-less fixture is a no-op and must not be
+# flagged, or the signal drowns in false positives and stops being read.
+NETGIT=(
+  'git +clone +[^"]*https?://'
+  'git +remote +add'
+  'git +ls-remote'
+  'git +(fetch|pull) +[^"]*https?://'
+)
+netgit=0
+for p in "${NETGIT[@]}"; do
+  c="$(grep -hcE "$p" "${TRANSCRIPTS[@]}" 2>/dev/null | awk '{s+=$1} END{print s+0}')"
+  if [ "${c:-0}" != "0" ]; then
+    printf '  NETGIT %-46s %s line(s)\n' "$p" "$c"
+    netgit=$((netgit + c))
+  fi
+done
+[ "$netgit" = "0" ] && printf '  clean %-46s\n' 'git network transport (clone/remote add/fetch URL)'
+
 echo
+if [ "$netgit" != "0" ]; then
+  echo "NETWORK GIT: $netgit transcript line(s) show git reaching a remote. The fixture ships with no"
+  echo "remote by construction, so this is a cell restoring one — git's transport bypasses the curl"
+  echo "and wget shims entirely and can serve the merged state. Read these before scoring the cell."
+  echo
+  grep -hEn "$(IFS='|'; echo "${NETGIT[*]}")" "${TRANSCRIPTS[@]}" 2>/dev/null \
+    | head -5 | cut -c1-200 | sed 's/^/    /'
+  exit 1
+fi
 if [ "$hits" != "0" ]; then
   echo "CONTAMINATED (or a false positive worth reading): $hits transcript lines reference scoring"
   echo "artifacts. Read them before scoring this cell — a mention in a tool RESULT is a read; a"

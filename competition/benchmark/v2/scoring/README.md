@@ -7,7 +7,20 @@ Deterministic half of the v2 pipeline. The LLM stages (extract → cluster → b
 |---|---|
 | `score_pooled.py` | validate `analysis.json`, then compute the three axes → `metrics.json` |
 | `check_artifacts.py` | assert `extract/`, `findings.json` and `analysis.json` describe one finding set |
-| `test_score_pooled.py` | one self-test per guard below — run it rather than counting from here, since a written-down count drifts (it said 12 when there were 15) |
+| `judge_stability.py` | two blind grading passes over the same clusters → agreement, kappa, and the disagreement list |
+| `test_score_pooled.py` · `test_judge_stability.py` | one self-test per guard below — run them rather than counting from here, since a written-down count drifts (it said 12 when there were 15) |
+
+## Does the grader agree with itself?
+
+Every pooled number rests on one subjective call — `valid-other` versus `trivia` — so the pilot
+(`dcc-vkeh`) grades a sample twice, blind both to tool identity and to the first pass, and runs
+`judge_stability.py pass1.json pass2.json`. It reports exact agreement, Cohen's kappa on the 6-way
+verdict, kappa on the `real`/`not-real` collapse that precision actually depends on, agreement
+restricted to the `valid-other`/`trivia` boundary, and every disagreement by cluster.
+
+The **pre-registered** threshold — fixed before the first pass ran, so it cannot be drawn around the
+result — is `real_vs_not.kappa >= 0.60` and `exact_agreement >= 0.70`. Pass 2 must run in a separate
+process; a continuation of the session that produced pass 1 measures memory, not stability.
 
 ## Four axes, never merged
 

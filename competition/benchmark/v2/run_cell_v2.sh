@@ -36,6 +36,31 @@ reset_repo() {
   fi
   git -C "$REPO" checkout -q -f "$CP"
   git -C "$REPO" clean -qxfd
+
+  # Review tools create git worktrees OUTSIDE the checkout, and nothing above can see them. The
+  # superpowers probe built the base commit in `/tmp/review-base` to diff behavior against HEAD and
+  # left it registered in `.git/worktrees` and live on disk — `status` does not report it, `clean
+  # -xfd` cannot reach it, and the filesystem hook guards `competition/benchmark/` only. That is
+  # cross-cell state in a channel no control covered: the next cell inherits whatever the last one
+  # left, which is the dcc-2cxq failure arriving through a new door. Remove them, loudly.
+  local main_wt wt strays=0
+  main_wt="$(cd "$REPO" && pwd -P)"
+  git -C "$REPO" worktree prune 2>/dev/null || true
+  while read -r wt; do
+    [ -z "$wt" ] && continue
+    [ "$wt" = "$main_wt" ] && continue
+    echo "[$SUBJ_ID/$TOOL] removing worktree left by an earlier cell: $wt" >&2
+    git -C "$REPO" worktree remove --force "$wt" 2>/dev/null || rm -rf "$wt"
+    strays=$((strays + 1))
+  done < <(git -C "$REPO" worktree list --porcelain 2>/dev/null | awk '/^worktree /{print $2}')
+  git -C "$REPO" worktree prune 2>/dev/null || true
+  local left; left="$(git -C "$REPO" worktree list --porcelain 2>/dev/null | grep -c '^worktree ' || true)"
+  if [ "${left:-1}" != "1" ]; then
+    echo "[$SUBJ_ID/$TOOL] REFUSING: $((left - 1)) worktree(s) still registered after cleanup" >&2
+    git -C "$REPO" worktree list >&2; exit 79
+  fi
+  [ "$strays" -gt 0 ] && echo "[$SUBJ_ID/$TOOL] cleaned $strays stray worktree(s) before this cell" >&2
+
   local dirty; dirty="$(git -C "$REPO" status --porcelain | wc -l | tr -d ' ')"
   if [ "$dirty" != "0" ]; then
     echo "[$SUBJ_ID/$TOOL] REFUSING: $REPO still dirty ($dirty entries) after reset — contamination risk" >&2
@@ -110,7 +135,16 @@ case "$TOOL" in
     INVOKE="Use the Skill tool to run \`code-review:code-review\` — the plugin-qualified command from code-review@claude-plugins-official. It is NOT \`decaf-quality:code-review\`: a different tool ships a skill of the same bare name, so never invoke a bare /code-review, and abort rather than substituting anything else if the qualified skill does not resolve.
 
 Review the proposed change checked out in this repository. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Print every finding you would post, with file:line references." ;;
-  *) echo "unknown tool: $TOOL" >&2; exit 2 ;;
+  # The three below were absent until the pilot (dcc-vkeh). Each needs the diff range named
+  # explicitly, because all three default to the WORKING TREE and a v2 fixture is clean at the
+  # checkpoint — a tool that reads `git status` alone sees an empty change and reviews nothing.
+  superpowers)
+    INVOKE="Use the Skill tool to run \`superpowers:requesting-code-review\`, then follow it: dispatch ONE general-purpose subagent filling that skill's code-reviewer.md prompt template, with {BASE_SHA} and {HEAD_SHA} set to the diff range given below. Return the reviewer subagent's report verbatim (Strengths / Critical / Important / Minor / Assessment)." ;;
+  pr-review-toolkit)
+    INVOKE="Use the Skill tool to run \`pr-review-toolkit:review-pr\` with arguments: all. Dispatch the review agents in parallel. Do NOT post anything to GitHub and do NOT run \`gh pr view\` to look the change up — the change under review is the local diff range given below, not a pull request, and the working tree is clean at its head, so use \`git diff <base> <head>\` wherever the workflow says to inspect changed files. Print every finding with file:line references." ;;
+  comprehensive-review)
+    INVOKE="Use the Skill tool to run \`comprehensive-review:comprehensive-review\` with arguments: --local --base $BASE. This repository is a detached checkout with NO git remote and NO branches; the change under review is the diff range given below. Treat provider operations as unavailable and run the review locally — do not stop on provider detection, and do not post anything anywhere. Print every finding with file:line references." ;;
+  *) echo "unknown tool: $TOOL (known: ours-bugs ours-review ours-audit anthropic-code-review superpowers pr-review-toolkit comprehensive-review)" >&2; exit 2 ;;
 esac
 
 PROMPT="$INVOKE
@@ -157,6 +191,14 @@ cost=$(jq -r '.total_cost_usd // "?"' "$OUT/meter.json" 2>/dev/null)
 if [ ! -s "$OUT/final-output.md" ]; then
   echo "[$SUBJ_ID/$TOOL] WARNING: empty final-output.md (rc=$rc) — see stderr.log; do not score this cell" >&2
 fi
+
+# `.result` is the FINAL assistant message, which is the whole review only for a tool whose last act
+# is to print it. The comprehensive-review probe printed its report and then appended an addendum, so
+# final-output.md held 20% of what the tool actually said and none of its original findings. Recover
+# the full main-chain output beside it; the ratio is reported per cell so a truncated one is visible
+# rather than assumed away.
+bash "$V2/extract_cell_report.sh" "$OUT" || \
+  echo "[$SUBJ_ID/$TOOL] WARNING: could not extract cell-report.md — score from the transcript by hand" >&2
 echo "[$SUBJ_ID/$TOOL] rc=$rc wall=$((t1-t0))s cost=\$$cost -> $OUT"
 # Suppression justified: `grep -c` prints 0 and EXITS 1 when nothing matches, which under `set -e`
 # would abort the run on the good outcome. The count is still printed, so zero is a measurement.
