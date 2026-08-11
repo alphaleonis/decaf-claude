@@ -7,7 +7,7 @@ Deterministic half of the v2 pipeline. The LLM stages (extract → cluster → b
 |---|---|
 | `score_pooled.py` | validate `analysis.json`, then compute the three axes → `metrics.json` |
 | `check_artifacts.py` | assert `extract/`, `findings.json` and `analysis.json` describe one finding set |
-| `test_score_pooled.py` | 12 self-tests; every guard below has one |
+| `test_score_pooled.py` | one self-test per guard below — run it rather than counting from here, since a written-down count drifts (it said 12 when there were 15) |
 
 ## Three axes, never merged
 
@@ -32,6 +32,11 @@ recall-style metric is therefore computed twice, and neither figure is allowed t
 Precision-style metrics count **reported findings only**, because a demoted finding costs the reader
 no attention. `clusters_reported` and `clusters_found` are both emitted.
 
+The corpus-level miss detector splits the same way. `threads.missed_by_every_tool` is what nobody
+*showed*; `missed_by_every_tool_found` is what nobody *found*; the difference,
+`demoted_by_every_tool_that_found_it`, is a threshold problem rather than a blind spot — a distinction
+that decides whether the fix is a better model or a changed reporting bar.
+
 Verified against the real cell that motivated this: an anthropic run headlined "Verdict: No blocking
 issues found" while its sub-threshold section described the key defect exactly, verified empirically.
 It scores **anchor_recall 0.0 / anchor_recall_found 1.0**. A tool that finds everything and reports
@@ -54,12 +59,20 @@ Each one corresponds to a defect that already produced a wrong published figure,
 of the scoring-model decision:
 
 - a tool whose findings carry **no severity at all**, or on under 20% of them — a stray sub-agent
-  `critical` once handed a tool a free 1.00 on n=1 carrying a full one-ninth of its published figure
+  `critical` once handed a tool a free 1.00 on n=1 carrying a full one-ninth of its published figure.
+  That is the *tool-reported* severity, which `/bench-synthesize` reads for its calibration axis
+- a cluster with **no `judged_severity`**, or one outside the weight table. This is the field
+  `precision_severity_weighted` actually divides by, and an absent one used to default silently to
+  weight 1.0 — the same weight as `low`, so an ungraded cluster was indistinguishable from a
+  low-severity one
 - a **cell contributing zero clusters** — nearly always an extraction failure, since the tool still
-  wrote a report
+  wrote a report. **The null arm is the exception** and must pass `--allow-silent-cells`: there, a
+  tool that reported nothing is the headline result, not a defect
 - a **real verdict without a `code_citation`** — the judge shares a model family with the reviewers,
   so an unciteable verdict is not evidence
-- `matches-thread` **without a thread index**, or an index out of range
+- `matches-thread` **without a thread index**, or an index out of range — and the same for
+  `matches-key`, which was previously unguarded, so a key match with no index was silently dropped
+  from anchor recall and read as a miss
 - a **v1 verdict name**, so a stale grader cannot pass silently
 - **missing `judge_model`** — results must be attributable to a grader
 - artifacts describing **different finding sets** (`check_artifacts.py`): 20 findings in one layer, 33

@@ -64,6 +64,14 @@ stays live with superseded numbers. That has already happened once: `198955f4-3e
 
 ## Non-negotiables
 
+- **Never pool in-window and out-of-window subjects into one figure.** Every `metrics.json` carries
+  `vintage.status`; a subject that merged before the judge's training cutoff may have been memorized,
+  so its numbers are not comparable with a clean subject's. Call
+  `scoring/vintage.check_pooling()` over the set behind any cross-subject number and show the split
+  rather than the average. In the current corpus **5 of 12 pooled subjects are `in-window` — the
+  whole `backend` row, plus contract L and app-ui M — so there is no reportable backend figure at
+  all.** The seven out-of-window subjects (contract S/M, app-ui S/L, library S/M/L) are the
+  citable set. This is METHODOLOGY-v2 section 5 and it is not a stylistic preference.
 - **Shares, not raw counts**, for every quality comparison. Cluster granularity varies per subject
   (18–95 observed); raw per-run counts are not comparable across subjects.
 - **Refuse the language axis** and say why — one subject per language×size cell, so a single odd PR

@@ -6,7 +6,7 @@ argument-hint: "<pooled-subject-dir>  e.g. competition/benchmark/v2/pooled/dotne
 Score one **v2 pooled-adjudication** subject. This is the v2 counterpart of `/bench-analyze`; the v1
 command scores the retired key-based dataset and must not be used here.
 
-Design context: `competition/benchmark/METHODOLOGY-v2.md` section 3. Three axes are reported
+Design context: `competition/benchmark/METHODOLOGY-v2.md` section 2. Three axes are reported
 **separately and never merged** — pooled (precision/noise), threads (the miss detector), anchor
 (only if the subject has a key).
 
@@ -74,7 +74,10 @@ Rules the grader must follow:
 - Never reward volume: judge each cluster on its own merits, blind to how many the tool produced.
 
 Merge the verdicts back onto the clusters (with the tool map) and write `<subject-dir>/analysis.json`
-with `subject`, `instrument`, `judge_model`, `cells[]` (tool, repeat, cost_usd, wall_s, access-log
+with `subject`, `instrument`, `judge_model`, **`merged_at` copied verbatim from `fixture.json`**
+(scoring refuses to emit metrics without it — it is what decides whether this subject's numbers may
+be pooled into a headline, see METHODOLOGY-v2 section 5 and `scoring/vintage.py`),
+`cells[]` (tool, repeat, cost_usd, wall_s, access-log
 counts) and `clusters[]`.
 
 **4. Check consistency — do not skip.**
@@ -100,6 +103,12 @@ silently-empty field is how a tool once received a free 1.00 on n=1.
 **6. Report.** Give the operator, per tool: precision (plain and severity-weighted), trivia ratio,
 unique real findings, findings/false-positives per cell, cost per real finding, and **thread recall as
 its own line** — never folded into precision.
+
+**Lead with `metrics.vintage.status`.** If it is `in-window`, say so in the first line of the report:
+this subject merged before the judge's training cutoff, so its numbers are disclosable on their own
+but **must not be pooled** with out-of-window subjects into any cross-subject figure. Five of the
+twelve pooled subjects are in this class, including all three `backend` cells — see METHODOLOGY-v2
+section 5.
 
 Report **both `thread_recall` and `thread_recall_found`, plus `demotion_gap`.** Neither is allowed to
 stand alone: as-reported is what a user would actually have seen, as-found is what the tool is capable
