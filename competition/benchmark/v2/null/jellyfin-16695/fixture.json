@@ -1,0 +1,31 @@
+{
+  "slug": "jellyfin/jellyfin#16695",
+  "repo": "jellyfin/jellyfin",
+  "pr": 16695,
+  "title": "Fix dummy chapter handling for videos with a single chapter or short duration.",
+  "app_type": "backend",
+  "size": "S",
+  "instrument": "null-arm",
+  "checkpoint": {
+    "sha": "d87e9f96228ef8863426e2544cada67235186a18",
+    "base": "10de1ce8feff92bbb604fed6eb561256d449f809",
+    "base_ref": "master",
+    "date": "2026-05-04T16:02:17Z",
+    "selection": "merge commit \u2014 post-review state that shipped with no known defect",
+    "diff_stat": {
+      "files": 3,
+      "additions": 24,
+      "deletions": 6
+    }
+  },
+  "merged_at": "2026-05-04T16:02:17Z",
+  "pr_created_at": "2026-04-24T19:35:30Z",
+  "vintage": {
+    "merged": "2026-05-04",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"
+  },
+  "threads": {
+    "total": 3,
+    "not-scored": 3
+  }
+}

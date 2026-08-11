@@ -1,0 +1,31 @@
+{
+  "slug": "grafana/grafana#122269",
+  "repo": "grafana/grafana",
+  "pr": 122269,
+  "title": "Auth: Use dedicated token for requests to Grafana.com",
+  "app_type": "backend",
+  "size": "M",
+  "instrument": "null-arm",
+  "checkpoint": {
+    "sha": "ccdf7327636bc8e08ca4b121863d21ac41df653a",
+    "base": "b262acddf7dd4c8e8663605221e9d0ed56839867",
+    "base_ref": "main",
+    "date": "2026-05-05T13:55:23Z",
+    "selection": "merge commit \u2014 post-review state that shipped with no known defect",
+    "diff_stat": {
+      "files": 17,
+      "additions": 223,
+      "deletions": 14
+    }
+  },
+  "merged_at": "2026-05-05T13:55:23Z",
+  "pr_created_at": "2026-04-09T19:23:48Z",
+  "vintage": {
+    "merged": "2026-05-05",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"
+  },
+  "threads": {
+    "total": 14,
+    "not-scored": 14
+  }
+}

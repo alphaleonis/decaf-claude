@@ -149,6 +149,47 @@ Known weaknesses, to be mitigated rather than assumed away:
 - **"Real" is not binary.** v1's precision was severity-unweighted, so four minor findings outscored
   one revert-forcing defect. Severity weighting is required, not optional.
 
+### The null arm
+
+Pooled precision is measured against the pool, not against truth, so it cannot say how much of a
+tool's output is noise in the first place. The null arm supplies the absolute scale: run the roster
+on a **substantive change with no known defect**, where approximately every finding is a false
+positive by construction. No answer key, no ground truth of any kind.
+
+This is worth its cost because of what the verdict distribution showed — of 98 clusters on one v1
+subject, 6 were *wrong* and 58 were *trivial*. Tools fail by immateriality, and the null arm
+quantifies exactly that: given nothing to find, how much does each still say?
+
+**Selection criteria** (`v2/verify_null.sh` checks these; `dcc-mjj5`):
+
+1. No revert or regression issue cross-referenced from the PR.
+2. **No later fix-shaped commit touching the same lines.** This is the check that can actually
+   falsify nullness, so it queries the file's later history rather than trusting the absence of a
+   link — a change can ship a defect nobody ever traced back to it. File-level overlap is a *screen,
+   not a verdict*: shared and generated files (dependency manifests, translation bundles, CI config,
+   append-only registries) are touched by every later fix, so a hit there is adjudicated by asking
+   whether the fix touched the same **lines**, not the same file.
+3. **Soak time recorded.** A defect needs time to surface, so nullness is a function of how long the
+   change has been in production, and that number is published rather than assumed.
+4. Size and application type matched to a scored subject, so the floor is comparable rather than
+   measured on a trivially different change.
+
+⚠️ **A null subject is checkpointed at the MERGE commit, not the first-review commit.** Scored
+subjects are checkpointed pre-review precisely so the thread-flagged issues are still present and
+findable — which is what would make them non-null. The null arm needs the post-review state that
+shipped. And the diff is `merge^1..merge`, the change as it landed: comparing the base branch to the
+merge commit yields an empty diff, because the merge is already on that branch.
+
+**"No *known* defect" is the honest framing, never "no defect".** Where the judge rates a null-arm
+finding as genuinely valid, that is a real result worth keeping rather than an error to suppress: it
+means a tool found something the project has not yet noticed. Those are reported separately from the
+noise count.
+
+⚠️ Soak time and vintage pull against each other: nullness wants an old change, the vintage rule
+wants a recent one. For null subjects soak wins and vintage is recorded rather than binding — a
+memorized null subject would, if anything, *deflate* the noise floor, which is the conservative
+direction for a measurement of noise.
+
 ### The anchor: one retrospective key
 
 The 7 audited subjects keep their keys and their value, with a narrowed job: detecting a defect class

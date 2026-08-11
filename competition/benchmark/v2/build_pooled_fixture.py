@@ -47,6 +47,12 @@ def main():
     ap.add_argument("owner"); ap.add_argument("repo"); ap.add_argument("pr", type=int)
     ap.add_argument("type"); ap.add_argument("size")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--null", action="store_true",
+                    help="Build a NULL subject: checkpoint at the MERGE commit, not the first-review "
+                         "commit. A scored subject is checkpointed pre-review so the thread-flagged "
+                         "issues are still present and findable — which is exactly what would make it "
+                         "non-null. The null arm needs the post-review state that shipped and has no "
+                         "known defect since.")
     a = ap.parse_args()
     slug = f"{a.owner}/{a.repo}"
 
@@ -78,13 +84,33 @@ def main():
     if not threads:
         raise SystemExit(f"{slug}#{a.pr}: no review threads")
 
-    # Checkpoint: the commit the earliest review comment was written against.
-    dated = sorted([t for t in threads if t["against_commit"]], key=lambda t: t["created_at"])
-    checkpoint = dated[0]["against_commit"]
-    cp_date = dated[0]["created_at"]
+    if a.null:
+        mc = graphql(f'{{ repository(owner:"{a.owner}", name:"{a.repo}") {{ pullRequest(number:{a.pr}) '
+                     f'{{ mergeCommit{{oid}} }} }} }}')["data"]["repository"]["pullRequest"]
+        checkpoint = mc["mergeCommit"]["oid"]
+        cp_date = pr["mergedAt"]
+        # Threads are recorded for provenance but never scored on a null subject: whatever they
+        # raised was resolved before this checkpoint, which is the point of using the merged state.
+        for th in threads:
+            th["admission"] = "not-scored"
+            th["admission_reason"] = "null subject — checkpoint is the merged state, after review"
+    else:
+        # Checkpoint: the commit the earliest review comment was written against.
+        dated = sorted([t for t in threads if t["against_commit"]], key=lambda t: t["created_at"])
+        checkpoint = dated[0]["against_commit"]
+        cp_date = dated[0]["created_at"]
 
-    cmp_ = json.loads(gh("api", f"repos/{slug}/compare/{pr['baseRefName']}...{checkpoint}"))
-    base = cmp_["merge_base_commit"]["sha"]
+    if a.null:
+        # The merge commit is already ON the base branch, so comparing baseRef...merge yields an
+        # EMPTY diff — observed 0 files on all three null fixtures. The reviewable change is what the
+        # merge introduced: first parent (base branch before the merge) to the merge commit.
+        parents = json.loads(gh("api", f"repos/{slug}/commits/{checkpoint}")).get("parents", [])
+        if not parents:
+            raise SystemExit(f"{slug}#{a.pr}: merge commit has no parents")
+        base = parents[0]["sha"]
+    else:
+        cmp_ = json.loads(gh("api", f"repos/{slug}/compare/{pr['baseRefName']}...{checkpoint}"))
+        base = cmp_["merge_base_commit"]["sha"]
 
     diff = json.loads(gh("api", f"repos/{slug}/compare/{base}...{checkpoint}"))
     files = {f["filename"]: changed_line_ranges(f.get("patch", "")) for f in diff.get("files", [])}
@@ -92,7 +118,7 @@ def main():
     dele = sum(f.get("deletions", 0) for f in diff.get("files", []))
 
     # Mechanical admission (section 4 step 6): file in the checkpoint diff, line inside a changed hunk.
-    for t in threads:
+    for t in ([] if a.null else threads):
         if t["path"] not in files:
             t["admission"] = "rejected"; t["admission_reason"] = "file absent from the checkpoint diff"
         elif t["line"] is None:
@@ -111,11 +137,12 @@ def main():
     fixture = {
         "slug": f"{slug}#{a.pr}", "repo": slug, "pr": a.pr,
         "title": pr["title"], "app_type": a.type, "size": a.size,
-        "instrument": "pooled-adjudication",
+        "instrument": "null-arm" if a.null else "pooled-adjudication",
         "checkpoint": {
             "sha": checkpoint, "base": base, "base_ref": pr["baseRefName"],
             "date": cp_date,
-            "selection": "commit the earliest review comment was written against",
+            "selection": ("merge commit — post-review state that shipped with no known defect"
+                          if a.null else "commit the earliest review comment was written against"),
             "diff_stat": {"files": len(files), "additions": add, "deletions": dele},
         },
         "merged_at": pr["mergedAt"], "pr_created_at": pr["createdAt"],

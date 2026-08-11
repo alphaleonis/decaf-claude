@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-10T21:15:01Z
+updated_at: 2026-08-11T06:41:46Z
 order: zzzzV
 ---
 
@@ -267,32 +267,32 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-wzbe: Three live holes, all found by testing rather than reasoning about the design.
+Completed dcc-mjj5: Three null subjects built and verified, one per size bucket, all `backend` and matched to scored
+subjects so the noise floor is comparable: `jellyfin#16695` (S), `grafana#122269` (M),
+`immich#28204` (L), each with ~100 days of soak.
 
-**`curl` bypassed the entire `gh` shim.** `curl https://api.github.com/repos/O/R/pulls/N/comments`
-returns exactly the review threads the shim exists to withhold — and those threads are now a *scored
-target*, so this was a hole in scoring, not just hygiene. Cells need real network for package restore
-([[dcc-fhp1]]), so `curl`/`wget` are shimmed to deny GitHub hosts and log everything else, rather
-than denied outright.
+Two design corrections surfaced only by building it:
 
-**`docs-at` printed its pin without enforcing it.** Wayback's `/web/<stamp>/` returns the *closest*
-snapshot, usually a later one: a request for 2015 returned a 2021 capture, and 2026-05-01 returned
-2026-05-21. Enforcing the date naively made it refuse almost everything, so it now bounds the query
-through the CDX index and takes the most recent capture at or before the checkpoint — with the
-redirect check kept as a second line of defence.
+- **A null subject must be checkpointed at the MERGE commit.** Scored subjects are checkpointed
+  pre-review precisely so thread-flagged issues remain findable — which is exactly what makes them
+  non-null. The null arm needs the post-review state that shipped.
+- **Its diff is `merge^1..merge`.** Comparing the base branch to the merge commit yields an EMPTY
+  diff, because the merge is already on that branch. All three fixtures first built as 0 files, which
+  would have had cells reviewing nothing.
 
-**MCP servers were inherited by every cell.** This machine has `context7` (current library docs),
-`playwright` (a full browser, so any URL including the PR page) and `erinra` (a memory store, i.e. a
-cross-cell contamination path) connected. Verified by invocation rather than by asking the model:
-without `--strict-mcp-config` the tool exists and is stopped only by a *permission* prompt, so a
-permissive `PERM_FLAGS` would have let it through; with the flag the tool does not exist at all.
+`v2/verify_null.sh` had two bugs worth recording, both caught by running it rather than reading it.
+`since=<mergedAt>` is inclusive, so every subject flagged its OWN merge commit as a later fix. And
+file-level overlap is far too coarse: shared and generated files (dependency manifests, translation
+bundles, CI config, append-only registries) are touched by every subsequent fix, so it reports
+REVIEW for adjudication instead of rejecting. Both REVIEW verdicts here were then adjudicated at line
+level and cleared.
 
-`v2/leak_audit.sh` prints per-cell coverage including the unmeasured rows — memorization, and HTTP
-clients other than curl/wget — because a leak audit that omitted them would claim more coverage than
-it has.
+Operator input on vintage (2026-08-11): we are probably over-weighting the training cutoff — a
+routine PR is a tiny fraction of the corpus and recalling that a specific diff shipped a defect is a
+much higher bar than having seen the repo. For null subjects the constraint actively conflicts with
+soak time, so soak wins and vintage is recorded rather than binding. A memorized null subject would
+if anything *deflate* the noise floor, which is the conservative direction for a noise measurement.
+The broader question is settled empirically by the matched-pair probe, not by argument — worth
+revisiting in [[dcc-3cm6]] whether the hard post-2026-05 rule on scored subjects should also relax.
 
-Note for [[dcc-3cm6]]: writing this reporter reproduced the harness's recurring bug a **fifth** time.
-`grep -c` prints `0` AND exits 1, so `|| echo 0` appended a second zero and every count rendered as
-"0\n0"; separately, `grep DENY` matched the control arm's `would=[DENY ...]` annotation and listed a
-PASS as a denial. Both are the empty-versus-failed confusion. The review should treat it as a class
-to sweep, not five incidents.
+The roster run itself is [[dcc-vkeh]]; all three are buildable and ready.
