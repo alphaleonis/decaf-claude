@@ -36,8 +36,39 @@ STAMP="$(printf '%s' "$CUTOFF" | tr -d '-')000000"
 #
 # The CDX index can be bounded instead: `to=<stamp>` with `limit=-1` returns the most recent capture
 # at or before the checkpoint, which is exactly what a reviewer at that date could have read.
-CDX="https://web.archive.org/cdx/search/cdx?url=$(printf '%s' "$URL" | sed 's|https\?://||')&to=${STAMP:0:8}&limit=-1&output=json&fl=timestamp&filter=statuscode:200"
-picked="$(curl -sS --max-time 30 "$CDX" 2>/dev/null | grep -oE '[0-9]{14}' | tail -1)"
+# No `filter=statuscode:200`: documentation sites redirect constantly, and a capture recorded as 301
+# or 308 still resolves to the page. Filtering them out reported "no capture" for URLs that have
+# several — svelte.dev/docs/kit/routing has a 308 between two 200s inside one month.
+CDX="https://web.archive.org/cdx/search/cdx?url=$(printf '%s' "$URL" | sed 's|https\?://||')&to=${STAMP:0:8}&limit=-1&output=json&fl=timestamp"
+
+# A FAILED CDX query and a genuine absence of captures are different facts, and reporting both as
+# "no capture at or before the checkpoint" silently tells a cell that documentation for its subject
+# does not exist. Measured 2026-08-11: 12 identical requests for one URL, 3 of them failed at the
+# connection level with no HTTP status — a 25% false-MISS rate the access log recorded as MISS
+# either way, so a cell degraded this way was not identifiable afterwards (dcc-3cm6).
+#
+# So: keep the HTTP status, retry the transient case, and log ERROR distinctly from MISS.
+picked=""; cdx_rc=""; cdx_code=""
+for attempt in 1 2 3; do
+  out="$(curl -sS --max-time 30 -w '\n__H__%{http_code}' "$CDX" 2>/dev/null)"; cdx_rc=$?
+  cdx_code="${out##*__H__}"
+  if [ "$cdx_rc" = "0" ] && [ "$cdx_code" = "200" ]; then
+    picked="$(printf '%s' "${out%__H__*}" | grep -oE '[0-9]{14}' | tail -1)"
+    break
+  fi
+  sleep $(( attempt * 2 ))
+done
+
+if [ "$cdx_rc" != "0" ] || [ "$cdx_code" != "200" ]; then
+  log ERROR "$URL (Wayback CDX unreachable after 3 attempts: curl=$cdx_rc http=${cdx_code:-none})"
+  cat >&2 <<EOF
+docs-at: the Wayback Machine index could not be reached (curl=$cdx_rc http=${cdx_code:-none}).
+
+This is a TRANSPORT FAILURE, not a statement that $URL has no archived snapshot. Retry, or work
+from the source in the checked-out tree, its vendored dependencies, and git history.
+EOF
+  exit 2
+fi
 
 if [ -z "$picked" ]; then
   log MISS "$URL (no capture at or before $CUTOFF)"
@@ -55,6 +86,8 @@ SNAP="https://web.archive.org/web/${picked}id_/${URL}"
 # Capture the EFFECTIVE url: Wayback redirects to its NEAREST snapshot, which may be NEWER than the
 # one requested. Verified: asking for 20150101 of vitest.dev/api returned a 2021 snapshot. Printing
 # the date is not enough — a later snapshot is post-checkpoint information, so it is refused.
+# Suppression justified: the HTTP code and effective URL are captured in-band by -w and branched on
+# below, so a failed fetch is reported as MISS with its code rather than as empty content.
 resp="$(curl -sS -L --max-time 45 -w '\n__HTTP__%{http_code}__URL__%{url_effective}' "$SNAP" 2>/dev/null)"
 meta="${resp##*__HTTP__}"; body="${resp%__HTTP__*}"
 code="${meta%%__URL__*}"; eff="${meta##*__URL__}"

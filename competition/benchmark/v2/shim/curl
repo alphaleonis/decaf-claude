@@ -12,6 +12,10 @@ LOG="${BENCH_ACCESS_LOG:-/dev/null}"
 SELF="$(basename "$0")"
 
 args="$*"
+
+# Host matching is CASE-INSENSITIVE: DNS is, so `https://GITHUB.com/O/R/pull/N` reached GitHub
+# through a case-sensitive glob (dcc-3cm6).
+shopt -s nocasematch
 case "$args" in
   *github.com*|*githubusercontent.com*|*api.github.com*|*ghproxy*|*github.io*)
     printf '%s\t%s\tDENY\t%s\n' "$(date -u +%FT%TZ)" "$SELF" "$args" >> "$LOG"

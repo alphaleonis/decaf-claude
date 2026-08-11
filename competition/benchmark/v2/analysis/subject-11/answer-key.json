@@ -9,12 +9,19 @@
     "push_index": 0,
     "push_count": "18 force-pushes + an unknown number of regular pushes",
     "selection": "as-opened; the reviewer-flagged defect is present here and is REMOVED before merge",
-    "diff_stat": { "files": 3, "additions": 403, "deletions": 115 }
+    "diff_stat": {
+      "files": 3,
+      "additions": 403,
+      "deletions": 115
+    }
   },
   "built_at": "2026-08-10",
   "built_by": "operator + assistant",
-  "candidates_considered": { "review_threads": 18, "post_merge_issues": 1, "follow_up_prs": 1 },
-
+  "candidates_considered": {
+    "review_threads": 18,
+    "post_merge_issues": 1,
+    "follow_up_prs": 1
+  },
   "entries": [
     {
       "id": "e1",
@@ -24,24 +31,23 @@
       "provenance": "review-thread",
       "source_ref": "ADD-SP, PR #7757 review thread, 2025-12-08: 'With the Release ordering, compiler might reorder the self.shards[index].push(task) and fetch_max, which means that the .push(task) might be sequenced-before the fetch_max.'",
       "discovered_at": "2025-12-08",
-      "admission_evidence": "Present at checkpoint. Verified in the fixture: `git grep 'fetch_max(index, Release)'` matches sharded_queue.rs at this head. NOT present at merge — `max_shard_pushed` and `fetch_max` were removed entirely during review (final head 9de7950e59f8 contains no fetch_max).",
+      "admission_evidence": "Present at checkpoint. Verified in the fixture: `git grep 'fetch_max(index, Release)'` matches sharded_queue.rs at this head. NOT present at merge \u2014 `max_shard_pushed` and `fetch_max` were removed entirely during review (final head 9de7950e59f8 contains no fetch_max).",
       "must_flag": "Flags that the fetch_max on the shard-index counter uses Release where AcqRel is needed, permitting the shard push to be reordered relative to the index update. Equivalent framings count (a memory-ordering bug on this RMW, a missing acquire side, a visibility gap between push and index).",
       "severity_hint": "high"
     },
     {
       "id": "e2",
-      "statement": "The queue acquires a shard lock while already holding the condvar lock — nested locking, which is error-prone and a deadlock hazard.",
+      "statement": "The queue acquires a shard lock while already holding the condvar lock \u2014 nested locking, which is error-prone and a deadlock hazard.",
       "file": "tokio/src/runtime/blocking/sharded_queue.rs",
       "locus": "condvar wait path",
       "provenance": "review-thread",
       "source_ref": "ADD-SP, PR #7757 review thread, 2025-12-11: 'Here, we attempt to acquire the shard lock while holding the condvar lock, this is the nested locking pattern...'",
       "discovered_at": "2025-12-11",
-      "admission_evidence": "PROVISIONAL — the nested-lock structure is present at the checkpoint, but the thread was written against a later head (2025-12-11) and the exact lock pairing must be re-verified against this checkpoint before this entry is scored.",
+      "admission_evidence": "PROVISIONAL \u2014 the nested-lock structure is present at the checkpoint, but the thread was written against a later head (2025-12-11) and the exact lock pairing must be re-verified against this checkpoint before this entry is scored.",
       "must_flag": "Flags that a shard lock is taken while the condvar lock is held.",
       "severity_hint": "medium"
     }
   ],
-
   "rejected": [
     {
       "candidate": "The escaped defect: programs using spawn_blocking hang indefinitely (tokio 1.52.0), which forced revert PR #8057 and release 1.52.1",
@@ -51,9 +57,9 @@
     {
       "candidate": "v1 ground_truth: 'The sharded spawn_blocking queue uses Release ordering where AcqRel is needed; programs using spawn_blocking can hang.'",
       "source_ref": "competition/benchmark/subjects/11-rust-medium.json",
-      "reason": "MISATTRIBUTED. The v1 fixture fuses two unrelated facts: the reviewer-flagged Release/AcqRel ordering (real, but FIXED during review — fetch_max is absent from the merged code) and the undiagnosed spawn_blocking hang (real, but not attributed to the ordering by anyone). The merged code does not contain the stated defect. Scoring tools against this key on the merged head would have graded them against a defect that is not in the diff."
+      "reason": "MISATTRIBUTED. The v1 fixture fuses two unrelated facts: the reviewer-flagged Release/AcqRel ordering (real, but FIXED during review \u2014 fetch_max is absent from the merged code) and the undiagnosed spawn_blocking hang (real, but not attributed to the ordering by anyone). The merged code does not contain the stated defect. Scoring tools against this key on the merged head would have graded them against a defect that is not in the diff."
     }
   ],
-
-  "notes": "INVERSE RESULT TO SUBJECT 9. Here the earlier checkpoint is strictly better: the as-opened head contains a real, scorable, reviewer-confirmed defect, and the merged head contains NO scorable defect at all (the ordering bug was fixed in review; the hang that forced the revert was never diagnosed). Subject 9 went the other way — its defects were INTRODUCED during review, so its merged head has more entries than an early checkpoint. Whether an early checkpoint helps depends on whether defects were introduced or removed during review, which is knowable only by building the key. Note also: 18 force-pushes plus regular pushes, so the force-push list alone does not enumerate all heads."
+  "notes": "INVERSE RESULT TO SUBJECT 9. Here the earlier checkpoint is strictly better: the as-opened head contains a real, scorable, reviewer-confirmed defect, and the merged head contains NO scorable defect at all (the ordering bug was fixed in review; the hang that forced the revert was never diagnosed). Subject 9 went the other way \u2014 its defects were INTRODUCED during review, so its merged head has more entries than an early checkpoint. Whether an early checkpoint helps depends on whether defects were introduced or removed during review, which is knowable only by building the key. Note also: 18 force-pushes plus regular pushes, so the force-push list alone does not enumerate all heads.",
+  "scope": "Valid at the AS-OPENED checkpoint 8d216da8281b ONLY. The merged head is unscorable (the escaped spawn_blocking hang was never root-caused), which is what GROUND-TRUTH-AUDIT.md records as 'replace / 0 entries' for this subject. These 2 entries are NOT part of the anchor's 12-entry projection, which counts subject 11 as 0. Scoring must read the checkpoint from the fixture, never assume the merged head: a key built here is invalid against that head, and that mismatch is exactly what invalidated the v1 ground truth for this subject."
 }

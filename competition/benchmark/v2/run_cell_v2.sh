@@ -16,14 +16,14 @@ V2="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BENCH="$(dirname "$V2")"
 source "$BENCH/config.env"
 
-FIX="$(ls "$V2"/subjects/$(printf %02d "$SID")-*.json)"
-REPO="$V2/repos/$SID"
-CP="$(jq -r '.checkpoint.sha'  "$FIX")"
-BASE="$(jq -r '.checkpoint.base' "$FIX")"
-DATE="$(jq -r '.checkpoint.date' "$FIX" | cut -c1-10)"
+# Any subject kind — pooled, null or anchor. Hard-coding the anchor layout here meant the runner
+# could not address a single one of the 12 pooled subjects the pilot is for (dcc-3cm6).
+source "$V2/fixture_lib.sh"
+resolve_subject "$SID"
+FIX="$FIXTURE"; REPO="$REPO_DIR"; CP="$SUBJ_CP"; BASE="$SUBJ_BASE"; DATE="$SUBJ_DATE"
 
 SHIM="${BENCH_SHIM:-on}"; REP="${BENCH_REPEAT:-1}"
-OUT="$V2/runs/${SID}__${TOOL}__shim-${SHIM}__r${REP}"; rm -rf "$OUT"; mkdir -p "$OUT"
+OUT="$V2/runs/${SUBJ_ID}__${TOOL}__shim-${SHIM}__r${REP}"; rm -rf "$OUT"; mkdir -p "$OUT"
 
 # Return the fixture checkout to the checkpoint before every cell. Review tools write artifacts into
 # the working tree — decaf's skills drop reports in `.decaf/code-reviews/`, and their
@@ -32,13 +32,13 @@ OUT="$V2/runs/${SID}__${TOOL}__shim-${SHIM}__r${REP}"; rm -rf "$OUT"; mkdir -p "
 # The fixture has no remote by construction, so the checkpoint must already be a local object.
 reset_repo() {
   if ! git -C "$REPO" cat-file -e "${CP}^{commit}" 2>/dev/null; then
-    echo "[$SID/$TOOL] REFUSING: checkpoint $CP absent from $REPO — rebuild the fixture" >&2; exit 78
+    echo "[$SUBJ_ID/$TOOL] REFUSING: checkpoint $CP absent from $REPO — rebuild the fixture" >&2; exit 78
   fi
   git -C "$REPO" checkout -q -f "$CP"
   git -C "$REPO" clean -qxfd
   local dirty; dirty="$(git -C "$REPO" status --porcelain | wc -l | tr -d ' ')"
   if [ "$dirty" != "0" ]; then
-    echo "[$SID/$TOOL] REFUSING: $REPO still dirty ($dirty entries) after reset — contamination risk" >&2
+    echo "[$SUBJ_ID/$TOOL] REFUSING: $REPO still dirty ($dirty entries) after reset — contamination risk" >&2
     git -C "$REPO" status --porcelain >&2; exit 77
   fi
 }
@@ -62,12 +62,46 @@ export BENCH_REAL_WGET="$(command -v wget)"
 
 if [ "$SHIM" = "on" ]; then export PATH="$V2/shim:$PATH"; else export PATH="$V2/shim-log:$PATH"; fi
 
+# Filesystem isolation. The shims cover the NETWORK; this covers the local tree, where this subject's
+# threads.json (the thread axis's answer key), the anchor keys and every earlier cell's output sit a
+# few relative paths from the checkout. A PreToolUse hook still fires under
+# --dangerously-skip-permissions and exit 2 blocks the call — verified on Claude Code 2.1.226 against
+# both the Read tool and a `cat ../threads.json` Bash fallback (dcc-suz4).
+#
+# The settings file is generated per cell because the hook command needs an absolute path, which
+# depends on where this repo is cloned.
+export BENCH_CELL_REPO="$REPO"
+HOOK_SETTINGS="$OUT/isolation-settings.json"
+jq -n --arg cmd "node $V2/hooks/block-answer-access.js" \
+  '{hooks:{PreToolUse:[{matcher:"Read|Edit|Write|Bash|Grep|Glob|NotebookRead|NotebookEdit",
+                        hooks:[{type:"command", command:$cmd}]}]}}' > "$HOOK_SETTINGS"
+
 # Record what the cell could actually do, so a run without a toolchain is identifiable rather than
-# quietly weaker evidence than one with.
-bash "$V2/detect_build.sh" "$(dirname "$REPO")" > "$OUT/build-capability.json" 2>/dev/null ||   echo '{"error":"detection failed"}' > "$OUT/build-capability.json"
+# quietly weaker evidence than one with (dcc-fhp1).
+#
+# detect_build.sh takes the SUBJECT directory and appends /repo itself. This used to pass
+# `dirname "$REPO"`, so detection looked for `v2/repos/repo` and every cell recorded
+# `{"error":"detection failed"}` — and because stderr went to /dev/null and the `||` branch
+# overwrote the output, detect_build's own `{"error":"no checkout at ..."}` never survived to say
+# why. Keep its diagnostic; only synthesize one if it produced nothing at all (dcc-3cm6).
+BC="$OUT/build-capability.json"
+bash "$V2/detect_build.sh" "$REPO" > "$BC" 2> "$OUT/detect_build.stderr"
+if ! jq -e . "$BC" >/dev/null 2>&1; then
+  jq -n --arg e "$(head -c 400 "$OUT/detect_build.stderr")" \
+    '{error:"build detection produced no JSON", stderr:$e}' > "$BC"
+fi
+if jq -e '.error' "$BC" >/dev/null 2>&1; then
+  echo "[$SUBJ_ID/$TOOL] WARNING: build capability unknown — $(jq -r '.error' "$BC")" >&2
+fi
 
-REPO_SLUG="$(jq -r '.repo' "$FIX")"; PRNUM="$(jq -r '.pr' "$FIX")"
 
+# No tool's prompt names the PR or tells it to fetch one. The v1-faithful wording pointed
+# `anthropic-code-review` at "pull request #N of <repo>" and told it to "fetch the PR with gh" —
+# written when the answer key was the metric and the PR page was merely a leak to be blocked. Under
+# pooled adjudication the review threads on that page are a SCORED TARGET, so the prompt was steering
+# one tool at the answer while the others got the local diff. It also made that tool's result depend
+# on the shim's field filter, which turned out to be leaking anyway (dcc-3cm6). Every tool now
+# reviews the same thing by the same route: the checked-out diff.
 case "$TOOL" in
   ours-review) INVOKE="Use the Skill tool to run /decaf-quality-dev:code-review with arguments: review --report" ;;
   ours-bugs)   INVOKE="Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs --report" ;;
@@ -75,7 +109,7 @@ case "$TOOL" in
   anthropic-code-review)
     INVOKE="Use the Skill tool to run \`code-review:code-review\` — the plugin-qualified command from code-review@claude-plugins-official. It is NOT \`decaf-quality:code-review\`: a different tool ships a skill of the same bare name, so never invoke a bare /code-review, and abort rather than substituting anything else if the qualified skill does not resolve.
 
-Review pull request #$PRNUM of the GitHub repository $REPO_SLUG. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references." ;;
+Review the proposed change checked out in this repository. Do NOT pass --comment and do NOT post anything to GitHub — output the review to the terminal only. Print every finding you would post, with file:line references." ;;
   *) echo "unknown tool: $TOOL" >&2; exit 2 ;;
 esac
 
@@ -98,7 +132,7 @@ Environment notes:
 
 Report every finding with a file:line reference and a clear statement of what is wrong."
 
-echo "[$SID/$TOOL shim=$SHIM r$REP] checkpoint ${CP:0:12}, date $DATE, model $BENCH_MODEL effort $BENCH_EFFORT"
+echo "[$SUBJ_ID/$TOOL shim=$SHIM r$REP] checkpoint ${CP:0:12}, date $DATE, model $BENCH_MODEL effort $BENCH_EFFORT"
 t0=$(date +%s)
 set +e
 # MCP servers are a live, unmeasured leak channel: this machine has context7 (CURRENT library docs),
@@ -109,16 +143,35 @@ set +e
     --model "$BENCH_MODEL" --effort "$BENCH_EFFORT" \
     --disallowedTools WebFetch WebSearch \
     --strict-mcp-config --mcp-config "$V2/shim/no-mcp.json" \
+    --settings "$HOOK_SETTINGS" \
     $PERM_FLAGS --output-format json ) > "$OUT/meter.json" 2> "$OUT/stderr.log"
 rc=$?
 set -e
 t1=$(date +%s)
 
+# Suppression justified: a cell that crashed writes no JSON, so `.result` is legitimately absent and
+# an empty final-output.md is the correct record of it. `rc` is reported separately on the next line,
+# so the failure is visible rather than swallowed.
 jq -r '.result // empty' "$OUT/meter.json" > "$OUT/final-output.md" 2>/dev/null || true
 cost=$(jq -r '.total_cost_usd // "?"' "$OUT/meter.json" 2>/dev/null)
-echo "[$SID/$TOOL] rc=$rc wall=$((t1-t0))s cost=\$$cost -> $OUT"
-if [ "$SHIM" = "on" ]; then
-  echo "[$SID/$TOOL] external accesses: $(wc -l < "$BENCH_ACCESS_LOG") ($(grep -c 'DENY' "$BENCH_ACCESS_LOG" || true) denied)"
-else
-  echo "[$SID/$TOOL] external accesses: $(wc -l < "$BENCH_ACCESS_LOG") (unrestricted; $(grep -c 'would=\[DENY' "$BENCH_ACCESS_LOG" || true) would have been DENIED by the shim)"
+if [ ! -s "$OUT/final-output.md" ]; then
+  echo "[$SUBJ_ID/$TOOL] WARNING: empty final-output.md (rc=$rc) — see stderr.log; do not score this cell" >&2
 fi
+echo "[$SUBJ_ID/$TOOL] rc=$rc wall=$((t1-t0))s cost=\$$cost -> $OUT"
+# Suppression justified: `grep -c` prints 0 and EXITS 1 when nothing matches, which under `set -e`
+# would abort the run on the good outcome. The count is still printed, so zero is a measurement.
+if [ "$SHIM" = "on" ]; then
+  echo "[$SUBJ_ID/$TOOL] external accesses: $(wc -l < "$BENCH_ACCESS_LOG") ($(grep -c 'DENY' "$BENCH_ACCESS_LOG" || true) denied)"
+else
+  echo "[$SUBJ_ID/$TOOL] external accesses: $(wc -l < "$BENCH_ACCESS_LOG") (unrestricted; $(grep -c 'would=\[DENY' "$BENCH_ACCESS_LOG" || true) would have been DENIED by the shim)"
+fi
+
+# The access log covers the NETWORK channels. The scoring artifacts are reachable from the checkout
+# by relative path, and no shim sees that — so every cell gets a transcript check too, and its result
+# is recorded beside the cell rather than left to be remembered (dcc-suz4).
+bash "$V2/verify_cell_isolation.sh" "$OUT" > "$OUT/isolation.txt" 2>&1; iso=$?
+case $iso in
+  0) echo "[$SUBJ_ID/$TOOL] isolation: CLEAN" ;;
+  1) echo "[$SUBJ_ID/$TOOL] isolation: CONTAMINATED — see $OUT/isolation.txt. DO NOT SCORE THIS CELL." >&2 ;;
+  *) echo "[$SUBJ_ID/$TOOL] isolation: UNVERIFIED (no transcript) — see $OUT/isolation.txt" >&2 ;;
+esac
