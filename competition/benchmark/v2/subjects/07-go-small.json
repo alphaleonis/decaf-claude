@@ -1,0 +1,22 @@
+{
+  "id": 7, "lang": "go", "size": "small",
+  "repo": "prometheus/prometheus", "pr": 13777,
+  "checkpoint": {
+    "sha": "53091126c28f518c154c365a47d617c9ee7634de",
+    "base": "312e3fd728d522028285000a63157cadf0666f65",
+    "date": "2024-03-15T13:03:16Z",
+    "push_index": 0, "push_count": 0,
+    "selection": "the only head — 1 commit, 0 force-pushes, opened and merged the same day; as-opened, final and merged content are identical",
+    "base_note": "the branch point, NOT main at merge time (15809223c74d, 10 commits ahead). compare/<branch-name>...<head> degenerates for a merged PR — see METHODOLOGY-v2 §4b",
+    "diff_stat": { "files": 1, "additions": 32, "deletions": 21 }
+  },
+  "review": { "base": "312e3fd728d522028285000a63157cadf0666f65", "head": "53091126c28f518c154c365a47d617c9ee7634de",
+              "diff_cmd": "git diff 312e3fd728d522028285000a63157cadf0666f65 53091126c28f518c154c365a47d617c9ee7634de" },
+  "merged_at": "2024-03-15T13:42:30Z",
+  "vintage": {
+    "merged": "2024-03-15",
+    "note": "in-window for every roster model; structural for anchor subjects — see METHODOLOGY-v2 §5. Status is computed per (subject, model) at analysis time."
+  },
+  "thread_comments": 0,
+  "human_threads": 0
+}

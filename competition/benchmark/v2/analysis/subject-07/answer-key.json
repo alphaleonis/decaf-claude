@@ -1,0 +1,65 @@
+{
+  "subject_id": 7,
+  "repo": "prometheus/prometheus",
+  "pr": 13777,
+  "checkpoint": {
+    "sha": "53091126c28f518c154c365a47d617c9ee7634de",
+    "base": "312e3fd728d522028285000a63157cadf0666f65",
+    "date": "2024-03-15T13:03:16Z",
+    "push_index": 0,
+    "push_count": 0,
+    "selection": "the only head — 1 commit, 0 force-pushes, opened 13:03 and merged 13:42 the same day; as-opened, final and merged content are identical, so no head walk was needed",
+    "diff_stat": { "files": 1, "additions": 32, "deletions": 21 }
+  },
+  "built_at": "2026-08-11",
+  "built_by": "operator + assistant",
+  "candidates_considered": { "review_threads": 0, "post_merge_issues": 1, "follow_up_prs": 1, "reproducer_prs": 1, "silent_fixes": 0 },
+
+  "entries": [
+    {
+      "id": "e1",
+      "statement": "getChunkSeriesSet opens a ChunkQuerier, defers querier.Close(), and returns querier.Select(...). The returned storage.ChunkSeriesSet is lazy: the caller iterates it inside StreamChunkedReadResponses AFTER getChunkSeriesSet has returned, by which point the deferred Close() has already run. Closing the querier releases the block's pendingReaders, allowing TSDB to close and unmap the block's chunk files while the series set is still reading them — a use-after-close on memory-mapped chunk data. The previous code held the querier open for the whole streaming call via a defer in the caller's own scope.",
+      "file": "storage/remote/read_handler.go",
+      "locus": "getChunkSeriesSet: `defer` at :247-251 and `return querier.Select(...)` at :265; consumed by the caller at :205-215 (`chunks := h.getChunkSeriesSet(...)` then passed to StreamChunkedReadResponses at :214)",
+      "provenance": "post-merge-issue",
+      "source_ref": "issue #14422 'SIGSEGV after writing block' (stack: tsdb/chunks.(*Reader).ChunkOrIterable → encoding/binary.Uvarint); revert #14515 'I believe the iterators for the querier can access memory-mapped files, which are closed when the querier is closed'; reproducer #14599 'a block that was being queried by the read API was able to get closed because it had no pendingReaders'",
+      "discovered_at": "2024-07-05",
+      "admission_evidence": "Present at checkpoint by construction — the checkpoint is the only head, and the entire PR is this change. Verified in the fixture: read_handler.go:247-251 defers querier.Close(), :265 returns querier.Select(...), and :205-215 consumes the result after the helper returns. At the base (312e3fd728d5) the same file opened the ChunkQuerier at :205, deferred Close at :209-210, and passed querier.Select(...) INLINE as an argument at :232 — all inside one closure, so the querier outlived the streaming call. The PR's only semantic change is hoisting that into a helper, which moves the defer's firing point ahead of the consumption.",
+      "reviewer_visible_cue": "The base file already contains a CORRECT sibling of this pattern: remoteReadSamples at :141-161 opens a querier, defers Close, and calls ToQueryResult(querier.Select(...)) — safe because ToQueryResult fully materializes the result before the closure returns. The difference between the two is exactly the lazy-vs-materialized distinction e1 turns on, and it is visible without leaving this file.",
+      "must_flag": "Flags that the ChunkSeriesSet returned by getChunkSeriesSet is consumed after the deferred querier.Close() has already run, so the querier does not outlive the data it produced. Equivalent framings count: 'Select is lazy, so closing the querier here invalidates the returned set', 'the deferred Close fires before the caller iterates', 'use-after-close / use-after-free on the chunk reader', 'the querier must outlive the series set', 'move Close to the caller or defer it until streaming completes'.",
+      "must_not_require": "Do NOT require the reviewer to name SIGSEGV, memory-mapped files, pendingReaders, or TSDB block lifecycle. Those are the CONSEQUENCE and need TSDB internals the reviewed diff does not show; the lifetime error itself is fully derivable from this file. Do NOT count merely describing the refactor, praising the comment's 'timely release of the querier resources', or flagging the storage.ErrChunkSeriesSet construct.",
+      "severity_hint": "critical"
+    }
+  ],
+
+  "rejected": [
+    {
+      "candidate": "storage.ErrChunkSeriesSet(err) is returned instead of propagating the querier-construction error directly",
+      "source_ref": "the diff itself (read_handler.go:245)",
+      "reason": "Not a defect. ErrChunkSeriesSet exists to surface an error to a consumer that inspects .Err(), and the caller does exactly that at :206 before using the set. Correct and idiomatic usage; recorded because it is the diff's other plausible-looking construct and a key that shows only survivors is not auditable."
+    },
+    {
+      "candidate": "the SelectHints construction block moved into the new helper",
+      "source_ref": "the diff itself (read_handler.go:253-264)",
+      "reason": "Moved verbatim from the caller with no semantic change. Nothing for a reviewer to flag."
+    },
+    {
+      "candidate": "review threads",
+      "source_ref": "GraphQL reviewThreads on PR #13777",
+      "reason": "There are ZERO review threads — the PR was opened 13:03 and merged 13:42 with a single APPROVED review by machine424 and no line comments. This is an empty source, not an unchecked one."
+    },
+    {
+      "candidate": "silent fixes between pushes",
+      "source_ref": "PR #13777 commit list",
+      "reason": "Not applicable: 1 commit, 0 force-pushes, so there are no inter-push diffs to mine."
+    }
+  ],
+
+  "completeness": {
+    "verdict": "COMPLETE for its diff",
+    "basis": "The reviewed diff is one file, +32/-21, and the whole PR is a single refactor whose entire semantic content is the lifetime change captured by e1. Every other line is either a verbatim move (SelectHints) or correct error plumbing (ErrChunkSeriesSet + chunks.Err()), both recorded in rejected[]. A second entry would have to be invented. Per GROUND-TRUTH-AUDIT.md, entry count is not the test — completeness for the diff is; this key is judged complete at one entry.",
+    "per_subject_precision": "EXCLUDED — a single-entry subject cannot separate signal from noise within itself, so it contributes to pooled recall but never to per-subject precision ranking (dcc-595v)."
+  },
+
+  "notes": "Cleanest subject in the corpus and the reason the >=2-entry replacement rule was dropped. No re-land exists: the revert #14515 was backported to release-2.53 (#14523) and release-2.54 (#14524), and the only follow-up is the tsdb reproducer test #14599. In-window for every roster model (merged 2024-03-15), which is structural for anchor subjects — read a unanimous MISS as informative and a unanimous CATCH as weak evidence (METHODOLOGY-v2 §5)."
+}
