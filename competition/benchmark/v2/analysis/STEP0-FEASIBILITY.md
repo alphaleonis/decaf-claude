@@ -2,7 +2,7 @@
 
 Run 2026-08-10 for `dcc-595v`. Method: 273 merged revert PRs across 9 application/SPA/full-stack
 repos and 3 infrastructure repos (25 each), screened with `v2/screen_step0.sh`, then hand-classified
-against the METHODOLOGY-v2 Step 0 rule — *does the fix body name a mechanism, or only a symptom?*
+against the METHODOLOGY-v2 revert-triage rule (§4d Step A1, "Step 0" when this was written) — *does the fix body name a mechanism, or only a symptom?*
 
 **Answer: yes, comfortably. The hypothesis that application repos cannot satisfy Step 0 is wrong.**
 

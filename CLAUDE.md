@@ -185,7 +185,9 @@ Generated **artifacts** (review reports, refactor plans, loop state) go under on
 ## The review-tool benchmark (`competition/`)
 
 Not a plugin — a controlled comparison of Claude Code review tools (decaf's presets vs
-`anthropic-code-review`, `superpowers`, and others) across 12 real OSS PRs that shipped a defect.
+`anthropic-code-review`, `superpowers`, and others) across 12 real OSS PRs from review-disciplined
+repositories. v2 subjects need **real human review threads**, not a shipped defect: the threads are
+what a tool's misses are measured against. (v1 selected for reverts; that is one reason it died.)
 
 **v1 results are void.** Four independent leak/validity failures: cross-cell `.decaf/` contamination,
 GitHub cross-references exposing the fixing PR, unreliable ground truth (2 of the first 3 subjects
@@ -197,18 +199,29 @@ Current work is **benchmark v2**, milestone `dcc-ho2w`:
 | Read | For |
 |---|---|
 | `competition/benchmark/v2/README.md` | operational — layout, running a cell, the access controls |
-| `competition/benchmark/METHODOLOGY-v2.md` | design rationale + the subject-construction procedure |
+| `competition/benchmark/METHODOLOGY-v2.md` | design rationale; §2 instruments, §3 access controls, §4 subject construction |
+| `competition/benchmark/v2/analysis/HARNESS-REVIEW.md` | the pre-pilot review — what is broken and what blocks spending |
+| `competition/benchmark/v2/scoring/README.md` | the three axes and every guard that refuses to emit a number |
 | `competition/benchmark/README.md` | v1, behind a warning banner |
 | `competition/benchmark/v1-archive/README.md` | the archived v1 data — what it may and may not be cited for |
 
 Ground rules that cost real money to learn:
 
 - **A reviewer must not be able to read the answer, and it must be provable per cell.** The `gh` shim
-  time-boxes rather than denies, and every external access is logged.
+  time-boxes rather than denies, every external access is logged, and every cell's transcript is
+  checked for filesystem reads of the answers (`v2/verify_cell_isolation.sh`).
 - **Ground truth is not trustworthy until audited.** Build the answer key before spending on cells.
 - **Verify claims about the corpus; don't assert them.** Several confident statements made during v2
   design turned out wrong when checked against the API — force-push recoverability, force-push
   counts, filter effectiveness, and one answer-key entry.
+- **An access control is not in force until it has been probed.** The `gh` shim's field filter read
+  as correct and leaked post-checkpoint review verdicts through `--json latestReviews`; a URL target
+  skipped the date check entirely. Both were found by running the shim, not by reading it.
+- **Empty is not the same as failed.** The same silent-failure bug has now surfaced seven times here
+  (a zsh word-splitting no-op, "0 candidates" from a broken query, `grep` aborting under `set -e`, a
+  wrong `detect_build` path recorded as a generic error, Wayback outages reported as "no snapshot",
+  and a null-arm check failing open). Anything whose emptiness is indistinguishable from an error
+  must say which it was.
 
 ## Versioning
 
