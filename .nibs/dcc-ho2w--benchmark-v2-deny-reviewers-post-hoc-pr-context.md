@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-11T09:41:16Z
+updated_at: 2026-08-11T10:02:41Z
 order: zzzzV
 ---
 
@@ -267,49 +267,50 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-envo: **Completed 2026-08-11.** The document is restructured; the checkpoint is now a step inside subject
-construction rather than a section of its own, and the two construction procedures are one section.
+Completed dcc-nvrt: **Completed 2026-08-11. All three null subjects hold — no replacement needed.**
 
-New shape (section numbers changed — a translation note is in the header and in `HARNESS-REVIEW.md`):
+Re-ran `verify_null.sh` with the cap lifted and adjudicated every hit at line level. The method
+compares the PR's **added** line texts against each later fix's **removed** line texts, which is
+immune to the line drift between the two commits: a fix that repairs something this PR wrote has to
+delete or rewrite a line this PR added.
 
-| Was | Is |
-|---|---|
-| §2 "What v2 reviews: the review checkpoint" | dissolved into §4a |
-| §3 instruments | **§2** |
-| §5 access controls | **§3** |
-| §4 anchor + §4A pooled | **§4** — 4a checkpoint, 4b shared spine, 4c pooled, 4d anchor |
-| §6 what v2 cannot fix | **§5** |
-| §7 open questions | **§6** |
+| Subject | Files | Probed | Files with later fixes | Verdict |
+|---|---|---|---|---|
+| `jellyfin#16695` (S) | 3 | 3 | 0 | **NULL** |
+| `grafana#122269` (M) | 17 | 12 (+5 excluded) | 2 — both disjoint | **NULL** |
+| `immich#28204` (L) | 33 | 33 | 8 — all disjoint | **NULL** |
 
-§1 now closes by naming what earned its keep, in measured order: the access controls, then the
-construction discipline. The checkpoint is introduced in §4a as one of two selection rules, with the
-1-of-3 evidence and the sobering count stated where the choice is made.
+**The decisive one clears.** `server/src/middleware/global-exception.filter.ts` was changed by
+`#28806 fix: error log on aborted uploads`, which rewrites lines 1-10 and 17-36 — it threads
+`Request` through `catch`/`handleError` and moves error logging out of `fromError`
+(`logGlobalError` → `onRequestError`). PR 28204 changed the `ZodValidationException` branch at lines
+~40-55 and never touched logging. Zero of the 4 non-trivial lines it added appear among the 5 the
+fix deletes: different region, different concern.
 
-**The §4/§4A merge (`dcc-3cm6` M2) is done.** The shared spine — merge base, fixture build, the
-presence-at-T admission rule, airtightness — is stated once in §4b; §4c (pooled) and §4d (anchor) are
-deltas on it. Anchor Steps 0–8 became A1–A6, pooled P1–P6 became P1–P3.
+Worth knowing about the subject: of 33 files only **three** are production —
+`global-exception.filter.ts` (+5/-5), `fetch-errors.ts` (+7/-0) and `handle-error.ts` (+12/-0) — and
+the latter two have no later fix-shaped commit at all. The remaining 30 are specs and helpers, and
+every fix touching those is a new test in an unrelated domain (map privacy, heatmap permissions,
+non-UTC offsets, OIDC logout, search visibility).
 
-Four stale or false passages corrected:
+On grafana the cap really was hiding something: `pkg/setting/setting.go` is one of the five files it
+never reached, and it carries a later fix (`#128543`, annotation-service TLS). Adjudicated disjoint.
+The five files excluded as shared/generated are `defaults.ini`, one docs page and the three
+`toggles_gen.*` — all append-only in this PR, so there is no PR-written line for a later fix to
+rewrite. Recorded rather than assumed.
 
-1. **The `topology.go` / `hollow_proxy.go` exclusion example was false at the checkpoint actually
-   used.** Verified against the API: the as-opened diff is 11 files and contains neither; push #2 —
-   subject 9's checkpoint — contains both, and the file filter rejected 0 of 46 threads there. The
-   passage now says which checkpoint each claim belongs to.
-2. **Step 7's example `rejected` entry was fabricated and false** — it claimed `topology.go` was
-   rejected as "file absent from the checkpoint diff". Replaced with a real entry from the built key
-   (the 5-minute poll timeout, rejected on presence-at-T). Added `must_not_require`, which the real
-   key carries and the documented schema omitted.
-3. **"~31 candidate key entries against 2 at the merged head" was a pre-execution projection stated
-   as a result.** Building the key returned **2** admitted entries against **3** in the v1
-   merged-head key. Now recorded as a falsified projection with the warning that candidate count is
-   not entry count.
-4. **Subject 11's early-checkpoint entry count was "≥1"**; the built key has 2.
+Changes:
 
-The four execution-found procedure bugs are indexed as a standing-warnings table at the head of §4
-and kept inline at the step each one breaks. Also folded in: the §3 Tier 1 `--json` allowlist and URL
-date-check holes, the `docs-at` outage-as-absence bug, and the void `build-capability.json` — all
-from `dcc-3cm6`, none of which had reached the methodology.
+- `v2/analysis/NULL-ARM.md` — the record the arm was missing. Per-subject verdicts, the full hit
+  table with adjudication, what the cap was hiding, and how to re-run.
+- Each null `fixture.json` gains a `nullness` block: verdict, adjudication date, probe coverage,
+  method, and an explicit `recheck` note. **Nullness is a claim with a date, not a property** — the
+  same reasoning that keeps vintage out of fixtures as a boolean.
+- `verify_null.sh` default cap 12 → 100. A cap below the corpus's own file counts is a coverage gap
+  dressed as a result; the cap now exists only to bound a pathological diff, and anything unreached
+  is still reported.
+- METHODOLOGY-v2 §2 records the full-coverage requirement and the drift-immune line test, and states
+  that nullness is re-checked before a noise floor is cited.
+- `v2/README.md` moves the null arm from "Not done" to built, and points at the record.
 
-Cross-references updated in 20 places across scripts, scoring, commands, `CLAUDE.md`, `v2/README.md`,
-`CANDIDATES.md`, `GROUND-TRUTH-AUDIT.md`, `STEP0-FEASIBILITY.md` and 15 fixtures. 25 scoring tests
-still pass; every edited script parses.
+[[dcc-vkeh]] can read a noise floor from all three.

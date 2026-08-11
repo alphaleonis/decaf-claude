@@ -69,7 +69,12 @@ fi
 # It also FAILS CLOSED. `2>/dev/null` on the commits query turned a rate-limited or 404 response into
 # an empty result, which reads as "no later fix found" and votes NULL-OK — the permissive direction,
 # on the one check that can falsify the arm's premise (dcc-3cm6).
-FILE_CAP="${NULL_FILE_CAP:-12}"
+# The cap was 12, which is smaller than a size-matched null subject. On immich#28204 (33 files) it
+# probed 12 and adjudicated a subset: lifting it surfaced 5 further files carrying later fix-shaped
+# commits, including the one production file the PR meaningfully changes. A cap below the corpus's
+# own file counts is a coverage gap dressed as a result (dcc-nvrt). It exists now only to bound a
+# pathological diff, and the run still reports anything it did not reach.
+FILE_CAP="${NULL_FILE_CAP:-100}"
 fixes=""; probed=0; skipped=0; errors=0; excluded=0
 if [ -n "$merged" ]; then
   after="$(date -u -d "$merged +1 second" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo "$merged")"

@@ -11,7 +11,7 @@
     "base": "10de1ce8feff92bbb604fed6eb561256d449f809",
     "base_ref": "master",
     "date": "2026-05-04T16:02:17Z",
-    "selection": "merge commit \u2014 post-review state that shipped with no known defect",
+    "selection": "merge commit — post-review state that shipped with no known defect",
     "diff_stat": {
       "files": 3,
       "additions": 24,
@@ -27,5 +27,21 @@
   "threads": {
     "total": 3,
     "not-scored": 3
+  },
+  "nullness": {
+    "verdict": "NULL",
+    "adjudicated": "2026-08-11",
+    "nib": "dcc-nvrt",
+    "soak_days": 99,
+    "coverage": {
+      "files": 3,
+      "probed": 3,
+      "excluded_shared_or_generated": 0,
+      "files_with_later_fix_shaped_commits": 0
+    },
+    "method": "PR-added line texts vs each later fix's removed line texts — drift-immune; file overlap is a screen, not a verdict",
+    "note": "no later fix-shaped commit on any file; no adjudication required",
+    "record": "v2/analysis/NULL-ARM.md",
+    "recheck": "nullness is a claim with a date, not a property; re-run v2/verify_null.sh before citing this subject"
   }
 }
