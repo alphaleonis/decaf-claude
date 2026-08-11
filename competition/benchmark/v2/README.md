@@ -1,10 +1,13 @@
 # Benchmark v2 — operational guide
 
-**Status: proof of concept.** Fixture construction and leak controls are validated on real subjects;
-scoring is not built. Do not run a full benchmark yet — see `Where this stands` below.
+**Status: built, not yet run at scale.** The corpus, the leak controls and the scoring pipeline all
+exist and are exercised. No cross-tool comparison has ever run under v2 — that is the pilot
+(`dcc-vkeh`), and it is blocked. See `Where this stands`.
 
-Design rationale and the subject-construction procedure live in
-[`../METHODOLOGY-v2.md`](../METHODOLOGY-v2.md). Work is tracked by milestone **`dcc-ho2w`**.
+Design rationale and both subject-construction procedures live in
+[`../METHODOLOGY-v2.md`](../METHODOLOGY-v2.md) (§4c pooled, §4d anchor). Work is tracked by milestone
+**`dcc-ho2w`**. The pre-pilot review of this harness is
+[`analysis/HARNESS-REVIEW.md`](analysis/HARNESS-REVIEW.md).
 
 ---
 
@@ -20,30 +23,50 @@ cheat.
 
 ```
 v2/
-├── subjects/NN-<lang>-<size>.json   fixture: checkpoint sha, base, date, diff stat
-├── repos/<id>/                      airtight checkout at the checkpoint (gitignored)
-├── analysis/subject-NN/
-│   └── answer-key.json              entries[] + rejected[] with admission evidence
+├── pooled/<owner>-<repo>-<pr>/      THE CORPUS — 12 subjects, size x application type
+│   ├── fixture.json                 checkpoint sha, base, date, diff stat, vintage, thread counts
+│   ├── threads.json                 218 raw / 120 admitted human review threads — THE ANSWERS
+│   └── repo/                        airtight checkout at the checkpoint (gitignored)
+├── null/<repo>-<pr>/                3 null subjects — the noise floor; same shape, no scored threads
+├── subjects/NN-<lang>-<size>.json   ANCHOR fixtures (blind-spot detection only, never ranks)
+├── repos/<id>/                      anchor checkouts (gitignored)
+├── analysis/
+│   ├── subject-NN/answer-key.json   anchor keys: entries[] + rejected[] with admission evidence
+│   ├── CANDIDATES.md                how the pooled corpus was selected and what it covers
+│   ├── GROUND-TRUTH-AUDIT.md        the 12-subject audit that ended the key-only design
+│   └── HARNESS-REVIEW.md            the pre-pilot review of this harness (dcc-3cm6)
 ├── runs/<sid>__<tool>__shim-<on|off>__r<n>/
 │   ├── final-output.md              the review
 │   ├── access.log                   every external access, with verdicts
+│   ├── build-capability.json        what the cell could build and run
+│   ├── isolation.txt                transcript proof it did not read the answers
 │   └── meter.json                   cost/token telemetry
-├── shim/gh                          ENFORCING: time-boxed gh (treatment arm)
-├── shim/docs-at                     Wayback-pinned documentation fetch
+├── scoring/                         ALL arithmetic — score_pooled.py, check_artifacts.py, tests
+├── fixture_lib.sh                   resolve any subject id to its kind, fixture, checkout, threads
+├── shim/{gh,curl,wget,docs-at}      ENFORCING access controls (treatment arm)
 ├── shim-log/gh                      PASS-THROUGH logger (control arm)
-└── run_cell_v2.sh                   the cell runner
+├── run_cell_v2.sh                   the cell runner
+├── leak_audit.sh                    per-cell channel coverage report
+└── verify_cell_isolation.sh         per-cell filesystem-leak check
 ```
 
 ## Running a cell
 
 ```sh
 cd competition/benchmark
-bash v2/run_cell_v2.sh <subject_id> <tool_id>              # shim ON (treatment)
-BENCH_SHIM=off BENCH_REPEAT=2 bash v2/run_cell_v2.sh 2 anthropic-code-review   # control arm
+bash v2/run_cell_v2.sh sveltejs-kit-15685 ours-review                          # shim ON (treatment)
+BENCH_SHIM=off BENCH_REPEAT=2 bash v2/run_cell_v2.sh sveltejs-kit-15685 anthropic-code-review
 ```
+
+The subject id is whatever `fixture_lib.sh` resolves: a pooled or null directory name
+(`sveltejs-kit-15685`), a slug (`sveltejs/kit#15685`), or an anchor number (`2`, `9`).
 
 Tools wired: `ours-bugs`, `ours-review`, `ours-audit`, `anthropic-code-review`.
 `superpowers` and the other competitors still need v2 invocations (`dcc-vkeh`).
+
+Every tool gets the same prompt and reviews the local `base..checkpoint` diff. **No prompt names the
+PR or tells a tool to fetch one** — under pooled adjudication the review threads on that page are a
+scored target, so pointing one tool at it would be pointing it at the answer.
 
 The runner sets these itself; they matter if you invoke a shim by hand:
 
@@ -63,16 +86,45 @@ what it must not see is anything dated after the checkpoint.
 | Channel | Treatment |
 |---|---|
 | local git | free — ancestry *is* the time boundary. Fetch `--depth 500`, drop the remote |
-| `gh pr/issue view` | allowed if created ≤ checkpoint; `--json` required, safe fields only |
-| `gh pr list` | allowed with `created:<=CHECKPOINT` injected into `--search` |
+| `gh pr/issue view` | allowed if created ≤ checkpoint; `--json` required, and its fields are an **allowlist** |
+| `gh pr list` | allowed with `created:<=CHECKPOINT` injected into `--search`; same field allowlist |
 | `gh pr diff` | **denied** — returns the merged state, future information at an earlier checkpoint |
 | `gh api` / `graphql` / `search` | **denied** — cannot be date-bounded |
-| `--comments`, `--json reviews/state/...` | **denied** — post-checkpoint content on a pre-checkpoint PR |
+| bare `gh pr view` | **denied** — prints `state: MERGED`, reviewers and approvals |
+| a target given as a URL | resolved to its number and date-checked like any other |
+| `curl` / `wget` | GitHub hosts **denied** (case-insensitively); everything else permitted and logged |
 | WebFetch / WebSearch | **denied** (harness built-ins, not shimmable) — use `docs-at` |
-| `docs-at <url>` | Wayback snapshot pinned to the checkpoint date |
+| `docs-at <url>` | Wayback snapshot pinned at or before the checkpoint date |
+
+**The `--json` allowlist is `number title body author createdAt url id baseRefName headRefName
+isCrossRepository` — everything else is refused.** It has to be an allowlist: `gh pr view --json`
+accepts 46 fields, and the blocklist this replaced let `latestReviews` through (it spelled `reviews`,
+and the match was case-sensitive), along with `commits`, `files`, `reviewDecision` and the whole
+merge-state family. On `sveltejs/kit#15685` that returned `CHANGES_REQUESTED` from 2026-05-18 and
+`APPROVED` from 2026-07-01 against a 2026-04-09 checkpoint, plus all 8 post-checkpoint commits.
+
+Residual and accepted: `title` and `body` can be edited after the checkpoint, and the API serves only
+the current text — there is no historical variant to request.
 
 Every hole above was found by *testing*, not by writing the doc. `gh pr list` returned the revert
-PR's title verbatim; bare `gh pr view` printed `state: MERGED` and an approval.
+PR's title verbatim; bare `gh pr view` printed `state: MERGED` and an approval; the field blocklist
+and the URL bypass were found by probing the shim with `BENCH_POLICY_DRYRUN=1` (`dcc-3cm6`).
+
+## Filesystem isolation
+
+The shims cover the network. The local tree needs its own control, because this subject's
+`threads.json` — the thread axis's answer key — sits one directory above the checkout, the anchor
+keys and every earlier cell's output a couple more, and `--dangerously-skip-permissions` removes path
+gating entirely.
+
+`v2/hooks/block-answer-access.js` is a `PreToolUse` guard that denies any path resolving **inside
+`competition/benchmark/` but outside the cell's own checkout**. It fires under
+`--dangerously-skip-permissions` (exit 2 blocks the call, verified against `Read` and the `Bash`
+fallback) and it is behavior-neutral: on a normal review cell it evaluated 29 paths and denied 0.
+
+`run_cell_v2.sh` generates the settings file per cell, records every verdict in `access.log` under
+the `fs` channel, and then runs `verify_cell_isolation.sh` over the transcript — prevention *and*
+proof, since a control that has only been reasoned about is not a control.
 
 ## Per-cell isolation
 
@@ -100,22 +152,39 @@ everything the target branch merged in between — 18 files became 240 on subjec
 
 ## Where this stands
 
-Validated end to end:
+Built and validated:
 
-- fixture construction on 3 subjects, with 4 procedure bugs found by executing it
-- leak controls, with the DENY path exercised by a real reviewer and the control arm instrumented
-- key-building, which caught **3 invalid ground truths** before any cost a review cell
-- 8 review cells run and hand-graded
+- **the 12-subject pooled corpus** — size × application type, 9 repos, 120 admitted threads of 218
+  (`dcc-ixyy`); a checkout was destroyed and rebuilt byte-identically from its committed fixture
+- **the null arm** — 3 subjects, one per size bucket (`dcc-mjj5`)
+- **the ground-truth audit** — all 12 anchor candidates; 5 unusable, TypeScript eliminated
+  (`dcc-5xad`)
+- **the scoring pipeline** — `scoring/score_pooled.py` with 21 self-tests, and `check_artifacts.py`
+  asserting the layers describe one finding set (`dcc-y2e6`)
+- **found-vs-reported** — every recall metric computed twice, per tool and corpus-wide (`dcc-c92m`)
+- **leak controls** — DENY path exercised by a real reviewer, control arm instrumented, and the
+  filesystem channel both *enforced* (a `PreToolUse` guard that holds under
+  `--dangerously-skip-permissions`) and *audited* per cell from the transcript
 
-Not built:
+Not done:
 
-- **no scoring pipeline** — zero references to `analysis/scripts/*.py` from `v2/`; cells are graded by
-  reading them (`dcc-y2e6`)
-- **keys are thin** — 1–2 entries each; a 1-entry key cannot rank tools (`dcc-595v`)
-- **found-vs-reported unresolved** — a tool found the defect and headlined "No blocking issues
-  found"; headline-only extraction scores that a miss (`dcc-c92m`)
-- **9 subjects unaudited**, base rate of bad ground truth currently 2 in 3 (`dcc-5xad`)
-- **no cross-tool comparison** has ever run under v2 (`dcc-vkeh`)
+- **no cross-tool comparison** has ever run under v2 — the pilot, `dcc-vkeh`
+- **anchor keys exist for 2 of 7 subjects**; the other 5 are validated but unbuilt (`dcc-9ncz`)
+- **the null arm's file probe covered 12 of 33 files** on the large subject (`dcc-nvrt`)
+
+## Vintage: 5 of 12 subjects are not poolable
+
+Anthropic publishes no day-level training cutoff, so Opus 5's "2026-05" is read as end-of-May: a
+subject is provably out-of-window only if it merged on **2026-06-01** or later (`dcc-vvf0`). Five
+subjects merged inside May 2026 and are kept but **flagged and excluded from cross-subject figures**
+— `backend` S/M/L, `contract` L, and `app-ui` M. **There is no reportable backend number in this
+corpus.** The citable seven are contract S/M, app-ui S/L, and library S/M/L.
+
+`v2/scoring/vintage.py` computes the status per (subject, model) pair at analysis time — never from
+a flag in the fixture, since the answer changes when a model ships — and `check_pooling()` makes a
+silent average fail loudly. `find_candidates.sh` screens at 2026-06-01 so the flagged set cannot
+grow. The null arm is exempt: soak time beats vintage there, and a memorized null subject deflates
+the noise floor, which is the safe direction.
 
 ## Results so far
 

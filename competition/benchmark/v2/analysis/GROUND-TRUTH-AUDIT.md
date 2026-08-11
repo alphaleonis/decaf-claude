@@ -20,7 +20,7 @@ Audited 2026-08-10 against METHODOLOGY-v2 §4. Evidence per subject in
 | 8 | k8s#129768 | Go / medium | **usable** | ~2 | Salvaged — see below. |
 | 9 | k8s#130837 | Go / large | **usable** | 2 | Built in a prior session. Defects introduced at push #2; merged head is the better checkpoint (3 entries). |
 | 10 | ripgrep#3185 | Rust / small | **usable** | 1 | Fix deletes the `while !free_buffer().is_empty() { read }` loop the PR added; body root-causes it precisely ("it ended up regressing `--line-buffered`"). |
-| 11 | tokio#7757 | Rust / medium | **replace** | 0 | Prior session. Indicted ordering bug was fixed during review; the hang was never root-caused. |
+| 11 | tokio#7757 | Rust / medium | **replace** | 0 | Prior session. Indicted ordering bug was fixed during review; the hang was never root-caused. **Verdict applies to the MERGED HEAD only** — see below. |
 | 12 | rust#153540 | Rust / large | **usable** | ~3 | Richest key available. Fix undoes *one named commit* (`29e9273`), and issue #157107 states the user-visible regression exactly. 12 real threads. |
 
 ## Subject 5 — how ground truth goes invalid
@@ -50,6 +50,28 @@ reviewers said, not from what the merged code does.** Any candidate drawn from a
 be re-read against the checkpoint before admission — a bot or human comment is evidence that
 something was *once* true, never that it shipped.
 
+## Subject 11 — "replace" is a verdict on the merged head, not on the subject
+
+The table's `replace / 0 entries` for subject 11 is about the **escaped** defect at the **merged
+head**, and reading it as "subject 11 has no key" is wrong. `v2/analysis/subject-11/answer-key.json`
+is a deliberate, current artifact: 2 entries at the **as-opened** checkpoint
+`8d216da8281b` (2025-12-04), which `v2/subjects/11-rust-medium.json` pins to the same SHA. Both
+entries are reviewer-flagged defects present in that diff and removed before merge.
+
+Subject 11 is in fact the single case where the checkpoint machinery changed the answer
+(METHODOLOGY-v2 §"Whether an earlier checkpoint helps"): the merged head has nothing scorable, the
+as-opened head has the only scorable defect. Deleting the key would delete the evidence for that.
+
+Two things follow, and both are load-bearing:
+
+- Subject 11's 2 entries are **not** part of the anchor's 12-entry projection, which counts this
+  subject as 0. Do not add them to it.
+- Any scoring run must take a checkpoint from the fixture rather than assuming one. A key built at
+  the as-opened head is invalid against the merged head — which is precisely what made the *v1*
+  ground truth for this subject wrong.
+
+Recorded 2026-08-11 by `dcc-3cm6`, which set out to delete this key as stale and found it was not.
+
 ## Subject 8 — root cause found in a source the methodology does not list
 
 The revert body only speculates ("I *suspect* there were existing races… that the unconditional
@@ -69,6 +91,7 @@ Both are in `store.go`, inside the reviewed diff, and both yield a `must_flag`.
 **Methodology gap: Step 5's candidate sources omit re-land / reattempt PRs.** They are frequently the
 only place the mechanism is written down, because the revert is written in a hurry and the issue is
 written by whoever saw the symptom. Add `cross-refs whose title reattempts the PR` to Step 5.
+✅ **Actioned** — METHODOLOGY-v2 §4d Step A4 now covers re-lands, citing this subject.
 
 ## Two cross-cutting corrections
 
@@ -123,6 +146,11 @@ and no key — each still needs the full §4 procedure. That work is `dcc-9ncz` 
 replacements, is what gates the pilot.
 
 ## Vintage
+
+> ⚠️ **Superseded cutoff.** This section was written against the roster's Jan 2026 cutoff. `dcc-f2nf`
+> subsequently made the binding cutoff **Opus 5's 2026-05**, since `BENCH_MODEL` and the judge are
+> both Opus 5 (METHODOLOGY-v2 §5). Read the figures below as a record of the audit, not as the rule.
+> "Merged after 2026-01" under *What replacements must satisfy* is likewise superseded.
 
 Only three subjects postdate the roster's Jan 2026 training cutoff — 3, 6 and 12 by their fix dates,
 though 3 and 6 are being replaced. Subjects 1 (2024-01), 7 (2024-03), 8 (2025-09) and 10 (2025-10)

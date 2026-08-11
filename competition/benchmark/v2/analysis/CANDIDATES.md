@@ -4,8 +4,15 @@ Gathered 2026-08-10. Regenerate with `v2/find_candidates.sh <repo>` then
 `v2/classify_candidate.sh <repo> <pr>`. Raw classified rows: `candidate-pool.tsv`.
 
 Every candidate satisfies the hard admission rules: **merged after 2026-05** (out of window for both
-`BENCH_MODEL` and the judge, per METHODOLOGY-v2 section 6), **carries real human review threads**
+`BENCH_MODEL` and the judge, per METHODOLOGY-v2 section 5), **carries real human review threads**
 (now a scored target, not decoration), non-bot author, and >=20 changed lines.
+
+> ⚠️ **The screen ran at 2026-05-01; the defensible bound is 2026-06-01** (`dcc-vvf0`). Anthropic
+> publishes no day-level training cutoff, so Opus 5's "2026-05" must be read as end-of-May. Five of
+> the twelve built subjects merged inside May 2026 and are therefore **in-window and not poolable** —
+> the whole `backend` row, plus contract L and app-ui M. They are kept and flagged rather than
+> replaced; `v2/find_candidates.sh` now defaults to 2026-06-01 so the flagged set cannot grow.
+> METHODOLOGY-v2 section 5 has the table and the reasoning.
 
 Pool: 547 candidates found across 10 repos; 69 classified by application type.
 
@@ -63,7 +70,7 @@ changed hunk. That recovers 120 threads where a modal-commit rule would have yie
   waved through. `grafana#117615` (3.14×) is legitimate — its checkpoint carries test scaffolding
   (`sqlCompletionProvider.test.ts` +48, `metaSqlExpr.test.ts` +67) that reviewers consolidated away
   before merge. Real branch shrinkage, not a bad base.
-- **Step 8 airtightness**, all 12: history depth ≥500 (the one-fetch rule held — no re-shallowing),
+- **Airtightness** (METHODOLOGY-v2 §4b), all 12: history depth ≥500 (the one-fetch rule held — no re-shallowing),
   clean working tree, no remote, merge base present, and no reference to the PR number anywhere in
   the checkout.
 
