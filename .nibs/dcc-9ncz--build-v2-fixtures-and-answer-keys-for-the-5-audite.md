@@ -2,11 +2,11 @@
 # dcc-9ncz
 version: 1
 title: Build answer keys for the anchor subjects (blind-spot detection only)
-status: in-progress
+status: deferred
 type: task
 priority: normal
 created_at: 2026-08-10T18:35:16Z
-updated_at: 2026-08-11T11:17:29Z
+updated_at: 2026-08-11T11:43:46Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
@@ -67,3 +67,28 @@ is deliberately NOT part of this projection.
       test (see [[dcc-595v]])
 - [ ] Step 8 airtightness check passes per fixture (history depth, clean tree, no remote, no
       fix/revert reference reachable)
+
+## Summary
+
+**Deferred 2026-08-11** — **Deferred 2026-08-11** at 4 of 7 keys built (2, 7, 9, 12 — 5 entries), with subjects 10, 8 and 1
+validated but unbuilt. Not abandoned: the anchor keeps its blind-spot job, and the build order for
+the remaining three stands in `## To build`.
+
+Why pause here rather than finish:
+
+- **The anchor is not on the critical path and never ranks tools.** The corpus repair is —
+  [[dcc-qwt3]] (split the thread axis), [[dcc-2gu2]] (re-screen), [[dcc-ryo4]] (replace the
+  in-window five), [[dcc-scc3]] (thin cells) — all of which gate what the pilot and full run can
+  report. Anchor entries gate nothing.
+- **Marginal value fell exactly as predicted, then faster.** Subject 12 — "the richest key
+  available", projected ~3 entries — yielded 1, because all 12 of its review threads fail
+  `must_flag`. The remaining three (10 ~1, 8 ~2, 1 ~2) add no language the anchor lacks, and 8 and 1
+  derive their mechanism indirectly (a re-land, a reconstructed stack trace) — the profile that
+  under-delivers on projection.
+- **Five entries across four subjects already serve the anchor's yes/no question.** A defect class
+  every tool misses is detectable against 5 high-confidence entries; 8-10 would sharpen nothing the
+  instrument can express.
+
+Resume trigger: if the pilot or full run produces a result the anchor is needed to interpret (e.g.
+every tool misses an entry class and n=5 feels thin), build subject 10 first — cheapest, mechanism
+stated directly in the fix body.
