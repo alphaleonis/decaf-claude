@@ -2,11 +2,11 @@
 # dcc-13wh
 version: 1
 title: Decide v2 pilot matrix scope at the measured $600 cost
-status: todo
+status: completed
 type: task
 priority: high
 created_at: 2026-08-11T16:46:34Z
-updated_at: 2026-08-11T16:47:08Z
+updated_at: 2026-08-11T17:31:43Z
 parent: dcc-ho2w
 order: "y"
 ---
@@ -50,3 +50,9 @@ executed queries; the two cheap ones read the diff.
 ## Acceptance
 
 - [ ] Operator picks a matrix scope, or cancels the pilot
+
+## Summary
+
+**Completed 2026-08-11** — Operator decided 2026-08-11: proceed with the full matrix, but incrementally — two cells at a time,
+stopping for approval before each further pair. The blanket ~$600 launch is not authorized; each pair
+is authorized on its own, so the scope can be cut at any point without having spent it.

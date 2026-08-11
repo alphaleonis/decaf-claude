@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-11T12:23:31Z
+updated_at: 2026-08-11T17:31:43Z
 order: zzzzV
 ---
 
@@ -267,21 +267,9 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-2gu2: Rebuilt the screen on the human-thread criterion and ran it for all nine target cells; full record in
-`CANDIDATES.md` ("Re-screen under the human-thread criterion"), raw rows in
-`candidate-pool-human.tsv`. `find_candidates.sh` is now two-phase: top-100-by-comments search, then
-per-candidate thread-author typing (GraphQL `__typename` ∪ the committed bot list — refuses to run
-without the list). Output adds human count, bot share, and distinct-human-reviewer count; a range
-form of `merged_after` beats the 100-result cap for complete coverage of a repo.
-
-Pool: 298 candidates at ≥5 raw human threads across the ten repos; 132 classified by type. vvf0's
-raw-thread feasibility counts marked superseded in CANDIDATES.md. Recommendations: replace backend M
-→ grafana#125982, backend L → PostHog#59630, contract L → PostHog#67924, app-ui M → immich#29965
-(all four same-repo matched vintage pairs for ryo4), app-ui L → element-web#33184, library S →
-sveltejs/kit#16507; keep-thin app-ui S (only 1-reviewer candidates, immich cap) and contract S (the
-screen's sole candidate IS the incumbent); backend S has NO viable candidate — verified by complete
-jellyfin sweep (212 PRs, three windows; best is 4 human threads / 1 reviewer) plus hand-checking
-every unclear S row (all docs-only). Near-misses recorded in case ryo4 prefers a relaxed bar.
+Completed dcc-13wh: Operator decided 2026-08-11: proceed with the full matrix, but incrementally — two cells at a time,
+stopping for approval before each further pair. The blanket ~$600 launch is not authorized; each pair
+is authorized on its own, so the scope can be cut at any point without having spent it.
 
 ## Key Decisions
 
