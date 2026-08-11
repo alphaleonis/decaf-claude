@@ -14,13 +14,32 @@ Design context: `competition/benchmark/METHODOLOGY-v2.md` section 2. Three axes 
 
 - `<subject-dir>/fixture.json` — checkpoint, base, app type, size
 - `<subject-dir>/threads.json` — human review threads with `admission` already computed
-- `<subject-dir>/cells/<tool>__r<n>/` — one directory per run cell (`final-output.md`, `meter.json`,
-  `access.log`)
+- `competition/benchmark/v2/runs/<subject-id>__<tool>__shim-<on|off>__r<n>/` — one directory per run
+  cell (`final-output.md`, `meter.json`, `access.log`, `isolation.txt`), written by
+  `run_cell_v2.sh`. **Score one shim arm at a time.** `shim-on` is the treatment arm and the one
+  results are reported from; `shim-off` is the control, and pooling the two would mix a cell that
+  could read post-checkpoint GitHub with one that could not.
+
+Scoring artifacts (`extract/`, `findings.json`, `analysis.json`, `metrics.json`) are written into
+`<subject-dir>`, beside the fixture — that is what `check_artifacts.py <subject-dir>` reads.
+
+**Refuse to score a cell whose `final-output.md` is empty or whose `isolation.txt` says
+CONTAMINATED.** An empty cell is a crash, not a tool that found nothing, and the two are
+indistinguishable once they reach `analysis.json` as "contributed no clusters".
 
 ## Stages
 
-**1. Extract — one subagent per cell, in parallel.** Read that cell's `final-output.md` plus any
-tool-written report file, and emit every finding normalized to:
+**1. Extract — one subagent per cell, in parallel.** Read that cell's **`cell-report.md`** (the
+tool's complete main-chain output, recovered from the transcript) plus any tool-written report file,
+and emit every finding normalized to:
+
+> **Read `cell-report.md`, not `final-output.md`.** `final-output.md` is `.result` — the session's
+> final assistant message only. A tool that prints its report and then keeps working leaves the
+> report out of it entirely: measured on the `comprehensive-review` pilot probe, `final-output.md`
+> held 20% of what the tool printed and none of its original findings, while `superpowers` and
+> `pr-review-toolkit` on the same subject were at 99% and 93%. The bias runs one way — it deletes
+> findings — so scoring `.result` makes a verbose tool look quiet and precise. `run_cell_v2.sh`
+> writes `cell-report.md` for every cell and prints the ratio; a cell under 80% is flagged.
 
 ```json
 {"tool":"", "repeat":1, "subagent":"", "severity":"critical|high|medium|low|nit|info",

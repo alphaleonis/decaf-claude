@@ -1,0 +1,14 @@
+Cell isolation check: /home/decaf/code/decaf-claude/competition/benchmark/v2/runs/dotnet-efcore-34127__pr-review-toolkit__shim-on__r0
+  session:    82d8464d-0e0c-4004-86bc-fb3026505afa
+  transcripts: 1
+
+  clean threads\.json                                 
+  clean answer-key\.json                              
+  clean fixture\.json                                 
+  clean final-output\.md                              
+  clean /v2/analysis/                                 
+  clean /v2/runs/                                     
+  clean /v2/pooled/[^/]*/(threads|fixture)            
+  clean HARNESS-REVIEW|GROUND-TRUTH-AUDIT|CANDIDATES\.md|METHODOLOGY
+
+CLEAN: no transcript reference to any scoring artifact.
