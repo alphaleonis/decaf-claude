@@ -171,7 +171,8 @@ Built and validated:
 Not done:
 
 - **no cross-tool comparison** has ever run under v2 — the pilot, `dcc-vkeh`
-- **anchor keys exist for 2 of 7 subjects**; the other 5 are validated but unbuilt (`dcc-9ncz`)
+- **anchor keys exist for 4 of 7 subjects** — 2, 7, 9, 12, totalling 5 entries; subjects 1, 8 and 10
+  are validated but unbuilt (`dcc-9ncz`)
 
 ## Vintage: 5 of 12 subjects are not poolable
 

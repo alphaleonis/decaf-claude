@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: normal
 created_at: 2026-08-10T18:35:16Z
-updated_at: 2026-08-11T10:57:16Z
+updated_at: 2026-08-11T11:17:29Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-595v
@@ -40,8 +40,8 @@ plus the shared spine in §4b.
 
 | Order | Subject | Lang/size | Projected entries | Why here |
 |---|---|---|---|---|
-| 1 | 7 — prometheus#13777 | Go / small | 1 | Crispest defect in the corpus; a 78-line single-file PR whose whole content is the defect, so one entry is a COMPLETE key |
-| 2 | 12 — rust#153540 | Rust / large | ~3 | Richest key available; fix undoes one named commit (`29e9273`) and issue #157107 states the regression exactly; 12 real threads |
+| ✅ 1 | 7 — prometheus#13777 | Go / small | 1 (built) | Crispest defect in the corpus; a 78-line single-file PR whose whole content is the defect, so one entry is a COMPLETE key |
+| ✅ 2 | 12 — rust#153540 | Rust / large | **1** (built; ~3 projected) | The ~3 projection was wrong: ALL 12 threads fail `must_flag`, so the thread count contributed nothing |
 | 3 | 10 — ripgrep#3185 | Rust / small | 1 | Fix deletes the loop the PR added and root-causes it in the body |
 | 4 | 8 — k8s#129768 | Go / medium | ~2 | Both defects stated precisely, but only in the re-land #133995, not the revert |
 | 5 | 1 — efcore#32770 | C# / small | ~2 | Mechanism is reconstructed from issue #32944 stack trace, not stated by a fix body |
