@@ -9,7 +9,8 @@
     "against_commit": "b8e8094acaeb156716848dc587f05e154c112eac",
     "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nTo fix the problem, we should eliminate the unused variable binding while keeping the construction side effect. The simplest way is to instantiate CollapseOnWindowResizeBehaviour without assigning it to behaviour in the first test. That way, the constructor still runs (keeping any event subscriptions active), but there is no unused local variable.\nConcretely, in apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts, in the first it(\"Should collapse/expand the panel when the window is resized\", ...) block, replace const behaviour = new CollapseOnWindowResizeBehaviour(collapseHandler); with a bare call new CollapseOnWindowResizeBehaviour(collapseHandler);. No imports, methods, or additional definitions are required, since we are simply removing an unused identifier.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts",
@@ -21,7 +22,8 @@
     "against_commit": "b8e8094acaeb156716848dc587f05e154c112eac",
     "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nIn general, unused variables in tests should be removed unless their instantiation side effects are required. If only the constructor side effect is needed, the variable name can be dropped and the constructor can be called without assignment; if even that is unnecessary, the entire line can be removed.\nFor this specific case in apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts, the \"should return correct shouldStartCollapsed\" test only checks the static shouldStartCollapsed() method, which does not depend on any particular instance created in that test. Therefore, we should remove the behaviour declaration entirely. The simplest and safest fix is to delete line 55:\nconst behaviour = new CollapseOnWindowResizeBehaviour(collapseHandler as unknown as CollapseHandler);\n\nNo new imports or other definitions are needed. The rest of the test remains unchanged and continues to validate the intended behavior.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts",
@@ -33,7 +35,8 @@
     "against_commit": "552c7fb2a2a28c3d3d94a7ae72b904f47ff3a21b",
     "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nTo fix the unused variable, we should remove the unused binding behaviour and the corresponding ESLint disable comment, while still constructing CollapseOnWindowResizeBehaviour so its side effects run. The best minimal-change fix is to turn the declaration into a bare constructor call.\nSpecifically, in apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts, in the first it(\"Should collapse/expand the panel when the window is resized\", ...) block, replace lines 17\u201319 so that we (a) keep creating collapseHandler as before, and (b) call new CollapseOnWindowResizeBehaviour(collapseHandler) without assigning it to a variable and without the eslint-disable comment. No imports or other definitions are needed.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts",
@@ -45,7 +48,8 @@
     "against_commit": "552c7fb2a2a28c3d3d94a7ae72b904f47ff3a21b",
     "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nIn general, unused variables in tests should be removed unless they are clearly needed for side effects. Here, the test is only verifying the behavior of the static method CollapseOnWindowResizeBehaviour.shouldStartCollapsed() based on UIStore.instance.windowWidth, so the behaviour variable and its instantiation are unnecessary.\nThe best fix is to delete the unused behaviour variable declaration on line 57 and also remove the now-unneeded ESLint suppression comment on line 56. This keeps the test focused on what it is actually exercising and eliminates the unused-variable warning. No changes to imports, other tests, or functionality are needed, and no additional methods or definitions are required.\nConcretely, in apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts, inside the it(\"should return correct shouldStartCollapsed\", ...) block, remove the two lines that create collapseHandler and behaviour, and leave the rest of the test intact.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "apps/web/playwright/snapshots/composer/RTE.spec.ts/narrow-linux.png",
@@ -57,7 +61,8 @@
     "against_commit": "69a4e808e908369063a6c13fe6980d83e2d99daf",
     "body": "This doesn't look narrow?",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "apps/web/playwright/snapshots/composer/CIDER.spec.ts/narrow-linux.png",
@@ -69,7 +74,8 @@
     "against_commit": "69a4e808e908369063a6c13fe6980d83e2d99daf",
     "body": "This doesn't look narrow?",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "apps/web/playwright/e2e/composer/CIDER.spec.ts",
@@ -81,7 +87,8 @@
     "against_commit": "14997ae7ba161cbe3bb256b1e1afd7a728fcd916",
     "body": "Suggested change\n      \n    \n    \n      \n          \n            \n                        //Expand the left panel\n          \n          \n            \n                        // Expand the left panel\n          \n      \n    \n    \n  \n\nmust\u2026 make\u2026 spacing\u2026 consistent\u2026",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "apps/web/playwright/e2e/composer/CIDER.spec.ts",
@@ -93,7 +100,8 @@
     "against_commit": "14997ae7ba161cbe3bb256b1e1afd7a728fcd916",
     "body": "Suggested change\n      \n    \n    \n      \n          \n            \n                        /// Now take the screenshot\n          \n          \n            \n                        // Now take the screenshot",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "apps/web/test/viewmodels/structures/ResizerViewModel-test.ts",
@@ -105,7 +113,8 @@
     "against_commit": "14997ae7ba161cbe3bb256b1e1afd7a728fcd916",
     "body": "Is this not a problem generally though, rather than something to fix up in the test with a mock?",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "apps/web/src/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour.ts",
@@ -117,7 +126,8 @@
     "against_commit": "14997ae7ba161cbe3bb256b1e1afd7a728fcd916",
     "body": "A second seems quite long? I suppose there's no callback to know when the library has done its resizing? I worry slightly about then clashing with something else like the user resizing the window again.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "apps/web/playwright/e2e/composer/CIDER.spec.ts",
@@ -129,7 +139,8 @@
     "against_commit": "14997ae7ba161cbe3bb256b1e1afd7a728fcd916",
     "body": "What's going on with the comment formatting here",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "apps/web/playwright/e2e/composer/CIDER.spec.ts",
@@ -141,7 +152,8 @@
     "against_commit": "14997ae7ba161cbe3bb256b1e1afd7a728fcd916",
     "body": "Why is this needed when it wasn't before, would be good to comment it",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "apps/web/playwright/e2e/composer/RTE.spec.ts",
@@ -153,7 +165,8 @@
     "against_commit": "14997ae7ba161cbe3bb256b1e1afd7a728fcd916",
     "body": "Ditto",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "apps/web/src/viewmodels/structures/auto-collapse/AutoCollapse.test.ts",
@@ -165,7 +178,8 @@
     "against_commit": "14997ae7ba161cbe3bb256b1e1afd7a728fcd916",
     "body": "Can we use vitest for new tests please?",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "apps/web/src/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour.test.ts",
@@ -177,7 +191,8 @@
     "against_commit": "14997ae7ba161cbe3bb256b1e1afd7a728fcd916",
     "body": "Can we use vitest for new tests please?",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "apps/web/src/viewmodels/structures/auto-collapse/CollapseHandler.test.ts",
@@ -189,7 +204,8 @@
     "against_commit": "14997ae7ba161cbe3bb256b1e1afd7a728fcd916",
     "body": "Can we use vitest for new tests please?",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "apps/web/src/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour.test.ts",
@@ -201,7 +217,8 @@
     "against_commit": "f3f37b18922db8f77585f616e940411ca65b5de8",
     "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nTo fix this without changing functionality, keep constructing CollapseOnWindowResizeBehaviour (to preserve constructor side effects) but remove the unused local variable binding in the first test.\nBest change in this file:\n\nIn apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts, first test block (\"Should collapse/expand the panel when the window is resized\"), replace:\n\nconst behaviour = new CollapseOnWindowResizeBehaviour(collapseHandler);\nwith:\nnew CollapseOnWindowResizeBehaviour(collapseHandler);\n\n\n\nNo import or dependency changes are required.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "bot"
   },
   {
     "path": "apps/web/src/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour.test.ts",
@@ -213,7 +230,8 @@
     "against_commit": "f3f37b18922db8f77585f616e940411ca65b5de8",
     "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nTo fix this without changing functionality, remove the unused local variable in the third test (\"should return correct shouldStartCollapsed\"). Since the test only checks a static method and window width values, no instance construction is required.\nIn apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts, delete:\n\nthe unused collapseHandler declaration (line 42),\nthe @ts-ignore and eslint-disable comments (lines 43\u201344),\nand the unused behaviour instantiation (line 45).\n\nNo new imports, methods, or definitions are needed.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "bot"
   },
   {
     "path": "apps/web/src/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour.test.ts",
@@ -225,7 +243,8 @@
     "against_commit": "31c0bb0c43ce4eec6ce665df8b24ffb6eebfb01d",
     "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nTo fix this without changing behavior, instantiate CollapseOnWindowResizeBehaviour without assigning it to a local variable in the first test (line 24 region). This keeps the side effect (event/listener registration) required by the test while eliminating the unused variable flagged by CodeQL.\nIn apps/web/src/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour.test.ts, replace:\n\nconst behaviour = new CollapseOnWindowResizeBehaviour(collapseHandler);\n\nwith:\n\nnew CollapseOnWindowResizeBehaviour(collapseHandler);\n\nNo new imports, methods, or definitions are needed.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "bot"
   },
   {
     "path": "apps/web/src/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour.test.ts",
@@ -237,7 +256,8 @@
     "against_commit": "31c0bb0c43ce4eec6ce665df8b24ffb6eebfb01d",
     "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nRemove the unused behaviour variable declaration in the third test case to eliminate dead code without changing functionality.\nBest fix in this file:\n\nIn apps/web/src/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour.test.ts, in the test \"should return correct shouldStartCollapsed\", delete:\n\nthe // @ts-ignore\nthe // eslint-disable-next-line\nconst behaviour = new CollapseOnWindowResizeBehaviour(collapseHandler);\n\n\nKeep collapseHandler as-is unless separately flagged, since this report is specifically about behaviour on line 48 and we should avoid broader behavioral assumptions.\n\nNo new imports, methods, or dependencies are required.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "bot"
   },
   {
     "path": "apps/web/playwright/e2e/composer/RTE.spec.ts",
@@ -249,6 +269,7 @@
     "against_commit": "2c61565783b80478f27983d0a1f09d60b0e5b9ad",
     "body": "Comment formatting",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   }
 ]

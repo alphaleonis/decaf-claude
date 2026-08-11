@@ -61,7 +61,7 @@ def main():
       title createdAt mergedAt baseRefName additions deletions changedFiles
       reviewThreads(first:100) {{ nodes {{
         path line originalLine isResolved isOutdated
-        comments(first:3) {{ nodes {{ createdAt author{{login}} originalCommit{{oid}} bodyText }} }}
+        comments(first:3) {{ nodes {{ createdAt author{{login __typename}} originalCommit{{oid}} bodyText }} }}
       }} }} }} }} }}"""
     pr = graphql(q)["data"]["repository"]["pullRequest"]
 
@@ -71,12 +71,22 @@ def main():
         if not c:
             continue
         first = c[0]
+        # Origin splits the thread axis (dcc-qwt3): 28% of the first corpus's admitted threads were
+        # written by competing review tools, and none of their logins contains "bot" — the GraphQL
+        # actor __typename is the mechanical signal a name regex is not. Scored as a SEPARATE axis
+        # (agreement with incumbent automated review), never pooled with the human one.
+        # A deleted author has no typename and gets origin null, which score_pooled refuses on an
+        # admitted thread — classify it by hand rather than let it default into either axis.
+        # Audit the stamped values per corpus with derive_bot_authors.py.
+        atype = (first.get("author") or {}).get("__typename")
         threads.append({
             "path": n.get("path"),
             "line": n.get("originalLine") or n.get("line"),
             "is_resolved": n.get("isResolved"),
             "is_outdated": n.get("isOutdated"),
             "author": (first.get("author") or {}).get("login"),
+            "author_type": atype,
+            "origin": None if atype is None else ("bot" if atype == "Bot" else "human"),
             "created_at": first.get("createdAt"),
             "against_commit": (first.get("originalCommit") or {}).get("oid"),
             "body": (first.get("bodyText") or "").strip(),

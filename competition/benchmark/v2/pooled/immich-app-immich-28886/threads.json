@@ -9,7 +9,8 @@
     "against_commit": "5eb4179a0c4418609be896a6ab556e4b8b9c2c6a",
     "body": "Why are you deleting this? Was it already in main? Has it been released yet? This will break all instances that have previously applied.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "open-api/immich-openapi-specs.json",
@@ -21,7 +22,8 @@
     "against_commit": "b784bca0594a4e0c2dfa3a56fb05abc95b0ff2ed",
     "body": "This is wrong/misleading. Is there a way to opt out of these values while still using int validation?",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "server/src/dtos/asset.dto.ts",
@@ -33,7 +35,8 @@
     "against_commit": "a0cd0850d019cc2bec914be51cdcaaf949be5487",
     "body": "Suggested change\n      \n    \n    \n      \n          \n            \n                  .describe('Rating in range [1-5] (starred), -1 (rejected) or null (unrated)')\n          \n          \n            \n                  .describe('Rating in range [1-5] (starred), -1 (rejected), or null (unrated)')",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts",
@@ -45,7 +48,8 @@
     "against_commit": "a0cd0850d019cc2bec914be51cdcaaf949be5487",
     "body": "Should we convert 0 values to null at least?",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/managers/timeline-manager/timeline-month.svelte.ts",
@@ -57,6 +61,7 @@
     "against_commit": "8d0510cc9a4d3619c08ceafca0daf2d7cba1ea12",
     "body": "addressing a console error unrelated to my changes:\nUncaught (in promise) TypeError: Cannot set property hour of [object Object] which has only a getter",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   }
 ]

@@ -53,8 +53,11 @@ have been shown the finding. Write one JSON array per cell to
 to one cluster — this is the engine that makes cross-tool comparison possible.
 
 **3. Blind grade.** Dispatch a grader with the checkpoint diff, the **admitted** threads from
-`threads.json`, and the clusters **with tool identity stripped** (send `cluster_id`, `summary`,
-`file:line` only; keep the tool map yourself). Per cluster it returns:
+`threads.json` (all of them, both origins — bot threads are matched too, they just score a different
+axis; send each thread's `path`, `line`, `body` only, **never `author` or `origin`**, so the judge
+cannot grade a thread differently for being bot-authored), and the clusters **with tool identity
+stripped** (send `cluster_id`, `summary`, `file:line` only; keep the tool map yourself). Per cluster
+it returns:
 
 ```json
 {"cluster_id":"", "verdict":"matches-thread|matches-key|valid-other|valid-minor|trivia|false-positive",
@@ -114,6 +117,12 @@ Report **both `thread_recall` and `thread_recall_found`, plus `demotion_gap`.** 
 stand alone: as-reported is what a user would actually have seen, as-found is what the tool is capable
 of. A large gap is a real and publishable property — a tool that finds everything and reports nothing
 is not the same product as one that finds nothing, and the fix for the first is a threshold change.
+
+`thread_recall` is computed over **human** threads only (dcc-qwt3). Report `incumbent_agreement` —
+recall against bot-authored threads, i.e. agreement with incumbent automated review — as its own
+line when the subject has bot threads, and never merge or average it with `thread_recall`. If
+`threads.human_axis_thin` is true (1–2 human threads), report the recall **with n attached** and say
+explicitly that it is per-subject disclosure only, not a poolable number.
 
 Then two things that need a human eye:
 

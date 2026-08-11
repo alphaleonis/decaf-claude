@@ -9,7 +9,8 @@
     "against_commit": "794e331789a790ed35eed7185a817136a3565ffd",
     "body": "Reject extend when lease is no longer latest generation\nManager.Extend only re-reads and rewrites the caller\u2019s generation key, so a renewal can succeed even after another holder has already created a newer generation during the read/save window around expiry. In that case the old holder refreshes generation N while the new holder owns generation N+1, so both can believe they hold the lease (split-brain). This can occur when extend starts just before TTL expiry and a competing Acquire runs just after expiry but before m.save here; Extend should also verify that this lease is still the latest generation (or use a conditional write) before persisting the new expiry.\nUseful? React with \ud83d\udc4d\u00a0/ \ud83d\udc4e.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -21,7 +22,8 @@
     "against_commit": "e9654f4bcc544ebbfca0f39f265b5fadfee50985",
     "body": "In the Release case, the read/validate/write happens due to a lack of a conditional write operation in the KV store. The consequence there is also pretty benign: a caller might not get ErrLeaseLost on concurrent Release() but whether it gets that error or not, it can correctly assume it no longer holds the lease.\nIn this case, we are potentially allowing two clients to believe the hold the same lease at the same time, the main property this library is supposed to provide. We shouldn't rely on callers calling Extend \"well before expiry\".\nIn the design doc for this package, Extend becomes a Create() with the next generation -- that is much safer as it guarantees a single lease holder.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -33,7 +35,8 @@
     "against_commit": "e9654f4bcc544ebbfca0f39f265b5fadfee50985",
     "body": "The Lost() channel on the lease has one main job: notifying when the caller lost the lease. It should only fire when it's guaranteed that the lease is lost. Now that I'm taking a closer look at Extend, I'm thinking that we shouldn't use time.AfterFunc() for this, it makes Extend() inherently racy. In the current code, we could have already notified the caller that they lost the lease even though we just extended it.\nI'm wondering if we should, instead, handle extensions internally: when acquiring a lease, the caller can optionally specify if they want automated renewals. If they do, we start a background goroutine that will periodically extend the lease (using the same mechanism as Extend in the design doc) and notifyLoss() if we can't. If the caller doesn't want renewals, we can use a timer as we are currently doing.\nAnother advantage of this approach is that it unifies how renewals are implemented instead of leaving it up to callers, which would lead to multiple variations of the same logic.\nI'm curious to hear @pstibrany's thoughts as I believe what I described above is closer to what search is doing at the moment.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -45,7 +48,8 @@
     "against_commit": "3092e690559337ded2ef699e679ccd08dfc0e24d",
     "body": "Worth noting: Previously notifyLoss was only called on successful release, now it's always called.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -57,7 +61,8 @@
     "against_commit": "3092e690559337ded2ef699e679ccd08dfc0e24d",
     "body": "We should verify that renewInterval is always <= cfg.ttl / 2 (1 reliable attempt before expiry, 0 failure tolerance), or preferrably <= ttl/3 (gives 2 reliable attempts before expiry, tolerating 1 slow/failed attempt; the third attempt lands at expiry and is unreliable in practice)",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -69,7 +74,8 @@
     "against_commit": "3092e690559337ded2ef699e679ccd08dfc0e24d",
     "body": "Shall we log failed attempts? Could be useful for troubleshooting.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -81,7 +87,8 @@
     "against_commit": "3092e690559337ded2ef699e679ccd08dfc0e24d",
     "body": "Shall we use some timeout for renewal attempt?",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/testing/lease.go",
@@ -93,7 +100,8 @@
     "against_commit": "3092e690559337ded2ef699e679ccd08dfc0e24d",
     "body": "This is 150ms sleep, but on slow CI machine goroutine doing extension may not have ran.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/testing/lease.go",
@@ -105,7 +113,8 @@
     "against_commit": "3092e690559337ded2ef699e679ccd08dfc0e24d",
     "body": "nit: Personally I find it somewhat strange that Lost fires on Release, but that's just my preference.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/testing/lease.go",
@@ -117,7 +126,8 @@
     "against_commit": "3092e690559337ded2ef699e679ccd08dfc0e24d",
     "body": "How is this test related to auto-renew?",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -129,7 +139,8 @@
     "against_commit": "8399305ee9ec097a59193acd28c9833719179d2d",
     "body": "Can we do this in the same Batch as the creation of the new generation (an extra Update operation)?",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -141,7 +152,8 @@
     "against_commit": "8399305ee9ec097a59193acd28c9833719179d2d",
     "body": "Nit: can we add a return here like we do in autoRenewLoop to make control flow more explicit?",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -153,7 +165,8 @@
     "against_commit": "8399305ee9ec097a59193acd28c9833719179d2d",
     "body": "One issue I see with this loop is that it has no visibility of when the lease naturally expires. We're renewing (by default) every ttl / 3 and giving up to 3/4 of that for a renewal to succeed. Using 10s (default TTL) as an example gives us renewInterval = 3.3s and extendTimeout = 2.5s for a total of 5.8s per attempt.\nBy the time the second try kicks in, we could have a situation where someone else got the lease but this caller has not been notified that they lost the lease (there would be a gap that grows with the TTL).\nTLDR: I think that if now() + extendTimeout > expiry, we should give up retrying and signal loss.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -165,7 +178,8 @@
     "against_commit": "8399305ee9ec097a59193acd28c9833719179d2d",
     "body": "Do you think we would need a customizable renewInterval right off the bat? Maybe we can simplify and assume ttl/3 for now until we have a use-case that needs a customized value for some reason.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -177,7 +191,8 @@
     "against_commit": "d80771ab43614aa27ae6315f47b56e0b6a90cdfa",
     "body": "As discussed on Slack, let's make this a soft-delete (Update) as it was before. Actual deletion will be handled by a GC process.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -189,7 +204,8 @@
     "against_commit": "d80771ab43614aa27ae6315f47b56e0b6a90cdfa",
     "body": "By this point, we could still have two lease holders. I think what we should do is:\nrenewalDur := renewInterval + extendTimeout\nif time.Now().Add(renewalDur) > expiry {\n    // lease lost\n}\n\nIn other words, if the max time it could take to renew the lease would fall outside of the bounds of our expiry, we are no longer safe and should give up retrying and assume the lease is lost.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "pkg/storage/unified/resource/lease/lease.go",
@@ -201,6 +217,7 @@
     "against_commit": "d80771ab43614aa27ae6315f47b56e0b6a90cdfa",
     "body": "I think we should make this a fixed constant. The amount of work to do is not related to renewInterval and it makes it easier to reason about renewals.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   }
 ]

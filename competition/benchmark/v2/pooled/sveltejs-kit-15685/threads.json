@@ -9,7 +9,8 @@
     "against_commit": "2244f2d2eb5c9a4e31b6d85082471636d1ee5de3",
     "body": "Suggested change\n      \n    \n    \n      \n          \n            \n            \tconst server_only_pattern = /\\.server\\.[^/]+$|\\/server\\/;/;\n          \n          \n            \n            \tconst server_only_pattern = /\\.server\\.[^/]+$|\\/server\\//;\n          \n      \n    \n    \n  \n\nTypo in regex pattern causes /server/ path matching to fail completely - a stray semicolon is being matched as a literal character.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "packages/kit/src/exports/vite/index.js",
@@ -21,7 +22,8 @@
     "against_commit": "2f75514b14a73334216d14d6cdf1ad9c260aaf9d",
     "body": "Local /server/ directories outside of $lib/ are not blocked from client-side imports, contrary to the PR's intent",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": ".changeset/lazy-nights-lay.md",
@@ -33,7 +35,8 @@
     "against_commit": "26bce18747ee9ba344163e785e5d1cf22b2d199f",
     "body": "Suggested change\n      \n    \n    \n      \n          \n            \n            recursive $lib server dirs\n          \n          \n            \n            breaking: nested server-only directories",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "documentation/docs/30-advanced/50-server-only-modules.md",
@@ -45,7 +48,8 @@
     "against_commit": "26bce18747ee9ba344163e785e5d1cf22b2d199f",
     "body": "I don't think we automatically create a $routes alias, do we?",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "packages/kit/src/exports/vite/index.js",
@@ -57,7 +61,8 @@
     "against_commit": "26bce18747ee9ba344163e785e5d1cf22b2d199f",
     "body": "did we change this from what it was before on purpose?",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "packages/kit/src/exports/vite/index.js",
@@ -69,7 +74,8 @@
     "against_commit": "26bce18747ee9ba344163e785e5d1cf22b2d199f",
     "body": "Was there any reason to change this?",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "packages/kit/test/apps/dev-only/test/test.js",
@@ -81,7 +87,8 @@
     "against_commit": "26bce18747ee9ba344163e785e5d1cf22b2d199f",
     "body": "These tests are good, but we should probably add another two apps to build-errors for nested server directories, both dynamic and static imports. You should be able to just ctrl+c, ctrl+v one of the existing test apps in build-errors and modify from there. The tests are in env.spec.js",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "documentation/docs/30-advanced/50-server-only-modules.md",
@@ -93,6 +100,7 @@
     "against_commit": "ff829303cdb19a0b1ec4e29a3bff9ed62c3db110",
     "body": "Suggested change\n      \n    \n    \n      \n          \n            \n            - For single modules, add `.server` to the filename, e.g. `secrets.server.js`. This works for _any_ file in the project directory, including within `$lib` or `$routes`.\n          \n          \n            \n            - For single modules, add `.server` to the filename, e.g. `secrets.server.js`. This works for _any_ file in the project directory, including within `$lib`.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   }
 ]

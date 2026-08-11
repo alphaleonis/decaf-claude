@@ -9,7 +9,8 @@
     "against_commit": "9a73ede33d5b715c75e8de873e52c23d7874cb7e",
     "body": "initialQuery now calls quoteIdentifierIfNecessary(vars[0]). If there are no non-expression queries, refIds can be empty (ExpressionQueryEditor filters out the current query), making vars[0] undefined and causing a runtime crash when quoteIdentifierIfNecessary runs. Add a guard for the empty refIds/vars case (e.g., don\u2019t generate an initial FROM clause / use a placeholder and skip auto-initialization) and add a regression test for mounting SqlExpr with an empty refIds array.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx",
@@ -21,7 +22,8 @@
     "against_commit": "9a73ede33d5b715c75e8de873e52c23d7874cb7e",
     "body": "quoteIdentifierIfNecessary (from MySQL sqlUtil) is not idempotent: if a query name/refId is already wrapped in backticks (a plausible workaround users may already have saved), it will get wrapped again and produce invalid SQL. Consider unquoting first (e.g., via unquoteIdentifier) or adding an explicit \u201calready quoted\u201d check before re-quoting.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "public/app/features/expressions/utils/metaSqlExpr.ts",
@@ -33,7 +35,8 @@
     "against_commit": "9a73ede33d5b715c75e8de873e52c23d7874cb7e",
     "body": "Table quoting logic is inconsistent across the SQL expressions feature: this file uses the local quoteIdentifierIfNecessary (regex-only) while SqlExpr/autocomplete use the MySQL sqlUtil version (which also quotes reserved words). This can lead to cases where the editor generates a quoted FROM clause but the schema/fields metadata query still uses an unquoted table name (e.g., refId like \"TABLE\"). Use a single shared quoting helper for all SQL-expressions table/field quoting (and ideally handle reserved words + already-quoted identifiers).",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts",
@@ -45,7 +48,8 @@
     "against_commit": "9a73ede33d5b715c75e8de873e52c23d7874cb7e",
     "body": "Autocomplete table completions now always run through quoteIdentifierIfNecessary, which will double-wrap already-quoted query names (e.g., a saved refId like foo bar) and insert invalid SQL. Make quoting idempotent (unquote-then-quote, or skip quoting when the identifier is already quoted) so autocomplete doesn\u2019t regress existing dashboards.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts",
@@ -57,7 +61,8 @@
     "against_commit": "913e505e2f5e3a92311bd10f41f2fd2584ede7ee",
     "body": "I don't think wrapping this in both quoteIdentifierIfNecessary and unquoteIdentifier is the right way to go here but I'm not super familiar with this area of the code. I thought when I reviewed this before that you hadn't done this so I'm wondering about the change here.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "public/app/features/expressions/utils/metaSqlExpr.ts",
@@ -69,7 +74,8 @@
     "against_commit": "913e505e2f5e3a92311bd10f41f2fd2584ede7ee",
     "body": "I'm concerned about this dependency on a plugin, especially because many data source plugins are in the process of being externalized (decoupled from core Grafana, versioned independently, living in another repo). I'm not sure if the MySQL data source is one of them, but we should be careful.\nPerhaps there's a need for utilities like these to be exposed via @grafana/sql, which could then be used here and in app/plugins/datasource/mysql/sqlUtil.ts (and perhaps elsewhere, like influxdb/fsql/sqlUtil.ts, although this requires double-quotes instead of backticks).",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx",
@@ -81,7 +87,8 @@
     "against_commit": "913e505e2f5e3a92311bd10f41f2fd2584ede7ee",
     "body": "table is a reserved keyword, let's use something else (default_table? or similar?) to avoid an error when the expression runs.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "public/app/features/expressions/utils/metaSqlExpr.test.ts",
@@ -93,7 +100,8 @@
     "against_commit": "8c1dcaf760315dde56479e3888f9d2135c956add",
     "body": "These tests only verify the quoted SQL text, not the production flow where query.table is backtick-quoted but the backing query still has the raw refId. Because ExpressionQueryEditor passes { value: q.refId, label: q.refId }, we need a regression test that keeps queries[].refId unquoted while query.table is quoted; otherwise the missing source-query lookup in fetchSQLFields goes unnoticed.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "public/app/features/expressions/utils/metaSqlExpr.test.ts",
@@ -105,7 +113,8 @@
     "against_commit": "8c1dcaf760315dde56479e3888f9d2135c956add",
     "body": "This test never sets up runMetaSQLExprQuery, so it only passes because the previous test's mockResolvedValue survives jest.clearAllMocks(). That makes the spec order-dependent: reordering these cases or changing an earlier mock will break this test for unrelated reasons.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx",
@@ -117,6 +126,7 @@
     "against_commit": "8ce1d96cff0c95d95912ff8500927faf5bd6fe9e",
     "body": "Reserved keyword used as placeholder\nMedium Severity\n\nWhen there are no refIds, the seeded SQL expression uses the unquoted placeholder table. TABLE is reserved in the MySQL-compatible backend, so FROM table fails at parse time instead of producing a clearer missing-table error. This shows up whenever a SQL expression is created with no source queries yet.\n\n\n\n\nAdditional Locations (1)\n\npublic/app/features/expressions/components/SqlExpressions/SqlExpr.test.tsx#L135-L144\n\n\n\u00a0\nReviewed by Cursor Bugbot for commit 8ce1d96. Configure here.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "bot"
   }
 ]
