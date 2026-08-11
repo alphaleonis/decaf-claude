@@ -47,12 +47,14 @@ than at its merged head — was v2's original headline idea and is now a step in
 **Decided 2026-08-10 (`dcc-595v`), replacing the key-only framing.** The retrospective key is one
 instrument of three, and it is not the one that ranks tools.
 
-The forcing fact is arithmetic. After the ground-truth audit the key-based corpus projects to **12
-scoreable entries across 7 subjects** — projected, because only **2 of those 7 keys are built**
-(subject 2 with 1 entry, subject 9 with 2), and the remaining 9 entries are the audit's per-subject
-estimates. Building them is `dcc-9ncz`. Either way five tools x 2 repeats against ~12 binary items
-cannot separate a 50%-recall tool from a 70%-recall one — that is structural, not imprecision, and it
-does not improve if every projection lands.
+The forcing fact is arithmetic. After the ground-truth audit the key-based corpus projected **12
+scoreable entries across 7 subjects**. Four of the seven keys are now built (`dcc-9ncz`) and they
+total **5 entries**: subjects 2, 7 and 12 with one each, subject 9 with two. Three of the four
+projections held exactly; subject 12's did not — the audit called it "the richest key available" at
+~3 entries on the strength of its 12 review threads, and **none of those threads passes the
+`must_flag` test**, so it yields one. Read the 12 as an upper bound. Either way five tools x 2
+repeats against ~12 binary items cannot separate a 50%-recall tool from a 70%-recall one — that is
+structural, not imprecision, and it does not improve if every remaining projection lands.
 
 Meanwhile a single v1 subject produced **800 findings collapsing to 98 distinct clusters**, of which
 the blind judge called 1 `TP-primary`, 2 `TP-human`, 31 `valid-other`, 58 `nitpick` and 6
@@ -192,9 +194,16 @@ The 7 subjects that survived the audit keep their value, with a narrowed job: de
 class that *every* tool misses. That is a yes/no about the whole field, for which ~12 entries is
 adequate. It is not used to rank.
 
-Two of the seven have a key today (subjects 2 and 9); the other five are audited and validated but
-have no checkpoint, fixture or key yet (`dcc-9ncz`). Subject 11 also carries a key, at its as-opened
-checkpoint, and is deliberately **not** counted in the 12 — see `v2/analysis/GROUND-TRUTH-AUDIT.md`.
+Four of the seven have a key today — subjects 2, 7, 9 and 12 (5 entries between them). Subjects 1, 8
+and 10 are audited and validated but have no checkpoint, fixture or key yet (`dcc-9ncz`). Subject 11
+also carries a key, at its as-opened checkpoint, and is deliberately **not** counted in the 12 — see
+`v2/analysis/GROUND-TRUTH-AUDIT.md`.
+
+**A key can be complete at one entry.** The test is completeness *for the diff*, never entry count:
+subject 7 is a single-file, +32/−21 PR whose entire content is the defect, so a second entry would
+have to be invented. Each key records that judgment in a `completeness` block. Single-entry subjects
+contribute to pooled recall but are excluded from per-subject precision ranking, because one true
+positive cannot separate signal from noise within a subject.
 
 A key is built by §4d, and a subject can fail to produce one at all; that outcome is a result, not an
 error (§4d, "A subject can turn out to be unscorable").
@@ -427,8 +436,10 @@ answer rather than an error:
 |---|---|---|
 | A second `fetch --depth 1` re-shallows the repository | §4b, "Build the fixture" | 129,013 commits → 7; Tier 0 archaeology silently gone |
 | Mechanical pre-filters are much weaker than expected | §4b, "The admission rule" | a checkpoint where the file filter rejects **0 of 46** threads, planned for as if it rejects most |
+| `compare/<branch-name>...<head>` degenerates for a **merged** PR | §4b, "Compute the merge base" | the head is already an ancestor of the branch, so the API returns `merge_base == head` and a **zero-file diff** — a silent empty answer, hit on both subjects 7 and 12 |
 | Force-pushes do not enumerate all heads | §4d, Step A2 | the introducing push is missed because it landed in an ordinary push |
 | A full-revert "fix" gives no line-level localization | §4d, Step A3 | blame returns nothing, and the defect looks unlocatable rather than undiagnosed |
+| A defect signature taken from the **fix** diff can be wrong at the checkpoint | §4d, Step A3 | the fix is written against then-current code, not against T. On subject 12 the fix's predicate matched **0 of 10** heads and the correct one matched 10 of 10 — a clean "defect absent everywhere" that was pure signature error |
 
 Commands shown in §4b and §4d have been run against subject 9; `O`/`R`/`N` are owner, repo, PR
 number.
@@ -471,22 +482,28 @@ per subject rather than assumed.
 #### Whether an earlier checkpoint helps is subject-dependent — measured, not assumed
 
 The plausible theory was: at T = merged head only post-merge discoveries apply, so an earlier
-checkpoint admits more of the lifecycle. **Building three keys showed the theory is wrong as a
+checkpoint admits more of the lifecycle. **Building five keys showed the theory is wrong as a
 general rule.** It depends entirely on whether the subject's defects were *introduced* or *removed*
 during review, and that is knowable only by building the key.
 
-| | Subject 9 (k8s #130837) | Subject 11 (tokio #7757) | Subject 2 (aspnetcore #67075) |
-|---|---|---|---|
-| What review did to the defect | **introduced** it (push #2) | **removed** it | **transformed** it |
-| Entries at an early checkpoint | 2 | 2 (the only scorable defects) | different, weaker shape |
-| Entries at the merged head | 3 | **0 scorable** | 1 — the indicted defect |
-| Better checkpoint | **merged head** | **as-opened** | **final head ≈ merged** |
+| | Subject 9 (k8s #130837) | Subject 11 (tokio #7757) | Subject 2 (aspnetcore #67075) | Subject 7 (prometheus #13777) | Subject 12 (rust #153540) |
+|---|---|---|---|---|---|
+| What review did to the defect | **introduced** it (push #2) | **removed** it | **transformed** it | nothing — 1 commit, 0 force-pushes | nothing — present at all 10 heads |
+| Entries at an early checkpoint | 2 | 2 (the only scorable defects) | different, weaker shape | n/a — one head only | 1 |
+| Entries at the merged head | 3 | **0 scorable** | 1 — the indicted defect | 1 | 1 |
+| Better checkpoint | **merged head** | **as-opened** | **final head ≈ merged** | the only head | **merged head**, on diff realism |
 
 So there is no default. For an anchor subject, locate the defect first (Step A2), then let its
 presence decide the checkpoint.
 
-**Sobering count: the checkpoint machinery changed the answer in 1 of 3 subjects** — and in that one
-(subject 11) only because the merged head turned out to be unscorable. On this evidence the
+**Sobering count: the checkpoint machinery changed the answer in 1 of 5 subjects** — and in that one
+(subject 11) only because the merged head turned out to be unscorable. The two subjects added by
+`dcc-9ncz` both had the defect present for the PR's entire life, so the machinery had nothing to
+discriminate. Subject 12 is the instructive one: the earliest-head rule pointed at the as-opened
+head, but its *stated purpose* — admitting more of the lifecycle — was measurably void there,
+because none of that subject's 12 review threads passes the `must_flag` test. The choice fell to
+diff realism instead (18 shipped files rather than 36 including work abandoned before merge). **When
+the rule's rationale does not apply, say so and record the basis for the choice made instead.** On this evidence the
 checkpoint idea is not v2's main value, which is why it is a step here rather than a section of its
 own. What earned its keep was the access controls of §3 and the key-building discipline of §4d, which
 caught **three invalid v1 ground truths** — subject 11's misattributed ordering bug, subject 2's
@@ -551,8 +568,17 @@ comparing a later head to the original base drags in every unrelated change merg
 subject 9 that inflates push #3 from 18 files to **240 files, +12663/−5081**. That is a wrong diff,
 not a large one.
 
+> ⚠️ **`<target-branch>` must be a SHA, not a branch name, once the PR has merged.** The head is then
+> already an ancestor of the branch, so the three-dot compare returns `merge_base == head` and a diff
+> of **zero files** — a silent empty answer, not an error. Hit on both subjects 7 and 12. Use the base
+> SHA the PR recorded (`gh api repos/O/R/pulls/N --jq .base.sha`), or the head commit's own parent for
+> a single-commit PR, and confirm the resulting diff matches the PR's own file count and churn.
+
 Sanity-check the resulting diff against the merged PR's size. A checkpoint diff wildly larger than
-the merged diff means the wrong base.
+the merged diff means the wrong base — or a branch that shrank during review, which is the other
+explanation and has to be told apart from the first. Subject 12's as-opened diff is 36 files against
+18 at merge, and it is legitimate: the merged 18 are a strict **subset** of the 36, with zero files
+added after opening. Compare the file *sets*, not just the counts.
 
 #### Build the fixture and the checkout
 
@@ -782,6 +808,13 @@ Grep each for the defect's signature (a changed function signature, a swapped ca
 timeout). The checkpoint is the **earliest head where the signature is present**. If the defect is
 present at the as-opened head, stop — that is the checkpoint, and it is the ideal case. Record the
 walk either way; it is the evidence for the checkpoint choice.
+
+> ⚠️ **Derive the signature from the introducing commit, never from the fix.** A revert or fix is
+> written against then-current code, which may have evolved for months after T. On subject 12 the
+> predicate lifted from the revert diff (`tools.iter().any(...)`) matched **0 of 10** heads, reading
+> exactly like "the defect is absent everywhere"; the form the PR actually wrote
+> (`self.tools.contains(...)`), taken from the introducing commit's own patch, matched **10 of 10**.
+> A signature that matches nothing is a signature to re-derive, not a subject to reject.
 
 > ⚠️ **A full revert gives no line-level localization.** Where the follow-up "fix" simply reverts the
 > whole PR (subject 11: `rt: revert #7757`, −340 lines, deleting the added file), blame tells you

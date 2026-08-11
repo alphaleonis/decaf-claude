@@ -1,0 +1,78 @@
+{
+  "subject_id": 12,
+  "repo": "rust-lang/rust",
+  "pr": 153540,
+  "checkpoint": {
+    "sha": "29e9273185bd6d67145524733bbf4af4c4cc65c8",
+    "base": "20f19f4615200b16e3631816e7824e832ff394db",
+    "date": "2026-03-22T07:59:00Z",
+    "push_index": 9,
+    "push_count": 9,
+    "selection": "final head — defect present at every head, and no thread is admissible at any of them; see checkpoint_evidence",
+    "diff_stat": { "files": 18, "additions": 383, "deletions": 328 }
+  },
+  "built_at": "2026-08-11",
+  "built_by": "operator + assistant",
+  "candidates_considered": { "review_threads": 12, "post_merge_issues": 1, "follow_up_prs": 1, "re_lands": 0, "silent_fixes": 0 },
+
+  "entries": [
+    {
+      "id": "e1",
+      "statement": "parse_attribute_list stops returning unparsed attributes unconditionally and instead keeps one only when its first path segment is a registered tool name, or one of allow/deny/expect/forbid/warn; everything else is diverted into a local `dropped_attributes` vec that is used only for a where-predicate check and then discarded. The attributes actually discarded are derive helpers and other inert proc-macro attributes — `#[serde(...)]`, `#[default]` — and the code's justification for discarding them ('both being fully processed at macro expansion') holds for compilation but not for consumers that read the attribute list afterwards. rustdoc's JSON output is such a consumer, so those attributes vanished from every Item's `attrs` field between 1.95.0 and 1.96.0.",
+      "file": "compiler/rustc_attr_parsing/src/interface.rs",
+      "locus": "parse_attribute_list (:262). `let mut dropped_attributes = Vec::new();` at :276; the retention gate `if self.tools.contains(&parts[0]) || [sym::allow, sym::deny, sym::expect, sym::forbid, sym::warn].contains(&parts[0])` at :418-423, with `attributes.push(attr)` at :424 and `dropped_attributes.push(attr)` at :426; the vec's only consumer is :446, after which it is dropped.",
+      "provenance": "post-merge-issue",
+      "source_ref": "issue #157107 'derive helpers not in `attrs` field in rustdoc json' (2026-05-29, a real downstream break in BuFFI on toolchain 1.95→1.96); revert #157150 'Revert \"drop derive helpers during ast lowering\"', whose body names the exact commit it undoes: 29e9273185bd from PR #153540",
+      "discovered_at": "2026-05-29",
+      "admission_evidence": "Present at the checkpoint and verified in the fixture at the line numbers above. Also verified present at ALL TEN heads (as-opened 38f62ee75b71 through final 29e9273185bd) by reading compiler/rustc_attr_parsing/src/interface.rs at each and testing for the retention gate and the dropped_attributes push — 10/10 hit. The change is the whole content of commit 29e9273 (+19/-18, one file), whose parent 1c6a8feef8db has the unconditional `attributes.push(Attribute::Unparsed(Box::new(attr)))`.",
+      "must_flag": "Flags that attributes are now silently discarded rather than returned, and that the set discarded is wider than the code's justification covers — i.e. that derive-helper / inert proc-macro attributes are dropped from the returned list and so become invisible to anything downstream that reads it. Equivalent framings count: 'this drops #[serde(...)]/#[default] from the attribute list', 'the tool-name gate is too narrow — non-tool inert attributes fall into the else branch', 'dropped_attributes is populated and then thrown away, so the information is lost', 'rustdoc/other consumers still need these after expansion'. Naming rustdoc specifically is sufficient but NOT necessary.",
+      "must_not_require": "Do NOT require the reviewer to name rustdoc JSON, the `attrs` field, BuFFI, or the 1.95→1.96 version boundary — those are the downstream CONSEQUENCE, discovered two months later by a user, and nothing in the reviewed diff points at rustdoc. Do NOT count merely asking what the comment means or requesting it be expanded: thread #4 did exactly that and the defect still shipped (see rejected[]). Do NOT count noting that `dropped_attributes` is unused-looking without connecting it to information loss.",
+      "severity_hint": "high"
+    }
+  ],
+
+  "rejected": [
+    {
+      "candidate": "thread: 'Outside of the context of this PR this comment is somewhat vague. Please expand the comment to explain what attributes are meant and why we drop them.'",
+      "source_ref": "mejrs on compiler/rustc_attr_parsing/src/interface.rs, 2026-03-07",
+      "reason": "Fails the must_flag test: it is a documentation request, not a defect statement. It makes no claim that the behavior is wrong. NOTABLE NEAR-MISS — it is aimed at the exact comment that justifies the defect, and the author answered it by expanding the comment rather than by re-examining the premise. Recorded because 'a reviewer touched this line' is not the same as 'a reviewer caught this', and the key must not be scored as though it were."
+    },
+    {
+      "candidate": "thread: 'How reachable is this code? Are these attributes not removed during expansion, I thought for example test was removed'",
+      "source_ref": "JonathanBrouwer on compiler/rustc_attr_parsing/src/interface.rs, 2026-03-20",
+      "reason": "Fails the must_flag test: a question about reachability, not a defect statement. SECOND NEAR-MISS, and closer than the first — it probes the very assumption ('fully processed at macro expansion') that e1 turns on. It was resolved without the behavior changing. A tool that asks the same question has not caught the defect; a tool that answers it has."
+    },
+    {
+      "candidate": "the other 10 review threads",
+      "source_ref": "PR #153540 reviewThreads (all 12 are resolved; 11 of 12 outdated)",
+      "reason": "Fail the must_flag test as a class: `matches!` instead of comparison operators, derive instead of a manual impl, a stray blank line, 'this first_item_in_crate parameter is rather ugly', 'can we move these functions to target_checking.rs', and three expressions of puzzlement at changed .stderr test expectations ('these changes are unfortunate', 'i don't really understand this change'). None states a specific defect a reviewer would have had to flag."
+    },
+    {
+      "candidate": "silent fixes between the 9 force-push heads",
+      "source_ref": "PR #153540 head walk",
+      "reason": "None admitted. The inter-push change is dominated by responses to the 12 threads, which are themselves rejected above, and no residual change meets the silent-fix bar (small, localized, defect-fix-shaped, not already covered by a thread, and with a writable must_flag)."
+    },
+    {
+      "candidate": "the 18 files present at the as-opened head but absent from the merged diff",
+      "source_ref": "compare ea5573a6c6e5...38f62ee75b71 vs the merged file set",
+      "reason": "Out of scope at this checkpoint by construction — the checkpoint is the final head and those files are not in its diff. Recorded because they WOULD be in scope had the as-opened checkpoint been used, and that choice is documented in checkpoint_evidence rather than left implicit."
+    }
+  ],
+
+  "checkpoint_evidence": {
+    "heads_walked": 10,
+    "defect_present_at": "all 10, including as-opened 38f62ee75b71 (2026-03-07)",
+    "method": "read compiler/rustc_attr_parsing/src/interface.rs at each head via repos/O/R/contents/PATH?ref=SHA and tested for the retention gate and the dropped_attributes push",
+    "false_start": "the first walk tested for `tools.iter().any(...)` and matched 0 of 10 heads. That predicate is a LATER evolution of the code visible in the 2026-05-30 revert diff, not what this PR wrote — the revert is against then-current main, not against the checkpoint. The correct signature is `self.tools.contains(&parts[0])`, taken from commit 29e9273's own patch. A signature copied from the fix diff can be wrong for the checkpoint; derive it from the introducing commit.",
+    "consequence": "The checkpoint machinery does not change the answer for this subject: the defect spans the PR's whole life. Choice fell to diff realism instead — 18 shipped files rather than 36 including abandoned work.",
+    "diff_size_check": "as-opened is 2x the merged file count, which METHODOLOGY-v2 §4b says to investigate. Investigated: the 18 merged files are a strict subset of the as-opened 36, with 0 files added after opening, so the merge base is correct and the branch genuinely halved during review."
+  },
+
+  "completeness": {
+    "verdict": "COMPLETE for its diff, at 1 entry — NOT the ~3 the audit projected",
+    "basis": "GROUND-TRUTH-AUDIT.md projected ~3 entries and called this 'the richest key available', on the strength of 12 real review threads. Building the key falsified that: ZERO of the 12 threads pass the must_flag test, so the thread count contributed nothing. The single entry comes from the post-merge issue and the revert, which name the mechanism exactly. This is the same error the subject-9 worked check warns about — candidate count is not entry count — arriving from the other direction, and the corpus projection of 12 entries across 7 subjects should be read as an upper bound.",
+    "per_subject_precision": "EXCLUDED — single-entry subject; contributes to pooled recall only (dcc-595v)."
+  },
+
+  "notes": "No re-land: cross-references are the two rollups (#154242, #154253), the issue (#157107) and the revert (#157150). The defect survived 9 force-pushes, 12 review threads and two reviewers who each questioned the exact lines involved without challenging the premise — which is what makes it good anchor material: the question is whether the whole field misses a cross-consumer assumption violation, not whether it can spot a local logic error."
+}

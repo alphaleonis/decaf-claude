@@ -97,7 +97,9 @@ written by whoever saw the symptom. Add `cross-refs whose title reattempts the P
 
 **The fixtures' `human_threads.count` counts comments, not threads.** Verified: subject 1 claims 4 →
 2 threads / 4 comments; subject 8 claims 2 → 1 thread / 2 comments; subject 12 claims 27 → 12 threads
-/ 24+ comments. This retroactively explains the subject-2 discrepancy recorded earlier as "fixture
+/ **exactly 27** comments (counted while building the key, `dcc-9ncz`; this section first estimated
+"24+", and the exact figure makes the identity exact rather than approximate). This retroactively
+explains the subject-2 discrepancy recorded earlier as "fixture
 claims 9 human threads; API returns 4" — that was a mislabel, **not** evidence of fixture
 unreliability, and the earlier note overstated the problem.
 

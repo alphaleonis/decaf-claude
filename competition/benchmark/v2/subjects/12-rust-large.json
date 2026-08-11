@@ -1,0 +1,29 @@
+{
+  "id": 12, "lang": "rust", "size": "large",
+  "repo": "rust-lang/rust", "pr": 153540,
+  "checkpoint": {
+    "sha": "29e9273185bd6d67145524733bbf4af4c4cc65c8",
+    "base": "20f19f4615200b16e3631816e7824e832ff394db",
+    "date": "2026-03-22T07:59:00Z",
+    "push_index": 9, "push_count": 9,
+    "selection": "final head. The defect is present at EVERY head including as-opened (38f62ee75b71), so the earliest-head rule does not discriminate — and its stated purpose, admitting more of the lifecycle, yields nothing here because all 12 review threads fail the must_flag test. The as-opened diff is 36 files/+456-404, of which 18 files were abandoned before merge; this head is the 18 that shipped and that production hit.",
+    "base_note": "the merged head's OWN merge base, not main at merge time. compare/<branch-name>...<head> degenerates for a merged PR (head is already an ancestor) — see METHODOLOGY-v2 §4b",
+    "diff_stat": { "files": 18, "additions": 383, "deletions": 328 }
+  },
+  "alternate_checkpoint": {
+    "sha": "38f62ee75b71", "base": "ea5573a6c6e5e932f917ec4a8e6d8efdeb9f394d",
+    "diff_stat": { "files": 36, "additions": 456, "deletions": 404 },
+    "note": "as-opened; defect present. The merged 18 files are a strict SUBSET of these 36 (100% overlap, 0 files added after opening). Not used — see checkpoint.selection."
+  },
+  "review": { "base": "20f19f4615200b16e3631816e7824e832ff394db", "head": "29e9273185bd6d67145524733bbf4af4c4cc65c8",
+              "diff_cmd": "git diff 20f19f4615200b16e3631816e7824e832ff394db 29e9273185bd6d67145524733bbf4af4c4cc65c8" },
+  "merged_at": "2026-03-23T19:06:33Z",
+  "vintage": {
+    "merged": "2026-03-23",
+    "note": "in-window for every roster model; structural for anchor subjects — see METHODOLOGY-v2 §5. Status is computed per (subject, model) at analysis time."
+  },
+  "thread_comments": 27,
+  "human_threads": 12,
+  "admissible_threads": 0,
+  "thread_count_note": "counted exactly: 12 threads / 27 comments. The v1 fixture's human_threads.count of 27 is precisely the COMMENT count — GROUND-TRUTH-AUDIT.md estimated '24+' and the exact figure confirms its point: that field counted comments, not threads."
+}
