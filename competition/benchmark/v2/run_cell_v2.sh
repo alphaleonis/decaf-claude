@@ -166,6 +166,15 @@ Environment notes:
 
 Report every finding with a file:line reference and a clear statement of what is wrong."
 
+# /tmp is tmpfs on this machine — RAM, not disk. Tools build the subject in it, and a
+# comprehensive-review cell on prometheus exhausted memory with two full worktrees of a
+# 14,360-commit repo and aborted after 62 minutes, $18.68 spent, no output. Give the cell a
+# disk-backed TMPDIR, refuse to start one when tmpfs is already tight, and sweep afterwards.
+export BENCH_CELL_TMPDIR="/var/tmp/bench-v2/${SUBJ_ID}__${TOOL}__r${REP}"
+rm -rf "$BENCH_CELL_TMPDIR"; mkdir -p "$BENCH_CELL_TMPDIR"
+export TMPDIR="$BENCH_CELL_TMPDIR" TMP="$BENCH_CELL_TMPDIR" TEMP="$BENCH_CELL_TMPDIR"
+bash "$V2/cell_tmp.sh" preflight "$OUT" "$REPO" || exit 80
+
 echo "[$SUBJ_ID/$TOOL shim=$SHIM r$REP] checkpoint ${CP:0:12}, date $DATE, model $BENCH_MODEL effort $BENCH_EFFORT"
 t0=$(date +%s)
 set +e
@@ -220,6 +229,12 @@ fi
 # The access log covers the NETWORK channels. The scoring artifacts are reachable from the checkout
 # by relative path, and no shim sees that — so every cell gets a transcript check too, and its result
 # is recorded beside the cell rather than left to be remembered (dcc-suz4).
+# Runs after artifact capture, which reads the checkout, and after report extraction, which reads the
+# transcript — neither touches /tmp, so nothing needed is swept. Returning the RAM here rather than
+# at the next cell's reset means a paused matrix does not sit on a full tmpfs.
+bash "$V2/cell_tmp.sh" cleanup "$OUT" "$REPO" || \
+  echo "[$SUBJ_ID/$TOOL] WARNING: /tmp cleanup failed — check free space before the next cell" >&2
+
 bash "$V2/verify_cell_isolation.sh" "$OUT" > "$OUT/isolation.txt" 2>&1; iso=$?
 case $iso in
   0) echo "[$SUBJ_ID/$TOOL] isolation: CLEAN" ;;
