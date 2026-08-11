@@ -127,7 +127,15 @@ four cells too thin to carry a per-cell recall number.
 3. **Report the human thread axis per subject, never pooled**, until the thin cells are addressed.
 4. **Correct §2's independence claim** to what the data supports.
 
-Filed as `dcc-qwt3`.
+Filed as `dcc-qwt3` — since implemented: every thread in the corpus carries `origin: human|bot`,
+classified by GitHub GraphQL actor type into the committed `v2/pooled/bot-authors.json`
+(`derive_bot_authors.py` re-derives it per corpus; `annotate_thread_origin.py` applies it).
+`score_pooled.py` computes `thread_recall` over human threads only, scores bot-thread hits as a
+separate `incumbent_agreement` axis, stamps `human_axis_thin` on the four ≤2-human-thread cells
+(reportable per subject with n shown, never pooled), and refuses to score an admitted thread whose
+origin is unstamped. The derivation also found a **tenth** bot the census's admitted-only scope did
+not cover: `cursor`, one *rejected* thread on grafana#117615 — nothing admitted changes, but it is
+one more login no name regex would have caught.
 
 ## Limits of this census
 

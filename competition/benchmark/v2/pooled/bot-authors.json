@@ -1,0 +1,315 @@
+{
+  "method": "GraphQL reviewThreads author __typename per subject; origin=bot iff type is Bot. Re-derive with derive_bot_authors.py; do not hand-edit `authors` \u2014 hand-audited exceptions go in `manual` and are preserved across re-runs.",
+  "corpus": [
+    "PostHog/posthog#52408",
+    "PostHog/posthog#55149",
+    "dotnet/efcore#34127",
+    "element-hq/element-web#32964",
+    "grafana/grafana#117615",
+    "grafana/grafana#124181",
+    "immich-app/immich#24627",
+    "immich-app/immich#28886",
+    "jellyfin/jellyfin#12834",
+    "mattermost/mattermost#36824",
+    "prometheus/prometheus#18081",
+    "sveltejs/kit#15685"
+  ],
+  "bots": [
+    "chatgpt-codex-connector",
+    "coderabbitai",
+    "copilot-pull-request-reviewer",
+    "cursor",
+    "github-advanced-security",
+    "github-code-quality",
+    "graphite-app",
+    "greptile-apps",
+    "hex-security-app",
+    "vercel"
+  ],
+  "manual": {
+    "hex-security-app": {
+      "github_type": "Bot",
+      "reason": "App renamed to parameter-app after fixture build; its two committed threads on PostHog/posthog#55149 sit at the exact path:line of the live parameter-app/Bot threads (rust/feature-flags/src/handler/mod.rs:231, posthog/api/feature_flag.py:3550). Verified 2026-08-11 via GraphQL."
+    }
+  },
+  "authors": [
+    {
+      "login": "JPVenson",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 2,
+      "subjects": [
+        "jellyfin/jellyfin#12834"
+      ]
+    },
+    {
+      "login": "NWRichmond",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 2,
+      "subjects": [
+        "grafana/grafana#117615"
+      ]
+    },
+    {
+      "login": "Piccirello",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 4,
+      "subjects": [
+        "PostHog/posthog#52408"
+      ]
+    },
+    {
+      "login": "bboreham",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 2,
+      "subjects": [
+        "prometheus/prometheus#18081"
+      ]
+    },
+    {
+      "login": "charleskorn",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 8,
+      "subjects": [
+        "prometheus/prometheus#18081"
+      ]
+    },
+    {
+      "login": "chatgpt-codex-connector",
+      "github_type": "Bot",
+      "origin": "bot",
+      "threads": 3,
+      "subjects": [
+        "PostHog/posthog#52408",
+        "grafana/grafana#124181"
+      ]
+    },
+    {
+      "login": "coderabbitai",
+      "github_type": "Bot",
+      "origin": "bot",
+      "threads": 3,
+      "subjects": [
+        "mattermost/mattermost#36824"
+      ]
+    },
+    {
+      "login": "copilot-pull-request-reviewer",
+      "github_type": "Bot",
+      "origin": "bot",
+      "threads": 22,
+      "subjects": [
+        "PostHog/posthog#52408",
+        "PostHog/posthog#55149",
+        "dotnet/efcore#34127",
+        "grafana/grafana#117615"
+      ]
+    },
+    {
+      "login": "cursor",
+      "github_type": "Bot",
+      "origin": "bot",
+      "threads": 1,
+      "subjects": [
+        "grafana/grafana#117615"
+      ]
+    },
+    {
+      "login": "danieldietzler",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 15,
+      "subjects": [
+        "immich-app/immich#24627",
+        "immich-app/immich#28886"
+      ]
+    },
+    {
+      "login": "dbkr",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 4,
+      "subjects": [
+        "element-hq/element-web#32964"
+      ]
+    },
+    {
+      "login": "elliott-with-the-longest-name-on-github",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 5,
+      "subjects": [
+        "sveltejs/kit#15685"
+      ]
+    },
+    {
+      "login": "github-advanced-security",
+      "github_type": "Bot",
+      "origin": "bot",
+      "threads": 3,
+      "subjects": [
+        "PostHog/posthog#55149"
+      ]
+    },
+    {
+      "login": "github-code-quality",
+      "github_type": "Bot",
+      "origin": "bot",
+      "threads": 8,
+      "subjects": [
+        "element-hq/element-web#32964"
+      ]
+    },
+    {
+      "login": "graphite-app",
+      "github_type": "Bot",
+      "origin": "bot",
+      "threads": 8,
+      "subjects": [
+        "PostHog/posthog#55149"
+      ]
+    },
+    {
+      "login": "greptile-apps",
+      "github_type": "Bot",
+      "origin": "bot",
+      "threads": 6,
+      "subjects": [
+        "PostHog/posthog#55149"
+      ]
+    },
+    {
+      "login": "haacked",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 63,
+      "subjects": [
+        "PostHog/posthog#52408",
+        "PostHog/posthog#55149"
+      ]
+    },
+    {
+      "login": "hanzei",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 7,
+      "subjects": [
+        "mattermost/mattermost#36824"
+      ]
+    },
+    {
+      "login": "hex-security-app",
+      "github_type": "Bot",
+      "origin": "bot",
+      "threads": 2,
+      "subjects": [
+        "PostHog/posthog#55149"
+      ],
+      "manual": true
+    },
+    {
+      "login": "jrasm91",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 2,
+      "subjects": [
+        "immich-app/immich#28886"
+      ]
+    },
+    {
+      "login": "nielsvanvelzen",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 6,
+      "subjects": [
+        "jellyfin/jellyfin#12834"
+      ]
+    },
+    {
+      "login": "pstibrany",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 7,
+      "subjects": [
+        "grafana/grafana#124181"
+      ]
+    },
+    {
+      "login": "ranma42",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 1,
+      "subjects": [
+        "dotnet/efcore#34127"
+      ]
+    },
+    {
+      "login": "renatolabs",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 9,
+      "subjects": [
+        "grafana/grafana#124181"
+      ]
+    },
+    {
+      "login": "roji",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 9,
+      "subjects": [
+        "dotnet/efcore#34127"
+      ]
+    },
+    {
+      "login": "sgriff96",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 1,
+      "subjects": [
+        "grafana/grafana#117615"
+      ]
+    },
+    {
+      "login": "t3chguy",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 9,
+      "subjects": [
+        "element-hq/element-web#32964"
+      ]
+    },
+    {
+      "login": "teemingc",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 1,
+      "subjects": [
+        "sveltejs/kit#15685"
+      ]
+    },
+    {
+      "login": "timonrieger",
+      "github_type": "User",
+      "origin": "human",
+      "threads": 3,
+      "subjects": [
+        "immich-app/immich#24627",
+        "immich-app/immich#28886"
+      ]
+    },
+    {
+      "login": "vercel",
+      "github_type": "Bot",
+      "origin": "bot",
+      "threads": 2,
+      "subjects": [
+        "sveltejs/kit#15685"
+      ]
+    }
+  ]
+}

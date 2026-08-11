@@ -9,7 +9,8 @@
     "against_commit": "9b0f84471e9d56e5457d132d8228c40c51d03848",
     "body": "CodeQL / Information exposure through an exception\nStack trace information flows to this location and may be exposed to an external user.\nShow more details",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "rust/feature-flags/src/handler/mod.rs",
@@ -21,7 +22,8 @@
     "against_commit": "ed38bbc555c8630110e325f9161589c3b835c7e0",
     "body": "override_flags_definitions is not gated by the internal token check\nAny external caller with a valid project API token can include override_flags_definitions in the request body and replace a flag's conditions with arbitrary definitions \u2014 for example, forcing a flag to 100% rollout with no property conditions. This bypasses feature gate logic for the caller's own evaluation. detailed_analysis is correctly gated behind is_internal_request, but the override field is wired through unconditionally.\nlet override_defs = if authentication::is_internal_request(&context) {\n    request.override_flags_definitions.as_ref()\n} else {\n    None\n};\nlet filtered_flags = flags::fetch_and_filter(\n    &flag_service,\n    team.id,\n    &context.meta,\n    &context.headers,\n    request.evaluation_runtime,\n    request.evaluation_contexts.as_ref(),\n    override_defs,\n)\n.await?;\nPrompt To Fix With AI\nThis is a comment left during a code review.\nPath: rust/feature-flags/src/handler/mod.rs\nLine: 196\n\nComment:\n**`override_flags_definitions` is not gated by the internal token check**\n\nAny external caller with a valid project API token can include `override_flags_definitions` in the request body and replace a flag's conditions with arbitrary definitions \u2014 for example, forcing a flag to `100%` rollout with no property conditions. This bypasses feature gate logic for the caller's own evaluation. `detailed_analysis` is correctly gated behind `is_internal_request`, but the override field is wired through unconditionally.\n\n```rust\nlet override_defs = if authentication::is_internal_request(&context) {\n    request.override_flags_definitions.as_ref()\n} else {\n    None\n};\nlet filtered_flags = flags::fetch_and_filter(\n    &flag_service,\n    team.id,\n    &context.meta,\n    &context.headers,\n    request.evaluation_runtime,\n    request.evaluation_contexts.as_ref(),\n    override_defs,\n)\n.await?;\n```\n\nHow can I resolve this? If you propose a fix, please make it concise.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -33,7 +35,8 @@
     "against_commit": "ed38bbc555c8630110e325f9161589c3b835c7e0",
     "body": "Root logger used instead of module logger\nlogging.exception(...) routes to the root logger, bypassing the module-level logger = logging.getLogger(__name__) used throughout this file. The traceback will be lost in structured logging setups that rely on named loggers. Also, passing the exception as an f-string argument to exception() is redundant \u2014 logger.exception already captures the current exception.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                                logging.exception(f\"Failed to serialize flag for override: {e}\")\n          \n          \n            \n                                logger.exception(\"Failed to serialize flag for override\")\n          \n      \n    \n    \n  \n\nPrompt To Fix With AI\nThis is a comment left during a code review.\nPath: posthog/api/feature_flag.py\nLine: 3537\n\nComment:\n**Root logger used instead of module logger**\n\n`logging.exception(...)` routes to the root logger, bypassing the module-level `logger = logging.getLogger(__name__)` used throughout this file. The traceback will be lost in structured logging setups that rely on named loggers. Also, passing the exception as an f-string argument to `exception()` is redundant \u2014 `logger.exception` already captures the current exception.\n\n```suggestion\n                    logger.exception(\"Failed to serialize flag for override\")\n```\n\nHow can I resolve this? If you propose a fix, please make it concise.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/person.py",
@@ -45,7 +48,8 @@
     "against_commit": "ed38bbc555c8630110e325f9161589c3b835c7e0",
     "body": "Debug mode silently returns empty query/rows after removing return_debug_info\nThe return_debug_info parameter was removed from build_person_properties_at_time, so the debug=true path now always sets debug_rows = [] and debug_query = \"\". Any caller relying on the debug endpoint to inspect the ClickHouse query and raw event rows will receive empty fields with no indication that the data is unavailable. Either restore the debug capability (e.g., via a separate function) or return an explicit error/warning when debug=true is requested but debug info cannot be provided.\nPrompt To Fix With AI\nThis is a comment left during a code review.\nPath: posthog/api/person.py\nLine: 1442-1451\n\nComment:\n**Debug mode silently returns empty query/rows after removing `return_debug_info`**\n\nThe `return_debug_info` parameter was removed from `build_person_properties_at_time`, so the `debug=true` path now always sets `debug_rows = []` and `debug_query = \"\"`. Any caller relying on the debug endpoint to inspect the ClickHouse query and raw event rows will receive empty fields with no indication that the data is unavailable. Either restore the debug capability (e.g., via a separate function) or return an explicit error/warning when `debug=true` is requested but debug info cannot be provided.\n\nHow can I resolve this? If you propose a fix, please make it concise.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "bot"
   },
   {
     "path": "rust/feature-flags/src/handler/flags.rs",
@@ -57,7 +61,8 @@
     "against_commit": "ed38bbc555c8630110e325f9161589c3b835c7e0",
     "body": "tracing::info! in the hot override-processing path creates log noise in production\nEach flag override emits multiple info-level log lines including full filter Debug output. This will fire on every internal test_evaluation request and pollute structured logs. Downgrade to tracing::debug! (or trace! for the filters dump).\nPrompt To Fix With AI\nThis is a comment left during a code review.\nPath: rust/feature-flags/src/handler/flags.rs\nLine: 154-171\n\nComment:\n**`tracing::info!` in the hot override-processing path creates log noise in production**\n\nEach flag override emits multiple `info`-level log lines including full filter `Debug` output. This will fire on every internal `test_evaluation` request and pollute structured logs. Downgrade to `tracing::debug!` (or `trace!` for the filters dump).\n\nHow can I resolve this? If you propose a fix, please make it concise.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -69,7 +74,8 @@
     "against_commit": "ed38bbc555c8630110e325f9161589c3b835c7e0",
     "body": "Inline import inside method inconsistent with top-level imports\nperson_existed_at_timestamp is imported inside test_evaluation, but build_person_properties_at_time and get_person_and_distinct_ids_for_identifier from the same module are already imported at the top of the file. Move this import to the top-level block alongside the others.\nPrompt To Fix With AI\nThis is a comment left during a code review.\nPath: posthog/api/feature_flag.py\nLine: 3438\n\nComment:\n**Inline import inside method inconsistent with top-level imports**\n\n`person_existed_at_timestamp` is imported inside `test_evaluation`, but `build_person_properties_at_time` and `get_person_and_distinct_ids_for_identifier` from the same module are already imported at the top of the file. Move this import to the top-level block alongside the others.\n\nHow can I resolve this? If you propose a fix, please make it concise.\n\nNote: If this suggestion doesn't match your team's coding style, reply to this and let me know. I'll remember it for next time!",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "rust/feature-flags/src/handler/mod.rs",
@@ -81,7 +87,8 @@
     "against_commit": "abd144bc0486d16676fe7da43e8fb6eb75b801ab",
     "body": "only_use_override_person_properties unauthenticated on public /flags endpoint\nonly_use_override_person_properties is a new query parameter added to FlagsQueryParams and passed directly to evaluate_for_request without an is_internal_request check, unlike the parallel parameters detailed_analysis and override_flags_definitions which are both gated. Any caller with just a project token (the public SDK token) can send POST /flags?only_use_override_person_properties=true with an empty or attacker-controlled person_properties payload. This causes the evaluator to skip fetching person properties from the database entirely (PersonPropertyState::Skipped), so every DB-stored property value is treated as unset. A flag condition like plan = enterprise fails (bypass for \"is set\"/\"equals\" gates), while conditions like plan IS NOT SET or plan NOT EQUALS blocked spuriously match. Feature flags used as soft access gates on person-property conditions are bypassable by any SDK user. The intended use of this flag is for the internal Python test_evaluation flow which passes the INTERNAL_REQUEST_TOKEN; there is no reason for it to be available to unauthenticated public callers.\n\nPrompt To Fix With AI\nGate `only_use_override_person_properties` behind `is_internal_request` in the same way `detailed_analysis` is gated, so external SDK callers cannot use it:\n\n```rust\nif context.meta.only_use_override_person_properties.unwrap_or(false)\n    && authentication::is_internal_request(&context)\n{\n    Some(true)\n} else {\n    Some(false)\n},\n```\n\nThis matches the existing pattern used for `detailed_analysis` immediately above it.\n\n\n Severity: medium | Confidence: 78% \n\nFixed in 57420df0.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "rust/feature-flags/src/handler/mod.rs",
@@ -93,7 +100,8 @@
     "against_commit": "abd144bc0486d16676fe7da43e8fb6eb75b801ab",
     "body": "only_use_override_person_properties is ungated on the public /flags endpoint\ndetailed_analysis (lines 224\u2013230) and override_flags_definitions (lines 189\u2013193) are both correctly guarded by is_internal_request, but only_use_override_person_properties is passed through unconditionally. Any caller with a valid project token can add ?only_use_override_person_properties=true to a regular /flags request along with arbitrary person_properties in the payload, causing the evaluator to ignore that user's DB properties and instead evaluate all conditions against the caller-supplied values. This is the same family of bypass that was explicitly closed for the other two parameters in this PR.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                            context.meta.only_use_override_person_properties,\n          \n          \n            \n                            if authentication::is_internal_request(&context) {\n          \n          \n            \n                                context.meta.only_use_override_person_properties\n          \n          \n            \n                            } else {\n          \n          \n            \n                                None\n          \n          \n            \n                            },\n          \n      \n    \n    \n  \n\nPrompt To Fix With AI\nThis is a comment left during a code review.\nPath: rust/feature-flags/src/handler/mod.rs\nLine: 231\n\nComment:\n**`only_use_override_person_properties` is ungated on the public `/flags` endpoint**\n\n`detailed_analysis` (lines 224\u2013230) and `override_flags_definitions` (lines 189\u2013193) are both correctly guarded by `is_internal_request`, but `only_use_override_person_properties` is passed through unconditionally. Any caller with a valid project token can add `?only_use_override_person_properties=true` to a regular `/flags` request along with arbitrary `person_properties` in the payload, causing the evaluator to ignore that user's DB properties and instead evaluate all conditions against the caller-supplied values. This is the same family of bypass that was explicitly closed for the other two parameters in this PR.\n\n```suggestion\n                if authentication::is_internal_request(&context) {\n                    context.meta.only_use_override_person_properties\n                } else {\n                    None\n                },\n```\n\nHow can I resolve this? If you propose a fix, please make it concise.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -105,7 +113,8 @@
     "against_commit": "22e2c9a174c024de8398abbf1690c27aa8bf6280",
     "body": "Critical deployment dependency: The test_evaluation endpoint will silently fail to return detailed condition analysis if the INTERNAL_REQUEST_TOKEN environment variable is not set or doesn't match the Rust service configuration.\nThe endpoint passes detailed_analysis=True to the Rust service, but the Rust code (in handler/mod.rs lines 224-230) only honors this flag when is_internal_request() returns true, which requires a matching Authorization header token.\nIf os.getenv(\"INTERNAL_REQUEST_TOKEN\") returns None or an empty string, the request won't be authenticated as internal, and detailed_conditions will be an empty list instead of containing the expected analysis.\n# Fix: Add validation and clear error handling\ninternal_token = os.getenv(\"INTERNAL_REQUEST_TOKEN\")\nif not internal_token:\n    return Response(\n        {\"error\": \"Server misconfiguration: INTERNAL_REQUEST_TOKEN not set\"},\n        status=status.HTTP_500_INTERNAL_SERVER_ERROR\n    )\n\nrust_response = get_flags_from_service(\n    # ... other params ...\n    internal_request_token=internal_token,\n)\nThis ensures the endpoint fails fast with a clear error rather than returning incomplete data.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                        rust_response = get_flags_from_service(\n          \n          \n            \n                            token=team_token,\n          \n          \n            \n                            distinct_id=evaluation_distinct_id,\n          \n          \n            \n                            groups=groups,\n          \n          \n            \n                            detailed_analysis=True,\n          \n          \n            \n                            person_properties=person_properties,\n          \n          \n            \n                            only_use_override_person_properties=timestamp is not None,\n          \n          \n            \n                            flag_keys=[feature_flag.key],\n          \n          \n            \n                            internal_request_token=os.getenv(\"INTERNAL_REQUEST_TOKEN\"),\n          \n          \n            \n                            override_flags_definitions=override_definitions,\n          \n          \n            \n                        )\n          \n          \n            \n            \n          \n          \n            \n                        internal_token = os.getenv(\"INTERNAL_REQUEST_TOKEN\")\n          \n          \n            \n                        if not internal_token:\n          \n          \n            \n                            return Response(\n          \n          \n            \n                                {\"error\": \"Server misconfiguration: INTERNAL_REQUEST_TOKEN not set\"},\n          \n          \n            \n                                status=status.HTTP_500_INTERNAL_SERVER_ERROR,\n          \n          \n            \n                            )\n          \n          \n            \n            \n          \n          \n            \n                        rust_response = get_flags_from_service(\n          \n          \n            \n                            token=team_token,\n          \n          \n            \n                            distinct_id=evaluation_distinct_id,\n          \n          \n            \n                            groups=groups,\n          \n          \n            \n                            detailed_analysis=True,\n          \n          \n            \n                            person_properties=person_properties,\n          \n          \n            \n                            only_use_override_person_properties=timestamp is not None,\n          \n          \n            \n                            flag_keys=[feature_flag.key],\n          \n          \n            \n                            internal_request_token=internal_token,\n          \n          \n            \n                            override_flags_definitions=override_definitions,\n          \n          \n            \n                        )\n          \n          \n            \n            \n          \n      \n    \n    \n  \n\nSpotted by GraphiteIs this helpful? React \ud83d\udc4d or \ud83d\udc4e to let us know.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -117,7 +126,8 @@
     "against_commit": "19727cc83c62f3ada29bd89b7b9b0dc38ed7a2c7",
     "body": "Critical logic bug: When serialization fails during historical evaluation (timestamp provided), override_definitions is set to None and evaluation continues with the CURRENT flag definition instead of the historical one. This silently returns incorrect results to the user.\nexcept Exception as e:\n    # For historical evaluation, serialization failure is critical\n    if timestamp:\n        logger.exception(\"Failed to serialize flag for override\")\n        capture_exception(e)\n        return Response(\n            {\"error\": \"Failed to prepare historical flag definition for evaluation.\"},\n            status=status.HTTP_500_INTERNAL_SERVER_ERROR,\n        )\n    # For current evaluation, can continue without override\n    logger.exception(\"Failed to serialize flag for override\")\n    override_definitions = None\nWhen timestamp is provided, the serialization is required for correct historical evaluation. The exception should cause an error response rather than silently proceeding with incorrect data.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                            except Exception:\n          \n          \n            \n                                # Log the error but continue without override definitions\n          \n          \n            \n                                logger.exception(\"Failed to serialize flag for override\")\n          \n          \n            \n                                override_definitions = None\n          \n          \n            \n            \n          \n          \n            \n                            except Exception as e:\n          \n          \n            \n                                # For historical evaluation, serialization failure is critical\n          \n          \n            \n                                if timestamp:\n          \n          \n            \n                                    logger.exception(\"Failed to serialize flag for override\")\n          \n          \n            \n                                    capture_exception(e)\n          \n          \n            \n                                    return Response(\n          \n          \n            \n                                        {\"error\": \"Failed to prepare historical flag definition for evaluation.\"},\n          \n          \n            \n                                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,\n          \n          \n            \n                                    )\n          \n          \n            \n                                # For current evaluation, can continue without override\n          \n          \n            \n                                logger.exception(\"Failed to serialize flag for override\")\n          \n          \n            \n                                override_definitions = None\n          \n          \n            \n            \n          \n      \n    \n    \n  \n\nSpotted by GraphiteIs this helpful? React \ud83d\udc4d or \ud83d\udc4e to let us know.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -129,7 +139,8 @@
     "against_commit": "d2bf7b66b245048225ca06c41ff0348c204cd27c",
     "body": "Only the first branch (flag_result.get(\"conditions\", [])) matches the Rust FlagDetails contract. The three fallback paths don't fire today. If the Rust shape ever changes (rename, nesting, removal), this chain silently returns [] and callers see a valid-looking response with zero conditions.\nI'd collapse this to the single valid path and log a warning (or return 502) when the expected key is missing. The fallbacks look defensive but they're really just hiding future breakage.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -141,7 +152,8 @@
     "against_commit": "d2bf7b66b245048225ca06c41ff0348c204cd27c",
     "body": "/flags is always called with v=2, which returns the dict shape. These bool, str, and else branches can't fire. The str branch also unconditionally sets reason = \"flag_matched\" for any non-empty string, which would be wrong if it ever did run (e.g. for \"false\" or an error string).\nSuggest collapsing to dict-only handling and logging/502-ing on anything unexpected.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -153,7 +165,8 @@
     "against_commit": "d2bf7b66b245048225ca06c41ff0348c204cd27c",
     "body": "feature_flag:read might be a bit narrow for an endpoint that returns raw person_properties in the response body. A token scoped only to read flags can now fetch any person's property dict through this action.\nTwo reasonable options:\n\nAlso require person:read in required_scopes.\nFilter the returned person_properties to only those keys referenced by the flag's conditions.\n\nOption 2 is probably nicer for the caller and still solves the scope concern.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -165,7 +178,8 @@
     "against_commit": "d2bf7b66b245048225ca06c41ff0348c204cd27c",
     "body": "This endpoint still ships with zero tests. The two silent-fallback issues that got fixed in 7ae382c would both have been caught by small unit tests, which is a good argument for adding them before the next regression can slip in.\nMinimum coverage I'd want before merging:\n\nHappy path (current evaluation) and historical-timestamp path\ndistinct_id + person_id conflict rejected by validator\nPerson not found \u2192 404\nPerson exists but didn't exist at timestamp \u2192 400\nINTERNAL_REQUEST_TOKEN unset \u2192 500 (the new guard)\nmodel_to_dict raise path when timestamp is set \u2192 500 (the new guard)",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "rust/feature-flags/src/handler/mod.rs",
@@ -177,7 +191,8 @@
     "against_commit": "d2bf7b66b245048225ca06c41ff0348c204cd27c",
     "body": "is_internal_request(&context) is called here, then again at lines 225 and 231 in this function, plus once more in billing.rs. Four call sites per /flags request, each re-parsing headers and allocating a Bearer-stripped String.\nThe perf cost is modest but real on the hot path. More importantly, the auth gate semantics now live in four places. Computing it once at the top of process_request_inner and threading the bool (or stashing it on RequestContext) would fix both.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "rust/feature-flags/src/handler/mod.rs",
@@ -189,7 +204,8 @@
     "against_commit": "d2bf7b66b245048225ca06c41ff0348c204cd27c",
     "body": "No integration test covers the \"public request passes override_flags_definitions / only_use_override_person_properties and those fields are dropped\" case. A future refactor could break the gate here without any test catching it.\nWorth adding /flags integration tests with and without the Bearer token, asserting the overrides and detailed_analysis are ignored in the un-authed case.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "rust/feature-flags/src/handler/authentication.rs",
@@ -201,7 +217,8 @@
     "against_commit": "d2bf7b66b245048225ca06c41ff0348c204cd27c",
     "body": "This function gates override_flags_definitions, detailed_analysis, only_use_override_person_properties, and the billing skip, and has six distinct branches (no token configured, blank token configured, missing Authorization header, empty Bearer value, non-matching Bearer, matching Bearer), and none of them are covered by tests.\nA small #[cfg(test)] mod tests hitting each branch would pay for itself immediately given how much behavior now hinges on this boolean.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -213,7 +230,8 @@
     "against_commit": "0447b87f709ff619287fcd16f87e34b0e161fd20",
     "body": "Critical bug: Incorrect response key lookup. The code attempts to extract flags using the key \"flags\", but the Rust service returns flags under the key \"feature_flags\" (as shown in the test mocks at line 8224 and the Rust FlagsResponse structure). This will cause all flag evaluations to return None/False.\n# Current (broken):\nflags = rust_response.get(\"flags\", {})\n\n# Should be:\nflags = rust_response.get(\"feature_flags\", {})\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                        # Extract the flag result from the Rust response\n          \n          \n            \n                        flags = rust_response.get(\"flags\", {})\n          \n          \n            \n                        flag_result = flags.get(feature_flag.key)\n          \n          \n            \n            \n          \n          \n            \n                        # Extract the flag result from the Rust response\n          \n          \n            \n                        flags = rust_response.get(\"feature_flags\", {})\n          \n          \n            \n                        flag_result = flags.get(feature_flag.key)\n          \n          \n            \n            \n          \n      \n    \n    \n  \n\nSpotted by GraphiteIs this helpful? React \ud83d\udc4d or \ud83d\udc4e to let us know.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -225,7 +243,8 @@
     "against_commit": "0447b87f709ff619287fcd16f87e34b0e161fd20",
     "body": "Test assertion mismatch: The test expects response.json()[\"detail\"] but the actual implementation at lines 3441-3447 returns response.json()[\"error\"]. This test will fail.\n# Current (broken):\nself.assertEqual(response.json()[\"detail\"], \"Person not found for distinct_id: nonexistent-user\")\n\n# Should be:\nself.assertEqual(response.json()[\"error\"], \"Person not found for distinct_id: nonexistent-user. Please verify the identifier exists in your PostHog instance.\")\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                    self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)\n          \n          \n            \n                    self.assertEqual(response.json()[\"detail\"], \"Person not found for distinct_id: nonexistent-user\")\n          \n          \n            \n            \n          \n          \n            \n                    self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)\n          \n          \n            \n                    self.assertEqual(response.json()[\"error\"], \"Person not found for distinct_id: nonexistent-user. Please verify the identifier exists in your PostHog instance.\")\n          \n          \n            \n            \n          \n      \n    \n    \n  \n\nSpotted by GraphiteIs this helpful? React \ud83d\udc4d or \ud83d\udc4e to let us know.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -237,7 +256,8 @@
     "against_commit": "0447b87f709ff619287fcd16f87e34b0e161fd20",
     "body": "Test configuration mismatch: The test patches posthog.api.feature_flag.settings.INTERNAL_REQUEST_TOKEN, but the actual implementation at line 3567 uses os.getenv(\"INTERNAL_REQUEST_TOKEN\"). The patch won't affect the code being tested, causing the test to not properly validate the error case.\n# Current (broken):\nwith patch(\"posthog.api.feature_flag.settings.INTERNAL_REQUEST_TOKEN\", None):\n\n# Should be:\nwith patch(\"posthog.api.feature_flag.os.getenv\", return_value=None):\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                    with patch(\"posthog.api.feature_flag.settings.INTERNAL_REQUEST_TOKEN\", None):\n          \n          \n            \n                    with patch(\"posthog.api.feature_flag.os.getenv\", return_value=None):\n          \n      \n    \n    \n  \n\nSpotted by GraphiteIs this helpful? React \ud83d\udc4d or \ud83d\udc4e to let us know.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -249,7 +269,8 @@
     "against_commit": "0447b87f709ff619287fcd16f87e34b0e161fd20",
     "body": "Test assertion error: The test expects a validation error in response.json()[\"non_field_errors\"][0] with the message \"Cannot specify both distinct_id and person_id\", but the actual validation error message at line 1974 is \"Cannot provide both distinct_id and person_id - choose one\". This test will fail due to message mismatch.\n# Current (broken):\nself.assertIn(\"Cannot specify both distinct_id and person_id\", response.json()[\"non_field_errors\"][0])\n\n# Should be:\nself.assertIn(\"Cannot provide both distinct_id and person_id\", response.json()[\"non_field_errors\"][0])\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)\n          \n          \n            \n                    self.assertIn(\"Cannot specify both distinct_id and person_id\", response.json()[\"non_field_errors\"][0])\n          \n          \n            \n            \n          \n          \n            \n                    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)\n          \n          \n            \n                    self.assertIn(\"Cannot provide both distinct_id and person_id\", response.json()[\"non_field_errors\"][0])\n          \n          \n            \n            \n          \n      \n    \n    \n  \n\nSpotted by GraphiteIs this helpful? React \ud83d\udc4d or \ud83d\udc4e to let us know.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -261,7 +282,8 @@
     "against_commit": "786c187cd087619d83c9973ec1f445d3c441e6df",
     "body": "This test patches build_person_properties_at_time but the actual implementation (line 3456 in feature_flag.py) calls person_existed_at_timestamp first to check existence. The test needs to mock person_existed_at_timestamp to return False to properly test this error path.\n@patch(\"posthog.api.feature_flag.person_existed_at_timestamp\", return_value=False)\ndef test_test_evaluation_person_didnt_exist_at_timestamp(self, mock_person_existed):\n    # Test implementation\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                def test_test_evaluation_person_didnt_exist_at_timestamp(self, mock_build_props):\n          \n          \n            \n                    \"\"\"Test 400 when person didn't exist at specified timestamp.\"\"\"\n          \n          \n            \n                    flag = FeatureFlag.objects.create(team=self.team, key=\"test-flag\")\n          \n          \n            \n                    Person.objects.create(team=self.team, distinct_ids=[\"test-user\"])\n          \n          \n            \n            \n          \n          \n            \n                    # Mock that person didn't exist at timestamp\n          \n          \n            \n                    mock_build_props.return_value = {}\n          \n          \n            \n            \n          \n          \n            \n                    response = self.client.post(\n          \n          \n            \n                        f\"/api/projects/{self.team.pk}/feature_flags/{flag.id}/test_evaluation/\",\n          \n          \n            \n                        {\"distinct_id\": \"test-user\", \"timestamp\": \"2020-01-01T00:00:00Z\"},\n          \n          \n            \n                        format=\"json\",\n          \n          \n            \n                    )\n          \n          \n            \n            \n          \n          \n            \n                    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)\n          \n          \n            \n                    self.assertIn(\"Person did not exist at the specified timestamp\", response.json()[\"error\"])\n          \n          \n            \n            \n          \n          \n            \n                @patch(\"posthog.api.feature_flag.person_existed_at_timestamp\", return_value=False)\n          \n          \n            \n                def test_test_evaluation_person_didnt_exist_at_timestamp(self, mock_person_existed):\n          \n          \n            \n                    \"\"\"Test 400 when person didn't exist at specified timestamp.\"\"\"\n          \n          \n            \n                    flag = FeatureFlag.objects.create(team=self.team, key=\"test-flag\")\n          \n          \n            \n                    Person.objects.create(team=self.team, distinct_ids=[\"test-user\"])\n          \n          \n            \n            \n          \n          \n            \n                    response = self.client.post(\n          \n          \n            \n                        f\"/api/projects/{self.team.pk}/feature_flags/{flag.id}/test_evaluation/\",\n          \n          \n            \n                        {\"distinct_id\": \"test-user\", \"timestamp\": \"2020-01-01T00:00:00Z\"},\n          \n          \n            \n                        format=\"json\",\n          \n          \n            \n                    )\n          \n          \n            \n            \n          \n          \n            \n                    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)\n          \n          \n            \n                    self.assertIn(\"Person did not exist at the specified timestamp\", response.json()[\"error\"])\n          \n          \n            \n            \n          \n      \n    \n    \n  \n\nSpotted by GraphiteIs this helpful? React \ud83d\udc4d or \ud83d\udc4e to let us know.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -273,7 +295,8 @@
     "against_commit": "0061089943a14ec86b93dd2c9f6f61491d26d8fd",
     "body": "The URL is missing the flag ID in the path. The test_evaluation endpoint is defined as a detail action (detail=True at line 3409), which requires the flag ID in the URL path.\nCurrent (incorrect):\nf\"/api/projects/{self.team.id}/feature_flags/test_evaluation/\"\nShould be:\nf\"/api/projects/{self.team.id}/feature_flags/{flag.id}/test_evaluation/\"\nThis will result in a 404 error when the test runs, since the URL pattern expects /feature_flags/{flag_id}/test_evaluation/ not /feature_flags/test_evaluation/.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                    response = self.client.post(\n          \n          \n            \n                        f\"/api/projects/{self.team.id}/feature_flags/test_evaluation/\",\n          \n          \n            \n                        data={\"flag_key\": \"test-flag\"},\n          \n          \n            \n                        format=\"json\",\n          \n          \n            \n                    )\n          \n          \n            \n            \n          \n          \n            \n                    response = self.client.post(\n          \n          \n            \n                        f\"/api/projects/{self.team.id}/feature_flags/{flag.id}/test_evaluation/\",\n          \n          \n            \n                        data={\"flag_key\": \"test-flag\"},\n          \n          \n            \n                        format=\"json\",\n          \n          \n            \n                    )\n          \n          \n            \n            \n          \n      \n    \n    \n  \n\nSpotted by GraphiteIs this helpful? React \ud83d\udc4d or \ud83d\udc4e to let us know.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "bot"
   },
   {
     "path": "posthog/models/person/point_in_time_properties.py",
@@ -285,7 +308,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "get_person_and_distinct_ids_for_identifier wraps the main logic in try/except Exception: raise, which is a no-op and can be removed to simplify control flow. If you intended to add context to exceptions, consider re-raising with a more specific error type/message; otherwise dropping the try/except will keep behavior identical and clearer.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "rust/feature-flags/src/api/types.rs",
@@ -297,7 +321,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "ConditionAnalysis.matched is populated with all_properties_matched, but the API schema/docs describe this field as \u201cwhether this condition was the one that matched\u201d (i.e., the winning/evaluated condition). As written, multiple conditions can end up with matched=true even if they were not the winning condition, which will confuse the UI/consumers. Consider setting matched to the computed condition_matched (winning condition) and, if needed, add a separate field for all_properties_matched/properties_matched.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                            matched: all_properties_matched,\n          \n          \n            \n                            matched: condition_matched,",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "rust/feature-flags/src/api/types.rs",
@@ -309,7 +334,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "rollout_excluded detection currently only flags exclusions when rollout_percentage == 0.0 (is_zero_rollout). Users can be excluded by any rollout percentage < 100, so this will under-report exclusions and produce incorrect explanations. Consider basing rollout_excluded on (flag_match.reason == OutOfRolloutBound) for the relevant condition_index, independent of whether rollout is exactly 0%.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                        // Determine if this specific condition was the one that got excluded by rollout\n          \n          \n            \n                        let this_condition_rollout_excluded = if properties_matched_but_rollout_failed {\n          \n          \n            \n                            // If overall reason is OutOfRolloutBound, check if this condition has matching index\n          \n          \n            \n                            if let Some(match_condition_index) = flag_match.condition_index {\n          \n          \n            \n                                // This condition was the one that matched properties but failed rollout\n          \n          \n            \n                                index == match_condition_index && is_zero_rollout\n          \n          \n            \n                            } else {\n          \n          \n            \n                                // No specific condition index, so could be this one if it has zero rollout\n          \n          \n            \n                                is_zero_rollout && all_properties_matched\n          \n          \n            \n                            }\n          \n          \n            \n                        } else {\n          \n          \n            \n                            // Overall reason is not OutOfRolloutBound, so use simple zero rollout check\n          \n          \n            \n                            is_zero_rollout && all_properties_matched\n          \n          \n            \n                        // Determine if this specific condition was the one that got excluded by rollout.\n          \n          \n            \n                        // This should be based on the match reason/condition index rather than whether\n          \n          \n            \n                        // rollout is exactly 0%, since any rollout percentage below 100% can exclude a user.\n          \n          \n            \n                        let this_condition_rollout_excluded = if properties_matched_but_rollout_failed {\n          \n          \n            \n                            if let Some(match_condition_index) = flag_match.condition_index {\n          \n          \n            \n                                // This condition was the one that matched properties but failed rollout\n          \n          \n            \n                                index == match_condition_index\n          \n          \n            \n                            } else {\n          \n          \n            \n                                // No specific condition index available; fall back to whether this\n          \n          \n            \n                                // condition's properties matched.\n          \n          \n            \n                                all_properties_matched\n          \n          \n            \n                            }\n          \n          \n            \n                        } else {\n          \n          \n            \n                            false",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "rust/feature-flags/src/handler/authentication.rs",
@@ -321,7 +347,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "The unit tests here don\u2019t exercise is_internal_request at all\u2014they reimplement the logic in test_is_internal_request with a custom context type. This risks tests passing while the real implementation breaks (e.g., due to RequestContext changes or header parsing differences). Consider refactoring is_internal_request to a small pure helper (e.g., is_internal_request_with_token(internal_token: Option<&str>, headers: &HeaderMap)) and test that directly, or construct a real RequestContext in tests and call super::is_internal_request.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "rust/feature-flags/src/handler/flags.rs",
@@ -333,7 +360,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "When applying override_flags_definitions, the code replaces the entire FeatureFlag struct (*flag = override_flag) without validating that the override\u2019s key, id, and team_id match the flag being overridden. A malformed override could silently change identity fields and cause downstream mismatches (e.g., response map keys vs requested key, or cross-team IDs). Consider validating these identity fields (or forcibly preserving them from the original flag) before assignment, and returning an error for invalid overrides.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                                Ok(override_flag) => {\n          \n          \n            \n                                    tracing::trace!(\n          \n          \n            \n                                        \"Successfully parsed override flag: {}, new filters: {:?}\",\n          \n          \n            \n                                        flag_key,\n          \n          \n            \n                                        override_flag.filters\n          \n          \n            \n                                    );\n          \n          \n            \n                                Ok(mut override_flag) => {\n          \n          \n            \n                                    tracing::trace!(\n          \n          \n            \n                                        \"Successfully parsed override flag: {}, new filters: {:?}\",\n          \n          \n            \n                                        flag_key,\n          \n          \n            \n                                        override_flag.filters\n          \n          \n            \n                                    );\n          \n          \n            \n            \n          \n          \n            \n                                    let original_key = flag.key.clone();\n          \n          \n            \n                                    let original_id = flag.id;\n          \n          \n            \n                                    let original_team_id = flag.team_id;\n          \n          \n            \n            \n          \n          \n            \n                                    if override_flag.key != original_key\n          \n          \n            \n                                        || override_flag.id != original_id\n          \n          \n            \n                                        || override_flag.team_id != original_team_id\n          \n          \n            \n                                    {\n          \n          \n            \n                                        tracing::warn!(\n          \n          \n            \n                                            \"Override definition for flag {} attempted to change identity fields (override key: {}, id: {}, team_id: {}; original key: {}, id: {}, team_id: {}); preserving original identity\",\n          \n          \n            \n                                            flag_key,\n          \n          \n            \n                                            override_flag.key,\n          \n          \n            \n                                            override_flag.id,\n          \n          \n            \n                                            override_flag.team_id,\n          \n          \n            \n                                            original_key,\n          \n          \n            \n                                            original_id,\n          \n          \n            \n                                            original_team_id\n          \n          \n            \n                                        );\n          \n          \n            \n                                    }\n          \n          \n            \n            \n          \n          \n            \n                                    override_flag.key = original_key;\n          \n          \n            \n                                    override_flag.id = original_id;\n          \n          \n            \n                                    override_flag.team_id = original_team_id;",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -345,7 +373,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "For historical evaluation (timestamp provided), the response filters person_properties using the current feature_flag definition rather than evaluation_flag (the reconstructed historical flag). If the flag\u2019s person-property conditions changed over time, this can omit relevant properties or include the wrong set. Consider filtering against evaluation_flag so the returned person_properties matches the evaluated flag definition.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                            \"person_properties\": _filter_person_properties_for_flag(feature_flag, person_properties),\n          \n          \n            \n                            \"person_properties\": _filter_person_properties_for_flag(evaluation_flag, person_properties),",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -357,7 +386,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "This test includes ad-hoc logging (logger.info(...)) that doesn\u2019t assert anything and can add noise to test output. Consider removing these log statements and relying on assertions/mocks for test diagnostics.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "bot"
   },
   {
     "path": "rust/feature-flags/src/handler/authentication.rs",
@@ -369,7 +399,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "blocking: test_is_internal_request looks like a mock helper but it's a line-for-line copy of the production is_internal_request defined above. Every #[test] in this module asserts against the copy, not the real function. If someone changes the real function (flips a condition, adds case-insensitive matching, changes trim semantics), the tests here stay green while production behavior silently diverges.\nThe fix is to let the tests call the real function. Extract the pure logic into an inner function that takes its inputs directly, make the public function a thin wrapper, and delete test_is_internal_request:\npub fn is_internal_request(context: &RequestContext) -> bool {\n    is_internal_request_inner(\n        context.state.config.internal_request_token.as_deref(),\n        &context.headers,\n    )\n}\n\nfn is_internal_request_inner(internal_token: Option<&str>, headers: &HeaderMap) -> bool {\n    let Some(internal_token) = internal_token else { return false; };\n    if internal_token.trim().is_empty() { return false; }\n    match crate::api::auth::extract_bearer_token(headers) {\n        Some(t) => !t.trim().is_empty() && t == internal_token,\n        None => false,\n    }\n}\nThen the #[test] bodies call is_internal_request_inner(Some(\"secret\"), &headers) directly, and a real refactor of the production function gets caught.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -381,7 +412,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "blocking: When timestamp is set, person_properties was built from historical state and evaluated against evaluation_flag (the reconstructed historical flag). The filter here is using feature_flag (current). If the flag's property references changed between timestamp and now, properties that actually drove evaluation can be stripped from the response, misrepresenting what happened.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                            \"person_properties\": _filter_person_properties_for_flag(feature_flag, person_properties),\n          \n          \n            \n                            \"person_properties\": _filter_person_properties_for_flag(evaluation_flag, person_properties),\n          \n      \n    \n    \n  \n\nevaluation_flag == feature_flag when no timestamp is set, so this is safe on both paths.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -393,7 +425,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "blocking: build_person_properties_at_time has no lower time bound and no row cap. For any person with an active account and years of events, the query at point_in_time_properties.py:143-176 scans every $set/$set_once/JSONHas(properties, '$set') match from -infinity to timestamp, ships the full properties blob via toJSONString, and Python double-parses it (json.loads(json.loads(...))).\ntest_evaluation has no throttle_classes, so any feature_flag:read token can point this at a high-activity person to DoS ClickHouse.\nFix at the query level in point_in_time_properties.py:\nfrom datetime import timedelta\nlower_bound = max(timestamp - timedelta(days=365 * 2), flag.created_at or (timestamp - timedelta(days=365 * 2)))\n\nquery = \"\"\"\nSELECT\n    JSONExtractString(properties, '$set') as set_json,\n    JSONExtractString(properties, '$set_once') as set_once_json,\n    event\nFROM events\nWHERE team_id = %(team_id)s\n    AND distinct_id IN %(distinct_ids)s\n    AND timestamp >= %(lower_bound)s\n    AND timestamp <= %(timestamp)s\n    AND (event IN ('$set', '$set_once') OR JSONHas(properties, '$set'))\nORDER BY timestamp ASC\nLIMIT 100000\n\"\"\"\nParse set_json/set_once_json with a single json.loads to kill the double-parse. Expected 10-100x reduction in bytes shipped.\nAlso: person_existed_at_timestamp a few lines up is a redundant round trip. If the property query returns zero rows, non-existence is implied. Fold them into one call.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/person.py",
@@ -405,7 +438,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "blocking: Looks like unrelated scope creep. On master, ?debug=true with DEBUG=True returned debug info alongside properties. This PR removed return_debug_info from build_person_properties_at_time and rewrote this branch to a hardcoded 400, but the debug_rows/debug_query/debug_params locals are still declared a few lines above and still referenced later (around lines 1485-1488), all empty. The debug query param is still documented (line 1349) and still parsed (line 1387).\nPick one:\n\nRevert this person.py change and restore return_debug_info on build_person_properties_at_time. Keep the build_person_properties_at_time changes minimal to what test_evaluation actually needs.\nIf debug mode was deliberately retired, delete the full debug branch: the serializer field (line 366), the query param registration (line 1349), the parsing (line 1387), and the dead locals. Returning a 400 for a documented parameter is worse than removing it outright.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -417,7 +451,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "suggestion: not detailed_conditions fires both when conditions is missing AND when it's present but empty. test_test_evaluation_with_timestamp passes \"conditions\": [] in the mock, so every test run emits this warning. Production flags that legitimately evaluate to zero matching conditions will also log it. That's the kind of warning operators learn to ignore.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                                if not detailed_conditions:\n          \n          \n            \n                                if \"conditions\" not in flag_result:\n          \n          \n            \n                                    logger.warning(\n          \n          \n            \n                                        \"Missing 'conditions' key in flag evaluation response\",\n          \n          \n            \n                                        extra={\"flag_key\": feature_flag.key, \"response_keys\": list(flag_result.keys())},\n          \n          \n            \n                                    )\n          \n          \n            \n                                detailed_conditions = flag_result.get(\"conditions\", [])",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -429,7 +464,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "suggestion: distinct_ids[0] isn't a stable selection when the caller passes person_id. The order of distinct_ids comes from either proto_person_to_model or the ORM distinct_ids property, neither of which guarantees stable ordering. Rollout bucketing and variant assignment are distinct-id-sensitive, so two calls with the same person_id can return different results for the same flag.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                    evaluation_distinct_id = distinct_id if distinct_id and distinct_id in distinct_ids else distinct_ids[0]\n          \n          \n            \n                    evaluation_distinct_id = (\n          \n          \n            \n                        distinct_id if distinct_id and distinct_id in distinct_ids\n          \n          \n            \n                        else sorted(distinct_ids)[0]\n          \n          \n            \n                    )\n          \n      \n    \n    \n  \n\nOr include the chosen distinct_id in the response so the caller can tell which was used.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "rust/feature-flags/src/handler/authentication.rs",
@@ -441,7 +477,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "suggestion: Two issues on this line.\n\n\nWhitespace asymmetry. Python sends f\"Bearer {internal_request_token}\" without stripping. extract_bearer_token trims the incoming value, but *internal_token (the configured value) isn't trimmed. If INTERNAL_REQUEST_TOKEN is set with a trailing newline (very common for K8s secret mounts and CI-generated env files), comparison fails silently and the request is treated as non-internal, dropping all the override params with only a log warning.\n\n\nByte-by-byte == short-circuits on the first mismatching byte, enabling a theoretical timing attack if the Rust /flags endpoint is ever reachable from an untrusted network. The subtle crate is already in the workspace.\n\n\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                    !auth_token.trim().is_empty() && auth_token == *internal_token\n          \n          \n            \n                    use subtle::ConstantTimeEq;\n          \n          \n            \n                    !auth_token.trim().is_empty()\n          \n          \n            \n                        && auth_token.as_bytes().ct_eq(internal_token.trim().as_bytes()).into()\n          \n      \n    \n    \n  \n\nThe trim() on internal_token fixes issue 1; ct_eq fixes issue 2.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/models/person/point_in_time_properties.py",
@@ -453,7 +490,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "suggestion: distinct_ids is defined as an @property on Person (posthog/models/person/person.py:209-210), so hasattr(person, \"distinct_ids\") is always true. The else branch is dead code.\nIf the intent was to distinguish personhog-hydrated persons from ORM-only, this check doesn't work. Either use an explicit sentinel attribute set by the personhog path, or just call person.distinct_ids directly and delete the fallback.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/models/person/point_in_time_properties.py",
@@ -465,7 +503,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "suggestion: try: \u2026 except Exception: raise catches and rethrows without transformation. It's a no-op. The import-inside-try shape hints this was meant to wrap errors (an earlier version of this file had raise Exception(f\"Failed to query person distinct_ids: {str(e)}\") from e).\nEither delete the try/except entirely, or restore the wrapping with a specific exception type if transformation was the intent.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -477,7 +516,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "nit: The import logging, logger = logging.getLogger(__name__), and six logger.info(...) calls in this test (this line plus 12479, 12486, 12489, 12503, 12511, 12526) look like debugging scaffolding left over from one of the 13 follow-up commits. They don't assert anything and add noise to CI logs. Worth deleting.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "rust/feature-flags/src/handler/mod.rs",
@@ -489,7 +529,8 @@
     "against_commit": "1a95c96b92a219bfe125ee05848650b34caf573e",
     "body": "nit: Both branches return Some, so the Option<bool> shape at the callee (handler/flags.rs:337) is meaningless for this caller.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                            if context.meta.detailed_analysis.unwrap_or(false) && is_internal {\n          \n          \n            \n                            Some(is_internal && context.meta.detailed_analysis.unwrap_or(false)),\n          \n      \n    \n    \n  \n\nOr change the callee to take a plain bool since the nullability isn't being used.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/models/person/point_in_time_properties.py",
@@ -501,7 +542,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "blocking: ClickHouse doesn't preserve sub-query order through UNION ALL. The ORDER BY timestamp ASC lives inside the inner property sub-select, but the planner is free to interleave UNION-ALL branches in parallel, so the rows the Python loop iterates may not be chronological.\nThe loop downstream depends on chronological order: person_properties.update(set_properties) is last-write-wins, and $set_once is first-write-wins. Two $set events touching the same key can resolve to either value, non-deterministically.\nThe mock-based unit tests don't catch this because they hand-feed rows in a fixed order, and the integration test file now mocks sync_execute too (so nothing exercises the real query ordering).\nFix: project the timestamp out of the property sub-select and add a top-level ORDER BY:\nquery = f\"\"\"\nSELECT kind, set_json, set_once_json, event_name, ts FROM (\n    SELECT 1 AS kind,\n           JSONExtractRaw(properties, '$set') AS set_json,\n           JSONExtractRaw(properties, '$set_once') AS set_once_json,\n           event AS event_name,\n           timestamp AS ts\n    FROM events\n    WHERE team_id = %(team_id)s AND distinct_id IN %(distinct_ids)s\n        AND timestamp >= %(lower_bound)s AND timestamp <= %(upper_bound)s\n        AND ({event_filter})\n    ORDER BY timestamp ASC LIMIT {int(row_limit)}\n)\nUNION ALL\nSELECT kind, set_json, set_once_json, event_name, ts FROM (\n    SELECT 0 AS kind, '' AS set_json, '' AS set_once_json, '' AS event_name, toDateTime(0) AS ts\n    FROM events\n    WHERE team_id = %(team_id)s AND distinct_id IN %(distinct_ids)s\n        AND timestamp <= %(upper_bound)s LIMIT 1\n)\nORDER BY kind ASC, ts ASC\n\"\"\"\nThen unpack kind, set_json, set_once_json, event_name, _ts = row in the loop. Existence rows have kind=0 so they sort first; the ts placeholder for the existence row doesn't matter once it's been consumed.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/models/person/test/test_point_in_time_properties_integration.py",
@@ -513,7 +555,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "blocking: This file is named *_integration.py and the docstring still says \"These tests demonstrate the functionality but require ClickHouse to be available\", but every test now @patch(\"\u2026sync_execute\") and the class switched from TestCase to SimpleTestCase. Net change: +60/-123, with the deleted lines being exactly the ones that drove a real query.\nThat means the new UNION ALL query string is never executed against ClickHouse. A typo in the SQL, a column-order swap between sub-selects, or the ORDER BY issue I flagged in point_in_time_properties.py all pass the suite.\nEither rename the file (so nobody trusts it as an integration boundary), or add a real ClickhouseTestMixin-backed test that inserts a few $set/$set_once events, calls build_person_properties_at_time with a real lower_bound, and asserts the returned (properties, existed) tuple. A row-limit boundary (insert row_limit + 1 events, expect truncation) is worth a separate case.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -525,7 +568,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "blocking: When timestamp is set, the in-memory FeatureFlag(...) a few lines above only copies name, active, deleted, version, filters from reconstructed_flag_data. Fields like bucketing_identifier, evaluation_runtime, ensure_experience_continuity, and evaluation_tags fall back to model defaults. Then model_to_dict(evaluation_flag, exclude=[...]) ships those defaults as the override payload.\nRust reads bucketing_identifier for rollout decisions (get_bucketing_identifier()). If a flag's bucketing_identifier was changed from device_id to distinct_id (or vice versa) after the requested timestamp, the historical evaluation returns the wrong rollout decision. Same problem for runtime/tag/continuity changes.\nFix: build the override payload directly from reconstructed_flag_data instead of round-tripping through an in-memory model. The function already returns every reconstructable field, which is the whole point.\nflag_dict = {\n    **reconstructed_flag_data,\n    \"id\": feature_flag.id,\n    \"key\": feature_flag.key,\n    \"team_id\": feature_flag.team_id,\n    \"created_at\": feature_flag.created_at.isoformat() if feature_flag.created_at else None,\n}\n# Drop reconstruction metadata Rust doesn't need.\nfor k in (\"is_historical\", \"version_timestamp\", \"modified_by\", \"created_by\"):\n    flag_dict.pop(k, None)\noverride_definitions = {feature_flag.key: flag_dict}\nThat also lets you delete the in-memory FeatureFlag(...) construction; you only need evaluation_flag for _filter_person_properties_for_flag, which only reads filters.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "rust/feature-flags/src/api/types.rs",
@@ -537,7 +581,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "blocking: The Python serializer documents matched as \"Whether this condition was the one that matched\", but here it's set to all_properties_matched, with explanations like \"Condition X matched properties but was not evaluated due to an earlier condition matching\". So a non-winning condition whose properties happen to all match returns matched=true.\nA caller using the documented contract to find the winning condition (next(c for c in conds if c.matched)) gets the wrong condition any time multiple conditions' properties match.\nPick one and align both sides:\n\nChange the field to mean \"this condition won\": matched: condition_matched && !this_condition_rollout_excluded, and add a separate properties_matched: bool for the broader signal.\nKeep the current behavior and change the Python help_text to \"Whether this condition's properties matched (regardless of whether this condition was the winner)\".\n\nThe first option is the more useful field for callers; the second is the smaller change.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "rust/feature-flags/src/handler/flags.rs",
@@ -549,7 +594,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "blocking: serde_json::from_value::<FeatureFlag>(override_def.clone()) parses the entire flag struct, including id and team_id, and then *flag = override_flag replaces it wholesale. The override is keyed by flag_key only, so a caller can submit override_flags_definitions = {\"my-flag\": {\"id\": 999, \"team_id\": 999, ...}} and the runtime evaluates against team 999's id space. Downstream rollout bucketing, cohort lookup, and the canonical log all read from the swapped struct.\nINTERNAL_REQUEST_TOKEN gating limits exposure today (only test_evaluation calls this), but Copilot already flagged this on the PR and the assertion is cheap. Better to land it now before this endpoint grows other callers.\nmatch serde_json::from_value::<FeatureFlag>(override_def.clone()) {\n    Ok(override_flag) => {\n        if override_flag.key != *flag_key\n            || override_flag.id != flag.id\n            || override_flag.team_id != flag.team_id\n        {\n            tracing::warn!(\n                \"Override identity mismatch for {}: skipping (override id={}, team_id={})\",\n                flag_key, override_flag.id, override_flag.team_id\n            );\n            continue;\n        }\n        *flag = override_flag;\n        overridden_keys.push(flag_key.clone());\n    }\n    ...\nThe legitimate Python caller already sets flag_dict[\"team_id\"] = evaluation_flag.team_id and model_to_dict carries id, so this is a no-op for current callers.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "rust/feature-flags/src/handler/authentication.rs",
@@ -561,7 +607,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "suggestion: Commit 3328794 trimmed the configured internal token, which closes half of the prior whitespace asymmetry. But the comparison still uses the un-trimmed wire token: the empty-check on this line trims auth_token, but ct_eq two lines down doesn't.\nIf the Python sender's INTERNAL_REQUEST_TOKEN env var has trailing whitespace (very common for K8s secret mounts and CI-generated env files), f\"Bearer {token}\" ships e.g. \"Bearer secret\\n\". extract_bearer_token returns secret\\n (10 bytes). The configured internal_token was already trimmed to secret (6 bytes). ct_eq fails on length mismatch, request silently treated as non-internal, overrides dropped, response is 200 with empty conditions and a useless warning. Same failure mode the prior fix tried to close.\nTrim symmetrically (and bind once for clarity):\nSome(auth_token) => {\n    let auth_token = auth_token.trim();\n    !auth_token.is_empty()\n        && auth_token.as_bytes().ct_eq(internal_token.as_bytes()).into()\n}\n(And/or strip Python-side at the source: (os.getenv(\"INTERNAL_REQUEST_TOKEN\") or \"\").strip(). Doing both is fine; trimming Rust-side is the safer of the two since it's defensive against any caller.)",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -573,7 +620,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "suggestion: When the Rust auth gate rejects the token (typo, K8s rotation race, the trim asymmetry I flagged in authentication.rs), Rust drops override_flags_definitions and only_use_override_person_properties and evaluates the flag against current PG state. Response is 200 OK. This warning fires, but the code below keeps populating result/reason/condition_index from the current-state evaluation, while the API consumer believes they got historical evaluation.\nFor an endpoint named \"test evaluation\" served from internal infra, that silent semantic corruption is the worst failure mode. When timestamp is set and the response lacks conditions, fail loudly:\nif timestamp and \"conditions\" not in flag_result:\n    logger.error(\n        \"Historical evaluation returned no conditions; INTERNAL_REQUEST_TOKEN may be misconfigured\",\n        extra={\"flag_key\": feature_flag.key, \"response_keys\": list(flag_result.keys())},\n    )\n    return Response(\n        {\"error\": \"Historical evaluation unavailable. Check service configuration.\"},\n        status=status.HTTP_502_BAD_GATEWAY,\n    )\nif \"conditions\" not in flag_result:\n    logger.warning(\n        \"Missing 'conditions' key in flag evaluation response\",\n        extra={\"flag_key\": feature_flag.key, \"response_keys\": list(flag_result.keys())},\n    )\nStronger version: have the Rust handler return 401/403 when override_flags_definitions or detailed_analysis=true is requested without a valid token, so misconfiguration surfaces as a hard failure on the wire.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/models/person/point_in_time_properties.py",
@@ -585,7 +633,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "suggestion: The existence probe scans timestamp <= upper_bound with no lower_bound. ClickHouse will prune partitions past upper_bound, but the planner still has to walk every partition between -infinity and upper_bound looking for one matching row. For a brand-new distinct_id with no events anywhere, this is a worst-case scan of every retention partition before deciding \"no match\", which is exactly the case where the endpoint returns 400 \"Person did not exist\".\nBound the probe to the same [lower_bound, upper_bound] window. Semantics shift from \"person ever existed\" to \"person existed in the scanned window\", which is consistent with the rest of the function (the caller already accepts lower_bound as a 2-year ceiling on history):\nSELECT kind, set_json, set_once_json, event_name FROM (\n    SELECT 0 AS kind, '' AS set_json, '' AS set_once_json, '' AS event_name\n    FROM events\n    WHERE team_id = %(team_id)s\n        AND distinct_id IN %(distinct_ids)s\n        AND timestamp >= %(lower_bound)s\n        AND timestamp <= %(upper_bound)s\n    LIMIT 1\n)\nAlternative if \"existed before lower_bound\" matters: drop the probe and use Person.objects.filter(...).exists() for existence (Postgres). get_person_and_distinct_ids_for_identifier already proves the Postgres row exists, so the probe is really asking \"did the person have events in the window\", which the property query itself answers via row count.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -597,7 +646,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "suggestion: Still walks flag.filters.get(\"groups\", []) only. Flags can also reference person properties via super_groups (early access gating) and multivariate.override_property_values, and those properties drive evaluation but get stripped from the response. Cohort-typed conditions reference person properties indirectly through the cohort definition; resolving that here would need a second query.\nSame finding as last review (S1). Re-flagging because it's the kind of thing better landed in this PR than as a follow-up.\ndef _filter_person_properties_for_flag(flag: FeatureFlag, person_properties: dict[str, Any]) -> dict[str, Any]:\n    \"\"\"\n    Filter person_properties to only include keys referenced by the flag's conditions.\n\n    Pass the flag whose conditions actually drove evaluation. For historical\n    (timestamp-based) evaluations that means the *reconstructed* flag, not the live\n    record: otherwise the response can leak property values that weren't relevant\n    at the requested point in time.\n\n    NOTE: cohort-typed conditions reference person properties indirectly via the\n    cohort definition. This helper does not resolve that, so flags whose only\n    conditions are cohorts will return an empty person_properties block.\n    \"\"\"\n    referenced_keys: set[str] = set()\n    for section in (\"groups\", \"super_groups\"):\n        for group in flag.filters.get(section, []) or []:\n            for prop in group.get(\"properties\", []) or []:\n                if prop.get(\"type\") == \"person\" and prop.get(\"key\"):\n                    referenced_keys.add(prop[\"key\"])\n    for override in (flag.filters.get(\"multivariate\", {}) or {}).get(\"override_property_values\", []) or []:\n        if override.get(\"type\") == \"person\" and override.get(\"key\"):\n            referenced_keys.add(override[\"key\"])\n    return {k: v for k, v in person_properties.items() if k in referenced_keys}",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -609,7 +659,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "suggestion: test_test_evaluation_with_timestamp is now a smoke test. The cleanup that removed the logger.info breadcrumbs (good) also took the assertions with it, so the test only checks status_code == 200 and mock_build_props.assert_called_once(). It doesn't verify only_use_override_person_properties=True, doesn't verify override_flags_definitions={...} was sent, and doesn't verify the historical person_properties actually drove evaluation. The whole point of the timestamp branch is now untested.\nself.assertEqual(response.status_code, status.HTTP_200_OK)\nmock_build_props.assert_called_once()\n\n_, get_flags_kwargs = mock_get_flags.call_args\nself.assertTrue(get_flags_kwargs[\"only_use_override_person_properties\"])\nself.assertIn(\"test-flag\", get_flags_kwargs[\"override_flags_definitions\"])\nself.assertEqual(get_flags_kwargs[\"person_properties\"], {\"email\": \"historical@example.com\"})\n\n_, build_kwargs = mock_build_props.call_args\nself.assertIn(\"lower_bound\", build_kwargs)",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -621,7 +672,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "suggestion: No test asserts evaluation_distinct_id. The field is the documented bucketing identifier and the resolution rule (caller-provided distinct_id if it resolves to the person, else sorted(distinct_ids)[0]) is the kind of thing a regression breaks silently: switch sorted(distinct_ids)[0] to next(iter(distinct_ids)) and the suite still passes, but rollout buckets quietly change.\nAdd self.assertEqual(data[\"evaluation_distinct_id\"], \"test-user\") here, and a dedicated test for the person_id path with multiple distinct_ids:\n@patch(\"posthog.api.feature_flag.get_flags_from_service\")\n@patch.dict(os.environ, {\"INTERNAL_REQUEST_TOKEN\": \"test-token\"})\ndef test_test_evaluation_with_person_id_uses_smallest_distinct_id(self, mock_get_flags):\n    flag = FeatureFlag.objects.create(team=self.team, key=\"test-flag\")\n    person = Person.objects.create(team=self.team, distinct_ids=[\"zzz\", \"aaa\", \"mmm\"])\n    mock_get_flags.return_value = {\"flags\": {\"test-flag\": {\n        \"enabled\": False, \"variant\": None,\n        \"reason\": {\"code\": \"no_match\"}, \"metadata\": {}, \"conditions\": [],\n    }}}\n    response = self.client.post(\n        f\"/api/projects/{self.team.pk}/feature_flags/{flag.id}/test_evaluation/\",\n        {\"person_id\": str(person.uuid)}, format=\"json\",\n    )\n    self.assertEqual(response.json()[\"evaluation_distinct_id\"], \"aaa\")\n    self.assertEqual(mock_get_flags.call_args.kwargs[\"distinct_id\"], \"aaa\")",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -633,7 +685,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "suggestion: This response includes evaluation_distinct_id, which on the person_id path will be a distinct_id the caller didn'''t send: we pick it for them (the lex-smallest one) and echo it back. That'''s a problem because the only permission this endpoint requires is feature_flag:read. Distinct IDs are normally gated behind person:read (that'''s how the Person API works), so a token that'''s only allowed to read flag definitions ends up being able to look up \"what distinct IDs does person UUID X have?\" by calling test_evaluation.\nUUIDs aren'''t really secret: they show up in admin URLs, exports, support tickets, anywhere a person ID gets logged. So \"an attacker who knows a person UUID\" isn'''t a high bar.\nWhen the caller sends a distinct_id directly, this is just an echo of what they already had, so there'''s nothing to leak. The only path that leaks is person_id. Two ways to close it:\n\nSuppress the field on the person_id path: return null and let the client see they didn'''t get a value back.\nAdd person:read to the required scopes for the whole endpoint.\n\n(1) is cheaper if no current caller depends on the value being populated for person_id lookups.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                            \"evaluation_distinct_id\": evaluation_distinct_id,\n          \n          \n            \n                            \"evaluation_distinct_id\": (\n          \n          \n            \n                                distinct_id if distinct_id and distinct_id in distinct_ids else None\n          \n          \n            \n                            ),\n          \n      \n    \n    \n  \n\n(and update the serializer to allow_null=True).",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/models/person/point_in_time_properties.py",
@@ -645,7 +698,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "nit: personhog-hydrated cache reads like a typo for posthog, even though it's actually the internal posthog/personhog_client/ module name. A quick parenthetical avoids the grep:\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                # Person.distinct_ids is an @property that returns the personhog-hydrated\n          \n          \n            \n                # Person.distinct_ids returns the in-memory cache when populated (e.g. by the",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/models/person/point_in_time_properties.py",
@@ -657,7 +711,8 @@
     "against_commit": "ce009c79511fdaa67301ebe1f73bfc120a8f0c07",
     "body": "nit: existed = True runs on every iteration. The result is correct (any row at all means existed), but it reads as if it depends on kind and runs N times instead of once.\nexisted = bool(rows)\n\nfor row in rows:\n    kind, set_json, set_once_json, event_name = row\n    if kind == 0:\n        continue\n    # ...",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -669,7 +724,8 @@
     "against_commit": "6effa89fa569ac5bb4c6fa65c8d4cccca4c8eb92",
     "body": "Internal infrastructure details exposed via str(e) in 500 error responses\nTwo except Exception as e: handlers in test_evaluation include \"detail\": str(e) in the HTTP 500 response. The first catches ClickHouse failures from build_person_properties_at_time (which wraps the raw ClickHouse exception, exposing version strings, cluster topology, internal error codes); the second catches unexpected exceptions from reconstruct_flag_at_timestamp (Django ORM errors exposing table names, query fragments). Any caller with feature_flag:read scope can deliberately trigger these paths (e.g., by sending a timestamp that causes a ClickHouse timeout or an ORM error) to extract internal infrastructure details. This pattern was previously flagged by CodeQL and fixed, then re-introduced in this commit.\n\nPrompt To Fix With AI\nIn `test_evaluation`, remove `\"detail\": str(e)` from both 500-returning `except Exception as e:` blocks. The exception is already logged via `logger.exception(...)`, so the response body does not need to include it. Replace both with generic messages only:\n\n```python\n# ClickHouse handler (~line 3549-3552):\nreturn Response(\n    {\"error\": \"Failed to build person properties at specified timestamp.\"},\n    status=status.HTTP_500_INTERNAL_SERVER_ERROR,\n)\n\n# Flag reconstruction handler (~line 3591-3594):\nreturn Response(\n    {\"error\": \"Failed to reconstruct flag at specified timestamp.\"},\n    status=status.HTTP_500_INTERNAL_SERVER_ERROR,\n)\n```\n\nThe `ValueError` handlers that return `f\"Invalid timestamp: {e}\"` are intentional (our own validation, safe to surface) and should remain unchanged.\n\n\n Severity: low | Confidence: 78%",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -681,7 +737,8 @@
     "against_commit": "40c54ef34f6c75e37d3392cef29fce167254444a",
     "body": "CodeQL / Information exposure through an exception\nStack trace information flows to this location and may be exposed to an external user.\nShow more details",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -693,7 +750,8 @@
     "against_commit": "40c54ef34f6c75e37d3392cef29fce167254444a",
     "body": "CodeQL / Information exposure through an exception\nStack trace information flows to this location and may be exposed to an external user.\nShow more details",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "bot"
   },
   {
     "path": "posthog/models/person/point_in_time_properties.py",
@@ -705,7 +763,8 @@
     "against_commit": "c4bc9a469b666a20496712f43d0bbc0666f37024",
     "body": "blocking: A user with $pageview and $identify events but no $set calls gets a 400 saying \"Person did not exist at the specified timestamp\", even though get_person_and_distinct_ids_for_identifier just confirmed they exist in Postgres at line 3506.\nThe second return is bool(rows), but rows only includes $set / $set_once events (per the event_filter on line 138). So \"no rows\" means \"no property updates in window\", not \"person didn't exist\". The call site at feature_flag.py:3530 reads it as existence.\nDrop the boolean entirely. The upstream Postgres lookup already proved existence, and the rest of the function handles an empty person_properties dict fine.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                return person_properties, bool(rows)\n          \n          \n            \n                return person_properties\n          \n      \n    \n    \n  \n\n(Then remove the not person_existed 400 block at feature_flag.py:3530-3534 and the unpacking at line 3523.)",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -717,7 +776,8 @@
     "against_commit": "c4bc9a469b666a20496712f43d0bbc0666f37024",
     "body": "blocking: The lower_bound clamp regressed in 6effa89f. Previously this scanned max(timestamp - 2y, flag.created_at) so a 30-day-old flag scanned ~30 days; now it always scans 2 years. Partition pruning still works on the upper bound, but within the window the planner reads parts until LIMIT 100k or the upper bound, so medium-traffic teams hitting recent-flag debugging see ~24x more parts skimmed.\nA flag created 30 days ago semantically can't have evaluated against properties set before it existed, so the clamp is safe.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                            person_properties, person_existed = build_person_properties_at_time(\n          \n          \n            \n                            lower_bound = timestamp - timedelta(days=730)\n          \n          \n            \n                            if feature_flag.created_at:\n          \n          \n            \n                                lower_bound = min(max(lower_bound, feature_flag.created_at), timestamp)\n          \n          \n            \n                            person_properties, person_existed = build_person_properties_at_time(\n          \n          \n            \n                                team_id=self.team_id,\n          \n          \n            \n                                timestamp=timestamp,\n          \n          \n            \n                                distinct_ids=distinct_ids,\n          \n          \n            \n                                include_set_once=True,\n          \n          \n            \n                                lower_bound=lower_bound,\n          \n          \n            \n                            )\n          \n      \n    \n    \n  \n\n(Restore the optional lower_bound kwarg on build_person_properties_at_time with _HISTORY_SCAN_FLOOR as the default.)",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -729,7 +789,8 @@
     "against_commit": "c4bc9a469b666a20496712f43d0bbc0666f37024",
     "body": "blocking: This drags the entire tasks-product graph (croniter, the temporal stack, signal models, integrations, object storage) into every Django process at module load, just for a one-field DRF serializer. There is no domain reason for feature_flags to depend on tasks for an OpenAPI shape.\nIf products/tasks/ is restructured later, the OpenAPI schema for feature flags breaks for no semantic reason. Move ErrorResponseSerializer to a neutral home (e.g. posthog/api/utils.py) and import it from there in both places.\n# posthog/api/utils.py\nclass ErrorResponseSerializer(serializers.Serializer):\n    error = serializers.CharField(help_text=\"Error message\")\nThen from posthog.api.utils import ErrorResponseSerializer here and in products/tasks/backend/serializers.py.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -741,7 +802,8 @@
     "against_commit": "c4bc9a469b666a20496712f43d0bbc0666f37024",
     "body": "suggestion: This whole try/except is inside if timestamp and reconstructed_flag_data is not None: (line 3607), so on the except path timestamp is necessarily truthy. The inner if timestamp: always fires; the # For current evaluation, can continue without override branch and its override_definitions = None are dead.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                                if timestamp:\n          \n          \n            \n                            except Exception as e:\n          \n          \n            \n                                logger.exception(\"Failed to serialize flag for override\")\n          \n          \n            \n                                capture_exception(e)\n          \n          \n            \n                                return Response(\n          \n          \n            \n                                    {\"error\": \"Failed to prepare historical flag definition for evaluation.\"},\n          \n          \n            \n                                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,\n          \n          \n            \n                                )",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -753,7 +815,8 @@
     "against_commit": "c4bc9a469b666a20496712f43d0bbc0666f37024",
     "body": "suggestion: This test asserts id, team_id, and key on the override payload but not bucketing_identifier, evaluation_runtime, ensure_experience_continuity, or evaluation_tags. The whole reason the in-memory FeatureFlag(**reconstructed_flag_data) round-trip was removed (and replaced with the direct flag_dict construction at feature_flag.py:3608) is that those fields would silently revert to model defaults. A future commit that re-introduces the in-memory pattern keeps this test green.\nUse non-default values when creating the flag and assert they round-trip. Add fields to the FeatureFlag.objects.create call:\nbucketing_identifier=\"device_id\",\nevaluation_runtime=\"server\",\nensure_experience_continuity=True,\nevaluation_tags=[\"experiment-x\"],\nThen assert each on get_flags_kwargs[\"override_flags_definitions\"][\"test-flag\"].",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -765,7 +828,8 @@
     "against_commit": "c4bc9a469b666a20496712f43d0bbc0666f37024",
     "body": "blocking: This 502 path is the API's only defense against a misconfigured INTERNAL_REQUEST_TOKEN silently downgrading historical evaluation to current-state evaluation. There's no test for it, so a future refactor that collapses the timestamp-vs-no-timestamp split would still pass the suite while corrupting historical results.\nAdd a test that mocks get_flags_from_service to return a flag dict without a conditions key, sends a request with timestamp, and asserts 502 plus the exact message. Pair with a non-timestamp test asserting 200 (warning logged, no 502) so the gate isn't accidentally inverted.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -777,7 +841,8 @@
     "against_commit": "c4bc9a469b666a20496712f43d0bbc0666f37024",
     "body": "suggestion: The CodeQL fix replaced f\"Invalid timestamp: {e}\" with \"Invalid timestamp format.\" here and \"Invalid timestamp.\" at line 3585. No test exercises either path: test_test_evaluation_invalid_timestamp sends \"timestamp\": \"invalid\", which DRF rejects upfront at serializer-validation time. The inner except ValueError only fires on downstream raises (e.g. _validate_aware_timestamp rejecting a naive datetime).\nA future commit that reintroduces f\"Invalid: {e}\" would still pass the suite. Add a test that mocks build_person_properties_at_time (or reconstruct_flag_at_timestamp for the second branch) to raise ValueError(\"naive datetime: secret/path\") and asserts both the static message and assertNotIn(\"secret/path\", response.content).",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "rust/feature-flags/src/api/types.rs",
@@ -789,7 +854,8 @@
     "against_commit": "c4bc9a469b666a20496712f43d0bbc0666f37024",
     "body": "suggestion: properties_matched was added to give callers an unambiguous \"did the properties match\" signal separate from \"this condition won\". No test asserts the two diverge: searching the tree for properties_matched returns zero hits. A regression that collapses properties_matched back to condition_matched would pass every test today.\nAdd a unit test seeding two conditions where condition 0 has all-properties-matching but rollout_percentage: 0, and condition 1 matches and wins. Assert analysis.conditions[0].properties_matched && !analysis.conditions[0].matched and analysis.conditions[1].properties_matched && analysis.conditions[1].matched.",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -801,7 +867,8 @@
     "against_commit": "c4bc9a469b666a20496712f43d0bbc0666f37024",
     "body": "suggestion: GroupsJSONField is also used by my_flags and evaluation_reasons (lines 1913, 1934). Changing its default from \"{}\" to {} changes the type that lands in validated_data[\"groups\"] for those two endpoints, even though this PR isn't otherwise touching them.\nThey happen to still work, because my_flags at line 2592 has an isinstance(groups, str) guard that absorbs the change. If anyone removes that guard later as dead code, those endpoints break and the new one doesn't.\nIf FeatureFlagTestEvaluationRequestSerializer wants a dict default, give it one without touching the shared class. POST bodies parse as JSON, so the CharField hack isn't needed:\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                    kwargs.setdefault(\"default\", {})\n          \n          \n            \n                    kwargs.setdefault(\"default\", \"{}\")\n          \n      \n    \n    \n  \n\n(Then in the new serializer: groups = serializers.JSONField(required=False, default=dict, help_text=\"...\").)",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -813,7 +880,8 @@
     "against_commit": "c4bc9a469b666a20496712f43d0bbc0666f37024",
     "body": "suggestion: This pop list hand-tracks what _build_response injects today (it also adds created_by). Rust's FeatureFlag struct drops unknown fields via serde, so the list is a no-op now. But if _build_response adds a new metadata field tomorrow, the list goes stale silently. If Rust ever flips to deny_unknown_fields, the list becomes load-bearing in a way that's invisible from this callsite.\nInvert: allowlist the fields Rust expects.\nRUST_FLAG_FIELDS = (\n    \"name\", \"active\", \"deleted\", \"version\", \"filters\",\n    \"bucketing_identifier\", \"evaluation_runtime\",\n    \"ensure_experience_continuity\", \"evaluation_tags\",\n)\nflag_dict: dict[str, Any] = {\n    k: reconstructed_flag_data[k]\n    for k in RUST_FLAG_FIELDS\n    if k in reconstructed_flag_data\n}\nflag_dict.update({\"id\": feature_flag.id, \"key\": feature_flag.key, \"team_id\": feature_flag.team_id})\nThen datetime stringification for created_at if present; remove the pop loop entirely.",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -825,7 +893,8 @@
     "against_commit": "c4bc9a469b666a20496712f43d0bbc0666f37024",
     "body": "nit: First arg is now a filters dict, but the function name still says \"for_flag\". A reader scanning the call site has to read the body to learn what's expected. Rename the parameter to track the name:\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n            def _filter_person_properties_for_flag(filters: dict[str, Any], person_properties: dict[str, Any]) -> dict[str, Any]:\n          \n          \n            \n            def _filter_person_properties_for_flag(flag_filters: dict[str, Any], person_properties: dict[str, Any]) -> dict[str, Any]:\n          \n      \n    \n    \n  \n\n(Or rename the function to _filter_person_properties_by_filters if you'd rather track the parameter; either is fine, but the disagreement should be resolved.)",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/feature_flag.py",
@@ -837,7 +906,8 @@
     "against_commit": "4bf59b05f601787302f58aeb7ce39085cb9648b4",
     "body": "suggestion: The clamp is back, but no test asserts the call site actually uses flag.created_at. If someone refactors away the if feature_flag.created_at: block thinking it's defensive boilerplate, the SQL silently regresses to a flat 2y scan and every existing test still passes.\nAdd a test that creates a flag with created_at set to, say, 30 days ago, calls test_evaluation with a recent timestamp, and asserts the lower_bound kwarg passed to build_person_properties_at_time equals the flag's created_at (not timestamp - 730d):\nwith patch(\"posthog.api.feature_flag.build_person_properties_at_time\") as mock_build:\n    mock_build.return_value = {}\n    self.client.post(...)\n    assert mock_build.call_args.kwargs[\"lower_bound\"] == flag.created_at",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -849,7 +919,8 @@
     "against_commit": "4bf59b05f601787302f58aeb7ce39085cb9648b4",
     "body": "nit: The assertions cover bucketing_identifier, evaluation_runtime, and ensure_experience_continuity, but evaluation_tags was the fourth field in the original concern. Easy to add for completeness:\nflag = FeatureFlag.objects.create(\n    ...\n    evaluation_tags=[\"experiment-x\"],\n)\n# ... and:\nself.assertEqual(\n    get_flags_kwargs[\"override_flags_definitions\"][\"test-flag\"][\"evaluation_tags\"],\n    [\"experiment-x\"],\n)",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "posthog/api/test/test_feature_flag.py",
@@ -861,6 +932,7 @@
     "against_commit": "4bf59b05f601787302f58aeb7ce39085cb9648b4",
     "body": "nit: There's nothing this is \"replaced by\" \u2014 the old test asserted a misbehavior (the bool(rows) 400) that was removed because it was wrong, not because some new test took its place. Just delete the comment block.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                # NOTE: This test is replaced by the working timestamp evaluation.",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   }
 ]

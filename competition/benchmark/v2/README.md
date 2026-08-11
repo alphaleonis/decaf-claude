@@ -25,8 +25,10 @@ cheat.
 v2/
 ├── pooled/<owner>-<repo>-<pr>/      THE CORPUS — 12 subjects, size x application type
 │   ├── fixture.json                 checkpoint sha, base, date, diff stat, vintage, thread counts
-│   ├── threads.json                 218 raw / 120 admitted human review threads — THE ANSWERS
+│   ├── threads.json                 218 raw / 120 admitted review threads — THE ANSWERS; each
+│   │                                carries origin human|bot (86 human, 34 bot — two axes, dcc-qwt3)
 │   └── repo/                        airtight checkout at the checkpoint (gitignored)
+├── pooled/bot-authors.json          committed thread-author bot list, derived per corpus
 ├── null/<repo>-<pr>/                3 null subjects — the noise floor; same shape, no scored threads
 ├── subjects/NN-<lang>-<size>.json   ANCHOR fixtures (blind-spot detection only, never ranks)
 ├── repos/<id>/                      anchor checkouts (gitignored)
@@ -45,6 +47,8 @@ v2/
 │   ├── isolation.txt                transcript proof it did not read the answers
 │   └── meter.json                   cost/token telemetry
 ├── scoring/                         ALL arithmetic — score_pooled.py, check_artifacts.py, tests
+├── derive_bot_authors.py            AUDITOR: type every thread author via GraphQL -> bot-authors.json
+├── annotate_thread_origin.py        stamp origin human|bot onto every threads.json from that list
 ├── fixture_lib.sh                   resolve any subject id to its kind, fixture, checkout, threads
 ├── shim/{gh,curl,wget,docs-at}      ENFORCING access controls (treatment arm)
 ├── shim-log/gh                      PASS-THROUGH logger (control arm)
@@ -158,7 +162,9 @@ everything the target branch merged in between — 18 files became 240 on subjec
 Built and validated:
 
 - **the 12-subject pooled corpus** — size × application type, 9 repos, 120 admitted threads of 218
-  (`dcc-ixyy`); a checkout was destroyed and rebuilt byte-identically from its committed fixture
+  (`dcc-ixyy`); a checkout was destroyed and rebuilt byte-identically from its committed fixture.
+  Every thread carries `origin: human|bot` (86 human / 34 bot admitted, `dcc-qwt3`): thread recall
+  is human-only, bot hits score `incumbent_agreement`, and the scorer refuses unstamped threads
 - **the null arm** — 3 subjects, one per size bucket (`dcc-mjj5`), each re-adjudicated at line level
   over its *full* file list and recorded in `analysis/NULL-ARM.md` (`dcc-nvrt`)
 - **the ground-truth audit** — all 12 anchor candidates; 5 unusable, TypeScript eliminated

@@ -10,9 +10,12 @@ Three axes, deliberately never merged into one "recall" (METHODOLOGY-v2 section 
 
   pooled    — precision, trivia ratio, unique real findings, noise per cell. Scored against the
               union of what the tools said, so it CANNOT see what everything missed.
-  threads   — recall against admitted human review threads. The miss detector: an independent
-              statement that something was worth raising, not derived from tool output. Agreement
-              with expert review is related to, but not the same as, finding real bugs.
+  threads   — recall against admitted HUMAN review threads. The miss detector: an independent
+              statement that something was worth raising. Human-only by construction (dcc-qwt3):
+              every admitted thread must carry origin human|bot, and hits on bot threads score a
+              separate `incumbent_agreement` axis — agreement with incumbent automated review —
+              never pooled with this one. Agreement with expert review is related to, but not the
+              same as, finding real bugs.
   anchor    — recall against an answer key, when the subject has one. Only for anchor subjects.
 
 Exits non-zero on a data defect rather than emitting a null metric. Two specific failures are
@@ -46,6 +49,10 @@ SEV_WEIGHT = {"critical": 5.0, "high": 4.0, "medium": 2.0, "low": 1.0, "nit": 0.
 # Precision-style metrics count REPORTED findings only, because a demoted finding costs the reader
 # no attention — it was never shown.
 DISPOSITIONS = {"reported", "demoted"}
+
+# A human axis of 1-2 threads yields recall quantized to 0/0.5/1.0 — reportable per subject with n
+# shown, never poolable. Four of the seven citable subjects sit at or under this (dcc-qwt3).
+THIN_HUMAN_AXIS_MAX = 2
 
 
 class DataDefect(Exception):
@@ -151,6 +158,16 @@ def validate(A, threads, key, allow_silent_cells=False):
         admitted = [t for t in threads if t.get("admission") == "admitted"]
         if not admitted:
             errs.append("threads.json supplied but no thread is admitted")
+        # dcc-qwt3: 28% of the first corpus's admitted threads were written by competing review
+        # tools. Thread recall is defined over the HUMAN population only, so an admitted thread
+        # whose population is unknown makes every thread-recall figure unprovable — refuse rather
+        # than emit a number that may mix the populations.
+        unstamped = [i for i, t in enumerate(threads) if t.get("admission") == "admitted"
+                     and t.get("origin") not in ("human", "bot")]
+        if unstamped:
+            errs.append(f"admitted thread(s) {unstamped} have no origin (human|bot) — annotate the "
+                        f"corpus (annotate_thread_origin.py) so thread recall cannot mix human "
+                        f"threads with competing-tool output")
         idxs = {c.get("matches_thread") for c in clusters if c.get("matches_thread") is not None}
         bad = {i for i in idxs if not isinstance(i, int) or i < 0 or i >= len(threads)}
         if bad:
@@ -177,7 +194,13 @@ def score(A, threads, key):
             tool_clusters[r["tool"]].add(c["cluster_id"])
     by_id = {c["cluster_id"]: c for c in clusters}
 
-    admitted_idx = [i for i, t in enumerate(threads or []) if t.get("admission") == "admitted"]
+    # Two populations, two axes, never merged (dcc-qwt3): `human` threads are the miss detector;
+    # `bot` threads measure agreement with incumbent automated review — several of those incumbents
+    # are peers or direct competitors of the tools under test.
+    human_idx = {i for i, t in enumerate(threads or [])
+                 if t.get("admission") == "admitted" and t.get("origin") == "human"}
+    bot_idx = {i for i, t in enumerate(threads or [])
+               if t.get("admission") == "admitted" and t.get("origin") == "bot"}
 
     # Which clusters a tool REPORTED versus merely FOUND (reported + demoted below its own bar).
     tool_reported = defaultdict(set)
@@ -209,12 +232,15 @@ def score(A, threads, key):
         uniq = [c for c in real if {r["tool"] for r in c["reported_by"]} == {tool}]
 
         # Thread recall — its own axis, never folded into pooled precision, and split by disposition.
+        # Computed over HUMAN threads only; hits on bot threads land in incumbent_agreement below.
         def hits(pool):
             return {c["matches_thread"] for c in pool
                     if c["verdict"] == "matches-thread" and c.get("matches_thread") is not None}
         hit, hit_found = hits(cs), hits(cs_found)
-        thread_recall = (len(hit & set(admitted_idx)) / len(admitted_idx)) if admitted_idx else None
-        thread_recall_found = (len(hit_found & set(admitted_idx)) / len(admitted_idx)) if admitted_idx else None
+        thread_recall = (len(hit & human_idx) / len(human_idx)) if human_idx else None
+        thread_recall_found = (len(hit_found & human_idx) / len(human_idx)) if human_idx else None
+        incumbent = (len(hit & bot_idx) / len(bot_idx)) if bot_idx else None
+        incumbent_found = (len(hit_found & bot_idx) / len(bot_idx)) if bot_idx else None
 
         # Anchor recall gets the same reported/found split: a tool can find a key entry and demote it.
         anchor_recall = anchor_recall_found = None
@@ -244,7 +270,9 @@ def score(A, threads, key):
             "thread_recall_found": round(thread_recall_found, 3) if thread_recall_found is not None else None,
             "demotion_gap": (round(thread_recall_found - thread_recall, 3)
                              if thread_recall is not None and thread_recall_found is not None else None),
-            "threads_hit": len(hit & set(admitted_idx)) if admitted_idx else None,
+            "threads_hit": len(hit & human_idx) if human_idx else None,
+            "incumbent_agreement": round(incumbent, 3) if incumbent is not None else None,
+            "incumbent_agreement_found": round(incumbent_found, 3) if incumbent_found is not None else None,
             "real_found": len([c for c in cs_found if c["verdict"] in REAL]),
             "demoted_real": len([c for c in cs_found if c["verdict"] in REAL]) - len(real),
             "anchor_recall": round(anchor_recall, 3) if anchor_recall is not None else None,
@@ -254,12 +282,13 @@ def score(A, threads, key):
         cu = out_tools[tool]["cost_usd"]
         out_tools[tool]["cost_per_real_finding"] = round(cu / len(real), 4) if real else None
 
-    # Judge calibration: an admitted thread that a tool DID report, but the judge called not-real.
-    # This check exists only because subjects come from review-disciplined repos.
+    # Judge calibration: an admitted HUMAN thread that a tool DID report, but the judge called
+    # not-real. Human only — the judge disagreeing with a bot is a disagreement between tools, not a
+    # calibration failure against expert review, which is what this check exists to catch.
     dismissed = []
     for c in clusters:
         mt = c.get("matches_thread")
-        if mt is not None and mt in admitted_idx and c["verdict"] in (NOISE | WRONG):
+        if mt is not None and mt in human_idx and c["verdict"] in (NOISE | WRONG):
             dismissed.append({"cluster_id": c["cluster_id"], "thread": mt, "verdict": c["verdict"],
                               "thread_path": (threads[mt] or {}).get("path")})
 
@@ -275,8 +304,8 @@ def score(A, threads, key):
                 and any(pred(r) for r in c["reported_by"])}
     hit_any_found = hit_any_over(lambda r: True)
     hit_any = hit_any_over(lambda r: r.get("disposition", "reported") == "reported")
-    missed = [i for i in admitted_idx if i not in hit_any]
-    missed_found = [i for i in admitted_idx if i not in hit_any_found]
+    missed = sorted(i for i in human_idx if i not in hit_any)
+    missed_found = sorted(i for i in human_idx if i not in hit_any_found)
 
     # Vintage travels with the metrics so a downstream synthesis cannot pool an in-window subject
     # into a headline without seeing it (dcc-vvf0). Computed here, never read from the fixture:
@@ -293,10 +322,17 @@ def score(A, threads, key):
         "n_clusters": len(clusters),
         "n_cells": len(cells),
         "threads": {
-            "admitted": len(admitted_idx),
+            "admitted": len(human_idx) + len(bot_idx),
+            "admitted_human": len(human_idx),
+            "admitted_bot": len(bot_idx),
+            # Four of the seven citable subjects hold <=2 human threads (THREAD-AXIS.md); a recall
+            # there is 0/0.5/1.0 quantization, not a measurement. The flag travels with the metrics
+            # so a synthesis must show n and may not pool or headline a thin cell's recall.
+            "human_axis_thin": 0 < len(human_idx) <= THIN_HUMAN_AXIS_MAX,
+            # Everything below is the HUMAN axis — the miss detector.
             # "reported": what a user would have been shown. "found": what the field is capable of.
-            "hit_by_any_tool": len(hit_any & set(admitted_idx)),
-            "hit_by_any_tool_found": len(hit_any_found & set(admitted_idx)),
+            "hit_by_any_tool": len(hit_any & human_idx),
+            "hit_by_any_tool_found": len(hit_any_found & human_idx),
             "missed_by_every_tool": len(missed),
             "missed_by_every_tool_found": len(missed_found),
             "missed_index": missed,
@@ -304,6 +340,13 @@ def score(A, threads, key):
             # Reported by nobody, though somebody found it — a threshold problem, not a blind spot.
             "demoted_by_every_tool_that_found_it": sorted(set(missed) - set(missed_found)),
             "judge_dismissed_reported_threads": dismissed,
+            # Agreement with incumbent automated review — a real measurement, but not a miss
+            # detector, and never pooled with the human axis. "missed" framing is deliberately
+            # absent: a bot thread nobody repeated is not evidence anything was missed.
+            "incumbent": {
+                "hit_by_any_tool": len(hit_any & bot_idx) if bot_idx else None,
+                "hit_by_any_tool_found": len(hit_any_found & bot_idx) if bot_idx else None,
+            },
         },
         "tools": out_tools,
         "verdict_distribution": {v: sum(1 for c in clusters if c["verdict"] == v)

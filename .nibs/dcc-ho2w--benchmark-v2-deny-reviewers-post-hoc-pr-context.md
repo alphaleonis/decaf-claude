@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-11T10:02:41Z
+updated_at: 2026-08-11T12:01:12Z
 order: zzzzV
 ---
 
@@ -267,50 +267,30 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-nvrt: **Completed 2026-08-11. All three null subjects hold — no replacement needed.**
+Completed dcc-qwt3: Split the thread axis into two populations, enforced by construction. Every thread in the pooled
+corpus now carries `origin: human|bot` (86 human / 34 bot admitted — exact census match), classified
+by GitHub GraphQL actor `__typename` against the committed `v2/pooled/bot-authors.json` —
+`derive_bot_authors.py` re-derives it per corpus (REST `users/` is unusable: it resolves same-named
+orgs or 404s; GraphQL types the actual actor), `annotate_thread_origin.py` applies it and refuses
+unknown authors. Two hand-audited facts surfaced: `hex-security-app` was renamed `parameter-app`
+(recorded in the list's `manual` section, preserved across re-runs) and a TENTH bot the census's
+admitted-only scope missed — `cursor`, one rejected thread on grafana#117615.
 
-Re-ran `verify_null.sh` with the cap lifted and adjudicated every hit at line level. The method
-compares the PR's **added** line texts against each later fix's **removed** line texts, which is
-immune to the line drift between the two commits: a fix that repairs something this PR wrote has to
-delete or rewrite a line this PR added.
+`score_pooled.py`: `thread_recall` is human-only; bot hits score a separate `incumbent_agreement`
+(+`_found`) axis; corpus miss-detector and judge-calibration fields are human-only; an admitted
+thread without origin is a DataDefect (exit 3). Six new self-tests, all watched fail first (the
+mixed-population recall really did read 0.333 where human-only reads 0.5). `build_pooled_fixture.py`
+stamps origin at build time; a deleted author gets origin null, which the scorer refuses rather than
+defaulting into either axis.
 
-| Subject | Files | Probed | Files with later fixes | Verdict |
-|---|---|---|---|---|
-| `jellyfin#16695` (S) | 3 | 3 | 0 | **NULL** |
-| `grafana#122269` (M) | 17 | 12 (+5 excluded) | 2 — both disjoint | **NULL** |
-| `immich#28204` (L) | 33 | 33 | 8 — all disjoint | **NULL** |
+## Key Decisions
 
-**The decisive one clears.** `server/src/middleware/global-exception.filter.ts` was changed by
-`#28806 fix: error log on aborted uploads`, which rewrites lines 1-10 and 17-36 — it threads
-`Request` through `catch`/`handleError` and moves error logging out of `fromError`
-(`logGlobalError` → `onRequestError`). PR 28204 changed the `ZodValidationException` branch at lines
-~40-55 and never touched logging. Zero of the 4 non-trivial lines it added appear among the 5 the
-fix deletes: different region, different concern.
-
-Worth knowing about the subject: of 33 files only **three** are production —
-`global-exception.filter.ts` (+5/-5), `fetch-errors.ts` (+7/-0) and `handle-error.ts` (+12/-0) — and
-the latter two have no later fix-shaped commit at all. The remaining 30 are specs and helpers, and
-every fix touching those is a new test in an unrelated domain (map privacy, heatmap permissions,
-non-UTC offsets, OIDC logout, search visibility).
-
-On grafana the cap really was hiding something: `pkg/setting/setting.go` is one of the five files it
-never reached, and it carries a later fix (`#128543`, annotation-service TLS). Adjudicated disjoint.
-The five files excluded as shared/generated are `defaults.ini`, one docs page and the three
-`toggles_gen.*` — all append-only in this PR, so there is no PR-written line for a later fix to
-rewrite. Recorded rather than assumed.
-
-Changes:
-
-- `v2/analysis/NULL-ARM.md` — the record the arm was missing. Per-subject verdicts, the full hit
-  table with adjudication, what the cap was hiding, and how to re-run.
-- Each null `fixture.json` gains a `nullness` block: verdict, adjudication date, probe coverage,
-  method, and an explicit `recheck` note. **Nullness is a claim with a date, not a property** — the
-  same reasoning that keeps vintage out of fixtures as a boolean.
-- `verify_null.sh` default cap 12 → 100. A cap below the corpus's own file counts is a coverage gap
-  dressed as a result; the cap now exists only to bound a pathological diff, and anything unreached
-  is still reported.
-- METHODOLOGY-v2 §2 records the full-coverage requirement and the drift-immune line test, and states
-  that nullness is re-checked before a noise floor is cited.
-- `v2/README.md` moves the null arm from "Not done" to built, and points at the record.
-
-[[dcc-vkeh]] can read a noise floor from all three.
+- Bot threads are retained as a fourth axis ("agreement with incumbent automated review"), never
+  deleted and never pooled with the human axis.
+- Thin cells (4 citable subjects with ≤2 human threads): KEEP the cells — pooled/anchor axes are
+  unaffected. Their recall is emitted but stamped `threads.human_axis_thin` (n ≤ 2); reportable per
+  subject with n shown, never pooled or headlined. Threshold is THIN_HUMAN_AXIS_MAX = 2.
+- The blind grader now must not see thread `author`/`origin` (bench-analyze-v2), so a judge cannot
+  grade a thread differently for being bot-authored; bot threads are still matched — they score the
+  incumbent axis.
+- METHODOLOGY-v2 §2/§5 corrected to "holds by construction" rather than by assumption.

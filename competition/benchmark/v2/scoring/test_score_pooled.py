@@ -28,8 +28,8 @@ BASE = {
     ],
 }
 THREADS = [
-    {"path": "a.py", "line": 10, "admission": "admitted"},
-    {"path": "b.py", "line": 5, "admission": "admitted"},
+    {"path": "a.py", "line": 10, "admission": "admitted", "origin": "human"},
+    {"path": "b.py", "line": 5, "admission": "admitted", "origin": "human"},
     {"path": "c.py", "line": 1, "admission": "rejected"},
 ]
 
@@ -277,6 +277,80 @@ def t_corpus_miss_detector_splits_by_disposition():
     assert t["missed_by_every_tool"] == 2, t
     assert t["missed_by_every_tool_found"] == 1, t
     assert t["demoted_by_every_tool_that_found_it"] == [0], t
+
+
+def t_admitted_thread_without_origin_is_a_defect():
+    """dcc-qwt3: 28% of the first corpus's admitted threads were competing-tool output.
+
+    An admitted thread whose population is unknown makes every thread-recall figure unprovable as
+    human-only, so the scorer must refuse rather than emit a number that may mix the populations.
+    """
+    ts = copy.deepcopy(THREADS)
+    del ts[1]["origin"]
+    expect_defect(BASE, ts, "origin")
+
+
+def t_bad_origin_value():
+    ts = copy.deepcopy(THREADS)
+    ts[1]["origin"] = "robot"
+    expect_defect(BASE, ts, "origin")
+
+
+def t_bot_threads_never_enter_thread_recall():
+    """The refusal itself: thread_recall is computed over the human population ONLY.
+
+    A tool that matched only the bot thread scores 0.0 on the human axis and 1.0 on the incumbent
+    axis — the figures are never merged.
+    """
+    ts = copy.deepcopy(THREADS)
+    ts.append({"path": "d.py", "line": 7, "admission": "admitted", "origin": "bot"})
+    a = copy.deepcopy(BASE)
+    a["clusters"].append({"cluster_id": "c5", "verdict": "matches-thread", "matches_thread": 3,
+                          "judged_severity": "medium", "code_citation": "d.py:7",
+                          "reported_by": [{"tool": "beta", "repeat": 1, "severity": "medium"}]})
+    validate(a, ts, None)
+    m = score(a, ts, None)
+    al, be = m["tools"]["alpha"], m["tools"]["beta"]
+    assert al["thread_recall"] == 0.5, al["thread_recall"]     # 1 of 2 HUMAN; bot thread invisible
+    assert be["thread_recall"] == 0.0, be["thread_recall"]     # its hit was a bot thread
+    assert be["incumbent_agreement"] == 1.0, be["incumbent_agreement"]
+    assert al["incumbent_agreement"] == 0.0, al["incumbent_agreement"]
+    t = m["threads"]
+    assert t["admitted_human"] == 2 and t["admitted_bot"] == 1, t
+    assert t["missed_by_every_tool"] == 1 and t["missed_index"] == [1], t   # human misses only
+    assert t["incumbent"]["hit_by_any_tool"] == 1, t["incumbent"]
+
+
+def t_incumbent_axis_absent_without_bot_threads():
+    m = score(BASE, THREADS, None)
+    assert m["tools"]["alpha"]["incumbent_agreement"] is None
+    assert m["threads"]["admitted_bot"] == 0
+    assert m["threads"]["incumbent"]["hit_by_any_tool"] is None
+
+
+def t_thin_human_axis_is_flagged():
+    """Four of the seven citable subjects hold <=2 human threads; a recall there is 0/0.5/1.0
+    quantization noise. The flag travels with the metrics so a synthesis cannot headline it."""
+    m = score(BASE, THREADS, None)
+    assert m["threads"]["human_axis_thin"] is True, m["threads"]           # n=2
+    ts = copy.deepcopy(THREADS)
+    ts.append({"path": "e.py", "line": 2, "admission": "admitted", "origin": "human"})
+    m3 = score(BASE, ts, None)
+    assert m3["threads"]["human_axis_thin"] is False, m3["threads"]        # n=3
+
+
+def t_judge_dismissal_calibrates_against_humans_only():
+    """A judge calling a bot thread trivia is a disagreement between tools, not a calibration
+    failure against expert review — it must not appear in judge_dismissed_reported_threads."""
+    ts = copy.deepcopy(THREADS)
+    ts.append({"path": "d.py", "line": 7, "admission": "admitted", "origin": "bot"})
+    a = copy.deepcopy(BASE)
+    a["clusters"].append({"cluster_id": "c5", "verdict": "trivia", "matches_thread": 3,
+                          "judged_severity": "nit",
+                          "reported_by": [{"tool": "beta", "repeat": 1, "severity": "low"}]})
+    validate(a, ts, None)
+    m = score(a, ts, None)
+    assert m["threads"]["judge_dismissed_reported_threads"] == [], m["threads"]
 
 
 def t_vintage_month_cutoff_resolves_conservatively():

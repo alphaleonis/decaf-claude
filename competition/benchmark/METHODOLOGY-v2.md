@@ -85,17 +85,22 @@ expert. So "expert reviewers flagged X and no tool flagged X" is a detectable mi
 adjudication is blind to. This is dense signal: it exists on every well-reviewed PR, unlike the
 escaped defect, which needs a revert.
 
-⚠️ **"Not derived from tool output" is an assumption, and on this corpus it was false for 28% of the
-admitted threads.** The census (`dcc-qwt3`, `v2/analysis/THREAD-AXIS.md`) found 34 of 120 written by
-automated reviewers — Copilot, Greptile, CodeRabbit, Codex, Graphite, CodeQL — several of them peers
-of the tools under test. Bot share ranges from 0% on four subjects to 80% on another, so the axis
-does not even mean the same thing in every cell. Thread authors must be filtered against an explicit
-bot list; a name regex does not work, because none of those nine logins contains "bot". Keep the
-automated threads as their own axis — agreement with incumbent tooling is worth measuring — and never
-pool them with the human one. Two further limits the census established: the human axis is highly
-concentrated (one reviewer supplied 36% of human threads and 66% of the human defect statements), and
-**tool output posted under a human account is undetectable**, so the axis is defensible as "what
-expert reviewers chose to say", never as "what unaided humans found".
+⚠️ **"Not derived from tool output" was an assumption, and on this corpus it was false for 28% of
+the admitted threads — the axis is now split so the property holds by construction.** The census
+(`dcc-qwt3`, `v2/analysis/THREAD-AXIS.md`) found 34 of 120 written by automated reviewers — Copilot,
+Greptile, CodeRabbit, Codex, Graphite, CodeQL — several of them peers of the tools under test. Bot
+share ranges from 0% on four subjects to 80% on another, so an unsplit axis would not even mean the
+same thing in every cell. Every thread now carries `origin: human|bot`, classified by the GitHub
+GraphQL actor type against a committed, per-corpus-derived bot list
+(`v2/pooled/bot-authors.json`, `v2/derive_bot_authors.py`) — a name regex cannot do this, because
+none of the ten bot logins contains "bot". Thread recall is computed over the human population only;
+hits on bot threads score a separate `incumbent_agreement` axis — agreement with incumbent automated
+review is worth measuring, but it is not the miss detector — and `score_pooled.py` refuses to score
+an admitted thread whose population is unstamped, so the two can never be pooled. Two further limits
+the census established: the human axis is highly concentrated (one reviewer supplied 36% of human
+threads and 66% of the human defect statements), and **tool output posted under a human account is
+undetectable**, so the axis is defensible as "what expert reviewers chose to say", never as "what
+unaided humans found".
 
 Thread density therefore becomes a **corpus selection criterion**, not an accident. The v1 corpus
 averaged badly (15 threads across five subjects, 12 of them on one) because it was selected for
@@ -1057,9 +1062,11 @@ Weight the thread axis accordingly when reading results, and keep the hand spot-
 ⚠️ That sentence held only after `dcc-qwt3`. As built, 28% of the admitted threads were themselves
 LLM output from competing review tools, so the "not produced by an Opus 5" guarantee bought less
 independence than claimed — not produced by *this* model is not the same as not produced by a model.
-Once the axes are split it is true of the human axis, which is 30 threads across the seven citable
-subjects, four of them holding two or fewer. The design's one non-LLM signal is thinner than the rest
-of this document assumes.
+The axes are now split (every thread carries `origin: human|bot`; bot hits score
+`incumbent_agreement`, and the scorer refuses unstamped threads), and the sentence is true of the
+human axis: 30 threads across the seven citable subjects, four of them holding two or fewer — those
+four are stamped `human_axis_thin` and their recall is reportable per subject with n shown, never
+pooled. The design's one non-LLM signal is thinner than the rest of this document assumes.
 
 **Pre-cutoff subjects are retained as a probe, not deleted.** Memorization is unfalsifiable in the
 abstract but its *effect size* is measurable: build **matched vintage pairs** — same repo, same size

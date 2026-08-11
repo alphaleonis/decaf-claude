@@ -9,7 +9,8 @@
     "against_commit": "f96cd758cd5f30c5a046c35bbb9da43373d1f343",
     "body": "self-review: not sure about the wording, feel free to change",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/slideshow-metadata-overlay.svelte",
@@ -21,7 +22,8 @@
     "against_commit": "27bc321644256ffbd7f3568960a54c7ab0edda8e",
     "body": "self-review: for simplification we could remove the opacity computation and just default to 0.7",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/SlideshowMetadataOverlay.svelte",
@@ -33,7 +35,8 @@
     "against_commit": "7648f98d47c5df2a5a5e87006891bcfb0d2e418d",
     "body": "All the components are PascalCase now. Could you rename this file?",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/SlideshowMetadataOverlay.svelte",
@@ -45,7 +48,8 @@
     "against_commit": "7648f98d47c5df2a5a5e87006891bcfb0d2e418d",
     "body": "Suggested change\n      \n    \n    \n      \n          \n            \n              interface Props {\n          \n          \n            \n              type Props = {",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/SlideshowMetadataOverlay.svelte",
@@ -57,7 +61,8 @@
     "against_commit": "7648f98d47c5df2a5a5e87006891bcfb0d2e418d",
     "body": "const?",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/SlideshowMetadataOverlay.svelte",
@@ -69,7 +74,8 @@
     "against_commit": "7648f98d47c5df2a5a5e87006891bcfb0d2e418d",
     "body": "I would probably just call it opacity",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/slideshow-metadata-overlay.svelte",
@@ -81,7 +87,8 @@
     "against_commit": "7648f98d47c5df2a5a5e87006891bcfb0d2e418d",
     "body": "Suggested change\n      \n    \n    \n      \n          \n            \n              // Compute description",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/slideshow-metadata-overlay.svelte",
@@ -93,7 +100,8 @@
     "against_commit": "7648f98d47c5df2a5a5e87006891bcfb0d2e418d",
     "body": "Suggested change\n      \n    \n    \n      \n          \n            \n            \n          \n          \n            \n              // Compute date taken",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/slideshow-metadata-overlay.svelte",
@@ -105,7 +113,8 @@
     "against_commit": "7648f98d47c5df2a5a5e87006891bcfb0d2e418d",
     "body": "Suggested change\n      \n    \n    \n      \n          \n            \n              // Compute location",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/slideshow-metadata-overlay.svelte",
@@ -117,7 +126,8 @@
     "against_commit": "7648f98d47c5df2a5a5e87006891bcfb0d2e418d",
     "body": "Use $derived.by(() => {}) instead",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/slideshow-metadata-overlay.svelte",
@@ -129,7 +139,8 @@
     "against_commit": "7648f98d47c5df2a5a5e87006891bcfb0d2e418d",
     "body": "Suggested change\n      \n    \n    \n      \n          \n            \n            \n          \n          \n            \n              // Compute visibility",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/slideshow-metadata-overlay.svelte",
@@ -141,7 +152,8 @@
     "against_commit": "7648f98d47c5df2a5a5e87006891bcfb0d2e418d",
     "body": "As a function this doesn't need to be derived. If you want it to only be a boolean, not a function, use $derived.by instead",
     "admission": "admitted",
-    "admission_reason": "line inside a changed hunk at the checkpoint"
+    "admission_reason": "line inside a changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/modals/SlideshowSettingsModal.svelte",
@@ -153,7 +165,8 @@
     "against_commit": "7648f98d47c5df2a5a5e87006891bcfb0d2e418d",
     "body": "This is uncommon styling for Immich. Probably just disable the dropdown?",
     "admission": "rejected",
-    "admission_reason": "line outside every changed hunk at the checkpoint"
+    "admission_reason": "line outside every changed hunk at the checkpoint",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/SlideshowMetadataOverlay.svelte",
@@ -165,7 +178,8 @@
     "against_commit": "5c7659de0cb543e6bfba9cb991c8ece1e1eca44e",
     "body": "Might want to use <Text> component?",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   },
   {
     "path": "web/src/lib/components/asset-viewer/SlideshowMetadataOverlay.svelte",
@@ -177,6 +191,7 @@
     "against_commit": "5c7659de0cb543e6bfba9cb991c8ece1e1eca44e",
     "body": "Do you even need the <p> tags here and below? If so, can they also be <Text>?",
     "admission": "rejected",
-    "admission_reason": "file absent from the checkpoint diff"
+    "admission_reason": "file absent from the checkpoint diff",
+    "origin": "human"
   }
 ]

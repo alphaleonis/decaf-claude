@@ -9,14 +9,26 @@ Deterministic half of the v2 pipeline. The LLM stages (extract → cluster → b
 | `check_artifacts.py` | assert `extract/`, `findings.json` and `analysis.json` describe one finding set |
 | `test_score_pooled.py` | one self-test per guard below — run it rather than counting from here, since a written-down count drifts (it said 12 when there were 15) |
 
-## Three axes, never merged
+## Four axes, never merged
 
 - **pooled** — precision (plain and severity-weighted), trivia ratio, unique real findings, noise per
   cell. Bounded by the union of tool output, so it cannot see what everything missed.
-- **threads** — recall against *admitted* human review threads. The miss detector, and the only axis
-  not derived from tool output. Agreement with expert review is related to, but not the same as,
+- **threads** — recall against admitted **human** review threads. The miss detector, and the only
+  axis not derived from tool output — a property that holds *by construction*, not by assumption:
+  every admitted thread carries `origin: human|bot` (stamped by `annotate_thread_origin.py` from the
+  committed `bot-authors.json`, derived per corpus by `derive_bot_authors.py`), and the scorer
+  refuses to run without it. Agreement with expert review is related to, but not the same as,
   finding real bugs — OSS reviewers skew toward API design and convention over correctness.
+- **incumbent** — `incumbent_agreement`: recall against admitted **bot** threads, i.e. agreement
+  with incumbent automated review (Copilot, Greptile, CodeRabbit, Codex, Graphite, CodeQL — several
+  are peers or competitors of the tools under test). A legitimate measurement, but not a miss
+  detector, and never pooled with the human axis: on the first corpus 28% of admitted threads were
+  bot-authored, unevenly spread from 0% to 80% per subject (`analysis/THREAD-AXIS.md`).
 - **anchor** — recall against an answer key, for anchor subjects only.
+
+**Thin human cells:** `threads.human_axis_thin` is true when the subject holds 1–2 human threads
+(four of the seven citable subjects do). A recall there is 0/0.5/1.0 quantization, not a
+measurement — report it per subject with n shown; never pool it, never headline it.
 
 ## Reported vs found
 
@@ -75,6 +87,10 @@ of the scoring-model decision:
   from anchor recall and read as a miss
 - a **v1 verdict name**, so a stale grader cannot pass silently
 - **missing `judge_model`** — results must be attributable to a grader
+- an **admitted thread without `origin: human|bot`** — thread recall is defined over the human
+  population only, and a thread whose population is unknown makes every thread-recall figure
+  unprovable as human-only. Annotate the corpus rather than let 28% competing-tool output back into
+  the miss detector
 - artifacts describing **different finding sets** (`check_artifacts.py`): 20 findings in one layer, 33
   in another, 1 in common, and the clustering run on the stale set
 
