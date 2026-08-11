@@ -14,8 +14,26 @@ set -euo pipefail
 REPO="${1:?usage: screen_step0.sh <owner/repo> [limit]}"
 LIMIT="${2:-25}"
 
-gh pr list -R "$REPO" --search 'revert in:title' --state merged --limit "$LIMIT" \
-  --json number,title,body,mergedAt 2>/dev/null \
+# Fail loudly on a TRANSPORT failure, like find_candidates.sh: `2>/dev/null` here turned an auth or
+# network error into zero rows, which reads as "this repo has no reverts" — the conclusion the screen
+# exists to reach.
+#
+# LIMIT OF THIS GUARD, stated rather than implied: `gh pr list --search` returns `[]` with exit 0 for
+# a repository that does not exist, so a typo'd or renamed repo is genuinely indistinguishable from
+# one with no reverts. The zero-row notice below is the only signal available; check the slug.
+if ! resp="$(gh pr list -R "$REPO" --search 'revert in:title' --state merged --limit "$LIMIT" \
+              --json number,title,body,mergedAt 2>&1)" || ! printf '%s' "$resp" | jq -e 'type=="array"' >/dev/null 2>&1; then
+  echo "ERROR: $REPO returned no usable PR list — not an empty result:" >&2
+  printf '%s\n' "$resp" | head -c 400 >&2; echo >&2
+  exit 4
+fi
+
+if [ "$(printf '%s' "$resp" | jq 'length')" = "0" ]; then
+  echo "NOTE: $REPO matched no merged 'revert in:title' PRs. Confirm the slug is right — a repo that" >&2
+  echo "      does not exist returns the same empty list as one with no reverts." >&2
+fi
+
+printf '%s' "$resp" \
 | jq -r --arg repo "$REPO" '
   .[] |
   # Strip the HTML-comment PR templates that dominate some repos, and the boilerplate

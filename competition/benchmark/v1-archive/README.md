@@ -62,7 +62,13 @@ No v2 code path can reach anything in here. v2 reads `v2/subjects/`, `v2/analysi
 this tree is `v1-archive/`. The specific collision that motivated the move was
 `analysis/scripts/gather_inputs.sh` writing to `analysis/subject-NN/` — the same directory shape v2
 uses — which would have let a v2 grader pick up a v1 key by path convention alone. `analysis/` now
-holds only scripts.
+holds only `scripts/` and `METHODOLOGY.md`; no `subject-NN/` remains, and `gather_inputs.sh` writes
+to `v1-archive/analysis/`.
+
+Re-verified 2026-08-11 (`dcc-3cm6`): no surviving v1 script writes anywhere v2 reads. One consequence
+worth knowing — `analysis/scripts/cluster_replay.py` still globs `analysis/subject-*/findings.json`
+and therefore now matches nothing and returns silently. It is v1-only and reads nothing v2 writes, so
+it is left as archived evidence rather than repaired.
 
 The v1 driver (`scripts/bench_next.sh`) refuses to run without `BENCH_V1_ALLOW=1`, so a stray
 `/bench-run` cannot append new cells to a dataset that is already void.

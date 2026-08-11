@@ -15,3 +15,7 @@ v2/pooled/*/repo/
 
 # Null-arm checkouts, rebuilt from the pinned SHAs in each fixture.json.
 v2/null/*/repo/
+
+# Python bytecode cache — regenerated on import, and it churns on every scoring edit.
+__pycache__/
+*.pyc

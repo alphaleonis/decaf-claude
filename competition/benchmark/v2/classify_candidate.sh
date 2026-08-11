@@ -23,10 +23,14 @@ case "$REPO" in
   *) LIBRARY=0 ;;
 esac
 
+# Suppression justified: the very next line turns an empty result into a hard error, so a failed
+# query cannot pass as "this PR has no files".
 files="$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[].filename' 2>/dev/null || true)"
 if [ -z "$files" ]; then echo "ERROR: no files for $REPO#$PR" >&2; exit 4; fi
 
 # Exclude generated/vendored noise from the signal, not from the diff itself.
+# Suppression justified: `grep -v` exits 1 when it filters everything out, which is a legitimate
+# result (an all-generated PR) and is handled by the fallback on the next line.
 sig="$(printf '%s\n' "$files" | grep -vE '(^|/)(node_modules|vendor|dist|build)/|\.(lock|snap|min\.js)$|package-lock\.json|yarn\.lock|go\.sum' || true)"
 [ -z "$sig" ] && sig="$files"
 

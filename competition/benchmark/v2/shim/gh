@@ -37,7 +37,9 @@ allow() {
   log ALLOW "$*"
 }
 
-# created_at of a PR or issue, or empty if it can't be resolved
+# created_at of a PR or issue, or empty if it can't be resolved.
+# Suppression justified and FAIL-CLOSED: an empty result reaches the caller as `deny "... (cannot
+# resolve createdAt)"`, so a failed lookup refuses access rather than granting it.
 created_at() { # $1=repo (may be empty) $2=kind(pr|issue) $3=number
   local repoarg=() ; [ -n "$1" ] && repoarg=(-R "$1")
   "$REAL" "$2" view "$3" "${repoarg[@]}" --json createdAt --jq '.createdAt' 2>/dev/null
@@ -63,8 +65,6 @@ case "$sub" in
     for a in "$@"; do
       case "$a" in
         --comments) deny "$sub $action $* (--comments may contain post-checkpoint discussion)" ;;
-        *comments*|*reviews*|*timelineItems*|*reviewThreads*|*closingIssuesReferences*|*mergedAt*|*mergeCommit*|*state*)
-          deny "$sub $action $* (requested field may contain post-checkpoint content)" ;;
       esac
     done
 
@@ -72,18 +72,64 @@ case "$sub" in
     # post-checkpoint facts on a PR that predates the cutoff. Observed leaking `state: MERGED` and
     # `reviewers: ilonatommy (Approved)` for subject 2. Require an explicit safe field selection.
     if [ "$action" = "view" ]; then
-      has_json=0; for a in "$@"; do [ "$a" = "--json" ] && has_json=1; done
+      has_json=0; for a in "$@"; do case "$a" in --json|--json=*) has_json=1 ;; esac; done
       if [ $has_json -eq 0 ]; then
         deny "$sub view $* (bare view prints post-checkpoint state/reviewers; use --json with title,body,number,author,createdAt)"
       fi
     fi
-    # locate a bare number argument and the -R/--repo value
+
+    # --json is an ALLOWLIST, never a blocklist. `gh pr view --json` accepts 46 fields and a
+    # blocklist has to spell every hazardous one correctly, in the right case: the earlier
+    # `*reviews*` pattern let `latestReviews` through, which returns each reviewer's verdict and
+    # body — on sveltejs/kit#15685 that is CHANGES_REQUESTED (2026-05-18) and APPROVED (2026-07-01)
+    # against a 2026-04-09 checkpoint. `commits` and `files` describe the merged state for the same
+    # reason `pr diff` is denied. Under pooled adjudication the review threads are a SCORED TARGET,
+    # so this filter is load-bearing for the metric, not only for hygiene (dcc-3cm6).
+    #
+    # Admitted: identity and as-opened content. Everything about the PR's later life is refused,
+    # including size counters, which report the merged diff rather than the checkpoint's.
+    # Residual, accepted: title and body can be EDITED after the checkpoint and the API serves only
+    # the current text. There is no historical variant to ask for.
+    SAFE_FIELDS=" number title body author createdAt url id baseRefName headRefName isCrossRepository "
+    check_fields() { # $1 = comma-separated field list
+      local f
+      IFS=',' read -ra _flds <<< "$1"
+      for f in "${_flds[@]}"; do
+        f="${f// /}"; [ -z "$f" ] && continue
+        case "$SAFE_FIELDS" in
+          *" $f "*) ;;
+          *) deny "$sub $action $* (--json $f is not on the safe-field allowlist; permitted: ${SAFE_FIELDS# })" ;;
+        esac
+      done
+    }
+    args=("$@"); i=0
+    while [ $i -lt ${#args[@]} ]; do
+      case "${args[$i]}" in
+        --json)   i=$((i+1)); check_fields "${args[$i]:-}" ;;
+        --json=*) check_fields "${args[$i]#--json=}" ;;
+      esac
+      i=$((i+1))
+    done
+
+    # Locate the target and the -R/--repo value. `gh pr view` and `gh issue view` also accept a URL
+    # or a branch name, neither of which starts with a digit — so scanning only for a bare number
+    # left `gh pr view https://github.com/O/R/pull/<any> --json title,body` with NO date check at
+    # all, reaching any post-checkpoint PR by title. Subject 9's linked item is titled "proxy:
+    # node-manager ignores timeouts to get NodeIPs": the bug, in a title.
     num=""; repo=""
     args=("$@"); i=0
     while [ $i -lt ${#args[@]} ]; do
       a="${args[$i]}"
       case "$a" in
         -R|--repo) i=$((i+1)); repo="${args[$i]:-}" ;;
+        --repo=*)  repo="${a#--repo=}" ;;
+        http*://*/pull/*|http*://*/issues/*)
+          # https://github.com/<owner>/<repo>/(pull|issues)/<number>[/...]
+          if [ -z "$num" ]; then
+            num="${a##*/pull/}"; [ "$num" = "$a" ] && num="${a##*/issues/}"
+            num="${num%%/*}"; num="${num%%\?*}"; num="${num%%#*}"
+            [ -z "$repo" ] && { r="${a#*://*/}"; repo="${r%%/pull/*}"; repo="${repo%%/issues/*}"; }
+          fi ;;
         [0-9]*)    [ -z "$num" ] && num="$a" ;;
       esac
       i=$((i+1))
@@ -118,7 +164,10 @@ case "$sub" in
       fi
       allow "$sub $action $num created=${c:0:10}"
     else
-      allow "$sub $action $*"
+      # Fail closed. An unresolvable target (a branch name, a URL shape not matched above, an
+      # omitted argument that makes gh infer from the current branch) previously fell through to
+      # ALLOW with no date check — the permissive reading of "I could not tell".
+      deny "$sub $action $* (no PR/issue number could be resolved, so the checkpoint date cannot be enforced)"
     fi
     exec "$REAL" "$sub" "$action" "$@"
     ;;

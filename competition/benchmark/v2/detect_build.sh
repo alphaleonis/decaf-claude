@@ -3,7 +3,7 @@
 #
 # Usage: detect_build.sh <v2/pooled/DIR>   # emits JSON on stdout
 #
-# Why date-neutrality matters (METHODOLOGY-v2 section 5): a package restore reaches the network, and
+# Why date-neutrality matters (METHODOLOGY-v2 section 3): a package restore reaches the network, and
 # an UNPINNED restore resolves "latest", which can pull a version published after the checkpoint —
 # a time-boxing hole opened through the back door. A lockfile committed at the checkpoint pins exact
 # versions, so a frozen restore is date-neutral by construction. Every restore command below is the
@@ -14,9 +14,14 @@
 # systematically harder to catch by reading — so the run must be identifiable, not silently degraded.
 set -uo pipefail
 
-D="${1:?usage: detect_build.sh <v2/pooled/DIR>}"
-R="$D/repo"
-[ -d "$R" ] || { echo "{\"error\":\"no checkout at $R\"}"; exit 2; }
+D="${1:?usage: detect_build.sh <subject-dir|checkout-dir>}"
+# Accept either the subject directory (pooled/null, which hold the checkout at <dir>/repo) or the
+# checkout itself (the anchor layout puts it at v2/repos/<id>, with no wrapper). Callers used to have
+# to know which, and run_cell_v2.sh guessed wrong for every cell it ran (dcc-3cm6).
+if   [ -d "$D/repo/.git" ]; then R="$D/repo"
+elif [ -d "$D/.git" ];      then R="$D"
+else echo "{\"error\":\"no git checkout at $D or $D/repo\"}"; exit 2
+fi
 
 have() { command -v "$1" >/dev/null 2>&1; }
 # corepack ships with node and provisions pnpm/yarn per-project — no system install needed.
@@ -54,6 +59,10 @@ elif [ -f "$R/package.json" ]; then
 fi
 
 # --- Go ----------------------------------------------------------------------------------------
+# Suppressions throughout this script are justified: `find` and `jq` here answer "does this
+# project have X", and absence is the answer, not a failure. Every absence reaches the output
+# as `date_neutral: false`, a `missing_toolchains` entry, or `build_possible: false` — the
+# script reports what it could not do rather than degrading quietly (dcc-fhp1).
 gosum="$(find "$R" -maxdepth 3 -name go.sum 2>/dev/null | head -1)"
 if [ -n "$gosum" ]; then
   langs+=("go"); managers+=("go"); locks+=("${gosum#$R/}")

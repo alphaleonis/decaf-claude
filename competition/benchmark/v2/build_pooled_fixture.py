@@ -3,7 +3,7 @@
 
 Usage: build_pooled_fixture.py <owner> <repo> <pr> <type> <size> [--out DIR]
 
-Implements METHODOLOGY-v2 section 4 steps 1-4 for a POOLED subject (no answer key), plus the thread
+Implements METHODOLOGY-v2 §4a-§4b for a POOLED subject (no answer key), plus the thread
 admission that makes review threads a scored target.
 
 Checkpoint rule: the commit the EARLIEST review comment was written against — the state at which
@@ -117,7 +117,7 @@ def main():
     add = sum(f.get("additions", 0) for f in diff.get("files", []))
     dele = sum(f.get("deletions", 0) for f in diff.get("files", []))
 
-    # Mechanical admission (section 4 step 6): file in the checkpoint diff, line inside a changed hunk.
+    # Mechanical admission (METHODOLOGY-v2 §4b): file in the checkpoint diff, line inside a changed hunk.
     for t in ([] if a.null else threads):
         if t["path"] not in files:
             t["admission"] = "rejected"; t["admission_reason"] = "file absent from the checkpoint diff"
@@ -147,7 +147,7 @@ def main():
         },
         "merged_at": pr["mergedAt"], "pr_created_at": pr["createdAt"],
         "vintage": {"merged": (pr["mergedAt"] or "")[:10],
-                    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 6"},
+                    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 5"},
         "threads": {"total": len(threads), **counts},
     }
     (out / "fixture.json").write_text(json.dumps(fixture, indent=2) + "\n")

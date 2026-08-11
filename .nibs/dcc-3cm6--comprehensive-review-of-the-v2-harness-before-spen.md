@@ -2,11 +2,11 @@
 # dcc-3cm6
 version: 1
 title: Comprehensive review of the v2 harness before spending on the pilot
-status: todo
+status: completed
 type: task
 priority: high
 created_at: 2026-08-10T20:14:04Z
-updated_at: 2026-08-10T20:15:00Z
+updated_at: 2026-08-11T08:30:55Z
 parent: dcc-ho2w
 order: 8c
 ---
@@ -74,9 +74,66 @@ that have ~100, and `build_pooled_repo.sh` aborting before its report because `g
 
 ## Acceptance
 
-- [ ] Every seeded finding fixed, or explicitly justified in writing
-- [ ] Silent-failure sweep complete; each surviving suppression justified in a comment
-- [ ] One pooled checkout destroyed and rebuilt from its committed fixture, verified identical
-- [ ] Shim refusal to reach review threads demonstrated on a pooled subject, not assumed
-- [ ] Repeated figures reconciled across all documents, or reduced to a single source
-- [ ] Findings recorded, with anything not worth fixing written down as accepted risk
+- [x] Every seeded finding fixed, or explicitly justified in writing
+- [x] Silent-failure sweep complete; each surviving suppression justified in a comment
+- [x] One pooled checkout destroyed and rebuilt from its committed fixture, verified identical
+- [x] Shim refusal to reach review threads demonstrated on a pooled subject, not assumed
+- [x] Repeated figures reconciled across all documents, or reduced to a single source
+- [x] Findings recorded, with anything not worth fixing written down as accepted risk
+
+## Summary
+
+**Completed 2026-08-11** — **Completed 2026-08-11** — Full review in `competition/benchmark/v2/analysis/HARNESS-REVIEW.md`.
+**Verdict: the pilot must not spend yet**, and the two reasons are filed as [[dcc-suz4]] and
+[[dcc-vvf0]], both now blocking [[dcc-vkeh]].
+
+Five defects would have corrupted or voided the pilot, four of them silently:
+
+1. **The answers are reachable from a cell.** Cells run `cd .../pooled/<subject>/repo` under
+   `--dangerously-skip-permissions`; `../threads.json` is the thread axis's answer key, `../../*/`
+   is every other subject, and `../../../runs/` is every prior cell. `reset_repo()` cleans only
+   inside the checkout. This is [[dcc-2cxq]] with a worse payload. Relocation does not help — the
+   flag removes path gating entirely. Detection shipped (`verify_cell_isolation.sh`, wired into the
+   runner, all four existing cells CLEAN); prevention is [[dcc-suz4]].
+2. **`run_cell_v2.sh` could not address the pooled corpus at all** — it resolved only
+   `v2/subjects/NN-*.json` + `v2/repos/<id>`. Fixed via a new `v2/fixture_lib.sh` that resolves all
+   three fixture shapes (there were three, not two: anchor, pooled, null).
+3. **The `gh` shim's `--json` filter was a case-sensitive substring blocklist over a 46-field API.**
+   `latestReviews` leaked `CHANGES_REQUESTED` (2026-05-18) and `APPROVED` (2026-07-01) against a
+   2026-04-09 checkpoint; `commits` returned all 8 post-checkpoint commits; `reviewDecision`,
+   `files` and the merge-state family were open. Now an allowlist — 0 of 30 probed fields reachable.
+4. **A URL target skipped the date check entirely.** `gh pr view <url> --json title,body` on any
+   post-checkpoint PR was ALLOW. URLs are now parsed and date-checked; an unresolvable target denies.
+5. **Every cell recorded `build-capability.json = {"error":"detection failed"}`** — `detect_build.sh`
+   was passed `dirname "$REPO"`, and `2>/dev/null || echo` then destroyed its real diagnostic. So
+   [[dcc-fhp1]]'s "identifiable rather than quietly weaker" guarantee was void.
+
+Two findings changed facts rather than code:
+
+- **`docs-at` reported Wayback outages as "no snapshot".** Measured 3 of 12 identical requests
+  failing at connection level — a 25% false-MISS rate logged as MISS either way. Its
+  `filter=statuscode:200` also dropped sites that redirect: SvelteKit's docs were *unreachable* for
+  every `sveltejs/kit#15685` cell. Both fixed; the page now resolves.
+- **The null arm's file probe silently covered 12 of 33 files** on the large subject. Full coverage
+  surfaces 8 hits where 1 was adjudicated, one of them in `global-exception.filter.ts` — the
+  production file central to a PR titled "structured validation error responses". Filed [[dcc-nvrt]].
+
+**Seeded finding 1 was a false positive and nothing was deleted.** `subject-11/answer-key.json` and
+`v2/subjects/11-rust-medium.json` pin the *same* as-opened checkpoint, and METHODOLOGY-v2 documents
+that head as the one place subject 11 is scorable — it is the single case where the checkpoint
+machinery changed the answer. The audit's "replace / 0 entries" is a verdict on the *merged* head.
+The real defect was that the two documents disagreed where a reader could not resolve it; both now
+say so, and the key carries a `scope` field.
+
+Cross-document figure audit found **no disagreements**: 218/120/98 threads, 5 of 12 rejected, and the
+fixture↔threads.json agreement all trace exactly. One *framing* was wrong — "12 scoreable entries
+across 7 subjects" is a projection; 2 of 7 keys are built (3 entries). Corrected in place.
+
+Also fixed: case-sensitive GitHub host denial in the curl/wget shims (`https://GITHUB.com/...` was
+allowed); `score_pooled.py` guarding `severity` (which no metric reads) while
+`precision_severity_weighted` divided by an unguarded `judged_severity`; no `matches_key` guard; the
+null arm being unscoreable by its own scorer; and the corpus-level miss detector silently reporting
+the "found" reading. 21 scoring tests pass, up from 15.
+
+`git` and the local filesystem are now named as unmeasured channels in the Tier 3 table and in
+`leak_audit.sh`, per the methodology's own commitment to name what it does not measure.

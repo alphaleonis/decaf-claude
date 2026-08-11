@@ -30,6 +30,10 @@ mkdir -p "$OUT"
 echo "== subject $SID: $REPO#$PR  (fix: #${FIXPR:-none}) =="
 
 # Files in the reviewed range (what a v1 reviewer actually saw).
+# Suppressions in this script are justified by what it collects: an AUDIT EVIDENCE BUNDLE for a
+# subject that may legitimately have no fix PR, no revert and no linked issue. Absence IS the
+# finding here, and the verdicts drawn from these files are written up by hand in
+# GROUND-TRUTH-AUDIT.md, where a missing artifact is visible as a missing file.
 gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[].filename' 2>/dev/null | sort -u > "$OUT/reviewed-files.txt"
 echo "reviewed range: $(wc -l < "$OUT/reviewed-files.txt") files"
 
