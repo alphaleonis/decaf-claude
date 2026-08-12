@@ -4,42 +4,60 @@
   "summary": "NullPropagatedOperands recurses into every SqlBinaryExpression with no operator filter, so AndAlso/OrElse operands are treated as null-propagating when they are not",
   "idx": [
    0,
+   8,
+   43,
+   108,
+   134,
+   192,
+   235,
    3,
-   17,
-   50,
-   61,
-   89,
-   113
+   22,
+   76,
+   119,
+   162,
+   216,
+   217,
+   250,
+   251,
+   42
   ]
  },
  "e02": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
   "summary": "A boolean/search-condition THEN result loses NULL: SearchConditionConvertingExpressionVisitor re-materializes it with no NULL arm, so NULL becomes false",
   "idx": [
-   5,
-   62,
-   90,
-   114
+   10,
+   135,
+   193,
+   236,
+   120,
+   219
   ]
  },
  "e03": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:512",
   "summary": "The when-clause result was visited with preserveColumnNullabilityInformation, so it was already simplified under the non-null assumption the rewrite then deletes",
   "idx": [
-   7,
-   51,
-   63,
-   92,
-   115
+   12,
+   109,
+   136,
+   195,
+   237,
+   220,
+   176
   ]
  },
  "e04": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:539",
   "summary": "RestoreNullValueColumnsList is passed currentNonNullableColumnsCount instead of currentNullValueColumnsCount, truncating the wrong list",
   "idx": [
-   19,
-   71,
-   109
+   45,
+   144,
+   212,
+   31,
+   79,
+   191,
+   232
   ]
  },
  "e05": {
@@ -47,21 +65,32 @@
   "summary": "The new TODO carries no issue reference or rationale for deferring the symmetric case",
   "idx": [
    2,
-   16,
-   44,
-   81,
-   100,
-   122
+   21,
+   70,
+   154,
+   203,
+   244,
+   41,
+   187,
+   256,
+   102
   ]
  },
  "e06": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
   "summary": "IsNull(elseResult) is false when there is no ELSE arm, so the semantically identical CASE WHEN t THEN r END is never optimized",
   "idx": [
-   14,
-   24,
-   94,
-   120
+   19,
+   50,
+   197,
+   242,
+   5,
+   30,
+   82,
+   167,
+   227,
+   254,
+   35
   ]
  },
  "e07": {
@@ -69,398 +98,580 @@
   "summary": "The whole result subtree is walked into a HashSet before DropNotNullChecks establishes the test contains any IS NOT NULL, so the work is wasted on most qualifying CASEs",
   "idx": [
    1,
-   10,
-   20
+   15,
+   46,
+   32,
+   84,
+   172
   ]
  },
  "e08": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580",
   "summary": "Whether the HashSet relies on structural rather than reference equality",
   "idx": [
-   39,
-   76
+   65,
+   149,
+   40,
+   80,
+   124,
+   177
   ]
  },
  "e09": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595",
   "summary": "DropNotNullChecks returns null to mean \"statically true\", the opposite polarity to the usual absent/failed reading, signalled only by a trailing comment",
   "idx": [
-   13,
-   22,
-   80,
-   96
+   18,
+   48,
+   153,
+   199,
+   28,
+   86,
+   165,
+   228
   ]
  },
  "e10": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617",
   "summary": "NullPropagatedOperands is a noun phrase naming a void side-effecting accumulator, against the verb-led convention of its siblings",
   "idx": [
-   15,
-   26,
-   97,
-   121
+   20,
+   52,
+   200,
+   243,
+   88,
+   230
   ]
  },
  "e11": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595",
   "summary": "The null-propagation helpers are static local functions, so providers with custom null-propagating node types have no extension seam",
   "idx": [
-   8,
-   35
+   13,
+   61,
+   29,
+   6,
+   85
   ]
  },
  "e12": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617",
   "summary": "Base-class expression types the processor already visits (AtTimeZone, Collate, Distinct, JsonScalar) are absent from the null-propagation model",
   "idx": [
-   9
+   14,
+   255,
+   180,
+   98
   ]
  },
  "e13": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
   "summary": "ExpressionType.Coalesce is a legal SqlBinaryExpression operator that does not propagate NULL in its first argument, and the unfiltered recursion admits it",
   "idx": [
-   4,
-   25,
-   37,
-   52,
-   65,
-   91,
-   110
+   9,
+   51,
+   63,
+   110,
+   138,
+   194,
+   213,
+   7,
+   33,
+   93,
+   121,
+   173,
+   218
   ]
  },
  "e14": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:635",
   "summary": "func.Instance! asserts an invariant on InstancePropagatesNullability alone, dropping the Instance: not null half the sibling checks",
   "idx": [
-   11,
-   23,
-   66,
-   93
+   16,
+   49,
+   139,
+   196,
+   83,
+   166,
+   223,
+   128
   ]
  },
  "e15": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633",
   "summary": "== true is used where the file elsewhere uses an is { ... : true } pattern",
   "idx": [
-   28
+   54
   ]
  },
  "e16": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:640",
   "summary": "The loop bounds on ArgumentsPropagateNullability.Count while indexing Arguments, so a longer flag list indexes out of range",
   "idx": [
-   12,
-   38,
-   77,
-   119
+   17,
+   64,
+   150,
+   241,
+   34,
+   96,
+   127,
+   129,
+   182
   ]
  },
  "e17": {
   "loc": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250",
   "summary": "All five new tests are positive and use only totally null-propagating operators, so none covers the boolean or comparison shapes the optimization breaks",
   "idx": [
-   6,
-   18,
-   64,
-   101,
-   116
+   11,
+   44,
+   137,
+   204,
+   238,
+   4,
+   23,
+   77,
+   224,
+   252,
+   163,
+   132
   ]
  },
  "e18": {
   "loc": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:0",
   "summary": "No UseRelationalNulls:true variants, though the optimization changes SQL under that mode",
   "idx": [
-   118
+   240
   ]
  },
  "e19": {
   "loc": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:0",
   "summary": "No negative test pins the argumentsPropagateNullability == false branch",
   "idx": [
-   117
+   239,
+   24,
+   81,
+   253
   ]
  },
  "e20": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:622",
   "summary": "The Negate and Convert unary operator paths are uncovered by tests",
   "idx": [
-   30,
-   70,
-   106
+   56,
+   143,
+   209,
+   170
   ]
  },
  "e21": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633",
   "summary": "The InstancePropagatesNullability branch is uncovered by tests",
   "idx": [
-   29,
-   69,
-   104
+   55,
+   142,
+   207,
+   169,
+   226
   ]
  },
  "e22": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:638",
   "summary": "The IsNiladic guard is uncovered by tests",
   "idx": [
-   105
+   208
   ]
  },
  "e23": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:608",
   "summary": "The DropNotNullChecks single-operand and binary.Update arms are uncovered by tests",
   "idx": [
-   102,
-   103
+   205,
+   206
   ]
  },
  "e24": {
   "loc": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2270",
   "summary": "The _with_partial_checks and _with_mixed_checks test names are swapped relative to what they assert",
   "idx": [
-   31,
-   108
+   57,
+   211
   ]
  },
  "e25": {
   "loc": "test/EFCore.Sqlite.FunctionalTests/Query/NullSemanticsQuerySqliteTest.cs:0",
   "summary": "SQLite inherits all five new tests with no SQL baseline override, so it compares results only",
   "idx": [
-   32,
    58,
-   86,
-   107
+   116,
+   159,
+   210,
+   89,
+   186
   ]
  },
  "e26": {
   "loc": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1044",
   "summary": "Baselines this diff makes optimal still carry stale // issue #16050 markers",
   "idx": [
-   67,
-   123
+   140,
+   245,
+   87,
+   168,
+   229
   ]
  },
  "e27": {
   "loc": "test/EFCore.SqlServer.FunctionalTests/Query/NullSemanticsQuerySqlServerTest.cs:4537",
   "summary": "The nested_checks baseline is byte-identical to the non-nested test, so it pins nothing extra",
   "idx": [
-   68
+   141
   ]
  },
  "e28": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:590",
   "summary": "Target-typed new is used where the sibling site spells the type out, and a second list is allocated where an in-place update would do",
   "idx": [
-   27,
-   99
+   53,
+   202
   ]
  },
  "e29": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:619",
   "summary": "operands.Add discards the HashSet insertion result and recurses unconditionally, so shared DAG nodes are re-traversed",
   "idx": [
-   33,
-   124
+   59,
+   246,
+   171,
+   231
   ]
  },
  "e30": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:602",
   "summary": "The new local functions dispatch with if/else-if type-pattern chains where the file prevailing style is a switch",
   "idx": [
-   98
+   201
   ]
  },
  "e31": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576",
   "summary": "The soundness contract the rewrite depends on is never stated: the steering comment describes only the degenerate identity case",
   "idx": [
-   21,
-   95,
-   126
+   47,
+   198,
+   248,
+   27,
+   78,
+   164,
+   222,
+   258
   ]
  },
  "e32": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
   "summary": "An operator allowlist alone leaves the optimization unsound against future operators; only re-visit-and-compare validation closes it",
   "idx": [
-   125,
-   127
+   247,
+   249,
+   259
   ]
  },
  "e34": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:622",
   "summary": "Whether the unary operator set Not/Negate/Convert is correct",
   "idx": [
-   54,
-   74
+   112,
+   147,
+   95,
+   181
   ]
  },
  "e35": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
   "summary": "Whether bitwise And/Or need excluding from the recursion",
   "idx": [
-   55,
-   73
+   113,
+   146,
+   122,
+   179
   ]
  },
  "e36": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
   "summary": "Whether ExclusiveOr should be excluded from the recursion",
   "idx": [
-   53,
-   72
+   111,
+   145,
+   178
   ]
  },
  "e37": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:0",
   "summary": "Whether the new code diverges from how VisitSqlFunction consumes the propagate-nullability flags",
   "idx": [
-   56
+   114
   ]
  },
  "e38": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:499",
   "summary": "VisitCase length after the change",
   "idx": [
-   46
+   72
   ]
  },
  "e39": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
   "summary": "Whether the new block should consult allowOptimizedExpansion",
   "idx": [
-   43
+   69,
+   221
   ]
  },
  "e40": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
   "summary": "Whether matching only unary NotEqual in DropNotNullChecks is too narrow",
   "idx": [
-   75
+   148
   ]
  },
  "e41": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
   "summary": "The per-CASE HashSet allocation cost",
   "idx": [
-   79
+   152,
+   190
   ]
  },
  "e42": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585",
   "summary": "Whether collapsing to clause.Result drops the CaseExpression Type/TypeMapping",
   "idx": [
-   40,
-   83
+   66,
+   156,
+   38,
+   94,
+   126,
+   185,
+   39
   ]
  },
  "e43": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585",
   "summary": "Whether the nullable out-parameter is left wrong after the collapse",
   "idx": [
-   41,
-   84
+   67,
+   157,
+   37,
+   125,
+   184
   ]
  },
  "e44": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
   "summary": "Whether the collapse loses a projection alias or breaks ORDER BY",
   "idx": [
-   85
+   158
   ]
  },
  "e45": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595",
   "summary": "Whether dropping an IS NOT NULL guard newly exposes divide-by-zero or arithmetic errors",
   "idx": [
-   42
+   68,
+   175
   ]
  },
  "e46": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617",
   "summary": "Whether unbounded recursion in the new helpers is a stack-overflow risk",
   "idx": [
-   36,
-   78
+   62,
+   151,
+   97,
+   188
   ]
  },
  "e47": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617",
   "summary": "Whether LikeExpression should be handled by NullPropagatedOperands",
   "idx": [
-   48
+   74
   ]
  },
  "e48": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
   "summary": "Whether provider-specific SqlExpression subclasses break the analysis",
   "idx": [
-   82
+   155
   ]
  },
  "e49": {
   "loc": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:0",
   "summary": "Whether nullable string concatenation would throw NullReferenceException in LINQ-to-Objects",
   "idx": [
-   57
+   115
   ]
  },
  "e50": {
   "loc": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:0",
   "summary": "Whether the GearsOfWar baseline churn is semantically sound and free of stale baselines",
   "idx": [
-   59,
-   112
+   117,
+   215,
+   131
   ]
  },
  "e51": {
   "loc": ":0",
   "summary": "Whether the SQL shape change needs a release-note artifact",
   "idx": [
-   45
+   71,
+   103
   ]
  },
  "e52": {
   "loc": ":0",
   "summary": "Whether stale CASE-WHEN-IS-NOT-NULL baselines were left un-updated elsewhere in the tree",
   "idx": [
-   47
+   73,
+   104,
+   260
   ]
  },
  "e53": {
   "loc": "src/EFCore.Relational/Query/Internal/RelationalCommandCache.cs:139",
   "summary": "Whether the rewrite dependence on parameter values could poison the compiled-query cache",
   "idx": [
-   49
+   75,
+   36,
+   106
   ]
  },
  "e54": {
   "loc": "test/EFCore.Specification.Tests:0",
   "summary": "test/EFCore.Specification.Tests does not compile under the installed SDK",
   "idx": [
-   60,
-   88
+   118,
+   161,
+   105,
+   133,
+   234
   ]
  },
  "e55": {
   "loc": "test/EFCore.Specification.Tests/TestModels/NullSemanticsModel/NullSemanticsData.cs:0",
   "summary": "Whether the seed data is adequate for the added tests",
   "idx": [
-   87
+   160,
+   130
   ]
  },
  "e56": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
   "summary": "Whether every boolean THEN result is affected, or some stay correct",
   "idx": [
-   111
+   214
   ]
  },
  "e57": {
   "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633",
   "summary": "Whether the optimization silently strengthens the contract of the propagate-nullability flags",
   "idx": [
-   34
+   60,
+   25
+  ]
+ },
+ "e58": {
+  "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
+  "summary": "Whether removing the guard loses index sargability",
+  "idx": [
+   189
+  ]
+ },
+ "e59": {
+  "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
+  "summary": "Whether aggregate functions such as SUM/MAX could be wrongly treated as null-propagating",
+  "idx": [
+   100
+  ]
+ },
+ "e60": {
+  "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595",
+  "summary": "The static local functions are declared after the return statement",
+  "idx": [
+   101
+  ]
+ },
+ "e62": {
+  "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585",
+  "summary": "Whether caseExpression.Update ignores the reassigned whenClauses",
+  "idx": [
+   174
+  ]
+ },
+ "e63": {
+  "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:499",
+  "summary": "The VisitCase XML doc was not updated for the new return shape",
+  "idx": [
+   183
+  ]
+ },
+ "e65": {
+  "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:600",
+  "summary": "Whether DropNotNullChecks descending only AndAlso and not OrElse is too narrow",
+  "idx": [
+   99
+  ]
+ },
+ "e66": {
+  "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:1633",
+  "summary": "IsNull also matches a null-valued SqlParameterExpression, which would make the rewrite parameter-value dependent",
+  "idx": [
+   233
+  ]
+ },
+ "e67": {
+  "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
+  "summary": "String concatenation relies on the server rather than the CASE to yield NULL, which differs under SQL Server CONCAT_NULL_YIELDS_NULL settings",
+  "idx": [
+   91,
+   123,
+   257
+  ]
+ },
+ "e68": {
+  "loc": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:0",
+  "summary": "No test pins the current unoptimized behavior of the expr == null ? null : expr shape named in the TODO",
+  "idx": [
+   90
+  ]
+ },
+ "e69": {
+  "loc": "benchmark/EFCore.Benchmarks/Query/QueryCompilationTests.cs:41",
+  "summary": "No query-compilation benchmark fixture contains a conditional-null projection, so the new path is invisible to perf tracking",
+  "idx": [
+   92
+  ]
+ },
+ "e70": {
+  "loc": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1074",
+  "summary": "Select_null_propagation_negative1/2 appear to cover this case but do not, because the guard uses a different column",
+  "idx": [
+   225
+  ]
+ },
+ "e71": {
+  "loc": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:631",
+  "summary": "The new function arm re-implements the null-propagation traversal already in ProcessNullNotNull and has diverged from it",
+  "idx": [
+   26
+  ]
+ },
+ "e73": {
+  "loc": ":0",
+  "summary": "Whether the changed code introduces SQL injection",
+  "idx": [
+   107
   ]
  }
 }

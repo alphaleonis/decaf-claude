@@ -4,6 +4,7 @@
  "judge_model": "claude-opus-5",
  "merged_at": "2026-06-15T21:17:18Z",
  "shim": "on",
+ "repeats": 2,
  "grading_pass": 2,
  "cells": [
   {
@@ -15,11 +16,27 @@
    "access_denied": 0
   },
   {
+   "tool": "anthropic-code-review",
+   "repeat": 2,
+   "cost_usd": 7.1305,
+   "wall_s": 11,
+   "access_total": 180,
+   "access_denied": 42
+  },
+  {
    "tool": "comprehensive-review",
    "repeat": 1,
    "cost_usd": 14.7795,
    "wall_s": 739,
    "access_total": 158,
+   "access_denied": 0
+  },
+  {
+   "tool": "comprehensive-review",
+   "repeat": 2,
+   "cost_usd": 20.131,
+   "wall_s": 25,
+   "access_total": 204,
    "access_denied": 0
   },
   {
@@ -31,11 +48,27 @@
    "access_denied": 0
   },
   {
+   "tool": "ours-audit",
+   "repeat": 2,
+   "cost_usd": 31.8029,
+   "wall_s": 1752,
+   "access_total": 409,
+   "access_denied": 1
+  },
+  {
    "tool": "ours-bugs",
    "repeat": 1,
    "cost_usd": 8.0059,
    "wall_s": 1294,
    "access_total": 140,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs",
+   "repeat": 2,
+   "cost_usd": 8.5788,
+   "wall_s": 1173,
+   "access_total": 125,
    "access_denied": 0
   },
   {
@@ -47,6 +80,14 @@
    "access_denied": 1
   },
   {
+   "tool": "ours-review",
+   "repeat": 2,
+   "cost_usd": 17.7707,
+   "wall_s": 1592,
+   "access_total": 277,
+   "access_denied": 1
+  },
+  {
    "tool": "pr-review-toolkit",
    "repeat": 1,
    "cost_usd": 23.2198,
@@ -55,11 +96,27 @@
    "access_denied": 0
   },
   {
+   "tool": "pr-review-toolkit",
+   "repeat": 2,
+   "cost_usd": 23.6599,
+   "wall_s": 32,
+   "access_total": 289,
+   "access_denied": 0
+  },
+  {
    "tool": "superpowers",
    "repeat": 1,
    "cost_usd": 4.5107,
    "wall_s": 789,
    "access_total": 52,
+   "access_denied": 0
+  },
+  {
+   "tool": "superpowers",
+   "repeat": 2,
+   "cost_usd": 3.4694,
+   "wall_s": 582,
+   "access_total": 46,
    "access_denied": 0
   }
  ],
@@ -70,10 +127,10 @@
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
    "verdict": "matches-thread",
    "matches_thread": 7,
-   "judged_severity": "critical",
+   "judged_severity": "high",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
-   "confidence": 0.5,
-   "rationale": "Correct on the code (NULL AND FALSE = FALSE breaks the invariant) and lands on the same AndAlso/OrElse null-propagation question the reviewer raised on this function.",
+   "confidence": 0.6,
+   "rationale": "Thread 7 interrogates exactly the AndAlso/OrElse null-propagation treatment in this recursion; e01 raises the same code and axis (NULL AND FALSE = FALSE).",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -87,42 +144,112 @@
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 3
+     "finding_index": 8
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 17
+     "finding_index": 43
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 50
+     "finding_index": 108
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 61
+     "finding_index": 134
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 89
+     "finding_index": 192
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 113
+     "finding_index": 235
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 22
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 76
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 119
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 162
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 216
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 217
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 250
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 251
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "demoted",
+     "finding_index": 42
     }
    ]
   },
@@ -133,37 +260,51 @@
    "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "high",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578-591",
-   "confidence": 0.7,
-   "rationale": "Verified: ConvertToValue (SearchConditionConvertingExpressionVisitor.cs:41-51) emits CASE WHEN c THEN 1 ELSE 0 with no NULL arm, so a hoisted bare condition returns false, not null.",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585-591",
+   "confidence": 0.65,
+   "rationale": "Verified mechanism: ConvertToValue (SearchConditionConvertingExpressionVisitor.cs:41-51) wraps a bare condition as CASE WHEN c THEN 1 ELSE 0 END \u2014 no NULL arm, so UNKNOWN becomes false.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 5
+     "finding_index": 10
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 62
+     "finding_index": 135
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 90
+     "finding_index": 193
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 114
+     "finding_index": 236
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 120
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 219
     }
    ]
   },
@@ -174,44 +315,58 @@
    "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "high",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:512-539",
-   "confidence": 0.75,
-   "rationale": "Verified against the code: the test is visited with preserveColumnNullabilityInformation and the restore happens only at 538, so the result really is simplified under the dropped assumption.",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:534-539",
+   "confidence": 0.6,
+   "rationale": "Confirmed: the result is visited at :534 while the test's _nonNullableColumns are still in scope (restore happens at :538-539), so the result was simplified under the dropped premise.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 7
+     "finding_index": 12
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "critical",
      "disposition": "demoted",
-     "finding_index": 51
+     "finding_index": 109
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 63
+     "finding_index": 136
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 92
+     "finding_index": 195
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 115
+     "finding_index": 237
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 220
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 176
     }
    ]
   },
@@ -223,29 +378,57 @@
    "matches_thread": null,
    "judged_severity": "medium",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:539",
-   "confidence": 0.75,
-   "rationale": "Confirmed real: line 539 truncates _nullValueColumns to the _nonNullableColumns watermark; line 529 uses the right one. Pre-existing (blame 17a9035ad) but a maintainer should fix it.",
+   "confidence": 0.7,
+   "rationale": "Confirmed real: :539 truncates _nullValueColumns with the non-nullable watermark while :529 and :564 use currentNullValueColumnsCount. Pre-existing (blame 2023-10-23).",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 19
+     "finding_index": 45
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "demoted",
-     "finding_index": 71
+     "finding_index": 144
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 109
+     "finding_index": 212
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 31
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 79
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 191
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 232
     }
    ]
   },
@@ -257,8 +440,8 @@
    "matches_thread": null,
    "judged_severity": "nit",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:577",
-   "confidence": 0.6,
-   "rationale": "Correct: the new TODO has no tracking issue while nearby deferred work is marked '// issue #16050'. Cosmetic consistency.",
+   "confidence": 0.7,
+   "rationale": "Verified: the new TODO carries no issue link, unlike the '// issue #16050' style markers used nearby.",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -272,35 +455,63 @@
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 16
+     "finding_index": 21
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "demoted",
-     "finding_index": 44
+     "finding_index": 70
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 81
+     "finding_index": 154
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 100
+     "finding_index": 203
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 122
+     "finding_index": 244
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 41
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 187
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 256
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 102
     }
    ]
   },
@@ -312,36 +523,85 @@
    "matches_thread": null,
    "judged_severity": "low",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
-   "confidence": 0.6,
-   "rationale": "Verified: IsNull (line 1633) returns false for a C# null elseResult, so an ELSE-less CASE is skipped. A missed optimization, correctly labeled as not a defect.",
+   "confidence": 0.65,
+   "rationale": "Verified: IsNull (:1632) returns false for a C# null elseResult, so the no-ELSE form skips the optimization. Missed optimization, not a defect.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 14
+     "finding_index": 19
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 24
+     "finding_index": 50
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 94
+     "finding_index": 197
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 120
+     "finding_index": 242
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 5
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 30
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 82
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 167
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 227
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 254
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 35
     }
    ]
   },
@@ -354,7 +614,7 @@
    "judged_severity": "low",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580-583",
    "confidence": 0.6,
-   "rationale": "Accurate: the whole result subtree is hashed before the test is known to contain any IS NOT NULL. Real but compile-time-only waste; finder rates it minor.",
+   "rationale": "Accurate ordering observation: the whole THEN subtree is hashed before the test is known to contain any IS NOT NULL. Small compile-time waste.",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -368,14 +628,35 @@
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 10
+     "finding_index": 15
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 20
+     "finding_index": 46
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 32
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 84
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 172
     }
    ]
   },
@@ -386,23 +667,51 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580",
-   "confidence": 0.8,
-   "rationale": "Hypothesis cleared and correctly so: SqlExpression subclasses override Equals/GetHashCode structurally. No actionable content.",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Structural-equality concern raised and correctly cleared; also notes the failure direction would be safe.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "demoted",
-     "finding_index": 39
+     "finding_index": 65
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 76
+     "finding_index": 149
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 40
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 80
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 124
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 177
     }
    ]
   },
@@ -414,36 +723,64 @@
    "matches_thread": 0,
    "judged_severity": "low",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595-615",
-   "confidence": 0.85,
-   "rationale": "Same substance as the reviewer's 'cleaner to return a TRUE expression here' on the `return null; // true` line: null overloaded to mean true.",
+   "confidence": 0.7,
+   "rationale": "Thread 0 at line 600 says 'maybe it would be cleaner to return a TRUE expression here' \u2014 same point about the null-means-true sentinel.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 13
+     "finding_index": 18
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 22
+     "finding_index": 48
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 80
+     "finding_index": 153
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 96
+     "finding_index": 199
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 28
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 86
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 165
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 228
     }
    ]
   },
@@ -455,36 +792,50 @@
    "matches_thread": 4,
    "judged_severity": "nit",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617",
-   "confidence": 0.85,
-   "rationale": "Same point as the reviewer's rename suggestion for this helper; both object to the noun-phrase name on a collecting method.",
+   "confidence": 0.75,
+   "rationale": "Thread 4 suggests renaming this method (DetectNullPropagatingNodes); e10 makes the same naming objection and proposes CollectNullPropagatedOperands.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 15
+     "finding_index": 20
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 26
+     "finding_index": 52
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 97
+     "finding_index": 200
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 121
+     "finding_index": 243
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 88
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 230
     }
    ]
   },
@@ -494,24 +845,45 @@
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595",
    "verdict": "matches-thread",
    "matches_thread": 5,
-   "judged_severity": "medium",
+   "judged_severity": "low",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595-649",
-   "confidence": 0.75,
-   "rationale": "Same substance as the reviewer's 'more general than a very local utility to case, plus extensibility for provider-specific expression types'.",
+   "confidence": 0.6,
+   "rationale": "Thread 5 asks for exactly this: the null-propagation knowledge should be more general with extensibility for provider-specific expression types.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 8
+     "finding_index": 13
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "high",
      "disposition": "demoted",
-     "finding_index": 35
+     "finding_index": 61
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 29
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 85
     }
    ]
   },
@@ -521,17 +893,38 @@
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617",
    "verdict": "matches-thread",
    "matches_thread": 6,
-   "judged_severity": "medium",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-649",
-   "confidence": 0.8,
-   "rationale": "Names AtTimeZone and Collate (plus Distinct/JsonScalar) as expression types missing from the model \u2014 precisely the reviewer's list.",
+   "judged_severity": "low",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-648",
+   "confidence": 0.65,
+   "rationale": "Thread 6 names AtTimeZone and Collate as missing node types; e12 names the same plus Distinct/JsonScalar.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 9
+     "finding_index": 14
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 255
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 180
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 98
     }
    ]
   },
@@ -543,57 +936,99 @@
    "matches_thread": 10,
    "judged_severity": "medium",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
-   "confidence": 0.85,
-   "rationale": "Same defect the reviewer states: Coalesce is a legal SqlBinaryExpression operator, is not null-propagating, and the unfiltered recursion admits it.",
+   "confidence": 0.7,
+   "rationale": "Thread 10 makes the identical point: Coalesce is a legal SqlBinaryExpression operator that is not null-propagating, so the unfiltered recursion can drop a load-bearing IS NOT NULL.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 4
+     "finding_index": 9
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 25
+     "finding_index": 51
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "demoted",
-     "finding_index": 37
+     "finding_index": 63
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 52
+     "finding_index": 110
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 65
+     "finding_index": 138
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 91
+     "finding_index": 194
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "high",
      "disposition": "demoted",
-     "finding_index": 110
+     "finding_index": 213
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "demoted",
+     "finding_index": 33
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "demoted",
+     "finding_index": 93
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 121
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 173
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 218
     }
    ]
   },
@@ -605,36 +1040,64 @@
    "matches_thread": null,
    "judged_severity": "low",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633-636",
-   "confidence": 0.65,
-   "rationale": "Verified: the [EntityFrameworkInternal] ctor accepts instance null with instancePropagatesNullability true, and the sibling at 2393 guards Instance: not null. Latent NRE.",
+   "confidence": 0.6,
+   "rationale": "Verified: sibling at :2393 guards 'Instance: not null, InstancePropagatesNullability: true'; the ctor permits null instance with the flag set, so Instance! is unguarded.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 11
+     "finding_index": 16
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 23
+     "finding_index": 49
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 66
+     "finding_index": 139
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 93
+     "finding_index": 196
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 83
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 166
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 223
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 128
     }
    ]
   },
@@ -646,15 +1109,15 @@
    "matches_thread": null,
    "judged_severity": "nit",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633",
-   "confidence": 0.65,
-   "rationale": "Accurate style asymmetry: `== true` here vs the `is { InstancePropagatesNullability: true }` pattern at 1505/2393. Cosmetic.",
+   "confidence": 0.7,
+   "rationale": "Verified style asymmetry: :2393 and :1630 use 'is { ...: true }' patterns where the new code uses '== true'.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 28
+     "finding_index": 54
     }
    ]
   },
@@ -665,37 +1128,72 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:640-646",
-   "confidence": 0.85,
-   "rationale": "Index-mismatch hypothesis cleared, and correctly: the ctor throws InconsistentNumberOfArguments (SqlFunctionExpression.cs:215-224) and IsNiladic carries MemberNotNullWhen.",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Verified cleared: the ctor throws InconsistentNumberOfArguments on a count mismatch and IsNiladic carries MemberNotNullWhen. No index risk.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 12
+     "finding_index": 17
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "demoted",
-     "finding_index": 38
+     "finding_index": 64
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 77
+     "finding_index": 150
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 119
+     "finding_index": 241
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 34
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 96
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 127
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 129
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 182
     }
    ]
   },
@@ -705,45 +1203,94 @@
    "location": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250",
    "verdict": "valid-other",
    "matches_thread": null,
-   "judged_severity": "medium",
-   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2292",
-   "confidence": 0.7,
-   "rationale": "Verified: all five tests use ~, int +, or string concat, and mixed_checks puts BoolA in the test not the result. The unsound shapes are entirely uncovered.",
+   "judged_severity": "high",
+   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2298",
+   "confidence": 0.6,
+   "rationale": "Verified: all five results use ~, int +, or string concat \u2014 totally null-propagating shapes. No test puts a comparison or connective in the THEN result.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 6
+     "finding_index": 11
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 18
+     "finding_index": 44
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 64
+     "finding_index": 137
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 101
+     "finding_index": 204
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 116
+     "finding_index": 238
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 23
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 77
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 224
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 252
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 163
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 132
     }
    ]
   },
@@ -754,16 +1301,16 @@
    "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2292",
+   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2298",
    "confidence": 0.5,
-   "rationale": "The useRelationalNulls:true pattern does exist in this file (20 sites) and the new tests skip it; a reasonable but modest coverage ask.",
+   "rationale": "The useRelationalNulls:true pattern does exist in this file and the new tests skip it; a small, real coverage asymmetry.",
    "reported_by": [
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 118
+     "finding_index": 240
     }
    ]
   },
@@ -773,17 +1320,38 @@
    "location": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:0",
    "verdict": "valid-other",
    "matches_thread": null,
-   "judged_severity": "low",
-   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2292",
-   "confidence": 0.5,
-   "rationale": "Real gap: nothing pins the argumentsPropagateNullability==false guard that keeps COALESCE results from collapsing. A regression test there is worth having.",
+   "judged_severity": "medium",
+   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2298",
+   "confidence": 0.55,
+   "rationale": "Real gap: the argumentsPropagateNullability==false guard (COALESCE) is the only thing blocking a wrong-result collapse and nothing pins it.",
    "reported_by": [
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 117
+     "finding_index": 239
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 24
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 81
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 253
     }
    ]
   },
@@ -793,31 +1361,38 @@
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:622",
    "verdict": "valid-minor",
    "matches_thread": null,
-   "judged_severity": "nit",
+   "judged_severity": "low",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:621-625",
    "confidence": 0.6,
-   "rationale": "Correct: the only unary test uses ~ (ExpressionType.Not); Negate has no test. Small branch-coverage gap in an otherwise symmetric operator set.",
+   "rationale": "Correct: only Not is exercised by the new tests; Negate has no test at all. A small, concrete coverage gap in a set the code enumerates by hand.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 30
+     "finding_index": 56
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 70
+     "finding_index": 143
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 106
+     "finding_index": 209
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 170
     }
    ]
   },
@@ -830,28 +1405,42 @@
    "judged_severity": "low",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633-636",
    "confidence": 0.6,
-   "rationale": "Correct: no new or updated baseline exercises an instance-method function, so this branch is untested. Small, with a concrete test suggested.",
+   "rationale": "Accurate: the instance branch (the one with the unguarded Instance!) has no test; the LEN baselines only exercise the arguments loop.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 29
+     "finding_index": 55
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 69
+     "finding_index": 142
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 104
+     "finding_index": 207
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 169
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 226
     }
    ]
   },
@@ -861,17 +1450,17 @@
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:638",
    "verdict": "trivia",
    "matches_thread": null,
-   "judged_severity": "nit",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:638",
+   "judged_severity": "info",
+   "code_citation": "",
    "confidence": 0.55,
-   "rationale": "Accurate but inconsequential: the IsNiladic guard is a compiler-required null check for Arguments; a dedicated test for it would add nothing.",
+   "rationale": "A fragmentary coverage note about a defensive guard; no consequence a maintainer would act on.",
    "reported_by": [
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 105
+     "finding_index": 208
     }
    ]
   },
@@ -882,23 +1471,23 @@
    "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:602-615",
-   "confidence": 0.6,
-   "rationale": "Correct: only the 'left is null ? right' arm is exercised (mixed_checks); the symmetric arm and binary.Update have no test. Small, symmetric to covered code.",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:604-609",
+   "confidence": 0.55,
+   "rationale": "Correct: no new test leaves two surviving conjuncts, so the binary.Update arm of the conjunction folding is unexercised.",
    "reported_by": [
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 102
+     "finding_index": 205
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 103
+     "finding_index": 206
     }
    ]
   },
@@ -909,23 +1498,23 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "nit",
-   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2270-2292",
+   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2270",
    "confidence": 0.5,
-   "rationale": "'Swapped' overreaches: _with_partial_checks reasonably names checks that only partially cover the result's operands, as the finding itself concedes.",
+   "rationale": "'partial checks' naturally reads as 'the null checks cover only some operands', which is exactly what the test does; the 'swapped' conclusion doesn't hold.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 31
+     "finding_index": 57
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 108
+     "finding_index": 211
     }
    ]
   },
@@ -933,40 +1522,54 @@
    "cluster_id": "e25",
    "summary": "SQLite inherits all five new tests with no SQL baseline override, so it compares results only",
    "location": "test/EFCore.Sqlite.FunctionalTests/Query/NullSemanticsQuerySqliteTest.cs:0",
-   "verdict": "valid-minor",
+   "verdict": "trivia",
    "matches_thread": null,
-   "judged_severity": "low",
-   "code_citation": "test/EFCore.Sqlite.FunctionalTests/Query/NullSemanticsQuerySqliteTest.cs",
+   "judged_severity": "info",
+   "code_citation": "",
    "confidence": 0.55,
-   "rationale": "True that SQLite gets no SQL baseline for the five new tests, so a silent non-firing would pass there; but the file's selective-override pattern makes this small.",
+   "rationale": "The cluster's own analysis concludes this matches the file's selective-override convention and the tests still run and pass on SQLite.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 32
+     "finding_index": 58
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "demoted",
-     "finding_index": 58
+     "finding_index": 116
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 86
+     "finding_index": 159
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 107
+     "finding_index": 210
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 89
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 186
     }
    ]
   },
@@ -976,24 +1579,45 @@
    "location": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1044",
    "verdict": "valid-minor",
    "matches_thread": null,
-   "judged_severity": "low",
-   "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1039-1049",
-   "confidence": 0.7,
-   "rationale": "Verified: optimization5/6/7 keep '// issue #16050' while their baselines are now the optimal SQL; sibling tests 2/3/4 legitimately keep theirs. Comment hygiene.",
+   "judged_severity": "nit",
+   "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1018-1044",
+   "confidence": 0.6,
+   "rationale": "Verified: the '// issue #16050' markers survive on Null_propagation_optimization5/6 and Select_null_propagation_optimization7 whose baselines this diff makes optimal.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 67
+     "finding_index": 140
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 123
+     "finding_index": 245
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 87
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 168
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 229
     }
    ]
   },
@@ -1001,19 +1625,19 @@
    "cluster_id": "e27",
    "summary": "The nested_checks baseline is byte-identical to the non-nested test, so it pins nothing extra",
    "location": "test/EFCore.SqlServer.FunctionalTests/Query/NullSemanticsQuerySqlServerTest.cs:4537",
-   "verdict": "valid-minor",
+   "verdict": "false-positive",
    "matches_thread": null,
    "judged_severity": "nit",
-   "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/NullSemanticsQuerySqlServerTest.cs:4548-4557",
-   "confidence": 0.45,
-   "rationale": "Core point holds (inner CASE collapses first, so no nested DropNotNullChecks recursion), but 'byte-identical' is wrong: string columns vs int columns.",
+   "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/NullSemanticsQuerySqlServerTest.cs:4537",
+   "confidence": 0.5,
+   "rationale": "Baseline is NOT byte-identical (string vs int columns), and the test is the only one pinning nested CASE folding, so 'pins nothing extra' is wrong.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 68
+     "finding_index": 141
     }
    ]
   },
@@ -1025,22 +1649,22 @@
    "matches_thread": null,
    "judged_severity": "nit",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:590",
-   "confidence": 0.65,
-   "rationale": "Accurate style asymmetry against line 537 in the same method, plus a redundant list allocation. Cosmetic.",
+   "confidence": 0.7,
+   "rationale": "Verified: :537 spells out new CaseWhenClause(...) while :590 uses a bare target-typed new and allocates a fresh list.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 27
+     "finding_index": 53
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 99
+     "finding_index": 202
     }
    ]
   },
@@ -1048,26 +1672,40 @@
    "cluster_id": "e29",
    "summary": "operands.Add discards the HashSet insertion result and recurses unconditionally, so shared DAG nodes are re-traversed",
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:619",
-   "verdict": "valid-other",
+   "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:619",
-   "confidence": 0.55,
-   "rationale": "Correct: Add's return is discarded and recursion is unconditional, so shared subtrees are re-walked and re-hashed. One-line `if (!operands.Add(e)) return;` fix.",
+   "confidence": 0.6,
+   "rationale": "Accurate: Add's return is discarded and recursion is unconditional, so shared DAG nodes re-descend. One-line fix, compile-time only.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 33
+     "finding_index": 59
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 124
+     "finding_index": 246
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 171
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 231
     }
    ]
   },
@@ -1078,16 +1716,16 @@
    "verdict": "matches-thread",
    "matches_thread": 3,
    "judged_severity": "nit",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595-649",
-   "confidence": 0.85,
-   "rationale": "Same point as the reviewer's 'this can all be one nice switch statement with pattern matching' on the if/else-if type-dispatch chains.",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:602-648",
+   "confidence": 0.7,
+   "rationale": "Thread 3: 'this can all be one nice switch statement with pattern matching' \u2014 same if/else-chain-vs-switch point on the same local functions.",
    "reported_by": [
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 98
+     "finding_index": 201
     }
    ]
   },
@@ -1095,33 +1733,68 @@
    "cluster_id": "e31",
    "summary": "The soundness contract the rewrite depends on is never stated: the steering comment describes only the degenerate identity case",
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576",
-   "verdict": "valid-other",
+   "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576",
-   "confidence": 0.5,
-   "rationale": "Accurate: the comment describes only the identity case while the code handles conjunctions and partial drops, and the load-bearing invariant is written nowhere.",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576-577",
+   "confidence": 0.6,
+   "rationale": "Fair: the steering comment describes the identity case in C# binary syntax while the code handles deep subtrees and partial conjunct drops. A doc gap.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 21
+     "finding_index": 47
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 95
+     "finding_index": 198
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "info",
      "disposition": "reported",
-     "finding_index": 126
+     "finding_index": 248
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 27
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 78
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 164
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 222
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 258
     }
    ]
   },
@@ -1130,25 +1803,32 @@
    "summary": "An operator allowlist alone leaves the optimization unsound against future operators; only re-visit-and-compare validation closes it",
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
    "verdict": "matches-thread",
-   "matches_thread": 10,
+   "matches_thread": 8,
    "judged_severity": "medium",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
-   "confidence": 0.5,
-   "rationale": "Recursing by node type instead of an operator allowlist is the fail-open the reviewer identifies and asks to be audited across binary operators.",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:621-630",
+   "confidence": 0.45,
+   "rationale": "Thread 8 raises the same structural question about how the operator filter should fail for operators not yet considered; e32 argues fail-closed allowlist.",
    "reported_by": [
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "info",
      "disposition": "reported",
-     "finding_index": 125
+     "finding_index": 247
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "info",
      "disposition": "reported",
-     "finding_index": 127
+     "finding_index": 249
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 259
     }
    ]
   },
@@ -1159,23 +1839,37 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:621-625",
-   "confidence": 0.75,
-   "rationale": "Claims Not/Negate/Convert is right and IS NULL/IS NOT NULL correctly excluded; that is accurate. States the code is fine.",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Claims the Not/Negate/Convert set is correct, and it is; a clearance, not a defect report.",
    "reported_by": [
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 54
+     "finding_index": 112
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 74
+     "finding_index": 147
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 95
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 181
     }
    ]
   },
@@ -1186,23 +1880,37 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
-   "confidence": 0.75,
-   "rationale": "Bitwise And/Or considered and dismissed; correct either way, since SQL bitwise operators return NULL for a NULL operand.",
+   "code_citation": "",
+   "confidence": 0.6,
+   "rationale": "Hypothesis investigated and correctly cleared: surviving bitwise And/Or nodes are integer ops and do propagate NULL.",
    "reported_by": [
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 55
+     "finding_index": 113
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 73
+     "finding_index": 146
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 122
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 179
     }
    ]
   },
@@ -1213,23 +1921,30 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
-   "confidence": 0.8,
-   "rationale": "ExclusiveOr considered and correctly dismissed: NULL ^ x is NULL. Asserts the code is fine, which it is.",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Correctly dismissed: NULL ^ x is NULL, so treating ExclusiveOr as null-propagating is right.",
    "reported_by": [
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 53
+     "finding_index": 111
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 72
+     "finding_index": 145
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 178
     }
    ]
   },
@@ -1240,16 +1955,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:631-647",
-   "confidence": 0.7,
-   "rationale": "Says flag usage matches VisitSqlFunction (line 1505) \u2014 true, and an explicit no-finding. Nothing to act on.",
+   "code_citation": "",
+   "confidence": 0.6,
+   "rationale": "Reports no divergence from VisitSqlFunction's use of the flags; a clearance with no actionable content.",
    "reported_by": [
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 56
+     "finding_index": 114
     }
    ]
   },
@@ -1260,16 +1975,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:499-650",
-   "confidence": 0.7,
-   "rationale": "Method-length observation the finder itself concedes has no nameable consequence beyond other findings. Costs attention only.",
+   "code_citation": "",
+   "confidence": 0.6,
+   "rationale": "Method-length observation the cluster itself says has no nameable consequence.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "demoted",
-     "finding_index": 46
+     "finding_index": 72
     }
    ]
   },
@@ -1281,15 +1996,22 @@
    "matches_thread": null,
    "judged_severity": "info",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
-   "confidence": 0.7,
-   "rationale": "Concludes ignoring allowOptimizedExpansion is correct, which holds for a rewrite claiming unconditional equivalence. An all-clear.",
+   "confidence": 0.6,
+   "rationale": "Dominant reading is 'correct to ignore'; the rewrite claims unconditional equivalence, so allowOptimizedExpansion is genuinely irrelevant here.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "demoted",
-     "finding_index": 43
+     "finding_index": 69
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 221
     }
    ]
   },
@@ -1300,16 +2022,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:597-598",
-   "confidence": 0.75,
-   "rationale": "Claims matching only unary NotEqual is sufficient, which is right: unary NotEqual is IS NOT NULL by construction. States the code is fine.",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Hypothesis cleared and correctly: unary NotEqual in the SQL tree is by construction IS NOT NULL.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 75
+     "finding_index": 148
     }
    ]
   },
@@ -1320,16 +2042,23 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580",
-   "confidence": 0.8,
-   "rationale": "Allocation cost considered and dismissed; correct, this is compile-time-per-query-shape work. Nothing to act on.",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Per-CASE HashSet allocation in a compile-time path, explicitly judged below the reporting bar by the finder and rightly so.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 79
+     "finding_index": 152
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 190
     }
    ]
   },
@@ -1340,23 +2069,58 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585-588",
-   "confidence": 0.8,
-   "rationale": "Correctly cleared: CaseExpression derives Type/TypeMapping from whenClauses[0].Result, and line 547 already does the identical collapse.",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Type/TypeMapping loss hypothesis cleared; the identical collapse already exists pre-change at :573.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "demoted",
-     "finding_index": 40
+     "finding_index": 66
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 83
+     "finding_index": 156
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 38
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 94
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 126
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 185
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 39
     }
    ]
   },
@@ -1367,23 +2131,44 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585-588",
-   "confidence": 0.8,
-   "rationale": "Correctly cleared: nullable is already true from the NULL else-branch before the early return. States the code is fine.",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Out-parameter hypothesis raised and cleared correctly; nullable is already true from the NULL else.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "demoted",
-     "finding_index": 41
+     "finding_index": 67
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 84
+     "finding_index": 157
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 37
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 125
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 184
     }
    ]
   },
@@ -1394,16 +2179,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585-588",
-   "confidence": 0.7,
-   "rationale": "Alias/ORDER BY hypothesis checked and cleared; ProjectionExpression carries the alias independently. Asserts no defect.",
+   "code_citation": "",
+   "confidence": 0.6,
+   "rationale": "Alias/ORDER BY hypothesis raised and cleared; no defect asserted.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 85
+     "finding_index": 158
     }
    ]
   },
@@ -1414,16 +2199,23 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595-615",
-   "confidence": 0.75,
-   "rationale": "Divide-by-zero hypothesis checked and cleared; only IS NOT NULL conjuncts are dropped. No defect asserted.",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Divide-by-zero/error-surface hypothesis raised and correctly refuted; the non-NULL value set reaching the expression is unchanged.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "demoted",
-     "finding_index": 42
+     "finding_index": 68
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 175
     }
    ]
   },
@@ -1434,23 +2226,37 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-649",
-   "confidence": 0.8,
-   "rationale": "Stack-overflow hypothesis raised and correctly dismissed: Visit already recurses the same tree deeper. No new risk, nothing to act on.",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Stack-overflow concern raised then correctly dismissed: Visit already recurses the same tree to the same depth first.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "demoted",
-     "finding_index": 36
+     "finding_index": 62
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 78
+     "finding_index": 151
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 97
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 188
     }
    ]
   },
@@ -1460,17 +2266,17 @@
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617",
    "verdict": "matches-thread",
    "matches_thread": 6,
-   "judged_severity": "low",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-649",
-   "confidence": 0.45,
-   "rationale": "Same substance as the reviewer naming missing expression types for the model; different example (LikeExpression rather than AtTimeZone/Collate).",
+   "judged_severity": "info",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-648",
+   "confidence": 0.5,
+   "rationale": "Same substance as thread 6 \u2014 an expression type that propagates NULL is absent from the model \u2014 though it names Like rather than AtTimeZone/Collate.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "demoted",
-     "finding_index": 48
+     "finding_index": 74
     }
    ]
   },
@@ -1481,16 +2287,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-649",
+   "code_citation": "",
    "confidence": 0.6,
-   "rationale": "Claims provider subclasses fall through to the safe default; true (unmatched types just stop the recursion). Asserts no defect, so no reader value.",
+   "rationale": "Provider-subclass hypothesis raised and cleared; they fall to the conservative default.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 82
+     "finding_index": 155
     }
    ]
   },
@@ -1501,16 +2307,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2264-2272",
-   "confidence": 0.85,
-   "rationale": "Reports a refuted NullReferenceException claim; the refutation is right \u2014 C# string concat with null yields empty. No defect asserted.",
+   "code_citation": "",
+   "confidence": 0.7,
+   "rationale": "Correctly refutes the NRE claim \u2014 C# string concat with null yields empty, no exception. Reports a non-problem.",
    "reported_by": [
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "critical",
      "disposition": "demoted",
-     "finding_index": 57
+     "finding_index": 115
     }
    ]
   },
@@ -1521,23 +2327,30 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1018-1049",
-   "confidence": 0.7,
-   "rationale": "Baseline churn verified sound and no stale baselines found \u2014 an accurate all-clear, not a finding.",
+   "code_citation": "",
+   "confidence": 0.6,
+   "rationale": "Traces the baseline churn and concludes it is all sound, which it is; a clearance.",
    "reported_by": [
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "demoted",
-     "finding_index": 59
+     "finding_index": 117
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 112
+     "finding_index": 215
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 131
     }
    ]
   },
@@ -1549,15 +2362,22 @@
    "matches_thread": null,
    "judged_severity": "info",
    "code_citation": "",
-   "confidence": 0.75,
-   "rationale": "Checked and correctly cleared: this repo has no release-note directory. Pure non-finding.",
+   "confidence": 0.65,
+   "rationale": "Correctly concludes there is no in-repo release-note artifact, hence no standard violated. No actionable content.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "demoted",
-     "finding_index": 45
+     "finding_index": 71
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 103
     }
    ]
   },
@@ -1569,15 +2389,29 @@
    "matches_thread": null,
    "judged_severity": "info",
    "code_citation": "",
-   "confidence": 0.7,
-   "rationale": "Searched for stale baselines and found none; an accurate all-clear with no action attached.",
+   "confidence": 0.6,
+   "rationale": "A completeness sweep that found nothing; reports the absence of a problem.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "demoted",
-     "finding_index": 47
+     "finding_index": 73
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 104
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 260
     }
    ]
   },
@@ -1588,16 +2422,30 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/Internal/RelationalCommandCache.cs:139",
-   "confidence": 0.75,
-   "rationale": "Cache-poisoning hypothesis checked and cleared; parameter nullability is part of the command cache key. No defect asserted.",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Cache-poisoning hypothesis checked and cleared; parameter nullability is part of the command cache key.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 49
+     "finding_index": 75
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 36
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 106
     }
    ]
   },
@@ -1609,22 +2457,43 @@
    "matches_thread": null,
    "judged_severity": "info",
    "code_citation": "",
-   "confidence": 0.7,
-   "rationale": "Local SDK build breakage in an unrelated test project, explicitly unrelated to the diff. Environmental, not reviewable content.",
+   "confidence": 0.5,
+   "rationale": "Local SDK build failure in an unrelated test project; environmental, unrelated to the change, and the cluster says so.",
    "reported_by": [
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 60
+     "finding_index": 118
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 88
+     "finding_index": 161
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 105
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 133
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 234
     }
    ]
   },
@@ -1635,16 +2504,23 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "test/EFCore.Specification.Tests/TestModels/NullSemanticsModel/NullSemanticsData.cs",
-   "confidence": 0.75,
-   "rationale": "Seed adequacy checked and cleared. Confirms existing behavior; no action for a maintainer.",
+   "code_citation": "",
+   "confidence": 0.6,
+   "rationale": "Seed-data adequacy checked and confirmed fine; a clearance with nothing for a maintainer to act on.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 87
+     "finding_index": 160
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 130
     }
    ]
   },
@@ -1655,16 +2531,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578-591",
-   "confidence": 0.7,
-   "rationale": "Scoping clarification for another finding (which boolean results stay correct). Accurate, but carries no independent action.",
+   "code_citation": "",
+   "confidence": 0.55,
+   "rationale": "A scoping qualifier on another finding \u2014 accurate, but no independent actionable content.",
    "reported_by": [
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 111
+     "finding_index": 214
     }
    ]
   },
@@ -1672,19 +2548,300 @@
    "cluster_id": "e57",
    "summary": "Whether the optimization silently strengthens the contract of the propagate-nullability flags",
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633",
-   "verdict": "trivia",
+   "verdict": "valid-other",
    "matches_thread": null,
-   "judged_severity": "info",
+   "judged_severity": "medium",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:631-647",
-   "confidence": 0.7,
-   "rationale": "Contract-strengthening claim refuted, correctly: VisitUnary at 2392-2429 already reads the flags in the reverse direction. Reports no defect.",
+   "confidence": 0.5,
+   "rationale": "Real consequence survives the refuted premise: a mis-declared propagate-nullability flag now yields wrong rows, and the call is hoisted out of the guard onto NULL rows.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "high",
      "disposition": "demoted",
-     "finding_index": 34
+     "finding_index": 60
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 25
+    }
+   ]
+  },
+  {
+   "cluster_id": "e58",
+   "summary": "Whether removing the guard loses index sargability",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "",
+   "confidence": 0.6,
+   "rationale": "Sargability hypothesis cleared correctly \u2014 the original predicate was already non-sargable.",
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 189
+    }
+   ]
+  },
+  {
+   "cluster_id": "e59",
+   "summary": "Whether aggregate functions such as SUM/MAX could be wrongly treated as null-propagating",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "",
+   "confidence": 0.6,
+   "rationale": "Aggregate hypothesis raised and correctly cleared; SqlServerAggregateFunctionExpression is not a SqlFunctionExpression and falls to the safe default.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 100
+    }
+   ]
+  },
+  {
+   "cluster_id": "e60",
+   "summary": "The static local functions are declared after the return statement",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Explicitly reports the placement matches file convention and is not a defect.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 101
+    }
+   ]
+  },
+  {
+   "cluster_id": "e62",
+   "summary": "Whether caseExpression.Update ignores the reassigned whenClauses",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "",
+   "confidence": 0.65,
+   "rationale": "Hypothesis raised and correctly cleared; CaseWhenClause equality is structural so Update detects the rewrite.",
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 174
+    }
+   ]
+  },
+  {
+   "cluster_id": "e63",
+   "summary": "The VisitCase XML doc was not updated for the new return shape",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:499",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "",
+   "confidence": 0.6,
+   "rationale": "Correctly concludes the XML doc stays accurate; VisitCase already returned non-CaseExpression values pre-change.",
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 183
+    }
+   ]
+  },
+  {
+   "cluster_id": "e65",
+   "summary": "Whether DropNotNullChecks descending only AndAlso and not OrElse is too narrow",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:600",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "",
+   "confidence": 0.6,
+   "rationale": "Claims the AndAlso-only descent is conservative and correct, and it is; a clearance.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 99
+    }
+   ]
+  },
+  {
+   "cluster_id": "e66",
+   "summary": "IsNull also matches a null-valued SqlParameterExpression, which would make the rewrite parameter-value dependent",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:1633",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "",
+   "confidence": 0.6,
+   "rationale": "Explicitly a claim withheld because it is unreachable; VisitSqlParameter rewrites null parameters to constants first.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "demoted",
+     "finding_index": 233
+    }
+   ]
+  },
+  {
+   "cluster_id": "e67",
+   "summary": "String concatenation relies on the server rather than the CASE to yield NULL, which differs under SQL Server CONCAT_NULL_YIELDS_NULL settings",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
+   "confidence": 0.5,
+   "rationale": "Technically true but rests on SET CONCAT_NULL_YIELDS_NULL OFF, a deprecated setting EF Core does not support; a maintainer would not act.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 91
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 123
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 257
+    }
+   ]
+  },
+  {
+   "cluster_id": "e68",
+   "summary": "No test pins the current unoptimized behavior of the expr == null ? null : expr shape named in the TODO",
+   "location": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "",
+   "confidence": 0.55,
+   "rationale": "Asking for a test that pins unimplemented-TODO behavior is not something a maintainer would act on.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 90
+    }
+   ]
+  },
+  {
+   "cluster_id": "e69",
+   "summary": "No query-compilation benchmark fixture contains a conditional-null projection, so the new path is invisible to perf tracking",
+   "location": "benchmark/EFCore.Benchmarks/Query/QueryCompilationTests.cs:41",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "benchmark/EFCore.Benchmarks/Query/QueryCompilationTests.cs:40-62",
+   "confidence": 0.55,
+   "rationale": "Factually right (no conditional-null projection in the fixtures), but no maintainer would gate an optimizer PR on adding a compilation-benchmark shape.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 92
+    }
+   ]
+  },
+  {
+   "cluster_id": "e70",
+   "summary": "Select_null_propagation_negative1/2 appear to cover this case but do not, because the guard uses a different column",
+   "location": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1074",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1074-1105",
+   "confidence": 0.5,
+   "rationale": "Accurate \u2014 negative1/2 use a different column in guard and result so they can't match the hash set \u2014 but mostly clears a false sense of coverage.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 225
+    }
+   ]
+  },
+  {
+   "cluster_id": "e71",
+   "summary": "The new function arm re-implements the null-propagation traversal already in ProcessNullNotNull and has diverged from it",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:631",
+   "verdict": "matches-thread",
+   "matches_thread": 5,
+   "judged_severity": "low",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:631-647",
+   "confidence": 0.5,
+   "rationale": "Thread 5 asks for this to be generalized/bubbled into the visitor rather than a local utility; e71 makes the same consolidation point via the ProcessNullNotNull duplication.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 26
+    }
+   ]
+  },
+  {
+   "cluster_id": "e73",
+   "summary": "Whether the changed code introduces SQL injection",
+   "location": ":0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "",
+   "confidence": 0.75,
+   "rationale": "Correctly reports no SQL-injection surface; an out-of-scope clearance with no actionable content.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 107
     }
    ]
   }

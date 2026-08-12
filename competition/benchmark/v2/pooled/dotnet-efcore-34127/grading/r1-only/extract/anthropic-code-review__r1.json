@@ -1,0 +1,38 @@
+[
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "",
+    "severity": "high",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 626,
+    "category": "null-semantics-correctness",
+    "claim": "NullPropagatedOperands recurses into every SqlBinaryExpression, including AndAlso/OrElse which do not propagate nullability under SQL three-valued logic, so DropNotNullChecks removes a required IS NOT NULL guard and changes query results.",
+    "raw": "**1. `NullPropagatedOperands` recurses into *every* `SqlBinaryExpression` operator, but `AndAlso`/`OrElse` do not propagate nullability in SQL's three-valued logic — the optimization drops a required `IS NOT NULL` guard and changes query results.**\n\n`src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630`",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "",
+    "severity": "low",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 580,
+    "category": "performance",
+    "claim": "NullPropagatedOperands walks the entire THEN tree for every single-when-clause CASE with a NULL else even when the test contains no IS NOT NULL, wasting allocation and traversal that gating on the test shape would avoid.",
+    "raw": "Secondary observations, below the bar I'd post as findings:\n\n- `src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580-581` — `NullPropagatedOperands` walks the entire `THEN` tree for *every* single-when-clause `CASE` with a `NULL` else, even when the test contains no `IS NOT NULL` at all. Gating on the test shape first would avoid the allocation and traversal. Minor.",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "",
+    "severity": "nit",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 577,
+    "category": "comment-hygiene",
+    "claim": "The new TODO comment carries no tracking-issue link, unlike most TODOs in this area.",
+    "raw": "- `src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:577` — the `// TODO: optimize expr == null ? null : expr` carries no issue link; most TODOs in this area reference a tracking issue.",
+    "disposition": "demoted"
+  }
+]
