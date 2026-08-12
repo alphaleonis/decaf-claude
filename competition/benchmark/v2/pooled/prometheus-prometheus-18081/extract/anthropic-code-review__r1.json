@@ -1,0 +1,122 @@
+[
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "",
+    "severity": "critical",
+    "file": "promql/engine.go",
+    "line": 2145,
+    "category": "stats-undercount-regression",
+    "claim": "TotalSamples (and prometheus_engine_query_samples_total) undercounts for range queries whose range-vector selector carries an @ modifier and whose enclosing call is not step-invariant, because fullWindowCount/samplesReadCount are declared outside the data-loading block and stay 0 on reused steps.",
+    "raw": "**1. `TotalSamples` / `prometheus_engine_query_samples_total` undercounts when a range-vector selector carries `@` and the enclosing call isn't step-invariant** — `promql/engine.go:2145`, `:2183`\n\n`var fullWindowCount, samplesReadCount int64` is declared outside the `if ts == ev.startTimestamp ...` block, so on reused steps it stays `0` and `IncrementSamplesAtStep(step, 0)` drops the window.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "",
+    "severity": "high",
+    "file": "promql/engine.go",
+    "line": 1874,
+    "category": "double-counting",
+    "claim": "Subquery samples are counted twice in SamplesRead — MergeSamplesReadFromSubquery merges the subquery's reads and the materialized matrix is then re-scanned and counted again by the range-vector loop, so samplesRead is exactly 2x and exceeds totalQueryableSamples.",
+    "raw": "**2. `SamplesRead` counts subquery samples twice** — `promql/engine.go:1874` and `:2184`\n\n`MergeSamplesReadFromSubquery` merges the subquery's reads, then the materialized matrix is re-scanned by the range-vector loop and counted again. Verified at exactly 2×; `samplesRead` ends up *exceeding* `totalQueryableSamples`, which is backwards for an I/O counter.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "",
+    "severity": "medium",
+    "file": "promql/engine.go",
+    "line": 2397,
+    "category": "unbounded-allocation-dos",
+    "claim": "NewChildWithStepTracking allocates two []int64 sized by the subquery's range/step before any evaluation, unconstrained by query.max-samples or the timeout, giving a query-text-controlled unbounded memory allocation (0 MiB base vs 54/109 MiB head).",
+    "raw": "**3. Unbounded up-front allocation from subquery step tracking** — `promql/engine.go:2397`, `util/stats/query_stats.go:411`\n\nAllocates two `[]int64` sized by `range/step` before evaluation, controlled entirely by query text and unconstrained by `query.max-samples`. Measured 0 MiB → 54/109 MiB for `m[1h:1ms]`/`m[2h:1ms]` with `MaxSamples: 50`; both queries succeed in ~0.1s.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "",
+    "severity": "low",
+    "file": "web/api/v1/api_test.go",
+    "line": 983,
+    "category": "vacuous-test-assertion",
+    "claim": "The new API-level assertions require.GreaterOrEqual(qs.Samples.SamplesRead, int64(0)) hold unconditionally for a monotonic counter and would pass even if the field were never populated.",
+    "raw": "**4. Vacuous test assertions** — `web/api/v1/api_test.go:983`, `:999`\n\n`require.GreaterOrEqual(t, qs.Samples.SamplesRead, int64(0))` holds unconditionally for a monotonic counter and would pass if the field were never populated.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "docs-compliance",
+    "severity": "low",
+    "file": "docs/feature_flags.md",
+    "line": 44,
+    "category": "docs-mismatch",
+    "claim": "The docs present samplesRead under the promql-per-step-stats feature heading, but the field is populated unconditionally (only the *PerStep arrays are flag-gated), so the documentation misstates when the field applies.",
+    "raw": "It flagged `docs/feature_flags.md:44-48` presenting `samplesRead` under the `promql-per-step-stats` heading when the field is actually unconditional. That one I agree is a real doc/behavior mismatch, and my verification above confirms the underlying behavior. Worth correcting alongside finding #2.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "docs-compliance",
+    "severity": "low",
+    "file": "docs/querying/api.md",
+    "line": 246,
+    "category": "docs-overbroad-claim",
+    "claim": "The added documentation sentence \"For other query types, this equals totalQueryableSamples\" is overbroad — the two counters are legitimately unequal for step-invariant expressions.",
+    "raw": "the \"for other queries this equals totalQueryableSamples\" claim (`docs/querying/api.md:246`) is overbroad — it is legitimately unequal for step-invariant expressions, where the code is correct.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "docs-compliance",
+    "severity": "low",
+    "file": "promql/engine.go",
+    "line": 2472,
+    "category": "stats-inconsistency",
+    "claim": "StepInvariantExpr adds SamplesRead once at step 0 while TotalSamples accrues per step, which an agent flagged as a code/docs contradiction; the orchestrator rejected it as correct-by-design and reclassified it as a documentation wording issue only.",
+    "raw": "1. It flagged `StepInvariantExpr` (`promql/engine.go:2472`) adding `SamplesRead` once at step 0 while `TotalSamples` accrues per step as a code/docs contradiction. The code there is correct and is the feature working as designed — a step-invariant expression genuinely is read once. ... A wording fix, not a defect.",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "historical-context",
+    "severity": "info",
+    "file": "promql/engine.go",
+    "line": 2385,
+    "category": "refactor-equivalence-check",
+    "claim": "The extracted subqStart/subqEnd/subqInterval computation was checked for a behavior change versus the prior inline code and found to compute identical values — cleared, not reported as a finding.",
+    "raw": "It also checked two things I had flagged as worth examining and found them sound, which I agree with:\n- The `subqStart`/`subqEnd`/`subqInterval` extraction at `promql/engine.go:2385-2411` computes identical values to the prior inline code.",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "historical-context",
+    "severity": "info",
+    "file": "promql/engine.go",
+    "line": 2422,
+    "category": "off-by-one-check",
+    "claim": "The ceiling-division outer-step attribution in the subquery step loop was examined as a possible off-by-one and found intentional and consistent with the countSamplesAfter delta model — cleared, not reported as a finding.",
+    "raw": "- The ceiling-division outer-step attribution at `promql/engine.go:2422-2437` is intentional and consistent with the `countSamplesAfter` delta model, not an off-by-one.",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 1,
+    "subagent": "shallow-bug-scan",
+    "severity": "info",
+    "file": "promql/engine.go",
+    "line": 2183,
+    "category": "samplesread-zero-check",
+    "claim": "SamplesRead staying 0 on reused (@-modifier) steps was examined alongside the TotalSamples regression and judged correct and intentional — cleared, only the TotalSamples half was reported as a defect.",
+    "raw": "It also confirmed the `SamplesRead=0` half of that branch is correct and intentional — the bug is specifically `TotalSamples`.",
+    "disposition": "demoted"
+  }
+]
