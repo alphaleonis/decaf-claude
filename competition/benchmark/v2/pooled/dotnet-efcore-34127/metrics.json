@@ -1,0 +1,270 @@
+{
+  "subject": "dotnet/efcore#34127",
+  "instrument": "pooled-adjudication",
+  "judge_model": "claude-opus-5",
+  "vintage": {
+    "status": "out-of-window",
+    "model": "claude-opus-5",
+    "merged_at": "2026-06-15",
+    "model_cutoff": "2026-05",
+    "provably_clean_from": "2026-06-01",
+    "why": "claude-opus-5 publishes a month-granular cutoff of 2026-05; a subject is provably out-of-window only if it merged on or after 2026-06-01"
+  },
+  "n_clusters": 56,
+  "n_cells": 7,
+  "threads": {
+    "admitted": 11,
+    "admitted_human": 10,
+    "admitted_bot": 1,
+    "human_axis_thin": false,
+    "hit_by_any_tool": 7,
+    "hit_by_any_tool_found": 7,
+    "missed_by_every_tool": 3,
+    "missed_by_every_tool_found": 3,
+    "missed_index": [
+      2,
+      8,
+      9
+    ],
+    "missed_index_found": [
+      2,
+      8,
+      9
+    ],
+    "demoted_by_every_tool_that_found_it": [],
+    "judge_dismissed_reported_threads": [],
+    "incumbent": {
+      "hit_by_any_tool": 0,
+      "hit_by_any_tool_found": 0
+    }
+  },
+  "tools": {
+    "anthropic-code-review": {
+      "clusters_reported": 1,
+      "clusters_found": 3,
+      "real": 1,
+      "valid_minor": 0,
+      "trivia": 0,
+      "false_positive": 0,
+      "precision": 1.0,
+      "precision_severity_weighted": 1.0,
+      "trivia_ratio": 0.0,
+      "unique_real": 0,
+      "unique_real_ids": [],
+      "per_cell": {
+        "findings": 1.0,
+        "false_positive": 0.0,
+        "trivia": 0.0
+      },
+      "thread_recall": 0.1,
+      "thread_recall_found": 0.1,
+      "demotion_gap": 0.0,
+      "threads_hit": 1,
+      "incumbent_agreement": 0.0,
+      "incumbent_agreement_found": 0.0,
+      "real_found": 1,
+      "demoted_real": 0,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 3.0555,
+      "cost_per_real_finding": 3.0555
+    },
+    "comprehensive-review": {
+      "clusters_reported": 13,
+      "clusters_found": 14,
+      "real": 10,
+      "valid_minor": 3,
+      "trivia": 0,
+      "false_positive": 0,
+      "precision": 0.769,
+      "precision_severity_weighted": 0.891,
+      "trivia_ratio": 0.0,
+      "unique_real": 1,
+      "unique_real_ids": [
+        "e12"
+      ],
+      "per_cell": {
+        "findings": 13.0,
+        "false_positive": 0.0,
+        "trivia": 0.0
+      },
+      "thread_recall": 0.5,
+      "thread_recall_found": 0.5,
+      "demotion_gap": 0.0,
+      "threads_hit": 5,
+      "incumbent_agreement": 0.0,
+      "incumbent_agreement_found": 0.0,
+      "real_found": 10,
+      "demoted_real": 0,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 14.7795,
+      "cost_per_real_finding": 1.478
+    },
+    "ours-audit": {
+      "clusters_reported": 17,
+      "clusters_found": 32,
+      "real": 8,
+      "valid_minor": 9,
+      "trivia": 0,
+      "false_positive": 0,
+      "precision": 0.471,
+      "precision_severity_weighted": 0.634,
+      "trivia_ratio": 0.0,
+      "unique_real": 1,
+      "unique_real_ids": [
+        "e15"
+      ],
+      "per_cell": {
+        "findings": 17.0,
+        "false_positive": 0.0,
+        "trivia": 0.0
+      },
+      "thread_recall": 0.4,
+      "thread_recall_found": 0.6,
+      "demotion_gap": 0.2,
+      "threads_hit": 4,
+      "incumbent_agreement": 0.0,
+      "incumbent_agreement_found": 0.0,
+      "real_found": 10,
+      "demoted_real": 2,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 25.9495,
+      "cost_per_real_finding": 3.2437
+    },
+    "ours-bugs": {
+      "clusters_reported": 1,
+      "clusters_found": 11,
+      "real": 1,
+      "valid_minor": 0,
+      "trivia": 0,
+      "false_positive": 0,
+      "precision": 1.0,
+      "precision_severity_weighted": 1.0,
+      "trivia_ratio": 0.0,
+      "unique_real": 0,
+      "unique_real_ids": [],
+      "per_cell": {
+        "findings": 1.0,
+        "false_positive": 0.0,
+        "trivia": 0.0
+      },
+      "thread_recall": 0.1,
+      "thread_recall_found": 0.1,
+      "demotion_gap": 0.0,
+      "threads_hit": 1,
+      "incumbent_agreement": 0.0,
+      "incumbent_agreement_found": 0.0,
+      "real_found": 3,
+      "demoted_real": 2,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 8.0059,
+      "cost_per_real_finding": 8.0059
+    },
+    "ours-review": {
+      "clusters_reported": 10,
+      "clusters_found": 28,
+      "real": 6,
+      "valid_minor": 4,
+      "trivia": 0,
+      "false_positive": 0,
+      "precision": 0.6,
+      "precision_severity_weighted": 0.872,
+      "trivia_ratio": 0.0,
+      "unique_real": 0,
+      "unique_real_ids": [],
+      "per_cell": {
+        "findings": 10.0,
+        "false_positive": 0.0,
+        "trivia": 0.0
+      },
+      "thread_recall": 0.1,
+      "thread_recall_found": 0.2,
+      "demotion_gap": 0.1,
+      "threads_hit": 1,
+      "incumbent_agreement": 0.0,
+      "incumbent_agreement_found": 0.0,
+      "real_found": 8,
+      "demoted_real": 2,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 15.8371,
+      "cost_per_real_finding": 2.6395
+    },
+    "pr-review-toolkit": {
+      "clusters_reported": 20,
+      "clusters_found": 22,
+      "real": 10,
+      "valid_minor": 9,
+      "trivia": 1,
+      "false_positive": 0,
+      "precision": 0.5,
+      "precision_severity_weighted": 0.743,
+      "trivia_ratio": 0.05,
+      "unique_real": 1,
+      "unique_real_ids": [
+        "e30"
+      ],
+      "per_cell": {
+        "findings": 20.0,
+        "false_positive": 0.0,
+        "trivia": 1.0
+      },
+      "thread_recall": 0.4,
+      "thread_recall_found": 0.4,
+      "demotion_gap": 0.0,
+      "threads_hit": 4,
+      "incumbent_agreement": 0.0,
+      "incumbent_agreement_found": 0.0,
+      "real_found": 10,
+      "demoted_real": 0,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 23.2198,
+      "cost_per_real_finding": 2.322
+    },
+    "superpowers": {
+      "clusters_reported": 14,
+      "clusters_found": 14,
+      "real": 7,
+      "valid_minor": 6,
+      "trivia": 1,
+      "false_positive": 0,
+      "precision": 0.5,
+      "precision_severity_weighted": 0.769,
+      "trivia_ratio": 0.071,
+      "unique_real": 2,
+      "unique_real_ids": [
+        "e19",
+        "e32"
+      ],
+      "per_cell": {
+        "findings": 14.0,
+        "false_positive": 0.0,
+        "trivia": 1.0
+      },
+      "thread_recall": 0.2,
+      "thread_recall_found": 0.2,
+      "demotion_gap": 0.0,
+      "threads_hit": 2,
+      "incumbent_agreement": 0.0,
+      "incumbent_agreement_found": 0.0,
+      "real_found": 7,
+      "demoted_real": 0,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 4.5107,
+      "cost_per_real_finding": 0.6444
+    }
+  },
+  "verdict_distribution": {
+    "false-positive": 0,
+    "matches-key": 0,
+    "matches-thread": 10,
+    "trivia": 26,
+    "valid-minor": 14,
+    "valid-other": 6
+  }
+}

@@ -6,7 +6,7 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-12T07:12:02Z
-updated_at: 2026-08-12T07:12:26Z
+updated_at: 2026-08-12T09:51:26Z
 parent: dcc-ho2w
 order: z
 ---
@@ -56,3 +56,30 @@ stated purpose.
 - [ ] Decide which treatment thread recall gets, recorded with the reasoning
 - [ ] `score_pooled.py` emits it that way, with a guard against a bare point estimate if that is the decision
 - [ ] `scoring/README.md` and `/bench-analyze-v2` describe the chosen treatment
+
+
+## Broadened after the second subject (2026-08-12): BOTH axes, not just thread recall
+
+The original framing above came from prometheus alone, where precision moved 0.11 across two grading
+passes and thread recall moved 0.20. **Efcore shows the reverse** — precision 0.14, thread recall
+0.10 — so "precision is robust, recall is not" was a one-subject generalization and it is wrong.
+
+| subject | max delta precision | max delta thread recall | precision ranking stable |
+|---|---|---|---|
+| prometheus/prometheus#18081 | 0.11 | 0.20 | no (one adjacent swap) |
+| dotnet/efcore#34127 | 0.14 | 0.10 | no |
+
+Both axes move 0.10-0.20 between independent grading passes of the SAME cells and the SAME clusters,
+and the precision ranking changed on both subjects. The judge itself is stable — it cleared every
+pre-registered floor on both subjects, and comfortably (exact agreement 0.889 and 0.929) — so this is
+not a grader-quality problem. It is that per-tool metrics computed over 10-60 clusters are simply
+sensitive to a handful of individual calls.
+
+**Therefore: no per-tool figure from a single grading pass may be published.** That applies to
+precision exactly as much as to thread recall. Options 1-3 below still stand, but they now govern
+both axes.
+
+A second consequence: the corpus-level numbers were far steadier than the per-tool ones — human
+threads hit by any tool moved 8->7 on prometheus and 7->6 on efcore, and the missed-by-everyone set
+grew by exactly one thread on each. Aggregate statements about what the field as a whole misses are
+the most defensible output this instrument produces; per-tool rankings are the least.

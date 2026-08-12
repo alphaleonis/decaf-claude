@@ -1,0 +1,65 @@
+{
+  "n_clusters": 56,
+  "judge_model": {
+    "pass1": "claude-opus-5",
+    "pass2": "claude-opus-5"
+  },
+  "same_model": true,
+  "exact_agreement": 0.929,
+  "disagreement_rate": 0.071,
+  "kappa_6way": 0.895,
+  "real_vs_not": {
+    "agreement": 0.946,
+    "kappa": 0.871
+  },
+  "valid_other_vs_trivia_boundary": {
+    "n": 35,
+    "agreement": 0.914,
+    "kappa": 0.779
+  },
+  "matches_thread": {
+    "n_either_pass": 10,
+    "agree_same_index": 9
+  },
+  "confusion": {
+    "matches-thread -> matches-thread": 9,
+    "matches-thread -> valid-minor": 1,
+    "trivia -> trivia": 26,
+    "valid-minor -> trivia": 1,
+    "valid-minor -> valid-minor": 11,
+    "valid-minor -> valid-other": 2,
+    "valid-other -> valid-other": 6
+  },
+  "disagreements": [
+    {
+      "cluster_id": "e15",
+      "pass1": "matches-thread",
+      "pass2": "valid-minor",
+      "crosses_real_boundary": true
+    },
+    {
+      "cluster_id": "e24",
+      "pass1": "valid-minor",
+      "pass2": "trivia",
+      "crosses_real_boundary": false
+    },
+    {
+      "cluster_id": "e29",
+      "pass1": "valid-minor",
+      "pass2": "valid-other",
+      "crosses_real_boundary": true
+    },
+    {
+      "cluster_id": "e31",
+      "pass1": "valid-minor",
+      "pass2": "valid-other",
+      "crosses_real_boundary": true
+    }
+  ],
+  "threshold": {
+    "kappa_floor": 0.6,
+    "exact_floor": 0.7,
+    "pre_registered": true
+  },
+  "stable": true
+}
