@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-11T19:36:12Z
+updated_at: 2026-08-12T07:11:55Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-5xad
@@ -321,3 +321,93 @@ scratchpad were each removed, the harness's own scratchpad survived, and the ref
 
 The failed cell's directory was deleted so `run_pilot.sh` re-runs it; its $18.68 is spent and
 unrecoverable.
+
+
+## First scored subject: prometheus/prometheus#18081 r1 (2026-08-12)
+
+Seven tools, one repeat, shim on, all cells isolation-CLEAN. 183 findings -> 99 clusters -> two
+independent blind grading passes. `vintage: out-of-window` (merged 2026-06-15, after Opus 5's
+2026-05 cutoff), so these numbers are poolable.
+
+### The judge is stable — pilot question 1, answered
+
+Thresholds were pre-registered in `scoring/judge_stability.py` and committed (`b9de687`) before
+either pass ran, so the verdict could not be drawn around the result.
+
+| measure | value | floor |
+|---|---|---|
+| exact agreement, 6-way | 0.889 | 0.70 |
+| Cohen's kappa, 6-way | 0.837 | — |
+| real / not-real kappa | 0.78 | 0.60 |
+| `valid-other` / `trivia` boundary | n=66, agreement 0.879, kappa 0.737 | — |
+
+Pass 2 ran as a separate `claude -p` process on a differently-shuffled payload, so it was blind to
+pass 1 by construction rather than by instruction. The boundary v1's distribution showed *is* the
+metric reproduces at kappa 0.737.
+
+### Precision and thread recall rank the tools backwards — pilot question 2
+
+| tool | precision | sev-weighted | real | unique real | reported | found | thread recall |
+|---|---|---|---|---|---|---|---|
+| `anthropic-code-review` | 1.00 | 1.00 | 6 | 0 | 6 | 10 | 0.20 |
+| `ours-bugs` | 1.00 | 1.00 | 3 | 0 | 3 | 10 | 0.10 |
+| `comprehensive-review` | 0.78 | 0.88 | 14 | 0 | 18 | 24 | 0.60 |
+| `ours-review` | 0.64 | 0.79 | 7 | 0 | 11 | 27 | 0.50 |
+| `superpowers` | 0.63 | 0.80 | 12 | 0 | 19 | 19 | 0.50 |
+| `pr-review-toolkit` | 0.56 | 0.72 | 13 | 0 | 23 | 23 | 0.60 |
+| `ours-audit` | 0.51 | 0.70 | 19 | **7** | 37 | 63 | 0.60 |
+
+The two tools with perfect precision have the worst agreement with expert human review; the tool
+with the worst precision has the best thread recall and is the only one with unique real findings.
+**A single merged quality score would rank these in an order the evidence does not support.** This is
+the clearest vindication so far of METHODOLOGY-v2's refusal to merge the axes — and it could not have
+been seen under v1, which had no thread axis.
+
+The tools separate on precision from 0.51 to 1.00 and on thread recall from 0.10 to 0.60. The
+instrument discriminates.
+
+### Precision is robust to the judge; thread recall is not — a new finding
+
+Re-scoring the identical cells and clusters against pass 2:
+
+| axis | max delta | ranking |
+|---|---|---|
+| precision | 0.11 | stable — one adjacent swap between tools 0.01 apart |
+| thread recall | **0.20** | not stable — `pr-review-toolkit` moved 0.60 -> 0.40 |
+
+The mechanism is quantization, not judge sloppiness. With 10 human threads each is worth 0.10, and a
+single substitution moves several tools at once: pass 1 matched thread 6 to `c05` (raised by three
+tools), pass 2 matched the same thread to `c41` (raised by one). The thread was covered under both
+passes; the per-tool credit was completely different.
+
+`threads.human_axis_thin` only fires at 1-2 human threads. This subject has 10 — the densest citable
+cell in the corpus — and its thread axis still moves 0.20 on one adjudication call. **Thread recall
+needs an uncertainty band from multi-pass grading, not a point estimate**, and that applies to every
+subject in the corpus, all of which have <= 10 human threads. Filed as follow-up work.
+
+### Judge calibration: clean
+
+`judge_dismissed_reported_threads` = 0 under both passes. No thread a tool actually raised was graded
+trivia or false-positive. That check exists precisely because subjects were drawn from
+review-disciplined repos, and it found nothing to worry about.
+
+### What every tool missed
+
+8 of 10 human threads were caught by at least one tool (7 of 10 under pass 2). Missed by everyone
+under both passes:
+
+- **thread 2** — a duplicated "phase 3" section header in the test file
+- **thread 7** — "Shouldn't this be 3?" on one specific per-step expectation value
+
+Both sit in `promql/engine_test.go`. Nine of this subject's ten human threads are on test files and
+only one is on production code, several are questions rather than assertions, and one is process
+feedback ("ideally this would be in a separate PR"). That is `THREAD-AXIS.md` Finding 3 showing up
+live: expert threads skew to preference and question, so a low thread-recall number here is not
+evidence that tools missed real bugs.
+
+### Structure of the pool
+
+68 of 99 clusters (69%) were raised by exactly one tool; only two — the subquery double-count and the
+`@`-modifier undercount — were found by all seven. Almost all single-tool clusters graded `trivia` or
+`valid-minor`: across the whole roster there are just 7 unique real findings, all from `ours-audit`.
+What tools find alone is mostly not substantive.
