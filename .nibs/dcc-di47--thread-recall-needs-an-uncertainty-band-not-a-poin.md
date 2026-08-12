@@ -6,7 +6,7 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-12T07:12:02Z
-updated_at: 2026-08-12T09:51:26Z
+updated_at: 2026-08-12T13:23:11Z
 parent: dcc-ho2w
 order: z
 ---
@@ -83,3 +83,32 @@ A second consequence: the corpus-level numbers were far steadier than the per-to
 threads hit by any tool moved 8->7 on prometheus and 7->6 on efcore, and the missed-by-everyone set
 grew by exactly one thread on each. Aggregate statements about what the field as a whole misses are
 the most defensible output this instrument produces; per-tool rankings are the least.
+
+
+## Decisive measurement (2026-08-12): the judge is the dominant term, not the tool
+
+efcore at 2 repeats let both sources of uncertainty be isolated on one subject:
+
+| source | isolation | max delta precision | max delta recall |
+|---|---|---|---|
+| the judge | two grading passes over the SAME 14 cells | **0.25** | **0.20** |
+| the tool | a second repeat, scored by the SAME judge pass | 0.12 | 0.10 |
+
+A whole second repeat (7 cells, $112) moved precision by at most 0.12 and left five of seven tools
+unchanged. Re-grading the cells already in hand moved it up to 0.25.
+
+**Recommended treatment, for decision before the full run:**
+
+1. **One repeat, three grading passes** — report each per-tool figure as the median with the observed
+   range attached. [Inference] ~$140/subject against ~$238 for 2 repeats + 2 passes, and it targets
+   the larger error term. Over 12 subjects: ~$1,700 vs ~$2,900, for a tighter measurement.
+2. Keep 2 repeats only where a tool's *reported volume* is itself the question — `anthropic-code-review`
+   reported 1 finding then 4 on identical code, which no number of grading passes would have revealed.
+
+**Publication rules this implies, regardless of which option is chosen:**
+
+- No per-tool precision or recall from a single grading pass.
+- `threads.missed_index` is **not** publishable from a single pass. The count reproduces (7/10 under
+  both passes) but the identity does not ({7,8,9} vs {1,2,9}, one in common). Report "the field
+  caught N of M"; do not name which were missed without multi-pass agreement.
+- A ranking is not a result unless it survives every pass. It did not survive on either subject.

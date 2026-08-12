@@ -1,0 +1,11 @@
+subject	tool	repeat	status	rc	wall_s	cost_usd	isolation	denied
+dotnet-efcore-34127	anthropic-code-review	1	skipped					
+dotnet-efcore-34127	anthropic-code-review	2	ok	0	532	7.130470750000001	Cell isolation check: /home/decaf/code/d	42
+dotnet-efcore-34127	superpowers	1	skipped					
+dotnet-efcore-34127	superpowers	2	ok	0	583	3.469403	Cell isolation check: /home/decaf/code/d	0
+dotnet-efcore-34127	ours-bugs	1	skipped					
+dotnet-efcore-34127	ours-bugs	2	ok	0	1175	8.578803149999995	Cell isolation check: /home/decaf/code/d	0
+dotnet-efcore-34127	comprehensive-review	1	skipped					
+dotnet-efcore-34127	comprehensive-review	2	ok	0	895	20.13102935	Cell isolation check: /home/decaf/code/d	0
+dotnet-efcore-34127	ours-review	1	skipped					
+dotnet-efcore-34127	ours-review	2	ok	0	1594	17.7706536	Cell isolation check: /home/decaf/code/d	1

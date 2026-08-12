@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-12T09:51:53Z
+updated_at: 2026-08-12T13:22:46Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-5xad
@@ -473,3 +473,64 @@ Prometheus suggested precision was robust to the judge and thread recall was not
 changed on both subjects.** See [[dcc-di47]], now broadened: no per-tool figure from a single grading
 pass may be published, for either axis. Corpus-level figures were far steadier and are the most
 defensible output the instrument produces.
+
+
+## efcore at full strength: 2 repeats, 14 cells (2026-08-12)
+
+261 findings -> 69 clusters -> two independent blind grading passes. Every cell CLEAN.
+**Zero false positives across all seven tools and both repeats** — 261 findings, not one graded wrong
+about the code.
+
+| tool | precision | sev-wtd | real | unique | reported | found | find/cell | thread recall | $/real |
+|---|---|---|---|---|---|---|---|---|---|
+| `anthropic-code-review` | 1.00 | 1.00 | 4 | 0 | 4 | 7 | 2.0 | 0.10 | $2.55 |
+| `ours-bugs` | 1.00 | 1.00 | 2 | 0 | 2 | 20 | 1.0 | 0.00 | $8.29 |
+| `comprehensive-review` | 0.89 | 0.96 | 16 | 1 | 18 | 23 | 9.0 | 0.50 | $2.18 |
+| `ours-review` | 0.60 | 0.84 | 9 | 0 | 15 | 37 | 7.5 | 0.20 | $3.73 |
+| `superpowers` | 0.53 | 0.83 | 9 | 1 | 17 | 17 | 8.5 | 0.20 | **$0.89** |
+| `ours-audit` | 0.50 | 0.75 | 12 | 1 | 24 | 44 | 12.0 | 0.50 | $4.81 |
+| `pr-review-toolkit` | 0.50 | 0.78 | 12 | 2 | 24 | 28 | 12.0 | 0.30 | $3.91 |
+
+Judge stability on the combined pool: exact 0.899, real/not-real kappa 0.855, boundary kappa 0.757
+over 47 clusters. STABLE against the pre-registered floors for the third time.
+
+### THE HEADLINE: the judge contributes about twice the uncertainty the tool does
+
+Both sources measured on the same subject, isolated from each other:
+
+| source | how it was isolated | max delta precision | max delta recall |
+|---|---|---|---|
+| **the judge** | two grading passes over the SAME 14 cells | **0.25** | **0.20** |
+| **the tool** | adding a second repeat, scored by the SAME judge pass | 0.12 | 0.10 |
+
+Adding a whole second repeat — seven more cells, $112 — moved precision by at most 0.12 and left five
+of seven tools completely unchanged. Re-grading the cells we already had moved it by up to 0.25.
+
+**This inverts the design assumption.** The two-repeat structure was built to control tool variance;
+tool variance turns out to be the smaller term. The cheap lever is grading passes (no new cells), and
+the expensive lever (repeats) buys less.
+
+For the full run the arithmetic is stark. Per subject, roughly: 1 repeat + 3 grading passes costs
+~$95 + ~$45 = **$140** and lands *below* the judge-variance floor; 2 repeats + 2 passes costs ~$208 +
+~$30 = **$238** and lands above it. Over 12 subjects that is ~$1,700 against ~$2,900, for a *more*
+precise measurement. Recorded in [[dcc-di47]].
+
+### Count reproduces, identity does not
+
+An earlier claim of mine needs narrowing. I wrote that corpus-level figures were the steadiest output
+of the instrument. That holds for the **count** — 7 of 10 human threads hit under both passes — but
+not for **which**: pass 1 missed threads {7, 8, 9}, pass 2 missed {1, 2, 9}. One thread in common.
+
+So "the field caught 7 of 10" is reproducible and publishable; "these three were missed by everyone"
+is not, and `threads.missed_index` must never be published from a single grading pass. That is a
+sharper and more useful statement than the one it replaces.
+
+### What a second repeat did change
+
+`anthropic-code-review` reported 1 finding in r1 and 4 in r2 on identical code. Its precision stayed
+1.00 across both — so the earlier n=1 worry resolved in its favor: it is genuinely precise, and
+genuinely erratic about how much it says. `ours-bugs` reported 1 then 2, and its 20 found against 2
+reported is the largest suppression ratio in the roster.
+
+`superpowers` is the cost-efficiency outlier at **$0.89 per real finding**, roughly a quarter of
+`ours-audit`'s $4.81 — while finding 9 real to its 12.

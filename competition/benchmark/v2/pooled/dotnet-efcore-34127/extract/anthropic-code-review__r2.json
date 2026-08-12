@@ -1,0 +1,62 @@
+[
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "critical",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 626,
+    "category": "null-semantics-correctness",
+    "claim": "NullPropagatedOperands recurses into every SqlBinaryExpression without gating on OperatorType, so for AndAlso/OrElse (which do not propagate NULL under three-valued logic) DropNotNullChecks removes a required IS NOT NULL guard, producing wrong projected values and extra rows in predicates.",
+    "raw": "### 1. [Critical — wrong query results] `NullPropagatedOperands` treats *every* `SqlBinaryExpression` as null-propagating, but `AND`/`OR` do not propagate NULL\n\n**`SqlNullabilityProcessor.cs:626-630`**\n\nThe recursion above is unguarded by `OperatorType` ... Under SQL three-valued logic `NULL OR TRUE = TRUE` and `NULL AND FALSE = FALSE` — neither is NULL, so the guard must not be dropped.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "medium",
+    "file": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs",
+    "line": 2250,
+    "category": "test-coverage",
+    "claim": "The five new tests only use genuinely null-propagating operators (~, +), so no boolean-result shape (&&, ||, nullable equality) in the THEN branch is covered and the correctness regression goes undetected.",
+    "raw": "### 2. [Medium] The added tests can't catch #1 — no boolean-result shape is covered\n\n**`NullSemanticsQueryTestBase.cs:2250-2295`**\n\nAll five new tests use results built from `~` (unary) and `+` (int and string concat) — operators that genuinely do propagate NULL. None puts `&&`, `||`, or a nullable-equality comparison in the `THEN` branch, which is precisely the shape that breaks.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "low",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 578,
+    "category": "missed-optimization",
+    "claim": "IsNull(elseResult) returns false when elseResult is C# null (a CASE with no ELSE clause), so the semantically equivalent ELSE NULL form is silently skipped by the new optimization.",
+    "raw": "### 3. [Minor] `CASE` with no `ELSE` at all is silently skipped\n\n**`SqlNullabilityProcessor.cs:578`** — `IsNull(elseResult)` returns `false` when `elseResult` is C# `null` (`:1633-1635`), i.e. when the source `CASE` has no `ELSE` clause. That form is semantically `ELSE NULL`, so the optimization applies but is missed. Not a correctness problem, just a gap in the new guard.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "low",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 595,
+    "category": "extensibility-design",
+    "claim": "DropNotNullChecks and NullPropagatedOperands are static local functions reading expression metadata directly instead of dispatching through the protected virtual VisitSqlBinary/VisitSqlUnary/VisitSqlFunction/VisitCustomSqlExpression extension points, so providers with different null-propagation behavior cannot influence the optimization.",
+    "raw": "### 4. [Minor] The new helpers bypass the provider extension points\n\n**`SqlNullabilityProcessor.cs:595-648`**\n\n`DropNotNullChecks` and `NullPropagatedOperands` are `static` local functions that read `OperatorType`, `IsNullable`, and `ArgumentsPropagateNullability` directly, rather than dispatching through the `protected virtual` ... methods this class exposes for providers.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 626,
+    "category": "provider-robustness",
+    "claim": "ExpressionType.Coalesce on a SqlBinaryExpression would also be wrongly treated as null-propagating, but is only reachable from a provider that builds one directly, so it is called a robustness concern rather than a live bug.",
+    "raw": "`ExpressionType.Coalesce` on `SqlBinaryExpression` is therefore only reachable from a provider that builds one directly, so it's a robustness concern rather than a live bug; the operator gate covers it either way.",
+    "disposition": "demoted"
+  }
+]
