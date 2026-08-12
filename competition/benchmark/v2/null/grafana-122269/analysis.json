@@ -1,0 +1,2092 @@
+{
+ "subject": "grafana/grafana#122269",
+ "instrument": "null-arm",
+ "judge_model": "claude-opus-5",
+ "merged_at": "2026-05-05T13:55:23Z",
+ "shim": "on",
+ "grading_pass": 1,
+ "cells": [
+  {
+   "tool": "anthropic-code-review",
+   "repeat": 1,
+   "cost_usd": 8.2946,
+   "wall_s": 65,
+   "access_total": 231,
+   "access_denied": 15
+  },
+  {
+   "tool": "comprehensive-review",
+   "repeat": 1,
+   "cost_usd": 17.7792,
+   "wall_s": 119,
+   "access_total": 263,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-audit",
+   "repeat": 1,
+   "cost_usd": 23.5324,
+   "wall_s": 1380,
+   "access_total": 354,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-bugs",
+   "repeat": 1,
+   "cost_usd": 8.2283,
+   "wall_s": 1276,
+   "access_total": 282,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-review",
+   "repeat": 1,
+   "cost_usd": 11.9452,
+   "wall_s": 964,
+   "access_total": 267,
+   "access_denied": 0
+  },
+  {
+   "tool": "pr-review-toolkit",
+   "repeat": 1,
+   "cost_usd": 16.4224,
+   "wall_s": 97,
+   "access_total": 300,
+   "access_denied": 0
+  },
+  {
+   "tool": "superpowers",
+   "repeat": 1,
+   "cost_usd": 3.4631,
+   "wall_s": 714,
+   "access_total": 47,
+   "access_denied": 0
+  }
+ ],
+ "clusters": [
+  {
+   "cluster_id": "n01",
+   "summary": "The grafana-cli accessor re-implements the token fallback with no feature-toggle check, so the CLI uses a different credential than the server",
+   "location": "pkg/cmd/grafana-cli/utils/command_line.go:111",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "pkg/cmd/grafana-cli/utils/command_line.go:111-122",
+   "confidence": 0.85,
+   "rationale": "Confirmed: the CLI accessor prefers proxy_token with no flag check, and grep shows zero openfeature refs under pkg/cmd/grafana-cli. The toggle does not gate the CLI path the docs claim it gates.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 14
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 34
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 72
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 91
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 115
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 145
+    }
+   ]
+  },
+  {
+   "cluster_id": "n02",
+   "summary": "The docs name the toggle without its registered grafana. prefix, so following them does not enable the feature",
+   "location": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+   "confidence": 0.85,
+   "rationale": "Confirmed: ReadFeatureTogglesFromInitFile keys flags verbatim by ini key name, so enabling the undotted 'dedicatedGrafanaComProxyAPIToken' the docs name does not enable grafana.dedicated... at setting.go:763.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 15
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 32
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 73
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 93
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 116
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 148
+    }
+   ]
+  },
+  {
+   "cluster_id": "n03",
+   "summary": "GcomToken() has no production caller after the migration but is retained on the interface, impl and mock",
+   "location": "pkg/cmd/grafana-cli/utils/command_line.go:29",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/cmd/grafana-cli/utils/command_line.go:29",
+   "confidence": 0.7,
+   "rationale": "Verified by grep: GcomToken survives only on the interface, impl and mock, with no production caller. Two near-identical accessors with Gcom/GrafanaCom naming drift \u2014 cleanup, not a bug.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 22
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 43
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 75
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 97
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 123
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 152
+    }
+   ]
+  },
+  {
+   "cluster_id": "n04",
+   "summary": "defaults.ini gained proxy_token but sample.ini, the template operators copy, was not updated",
+   "location": "conf/sample.ini:1815",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "conf/sample.ini:1815-1819",
+   "confidence": 0.85,
+   "rationale": "Confirmed: the [grafana_com] block in sample.ini still lists only url, api_url, sso_api_token, and contribute/create-pull-request.md:138-141 requires both files change together.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 24
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 44
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 98
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 124
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 154
+    }
+   ]
+  },
+  {
+   "cluster_id": "n05",
+   "summary": "The toggle is sampled once at boot but the registry entry omits RequiresRestart: true",
+   "location": "pkg/services/featuremgmt/registry.go:2252",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/services/featuremgmt/registry.go:2252-2258",
+   "confidence": 0.7,
+   "rationale": "Confirmed: the flag is sampled once at cli.go:113 / target.go:99 and baked into a plain string, yet the entry omits RequiresRestart while 40 siblings in the file set it for exactly this.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 37
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 94
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 122
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 146
+    }
+   ]
+  },
+  {
+   "cluster_id": "n06",
+   "summary": "The flag name is a hardcoded string literal instead of the generated featuremgmt constant",
+   "location": "pkg/setting/setting.go:763",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/setting/setting.go:763",
+   "confidence": 0.6,
+   "rationale": "Confirmed: the literal duplicates FlagGrafanaDedicatedGrafanaComProxyAPIToken with no compile-time link, and toggles_gen.json records four renames of this flag in eight days. A fifth silently disables it.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 19
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 38
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 95
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 120
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 153
+    }
+   ]
+  },
+  {
+   "cluster_id": "n07",
+   "summary": "The resolver discards the OpenFeature evaluation error and logs none of its outcomes, so the token source is unobservable",
+   "location": "pkg/setting/setting.go:762",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/setting/setting.go:762-768",
+   "confidence": 0.55,
+   "rationale": "Accurate: the resolver logs nothing and drops the evaluation error, so the chosen token source is unobservable. Real but small \u2014 a debug line fixes it; no behavior is wrong.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 18
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 39
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 119
+    }
+   ]
+  },
+  {
+   "cluster_id": "n08",
+   "summary": "Resolve overwrites the parsed proxy_token in place using one field as both input and output, making it destructive and non-idempotent",
+   "location": "pkg/setting/setting.go:766",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/setting/setting.go:766",
+   "confidence": 0.5,
+   "rationale": "Real: the assignment uses one field as input and output, so the parsed proxy_token is destroyed and a later caller cannot tell whether one was configured. The CLI reads the same field pre-resolution.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 17
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 55
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 77
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 96
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 121
+    }
+   ]
+  },
+  {
+   "cluster_id": "n09",
+   "summary": "The field and method comments do not disclose the two-phase raw/effective meaning of the field",
+   "location": "pkg/setting/setting.go:540",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/setting/setting.go:540-541",
+   "confidence": 0.65,
+   "rationale": "Accurate: the field comment says 'the dedicated auth token' but after resolution the field usually holds the SSO token, and neither comment mentions the raw/effective split. Doc-comment accuracy.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 25
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 130
+    }
+   ]
+  },
+  {
+   "cluster_id": "n10",
+   "summary": "Resolution is an unenforced lifecycle contract: a bootstrap that skips the call yields an unauthenticated proxy",
+   "location": "pkg/setting/setting.go:759",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "pkg/setting/setting.go:759-768",
+   "confidence": 0.7,
+   "rationale": "Real: the effective value of a field two consumers now read is produced only by a mutator called from two places, enforced solely by a doc comment. testinfra.go:124 already misses it.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 16
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 35
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 92
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 129
+    }
+   ]
+  },
+  {
+   "cluster_id": "n11",
+   "summary": "The integration-test harness initializes OpenFeature but never calls the resolver, so test servers proxy unauthenticated",
+   "location": "pkg/tests/testinfra/testinfra.go:124",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/tests/testinfra/testinfra.go:124",
+   "confidence": 0.65,
+   "rationale": "Confirmed: InitOpenFeatureWithCfg is called there but ResolveGrafanaComProxyAPIToken is not, so test servers serving /api/gnet would proxy with no token even when sso_api_token is set.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 79
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 118
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 147
+    }
+   ]
+  },
+  {
+   "cluster_id": "n12",
+   "summary": "The docs scope the token to catalog browsing and CLI installs, but it backs the whole /api/gnet/* proxy",
+   "location": "docs/sources/setup-grafana/configure-grafana/_index.md:2321",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+   "confidence": 0.6,
+   "rationale": "Confirmed: the same field feeds grafana_com_proxy.go:54 (the whole /api/gnet/* proxy) and pluginconfig/config.go:39, not just catalog browsing and grafana-cli. An operator would mis-scope the token.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 21
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 74
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 125
+    }
+   ]
+  },
+  {
+   "cluster_id": "n13",
+   "summary": "The new doc line uses a Hugo relref shortcode, the only one in the file, against the documented convention",
+   "location": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+   "confidence": 0.75,
+   "rationale": "Verified: this is the only relref in the file and in the whole setup-grafana tree, and docs/AGENTS.md:110 mandates inline Markdown links. Convention drift.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 23
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 45
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 127
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 158
+    }
+   ]
+  },
+  {
+   "cluster_id": "n14",
+   "summary": "The doc link anchor is probably wrong: sibling headings render underscores as dashes",
+   "location": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+   "verdict": "false-positive",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+   "confidence": 0.65,
+   "rationale": "Evidence points the other way: in-file anchors #root_url (:269) and #auto_assign_org_role (:960) preserve underscores. #grafana-com at :2310 is itself broken, as is #external-image-store.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 159
+    }
+   ]
+  },
+  {
+   "cluster_id": "n15",
+   "summary": "The docs never mention the sso_api_token fallback, the most operationally important behavior",
+   "location": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "docs/sources/setup-grafana/configure-grafana/_index.md:2323-2327",
+   "confidence": 0.65,
+   "rationale": "Correct: the new doc block never mentions that an unset or toggle-disabled proxy_token silently falls back to sso_api_token. An omission rather than an error.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 149
+    }
+   ]
+  },
+  {
+   "cluster_id": "n16",
+   "summary": "The generated toggles JSON permanently records tombstones for phantom flag names",
+   "location": "pkg/services/featuremgmt/toggles_gen.json:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/services/featuremgmt/toggles_gen.json:2226-2267",
+   "confidence": 0.8,
+   "rationale": "Claim is that the tombstones are normal generator output, not a defect. That is correct \u2014 the file already carried ~98 such entries.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 27
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 66
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 137
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 157
+    }
+   ]
+  },
+  {
+   "cluster_id": "n17",
+   "summary": "A mockery DO NOT EDIT file was hand-edited and will not survive regeneration",
+   "location": "pkg/cmd/grafana-cli/utils/command_line_mock.go:162",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/cmd/grafana-cli/utils/command_line_mock.go:162",
+   "confidence": 0.7,
+   "rationale": "Confirmed: file header says 'mockery v2.31.4. DO NOT EDIT.', the new block lacks the '// X provides a mock function' comment every generated method has, and no .mockery.yaml or go:generate exists.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 136
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 160
+    }
+   ]
+  },
+  {
+   "cluster_id": "n18",
+   "summary": "skipStaticRootValidation is set without restoring it",
+   "location": "pkg/setting/setting_test.go:388",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting_test.go:30",
+   "confidence": 0.8,
+   "rationale": "Verified: skipStaticRootValidation is already set unconditionally at setting_test.go:30. The new assignment is redundant, not harmful; the claim says exactly that.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 28
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 59
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 86
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 112
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 133
+    }
+   ]
+  },
+  {
+   "cluster_id": "n19",
+   "summary": "The new grafana_com test is placed among plugin-settings tests and names a function that does not exist",
+   "location": "pkg/setting/setting_plugins_test.go:284",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "pkg/setting/setting_plugins_test.go:284",
+   "confidence": 0.75,
+   "rationale": "Verified by grep: readGrafanaComSettings exists nowhere; the file's convention (Test_readPluginSettings) names a real function. Also a [grafana_com] test sitting in the plugin-settings file.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 48
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 99
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 134
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 155
+    }
+   ]
+  },
+  {
+   "cluster_id": "n20",
+   "summary": "Neither the CLI accessor nor the gnet proxy has a test asserting which token reaches the Authorization header",
+   "location": "pkg/api/grafana_com_proxy.go:54",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/api/grafana_com_proxy.go:54",
+   "confidence": 0.65,
+   "rationale": "Verified: pkg/cmd/grafana-cli/utils has no test files and pkg/api has no grafana_com_proxy_test.go. Nothing asserts which credential reaches the wire \u2014 the whole point of the change.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 20
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 49
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 100
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 101
+    }
+   ]
+  },
+  {
+   "cluster_id": "n21",
+   "summary": "The only CLI token test still asserts the dead GcomToken(), so the new path is untested",
+   "location": "pkg/cmd/grafana-cli/commands/install_command_test.go:103",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/cmd/grafana-cli/commands/install_command_test.go:103",
+   "confidence": 0.75,
+   "rationale": "Confirmed: the only CLI token test asserts c.GcomToken(), which now has zero production callers; the new accessor's fallback logic has no coverage in either branch.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 41
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 76
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 150
+    }
+   ]
+  },
+  {
+   "cluster_id": "n22",
+   "summary": "Dotted flag names cannot be enabled via cfg: overrides because the parser skips any key containing a dot",
+   "location": "pkg/setting/setting_feature_toggles.go:107",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/setting/setting_feature_toggles.go:106-108",
+   "confidence": 0.7,
+   "rationale": "Verified: applyFeatureToggleCmdOverrides continues on any key containing a dot, so cfg:feature_toggles.grafana.dedicated... is a silent no-op. Pre-existing, but this change adds a dotted flag.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 26
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 117
+    }
+   ]
+  },
+  {
+   "cluster_id": "n23",
+   "summary": "The new test drives the value only by environment variable, so the defaults.ini key is unexercised",
+   "location": "pkg/setting/setting_plugins_test.go:284",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting_plugins_test.go:284-292",
+   "confidence": 0.6,
+   "rationale": "Technically true \u2014 the env second pass at setting.go:906 creates the key regardless \u2014 but the defaults.ini line is behaviorally inert (valueAsString already defaults to \"\"), so a test for it would assert nothing.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 135
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 156
+    }
+   ]
+  },
+  {
+   "cluster_id": "n24",
+   "summary": "Three byte-identical subtest bodies should be table-driven",
+   "location": "pkg/setting/setting_test.go:387",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "pkg/setting/setting_test.go:406-438",
+   "confidence": 0.7,
+   "rationale": "Correct: three near-identical subtest bodies differing only in inputs, in a file that already uses table style at :441 and :661. Pure style.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 132
+    }
+   ]
+  },
+  {
+   "cluster_id": "n25",
+   "summary": "A new subtest is tautological \u2014 it passes with the resolver guard removed",
+   "location": "pkg/setting/setting_test.go:417",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/setting/setting_test.go:457-466",
+   "confidence": 0.7,
+   "rationale": "Accurate: cfg.Load already sets the field to dedicated-token from the env var, so this subtest passes with the function body emptied. It does still catch an unconditional-overwrite mutation.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 40
+    }
+   ]
+  },
+  {
+   "cluster_id": "n26",
+   "summary": "setProvider cleanup restores NoopProvider rather than the previously installed provider",
+   "location": "pkg/setting/setting_test.go:400",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/setting/setting_test.go:405",
+   "confidence": 0.6,
+   "rationale": "Correct: the cleanup installs NoopProvider rather than restoring the prior provider, leaving process-global SDK state altered for the rest of the binary. No failure today.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 52
+    }
+   ]
+  },
+  {
+   "cluster_id": "n27",
+   "summary": "The plugin repo client attaches the token on an unanchored URL prefix match",
+   "location": "pkg/plugins/repo/client.go:240",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/plugins/repo/client.go:240",
+   "confidence": 0.55,
+   "rationale": "Correct: strings.HasPrefix is not anchored at a host boundary, and the base URL is operator-supplied via --repo. Real but pre-existing and requires the operator's own misconfiguration to bite.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 42
+    }
+   ]
+  },
+  {
+   "cluster_id": "n28",
+   "summary": "applyCommandLineProperties appends cfg: overrides unredacted to the applied-properties log",
+   "location": "pkg/setting/setting.go:1155",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "pkg/setting/setting.go:1155",
+   "confidence": 0.8,
+   "rationale": "Confirmed: applyCommandLineProperties appends the raw value while its sibling at :1138 uses RedactedValue, and LogConfigSources logs it at Info. cfg:grafana_com.proxy_token=<secret> is printed in clear.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 36
+    }
+   ]
+  },
+  {
+   "cluster_id": "n29",
+   "summary": "No audit log records who drove a proxied grafana.com call with the instance credential",
+   "location": "pkg/api/grafana_com_proxy.go:52",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/api/grafana_com_proxy.go:51-56",
+   "confidence": 0.5,
+   "rationale": "Accurate \u2014 ProxyGnetRequest logs nothing identifying the caller while substituting the instance credential. Entirely pre-existing and an enhancement, not a defect this change introduces.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 53
+    }
+   ]
+  },
+  {
+   "cluster_id": "n30",
+   "summary": "The CLI config-parse error is logged at Debug, so an unreadable config produces no output",
+   "location": "pkg/cmd/grafana-cli/utils/command_line.go:114",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/cmd/grafana-cli/utils/command_line.go:114-117",
+   "confidence": 0.6,
+   "rationale": "Verified: pkg/cmd/grafana-cli/logger.Debug is gated on debugmode, so a config-parse failure is silent and yields an empty token. Real, but copied verbatim from the pre-existing GcomToken.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 126
+    }
+   ]
+  },
+  {
+   "cluster_id": "n31",
+   "summary": "A 176-character line packs client construction, evaluation and the emptiness check together",
+   "location": "pkg/setting/setting.go:763",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "pkg/setting/setting.go:763",
+   "confidence": 0.7,
+   "rationale": "Measured 187 chars (finding said 176), packing client construction, evaluation and the emptiness test with the interesting case as a bare return. Readability only.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 128
+    }
+   ]
+  },
+  {
+   "cluster_id": "n32",
+   "summary": "The toggle description implies grafana-cli coverage it does not have and omits that it is inert without proxy_token",
+   "location": "pkg/services/featuremgmt/registry.go:2252",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "pkg/services/featuremgmt/registry.go:2253-2254",
+   "confidence": 0.6,
+   "rationale": "Fair: the description reads as covering grafana-cli (which never evaluates the flag) and omits that the toggle is inert without proxy_token. Wording only.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 131
+    }
+   ]
+  },
+  {
+   "cluster_id": "n33",
+   "summary": "Grafana Enterprise entry points outside this repository would need the same resolver insertion",
+   "location": ":0",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/setting/setting.go:759-761",
+   "confidence": 0.5,
+   "rationale": "The must-call-after-init requirement lives only in a doc comment, so a downstream Enterprise entry point could miss it. Conditional and unverifiable from this repo, but a fair caution.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 54
+    }
+   ]
+  },
+  {
+   "cluster_id": "n34",
+   "summary": "proxy_token is added bare with no comment saying it is inert without the toggle",
+   "location": "conf/defaults.ini:1899",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "conf/defaults.ini:1896-1899",
+   "confidence": 0.6,
+   "rationale": "Verified: no key in the [grafana_com] stanza of defaults.ini carries a comment. The new line matches its siblings exactly; the finding's own evidence concedes this.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 31
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 46
+    }
+   ]
+  },
+  {
+   "cluster_id": "n35",
+   "summary": "The per-setting environment-variable callout is the only one of its kind in the file",
+   "location": "docs/sources/setup-grafana/configure-grafana/_index.md:2327",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "docs/sources/setup-grafana/configure-grafana/_index.md:2327",
+   "confidence": 0.7,
+   "rationale": "Verified: the generic GF_ override rule is stated once at lines 79-90 and no other standard key carries a per-setting callout. Harmless redundancy.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 47
+    }
+   ]
+  },
+  {
+   "cluster_id": "n36",
+   "summary": "The field name is ambiguous about which credential it holds after resolution",
+   "location": "pkg/setting/setting.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting.go:540-541",
+   "confidence": 0.7,
+   "rationale": "The claim as stated is that the name is clear enough and naming is out of scope \u2014 i.e. no defect. Nothing actionable.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 88
+    }
+   ]
+  },
+  {
+   "cluster_id": "n37",
+   "summary": "openfeature.NewDefaultClient allocates a new client on every call",
+   "location": "pkg/setting/setting.go:762",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting.go:763",
+   "confidence": 0.75,
+   "rationale": "Accurate but inconsequential: one client allocation on a once-per-process boot path, explicitly stated as having no correctness impact.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 89
+    }
+   ]
+  },
+  {
+   "cluster_id": "n38",
+   "summary": "There is no strict mode: an operator cannot express \"never fall back to the SSO token\"",
+   "location": "pkg/setting/setting.go:762",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/setting/setting.go:766",
+   "confidence": 0.55,
+   "rationale": "True that every negative path falls back to the broader SSO credential with no way to opt out. Correct observation, but the fallback is the stated design intent \u2014 a feature request.",
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 104
+    }
+   ]
+  },
+  {
+   "cluster_id": "n39",
+   "summary": "Whether an empty EvaluationContext discards global targeting context",
+   "location": "pkg/setting/setting.go:763",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting.go:763",
+   "confidence": 0.75,
+   "rationale": "Refutation of an empty-EvaluationContext hazard; the SDK merges rather than erases global context. Asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 56
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 81
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 110
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 140
+    }
+   ]
+  },
+  {
+   "cluster_id": "n40",
+   "summary": "Whether context.Background() with no timeout can hang startup",
+   "location": "pkg/setting/setting.go:763",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/infra/features/client.go:46-50",
+   "confidence": 0.8,
+   "rationale": "Verified: CreateHTTPClient defaults to a 10s timeout, so context.Background() cannot hang boot. Claim asserts no defect and is right.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 57
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 82
+    }
+   ]
+  },
+  {
+   "cluster_id": "n41",
+   "summary": "Whether the new pkg/setting to openfeature edge introduces an import cycle",
+   "location": "pkg/setting/setting.go:762",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting_feature_toggles.go:13",
+   "confidence": 0.75,
+   "rationale": "Cleared: pkg/setting already depended on the openfeature module via memprovider, and openfeature is external so no cycle is possible. No defect asserted.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 84
+    }
+   ]
+  },
+  {
+   "cluster_id": "n42",
+   "summary": "Whether a runtime config reload could revert or wipe the resolved token",
+   "location": "pkg/setting/setting.go:1388",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting.go:762-768",
+   "confidence": 0.75,
+   "rationale": "Cleared hypothesis: no OSS path re-invokes cfg.Load after startup, so the resolution cannot be reverted. Not a defect report.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 61
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 85
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 108
+    }
+   ]
+  },
+  {
+   "cluster_id": "n43",
+   "summary": "Whether the sso_api_token fallback is backward compatible",
+   "location": "pkg/setting/setting.go:762",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting.go:766",
+   "confidence": 0.75,
+   "rationale": "Claim is that operators on sso_api_token alone are unaffected. True, and it is a clearance rather than a defect report.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 90
+    }
+   ]
+  },
+  {
+   "cluster_id": "n44",
+   "summary": "Whether the in-place Cfg mutation is a data race",
+   "location": "pkg/setting/setting.go:759",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting.go:762",
+   "confidence": 0.75,
+   "rationale": "Cleared: both call sites run before any server goroutine holds the Cfg pointer. Claim is explicitly that there is no race today.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 30
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 107
+    }
+   ]
+  },
+  {
+   "cluster_id": "n45",
+   "summary": "Whether the PROXY_TOKEN$ redaction pattern is correct and complete",
+   "location": "pkg/setting/setting.go:831",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting.go:831",
+   "confidence": 0.8,
+   "rationale": "Claim is that the PROXY_TOKEN$ pattern is correct and its breadth is safe. Both hold; no defect asserted.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 63
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 105
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 139
+    }
+   ]
+  },
+  {
+   "cluster_id": "n46",
+   "summary": "Whether the resolver boolean logic is correct and convergent across flag states",
+   "location": "pkg/setting/setting.go:762",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting.go:762-768",
+   "confidence": 0.75,
+   "rationale": "Claim is that the boolean logic is correct across all four flag/token combinations. It is. A clearance, not a finding.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 143
+    }
+   ]
+  },
+  {
+   "cluster_id": "n47",
+   "summary": "Whether discarding the evaluation error departs from the codebase idiom",
+   "location": "pkg/setting/setting.go:763",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting.go:763",
+   "confidence": 0.75,
+   "rationale": "Claim is that discarding the OpenFeature error matches the codebase-wide idiom. Correct; asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 29
+    }
+   ]
+  },
+  {
+   "cluster_id": "n48",
+   "summary": "Whether a whitespace-only proxy_token is accepted and sent",
+   "location": "pkg/setting/setting.go:0",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/setting/setting.go:763",
+   "confidence": 0.6,
+   "rationale": "Correct: a whitespace-only proxy_token passes the != \"\" guard, suppressing the SSO fallback and sending 'Bearer  '. The sibling token is TrimSpace'd at backend.go:57. Outcome is a 401.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 69
+    }
+   ]
+  },
+  {
+   "cluster_id": "n49",
+   "summary": "Whether the legacy [grafana_net] alias applies to proxy_token",
+   "location": "pkg/setting/setting.go:1669",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "conf/defaults.ini:1892-1893",
+   "confidence": 0.8,
+   "rationale": "Claim is that the [grafana_net] alias never applied to token keys and this is not a regression. Verified: [grafana_net] carries only url. Not a defect report.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 70
+    }
+   ]
+  },
+  {
+   "cluster_id": "n50",
+   "summary": "Whether c.Config() re-parses the INI file on every accessor call",
+   "location": "pkg/cmd/grafana-cli/utils/command_line.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/cmd/grafana-cli/utils/command_line.go:112",
+   "confidence": 0.8,
+   "rationale": "Claim is that re-parsing the INI per accessor call is a pre-existing, cost-only pattern in a one-shot process. Correct; no defect asserted.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 68
+    }
+   ]
+  },
+  {
+   "cluster_id": "n51",
+   "summary": "Whether the CLI logger call is a structured-logger arity bug",
+   "location": "pkg/cmd/grafana-cli/utils/command_line.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/cmd/grafana-cli/logger/logger.go:12-16",
+   "confidence": 0.85,
+   "rationale": "Verified: the CLI logger's Debug is a variadic fmt.Println wrapper with no key/value contract. The refutation is right; no defect asserted.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 58
+    }
+   ]
+  },
+  {
+   "cluster_id": "n52",
+   "summary": "Whether %2e%2e in the gnet wildcard can escape the /api prefix",
+   "location": "pkg/api/grafana_com_proxy.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/api/grafana_com_proxy.go:52",
+   "confidence": 0.5,
+   "rationale": "Self-declared unresolved with two unconfirmed steps and no demonstrated defect; the target host stays grafana.com regardless. Honest, but nothing a maintainer can act on as written.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 67
+    }
+   ]
+  },
+  {
+   "cluster_id": "n53",
+   "summary": "Whether the token could leak via an HTTP redirect",
+   "location": "pkg/plugins/repo/client.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/plugins/repo/client.go:240-242",
+   "confidence": 0.7,
+   "rationale": "Cleared hypothesis: Go's http.Client strips Authorization on cross-host redirects. No defect asserted.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 62
+    }
+   ]
+  },
+  {
+   "cluster_id": "n54",
+   "summary": "Whether the token could leak to a non-grafana.com host via --pluginUrl",
+   "location": "pkg/plugins/repo/client.go:240",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/plugins/repo/client.go:240-242",
+   "confidence": 0.75,
+   "rationale": "Verified: Authorization is attached only when the URL is prefixed by the configured grafana.com API URL, so --pluginUrl downloads do not receive it. Asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 83
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 111
+    }
+   ]
+  },
+  {
+   "cluster_id": "n55",
+   "summary": "Whether an unresolved token field degrades safely at the proxy",
+   "location": "pkg/api/grafana_com_proxy.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/api/grafana_com_proxy.go:44-46",
+   "confidence": 0.8,
+   "rationale": "Verified: the director sets Authorization only when the token is non-empty, so an unresolved field degrades to anonymous. Claim asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 80
+    }
+   ]
+  },
+  {
+   "cluster_id": "n56",
+   "summary": "Whether the resolved token could be exposed via /api/admin/settings",
+   "location": ":0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting.go:828-836",
+   "confidence": 0.7,
+   "rationale": "Cleared hypothesis: admin settings serialize the redacting SettingsProvider, not the Cfg struct. Claim asserts no exposure and is consistent with the redaction path.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 64
+    }
+   ]
+  },
+  {
+   "cluster_id": "n57",
+   "summary": "Threat-model note: the change is net-neutral by default",
+   "location": ":0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/api/grafana_com_proxy.go:44-46",
+   "confidence": 0.7,
+   "rationale": "A summary that the change is attack-surface-neutral by default. Accurate restatement of what the diff does; no action for a maintainer.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 71
+    }
+   ]
+  },
+  {
+   "cluster_id": "n58",
+   "summary": "Whether the registry entry Generate flags deviate from siblings",
+   "location": "pkg/services/featuremgmt/registry.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/services/featuremgmt/registry.go:2252-2258",
+   "confidence": 0.8,
+   "rationale": "Generate{Go: true} appears 13x in registry.go; an established alternate pattern. Claim says it is not a deviation worth acting on, and that is correct.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 65
+    }
+   ]
+  },
+  {
+   "cluster_id": "n59",
+   "summary": "Whether the production entry points sequence OpenFeature init and resolution correctly",
+   "location": "pkg/cmd/grafana-server/commands/cli.go:113",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/cmd/grafana-server/commands/cli.go:113",
+   "confidence": 0.8,
+   "rationale": "Clearance: both production entry points call the resolver after OpenFeature init and before Initialize. Verified against the diff; not a defect report.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 78
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 106
+    }
+   ]
+  },
+  {
+   "cluster_id": "n60",
+   "summary": "Whether the generated toggle files are consistent with the registry entry",
+   "location": "pkg/services/featuremgmt/toggles_gen.go:727",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/services/featuremgmt/toggles_gen.go:722-725",
+   "confidence": 0.75,
+   "rationale": "Clearance: generated toggle files are consistent with the registry entry and the grafana. prefix has precedent. Asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 141
+    }
+   ]
+  },
+  {
+   "cluster_id": "n61",
+   "summary": "Whether the mock type assertion panics on nil",
+   "location": "pkg/cmd/grafana-cli/utils/command_line_mock.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/cmd/grafana-cli/utils/command_line_mock.go:162-172",
+   "confidence": 0.85,
+   "rationale": "Verified: the new block is byte-identical in shape to every sibling mock method. Standard mockery contract, no defect claimed.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 60
+    }
+   ]
+  },
+  {
+   "cluster_id": "n62",
+   "summary": "Whether the new subtests are mutation-sensitive and can actually fail",
+   "location": "pkg/setting/setting_test.go:397",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting_test.go:387-438",
+   "confidence": 0.7,
+   "rationale": "Mutation claims check out for the three named mutations. This is a clearance, not a defect report, so it carries no action for a maintainer.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 87
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 114
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 144
+    }
+   ]
+  },
+  {
+   "cluster_id": "n63",
+   "summary": "Whether swapping the OpenFeature provider pollutes global state across subtests",
+   "location": "pkg/setting/setting_test.go:387",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting_test.go:392-405",
+   "confidence": 0.7,
+   "rationale": "Claim is that the global provider swap does not pollute other tests. Correct for this package \u2014 no parallel subtests and nothing else evaluates flags. Not a defect report.",
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 113
+    }
+   ]
+  },
+  {
+   "cluster_id": "n64",
+   "summary": "The /api/gnet/* route proxies any method and caller-controlled path with the instance credential, guarded only by reqSignedIn",
+   "location": "pkg/api/api.go:587",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "pkg/api/api.go:587",
+   "confidence": 0.6,
+   "rationale": "Accurate: r.Any + reqSignedIn only, caller-controlled wildcard path, and the director substitutes the instance grafana.com bearer. Pre-existing, but it is the credential this change repoints.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 33
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "demoted",
+     "finding_index": 102
+    }
+   ]
+  },
+  {
+   "cluster_id": "n65",
+   "summary": "No test asserts that ProvidePluginManagementConfig or ProxyGnetRequest carry the resolved token",
+   "location": "pkg/services/pluginsintegration/pluginconfig/config.go:39",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "pkg/services/pluginsintegration/pluginconfig/config.go:39",
+   "confidence": 0.6,
+   "rationale": "Verified: config_test.go contains no token assertion, so the one-line field swap is unguarded. Small and easy to add; narrower than the proxy-level gap.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 50
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 151
+    }
+   ]
+  },
+  {
+   "cluster_id": "n66",
+   "summary": "No test pins the idempotency / second-call contract of the resolver",
+   "location": "pkg/setting/setting.go:762",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/setting/setting.go:762-768",
+   "confidence": 0.6,
+   "rationale": "True that no test pins a second call, but the resolver is invoked exactly once per process; pinning an unreachable contract is not worth a maintainer's attention.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 51
+    }
+   ]
+  },
+  {
+   "cluster_id": "n67",
+   "summary": "Recursive dependency install rebuilds the options without carrying the token forward",
+   "location": "pkg/cmd/grafana-cli/commands/install_command.go:182",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "pkg/cmd/grafana-cli/commands/install_command.go:180-186",
+   "confidence": 0.8,
+   "rationale": "Confirmed: the dependency recursion rebuilds pluginInstallOpts with only insecure/repoURL/pluginDir, dropping gcomToken. Dependencies are fetched anonymously after the parent is extracted.",
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 103
+    }
+   ]
+  },
+  {
+   "cluster_id": "n68",
+   "summary": "Whether InitializeForCLI misses the resolver and the grafana-cli runner path is affected",
+   "location": "pkg/server/wire_gen.go:1721",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "pkg/server/wire_gen.go:367",
+   "confidence": 0.8,
+   "rationale": "Verified by grep: ProvidePluginManagementConfig appears only at wire_gen.go:367 and :1073, so InitializeForCLI is unaffected. Explicitly a dropped claim.",
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 109
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 142
+    }
+   ]
+  },
+  {
+   "cluster_id": "n69",
+   "summary": "A test comment names the wrong method for the path now exercised and misattributes behavior",
+   "location": "pkg/cmd/grafana-cli/commands/upgrade_command_test.go:64",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "pkg/cmd/grafana-cli/commands/upgrade_command_test.go:63",
+   "confidence": 0.75,
+   "rationale": "Confirmed: the comment names GcomToken() but the exercised path now calls GrafanaComProxyAPIToken(), and baseCommandLine (line 133) supplies both. Stale comment.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 138
+    }
+   ]
+  }
+ ]
+}

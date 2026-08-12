@@ -1,0 +1,577 @@
+{
+ "n01": {
+  "loc": "pkg/cmd/grafana-cli/utils/command_line.go:111",
+  "summary": "The grafana-cli accessor re-implements the token fallback with no feature-toggle check, so the CLI uses a different credential than the server",
+  "idx": [
+   0,
+   14,
+   34,
+   72,
+   91,
+   115,
+   145
+  ]
+ },
+ "n02": {
+  "loc": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+  "summary": "The docs name the toggle without its registered grafana. prefix, so following them does not enable the feature",
+  "idx": [
+   2,
+   15,
+   32,
+   73,
+   93,
+   116,
+   148
+  ]
+ },
+ "n03": {
+  "loc": "pkg/cmd/grafana-cli/utils/command_line.go:29",
+  "summary": "GcomToken() has no production caller after the migration but is retained on the interface, impl and mock",
+  "idx": [
+   6,
+   22,
+   43,
+   75,
+   97,
+   123,
+   152
+  ]
+ },
+ "n04": {
+  "loc": "conf/sample.ini:1815",
+  "summary": "defaults.ini gained proxy_token but sample.ini, the template operators copy, was not updated",
+  "idx": [
+   3,
+   24,
+   44,
+   98,
+   124,
+   154
+  ]
+ },
+ "n05": {
+  "loc": "pkg/services/featuremgmt/registry.go:2252",
+  "summary": "The toggle is sampled once at boot but the registry entry omits RequiresRestart: true",
+  "idx": [
+   1,
+   37,
+   94,
+   122,
+   146
+  ]
+ },
+ "n06": {
+  "loc": "pkg/setting/setting.go:763",
+  "summary": "The flag name is a hardcoded string literal instead of the generated featuremgmt constant",
+  "idx": [
+   7,
+   19,
+   38,
+   95,
+   120,
+   153
+  ]
+ },
+ "n07": {
+  "loc": "pkg/setting/setting.go:762",
+  "summary": "The resolver discards the OpenFeature evaluation error and logs none of its outcomes, so the token source is unobservable",
+  "idx": [
+   18,
+   39,
+   119
+  ]
+ },
+ "n08": {
+  "loc": "pkg/setting/setting.go:766",
+  "summary": "Resolve overwrites the parsed proxy_token in place using one field as both input and output, making it destructive and non-idempotent",
+  "idx": [
+   17,
+   55,
+   77,
+   96,
+   121
+  ]
+ },
+ "n09": {
+  "loc": "pkg/setting/setting.go:540",
+  "summary": "The field and method comments do not disclose the two-phase raw/effective meaning of the field",
+  "idx": [
+   8,
+   25,
+   130
+  ]
+ },
+ "n10": {
+  "loc": "pkg/setting/setting.go:759",
+  "summary": "Resolution is an unenforced lifecycle contract: a bootstrap that skips the call yields an unauthenticated proxy",
+  "idx": [
+   16,
+   35,
+   92,
+   129
+  ]
+ },
+ "n11": {
+  "loc": "pkg/tests/testinfra/testinfra.go:124",
+  "summary": "The integration-test harness initializes OpenFeature but never calls the resolver, so test servers proxy unauthenticated",
+  "idx": [
+   9,
+   79,
+   118,
+   147
+  ]
+ },
+ "n12": {
+  "loc": "docs/sources/setup-grafana/configure-grafana/_index.md:2321",
+  "summary": "The docs scope the token to catalog browsing and CLI installs, but it backs the whole /api/gnet/* proxy",
+  "idx": [
+   5,
+   21,
+   74,
+   125
+  ]
+ },
+ "n13": {
+  "loc": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+  "summary": "The new doc line uses a Hugo relref shortcode, the only one in the file, against the documented convention",
+  "idx": [
+   4,
+   23,
+   45,
+   127,
+   158
+  ]
+ },
+ "n14": {
+  "loc": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+  "summary": "The doc link anchor is probably wrong: sibling headings render underscores as dashes",
+  "idx": [
+   159
+  ]
+ },
+ "n15": {
+  "loc": "docs/sources/setup-grafana/configure-grafana/_index.md:2325",
+  "summary": "The docs never mention the sso_api_token fallback, the most operationally important behavior",
+  "idx": [
+   149
+  ]
+ },
+ "n16": {
+  "loc": "pkg/services/featuremgmt/toggles_gen.json:0",
+  "summary": "The generated toggles JSON permanently records tombstones for phantom flag names",
+  "idx": [
+   27,
+   66,
+   137,
+   157
+  ]
+ },
+ "n17": {
+  "loc": "pkg/cmd/grafana-cli/utils/command_line_mock.go:162",
+  "summary": "A mockery DO NOT EDIT file was hand-edited and will not survive regeneration",
+  "idx": [
+   136,
+   160
+  ]
+ },
+ "n18": {
+  "loc": "pkg/setting/setting_test.go:388",
+  "summary": "skipStaticRootValidation is set without restoring it",
+  "idx": [
+   28,
+   59,
+   86,
+   112,
+   133
+  ]
+ },
+ "n19": {
+  "loc": "pkg/setting/setting_plugins_test.go:284",
+  "summary": "The new grafana_com test is placed among plugin-settings tests and names a function that does not exist",
+  "idx": [
+   48,
+   99,
+   134,
+   155
+  ]
+ },
+ "n20": {
+  "loc": "pkg/api/grafana_com_proxy.go:54",
+  "summary": "Neither the CLI accessor nor the gnet proxy has a test asserting which token reaches the Authorization header",
+  "idx": [
+   20,
+   49,
+   100,
+   101
+  ]
+ },
+ "n21": {
+  "loc": "pkg/cmd/grafana-cli/commands/install_command_test.go:103",
+  "summary": "The only CLI token test still asserts the dead GcomToken(), so the new path is untested",
+  "idx": [
+   41,
+   76,
+   150
+  ]
+ },
+ "n22": {
+  "loc": "pkg/setting/setting_feature_toggles.go:107",
+  "summary": "Dotted flag names cannot be enabled via cfg: overrides because the parser skips any key containing a dot",
+  "idx": [
+   26,
+   117
+  ]
+ },
+ "n23": {
+  "loc": "pkg/setting/setting_plugins_test.go:284",
+  "summary": "The new test drives the value only by environment variable, so the defaults.ini key is unexercised",
+  "idx": [
+   135,
+   156
+  ]
+ },
+ "n24": {
+  "loc": "pkg/setting/setting_test.go:387",
+  "summary": "Three byte-identical subtest bodies should be table-driven",
+  "idx": [
+   132
+  ]
+ },
+ "n25": {
+  "loc": "pkg/setting/setting_test.go:417",
+  "summary": "A new subtest is tautological \u2014 it passes with the resolver guard removed",
+  "idx": [
+   40
+  ]
+ },
+ "n26": {
+  "loc": "pkg/setting/setting_test.go:400",
+  "summary": "setProvider cleanup restores NoopProvider rather than the previously installed provider",
+  "idx": [
+   52
+  ]
+ },
+ "n27": {
+  "loc": "pkg/plugins/repo/client.go:240",
+  "summary": "The plugin repo client attaches the token on an unanchored URL prefix match",
+  "idx": [
+   42
+  ]
+ },
+ "n28": {
+  "loc": "pkg/setting/setting.go:1155",
+  "summary": "applyCommandLineProperties appends cfg: overrides unredacted to the applied-properties log",
+  "idx": [
+   36
+  ]
+ },
+ "n29": {
+  "loc": "pkg/api/grafana_com_proxy.go:52",
+  "summary": "No audit log records who drove a proxied grafana.com call with the instance credential",
+  "idx": [
+   53
+  ]
+ },
+ "n30": {
+  "loc": "pkg/cmd/grafana-cli/utils/command_line.go:114",
+  "summary": "The CLI config-parse error is logged at Debug, so an unreadable config produces no output",
+  "idx": [
+   126
+  ]
+ },
+ "n31": {
+  "loc": "pkg/setting/setting.go:763",
+  "summary": "A 176-character line packs client construction, evaluation and the emptiness check together",
+  "idx": [
+   128
+  ]
+ },
+ "n32": {
+  "loc": "pkg/services/featuremgmt/registry.go:2252",
+  "summary": "The toggle description implies grafana-cli coverage it does not have and omits that it is inert without proxy_token",
+  "idx": [
+   131
+  ]
+ },
+ "n33": {
+  "loc": ":0",
+  "summary": "Grafana Enterprise entry points outside this repository would need the same resolver insertion",
+  "idx": [
+   54
+  ]
+ },
+ "n34": {
+  "loc": "conf/defaults.ini:1899",
+  "summary": "proxy_token is added bare with no comment saying it is inert without the toggle",
+  "idx": [
+   31,
+   46
+  ]
+ },
+ "n35": {
+  "loc": "docs/sources/setup-grafana/configure-grafana/_index.md:2327",
+  "summary": "The per-setting environment-variable callout is the only one of its kind in the file",
+  "idx": [
+   47
+  ]
+ },
+ "n36": {
+  "loc": "pkg/setting/setting.go:0",
+  "summary": "The field name is ambiguous about which credential it holds after resolution",
+  "idx": [
+   88
+  ]
+ },
+ "n37": {
+  "loc": "pkg/setting/setting.go:762",
+  "summary": "openfeature.NewDefaultClient allocates a new client on every call",
+  "idx": [
+   89
+  ]
+ },
+ "n38": {
+  "loc": "pkg/setting/setting.go:762",
+  "summary": "There is no strict mode: an operator cannot express \"never fall back to the SSO token\"",
+  "idx": [
+   104
+  ]
+ },
+ "n39": {
+  "loc": "pkg/setting/setting.go:763",
+  "summary": "Whether an empty EvaluationContext discards global targeting context",
+  "idx": [
+   56,
+   81,
+   110,
+   140
+  ]
+ },
+ "n40": {
+  "loc": "pkg/setting/setting.go:763",
+  "summary": "Whether context.Background() with no timeout can hang startup",
+  "idx": [
+   57,
+   82
+  ]
+ },
+ "n41": {
+  "loc": "pkg/setting/setting.go:762",
+  "summary": "Whether the new pkg/setting to openfeature edge introduces an import cycle",
+  "idx": [
+   84
+  ]
+ },
+ "n42": {
+  "loc": "pkg/setting/setting.go:1388",
+  "summary": "Whether a runtime config reload could revert or wipe the resolved token",
+  "idx": [
+   61,
+   85,
+   108
+  ]
+ },
+ "n43": {
+  "loc": "pkg/setting/setting.go:762",
+  "summary": "Whether the sso_api_token fallback is backward compatible",
+  "idx": [
+   90
+  ]
+ },
+ "n44": {
+  "loc": "pkg/setting/setting.go:759",
+  "summary": "Whether the in-place Cfg mutation is a data race",
+  "idx": [
+   30,
+   107
+  ]
+ },
+ "n45": {
+  "loc": "pkg/setting/setting.go:831",
+  "summary": "Whether the PROXY_TOKEN$ redaction pattern is correct and complete",
+  "idx": [
+   10,
+   63,
+   105,
+   139
+  ]
+ },
+ "n46": {
+  "loc": "pkg/setting/setting.go:762",
+  "summary": "Whether the resolver boolean logic is correct and convergent across flag states",
+  "idx": [
+   11,
+   143
+  ]
+ },
+ "n47": {
+  "loc": "pkg/setting/setting.go:763",
+  "summary": "Whether discarding the evaluation error departs from the codebase idiom",
+  "idx": [
+   29
+  ]
+ },
+ "n48": {
+  "loc": "pkg/setting/setting.go:0",
+  "summary": "Whether a whitespace-only proxy_token is accepted and sent",
+  "idx": [
+   69
+  ]
+ },
+ "n49": {
+  "loc": "pkg/setting/setting.go:1669",
+  "summary": "Whether the legacy [grafana_net] alias applies to proxy_token",
+  "idx": [
+   70
+  ]
+ },
+ "n50": {
+  "loc": "pkg/cmd/grafana-cli/utils/command_line.go:0",
+  "summary": "Whether c.Config() re-parses the INI file on every accessor call",
+  "idx": [
+   68
+  ]
+ },
+ "n51": {
+  "loc": "pkg/cmd/grafana-cli/utils/command_line.go:0",
+  "summary": "Whether the CLI logger call is a structured-logger arity bug",
+  "idx": [
+   58
+  ]
+ },
+ "n52": {
+  "loc": "pkg/api/grafana_com_proxy.go:0",
+  "summary": "Whether %2e%2e in the gnet wildcard can escape the /api prefix",
+  "idx": [
+   67
+  ]
+ },
+ "n53": {
+  "loc": "pkg/plugins/repo/client.go:0",
+  "summary": "Whether the token could leak via an HTTP redirect",
+  "idx": [
+   62
+  ]
+ },
+ "n54": {
+  "loc": "pkg/plugins/repo/client.go:240",
+  "summary": "Whether the token could leak to a non-grafana.com host via --pluginUrl",
+  "idx": [
+   83,
+   111
+  ]
+ },
+ "n55": {
+  "loc": "pkg/api/grafana_com_proxy.go:0",
+  "summary": "Whether an unresolved token field degrades safely at the proxy",
+  "idx": [
+   80
+  ]
+ },
+ "n56": {
+  "loc": ":0",
+  "summary": "Whether the resolved token could be exposed via /api/admin/settings",
+  "idx": [
+   64
+  ]
+ },
+ "n57": {
+  "loc": ":0",
+  "summary": "Threat-model note: the change is net-neutral by default",
+  "idx": [
+   71
+  ]
+ },
+ "n58": {
+  "loc": "pkg/services/featuremgmt/registry.go:0",
+  "summary": "Whether the registry entry Generate flags deviate from siblings",
+  "idx": [
+   65
+  ]
+ },
+ "n59": {
+  "loc": "pkg/cmd/grafana-server/commands/cli.go:113",
+  "summary": "Whether the production entry points sequence OpenFeature init and resolution correctly",
+  "idx": [
+   12,
+   78,
+   106
+  ]
+ },
+ "n60": {
+  "loc": "pkg/services/featuremgmt/toggles_gen.go:727",
+  "summary": "Whether the generated toggle files are consistent with the registry entry",
+  "idx": [
+   13,
+   141
+  ]
+ },
+ "n61": {
+  "loc": "pkg/cmd/grafana-cli/utils/command_line_mock.go:0",
+  "summary": "Whether the mock type assertion panics on nil",
+  "idx": [
+   60
+  ]
+ },
+ "n62": {
+  "loc": "pkg/setting/setting_test.go:397",
+  "summary": "Whether the new subtests are mutation-sensitive and can actually fail",
+  "idx": [
+   87,
+   114,
+   144
+  ]
+ },
+ "n63": {
+  "loc": "pkg/setting/setting_test.go:387",
+  "summary": "Whether swapping the OpenFeature provider pollutes global state across subtests",
+  "idx": [
+   113
+  ]
+ },
+ "n64": {
+  "loc": "pkg/api/api.go:587",
+  "summary": "The /api/gnet/* route proxies any method and caller-controlled path with the instance credential, guarded only by reqSignedIn",
+  "idx": [
+   33,
+   102
+  ]
+ },
+ "n65": {
+  "loc": "pkg/services/pluginsintegration/pluginconfig/config.go:39",
+  "summary": "No test asserts that ProvidePluginManagementConfig or ProxyGnetRequest carry the resolved token",
+  "idx": [
+   50,
+   151
+  ]
+ },
+ "n66": {
+  "loc": "pkg/setting/setting.go:762",
+  "summary": "No test pins the idempotency / second-call contract of the resolver",
+  "idx": [
+   51
+  ]
+ },
+ "n67": {
+  "loc": "pkg/cmd/grafana-cli/commands/install_command.go:182",
+  "summary": "Recursive dependency install rebuilds the options without carrying the token forward",
+  "idx": [
+   103
+  ]
+ },
+ "n68": {
+  "loc": "pkg/server/wire_gen.go:1721",
+  "summary": "Whether InitializeForCLI misses the resolver and the grafana-cli runner path is affected",
+  "idx": [
+   109,
+   142
+  ]
+ },
+ "n69": {
+  "loc": "pkg/cmd/grafana-cli/commands/upgrade_command_test.go:64",
+  "summary": "A test comment names the wrong method for the path now exercised and misattributes behavior",
+  "idx": [
+   138
+  ]
+ }
+}

@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-12T13:22:46Z
+updated_at: 2026-08-12T17:59:50Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-5xad
@@ -534,3 +534,66 @@ reported is the largest suppression ratio in the roster.
 
 `superpowers` is the cost-efficiency outlier at **$0.89 per real finding**, roughly a quarter of
 `ours-audit`'s $4.81 — while finding 9 real to its 12.
+
+
+## Null arm scored (2026-08-12) — and it did not measure a noise floor
+
+Seven cells on `grafana/grafana#122269`, 161 findings -> 69 clusters, two independent blind grading
+passes. The grader was **not told this was a null subject** — telling it would have made the
+measurement circular. Scored with `--allow-silent-cells` and without `--threads`, as the arm requires.
+
+| tool | reported | real | valid-minor | trivia | FP | precision |
+|---|---|---|---|---|---|---|
+| `pr-review-toolkit` | 24 | 9 | 12 | 3 | 0 | 0.38 |
+| `ours-audit` | 23 | 10 | 11 | 2 | 0 | 0.43 |
+| `superpowers` | 16 | 7 | 6 | 2 | 1 | 0.44 |
+| `comprehensive-review` | 13 | 8 | 5 | 0 | 0 | 0.61 |
+| `ours-review` | 10 | 8 | 2 | 0 | 0 | 0.80 |
+| `ours-bugs` | 6 | 5 | 1 | 0 | 0 | 0.83 |
+| `anthropic-code-review` | 5 | 4 | 1 | 0 | 0 | 0.80 |
+
+### The subject is not defect-free
+
+**14 clusters graded `valid-other`** — real, substantive problems a maintainer should act on. Ten of
+the fourteen were confirmed by both grading passes. The top two were found by **all seven tools
+independently** and both passes agree they are real:
+
+- the `grafana-cli` accessor re-implements the token fallback with no feature-toggle check, so the
+  CLI uses a different credential than the server
+- the docs name the toggle without its registered `grafana.` prefix, so an operator who follows them
+  does not enable the feature
+
+`NULL-ARM.md`'s selection procedure — no revert, no linked regression issue, no follow-up fix on the
+same lines — establishes that **nobody reported a defect**, not that there is none. Seven independent
+tools disagree with that inference, and the blind judge sides with them.
+
+### What this means for the instrument
+
+**Precision does not separate a defect-laden change from a defect-free one.** The ranges overlap
+heavily:
+
+| subject | precision range | total false positives |
+|---|---|---|
+| prometheus (real defects) | 0.51 - 1.00 | 2 |
+| efcore (real defects) | 0.50 - 1.00 | 0 |
+| **null (no known defect)** | **0.38 - 0.83** | **1** |
+
+There is a downward shift, but it is small against the spread. So precision measures *is what you
+said defensible*, not *did you find the bug*. Any published precision figure has to be described that
+way, and the thread axis remains the only thing that answers the second question.
+
+**One false positive in 161 findings, across seven tools.** These tools essentially do not invent
+defects. Their failure mode is immateriality — 32 trivia and 22 valid-minor clusters — exactly what
+v1's distribution suggested and the reason severity-weighted precision exists.
+
+**Judge variance is worst here: max delta precision 0.33** across the two passes, against 0.25 on
+efcore and 0.11 on prometheus. `ours-bugs` moved 0.83 -> 0.50 on six reported clusters. Small
+denominators plus a subjective boundary is the whole story, and it reinforces [[dcc-di47]].
+
+### The honest conclusion
+
+The null arm as designed cannot produce an absolute noise floor, because "no known defect" is not
+"no defect" and review tools find unknown ones. What it produced instead is more useful: a
+demonstration that on a change nobody thought had problems, seven tools found 51 real cluster-
+memberships and exactly one false positive. That is a strong positive result for the tools and a
+negative result for the arm's stated purpose. Recorded rather than reframed.
