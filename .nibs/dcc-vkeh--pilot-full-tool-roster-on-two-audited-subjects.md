@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-12T07:11:55Z
+updated_at: 2026-08-12T09:51:53Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-5xad
@@ -411,3 +411,65 @@ evidence that tools missed real bugs.
 `@`-modifier undercount — were found by all seven. Almost all single-tool clusters graded `trivia` or
 `valid-minor`: across the whole roster there are just 7 unique real findings, all from `ours-audit`.
 What tools find alone is mostly not substantive.
+
+
+## Second scored subject: dotnet/efcore#34127 r1 (2026-08-12)
+
+Seven tools, one repeat, shim on, all cells CLEAN. 128 findings -> 56 clusters -> two independent
+blind grading passes. `vintage: out-of-window`. **Zero false positives across all seven tools.**
+
+| tool | precision | sev-weighted | real | unique | reported | found | thread recall | incumbent |
+|---|---|---|---|---|---|---|---|---|
+| `anthropic-code-review` | 1.00 | 1.00 | 1 | 0 | 1 | 3 | 0.10 | 0.00 |
+| `ours-bugs` | 1.00 | 1.00 | 1 | 0 | 1 | 11 | 0.10 | 0.00 |
+| `comprehensive-review` | 0.77 | 0.89 | 10 | 1 | 13 | 14 | 0.50 | 0.00 |
+| `ours-review` | 0.60 | 0.87 | 6 | 0 | 10 | 28 | 0.10 | 0.00 |
+| `pr-review-toolkit` | 0.50 | 0.74 | 10 | 1 | 20 | 22 | 0.40 | 0.00 |
+| `superpowers` | 0.50 | 0.77 | 7 | 2 | 14 | 14 | 0.20 | 0.00 |
+| `ours-audit` | 0.47 | 0.63 | 8 | 1 | 17 | 32 | 0.40 | 0.00 |
+
+### The precision/recall inversion replicates at the top
+
+Both tools at precision 1.00 again sit at the bottom of thread recall (0.10) — the same shape as
+prometheus, now on a different language, a different repo and a different defect class. It is not a
+clean monotonic inversion (`ours-review` is 0.60 / 0.10), but the top of the precision table is
+reliably the bottom of the recall table.
+
+**Both 1.00s rest on a single reported cluster each.** `anthropic-code-review` reported 1 finding of
+3 found; `ours-bugs` reported 1 of 11. A precision of 1.00 over n=1 is not evidence of a precise
+tool, and must never be published without n beside it.
+
+### First incumbent_agreement number: 0.00 across the board
+
+This subject carries one bot-authored thread (Copilot, `SqlNullabilityProcessor.cs:590`, on the same
+file and the same defect family a human reviewer raised independently). **No tool matched it** —
+`incumbent_agreement` is 0.00 for all seven. The judge could not have been biased against it: origin
+and author were stripped from the grader payload, so it was graded on substance like every other
+thread ([[dcc-qwt3]]).
+
+### What every tool missed
+
+7 of 10 human threads hit (6 under pass 2). Missed by everyone under both passes: threads 2, 8 and 9
+— `nit: this can all be one nice switch statement with pattern matching`, `Are there other unary
+operators that propagate?`, and `Interestingly, if the node isn't nullable, then the checks can also
+be elided`. Two of the three are style or exploratory questions; the third is a missed-optimization
+observation. None is a correctness defect.
+
+### Judge stability: better than prometheus, on every measure
+
+| measure | efcore | prometheus | floor |
+|---|---|---|---|
+| exact agreement | 0.929 | 0.889 | 0.70 |
+| real/not-real kappa | 0.871 | 0.78 | 0.60 |
+| `valid-other`/`trivia` kappa | 0.779 | 0.737 | — |
+| `matches-thread` same index | 9/10 | 6/9 | — |
+
+Judge calibration clean again: zero threads a tool raised were graded trivia or false-positive.
+
+### The robustness finding, corrected
+
+Prometheus suggested precision was robust to the judge and thread recall was not. Efcore reverses it
+(precision 0.14, recall 0.10). **Both axes move 0.10-0.20 between passes and the precision ranking
+changed on both subjects.** See [[dcc-di47]], now broadened: no per-tool figure from a single grading
+pass may be published, for either axis. Corpus-level figures were far steadier and are the most
+defensible output the instrument produces.
