@@ -1,0 +1,15 @@
+Cell isolation check: /home/decaf/code/decaf-claude/competition/benchmark/v2/runs/grafana-122269__comprehensive-review__shim-on__r1
+  session:    ca65dba2-ccf2-46b2-874b-03da22e6201f
+  transcripts: 1
+
+  clean threads\.json                                 
+  clean answer-key\.json                              
+  clean fixture\.json                                 
+  clean final-output\.md                              
+  clean /v2/analysis/                                 
+  clean /v2/runs/                                     
+  clean /v2/pooled/[^/]*/(threads|fixture)            
+  clean HARNESS-REVIEW|GROUND-TRUTH-AUDIT|CANDIDATES\.md|METHODOLOGY
+  clean git network transport (clone/remote add/fetch URL)
+
+CLEAN: no transcript reference to any scoring artifact.
