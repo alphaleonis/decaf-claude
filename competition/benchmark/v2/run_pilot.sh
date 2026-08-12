@@ -40,10 +40,20 @@ for sid in "${SUBJ_ARR[@]}"; do
     for r in $(seq 1 "$REPEATS"); do
       total=$((total+1))
       out="$V2/runs/${sid}__${tool}__shim-${SHIM}__r${r}"
+      # Resume: skip a cell that already SUCCEEDED. Non-empty output is not sufficient evidence of
+      # that — a cell killed by an API error mid-review writes a short, well-formed prefix and then
+      # stops. Measured: the null-arm ours-audit cell hit a 429 spend limit after 533s, wrote 102
+      # bytes of final-output.md and 930 of cell-report.md, filed no report artifact, and would have
+      # been skipped forever by an emptiness check. `is_error` in meter.json is the authority.
       if [ -z "${BENCH_FORCE:-}" ] && [ -s "$out/final-output.md" ]; then
-        echo "[skip] $sid/$tool r$r — already has output"
-        printf '%s\t%s\t%s\tskipped\t\t\t\t\t\n' "$sid" "$tool" "$r" >> "$LOG"
-        skipped=$((skipped+1)); continue
+        cell_err="$(jq -r '.is_error // false' "$out/meter.json" 2>/dev/null)"
+        if [ "$cell_err" = "true" ]; then
+          echo "[rerun] $sid/$tool r$r — previous attempt errored ($(jq -r '.terminal_reason // "?"' "$out/meter.json" 2>/dev/null)); re-running" >&2
+        else
+          echo "[skip] $sid/$tool r$r — already has output"
+          printf '%s\t%s\t%s\tskipped\t\t\t\t\t\n' "$sid" "$tool" "$r" >> "$LOG"
+          skipped=$((skipped+1)); continue
+        fi
       fi
 
       t0=$(date +%s)
@@ -57,7 +67,13 @@ for sid in "${SUBJ_ARR[@]}"; do
       iso="$(head -1 "$out/isolation.txt" 2>/dev/null | tr -d '\t' | cut -c1-40)"
       denied="$(grep -c 'DENY' "$out/access.log" 2>/dev/null || true)"
 
-      if [ "$rc" -ne 0 ]; then
+      # An API error (429 spend/rate limit, 5xx) leaves rc=1 AND a partial, well-formed report. Name
+      # it distinctly from a runner fault: the fix is to wait and re-run, not to debug the harness.
+      api_err="$(jq -r '.api_error_status // empty' "$out/meter.json" 2>/dev/null)"
+      if [ -n "$api_err" ]; then
+        status="api-error-$api_err"; failed=$((failed+1))
+        echo "[$sid/$tool] API $api_err — cell truncated mid-review, DO NOT SCORE; re-run when the limit clears" >&2
+      elif [ "$rc" -ne 0 ]; then
         status="runner-error"; failed=$((failed+1))
       elif [ ! -s "$out/final-output.md" ]; then
         # Distinguished from a clean run on purpose: the two are indistinguishable downstream, and

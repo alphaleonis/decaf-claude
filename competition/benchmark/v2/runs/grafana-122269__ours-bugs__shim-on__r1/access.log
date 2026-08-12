@@ -1,0 +1,282 @@
+2026-08-12T14:20:01Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:20:02Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:20:08Z	fs	ALLOW	Bash pkg/services/featuremgmt/toggles_gen.json pkg/services/featuremgmt/toggles_gen.csv
+2026-08-12T14:20:33Z	fs	ALLOW	Bash /dev/null
+2026-08-12T14:20:34Z	fs	ALLOW	Bash pkg/setting/setting.go pkg/
+2026-08-12T14:20:40Z	fs	ALLOW	Bash ./pkg/setting/... ./pkg/cmd/grafana-cli/... ./pkg/cmd/grafana-server/... ./pkg/api/... ./pkg/services/featuremgmt/... ./pkg/services/pluginsintegration/pluginconfig/...
+2026-08-12T14:20:47Z	fs	ALLOW	Bash ./pkg/setting/...
+2026-08-12T14:20:50Z	fs	ALLOW	Bash ./pkg/cmd/grafana-cli/... ./pkg/services/pluginsintegration/pluginconfig/...
+2026-08-12T14:22:51Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/CLAUDE.md
+2026-08-12T14:22:51Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/AGENTS.md
+2026-08-12T14:22:53Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T14:22:56Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:22:56Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/cli.go
+2026-08-12T14:22:57Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:23:01Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:23:04Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:23:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:23:09Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:23:14Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/api/grafana_com_proxy.go
+2026-08-12T14:23:14Z	fs	ALLOW	Bash pkg/cmd/grafana-server/commands/cli.go pkg/cmd/grafana-server/commands/target.go
+2026-08-12T14:23:15Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/pluginsintegration/pluginconfig/config.go
+2026-08-12T14:23:15Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:23:18Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:23:27Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/target.go
+2026-08-12T14:23:28Z	fs	ALLOW	Bash ccdf7327636bc8e08ca4b121863d21ac41df653a:pkg/setting/setting_test.go
+2026-08-12T14:23:28Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/install_command.go
+2026-08-12T14:23:33Z	fs	ALLOW	Bash ccdf7327636bc8e08ca4b121863d21ac41df653a:pkg/setting/setting_test.go
+2026-08-12T14:23:34Z	fs	ALLOW	Bash ccdf7327636bc8e08ca4b121863d21ac41df653a:pkg/cmd/grafana-cli/commands/install_command_test.go /dev/null
+2026-08-12T14:23:37Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:23:37Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/ /dev/null
+2026-08-12T14:23:44Z	fs	ALLOW	Bash pkg/cmd/grafana-server/commands/cli.go
+2026-08-12T14:23:45Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:23:45Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:23:46Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:23:48Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo
+2026-08-12T14:23:49Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo
+2026-08-12T14:23:49Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/api/ /dev/null
+2026-08-12T14:23:51Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/api/grafana_com_proxy.go
+2026-08-12T14:23:53Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:23:54Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/api/ /dev/null
+2026-08-12T14:23:54Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:24:03Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:24:04Z	fs	ALLOW	Bash pkg/services/featuremgmt/openfeature.go
+2026-08-12T14:24:06Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:24:08Z	fs	ALLOW	Bash ccdf7327636bc8e08ca4b121863d21ac41df653a:pkg/setting/setting_test.go
+2026-08-12T14:24:08Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:24:08Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:24:09Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:24:11Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/commands.go
+2026-08-12T14:24:11Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:24:11Z	fs	ALLOW	Bash pkg/server/
+2026-08-12T14:24:13Z	fs	ALLOW	Bash pkg/setting/setting_test.go pkg/setting/setting_plugins_test.go pkg/cmd/grafana-cli/commands/upgrade_command_test.go
+2026-08-12T14:24:16Z	fs	ALLOW	Bash pkg/setting/setting_test.go
+2026-08-12T14:24:16Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/ /dev/null
+2026-08-12T14:24:18Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:24:19Z	fs	ALLOW	Bash pkg/server/wire_gen.go pkg/server/wire_gen.go pkg/server/wire.go pkg/services/pluginsintegration/
+2026-08-12T14:24:19Z	fs	ALLOW	Bash pkg/services/pluginsintegration/pluginconfig/config.go
+2026-08-12T14:24:19Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:24:19Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T14:24:20Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/pluginsintegration/pluginconfig/config.go
+2026-08-12T14:24:21Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:24:22Z	fs	ALLOW	Bash ./pkg/setting
+2026-08-12T14:24:23Z	fs	ALLOW	Bash pkg/server/wire_gen.go
+2026-08-12T14:24:23Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:24:23Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/pluginsintegration/ /dev/null
+2026-08-12T14:24:27Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T14:24:27Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/cli.go
+2026-08-12T14:24:29Z	fs	ALLOW	Bash pkg/server/wire_gen.go
+2026-08-12T14:24:30Z	fs	ALLOW	Bash pkg/cmd/grafana-server/commands/cli.go
+2026-08-12T14:24:30Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/ /dev/null
+2026-08-12T14:24:31Z	fs	ALLOW	Bash ./pkg/setting
+2026-08-12T14:24:33Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:24:36Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:24:40Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/openfeature.go
+2026-08-12T14:24:45Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:25:00Z	fs	ALLOW	Bash /dev/null
+2026-08-12T14:25:03Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:25:11Z	fs	ALLOW	Bash ./pkg/setting
+2026-08-12T14:25:11Z	fs	ALLOW	Bash pkg/api/grafana_com_proxy.go
+2026-08-12T14:25:12Z	fs	ALLOW	Bash pkg/services/featuremgmt/openfeature.go pkg/services/featuremgmt/static_provider.go /dev/null
+2026-08-12T14:25:21Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/ /dev/null
+2026-08-12T14:25:24Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/runner/runner.go
+2026-08-12T14:25:27Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:25:29Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:25:34Z	fs	ALLOW	Bash pkg/setting/ pkg/api/ pkg/services/ pkg/server/
+2026-08-12T14:25:35Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:25:35Z	fs	ALLOW	Bash pkg/tests/ pkg/plugins/ pkg/services/pluginsintegration/
+2026-08-12T14:25:38Z	fs	ALLOW	Bash ./pkg/setting
+2026-08-12T14:25:39Z	fs	ALLOW	Bash pkg/
+2026-08-12T14:25:39Z	fs	ALLOW	Bash pkg/tests/
+2026-08-12T14:25:45Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T14:25:49Z	fs	ALLOW	Bash ./pkg/setting
+2026-08-12T14:25:52Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line_mock.go
+2026-08-12T14:25:53Z	fs	ALLOW	Bash ./pkg/setting
+2026-08-12T14:25:55Z	fs	ALLOW	Bash pkg/setting/setting_plugins_test.go
+2026-08-12T14:25:58Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/upgrade_command_test.go
+2026-08-12T14:26:04Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/ /dev/null
+2026-08-12T14:26:04Z	fs	ALLOW	Bash /tmp/test_openfeature.go github.com/open-feature/go-sdk/openfeature github.com/open-feature/go-sdk/openfeature/memprovider // // /tmp/test_openfeature.go
+2026-08-12T14:26:05Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo
+2026-08-12T14:26:06Z	fs	ALLOW	Bash ./pkg/setting
+2026-08-12T14:26:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/
+2026-08-12T14:26:10Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli
+2026-08-12T14:26:11Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_plugins_test.go
+2026-08-12T14:26:12Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/
+2026-08-12T14:26:12Z	fs	ALLOW	Bash pkg/services/featuremgmt/*.go
+2026-08-12T14:26:12Z	fs	ALLOW	Bash pkg/
+2026-08-12T14:26:13Z	fs	ALLOW	Bash pkg/setting/setting_plugins_test.go
+2026-08-12T14:26:14Z	fs	ALLOW	Bash pkg/cmd/grafana-cli /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/ /dev/null
+2026-08-12T14:26:16Z	fs	ALLOW	Bash pkg/setting/setting_plugins_test.go
+2026-08-12T14:26:18Z	fs	ALLOW	Bash pkg/setting/setting_plugins_test.go
+2026-08-12T14:26:20Z	fs	ALLOW	Bash pkg/setting/setting_test.go
+2026-08-12T14:26:21Z	fs	ALLOW	Bash ~/go/pkg/mod/github.com/open-feature/go-sdk*/ /dev/null open-feature/go-sdk
+2026-08-12T14:26:22Z	fs	ALLOW	Bash pkg/setting/setting_test.go
+2026-08-12T14:26:25Z	fs	ALLOW	Bash pkg/setting/setting_test.go
+2026-08-12T14:26:25Z	fs	ALLOW	Bash /home/decaf/go/pkg/mod/github.com/open-feature/go-sdk@v1.17.1/openfeature/client.go
+2026-08-12T14:26:27Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:26:31Z	fs	ALLOW	Bash /home/decaf/go/pkg/mod/github.com/open-feature/go-sdk@v1.17.1/openfeature/evaluation_context.go
+2026-08-12T14:26:32Z	fs	ALLOW	Bash pkg/api/grafana_com_proxy.go
+2026-08-12T14:26:32Z	fs	ALLOW	Bash /home/decaf/go/pkg/mod/github.com/open-feature/go-sdk@v1.17.1/openfeature/client.go
+2026-08-12T14:26:36Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/upgrade_command_test.go /dev/null
+2026-08-12T14:26:38Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/ /dev/null
+2026-08-12T14:26:43Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T14:26:45Z	fs	ALLOW	Bash pkg/infra/features/*.go
+2026-08-12T14:26:46Z	fs	ALLOW	Bash ./pkg/setting
+2026-08-12T14:26:49Z	fs	ALLOW	Bash pkg/infra/features/client.go
+2026-08-12T14:26:50Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/upgrade_command_test.go
+2026-08-12T14:26:53Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:27:10Z	fs	ALLOW	Bash pkg/plugins/repo/client.go pkg/plugins/repo/service.go
+2026-08-12T14:27:10Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/install_command.go
+2026-08-12T14:27:12Z	fs	ALLOW	Bash ./pkg/setting
+2026-08-12T14:27:18Z	fs	ALLOW	Bash pkg/setting/setting.go pkg/setting/*.go conf/defaults.ini
+2026-08-12T14:27:24Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:27:26Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T14:27:27Z	fs	ALLOW	Bash pkg/cmd/grafana/main.go
+2026-08-12T14:27:32Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T14:27:35Z	fs	ALLOW	Bash pkg/cmd/grafana-server/commands/*.go
+2026-08-12T14:27:35Z	fs	ALLOW	Bash pkg/operators/ pkg/services/apiserver/standalone/ /dev/null
+2026-08-12T14:27:35Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:27:44Z	fs	ALLOW	Bash packaging/docker/ /dev/null
+2026-08-12T14:28:05Z	fs	ALLOW	Bash ./pkg/setting/...
+2026-08-12T14:28:09Z	fs	ALLOW	Bash ./pkg/setting
+2026-08-12T14:28:13Z	fs	ALLOW	Bash ./pkg/cmd/grafana-cli/commands
+2026-08-12T14:28:19Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:28:26Z	fs	ALLOW	Bash ./pkg/cmd/grafana-cli/commands
+2026-08-12T14:28:36Z	fs	ALLOW	Bash pkg/cmd/ pkg/cmd
+2026-08-12T14:28:40Z	fs	ALLOW	Bash ./pkg/setting ./pkg/cmd/grafana-cli/commands
+2026-08-12T14:28:47Z	fs	ALLOW	Bash pkg/api/ api/gnet
+2026-08-12T14:29:14Z	fs	ALLOW	Bash public/app/features/dashboard-scene/pages/DashboardScenePageStateManager.ts public/app/features/dashboard/dashgrid/DashboardLibrary/api/dashboardLibraryApi.ts
+2026-08-12T14:29:31Z	fs	ALLOW	Bash pkg/setting/*.go
+2026-08-12T14:29:49Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/feature-toggles/index.md docs/sources/setup-grafana/configure-grafana/feature-toggles/index.md
+2026-08-12T14:30:01Z	fs	ALLOW	Bash ~/go/pkg/mod/github.com/open-feature/go-sdk-contrib/providers/ ~/go/pkg/mod/github.com/open-feature/go-sdk-contrib/providers/ofrep*/pkg
+2026-08-12T14:30:05Z	fs	ALLOW	Bash ~/go/pkg/mod/github.com/open-feature/go-sdk-contrib/providers/ofrep@v0.1.7 ~/go/pkg/mod/github.com/open-feature/go-sdk-contrib/providers/ofrep@v0.1.7/*.go /dev/null
+2026-08-12T14:30:16Z	fs	ALLOW	Bash pkg/infra/features/*.go pkg/infra/features/client.go
+2026-08-12T14:30:30Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T14:31:22Z	fs	ALLOW	Bash ./pkg/setting/
+2026-08-12T14:31:24Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md pkg/services/featuremgmt/registry.go
+2026-08-12T14:31:34Z	fs	ALLOW	Bash api/gnet api/gnet pkg/api/api.go public/app
+2026-08-12T14:31:35Z	fs	ALLOW	Bash pkg/setting/setting_feature_toggles.go
+2026-08-12T14:31:45Z	fs	ALLOW	Bash pkg/api/api.go api/gnet api/gnet public/app /dev/null
+2026-08-12T14:31:47Z	fs	ALLOW	Bash docs/ pkg/services/featuremgmt/*.go
+2026-08-12T14:32:11Z	fs	ALLOW	Bash pkg/api/grafana_com_proxy.go plugins/repo/client.go pkg/plugins/repo/client.go
+2026-08-12T14:32:13Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/utils/command_line.go pkg/infra/features/provider.go /dev/null
+2026-08-12T14:32:43Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:32:44Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:32:44Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/install_command.go
+2026-08-12T14:32:52Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/plugins/repo/client.go
+2026-08-12T14:32:56Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli
+2026-08-12T14:32:58Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo */grafana-cli/*main.go
+2026-08-12T14:33:02Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd
+2026-08-12T14:33:04Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana/main.go
+2026-08-12T14:33:07Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/cli.go
+2026-08-12T14:33:09Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/services
+2026-08-12T14:33:12Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/services
+2026-08-12T14:33:14Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/services/services.go
+2026-08-12T14:33:17Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:33:19Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:33:22Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg
+2026-08-12T14:33:26Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/cli.go
+2026-08-12T14:33:35Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/target.go
+2026-08-12T14:33:36Z	fs	ALLOW	Bash ccdf7327636bc8e08ca4b121863d21ac41df653a:pkg/setting/setting.go
+2026-08-12T14:33:40Z	fs	ALLOW	Bash pkg/cmd/grafana-server/commands/cli.go pkg/cmd/grafana-server/commands/target.go
+2026-08-12T14:33:44Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/cli.go
+2026-08-12T14:33:44Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T14:33:47Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg
+2026-08-12T14:33:48Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go
+2026-08-12T14:33:48Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/target.go
+2026-08-12T14:33:49Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/registry.go
+2026-08-12T14:33:51Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:33:52Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:33:54Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_feature_toggles.go
+2026-08-12T14:33:57Z	fs	ALLOW	Bash /dev/null
+2026-08-12T14:34:00Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/
+2026-08-12T14:34:02Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/openfeature.go
+2026-08-12T14:34:02Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_openfeature.go
+2026-08-12T14:34:05Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo */pkg/services/featuremgmt/*
+2026-08-12T14:34:05Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/infra/features
+2026-08-12T14:34:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/infra/features/
+2026-08-12T14:34:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/*.go
+2026-08-12T14:34:09Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/infra/features/provider.go
+2026-08-12T14:34:10Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/static_provider.go
+2026-08-12T14:34:17Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:34:17Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:34:19Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:34:19Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:34:21Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/*.go
+2026-08-12T14:34:23Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/registry.go
+2026-08-12T14:34:23Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_openfeature.go
+2026-08-12T14:34:28Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo
+2026-08-12T14:34:30Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/registry.go
+2026-08-12T14:34:36Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:34:41Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_feature_toggles.go
+2026-08-12T14:34:44Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/static_provider.go
+2026-08-12T14:34:46Z	fs	ALLOW	Bash ccdf7327636bc8e08ca4b121863d21ac41df653a:pkg/setting/setting.go
+2026-08-12T14:34:49Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/*test.go /dev/null
+2026-08-12T14:34:51Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_feature_toggles_test.go
+2026-08-12T14:35:05Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:35:07Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:35:56Z	fs	ALLOW	Bash pkg/ pkg/
+2026-08-12T14:35:57Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/install_command_test.go
+2026-08-12T14:36:47Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:36:48Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/install_command.go
+2026-08-12T14:36:48Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:36:52Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:36:54Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/cli.go
+2026-08-12T14:36:57Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/cli.go
+2026-08-12T14:37:00Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/target.go
+2026-08-12T14:37:03Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/target.go
+2026-08-12T14:37:03Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T14:37:04Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/registry.go
+2026-08-12T14:37:04Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/toggles_gen.go
+2026-08-12T14:37:06Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli
+2026-08-12T14:37:09Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_feature_toggles.go
+2026-08-12T14:37:09Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli
+2026-08-12T14:37:11Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/cli.go
+2026-08-12T14:37:12Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_feature_toggles.go
+2026-08-12T14:37:14Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_feature_toggles.go
+2026-08-12T14:37:14Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/services/services.go
+2026-08-12T14:37:18Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg
+2026-08-12T14:37:20Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/install_command.go
+2026-08-12T14:37:21Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:37:22Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/install_command.go
+2026-08-12T14:37:23Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting
+2026-08-12T14:37:25Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/plugins
+2026-08-12T14:37:26Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:37:27Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/plugins/repo/client.go
+2026-08-12T14:37:29Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/plugins/repo/client.go
+2026-08-12T14:37:29Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/server
+2026-08-12T14:37:31Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/plugins/repo/client.go
+2026-08-12T14:37:32Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg //
+2026-08-12T14:37:34Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/static_provider.go
+2026-08-12T14:37:35Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/
+2026-08-12T14:37:38Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:37:41Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/registry.go
+2026-08-12T14:37:43Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:37:43Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T14:37:45Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T14:37:46Z	fs	ALLOW	Bash pkg/plugins/repo/manager.go
+2026-08-12T14:37:48Z	fs	ALLOW	Bash (no path)
+2026-08-12T14:37:49Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T14:37:51Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T14:37:52Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/install_command.go
+2026-08-12T14:37:54Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/registry.go
+2026-08-12T14:37:54Z	fs	ALLOW	Bash ccdf7327:pkg/services/featuremgmt/registry.go
+2026-08-12T14:37:56Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/registry.go
+2026-08-12T14:37:58Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T14:38:00Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/featuremgmt/*.go
+2026-08-12T14:38:04Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T14:38:05Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/cli.go
+2026-08-12T14:38:07Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go
+2026-08-12T14:38:08Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:38:10Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T14:38:11Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T14:38:15Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:38:17Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting
+2026-08-12T14:38:17Z	fs	ALLOW	Bash b262acdd:pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:38:20Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T14:38:20Z	fs	ALLOW	Bash b262acdd:pkg/cmd/grafana-cli/commands/install_command.go
+2026-08-12T14:38:23Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:38:30Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T14:39:07Z	fs	ALLOW	Bash .decaf/code-reviews .decaf/code-reviews/CODE_REVIEW_$
+2026-08-12T14:40:46Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/.decaf/code-reviews/CODE_REVIEW_2026-08-12_16-39-07.md
+2026-08-12T14:40:50Z	fs	ALLOW	Bash .decaf/code-reviews/ /dev/null

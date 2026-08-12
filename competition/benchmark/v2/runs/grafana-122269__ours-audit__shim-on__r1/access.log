@@ -1,0 +1,354 @@
+2026-08-12T16:29:38Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:29:39Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:29:43Z	fs	ALLOW	Bash pkg/services/featuremgmt/toggles_gen.json pkg/services/featuremgmt/toggles_gen.csv
+2026-08-12T16:29:57Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:29:58Z	fs	ALLOW	Bash pkg/
+2026-08-12T16:30:01Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:30:01Z	fs	ALLOW	Bash pkg/
+2026-08-12T16:30:18Z	fs	ALLOW	Bash ./pkg/setting/... ./pkg/cmd/... ./pkg/api/... ./pkg/services/pluginsintegration/pluginconfig/... ./pkg/services/featuremgmt/...
+2026-08-12T16:30:51Z	fs	ALLOW	Bash ./pkg/setting/...
+2026-08-12T16:30:54Z	fs	ALLOW	Bash ./pkg/cmd/grafana-cli/...
+2026-08-12T16:31:36Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:31:50Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:01Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T16:32:01Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/cli.go
+2026-08-12T16:32:02Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/target.go
+2026-08-12T16:32:07Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:08Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:08Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/ /dev/null pkg/
+2026-08-12T16:32:11Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:12Z	fs	ALLOW	Bash pkg/ /dev/null
+2026-08-12T16:32:14Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T16:32:15Z	fs	ALLOW	Bash conf/defaults.ini
+2026-08-12T16:32:18Z	fs	ALLOW	Bash pkg/cmd/ pkg/cmd/grafana/ /dev/null pkg/cmd/grafana-server/commands/
+2026-08-12T16:32:20Z	fs	ALLOW	Bash pkg/cmd/grafana-server/commands/cli.go
+2026-08-12T16:32:21Z	fs	ALLOW	Bash pkg/
+2026-08-12T16:32:22Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:22Z	fs	ALLOW	Bash pkg/
+2026-08-12T16:32:25Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:25Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go pkg/tests/
+2026-08-12T16:32:26Z	fs	ALLOW	Bash pkg/ /dev/null /dev/null
+2026-08-12T16:32:27Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/setting/setting.go pkg/cmd/grafana-cli/utils/command_line.go pkg/cmd/grafana-cli/utils/command_line_mock.go pkg/cmd/grafana-cli/commands/install_command.go conf/defaults.ini pkg/api/grafana_com_proxy.go pkg/services/pluginsintegration/pluginconfig/config.go
+2026-08-12T16:32:30Z	fs	ALLOW	Bash pkg/services/featuremgmt/*.go
+2026-08-12T16:32:32Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:33Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:32:35Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:36Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/registry.go RequiresRestart/HideFromAdminPage/AllowSelfServe pkg/services/featuremgmt/registry.go
+2026-08-12T16:32:36Z	fs	ALLOW	Bash pkg/setting/setting.go pkg/setting/setting.go
+2026-08-12T16:32:39Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/commands.go
+2026-08-12T16:32:40Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/toggles_gen.go pkg/services/featuremgmt/toggles_gen.csv
+2026-08-12T16:32:41Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go pkg/tests/testinfra/testinfra.go
+2026-08-12T16:32:42Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:42Z	fs	ALLOW	Bash pkg/tests/
+2026-08-12T16:32:43Z	fs	ALLOW	Bash pkg/cmd/ pkg/cmd
+2026-08-12T16:32:43Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:45Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana/main.go
+2026-08-12T16:32:45Z	fs	ALLOW	Bash pkg/setting grafana/pkg/services/featuremgmt pkg/setting/*.go pkg/setting? grafana/pkg/setting pkg/services/featuremgmt/*.go
+2026-08-12T16:32:47Z	fs	ALLOW	Bash pkg/server/wire_gen.go
+2026-08-12T16:32:48Z	fs	ALLOW	Bash pkg/setting grafana/pkg/services/featuremgmt pkg/setting/*.go pkg/setting? grafana/pkg/setting pkg/services/featuremgmt/*.go pkg/setting/*.go pkg/server/*.go /dev/null
+2026-08-12T16:32:49Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/api/grafana_com_proxy.go
+2026-08-12T16:32:49Z	fs	ALLOW	Bash /^func InitializeForCLI/,/^}/ pkg/server/wire_gen.go /^func InitializeForCLI/,/^}/ pkg/server/wire_gen.go
+2026-08-12T16:32:50Z	fs	ALLOW	Bash pkg/setting/setting.go pkg/api/grafana_com_proxy.go
+2026-08-12T16:32:50Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/pluginsintegration/pluginconfig/config.go
+2026-08-12T16:32:50Z	fs	ALLOW	Bash pkg/api/*.go
+2026-08-12T16:32:50Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:50Z	fs	ALLOW	Bash pkg/api/grafana_com_proxy.go
+2026-08-12T16:32:53Z	fs	ALLOW	Bash pkg/cmd/grafana-cli pkg/cmd/grafana-cli/utils/*_test.go /dev/null
+2026-08-12T16:32:53Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:54Z	fs	ALLOW	Bash /^func InitializeForTest/,/^\}/ pkg/server/wire_gen.go
+2026-08-12T16:32:54Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:32:55Z	fs	ALLOW	Bash pkg/server/*.go
+2026-08-12T16:32:56Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/install_command_test.go
+2026-08-12T16:32:56Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/install_command.go pkg/cmd/grafana-cli/commands/install_command_test.go /dev/null
+2026-08-12T16:32:57Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go docs/
+2026-08-12T16:32:59Z	fs	ALLOW	Bash pkg/server/wire_gen.go pkg/server/wire_gen.go pkg/server/wire_gen.go /^func /{l=$0 pkg/server/wire_gen.go pkg/server/wire_gen.go
+2026-08-12T16:32:59Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/install_command_test.go
+2026-08-12T16:33:01Z	fs	ALLOW	Bash pkg/services/featuremgmt/openfeature.go pkg/services/featuremgmt/
+2026-08-12T16:33:03Z	fs	ALLOW	Bash pkg/ /dev/null
+2026-08-12T16:33:04Z	fs	ALLOW	Bash pkg/services/featuremgmt/*.go pkg/services/featuremgmt/static_provider.go /dev/null
+2026-08-12T16:33:04Z	fs	ALLOW	Bash pkg/cmd/grafana/main.go
+2026-08-12T16:33:05Z	fs	ALLOW	Bash pkg/setting/*.go pkg/setting/*.go
+2026-08-12T16:33:06Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:06Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/api/grafana_com_proxy.go
+2026-08-12T16:33:10Z	fs	ALLOW	Bash pkg/cmd/grafana-server/commands/cli.go pkg/cmd/grafana-server/commands/target.go
+2026-08-12T16:33:10Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:11Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:13Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T16:33:13Z	fs	ALLOW	Bash pkg/ pkg/services/featuremgmt/*.go
+2026-08-12T16:33:14Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:15Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:15Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go pkg/tests/testinfra/testinfra.go pkg/services/featuremgmt/openfeature.go
+2026-08-12T16:33:15Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:18Z	fs	ALLOW	Bash pkg/services/featuremgmt/openfeature.go /dev/null pkg/services/featuremgmt/
+2026-08-12T16:33:19Z	fs	ALLOW	Bash api/gnet pkg/tests/ public/ /dev/null pkg/tests/
+2026-08-12T16:33:20Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/feature-toggles/index.md
+2026-08-12T16:33:21Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go
+2026-08-12T16:33:22Z	fs	ALLOW	Bash pkg/services/featuremgmt/openfeature.go
+2026-08-12T16:33:22Z	fs	ALLOW	Bash pkg/cmd/grafana-cli pkg/cmd/grafana pkg/server/module_server_test.go
+2026-08-12T16:33:27Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:28Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/ pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T16:33:31Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/commands.go
+2026-08-12T16:33:32Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/utils/command_line.go pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T16:33:32Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:33Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:35Z	fs	ALLOW	Bash pkg/ /dev/null pkg/cmd/grafana-cli/utils/command_line.go pkg/cmd/grafana-cli/utils/command_line_mock.go
+2026-08-12T16:33:35Z	fs	ALLOW	Bash conf/defaults.ini conf/sample.ini GrafanaComSSOAPIToken/sso_api_token conf/sample.ini conf/defaults.ini
+2026-08-12T16:33:37Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:38Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:44Z	fs	ALLOW	Bash conf/defaults.ini conf/sample.ini conf/sample.ini conf/sample.ini conf/defaults.ini docs/sources/setup-grafana/configure-grafana/_index.md contribute/ /dev/null
+2026-08-12T16:33:44Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:44Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:45Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go pkg/tests/testinfra/testinfra.go
+2026-08-12T16:33:45Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:33:46Z	fs	ALLOW	Bash pkg/api/api.go
+2026-08-12T16:33:47Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/install_command_test.go pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T16:33:47Z	fs	ALLOW	Bash pkg/plugins pkg/services/pluginsintegration
+2026-08-12T16:33:49Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T16:33:51Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T16:33:52Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go
+2026-08-12T16:33:52Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T16:33:53Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:33:53Z	fs	ALLOW	Bash pkg/plugins/repo/client.go
+2026-08-12T16:33:54Z	fs	ALLOW	Bash pkg/tests/ pkg/tests/testinfra/testinfra.go pkg/tests/testinfra/testinfra.go
+2026-08-12T16:33:54Z	fs	ALLOW	Bash pkg/setting/provider.go pkg/api/admin.go
+2026-08-12T16:33:54Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/logger/logger.go
+2026-08-12T16:33:54Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:33:54Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/commands.go
+2026-08-12T16:33:55Z	fs	ALLOW	Bash conf/defaults.ini conf/sample.ini docs/sources/setup-grafana/configure-grafana/_index.md conf/defaults.ini conf/sample.ini
+2026-08-12T16:33:55Z	fs	ALLOW	Bash pkg/services/featuremgmt/openfeature.go /dev/null pkg/services/featuremgmt/
+2026-08-12T16:33:57Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:33:58Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:34:00Z	fs	ALLOW	Bash conf/sample.ini docs/sources/setup-grafana/configure-grafana/_index.md docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:34:00Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:34:01Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:34:02Z	fs	ALLOW	Bash pkg/plugins/repo/client.go
+2026-08-12T16:34:02Z	fs	ALLOW	Bash pkg/api/admin.go
+2026-08-12T16:34:03Z	fs	ALLOW	Bash docs/AGENTS.md
+2026-08-12T16:34:04Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:34:04Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/*.md
+2026-08-12T16:34:04Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:34:06Z	fs	ALLOW	Bash pkg/setting/setting_test.go pkg/setting/setting_plugins_test.go pkg/cmd/grafana-cli/commands/upgrade_command_test.go
+2026-08-12T16:34:07Z	fs	ALLOW	Bash pkg/services/featuremgmt/static_provider.go pkg/setting/setting_feature_toggles.go /dev/null pkg/setting pkg/setting/setting_feature_toggles.go /dev/null
+2026-08-12T16:34:09Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md docs/sources/setup-grafana/configure-grafana/_index.md docs/sources/setup-grafana/configure-grafana/_index.md docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:34:10Z	fs	ALLOW	Bash docs/sources/ docs/sources/
+2026-08-12T16:34:10Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:34:11Z	fs	ALLOW	Bash pkg/setting/setting_test.go pkg/setting/setting_plugins_test.go
+2026-08-12T16:34:12Z	fs	ALLOW	Bash pkg/setting/setting.go pkg/cmd/grafana-cli/utils/command_line.go pkg/cmd/grafana-cli/utils/command_line_mock.go pkg/api/grafana_com_proxy.go pkg/cmd/grafana-cli/commands/install_command.go pkg/services/pluginsintegration/pluginconfig/config.go
+2026-08-12T16:34:12Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/registry.go
+2026-08-12T16:34:13Z	fs	ALLOW	Bash conf/ pkg/ pkg/infra/features/*.go
+2026-08-12T16:34:14Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/
+2026-08-12T16:34:15Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:34:15Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/
+2026-08-12T16:34:16Z	fs	ALLOW	Bash pkg/services/pluginsintegration/pluginconfig/config.go pkg/plugins/config/*.go
+2026-08-12T16:34:20Z	fs	ALLOW	Bash pkg/api/grafana_com_proxy.go pkg/api/
+2026-08-12T16:34:20Z	fs	ALLOW	Bash pkg/services/featuremgmt/openfeature.go
+2026-08-12T16:34:20Z	fs	ALLOW	Bash pkg/setting/setting_feature_toggles.go
+2026-08-12T16:34:21Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/runner/runner.go
+2026-08-12T16:34:21Z	fs	ALLOW	Bash pkg/middleware pkg/api pkg/util/proxyutil/reverse_proxy.go /dev/null
+2026-08-12T16:34:21Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:34:23Z	fs	ALLOW	Bash pkg/setting/provider.go pkg/services/settingsprovider /dev/null api/gnet
+2026-08-12T16:34:23Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:34:27Z	fs	ALLOW	Bash pkg/ apps/ /dev/null
+2026-08-12T16:34:27Z	fs	ALLOW	Bash pkg/
+2026-08-12T16:34:29Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go
+2026-08-12T16:34:29Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:34:31Z	fs	ALLOW	Bash pkg/ apps/
+2026-08-12T16:34:31Z	fs	ALLOW	Bash pkg/
+2026-08-12T16:34:32Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md docs/sources/setup-grafana/configure-grafana/_index.md docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:34:34Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/registry.go
+2026-08-12T16:34:37Z	fs	ALLOW	Bash pkg/services/featuremgmt/openfeature.go pkg/services/featuremgmt/static_provider.go
+2026-08-12T16:34:37Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go definition/comment pkg/services/featuremgmt/toggles.go pkg/services/featuremgmt/*.go /dev/null
+2026-08-12T16:34:38Z	fs	ALLOW	Bash pkg/cmd pkg/tests
+2026-08-12T16:34:38Z	fs	ALLOW	Bash pkg/ apps/
+2026-08-12T16:34:38Z	fs	ALLOW	Bash pkg/ apps/
+2026-08-12T16:34:39Z	fs	ALLOW	Bash pkg/services/featuremgmt/models.go
+2026-08-12T16:34:39Z	fs	ALLOW	Bash pkg/server/wire.go
+2026-08-12T16:34:40Z	fs	ALLOW	Bash docs/AGENTS.md
+2026-08-12T16:34:40Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go
+2026-08-12T16:34:41Z	fs	ALLOW	Bash pkg/services/pluginsintegration/pluginconfig/config.go
+2026-08-12T16:34:41Z	fs	ALLOW	Bash docs/AGENTS.md
+2026-08-12T16:34:43Z	fs	ALLOW	Bash pkg/services/pluginsintegration/ pkg/plugins/ pkg/services/pluginsintegration/pluginconfig/config.go
+2026-08-12T16:34:43Z	fs	ALLOW	Bash pkg/server/wire.go
+2026-08-12T16:34:50Z	fs	ALLOW	Bash pkg/ pkg/cmd/grafana-server/commands/cli.go pkg/cmd/grafana-server/commands/target.go
+2026-08-12T16:34:50Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/upgrade_command_test.go pkg/setting/setting_plugins_test.go pkg/setting/setting_test.go
+2026-08-12T16:34:50Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go
+2026-08-12T16:34:52Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/ /dev/null
+2026-08-12T16:34:52Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/*_test.go
+2026-08-12T16:34:53Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/setting/*.go
+2026-08-12T16:34:53Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/api/grafana_com_proxy.go
+2026-08-12T16:34:53Z	fs	ALLOW	Bash pkg/server/wire_gen.go /^func /,/^}/ pkg/server/wire_gen.go
+2026-08-12T16:34:53Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:34:54Z	fs	ALLOW	Bash pkg/plugins/repo/service.go pkg/plugins/repo/*.go
+2026-08-12T16:34:54Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/utils pkg/cmd/grafana-cli/utils/*_test.go /dev/null
+2026-08-12T16:34:57Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T16:34:58Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T16:34:58Z	fs	ALLOW	Bash open-feature/go-sdk $MOD/github.com/open-feature/ /dev/null
+2026-08-12T16:35:01Z	fs	ALLOW	Bash $MOD/github.com/open-feature/go-sdk@v1.17.1/openfeature/client.go
+2026-08-12T16:35:01Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/utils/command_line.go pkg/cmd/grafana-cli/commands/commands.go
+2026-08-12T16:35:02Z	fs	ALLOW	Bash pkg/cmd/grafana-cli pkg/cmd/grafana-cli/commands/install_command.go
+2026-08-12T16:35:03Z	fs	ALLOW	Bash $MOD/github.com/open-feature/go-sdk@v1.17.1/openfeature/client.go
+2026-08-12T16:35:03Z	fs	ALLOW	Bash pkg/services/pluginsintegration/pluginconfig/config.go pkg/plugins/config/*.go
+2026-08-12T16:35:05Z	fs	ALLOW	Bash pkg/plugins/
+2026-08-12T16:35:06Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/install_command_test.go
+2026-08-12T16:35:07Z	fs	ALLOW	Bash api/gnet / pkg/setting/*.go
+2026-08-12T16:35:07Z	fs	ALLOW	Bash pkg/setting pkg/services/settingsprovider pkg/api /dev/null
+2026-08-12T16:35:10Z	fs	ALLOW	Bash $MOD/github.com/open-feature/go-sdk@v1.17.1/openfeature/client.go
+2026-08-12T16:35:10Z	fs	ALLOW	Bash $MOD/github.com/open-feature/go-sdk@v1.17.1/openfeature/client.go
+2026-08-12T16:35:14Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T16:35:14Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md docs/sources/setup-grafana/configure-grafana/_index.md pkg/services/featuremgmt/registry.go
+2026-08-12T16:35:15Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:35:16Z	fs	ALLOW	Bash pkg/setting/provider.go /dev/null pkg/setting/
+2026-08-12T16:35:19Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/models.go
+2026-08-12T16:35:21Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/install_command_test.go
+2026-08-12T16:35:22Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/install_command_test.go
+2026-08-12T16:35:23Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go /RequiresRestart: *true/{print pkg/services/featuremgmt/registry.go
+2026-08-12T16:35:28Z	fs	ALLOW	Bash pkg/setting/*.go
+2026-08-12T16:35:28Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T16:35:31Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/
+2026-08-12T16:35:33Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/ /dev/null
+2026-08-12T16:35:35Z	fs	ALLOW	Bash pkg/server/wire_gen.go pkg/server/wire_gen.go
+2026-08-12T16:35:37Z	fs	ALLOW	Bash pkg/services/featuremgmt/toggles_gen_test.go
+2026-08-12T16:35:37Z	fs	ALLOW	Bash pkg/setting/ pkg/setting/*_test.go pkg/
+2026-08-12T16:35:37Z	fs	ALLOW	Bash pkg/setting/setting_test.go pkg/setting/setting_test.go
+2026-08-12T16:35:38Z	fs	ALLOW	Bash pkg/server/wire_gen.go pkg/server/wire_gen.go
+2026-08-12T16:35:38Z	fs	ALLOW	Bash pkg/cmd/grafana-server/commands/ pkg/cmd/grafana-server/commands/target.go
+2026-08-12T16:35:39Z	fs	ALLOW	Bash pkg/setting/ pkg/setting/
+2026-08-12T16:35:41Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/models.go pkg/services/featuremgmt/registry.go
+2026-08-12T16:35:41Z	fs	ALLOW	Bash pkg/setting/setting.go conf/sample.ini
+2026-08-12T16:35:42Z	fs	ALLOW	Bash pkg/cmd/grafana-server/commands/cli.go pkg/cmd/grafana-server/commands/target.go
+2026-08-12T16:35:43Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/tests/testinfra/testinfra.go
+2026-08-12T16:35:45Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/feature-toggles/index.md
+2026-08-12T16:35:48Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/feature-toggles/ docs/ packages/grafana-data/src/types/featureToggles.gen.ts /dev/null
+2026-08-12T16:35:50Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/feature-toggles/index.md docs/sources/setup-grafana/configure-grafana/feature-toggles/index.md
+2026-08-12T16:35:51Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T16:35:54Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/registry.go packages/grafana-data/src/types/featureToggles.gen.ts
+2026-08-12T16:35:55Z	fs	ALLOW	Bash pkg/api/api.go pkg/api/api.go pkg/middleware/*.go
+2026-08-12T16:35:55Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:35:56Z	fs	ALLOW	Bash pkg/api/grafana_com_proxy.go
+2026-08-12T16:35:56Z	fs	ALLOW	Bash pkg/setting/setting_test.go pkg/cmd/grafana-cli/commands/install_command.go
+2026-08-12T16:35:59Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/api
+2026-08-12T16:36:00Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/pluginsintegration/pluginconfig/ /dev/null
+2026-08-12T16:36:00Z	fs	ALLOW	Bash pkg/server/wire_gen.go
+2026-08-12T16:36:01Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:36:03Z	fs	ALLOW	Bash pkg/setting/*.go
+2026-08-12T16:36:04Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/pluginsintegration/pluginconfig
+2026-08-12T16:36:05Z	fs	ALLOW	Bash pkg/setting/*.go pkg/setting/setting.go
+2026-08-12T16:36:05Z	fs	ALLOW	Bash pkg/middleware/auth.go pkg/middleware/auth.go
+2026-08-12T16:36:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/pluginsintegration/pluginconfig/config_test.go
+2026-08-12T16:36:11Z	fs	ALLOW	Bash pkg/setting
+2026-08-12T16:36:12Z	fs	ALLOW	Bash pkg/middleware/auth.go
+2026-08-12T16:36:13Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T16:36:14Z	fs	ALLOW	Bash $MOD/github.com/open-feature/go-sdk@v1.17.1/openfeature/*.go $MOD/github.com/open-feature/go-sdk@v1.17.1/openfeature/api.go $MOD/github.com/open-feature/go-sdk@v1.17.1/openfeature/event_executor.go /dev/null
+2026-08-12T16:36:15Z	fs	ALLOW	Bash $MOD/github.com/open-feature/go-sdk@v1.17.1/openfeature/openfeature.go
+2026-08-12T16:36:17Z	fs	ALLOW	Bash pkg/api/*.go
+2026-08-12T16:36:17Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:36:21Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/*_test.go
+2026-08-12T16:36:21Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T16:36:21Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:36:23Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_openfeature_test.go /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_feature_toggles_test.go
+2026-08-12T16:36:27Z	fs	ALLOW	Bash ./pkg/setting/... ./pkg/cmd/grafana-cli/utils/... ./pkg/api/
+2026-08-12T16:36:28Z	fs	ALLOW	Bash pkg/services/pluginsintegration/pluginconfig/*_test.go pkg/plugins/repo/*_test.go /dev/null
+2026-08-12T16:36:33Z	fs	ALLOW	Bash pkg/
+2026-08-12T16:36:35Z	fs	ALLOW	Bash pkg/setting/setting_test.go
+2026-08-12T16:36:39Z	fs	ALLOW	Bash ./pkg/setting/
+2026-08-12T16:36:40Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:36:50Z	fs	ALLOW	Bash pkg/infra/features/*.go
+2026-08-12T16:36:52Z	fs	ALLOW	Bash pkg/infra/features/client.go
+2026-08-12T16:36:53Z	fs	ALLOW	Bash pkg/setting/*.go pkg/
+2026-08-12T16:36:53Z	fs	ALLOW	Bash pkg/api/api.go pkg/api/*.go pkg/web/*.go
+2026-08-12T16:36:58Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/registry.go
+2026-08-12T16:37:00Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T16:37:00Z	fs	ALLOW	Bash pkg/services/updatemanager/plugins.go
+2026-08-12T16:37:03Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/registry.go
+2026-08-12T16:37:05Z	fs	ALLOW	Bash api/gnet pkg/
+2026-08-12T16:37:06Z	fs	ALLOW	Bash pkg/plugins/repo/client.go pkg/tests/testinfra/testinfra.go pkg/services/featuremgmt/registry.go /2253/,+3p pkg/services/featuremgmt/registry.go
+2026-08-12T16:37:13Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go pkg/
+2026-08-12T16:37:18Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go
+2026-08-12T16:37:23Z	fs	ALLOW	Bash pkg/services/featuremgmt/static_provider.go /dev/null pkg/services/featuremgmt/
+2026-08-12T16:37:25Z	fs	ALLOW	Bash pkg/cmd/grafana-cli/commands/install_command_test.go
+2026-08-12T16:37:43Z	fs	ALLOW	Bash pkg/setting/setting_feature_toggles.go
+2026-08-12T16:37:45Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/feature-toggles/index.md /dev/null pkg/services/featuremgmt/registry.go
+2026-08-12T16:38:10Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:39:54Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:39:59Z	fs	ALLOW	Bash pkg/setting/setting.go /tmp/setting.go.bak p='pkg/setting/setting.go
+2026-08-12T16:40:02Z	fs	ALLOW	Bash ./pkg/setting/
+2026-08-12T16:40:07Z	fs	ALLOW	Bash ./pkg/setting/
+2026-08-12T16:40:15Z	fs	ALLOW	Bash /tmp/setting.go.bak pkg/setting/setting.go
+2026-08-12T16:40:17Z	fs	ALLOW	Bash ./pkg/setting/
+2026-08-12T16:40:25Z	fs	ALLOW	Bash pkg/setting/setting_feature_toggles.go pkg/setting/setting_feature_toggles.go
+2026-08-12T16:40:27Z	fs	ALLOW	Bash conf/sample.ini conf/defaults.ini
+2026-08-12T16:40:35Z	fs	ALLOW	Bash / pkg/services/featuremgmt/static_provider.go pkg/services/featuremgmt/registry.go
+2026-08-12T16:40:37Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go pkg/cmd/grafana-cli/commands/install_command_test.go
+2026-08-12T16:40:46Z	fs	ALLOW	Bash pkg/api/grafana_com_proxy.go api/gnet pkg/api/api.go pkg/server/*.go
+2026-08-12T16:40:48Z	fs	ALLOW	Bash pkg/setting/setting.go pkg/plugins/repo/client.go
+2026-08-12T16:40:57Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:40:59Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go pkg/services/featuremgmt/toggles_gen.csv pkg/services/featuremgmt/toggles_gen.csv pkg/server/wire_gen.go pkg/server/wire_gen.go
+2026-08-12T16:41:12Z	fs	ALLOW	Bash pkg/tests/ pkg/cmd/ /dev/null docs/sources/setup-grafana/configure-grafana/_index.md docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:41:14Z	fs	ALLOW	Bash docs/sources/setup-grafana/configure-grafana/_index.md docs/sources/setup-grafana/configure-grafana/_index.md docs/sources/setup-grafana/configure-grafana/_index.md
+2026-08-12T16:41:40Z	fs	ALLOW	Bash docs/AGENTS.md docs/AGENTS.md
+2026-08-12T16:41:43Z	fs	ALLOW	Bash pkg/services/featuremgmt/ pkg/setting/ pkg/services/featuremgmt/toggles_gen.json
+2026-08-12T16:43:00Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:43:01Z	fs	ALLOW	Bash (no path)
+2026-08-12T16:43:05Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T16:43:06Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/cli.go
+2026-08-12T16:43:07Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-server/commands/target.go
+2026-08-12T16:43:07Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/api/grafana_com_proxy.go
+2026-08-12T16:43:11Z	fs	ALLOW	Bash pluginconfig/config.go pkg/services/pluginsintegration/pluginconfig/config.go pkg/tests/testinfra/testinfra.go
+2026-08-12T16:43:12Z	fs	ALLOW	Bash / pkg/server/wire.go pkg/server/wire_gen.go
+2026-08-12T16:43:13Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:43:14Z	fs	ALLOW	Bash pkg/ cmd/
+2026-08-12T16:43:17Z	fs	ALLOW	Bash pkg/ cmd/ /dev/null
+2026-08-12T16:43:18Z	fs	ALLOW	Bash pkg/server/wire_gen.go
+2026-08-12T16:43:18Z	fs	ALLOW	Bash pkg/server/wire_gen.go pkg/services/pluginsintegration/pluginconfig/config.go
+2026-08-12T16:43:22Z	fs	ALLOW	Bash pkg/cmd/grafana-server/commands/cli.go pkg/cmd/grafana-server/commands/target.go pkg/setting/setting_test.go
+2026-08-12T16:43:25Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/services/pluginsintegration/pluginconfig/config.go
+2026-08-12T16:43:25Z	fs	ALLOW	Bash pkg/services/featuremgmt pkg/services/featuremgmt/openfeature.go /dev/null
+2026-08-12T16:43:26Z	fs	ALLOW	Bash pkg/tests pkg/tests/ pkg/cmd/ /dev/null /dev/null
+2026-08-12T16:43:27Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting_test.go
+2026-08-12T16:43:32Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:43:34Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/tests/testinfra/testinfra.go
+2026-08-12T16:43:34Z	fs	ALLOW	Bash pkg/
+2026-08-12T16:43:34Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T16:43:35Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T16:43:36Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T16:43:39Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:43:43Z	fs	ALLOW	Bash pkg/tests/ pkg/tests/testinfra/testinfra.go
+2026-08-12T16:43:43Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go
+2026-08-12T16:43:46Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:43:46Z	fs	ALLOW	Bash pkg/services/pluginsintegration/pluginconfig/config.go pkg/api/grafana_com_proxy.go
+2026-08-12T16:43:47Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T16:43:48Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/setting/setting.go
+2026-08-12T16:43:48Z	fs	ALLOW	Bash pkg/setting/setting.go pkg/api/grafana_com_proxy.go pkg/services/pluginsintegration/pluginconfig/config.go pkg/cmd/grafana-server/commands/cli.go pkg/cmd/grafana-server/commands/target.go pkg/tests/testinfra/testinfra.go
+2026-08-12T16:43:49Z	fs	ALLOW	Bash pkg/api/api.go
+2026-08-12T16:43:49Z	fs	ALLOW	Bash pkg/api/grafana_com_proxy.go
+2026-08-12T16:43:50Z	fs	ALLOW	Bash pkg/services/settings/ pkg/api/admin*.go /dev/null pkg/services/ /dev/null
+2026-08-12T16:43:53Z	fs	ALLOW	Bash pkg/api/api.go
+2026-08-12T16:43:54Z	fs	ALLOW	Bash pkg/middleware/auth.go
+2026-08-12T16:43:57Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:43:59Z	fs	ALLOW	Bash pkg/cmd/
+2026-08-12T16:43:59Z	fs	ALLOW	Bash pkg/cmd/
+2026-08-12T16:43:59Z	fs	ALLOW	Bash pkg/middleware/*.go
+2026-08-12T16:43:59Z	fs	ALLOW	Bash pkg/middleware/auth.go
+2026-08-12T16:44:02Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/commands/commands.go
+2026-08-12T16:44:03Z	fs	ALLOW	Bash pkg/setting/setting.go pkg/setting/setting.go pkg/setting/setting.go
+2026-08-12T16:44:04Z	fs	ALLOW	Bash pkg/middleware/auth.go
+2026-08-12T16:44:10Z	fs	ALLOW	Bash /dev/null
+2026-08-12T16:44:10Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/pkg/cmd/grafana-cli/utils/command_line.go
+2026-08-12T16:44:11Z	fs	ALLOW	Bash pkg/api/grafana_com_proxy.go pkg/api/grafana_com_proxy.go pkg/api/api.go pkg/api/api.go
+2026-08-12T16:44:15Z	fs	ALLOW	Bash pkg/setting/ pkg/services/featuremgmt/ pkg/api/ /dev/null
+2026-08-12T16:44:18Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:44:21Z	fs	ALLOW	Bash pkg/server/wire_gen.go
+2026-08-12T16:44:21Z	fs	ALLOW	Bash pkg/server/wire_gen.go
+2026-08-12T16:44:21Z	fs	ALLOW	Bash pkg/util/proxyutil/reverse_proxy.go /dev/null pkg/util/proxyutil
+2026-08-12T16:44:22Z	fs	ALLOW	Bash pkg/util/url.go /dev/null pkg/util/
+2026-08-12T16:44:34Z	fs	ALLOW	Bash pkg/cmd/grafana/main.go pkg/cmd/grafana-server/commands/*.go
+2026-08-12T16:44:36Z	fs	ALLOW	Bash pkg/web/*.go
+2026-08-12T16:44:38Z	fs	ALLOW	Bash pkg/setting/setting_plugins_test.go
+2026-08-12T16:45:06Z	fs	ALLOW	Bash pkg/tests/testinfra/testinfra.go
+2026-08-12T16:45:08Z	fs	ALLOW	Bash pkg/setting/setting.go
+2026-08-12T16:45:36Z	fs	ALLOW	Bash pkg/setting/setting.go pkg/middleware/auth.go pkg/api/api.go
+2026-08-12T16:46:22Z	fs	ALLOW	Bash /dev/null /dev/null .decaf/code-reviews/ /dev/null
+2026-08-12T16:49:35Z	fs	DENY	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/CODE_REVIEW_2026-08-12_grafana-122269.md
+2026-08-12T16:49:39Z	fs	ALLOW	Bash .decaf/code-reviews
+2026-08-12T16:52:08Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/null/grafana-122269/repo/.decaf/code-reviews/CODE_REVIEW_2026-08-12_grafana-122269.md
+2026-08-12T16:52:12Z	fs	ALLOW	Bash (no path)
