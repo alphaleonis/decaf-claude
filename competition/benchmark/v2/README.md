@@ -1,8 +1,10 @@
 # Benchmark v2 — operational guide
 
-**Status: built, not yet run at scale.** The corpus, the leak controls and the scoring pipeline all
-exist and are exercised. No cross-tool comparison has ever run under v2 — that is the pilot
-(`dcc-vkeh`), and it is blocked. See `Where this stands`.
+**Status: piloted.** The pilot (`dcc-vkeh`) ran 35 of 35 cells across three subjects, every cell
+isolation-clean, and every result is scored and committed. Read
+[`analysis/PILOT-RESULTS.md`](analysis/PILOT-RESULTS.md) before running or citing anything — it
+carries the four findings that govern what the full run may publish, chief among them a **publication
+floor: no precision figure over fewer than 10 reported clusters.**
 
 Design rationale and both subject-construction procedures live in
 [`../METHODOLOGY-v2.md`](../METHODOLOGY-v2.md) (§4c pooled, §4d anchor). Work is tracked by milestone
@@ -176,13 +178,26 @@ Built and validated:
   filesystem channel both *enforced* (a `PreToolUse` guard that holds under
   `--dangerously-skip-permissions`) and *audited* per cell from the transcript
 
+- **the pilot** — 35/35 cells over three subjects (two pooled at 2 repeats, plus the null arm), all
+  clean, all scored, five judge-stability measurements. `analysis/PILOT-RESULTS.md` (`dcc-vkeh`)
+
 Not done:
 
-- **no cross-tool comparison** has ever run under v2 — the pilot, `dcc-vkeh`
-- **the thread axis is 28% automated-reviewer output** and must be split before any recall
-  number is reported (`dcc-qwt3`, `analysis/THREAD-AXIS.md`) — this blocks the pilot
+- **the full run** — 12 subjects, not started. The pilot's design changes must land first, above all
+  the n ≥ 10 publication floor (`dcc-di47`)
 - **anchor keys exist for 4 of 7 subjects** — 2, 7, 9, 12, totalling 5 entries; subjects 1, 8 and 10
   are validated but unbuilt (`dcc-9ncz`)
+
+Rules the pilot established, which govern every future number:
+
+- **No precision figure over fewer than 10 reported clusters.** Four of fourteen tool-subject pairs
+  fell below it, and every unstable figure in the pilot was one of them.
+- **Two grading passes per subject, always.** Judge variance exceeds tool variance at every
+  denominator size, and passes cost no cells.
+- **`threads.missed_index` is not publishable from one pass** — the count reproduces, the identity
+  does not.
+- **Precision measures whether a claim is defensible, not whether the bug was found.** It barely
+  separates a defect-laden change from a defect-free one; only the thread axis answers that.
 
 ## Vintage: 5 of 12 subjects are not poolable
 

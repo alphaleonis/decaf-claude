@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-11T17:31:43Z
+updated_at: 2026-08-13T08:46:16Z
 order: zzzzV
 ---
 
@@ -267,9 +267,36 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-13wh: Operator decided 2026-08-11: proceed with the full matrix, but incrementally — two cells at a time,
-stopping for approval before each further pair. The blanket ~$600 launch is not authorized; each pair
-is authorized on its own, so the scope can be cut at any point without having spent it.
+Completed dcc-vkeh: Pilot complete: 35/35 cells over three subjects (prometheus#18081 and efcore#34127 at 7 tools x 2
+repeats, plus the grafana#122269 null arm at 7 x 1), every cell isolation-CLEAN, zero runner errors,
+~$820 all-in. All five acceptance items met. Full report in `v2/analysis/PILOT-RESULTS.md`.
+
+The instrument works. The judge is stable at the valid-other/trivia boundary in five independent
+measurements against thresholds pre-registered before any pass ran, and judge calibration is clean
+everywhere (zero threads a tool raised were dismissed). Tools separate on both axes.
+
+Four findings govern what the full run may publish. (1) The denominator dominates variance, not its
+source: both judge and tool variance roughly halve at n >= 10 reported clusters, and every unstable
+figure in the pilot came from a tool below that line — hence a publication floor of n >= 10, which
+costs nothing. (2) The null arm found 14 real defects, so it is not a noise floor, and precision
+barely separates a defect-laden change from a defect-free one: precision measures whether a claim is
+defensible, not whether the bug was found. (3) For the thread axis the count reproduces but the
+identity does not, so `missed_index` needs multi-pass agreement. (4) The precision/recall inversion
+reported at single-repeat strength dissolved at two repeats — every single-repeat ranking in this
+pilot is suspect, including ones reported here as findings before r2 existed.
+
+Five harness defects were found by running rather than reading, four of them silent: `.result`
+truncation, worktrees surviving the reset, tool reports destroyed by the next cell, tmpfs exhaustion
+killing a cell, and resume skipping a cell that failed with partial output. Two pushed in opposite
+directions on different tools and would have scrambled the ranking while every artifact looked
+healthy.
+
+The access controls were exercised, not merely installed: one cell logged 22 gh DENY against 23
+ALLOW, including two attempts on the subject PR itself and the reviews and comments APIs. Its other
+repeat made zero denied attempts, so a single-repeat design would have missed the harness's most
+important validation entirely.
+
+Follow-up: dcc-di47 (publication rules) must land before the full run.
 
 ## Key Decisions
 
