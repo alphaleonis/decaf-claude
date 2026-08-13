@@ -1,0 +1,15 @@
+subject	tool	repeat	status	rc	wall_s	cost_usd	isolation	denied
+prometheus-prometheus-18081	ours-bugs	1	skipped					
+prometheus-prometheus-18081	ours-bugs	2	ok	0	1363	9.823419150000005	Cell isolation check: /home/decaf/code/d	2
+prometheus-prometheus-18081	ours-review	1	skipped					
+prometheus-prometheus-18081	ours-review	2	ok	0	1487	20.935366149999997	Cell isolation check: /home/decaf/code/d	2
+prometheus-prometheus-18081	ours-audit	1	skipped					
+prometheus-prometheus-18081	ours-audit	2	ok	0	1317	29.0604635	Cell isolation check: /home/decaf/code/d	1
+prometheus-prometheus-18081	anthropic-code-review	1	skipped					
+prometheus-prometheus-18081	anthropic-code-review	2	ok	0	939	14.423048299999998	Cell isolation check: /home/decaf/code/d	22
+prometheus-prometheus-18081	superpowers	1	skipped					
+prometheus-prometheus-18081	superpowers	2	ok	0	685	4.3609975	Cell isolation check: /home/decaf/code/d	0
+prometheus-prometheus-18081	pr-review-toolkit	1	skipped					
+prometheus-prometheus-18081	pr-review-toolkit	2	ok	0	754	19.45085225000001	Cell isolation check: /home/decaf/code/d	0
+prometheus-prometheus-18081	comprehensive-review	1	skipped					
+prometheus-prometheus-18081	comprehensive-review	2	ok	0	753	22.746804750000024	Cell isolation check: /home/decaf/code/d	1

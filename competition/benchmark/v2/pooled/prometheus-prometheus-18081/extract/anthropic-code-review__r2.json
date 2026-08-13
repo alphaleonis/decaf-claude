@@ -1,0 +1,86 @@
+[
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "high",
+    "file": "promql/engine.go",
+    "line": 2145,
+    "category": "stats-regression",
+    "claim": "fullWindowCount is declared inside the per-step loop and only assigned on the first step (or when selVS.Timestamp is nil), so on @-modifier reuse steps IncrementSamplesAtStep receives 0 and totalQueryableSamples/TotalSamplesPerStep collapse (48 -> 12, [12,12,12,12] -> [12,0,0,0]) despite the comment claiming unchanged semantics.",
+    "raw": "`fullWindowCount` is declared *inside* the per-step loop (line 2145) and only assigned inside the `if ts == ev.startTimestamp || selVS.Timestamp == nil` guard (line 2149). On `@`-modifier reuse steps that guard is false, so `fullWindowCount` stays `0` and line 2183 becomes `IncrementSamplesAtStep(step, 0)`. The pre-change code unconditionally passed the full window count at *every* step.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "high",
+    "file": "promql/engine.go",
+    "line": 1874,
+    "category": "double-counting",
+    "claim": "samplesRead double-counts every range-vector function applied to a subquery: evalSubquery merges the subquery's real I/O via MergeSamplesReadFromSubquery and then the materialized output is re-counted as read in the range-vector step loop at line 2184, contradicting the docs added in the same PR.",
+    "raw": "`evalSubquery` merges the subquery's real I/O into the parent via `MergeSamplesReadFromSubquery` (line 1874). It then returns the subquery's materialized output wrapped as a synthetic `MatrixSelector` (lines 1877-1893), which the caller feeds through the same range-vector step loop — which counts those already-in-memory points *again* as \"read\" at line 2184.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "high",
+    "file": "promql/engine.go",
+    "line": 2397,
+    "category": "unbounded-allocation",
+    "claim": "NewChildWithStepTracking allocates two []int64 sized to the client-controlled subquery step count before evaluation begins, outside the query.max-samples guard, taking peak RSS from 30 MB to 7.46 GB on a single instant query that is rejected anyway.",
+    "raw": "This runs *before* `newEv.eval(...)` and allocates two `[]int64` sized to the **subquery's** step count. Previously `NewChild()` disabled per-step tracking in children, so nothing was allocated. Subquery step count is client-controlled via the `:step` syntax and is not bounded by `query.max-samples`, which only applies during evaluation.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "high",
+    "file": "promql/engine.go",
+    "line": 2164,
+    "category": "hot-path-performance",
+    "claim": "countSamplesAfter runs ungated by any feature flag on every step of every range-vector evaluation and linearly scans the whole retained window from the front, making per-step cost O(window) instead of O(new points) — measured ~34% slowdown on BenchmarkRangeQuery rate(a_one[1d]) with per-step stats disabled.",
+    "raw": "This is not gated behind `EnablePerStepStats` or any feature flag — the aggregate `SamplesRead` field is tracked unconditionally, so the scan runs on **every step of every range-vector function evaluation, for every query**. ... **~34% slower**, non-overlapping distributions, allocations unchanged — so the delta is pure CPU from the added scan.",
+    "disposition": "reported"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "low",
+    "file": "promql/engine_test.go",
+    "line": 1742,
+    "category": "test-scaffolding",
+    "claim": "Scratch authoring notes (banner blocks, an IMPLEMENTATION NOTES section, and a comment admitting sample counts may need refinement) were left in the test file, indicating expected values were fitted to observed output rather than derived — locking in the subquery double-count as correct.",
+    "raw": "**4. Scratch authoring notes left in the test file** — `promql/engine_test.go:1742-1784`. Banner blocks (`FOCUSED KEY PATTERNS - Validated Examples`), an `IMPLEMENTATION NOTES` section, and this line: > `// - Some sample count calculations may need refinement based on actual query execution` ... it indicates expected values were fitted to observed output rather than derived.",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "nit",
+    "file": "util/stats/query_stats.go",
+    "line": 313,
+    "category": "missing-doc-comment",
+    "claim": "The new exported method QuerySamples.StepTrackingEnabled has no doc comment, unlike every other exported symbol added in the diff and contrary to the repo's PR checklist.",
+    "raw": "**5. Missing doc comment on a new exported symbol** — `util/stats/query_stats.go:313`. `func (qs *QuerySamples) StepTrackingEnabled() bool` has no comment, unlike every other exported symbol added in this diff. The repo's PR checklist requires one.",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "anthropic-code-review",
+    "repeat": 2,
+    "subagent": "",
+    "severity": "low",
+    "file": "util/stats/query_stats.go",
+    "line": 352,
+    "category": "bounds-check-inconsistency",
+    "claim": "The new helpers silently skip out-of-range step indices while still incrementing the aggregate (so per-step sums can silently disagree with SamplesRead), diverging from the pre-existing sibling helpers that index unguarded and would panic.",
+    "raw": "**6. Divergent bounds-check behavior between sibling helpers** — `util/stats/query_stats.go:352` and `:365` silently skip out-of-range step indices, while the pre-existing `IncrementSamplesAtStep` and `IncrementSamplesAtTimestamp` index unguarded and would panic. The new helpers still increment the aggregate when they skip the per-step slot, so per-step sums can disagree with `SamplesRead`.",
+    "disposition": "demoted"
+  }
+]

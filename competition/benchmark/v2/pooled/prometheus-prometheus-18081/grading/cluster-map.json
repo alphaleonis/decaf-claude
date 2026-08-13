@@ -4,12 +4,19 @@
   "summary": "Subquery samples counted twice in SamplesRead: evalSubquery merges the child count and the outer range-vector loop re-counts the materialized matrix",
   "idx": [
    1,
+   18,
+   59,
+   187,
+   216,
+   280,
+   334,
    11,
-   35,
-   103,
-   113,
-   140,
-   165
+   45,
+   126,
+   198,
+   244,
+   304,
+   355
   ]
  },
  "c02": {
@@ -17,12 +24,19 @@
   "summary": "fullWindowCount is assigned only inside the load/recompute branch, so TotalSamples records 0 on every @-modifier buffer-reuse step",
   "idx": [
    0,
+   17,
+   58,
+   185,
+   215,
+   281,
+   333,
    10,
-   34,
-   101,
-   112,
-   141,
-   164
+   43,
+   125,
+   197,
+   245,
+   305,
+   352
   ]
  },
  "c02b": {
@@ -37,251 +51,285 @@
   "summary": "NewChildWithStepTracking allocates two numSteps-sized []int64 per subquery, sized by unvalidated subquery resolution, where NewChild allocated none",
   "idx": [
    2,
-   23,
-   37,
-   53,
-   102,
-   109,
-   125,
-   173
+   30,
+   61,
+   77,
+   186,
+   193,
+   228,
+   342,
+   12,
+   41,
+   127,
+   196,
+   243,
+   308,
+   353
   ]
  },
  "c04": {
   "loc": "promql/value.go:195",
   "summary": "countSamplesAfter adds an unconditional O(window) scan per step per series to the range-vector hot path, replacing an O(1) len()",
   "idx": [
-   12,
-   36,
-   124,
-   142,
-   166
+   19,
+   60,
+   227,
+   282,
+   335,
+   13,
+   48,
+   129,
+   246,
+   307,
+   354
   ]
  },
  "c05": {
   "loc": "promql/engine.go:2434",
   "summary": "Subquery per-step attribution folds out-of-window steps onto step 0 and clamps trailing steps, producing a distribution that describes nothing real",
   "idx": [
-   15,
-   104,
-   114,
-   146
+   22,
+   188,
+   217,
+   286,
+   57,
+   206,
+   358
   ]
  },
  "c06": {
   "loc": "promql/engine.go:2426",
   "summary": "Two divergent subquery merge implementations: the inline block reaches into fields directly and bypasses the package accessors",
   "idx": [
-   19,
-   115,
-   157,
-   167
+   26,
+   218,
+   297,
+   336,
+   50,
+   133,
+   324,
+   325
   ]
  },
  "c07": {
   "loc": "promql/engine.go:427",
   "summary": "samplesRead is named and documented as an I/O count but increments once per step per series, so it over-counts memoized reads",
   "idx": [
-   38,
-   147
+   62,
+   287,
+   137,
+   357
   ]
  },
  "c08": {
   "loc": "promql/engine.go:424",
   "summary": "A permanent public counter and always-present API field ship with no feature gate and no experimental marker",
   "idx": [
-   50
+   74
   ]
  },
  "c09": {
   "loc": "promql/engine.go:422",
   "summary": "The changed HELP string of a pre-existing metric makes a claim about per-step window counting that is inexact",
   "idx": [
-   148
+   288
   ]
  },
  "c10": {
   "loc": "promql/engine.go:424",
   "summary": "query_samples_total vs query_samples_read_total are not self-describing",
   "idx": [
-   179
+   348
   ]
  },
  "c11": {
   "loc": "promql/engine.go:461",
   "summary": "The new counter has no test asserting registration or accumulation",
   "idx": [
-   18,
-   47,
-   171
+   25,
+   71,
+   340,
+   52,
+   159
   ]
  },
  "c12": {
   "loc": "promql/engine.go:464",
   "summary": "Metric naming and registration conventions, checked and cleared",
   "idx": [
-   33,
-   133
+   40,
+   236
   ]
  },
  "c13": {
   "loc": "promql/engine.go:686",
   "summary": "querySamplesRead.Add fires in the defer for failed, cancelled and timed-out queries, adding partial counts",
   "idx": [
-   71,
-   88
+   95,
+   112
   ]
  },
  "c14": {
   "loc": "promql/engine.go:710",
   "summary": "The query log picks up the new field for free",
   "idx": [
-   31
+   38
   ]
  },
  "c15": {
   "loc": "promql/engine.go:1718",
   "summary": "smoothSeries calls matrixIterSlice but has no samplesStats references, so smoothed selectors report zero",
   "idx": [
-   55
+   79
   ]
  },
  "c16": {
   "loc": "promql/engine.go:1861",
   "summary": "Comment says only SamplesRead is merged, but the code also merges peak samples",
   "idx": [
-   160
+   300
   ]
  },
  "c17": {
   "loc": "promql/engine.go:1865",
   "summary": "evalSubquery restore is not deferred, so a panic skips the merge",
   "idx": [
-   137
+   240
   ]
  },
  "c18": {
   "loc": "promql/engine.go:2164",
   "summary": "The delta cutoff maxt - ev.interval assumes the previous window overlapped; after a gap the whole window is re-read",
   "idx": [
-   28,
-   76,
-   107,
-   168
+   35,
+   100,
+   191,
+   337,
+   165,
+   201,
+   202,
+   262,
+   264
   ]
  },
  "c19": {
   "loc": "promql/value.go:195",
   "summary": "countSamplesAfter strict > cutoff boundary as a possible off-by-one",
   "idx": [
-   99,
-   106
+   123,
+   190,
+   171,
+   330
   ]
  },
  "c20": {
   "loc": "promql/engine.go:2160",
   "summary": "@-modifier slice reuse causing countSamplesAfter to re-count reads",
   "idx": [
-   131
+   234
   ]
  },
  "c21": {
   "loc": "promql/engine.go:0",
   "summary": "Whether any TotalSamples mutation site lacks a paired SamplesRead increment",
   "idx": [
-   30,
-   80
+   37,
+   104
   ]
  },
  "c22": {
   "loc": "promql/engine.go:0",
   "summary": "Goroutine, channel and context hazards",
   "idx": [
-   92
+   116
   ]
  },
  "c23": {
   "loc": "promql/engine.go:0",
   "summary": "Resource-limit integrity under the new counters",
   "idx": [
-   95
+   119
   ]
  },
  "c24": {
   "loc": "promql/engine.go:686",
   "summary": "Counter monotonicity",
   "idx": [
-   97
+   121
   ]
  },
  "c25": {
   "loc": "promql/engine.go:0",
   "summary": "Double-registration of the new collector",
   "idx": [
-   110
+   194
   ]
  },
  "c26": {
   "loc": "promql/engine.go:0",
   "summary": "The zero-length early-out sitting after counts are computed",
   "idx": [
-   129
+   232
   ]
  },
  "c27": {
   "loc": "promql/engine.go:0",
   "summary": "SamplesRead not governed by query.max-samples",
   "idx": [
-   135
+   238
   ]
  },
  "c28": {
   "loc": "promql/engine.go:1874",
   "summary": "Nested-subquery exponential blowup",
   "idx": [
-   94
+   118
   ]
  },
  "c29": {
   "loc": "promql/engine.go:1997",
   "summary": "StepInvariantExpr wrapping of an @-invariant subquery arg",
   "idx": [
-   111
+   195
   ]
  },
  "c30": {
   "loc": "promql/engine.go:2009",
   "summary": "The e.Args[i] = val AST mutation and the defer inside the loop",
   "idx": [
-   93
+   117
   ]
  },
  "c31": {
   "loc": "promql/engine.go:2160",
   "summary": "Three load-bearing accounting decisions ship undocumented",
   "idx": [
-   49
+   73,
+   134
   ]
  },
  "c32": {
   "loc": "promql/engine.go:2388",
   "summary": "The default-step subquery arm is uncovered by the coverage profile",
   "idx": [
-   51
+   75
   ]
  },
  "c33": {
   "loc": "promql/engine.go:2471",
   "summary": "The comment \"Subquery ran once\" sits in the StepInvariantExpr case, where the expression need not be a subquery",
   "idx": [
-   61,
-   161
+   85,
+   301,
+   146,
+   328
   ]
  },
  "c34": {
   "loc": "promql/engine.go:2471",
   "summary": "Whether the StepInvariantExpr read increment is pinned by tests",
   "idx": [
-   100
+   124
   ]
  },
  "c35": {
@@ -295,89 +343,97 @@
   "loc": "promql/engine.go:2424",
   "summary": "Feature-flag coupling of the scalar samplesRead",
   "idx": [
-   79
+   103
   ]
  },
  "c37": {
   "loc": "promql/engine.go:2437",
   "summary": "The outerStep index truncates an int64 quotient to int and clamps only the upper bound",
   "idx": [
-   41,
-   89
+   65,
+   113,
+   170,
+   204,
+   266
   ]
  },
  "c38": {
   "loc": "promql/engine.go:2437",
   "summary": "The attribution mixes ev.startTimestamp with ev.samplesStats.Interval, which agree today but need not",
   "idx": [
-   54
+   78
   ]
  },
  "c39": {
   "loc": "promql/engine.go:2437",
   "summary": "Division by zero on the stats Interval in the attribution path",
   "idx": [
-   74,
-   105,
-   126
+   98,
+   189,
+   229,
+   169,
+   205,
+   208,
+   265,
+   331
   ]
  },
  "c40": {
   "loc": "promql/engine.go:2437",
   "summary": "Negative index or out-of-bounds panic in the per-step attribution loop",
   "idx": [
-   29,
-   108,
-   127
+   36,
+   192,
+   230
   ]
  },
  "c41": {
   "loc": "promql/engine.go:2439",
   "summary": "The \"after last outer step\" clamp is dead code under the test suite",
   "idx": [
-   45
+   69
   ]
  },
  "c42": {
   "loc": "promql/engine.go:2439",
   "summary": "The comment reference to disk reads is unverifiable for head-block data",
   "idx": [
-   162
+   302
   ]
  },
  "c43": {
   "loc": "promql/engine.go:2745",
   "summary": "matrixSelector computes totalSize after extendFloats has altered the point set",
   "idx": [
-   52
+   76
   ]
  },
  "c44": {
   "loc": "promql/engine.go:4310",
   "summary": "preprocessExprHelper never preprocesses AggregateExpr Param, so step-invariance is judged on Expr alone",
   "idx": [
-   40
+   64
   ]
  },
  "c45": {
   "loc": "promql/engine.go:0",
   "summary": "matrixIterSlice subtracts the size of retained rather than dropped histograms",
   "idx": [
-   72
+   96
   ]
  },
  "c46": {
   "loc": "promql/engine.go:2402",
   "summary": "numSteps underflow for a subquery whose step exceeds its range",
   "idx": [
-   128
+   231
   ]
  },
  "c47": {
   "loc": "promql/engine.go:2402",
   "summary": "The startTimestamp/interval hoist in the SubqueryExpr refactor as behavior-changing",
   "idx": [
-   130
+   233
   ]
  },
  "c48": {
@@ -398,235 +454,294 @@
   "loc": "promql/engine.go:2160",
   "summary": "Whether the step==0 delta branch is pinned by tests",
   "idx": [
-   98
+   122
   ]
  },
  "c51": {
   "loc": "promql/engine.go:2160",
   "summary": "Slice aliasing between countSamplesAfter and the call path",
   "idx": [
-   86
+   110
   ]
  },
  "c52": {
   "loc": "util/stats/query_stats.go:108",
   "summary": "samplesRead ships without omitempty into a v1 API declared stable, freezing contested semantics",
   "idx": [
-   20,
-   78,
-   123
+   27,
+   102,
+   226,
+   176,
+   273
   ]
  },
  "c53": {
   "loc": "util/stats/query_stats.go:109",
   "summary": "Third-party engines populating Statistics themselves will emit a misleading zero",
   "idx": [
-   73
+   97,
+   163
   ]
  },
  "c54": {
   "loc": "util/stats/query_stats.go:183",
   "summary": "SamplesReadPerStepMap returns nil where its sibling returns a non-nil empty map",
   "idx": [
-   59,
-   158
+   83,
+   298,
+   56,
+   143,
+   148
   ]
  },
  "c55": {
   "loc": "util/stats/query_stats.go:184",
   "summary": "The SamplesReadPerStepMap nil-return branch is uncovered though the test would reach it",
   "idx": [
-   67
+   91
   ]
  },
  "c56": {
   "loc": "util/stats/query_stats.go:183",
   "summary": "SamplesReadPerStepMap being used only from tests",
   "idx": [
-   91
+   115
   ]
  },
  "c57": {
   "loc": "util/stats/query_stats.go:297",
   "summary": "The qs == nil guard in InitStepTracking is unreachable from either caller and untested",
   "idx": [
-   70
+   94
   ]
  },
  "c58": {
   "loc": "util/stats/query_stats.go:313",
   "summary": "StepTrackingEnabled is a redundant getter and a misnomer for what it returns",
   "idx": [
-   159,
-   176
+   299,
+   345,
+   15
   ]
  },
  "c59": {
   "loc": "util/stats/query_stats.go:321",
   "summary": "The four SamplesRead helpers duplicate the TotalSamples machinery and have drifted into different bounds disciplines",
   "idx": [
-   116,
-   139
+   219,
+   242
   ]
  },
  "c60": {
   "loc": "util/stats/query_stats.go:346",
   "summary": "New doc comments use different wording from the sibling helpers",
   "idx": [
-   58
+   82
   ]
  },
  "c61": {
   "loc": "util/stats/query_stats.go:352",
   "summary": "IncrementSamplesReadAtStep bounds-checks where its twin does not: the scalar is incremented but the per-step write silently skipped, so SamplesRead != sum(perStep)",
   "idx": [
-   21,
-   43,
-   145,
-   174
+   28,
+   67,
+   285,
+   343,
+   16,
+   54,
+   136,
+   199,
+   209,
+   255,
+   309,
+   311
   ]
  },
  "c62": {
   "loc": "util/stats/query_stats.go:347",
   "summary": "The new helpers name their count parameter n where siblings use samples",
   "idx": [
-   57
+   81,
+   147,
+   149,
+   254
   ]
  },
  "c63": {
   "loc": "util/stats/query_stats.go:352",
   "summary": "Whether SamplesRead != sum(SamplesReadPerStep) is live",
   "idx": [
-   77
+   101
   ]
  },
  "c64": {
   "loc": "util/stats/query_stats.go:402",
   "summary": "NewChild discards its receiver with no doc comment explaining why",
   "idx": [
-   62
+   86
   ]
  },
  "c65": {
   "loc": "util/stats/query_stats.go:406",
   "summary": "NewChild is a method and NewChildWithStepTracking a package function with opposite defaults, expressing the same concept asymmetrically",
   "idx": [
-   24,
-   56,
-   120,
-   156
+   31,
+   80,
+   223,
+   296,
+   142,
+   200,
+   257,
+   327,
+   363
   ]
  },
  "c66": {
   "loc": "util/stats/query_stats.go:419",
   "summary": "MergeSamplesReadFromSubquery merges positionally, correct only if child and parent share StartTimestamp and Interval",
   "idx": [
-   44
+   68,
+   55,
+   135,
+   210,
+   248,
+   359
   ]
  },
  "c67": {
   "loc": "util/stats/query_stats.go:423",
   "summary": "The length-mismatch guard is untested and currently unreachable",
   "idx": [
-   122
+   225
   ]
  },
  "c68": {
   "loc": "util/stats/query_stats.go:0",
   "summary": "Struct field ordering and alignment in querySamples",
   "idx": [
-   90
+   114,
+   177
   ]
  },
  "c69": {
   "loc": "util/stats/query_stats.go:0",
   "summary": "Nil-receiver guards on five methods could swallow programming errors",
   "idx": [
-   132
+   235,
+   270,
+   312
   ]
  },
  "c70": {
   "loc": "util/stats/query_stats.go:0",
   "summary": "JSON property ordering versus the OpenAPI schema",
   "idx": [
-   134
+   237,
+   274
   ]
  },
  "c71": {
   "loc": "util/stats/query_stats.go:0",
   "summary": "Concurrency hazard from the new QuerySamples fields",
   "idx": [
-   136
+   239,
+   179,
+   272
   ]
  },
  "c72": {
   "loc": "util/stats/query_stats.go:306",
   "summary": "Negative or zero numSteps causing a make() panic in InitStepTracking",
   "idx": [
-   75
+   99,
+   168,
+   267
   ]
  },
  "c73": {
   "loc": "promql/engine_test.go:1777",
   "summary": "Test expectations were captured from the implementation output rather than derived, and an IMPLEMENTATION NOTES scratch block admitting they may need refinement shipped with them",
   "idx": [
-   16,
-   39,
-   117,
-   149,
-   150,
-   169
+   23,
+   63,
+   220,
+   289,
+   290,
+   338,
+   14,
+   49,
+   250,
+   320,
+   360
   ]
  },
  "c74": {
   "loc": "promql/engine_test.go:1541",
   "summary": "Verbatim duplicate test cases repeated two and three times",
   "idx": [
-   17,
-   119,
-   153,
-   170
+   24,
+   222,
+   293,
+   339,
+   144,
+   251,
+   322,
+   361
   ]
  },
  "c75": {
   "loc": "promql/engine_test.go:51",
   "summary": "The defaultEpsilon removal is unrelated cleanup inside a feature commit",
   "idx": [
-   27,
-   64,
-   177
+   34,
+   88,
+   346,
+   329,
+   364
   ]
  },
  "c76": {
   "loc": "promql/engine_test.go:0",
   "summary": "No test asserts the invariants SamplesRead <= TotalSamples or SamplesRead == sum(SamplesReadPerStep)",
   "idx": [
-   48,
-   155,
-   182
+   72,
+   295,
+   351,
+   310
   ]
  },
  "c77": {
   "loc": "promql/engine_test.go:0",
   "summary": "No test measures actual iterator yield against samplesRead",
   "idx": [
-   181
+   350
   ]
  },
  "c78": {
   "loc": "promql/engine_test.go:0",
   "summary": "Coverage gaps: new exports, nil-receiver paths, step > range, nested subquery in a range query, irregular series",
   "idx": [
-   68,
-   154
+   92,
+   294,
+   153,
+   154,
+   155,
+   156,
+   316,
+   317,
+   318,
+   369
   ]
  },
  "c79": {
   "loc": "promql/engine_test.go:2437",
   "summary": "The peak-samples max-check was weakened: stats is reassigned from the per-step-disabled run",
   "idx": [
-   69,
-   152
+   93,
+   292,
+   139,
+   323,
+   366
   ]
  },
  "c81": {
@@ -634,19 +749,28 @@
   "summary": "The only new API assertions are vacuous: GreaterOrEqual(SamplesRead, 0) holds for a never-populated field",
   "idx": [
    3,
-   22,
-   46,
-   63,
-   118,
+   29,
+   70,
+   87,
+   221,
+   291,
+   341,
+   53,
+   131,
    151,
-   172
+   214,
+   253,
+   313,
+   362
   ]
  },
  "c91": {
   "loc": "util/stats/stats_test.go:0",
   "summary": "The four new exported helpers have no direct tests",
   "idx": [
-   66
+   90,
+   158,
+   261
   ]
  },
  "c82": {
@@ -654,9 +778,14 @@
   "summary": "Docs present samplesRead and the new counters under the per-step-stats feature heading, but neither is gated by that flag",
   "idx": [
    4,
-   14,
-   144,
-   175
+   21,
+   284,
+   344,
+   51,
+   138,
+   252,
+   315,
+   365
   ]
  },
  "c83": {
@@ -664,116 +793,355 @@
   "summary": "The documented invariant that samplesRead equals totalQueryableSamples for other query types is false, in several places",
   "idx": [
    5,
-   13,
-   42,
-   143
+   20,
+   66,
+   283,
+   47,
+   128,
+   247,
+   314,
+   356
   ]
  },
  "c84": {
   "loc": "docs/querying/api.md:239",
   "summary": "The new section lacks the *New in vX.Y* marker used elsewhere in the file",
   "idx": [
-   25
+   32
   ]
  },
  "c85": {
   "loc": "docs/querying/api.md:239",
   "summary": "The new section nests under the range-query heading so it is absent from the instant-query TOC",
   "idx": [
-   26
+   33
   ]
  },
  "c86": {
   "loc": "docs/querying/api.md:0",
   "summary": "Doc link and anchor style",
   "idx": [
-   84
+   108
   ]
  },
  "c87": {
   "loc": "web/api/v1/openapi_schemas.go:584",
   "summary": "The schema description contradicts its sibling on feature-flag gating",
   "idx": [
-   163
+   303,
+   256
   ]
  },
  "c88": {
   "loc": "web/api/v1/openapi_schemas.go:0",
   "summary": "Whether both OpenAPI golden files were regenerated consistently",
   "idx": [
-   32
+   39,
+   175,
+   279
   ]
  },
  "c89": {
   "loc": "web/api/v1/openapi_schemas.go:593",
   "summary": "OpenAPI golden YAML drift and missing required entries",
   "idx": [
-   82
+   106
   ]
  },
  "c90": {
   "loc": "CHANGELOG.md:0",
   "summary": "No CHANGELOG entry for the new metric and API fields",
   "idx": [
-   81,
-   178
+   105,
+   347,
+   172
   ]
  },
  "c92": {
   "loc": "web/ui:0",
   "summary": "Whether web UI types need updating",
   "idx": [
-   83
+   107,
+   167
   ]
  },
  "c93": {
   "loc": "model/histogram/float_histogram.go:648",
   "summary": "HPoint.size() cost inside countSamplesAfter",
   "idx": [
-   87
+   111
   ]
  },
  "c94": {
   "loc": "web/api/v1/api.go:0",
   "summary": "Whether samplesRead discloses storage information",
   "idx": [
-   96
+   120,
+   183
   ]
  },
  "c95": {
   "loc": "promql/histogram_stats_iterator.go:66",
   "summary": "go vet Seek method-signature notices",
   "idx": [
-   138
+   241,
+   263
   ]
  },
  "c96": {
   "loc": "promql/engine.go:0",
   "summary": "A semantic change to an existing metric is hidden in a commit advertising only an addition",
   "idx": [
-   180
+   349,
+   367
   ]
  },
  "c97": {
   "loc": "promql/value.go:195",
   "summary": "countSamplesAfter returns int64 while its same-file sibling returns int, forcing a cast at the combining call site",
   "idx": [
-   60
+   84
   ]
  },
  "c98": {
   "loc": "promql/value.go:195",
   "summary": "countSamplesAfter, the core arithmetic of the feature, has no direct unit test covering its cutoff boundary or histogram weighting",
   "idx": [
-   65,
-   121
+   89,
+   224,
+   157,
+   260,
+   319
   ]
  },
  "c99": {
   "loc": "promql/value.go:192",
   "summary": "countSamplesAfter placement in promql/value.go",
   "idx": [
-   85
+   109,
+   178,
+   181
+  ]
+ },
+ "c100": {
+  "loc": "util/stats/query_stats.go:306",
+  "summary": "Half the subquery child allocation is waste: its TotalSamplesPerStep is written and never read",
+  "idx": [
+   42,
+   140,
+   259
+  ]
+ },
+ "c101": {
+  "loc": "promql/engine_test.go:1177",
+  "summary": "The new test table encodes the double-count as expected values, so the tests lock the defect in rather than catch it",
+  "idx": [
+   46,
+   130,
+   164
+  ]
+ },
+ "c102": {
+  "loc": "promql/engine.go:686",
+  "summary": "Because the metric is a counter, the double-count inflation is written permanently into the time series",
+  "idx": [
+   162
+  ]
+ },
+ "c103": {
+  "loc": "promql/bench_test.go:0",
+  "summary": "No benchmark accompanies unconditional new work in the innermost loop, and the existing cases hide the regression",
+  "idx": [
+   161,
+   370
+  ]
+ },
+ "c104": {
+  "loc": "promql/engine_test.go:0",
+  "summary": "Every fixture explains its TotalSamples derivation but none explains SamplesRead, the new and non-obvious number",
+  "idx": [
+   321
+  ]
+ },
+ "c105": {
+  "loc": "promql/engine.go:2143",
+  "summary": "The inline comment claiming unchanged TotalSamples semantics is false and contradicts the change below it",
+  "idx": [
+   44
+  ]
+ },
+ "c106": {
+  "loc": "promql/engine.go:2382",
+  "summary": "The SubqueryExpr restructuring is largely churn that hides the substantive change and drops an explanatory comment",
+  "idx": [
+   326
+  ]
+ },
+ "c107": {
+  "loc": "promql/engine.go:2435",
+  "summary": "The subquery-to-outer-step mapping never adds offsetMillis, so an offset skews the per-step attribution",
+  "idx": [
+   132,
+   306
+  ]
+ },
+ "c108": {
+  "loc": "promql/engine.go:2458",
+  "summary": "The StepInvariantExpr case was left on NewChild(), which hardcodes per-step stats off",
+  "idx": [
+   152,
+   249
+  ]
+ },
+ "c109": {
+  "loc": "promql/engine.go:2765",
+  "summary": "matrixIterSlice documents a closed window where the code is half-open",
+  "idx": [
+   145
+  ]
+ },
+ "c110": {
+  "loc": "promql/engine.go:2446",
+  "summary": "The else branch passes a timestamp that is always discarded, so the fallback attribution is silently positional",
+  "idx": [
+   141,
+   278
+  ]
+ },
+ "c111": {
+  "loc": ":0",
+  "summary": "The definition of samplesRead was never pinned down",
+  "idx": [
+   368
+  ]
+ },
+ "c112": {
+  "loc": "util/stats/query_stats.go:298",
+  "summary": "InitStepTracking has no guard against interval == 0 or numSteps <= 0, and the new call site broadens its inputs",
+  "idx": [
+   166
+  ]
+ },
+ "c113": {
+  "loc": "util/stats/query_stats.go:306",
+  "summary": "No test bounds the subquery per-step allocation, so a fix would be unprotected against regression",
+  "idx": [
+   160
+  ]
+ },
+ "c114": {
+  "loc": "util/stats/query_stats.go:0",
+  "summary": "SamplesReadPerStepMap returns a type named for total samples, exported to downstream consumers",
+  "idx": [
+   258
+  ]
+ },
+ "c115": {
+  "loc": "docs/feature_flags.md:46",
+  "summary": "The new field names are bold where the file convention is backticks",
+  "idx": [
+   150
+  ]
+ },
+ "c116": {
+  "loc": "util/stats/stats_test.go:67",
+  "summary": "The array-field regexes lack the trailing anchor the scalar regexes carry",
+  "idx": [
+   213
+  ]
+ },
+ "c117": {
+  "loc": ":0",
+  "summary": "A stray scratch test file was flagged by two agents as part of the change",
+  "idx": [
+   332
+  ]
+ },
+ "c118": {
+  "loc": "promql/engine.go:0",
+  "summary": "Whether any IncrementSamplesAt* site lacks a paired samples-read increment",
+  "idx": [
+   173,
+   269
+  ]
+ },
+ "c119": {
+  "loc": "promql/engine.go:0",
+  "summary": "Whether the new counter registration is correct and raises no cardinality concern",
+  "idx": [
+   174,
+   271
+  ]
+ },
+ "c120": {
+  "loc": "promql/engine.go:0",
+  "summary": "Whether evalSubquery allocates per outer step",
+  "idx": [
+   180
+  ]
+ },
+ "c121": {
+  "loc": "web/api/v1/api.go:0",
+  "summary": "Whether query.max-samples enforcement is weakened",
+  "idx": [
+   184
+  ]
+ },
+ "c122": {
+  "loc": "promql/engine.go:0",
+  "summary": "Whether the empty-window continue loses sample counts",
+  "idx": [
+   203
+  ]
+ },
+ "c123": {
+  "loc": "promql/engine.go:0",
+  "summary": "Whether the collector is double-registered or the stats pointer nil-dereferenced",
+  "idx": [
+   207
+  ]
+ },
+ "c124": {
+  "loc": "promql/engine.go:0",
+  "summary": "Whether slice aliasing across the reused evaluation buffer is a Go-semantics hazard",
+  "idx": [
+   275
+  ]
+ },
+ "c125": {
+  "loc": "promql/engine.go:0",
+  "summary": "Whether the length of the Call eval branch is a god-function problem",
+  "idx": [
+   276
+  ]
+ },
+ "c126": {
+  "loc": ":0",
+  "summary": "Whether the rationale for introducing SamplesRead belongs in the review",
+  "idx": [
+   277
+  ]
+ },
+ "c127": {
+  "loc": "promql/engine.go:2437",
+  "summary": "Whether the ceiling division in the outer-step attribution is correct",
+  "idx": [
+   211,
+   268
+  ]
+ },
+ "c128": {
+  "loc": "util/stats/query_stats.go:0",
+  "summary": "Whether the merge helper naming follows the existing vocabulary",
+  "idx": [
+   182
+  ]
+ },
+ "c129": {
+  "loc": "util/stats/query_stats.go:306",
+  "summary": "Whether calling InitStepTracking on a nil QuerySamples can dereference nil",
+  "idx": [
+   212
   ]
  }
 }

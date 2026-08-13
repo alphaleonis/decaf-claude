@@ -6,7 +6,7 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-12T07:12:02Z
-updated_at: 2026-08-12T13:23:11Z
+updated_at: 2026-08-13T08:40:48Z
 parent: dcc-ho2w
 order: z
 ---
@@ -112,3 +112,46 @@ unchanged. Re-grading the cells already in hand moved it up to 0.25.
   both passes) but the identity does not ({7,8,9} vs {1,2,9}, one in common). Report "the field
   caught N of M"; do not name which were missed without multi-pass agreement.
 - A ranking is not a result unless it survives every pass. It did not survive on either subject.
+
+
+## RESOLVED (2026-08-13): denominator size dominates, not the source
+
+The second subject at 2 repeats let both sources be isolated twice. The naive max-delta reading
+reverses between subjects:
+
+| subject | judge (2 passes, same cells) | tool (2nd repeat, same pass) |
+|---|---|---|
+| efcore | 0.25 | 0.12 |
+| prometheus | 0.13 | **0.40** |
+
+Prometheus's 0.40 is entirely `ours-bugs`, whose precision was 1.00 over **3 reported clusters** in
+r1 and 0.60 over 5 with r2 added. That is not a tool changing behavior; it is a figure that was never
+a measurement. Pooling all 14 tool-subject pairs and splitting by denominator gives the real
+structure:
+
+| reported clusters | mean tool delta | mean judge delta |
+|---|---|---|
+| n < 10 (4 pairs) | 0.100 | 0.163 |
+| n >= 10 (10 pairs) | 0.056 | 0.085 |
+
+**Both sources roughly halve once a tool reports ten or more clusters**, and the judge is the larger
+term at both sizes. So efcore's direction was right and prometheus's reversal was an artifact — but
+the effect that matters most is neither: it is n.
+
+### Decision
+
+1. **Do not publish a precision figure computed over fewer than 10 reported clusters.** Report the
+   count instead ("reported 3 findings, all real"). Four of fourteen tool-subject pairs in this pilot
+   fall below that line, and every unstable figure in the whole exercise is one of them.
+2. **Two grading passes per subject, always.** Judge delta is the larger term at both denominator
+   sizes, and passes cost no cells.
+3. **Two repeats remain worthwhile** but for a different reason than assumed: not to stabilize
+   precision, but because reported VOLUME is itself unstable in a way no amount of re-grading reveals
+   — `anthropic-code-review` reported 1 finding then 4 on identical efcore code, and `ours-review`
+   went 11 -> 20 on prometheus.
+4. `threads.missed_index` still must not be published from one pass; the count reproduces, the
+   identity does not.
+
+The earlier recommendation here — favour grading passes over repeats to save ~$1,200 on the full run
+— **is withdrawn**. It rested on one subject. Both controls are needed, and the cheap win is the
+n>=10 publication floor, which costs nothing.
