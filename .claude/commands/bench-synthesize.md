@@ -46,17 +46,23 @@ Load `artifact-design` first, and `dataviz` before writing chart code. Sections,
 2. **Scope notice, above the numbers** — application types covered, subject count, whether ranges overlap. Not a footnote.
 3. **Headline table** — one row per tool, with a `measured` / `withheld` state. A withheld tool keeps its row and its rank position; the reason goes inline.
 4. **Precision with its observed range** — the range across subjects and passes, so overlap is visible rather than asserted.
-5. **The axes against each other** — precision vs thread recall, because they disagree and a merged score would hide it.
-6. **Severity calibration** — P(substantive | the tool called it critical or high), from each cell's
+5. **Signal vs noise** — normalized stacked bars over the **full four-way split**
+   (substantive / valid-minor / trivia / false-positive), with absolute findings-per-cell beside
+   them. **Do not collapse this to real-vs-wrong.** The whole point of the vocabulary is that these
+   tools rarely produce false positives and routinely produce correct-but-immaterial output — a
+   two-bucket chart hides the only failure mode that actually separates them, and `trivia_ratio` is
+   emitted per tool precisely so this section can exist.
+6. **The axes against each other** — precision vs thread recall, because they disagree and a merged score would hide it.
+7. **Severity calibration** — P(substantive | the tool called it critical or high), from each cell's
    *tool-reported* severity against the judge's verdict. This is the axis `score_pooled.py`'s
    empty-severity guard exists to protect, so it must actually appear. **Caveat it honestly:** at
    least one tool emits no severity labels of its own on some runs — its extract carries the
    extractor's inference, not the tool's claim — and a calibration figure over inferred severities
    measures the extractor. Exclude those cells and say which.
-7. **Cost per real finding.**
-8. **What the data supports** — a small number of claims, each traceable to a figure above.
-9. **What this may not be used for** — application types not covered, rankings not settled, withheld figures, thread identity, pooling refusals.
-10. **Method** — name the aggregator and the rules it enforces by refusing.
+8. **Cost per real finding.**
+9. **What the data supports** — a small number of claims, each traceable to a figure above.
+10. **What this may not be used for** — application types not covered, rankings not settled, withheld figures, thread identity, pooling refusals.
+11. **Method** — name the aggregator and the rules it enforces by refusing.
 
 Charts: prefer single-hue with identity carried by direct labels — with seven labelled marks there is
 no categorical set to cycle and no legend needed. If you do use a categorical palette, run

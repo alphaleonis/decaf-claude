@@ -124,9 +124,32 @@ def main():
             "real_total": sum(r["real"] for r in rows.values()),
             "unique_real_total": sum(r["unique_real"] for r in rows.values()),
             "fp_total": sum(r["false_positive"] for r in rows.values()),
+            # The four-way split, rolled up. Reported separately from precision because these tools
+            # almost never emit a false positive (3 in 793 findings across the pilot) and routinely
+            # emit correct-but-immaterial output — collapsing to real-vs-wrong hides the only failure
+            # mode that separates them. `reported_total` is the denominator for all four.
+            "reported_total": sum(r["reported"] for r in rows.values()),
+            "valid_minor_total": sum(r["valid_minor"] for r in rows.values()),
+            "trivia_total": sum(r["trivia"] for r in rows.values()),
+            "mix": None,  # filled below, once the denominator is known
             "cost_total": round(sum(r["cost_usd"] for r in rows.values()), 2),
             "null": {s["subject"]: per_tool(s, t) for s in nulls if t in s["tools"]},
         }
+        n = agg[t]["reported_total"]
+        if n:
+            agg[t]["mix"] = {
+                "substantive": round(agg[t]["real_total"] / n, 3),
+                "valid_minor": round(agg[t]["valid_minor_total"] / n, 3),
+                "trivia": round(agg[t]["trivia_total"] / n, 3),
+                "false_positive": round(agg[t]["fp_total"] / n, 3),
+            }
+            # The four shares partition the reported set, so they must sum to 1. A drift here means
+            # a verdict escaped the vocabulary and the mix is describing a different population than
+            # the precision figure beside it.
+            tot = sum(agg[t]["mix"].values())
+            if abs(tot - 1.0) > 0.005:
+                raise Refused(f"{t}: verdict mix sums to {tot:.3f}, not 1.000 — a verdict is "
+                              f"unaccounted for and the mix does not describe the reported set")
 
     out = {
         "generated_from": [s["dir"] for s in subs],

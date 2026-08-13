@@ -44,6 +44,32 @@ Thread recall is the mean over two subjects of recall against admitted **human**
 
 ---
 
+## Signal vs noise — the split precision hides
+
+Precision collapses four graded outcomes into two. The full split is the more useful number, because
+these tools almost never emit a false positive and routinely emit correct-but-immaterial output:
+
+| Tool | Reported | Substantive | Valid-minor | Trivia | False positive |
+|---|---|---|---|---|---|
+| `anthropic-code-review` | 11 | **100%** | 0% | 0% | 0% |
+| `comprehensive-review` | 41 | 80% | 20% | 0% | 0% |
+| `ours-bugs` | 7 | 71% | 29% | 0% | 0% |
+| `superpowers` | 45 | 69% | 20% | 11% | 0% |
+| `ours-review` | 39 | 54% | 44% | 3% | 0% |
+| `pr-review-toolkit` | 54 | 54% | 41% | 6% | 0% |
+| `ours-audit` | 78 | 47% | 40% | 12% | 1% |
+
+**"Precision 0.48" is a misleading summary of `ours-audit`.** Its output is 47% substantive plus 40%
+correct-but-minor — **87% correct** — against 12% trivia and 1% wrong. The decaf presets are not
+noisy; they are verbose about true small things. That is a different defect with a different fix, and
+plain precision cannot tell the two apart.
+
+Note also what this axis does **not** distinguish: a wrong-results defect and a naming suggestion both
+land in `substantive`. The judge-assigned class axis that would separate them exists in v1 and not in
+v2 — see `dcc-opdr`.
+
+---
+
 ## What the data actually supports
 
 ### 1. No tool wins on every axis, and the axes disagree
