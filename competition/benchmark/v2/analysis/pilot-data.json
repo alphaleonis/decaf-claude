@@ -1,0 +1,557 @@
+{
+  "generated_from": [
+    "competition/benchmark/v2/pooled/prometheus-prometheus-18081",
+    "competition/benchmark/v2/pooled/dotnet-efcore-34127",
+    "competition/benchmark/v2/null/grafana-122269"
+  ],
+  "rules": {
+    "min_clusters_for_ratio": 10,
+    "precision_is_median_of_passes": true,
+    "null_arm_reported_separately": true
+  },
+  "scope": {
+    "pooled_subjects": 2,
+    "null_subjects": 1,
+    "app_types_covered": [
+      "library"
+    ],
+    "sizes_covered": [
+      "L",
+      "M"
+    ],
+    "single_app_type": true,
+    "total_cells": 35,
+    "total_clusters": 267
+  },
+  "subjects": [
+    {
+      "subject": "prometheus/prometheus#18081",
+      "app_type": "library",
+      "size": "L",
+      "status": "out-of-window",
+      "n_cells": 14,
+      "n_clusters": 129,
+      "repeats": 2
+    },
+    {
+      "subject": "dotnet/efcore#34127",
+      "app_type": "library",
+      "size": "M",
+      "status": "out-of-window",
+      "n_cells": 14,
+      "n_clusters": 69,
+      "repeats": 2
+    },
+    {
+      "subject": "grafana/grafana#122269",
+      "app_type": "backend",
+      "size": "M",
+      "status": "in-window",
+      "n_cells": 7,
+      "n_clusters": 69,
+      "repeats": 1
+    }
+  ],
+  "tools": {
+    "anthropic-code-review": {
+      "per_subject": {
+        "prometheus/prometheus#18081": {
+          "reported": 7,
+          "found": 14,
+          "real": 7,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 0,
+          "valid_minor": 0,
+          "cost_usd": 25.5015,
+          "cost_per_real": 3.6431,
+          "thread_recall": 0.2,
+          "thread_recall_found": 0.3,
+          "below_floor": true,
+          "precision": null,
+          "precision_range": null,
+          "withheld_reason": "n=7 < 10 reported clusters"
+        },
+        "dotnet/efcore#34127": {
+          "reported": 4,
+          "found": 7,
+          "real": 4,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 0,
+          "valid_minor": 0,
+          "cost_usd": 10.186,
+          "cost_per_real": 2.5465,
+          "thread_recall": 0.1,
+          "thread_recall_found": 0.2,
+          "below_floor": true,
+          "precision": null,
+          "precision_range": null,
+          "withheld_reason": "n=4 < 10 reported clusters"
+        }
+      },
+      "subjects_above_floor": 0,
+      "precision_mean": null,
+      "precision_note": "withheld: 2 of 2 subjects below the n>=10 floor",
+      "thread_recall_mean": 0.15,
+      "real_total": 11,
+      "unique_real_total": 0,
+      "fp_total": 0,
+      "cost_total": 35.69,
+      "null": {
+        "grafana/grafana#122269": {
+          "reported": 5,
+          "found": 14,
+          "real": 4,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 0,
+          "valid_minor": 1,
+          "cost_usd": 8.2946,
+          "cost_per_real": 2.0737,
+          "thread_recall": null,
+          "thread_recall_found": null,
+          "below_floor": true,
+          "precision": null,
+          "precision_range": null,
+          "withheld_reason": "n=5 < 10 reported clusters"
+        }
+      }
+    },
+    "comprehensive-review": {
+      "per_subject": {
+        "prometheus/prometheus#18081": {
+          "reported": 23,
+          "found": 29,
+          "real": 17,
+          "unique_real": 1,
+          "false_positive": 0,
+          "trivia": 0,
+          "valid_minor": 6,
+          "cost_usd": 47.4932,
+          "cost_per_real": 2.7937,
+          "thread_recall": 0.7,
+          "thread_recall_found": 0.7,
+          "below_floor": false,
+          "precision": 0.739,
+          "precision_range": [
+            0.739,
+            0.739
+          ],
+          "passes": 2
+        },
+        "dotnet/efcore#34127": {
+          "reported": 18,
+          "found": 23,
+          "real": 16,
+          "unique_real": 1,
+          "false_positive": 0,
+          "trivia": 0,
+          "valid_minor": 2,
+          "cost_usd": 34.9105,
+          "cost_per_real": 2.1819,
+          "thread_recall": 0.5,
+          "thread_recall_found": 0.5,
+          "below_floor": false,
+          "precision": 0.834,
+          "precision_range": [
+            0.778,
+            0.889
+          ],
+          "passes": 2
+        }
+      },
+      "subjects_above_floor": 2,
+      "precision_mean": 0.786,
+      "precision_note": null,
+      "thread_recall_mean": 0.6,
+      "real_total": 33,
+      "unique_real_total": 2,
+      "fp_total": 0,
+      "cost_total": 82.4,
+      "null": {
+        "grafana/grafana#122269": {
+          "reported": 13,
+          "found": 18,
+          "real": 8,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 0,
+          "valid_minor": 5,
+          "cost_usd": 17.7792,
+          "cost_per_real": 2.2224,
+          "thread_recall": null,
+          "thread_recall_found": null,
+          "below_floor": false,
+          "precision": 0.538,
+          "precision_range": [
+            0.462,
+            0.615
+          ],
+          "passes": 2
+        }
+      }
+    },
+    "ours-audit": {
+      "per_subject": {
+        "prometheus/prometheus#18081": {
+          "reported": 54,
+          "found": 84,
+          "real": 25,
+          "unique_real": 5,
+          "false_positive": 1,
+          "trivia": 5,
+          "valid_minor": 23,
+          "cost_usd": 59.8524,
+          "cost_per_real": 2.3941,
+          "thread_recall": 0.6,
+          "thread_recall_found": 0.6,
+          "below_floor": false,
+          "precision": 0.528,
+          "precision_range": [
+            0.463,
+            0.593
+          ],
+          "passes": 2
+        },
+        "dotnet/efcore#34127": {
+          "reported": 24,
+          "found": 44,
+          "real": 12,
+          "unique_real": 1,
+          "false_positive": 0,
+          "trivia": 4,
+          "valid_minor": 8,
+          "cost_usd": 57.7524,
+          "cost_per_real": 4.8127,
+          "thread_recall": 0.5,
+          "thread_recall_found": 0.6,
+          "below_floor": false,
+          "precision": 0.438,
+          "precision_range": [
+            0.375,
+            0.5
+          ],
+          "passes": 2
+        }
+      },
+      "subjects_above_floor": 2,
+      "precision_mean": 0.483,
+      "precision_note": null,
+      "thread_recall_mean": 0.55,
+      "real_total": 37,
+      "unique_real_total": 6,
+      "fp_total": 1,
+      "cost_total": 117.6,
+      "null": {
+        "grafana/grafana#122269": {
+          "reported": 23,
+          "found": 40,
+          "real": 10,
+          "unique_real": 1,
+          "false_positive": 0,
+          "trivia": 2,
+          "valid_minor": 11,
+          "cost_usd": 23.5324,
+          "cost_per_real": 2.3532,
+          "thread_recall": null,
+          "thread_recall_found": null,
+          "below_floor": false,
+          "precision": 0.413,
+          "precision_range": [
+            0.391,
+            0.435
+          ],
+          "passes": 2
+        }
+      }
+    },
+    "ours-bugs": {
+      "per_subject": {
+        "prometheus/prometheus#18081": {
+          "reported": 5,
+          "found": 20,
+          "real": 3,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 0,
+          "valid_minor": 2,
+          "cost_usd": 18.011,
+          "cost_per_real": 6.0037,
+          "thread_recall": 0.1,
+          "thread_recall_found": 0.4,
+          "below_floor": true,
+          "precision": null,
+          "precision_range": null,
+          "withheld_reason": "n=5 < 10 reported clusters"
+        },
+        "dotnet/efcore#34127": {
+          "reported": 2,
+          "found": 20,
+          "real": 2,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 0,
+          "valid_minor": 0,
+          "cost_usd": 16.5847,
+          "cost_per_real": 8.2924,
+          "thread_recall": 0.0,
+          "thread_recall_found": 0.0,
+          "below_floor": true,
+          "precision": null,
+          "precision_range": null,
+          "withheld_reason": "n=2 < 10 reported clusters"
+        }
+      },
+      "subjects_above_floor": 0,
+      "precision_mean": null,
+      "precision_note": "withheld: 2 of 2 subjects below the n>=10 floor",
+      "thread_recall_mean": 0.05,
+      "real_total": 5,
+      "unique_real_total": 0,
+      "fp_total": 0,
+      "cost_total": 34.6,
+      "null": {
+        "grafana/grafana#122269": {
+          "reported": 6,
+          "found": 19,
+          "real": 5,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 0,
+          "valid_minor": 1,
+          "cost_usd": 8.2283,
+          "cost_per_real": 1.6457,
+          "thread_recall": null,
+          "thread_recall_found": null,
+          "below_floor": true,
+          "precision": null,
+          "precision_range": null,
+          "withheld_reason": "n=6 < 10 reported clusters"
+        }
+      }
+    },
+    "ours-review": {
+      "per_subject": {
+        "prometheus/prometheus#18081": {
+          "reported": 24,
+          "found": 48,
+          "real": 12,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 1,
+          "valid_minor": 11,
+          "cost_usd": 38.0864,
+          "cost_per_real": 3.1739,
+          "thread_recall": 0.6,
+          "thread_recall_found": 0.6,
+          "below_floor": false,
+          "precision": 0.541,
+          "precision_range": [
+            0.5,
+            0.583
+          ],
+          "passes": 2
+        },
+        "dotnet/efcore#34127": {
+          "reported": 15,
+          "found": 37,
+          "real": 9,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 0,
+          "valid_minor": 6,
+          "cost_usd": 33.6078,
+          "cost_per_real": 3.7342,
+          "thread_recall": 0.2,
+          "thread_recall_found": 0.3,
+          "below_floor": false,
+          "precision": 0.533,
+          "precision_range": [
+            0.467,
+            0.6
+          ],
+          "passes": 2
+        }
+      },
+      "subjects_above_floor": 2,
+      "precision_mean": 0.537,
+      "precision_note": null,
+      "thread_recall_mean": 0.4,
+      "real_total": 21,
+      "unique_real_total": 0,
+      "fp_total": 0,
+      "cost_total": 71.69,
+      "null": {
+        "grafana/grafana#122269": {
+          "reported": 10,
+          "found": 23,
+          "real": 8,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 0,
+          "valid_minor": 2,
+          "cost_usd": 11.9452,
+          "cost_per_real": 1.4931,
+          "thread_recall": null,
+          "thread_recall_found": null,
+          "below_floor": false,
+          "precision": 0.7,
+          "precision_range": [
+            0.6,
+            0.8
+          ],
+          "passes": 2
+        }
+      }
+    },
+    "pr-review-toolkit": {
+      "per_subject": {
+        "prometheus/prometheus#18081": {
+          "reported": 30,
+          "found": 33,
+          "real": 17,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 1,
+          "valid_minor": 12,
+          "cost_usd": 42.9703,
+          "cost_per_real": 2.5277,
+          "thread_recall": 0.6,
+          "thread_recall_found": 0.6,
+          "below_floor": false,
+          "precision": 0.583,
+          "precision_range": [
+            0.567,
+            0.6
+          ],
+          "passes": 2
+        },
+        "dotnet/efcore#34127": {
+          "reported": 24,
+          "found": 28,
+          "real": 12,
+          "unique_real": 2,
+          "false_positive": 0,
+          "trivia": 2,
+          "valid_minor": 10,
+          "cost_usd": 46.8797,
+          "cost_per_real": 3.9066,
+          "thread_recall": 0.3,
+          "thread_recall_found": 0.3,
+          "below_floor": false,
+          "precision": 0.459,
+          "precision_range": [
+            0.417,
+            0.5
+          ],
+          "passes": 2
+        }
+      },
+      "subjects_above_floor": 2,
+      "precision_mean": 0.521,
+      "precision_note": null,
+      "thread_recall_mean": 0.45,
+      "real_total": 29,
+      "unique_real_total": 2,
+      "fp_total": 0,
+      "cost_total": 89.85,
+      "null": {
+        "grafana/grafana#122269": {
+          "reported": 24,
+          "found": 30,
+          "real": 9,
+          "unique_real": 0,
+          "false_positive": 0,
+          "trivia": 3,
+          "valid_minor": 12,
+          "cost_usd": 16.4224,
+          "cost_per_real": 1.8247,
+          "thread_recall": null,
+          "thread_recall_found": null,
+          "below_floor": false,
+          "precision": 0.354,
+          "precision_range": [
+            0.333,
+            0.375
+          ],
+          "passes": 2
+        }
+      }
+    },
+    "superpowers": {
+      "per_subject": {
+        "prometheus/prometheus#18081": {
+          "reported": 28,
+          "found": 28,
+          "real": 22,
+          "unique_real": 3,
+          "false_positive": 0,
+          "trivia": 2,
+          "valid_minor": 4,
+          "cost_usd": 9.1782,
+          "cost_per_real": 0.4172,
+          "thread_recall": 0.7,
+          "thread_recall_found": 0.7,
+          "below_floor": false,
+          "precision": 0.786,
+          "precision_range": [
+            0.786,
+            0.786
+          ],
+          "passes": 2
+        },
+        "dotnet/efcore#34127": {
+          "reported": 17,
+          "found": 17,
+          "real": 9,
+          "unique_real": 1,
+          "false_positive": 0,
+          "trivia": 3,
+          "valid_minor": 5,
+          "cost_usd": 7.9801,
+          "cost_per_real": 0.8867,
+          "thread_recall": 0.2,
+          "thread_recall_found": 0.2,
+          "below_floor": false,
+          "precision": 0.5,
+          "precision_range": [
+            0.471,
+            0.529
+          ],
+          "passes": 2
+        }
+      },
+      "subjects_above_floor": 2,
+      "precision_mean": 0.643,
+      "precision_note": null,
+      "thread_recall_mean": 0.45,
+      "real_total": 31,
+      "unique_real_total": 4,
+      "fp_total": 0,
+      "cost_total": 17.16,
+      "null": {
+        "grafana/grafana#122269": {
+          "reported": 16,
+          "found": 16,
+          "real": 7,
+          "unique_real": 0,
+          "false_positive": 1,
+          "trivia": 2,
+          "valid_minor": 6,
+          "cost_usd": 3.4631,
+          "cost_per_real": 0.4947,
+          "thread_recall": null,
+          "thread_recall_found": null,
+          "below_floor": false,
+          "precision": 0.438,
+          "precision_range": [
+            0.438,
+            0.438
+          ],
+          "passes": 2
+        }
+      }
+    }
+  }
+}
