@@ -198,9 +198,10 @@ Current work is **benchmark v2**, milestone `dcc-ho2w`:
 
 | Read | For |
 |---|---|
+| `competition/benchmark/v2/analysis/PILOT-RESULTS.md` | **the pilot's results and the rules they impose on every future number** — read first |
 | `competition/benchmark/v2/README.md` | operational — layout, running a cell, the access controls |
 | `competition/benchmark/METHODOLOGY-v2.md` | design rationale; §2 instruments, §3 access controls, §4 subject construction |
-| `competition/benchmark/v2/analysis/HARNESS-REVIEW.md` | the pre-pilot review — what is broken and what blocks spending |
+| `competition/benchmark/v2/analysis/HARNESS-REVIEW.md` | the pre-pilot review — what was broken and what blocked spending |
 | `competition/benchmark/v2/scoring/README.md` | the three axes and every guard that refuses to emit a number |
 | `competition/benchmark/README.md` | v1, behind a warning banner |
 | `competition/benchmark/v1-archive/README.md` | the archived v1 data — what it may and may not be cited for |
@@ -217,11 +218,19 @@ Ground rules that cost real money to learn:
 - **An access control is not in force until it has been probed.** The `gh` shim's field filter read
   as correct and leaked post-checkpoint review verdicts through `--json latestReviews`; a URL target
   skipped the date check entirely. Both were found by running the shim, not by reading it.
-- **Empty is not the same as failed.** The same silent-failure bug has now surfaced seven times here
-  (a zsh word-splitting no-op, "0 candidates" from a broken query, `grep` aborting under `set -e`, a
-  wrong `detect_build` path recorded as a generic error, Wayback outages reported as "no snapshot",
-  and a null-arm check failing open). Anything whose emptiness is indistinguishable from an error
-  must say which it was.
+- **Empty is not the same as failed — and neither is PARTIAL.** The same silent-failure bug has now
+  surfaced nine times here (a zsh word-splitting no-op, "0 candidates" from a broken query, `grep`
+  aborting under `set -e`, a wrong `detect_build` path recorded as a generic error, Wayback outages
+  reported as "no snapshot", a null-arm check failing open, `.result` holding 5% of a tool's output,
+  a tool report deleted by the next cell's reset, and a 429-truncated cell that resume skipped
+  forever because its output was non-empty). Anything whose emptiness *or incompleteness* is
+  indistinguishable from success must say which it was.
+- **A number over a small denominator is not a measurement.** The pilot's every unstable figure came
+  from a tool reporting under 10 clusters; `precision 1.00` on n=3 moved to 0.60 on n=5. No precision
+  figure over fewer than 10 reported clusters may be published (`analysis/PILOT-RESULTS.md`).
+- **One subject does not generalize.** Three separate conclusions drawn from a single subject during
+  the pilot were overturned by the second: the diff-size cost multiplier, "precision is robust to the
+  judge", and "grading passes beat repeats". Replicate before recommending.
 
 ## Versioning
 
