@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-08-10T17:55:32Z
+updated_at: 2026-08-13T09:36:56Z
 blocked_by:
     - dcc-9kkz
 order: zzzV
@@ -170,3 +170,37 @@ a measured figure must be re-justified** before it lands — check each against 
 wait for [[dcc-plsq]].
 
 Live children to re-check: [[dcc-c2uc]], [[dcc-1xtt]], [[dcc-lf4a]].
+
+
+## Premise restated on v2 data (2026-08-13)
+
+**The "Why" above rests on v1 numbers and v1 is void.** "$21.33/run against anthropic's $7.61",
+"severity calibration 0.70 vs 0.90" and the `roster_yield.py` per-persona analysis all come from the
+retired dataset — contamination, GitHub leak, unaudited ground truth, unpinned effort, with the two
+leaks pushing in opposite directions. None of it may be cited, including here.
+
+Replacement premise from the v2 pilot ([[dcc-vkeh]], `v2/analysis/TUNING-SIGNALS.md`) — two subjects,
+both `library`, seven tools x two repeats, blind-adjudicated twice:
+
+- **decaf's presets are accurate but verbose.** Of `ours-audit`'s 41 reported-but-not-substantive
+  clusters, **every one is judged low/nit/info — zero medium or above**; `ours-review` is the same
+  shape. Severity-weighted precision gains +0.18 to +0.25 over plain, against +0.07 to +0.12 for
+  `comprehensive-review`. The noise is not wrong, it is small.
+- **`ours-audit` is the roster's best detector** — 37 real findings and 6 unique real findings, both
+  the most of any tool. Any intervention must be checked against `unique_real`, not precision, or it
+  trades away the thing the preset is good at.
+- **`ours-bugs`'s gate is discarding consensus defects.** It found 40 clusters, reported 7, and 7 of
+  the 33 it suppressed were real — including three high-severity findings that four to six other
+  tools reported. `ours-audit` and `ours-review` demote more in absolute terms and lose 8% and 7%, so
+  the shared machinery is sound and the fault is the `bugs` preset's own threshold.
+- **The target to beat is `superpowers`: 31 real findings for $17.16, $0.55 each**, with no roster and
+  no demotion machinery, against `ours-audit`'s 37 for $117.60. That is a far more demanding bar than
+  the v1 comparison this epic was founded on.
+
+The cheapest intervention the data supports is presentational, not architectural: collapse the
+Minor/nit tier into a counted summary line instead of enumerating each item as a finding. It moves
+plain precision substantially and touches no substantive finding, because none of decaf's
+non-substantive output is above `low`.
+
+Bounded by: two subjects, one application type, and `ours-bugs` having no precision figure at all
+(it never cleared the ten-cluster publication floor — the demotion finding needs no ratio).
