@@ -4,6 +4,7 @@
  "judge_model": "claude-opus-5",
  "merged_at": "2026-06-15T12:26:57Z",
  "shim": "on",
+ "repeats": 2,
  "grading_pass": 1,
  "cells": [
   {
@@ -15,6 +16,14 @@
    "access_denied": 3
   },
   {
+   "tool": "anthropic-code-review",
+   "repeat": 2,
+   "cost_usd": 14.423,
+   "wall_s": 94,
+   "access_total": 279,
+   "access_denied": 22
+  },
+  {
    "tool": "comprehensive-review",
    "repeat": 1,
    "cost_usd": 24.7464,
@@ -23,11 +32,27 @@
    "access_denied": 2
   },
   {
+   "tool": "comprehensive-review",
+   "repeat": 2,
+   "cost_usd": 22.7468,
+   "wall_s": 752,
+   "access_total": 313,
+   "access_denied": 1
+  },
+  {
    "tool": "ours-audit",
    "repeat": 1,
    "cost_usd": 30.7919,
    "wall_s": 1773,
    "access_total": 328,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-audit",
+   "repeat": 2,
+   "cost_usd": 29.0605,
+   "wall_s": 1311,
+   "access_total": 301,
    "access_denied": 1
   },
   {
@@ -39,12 +64,28 @@
    "access_denied": 1
   },
   {
+   "tool": "ours-bugs",
+   "repeat": 2,
+   "cost_usd": 9.8234,
+   "wall_s": 1360,
+   "access_total": 231,
+   "access_denied": 2
+  },
+  {
    "tool": "ours-review",
    "repeat": 1,
    "cost_usd": 17.151,
    "wall_s": 1362,
    "access_total": 288,
    "access_denied": 0
+  },
+  {
+   "tool": "ours-review",
+   "repeat": 2,
+   "cost_usd": 20.9354,
+   "wall_s": 1486,
+   "access_total": 263,
+   "access_denied": 2
   },
   {
    "tool": "pr-review-toolkit",
@@ -55,11 +96,27 @@
    "access_denied": 3
   },
   {
+   "tool": "pr-review-toolkit",
+   "repeat": 2,
+   "cost_usd": 19.4509,
+   "wall_s": 104,
+   "access_total": 225,
+   "access_denied": 0
+  },
+  {
    "tool": "superpowers",
    "repeat": 1,
    "cost_usd": 4.8172,
    "wall_s": 752,
    "access_total": 53,
+   "access_denied": 0
+  },
+  {
+   "tool": "superpowers",
+   "repeat": 2,
+   "cost_usd": 4.361,
+   "wall_s": 684,
+   "access_total": 39,
    "access_denied": 0
   }
  ],
@@ -71,9 +128,9 @@
    "verdict": "matches-thread",
    "matches_thread": 5,
    "judged_severity": "high",
-   "code_citation": "promql/engine.go:2160-2184",
-   "confidence": 0.85,
-   "rationale": "Same defect the reviewer hit at the [30s:30s]@90s case: evalSubquery merges the child's reads (1874) and the range-vector loop re-counts the materialized matrix.",
+   "code_citation": "promql/engine.go:1874",
+   "confidence": 0.8,
+   "rationale": "Same defect the reviewer identified numerically: verified SamplesRead is exactly 2x TotalSamples for subqueries (24 vs 12 on probe).",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -87,42 +144,91 @@
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 11
+     "finding_index": 18
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 35
+     "finding_index": 59
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 103
+     "finding_index": 187
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 113
+     "finding_index": 216
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 140
+     "finding_index": 280
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 165
+     "finding_index": 334
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 11
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 45
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 126
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 198
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 244
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 304
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 355
     }
    ]
   },
@@ -133,9 +239,9 @@
    "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "high",
-   "code_citation": "promql/engine.go:2145-2183",
-   "confidence": 0.75,
-   "rationale": "Real regression: fullWindowCount stays 0 on @-reuse steps so IncrementSamplesAtStep records 0 where the old code counted the retained window; reachable via non-invariant calls.",
+   "code_citation": "promql/engine.go:2145",
+   "confidence": 0.9,
+   "rationale": "Confirmed by probe: quantile_over_time(scalar(m), m3[60s] @ 30) over 201-220s reports TotalSamples 8 vs 20 with the pre-change accounting; reuse steps record zero.",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -149,42 +255,91 @@
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 10
+     "finding_index": 17
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 34
+     "finding_index": 58
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 101
+     "finding_index": 185
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 112
+     "finding_index": 215
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 141
+     "finding_index": 281
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 164
+     "finding_index": 333
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 10
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 43
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 125
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 197
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 245
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 305
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 352
     }
    ]
   },
@@ -195,9 +350,9 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2143-2166",
-   "confidence": 0.7,
-   "rationale": "Claim is that zero reads on @-reuse steps is intentional, and it is. Not a defect report.",
+   "code_citation": "promql/engine.go:2145-2168",
+   "confidence": 0.6,
+   "rationale": "Claims the SamplesRead=0 half of the @-reuse branch is correct, which it is. No defect asserted.",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -215,9 +370,9 @@
    "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "medium",
-   "code_citation": "util/stats/query_stats.go:306-310",
+   "code_citation": "promql/engine.go:2397",
    "confidence": 0.65,
-   "rationale": "Real: engine.go:2397 sizes two slices by subquery range/step, driven by query text and unbounded by max-samples, where NewChild allocated nothing.",
+   "rationale": "Real: NewChildWithStepTracking allocates two range/step-sized slices per subquery where NewChild allocated none, sized by query text before evaluation.",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -231,49 +386,98 @@
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 23
+     "finding_index": 30
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 37
+     "finding_index": 61
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 53
+     "finding_index": 77
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 102
+     "finding_index": 186
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 109
+     "finding_index": 193
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 125
+     "finding_index": 228
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 173
+     "finding_index": 342
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 12
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 41
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 127
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 196
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 243
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 308
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 353
     }
    ]
   },
@@ -284,44 +488,86 @@
    "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "medium",
-   "code_citation": "promql/value.go:195-207",
-   "confidence": 0.75,
-   "rationale": "countSamplesAfter runs from engine.go:2164 per step per series regardless of whether stats were requested, replacing an O(1) len() with a full-window scan.",
+   "code_citation": "promql/value.go:192-207",
+   "confidence": 0.7,
+   "rationale": "Real: countSamplesAfter replaces an O(1) len() with a full-window scan per step per series, ungated by stats or the feature flag.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
-     "finding_index": 12
+     "finding_index": 19
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 36
+     "finding_index": 60
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 124
+     "finding_index": 227
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 142
+     "finding_index": 282
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 166
+     "finding_index": 335
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 13
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 48
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 129
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 246
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 307
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 354
     }
    ]
   },
@@ -332,37 +578,58 @@
    "verdict": "matches-thread",
    "matches_thread": 6,
    "judged_severity": "medium",
-   "code_citation": "promql/engine.go:2435-2443",
+   "code_citation": "promql/engine.go:2425-2443",
    "confidence": 0.5,
-   "rationale": "Same trailing-step phenomenon the reviewer questioned: subquery steps run to ev.endTimestamp past the last outer step and get folded into the last bucket.",
+   "rationale": "Engages the same anomaly the reviewer flagged \u2014 subquery steps beyond the last outer step, folded/clamped onto boundary buckets. Verified the clamp fires 22x.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 15
+     "finding_index": 22
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 104
+     "finding_index": 188
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 114
+     "finding_index": 217
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 146
+     "finding_index": 286
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 57
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 206
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 358
     }
    ]
   },
@@ -372,38 +639,66 @@
    "location": "promql/engine.go:2426",
    "verdict": "valid-other",
    "matches_thread": null,
-   "judged_severity": "medium",
+   "judged_severity": "low",
    "code_citation": "promql/engine.go:2425-2447",
-   "confidence": 0.65,
-   "rationale": "Accurate: the SubqueryExpr case reimplements the merge inline over another package's exported fields instead of MergeSamplesReadFromSubquery; two policies to keep in sync.",
+   "confidence": 0.55,
+   "rationale": "Real: the SubqueryExpr case reimplements the merge inline against another package's exported fields instead of MergeSamplesReadFromSubquery.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 19
+     "finding_index": 26
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 115
+     "finding_index": 218
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 157
+     "finding_index": 297
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 167
+     "finding_index": 336
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 50
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 133
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 324
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 325
     }
    ]
   },
@@ -414,23 +709,37 @@
    "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "medium",
-   "code_citation": "promql/engine.go:1816-1842",
-   "confidence": 0.7,
-   "rationale": "Real semantic gap: evalSeries charges one read per step per series, so a memoized point under lookback is billed at every step while the field is sold as I/O.",
+   "code_citation": "promql/engine.go:1815-1820",
+   "confidence": 0.65,
+   "rationale": "Real: evalSeries increments per step per series, so a memoized sample is charged repeatedly; the field is named/documented as an I/O count.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 38
+     "finding_index": 62
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 147
+     "finding_index": 287
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 137
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 357
     }
    ]
   },
@@ -441,16 +750,16 @@
    "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "medium",
-   "code_citation": "promql/engine.go:424-431",
-   "confidence": 0.6,
-   "rationale": "A permanent counter and an always-present response field ship with contested semantics and no experimental marker; a legitimate merge-gating question.",
+   "code_citation": "util/stats/query_stats.go:109",
+   "confidence": 0.55,
+   "rationale": "Real: a permanent counter and an always-present stable-API field ship while the semantics are demonstrably unsettled.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 50
+     "finding_index": 74
     }
    ]
   },
@@ -461,16 +770,16 @@
    "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/engine.go:419-423",
+   "code_citation": "promql/engine.go:422",
    "confidence": 0.6,
-   "rationale": "An existing counter's HELP text changed and the new parenthetical does not hold on the @-reuse path. Small but real.",
+   "rationale": "Accurate: an existing metric's HELP text is rewritten with a per-step claim the @-reuse path breaks.",
    "reported_by": [
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 148
+     "finding_index": 288
     }
    ]
   },
@@ -481,16 +790,16 @@
    "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/engine.go:419-431",
-   "confidence": 0.6,
-   "rationale": "Naming feedback on a permanent public counter pair plus a help-text suggestion; reasonable but cosmetic.",
+   "code_citation": "promql/engine.go:424",
+   "confidence": 0.55,
+   "rationale": "Fair naming point for a permanent metric: 'samples_total' vs 'samples_read_total' does not convey the loaded/read distinction.",
    "reported_by": [
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 179
+     "finding_index": 348
     }
    ]
   },
@@ -503,28 +812,42 @@
    "judged_severity": "low",
    "code_citation": "promql/engine.go:424-431",
    "confidence": 0.6,
-   "rationale": "Grep confirms no test names the counter, its registration or its Add call; a genuine gap for the change's headline deliverable.",
+   "rationale": "Real gap: no test references the new counter, its registration, or its Add; a missing MustRegister entry would fail silently.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 18
+     "finding_index": 25
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 47
+     "finding_index": 71
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 171
+     "finding_index": 340
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 52
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 159
     }
    ]
   },
@@ -536,22 +859,22 @@
    "matches_thread": null,
    "judged_severity": "info",
    "code_citation": "promql/engine.go:464",
-   "confidence": 0.75,
-   "rationale": "Naming and registration convention check that cleared; no defect asserted.",
+   "confidence": 0.8,
+   "rationale": "Checked-and-cleared naming/registration conventions. No defect.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 33
+     "finding_index": 40
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 133
+     "finding_index": 236
     }
    ]
   },
@@ -562,23 +885,23 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:683-687",
+   "code_citation": "promql/engine.go:684-687",
    "confidence": 0.7,
-   "rationale": "Concludes the defer-time Add is correct for a counter; only a documentation aside remains.",
+   "rationale": "Cleared: counter Add on failure paths is correct and matches the pre-existing sibling. No action.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 71
+     "finding_index": 95
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 88
+     "finding_index": 112
     }
    ]
   },
@@ -590,15 +913,15 @@
    "matches_thread": null,
    "judged_severity": "info",
    "code_citation": "promql/engine.go:710",
-   "confidence": 0.7,
-   "rationale": "Restates that existing query-log plumbing picks the field up; no action implied.",
+   "confidence": 0.8,
+   "rationale": "Restates what the code plainly does; no action.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 31
+     "finding_index": 38
     }
    ]
   },
@@ -608,17 +931,17 @@
    "location": "promql/engine.go:1718",
    "verdict": "valid-other",
    "matches_thread": null,
-   "judged_severity": "medium",
-   "code_citation": "promql/engine.go:1718-1784",
-   "confidence": 0.75,
-   "rationale": "Verified: smoothSeries contains no samplesStats calls, so a smoothed selector reports zero loaded and now zero read for real storage work.",
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:1718-1785",
+   "confidence": 0.6,
+   "rationale": "Verified: smoothSeries contains zero samplesStats calls, so smoothed selectors report samplesRead=0 for real reads.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 55
+     "finding_index": 79
     }
    ]
   },
@@ -628,17 +951,17 @@
    "location": "promql/engine.go:1861",
    "verdict": "valid-minor",
    "matches_thread": null,
-   "judged_severity": "low",
-   "code_citation": "promql/engine.go:1861-1876",
-   "confidence": 0.75,
-   "rationale": "True: the new doc comment says only SamplesRead is merged while 1873 also merges the peak, and the old peak comment was dropped.",
+   "judged_severity": "nit",
+   "code_citation": "promql/engine.go:1861-1875",
+   "confidence": 0.7,
+   "rationale": "Correct: the new doc comment says only SamplesRead is merged while UpdatePeakFromSubquery also runs.",
    "reported_by": [
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 160
+     "finding_index": 300
     }
    ]
   },
@@ -646,19 +969,19 @@
    "cluster_id": "c17",
    "summary": "evalSubquery restore is not deferred, so a panic skips the merge",
    "location": "promql/engine.go:1865",
-   "verdict": "valid-minor",
+   "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/engine.go:1865-1876",
-   "confidence": 0.65,
-   "rationale": "True: the restore and merge are not deferred, so an ev.error panic skips them. Only affects queries that already fail.",
+   "code_citation": "promql/engine.go:1865-1885",
+   "confidence": 0.55,
+   "rationale": "Accurate that the restore is not deferred, but the panic unwinds the whole query; the pre-existing code had the same shape. No consequence.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "low",
      "disposition": "demoted",
-     "finding_index": 137
+     "finding_index": 240
     }
    ]
   },
@@ -669,37 +992,72 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2164",
-   "confidence": 0.7,
-   "rationale": "Claim is that the maxt-interval cutoff is correct, and it is. Not a defect report.",
+   "code_citation": "promql/engine.go:2167",
+   "confidence": 0.75,
+   "rationale": "Cleared across many shapes: the maxt-interval cutoff is correct. No defect.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 28
+     "finding_index": 35
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 76
+     "finding_index": 100
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 107
+     "finding_index": 191
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 168
+     "finding_index": 337
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 165
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 201
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 202
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 262
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 264
     }
    ]
   },
@@ -710,23 +1068,37 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/value.go:195-207",
-   "confidence": 0.75,
-   "rationale": "Claim is that the strict > boundary is correct, and it is; a refuted hypothesis.",
+   "code_citation": "promql/value.go:195",
+   "confidence": 0.8,
+   "rationale": "Mutation probe showing the strict > boundary is correct and pinned; refutes its own hypothesis.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 99
+     "finding_index": 123
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 106
+     "finding_index": 190
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 171
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 330
     }
    ]
   },
@@ -737,16 +1109,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2149-2166",
+   "code_citation": "promql/engine.go:2160-2168",
    "confidence": 0.7,
-   "rationale": "Cleared hypothesis; the reuse path does leave samplesReadCount at zero. Not a defect report.",
+   "rationale": "Cleared hypothesis: no re-count on the @-reuse path. Correct and non-actionable.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 131
+     "finding_index": 234
     }
    ]
   },
@@ -757,23 +1129,23 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:1817-1841",
-   "confidence": 0.65,
-   "rationale": "An enumeration concluding nothing is missing; asserts no defect.",
+   "code_citation": "promql/engine.go:1817-2747",
+   "confidence": 0.8,
+   "rationale": "Cleared enumeration, no missed site. No defect.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 30
+     "finding_index": 37
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 80
+     "finding_index": 104
     }
    ]
   },
@@ -784,16 +1156,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "",
-   "confidence": 0.75,
-   "rationale": "Says the change touches no goroutines, channels or contexts; true and inert.",
+   "code_citation": "promql/engine.go:2382-2447",
+   "confidence": 0.85,
+   "rationale": "States the change adds no concurrency surface \u2014 true, no action.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 92
+     "finding_index": 116
     }
    ]
   },
@@ -804,16 +1176,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2421-2424",
-   "confidence": 0.75,
-   "rationale": "Verification that peak and max-samples behavior is unchanged; no defect asserted.",
+   "code_citation": "promql/engine.go:2422-2424",
+   "confidence": 0.8,
+   "rationale": "Cleared: peak and max-samples behavior unchanged. No defect.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 95
+     "finding_index": 119
     }
    ]
   },
@@ -824,16 +1196,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:683-687",
-   "confidence": 0.8,
-   "rationale": "Counter monotonicity checked and cleared; countSamplesAfter cannot return negative.",
+   "code_citation": "promql/engine.go:686",
+   "confidence": 0.85,
+   "rationale": "Cleared: no negative Add possible. No defect.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 97
+     "finding_index": 121
     }
    ]
   },
@@ -841,19 +1213,19 @@
    "cluster_id": "c25",
    "summary": "Double-registration of the new collector",
    "location": "promql/engine.go:0",
-   "verdict": "trivia",
+   "verdict": "false-positive",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:455-470",
-   "confidence": 0.4,
-   "rationale": "Reads as an entry in a ruled-out list; the collector is registered exactly once, so there is nothing to act on either way.",
+   "code_citation": "promql/engine.go:461-467",
+   "confidence": 0.45,
+   "rationale": "As stated it asserts double-registration; the counter is constructed once and registered once in the single MustRegister block.",
    "reported_by": [
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 110
+     "finding_index": 194
     }
    ]
   },
@@ -864,16 +1236,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2167-2169",
-   "confidence": 0.7,
-   "rationale": "Cleared hypothesis about the early-out ordering; correct that both counts are zero there.",
+   "code_citation": "promql/engine.go:2168",
+   "confidence": 0.8,
+   "rationale": "Cleared: the early-out cannot lose counts. No defect.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 129
+     "finding_index": 232
     }
    ]
   },
@@ -884,16 +1256,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2183-2184",
-   "confidence": 0.7,
-   "rationale": "Accurate observation that only currentSamples drives ErrTooManySamples; nothing to act on.",
+   "code_citation": "promql/engine.go:686",
+   "confidence": 0.8,
+   "rationale": "Cleared: the limit contract is unchanged. No action.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 135
+     "finding_index": 238
     }
    ]
   },
@@ -905,15 +1277,15 @@
    "matches_thread": null,
    "judged_severity": "info",
    "code_citation": "promql/engine.go:1874",
-   "confidence": 0.7,
-   "rationale": "Blowup hypothesis traced, found linear, and folded into another finding; no separate defect.",
+   "confidence": 0.75,
+   "rationale": "Cleared: nesting is linear, not multiplicative. No defect.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 94
+     "finding_index": 118
     }
    ]
   },
@@ -921,19 +1293,19 @@
    "cluster_id": "c29",
    "summary": "StepInvariantExpr wrapping of an @-invariant subquery arg",
    "location": "promql/engine.go:1997",
-   "verdict": "valid-other",
+   "verdict": "trivia",
    "matches_thread": null,
-   "judged_severity": "medium",
-   "code_citation": "promql/engine.go:4357-4361",
-   "confidence": 0.5,
-   "rationale": "Checked: an @-carrying subquery arg is wrapped at 4359 and the matrix-arg loop at 1996-2018 matches neither wrapper. Real but pre-existing and off-diff.",
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:1997-2015",
+   "confidence": 0.6,
+   "rationale": "Pre-existing matrixArg detection detail, explicitly declared out of reach; no actionable claim about this change.",
    "reported_by": [
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 111
+     "finding_index": 195
     }
    ]
   },
@@ -944,16 +1316,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2009-2015",
-   "confidence": 0.75,
-   "rationale": "Pre-existing and untouched by this change; presented and dismissed as a non-finding.",
+   "code_citation": "promql/engine.go:2009",
+   "confidence": 0.8,
+   "rationale": "Pre-existing and untouched, declared bounded. No actionable content.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 93
+     "finding_index": 117
     }
    ]
   },
@@ -964,16 +1336,23 @@
    "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/engine.go:2143-2165",
+   "code_citation": "promql/engine.go:2425-2443",
    "confidence": 0.55,
-   "rationale": "Fair: the cutoff, the step-0 dump and the clamp each get a one-line what-comment and no why. Documentation quality, no behavior claim.",
+   "rationale": "Fair: three attribution policies ship with what-not-why comments; the policies themselves are the subject of a separate, stronger finding.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 49
+     "finding_index": 73
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 134
     }
    ]
   },
@@ -981,19 +1360,19 @@
    "cluster_id": "c32",
    "summary": "The default-step subquery arm is uncovered by the coverage profile",
    "location": "promql/engine.go:2388",
-   "verdict": "valid-other",
+   "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/engine.go:2389-2391",
-   "confidence": 0.55,
-   "rationale": "Default-step subqueries feed subqInterval into the new attribution and no table case uses that form, which is a common real-world shape.",
+   "code_citation": "promql/engine.go:2388-2392",
+   "confidence": 0.5,
+   "rationale": "Confirmed no default-step subquery in TestQueryStatistics, but the arm itself is covered by TestSubquerySelector, so 'uncovered' is overstated.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 51
+     "finding_index": 75
     }
    ]
   },
@@ -1003,24 +1382,38 @@
    "location": "promql/engine.go:2471",
    "verdict": "valid-minor",
    "matches_thread": null,
-   "judged_severity": "low",
-   "code_citation": "promql/engine.go:2471-2472",
-   "confidence": 0.8,
-   "rationale": "Correct: the case handles any step-invariant subtree, not just subqueries. Comment wording only.",
+   "judged_severity": "nit",
+   "code_citation": "promql/engine.go:2471",
+   "confidence": 0.75,
+   "rationale": "Correct: the comment says 'Subquery ran once' inside the StepInvariantExpr case, which handles any step-invariant expression.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 61
+     "finding_index": 85
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 161
+     "finding_index": 301
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 146
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 328
     }
    ]
   },
@@ -1031,16 +1424,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2472",
-   "confidence": 0.75,
-   "rationale": "A mutation-testing result showing the line is pinned by tests; no defect claimed.",
+   "code_citation": "promql/engine.go:2471",
+   "confidence": 0.8,
+   "rationale": "Mutation-probe result showing the branch is pinned; no defect claimed.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 100
+     "finding_index": 124
     }
    ]
   },
@@ -1052,8 +1445,8 @@
    "matches_thread": null,
    "judged_severity": "info",
    "code_citation": "promql/engine.go:2472",
-   "confidence": 0.7,
-   "rationale": "Explicitly concludes the code is correct and only wording needs care; not a defect report.",
+   "confidence": 0.65,
+   "rationale": "Concludes the StepInvariantExpr increment is correct as designed; a wording issue, no defect asserted.",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -1071,16 +1464,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2426-2447",
-   "confidence": 0.7,
-   "rationale": "Concludes the scalar samplesRead is flag-invariant; correct, and no defect asserted.",
+   "code_citation": "promql/engine.go:2427",
+   "confidence": 0.75,
+   "rationale": "Cleared: the scalar is flag-invariant. No defect.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 79
+     "finding_index": 103
     }
    ]
   },
@@ -1090,24 +1483,45 @@
    "location": "promql/engine.go:2437",
    "verdict": "trivia",
    "matches_thread": null,
-   "judged_severity": "info",
+   "judged_severity": "low",
    "code_citation": "promql/engine.go:2437",
    "confidence": 0.55,
-   "rationale": "The quotient is a step index, not milliseconds, so the 2^31 ms argument does not hold; the cluster's own second note concedes no realistic truncation.",
+   "rationale": "Mechanically true but inconsequential: the int64 division yields a step index bounded by the step count, so no truncation is realistic.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 41
+     "finding_index": 65
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 89
+     "finding_index": 113
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 170
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "demoted",
+     "finding_index": 204
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 266
     }
    ]
   },
@@ -1118,16 +1532,16 @@
    "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/engine.go:2436-2437",
-   "confidence": 0.6,
-   "rationale": "Real coupling between the evaluator's start and the stats object's interval; they agree at every reachable site today, so it is a fragility note.",
+   "code_citation": "promql/engine.go:2437",
+   "confidence": 0.65,
+   "rationale": "Accurate latent coupling: the formula mixes the evaluator's start with the stats object's interval, which the evalSubquery rewrite makes separable.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 54
+     "finding_index": 78
     }
    ]
   },
@@ -1138,30 +1552,65 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "util/stats/query_stats.go:358-368",
-   "confidence": 0.75,
-   "rationale": "Divide-by-zero hypothesis raised and dismissed; Interval is non-zero whenever the per-step slices exist.",
+   "code_citation": "promql/engine.go:2437",
+   "confidence": 0.8,
+   "rationale": "Cleared: Interval is non-zero whenever the slices exist. No defect.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 74
+     "finding_index": 98
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 105
+     "finding_index": 189
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 126
+     "finding_index": 229
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 169
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "demoted",
+     "finding_index": 205
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "demoted",
+     "finding_index": 208
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 265
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 331
     }
    ]
   },
@@ -1172,30 +1621,30 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2435-2443",
-   "confidence": 0.7,
-   "rationale": "Panic hypothesis raised and cleared; the reasoning holds. No defect asserted.",
+   "code_citation": "promql/engine.go:2429-2443",
+   "confidence": 0.75,
+   "rationale": "Cleared: no reachable panic in the attribution loop. Correct and non-actionable.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 29
+     "finding_index": 36
     },
     {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 108
+     "finding_index": 192
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 127
+     "finding_index": 230
     }
    ]
   },
@@ -1205,17 +1654,17 @@
    "location": "promql/engine.go:2439",
    "verdict": "false-positive",
    "matches_thread": null,
-   "judged_severity": "info",
-   "code_citation": "promql/engine.go:2440-2443",
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:2439-2442",
    "confidence": 0.75,
-   "rationale": "Clamp is live: the End=220s case gives subqEnd=220000 and tk=220000 -> outerStep 4 >= numOuterSteps 4. Deleting it would index out of range, not pass.",
+   "rationale": "Refuted by probe: instrumenting the clamp and running TestQueryStatistics fires it 22 times (outerStep=4/6/7 at tk=220000, 272000, 289000, 390000, 400000).",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 45
+     "finding_index": 69
     }
    ]
   },
@@ -1228,14 +1677,14 @@
    "judged_severity": "nit",
    "code_citation": "promql/engine.go:2439",
    "confidence": 0.6,
-   "rationale": "Fair: head-block samples are not disk reads, so the comment overstates. Wording only.",
+   "rationale": "Comment says 'all disk reads' where head-block data is in memory; accurate wording nit.",
    "reported_by": [
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 162
+     "finding_index": 302
     }
    ]
   },
@@ -1243,19 +1692,19 @@
    "cluster_id": "c43",
    "summary": "matrixSelector computes totalSize after extendFloats has altered the point set",
    "location": "promql/engine.go:2745",
-   "verdict": "valid-other",
+   "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/engine.go:2732-2747",
-   "confidence": 0.65,
-   "rationale": "Confirmed: totalSize is taken after extendFloats prepends/appends synthetic mint/maxt points, so anchored/smoothed selectors report samples never read.",
+   "code_citation": "promql/engine.go:2745-2747",
+   "confidence": 0.55,
+   "rationale": "Accurate: totalSize is taken after extendFloats injects synthetic boundary points, so the new read counter includes never-read samples. Pre-existing pattern.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 52
+     "finding_index": 76
     }
    ]
   },
@@ -1267,15 +1716,15 @@
    "matches_thread": null,
    "judged_severity": "medium",
    "code_citation": "promql/engine.go:4311-4314",
-   "confidence": 0.6,
-   "rationale": "Verified: the AggregateExpr case returns preprocessExprHelper(n.Expr) only, so Param is never preprocessed. Real, but pre-existing and unrelated to this diff.",
+   "confidence": 0.5,
+   "rationale": "Verified in code: the AggregateExpr case unwraps n.Param but recurses only into n.Expr, so @ start()/end() in a param is never resolved. Pre-existing, outside the diff.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 40
+     "finding_index": 64
     }
    ]
   },
@@ -1286,16 +1735,16 @@
    "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "medium",
-   "code_citation": "promql/engine.go:2802-2812",
+   "code_citation": "promql/engine.go:2812",
    "confidence": 0.7,
-   "rationale": "Verified: histogram branch subtracts totalHPointSize(retained) after reslicing while the float branch subtracts the dropped count. Real, though pre-existing.",
+   "rationale": "Verified: the histogram overlap branch slices first, then subtracts totalHPointSize of the retained points, so currentSamples is wrong. Pre-existing.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 72
+     "finding_index": 96
     }
    ]
   },
@@ -1306,16 +1755,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2392-2397",
-   "confidence": 0.75,
-   "rationale": "numSteps underflow hypothesis worked through and dismissed; the arithmetic is right.",
+   "code_citation": "promql/engine.go:2393-2402",
+   "confidence": 0.8,
+   "rationale": "Cleared: truncating division yields numSteps>=1. No defect.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 128
+     "finding_index": 231
     }
    ]
   },
@@ -1326,16 +1775,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2399-2412",
-   "confidence": 0.75,
-   "rationale": "Cleared hypothesis: the field hoist is behavior-preserving. No defect asserted.",
+   "code_citation": "promql/engine.go:2385-2402",
+   "confidence": 0.8,
+   "rationale": "Cleared: the hoist is not behavior-changing. No defect.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 130
+     "finding_index": 233
     }
    ]
   },
@@ -1346,9 +1795,9 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2384-2395",
-   "confidence": 0.75,
-   "rationale": "Claim is that the hoisted computation is value-identical to the old inline code; it is.",
+   "code_citation": "promql/engine.go:2385-2402",
+   "confidence": 0.8,
+   "rationale": "Cleared: the hoist computes identical values. No defect.",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -1366,9 +1815,9 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2435-2443",
+   "code_citation": "promql/engine.go:2437",
    "confidence": 0.7,
-   "rationale": "Claim is that the ceiling division is intentional rather than an off-by-one; no defect asserted.",
+   "rationale": "Cleared: declares the ceiling division intentional rather than an off-by-one. No action.",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -1386,16 +1835,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2160-2165",
-   "confidence": 0.75,
-   "rationale": "Mutation result showing the delta branch is pinned by tests; refutes a hypothesis rather than reporting one.",
+   "code_citation": "promql/engine.go:2160-2168",
+   "confidence": 0.8,
+   "rationale": "Mutation probe result confirming the delta branch is pinned; no defect claimed.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 98
+     "finding_index": 122
     }
    ]
   },
@@ -1406,16 +1855,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/engine.go:2159-2165",
-   "confidence": 0.75,
-   "rationale": "Slice-aliasing hypothesis cleared; the counts are taken before the call. No defect.",
+   "code_citation": "promql/engine.go:2160-2185",
+   "confidence": 0.8,
+   "rationale": "Cleared: no aliasing hazard. No defect.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 86
+     "finding_index": 110
     }
    ]
   },
@@ -1425,31 +1874,45 @@
    "location": "util/stats/query_stats.go:108",
    "verdict": "valid-other",
    "matches_thread": null,
-   "judged_severity": "medium",
-   "code_citation": "util/stats/query_stats.go:105-111",
-   "confidence": 0.55,
-   "rationale": "samplesRead lands in every stats response of a v1 API declared stable while its semantics are the thing under dispute; a real merge-gating question.",
+   "judged_severity": "low",
+   "code_citation": "util/stats/query_stats.go:109",
+   "confidence": 0.5,
+   "rationale": "Real: the field is unconditionally present in the stable v1 API, so the contested semantics cannot be corrected within 3.x.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 20
+     "finding_index": 27
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 78
+     "finding_index": 102
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "demoted",
-     "finding_index": 123
+     "finding_index": 226
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 176
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 273
     }
    ]
   },
@@ -1457,19 +1920,26 @@
    "cluster_id": "c53",
    "summary": "Third-party engines populating Statistics themselves will emit a misleading zero",
    "location": "util/stats/query_stats.go:109",
-   "verdict": "trivia",
+   "verdict": "valid-minor",
    "matches_thread": null,
-   "judged_severity": "info",
-   "code_citation": "util/stats/query_stats.go:105-111",
-   "confidence": 0.65,
-   "rationale": "Self-labelled residual risk that applies equally to the pre-existing field and could not be verified from this repo.",
+   "judged_severity": "low",
+   "code_citation": "util/stats/query_stats.go:109",
+   "confidence": 0.5,
+   "rationale": "Plausible downstream concern, but unverifiable from this repo and identical to the pre-existing totalQueryableSamples situation.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 73
+     "finding_index": 97
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 163
     }
    ]
   },
@@ -1482,21 +1952,42 @@
    "judged_severity": "low",
    "code_citation": "util/stats/query_stats.go:182-193",
    "confidence": 0.7,
-   "rationale": "Accurate: extra nil condition versus the sibling and a doc comment naming only one of two. The nil-panic framing overstates a test-only accessor.",
+   "rationale": "Correct: the new accessor returns nil on a second condition its sibling does not have, and the doc comment names only one.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 59
+     "finding_index": 83
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 158
+     "finding_index": 298
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 56
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 143
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 148
     }
    ]
   },
@@ -1506,17 +1997,17 @@
    "location": "util/stats/query_stats.go:184",
    "verdict": "valid-minor",
    "matches_thread": null,
-   "judged_severity": "low",
-   "code_citation": "util/stats/query_stats.go:182-193",
+   "judged_severity": "nit",
+   "code_citation": "util/stats/query_stats.go:184",
    "confidence": 0.65,
-   "rationale": "The nil branch is genuinely uncovered and one assertion would close it, but the accessor is test-only.",
+   "rationale": "Accurate: the nil branch is uncovered though the test already performs the run that would reach it.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 67
+     "finding_index": 91
     }
    ]
   },
@@ -1527,16 +2018,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "util/stats/query_stats.go:182-193",
-   "confidence": 0.75,
-   "rationale": "Notes a test-only accessor mirroring the pre-existing one; explicitly not a finding.",
+   "code_citation": "util/stats/query_stats.go:182",
+   "confidence": 0.8,
+   "rationale": "Cleared: matches the pre-existing test-accessor pattern. No defect.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 91
+     "finding_index": 115
     }
    ]
   },
@@ -1546,17 +2037,17 @@
    "location": "util/stats/query_stats.go:297",
    "verdict": "valid-minor",
    "matches_thread": null,
-   "judged_severity": "low",
-   "code_citation": "util/stats/query_stats.go:298-304",
-   "confidence": 0.7,
-   "rationale": "Correct: both callers pass a non-nil receiver, so the added nil guard is unreachable and untested.",
+   "judged_severity": "nit",
+   "code_citation": "util/stats/query_stats.go:297-300",
+   "confidence": 0.6,
+   "rationale": "Accurate: the added nil guard is unreachable from either caller and untested.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 70
+     "finding_index": 94
     }
    ]
   },
@@ -1568,22 +2059,29 @@
    "matches_thread": null,
    "judged_severity": "low",
    "code_citation": "util/stats/query_stats.go:313-318",
-   "confidence": 0.7,
-   "rationale": "Correct: no doc comment, and it reports the flag rather than whether the slices were initialized, which is the predicate used elsewhere in the file.",
+   "confidence": 0.65,
+   "rationale": "Accurate: the getter returns EnablePerStepStats, not whether tracking was initialized; its only value is the nil guard.",
    "reported_by": [
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 159
+     "finding_index": 299
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 176
+     "finding_index": 345
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 15
     }
    ]
   },
@@ -1594,23 +2092,23 @@
    "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "util/stats/query_stats.go:320-369",
-   "confidence": 0.65,
-   "rationale": "The duplication and the three different bounds disciplines are exactly as described; maintainability, with the live consequence raised separately.",
+   "code_citation": "util/stats/query_stats.go:346-356",
+   "confidence": 0.6,
+   "rationale": "Accurate: the four increment helpers use three different bounds disciplines for the same job.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 116
+     "finding_index": 219
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 139
+     "finding_index": 242
     }
    ]
   },
@@ -1620,17 +2118,17 @@
    "location": "util/stats/query_stats.go:346",
    "verdict": "trivia",
    "matches_thread": null,
-   "judged_severity": "info",
-   "code_citation": "util/stats/query_stats.go:346-357",
-   "confidence": 0.7,
-   "rationale": "'when' versus 'if' inside a doc comment; accurate and not worth a reader's attention.",
+   "judged_severity": "nit",
+   "code_citation": "util/stats/query_stats.go:346",
+   "confidence": 0.6,
+   "rationale": "'when' vs 'if' in a doc comment; accurate but not worth a reader's attention.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 58
+     "finding_index": 82
     }
    ]
   },
@@ -1641,37 +2139,93 @@
    "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "util/stats/query_stats.go:346-355",
-   "confidence": 0.6,
-   "rationale": "The asymmetry is described accurately, but no current call site can go out of range (the clamp prevents it), so the silent-drop consequence is latent.",
+   "code_citation": "util/stats/query_stats.go:352",
+   "confidence": 0.65,
+   "rationale": "Accurate: the scalar is incremented while an out-of-range per-step write is dropped, so the two can diverge silently. Latent today.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 21
+     "finding_index": 28
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 43
+     "finding_index": 67
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 145
+     "finding_index": 285
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 174
+     "finding_index": 343
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 16
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 54
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 136
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 199
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 209
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 255
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 309
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 311
     }
    ]
   },
@@ -1682,16 +2236,37 @@
    "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "nit",
-   "code_citation": "util/stats/query_stats.go:347-358",
-   "confidence": 0.8,
-   "rationale": "True: n versus samples for the same role across sibling helpers. Purely cosmetic.",
+   "code_citation": "util/stats/query_stats.go:347",
+   "confidence": 0.7,
+   "rationale": "Correct naming inconsistency: the new methods call the count 'n' where siblings call it 'samples'.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 57
+     "finding_index": 81
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 147
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 149
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 254
     }
    ]
   },
@@ -1702,16 +2277,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "util/stats/query_stats.go:346-368",
+   "code_citation": "util/stats/query_stats.go:346-356",
    "confidence": 0.7,
-   "rationale": "Reports the scalar/per-step divergence as latent rather than live; no defect asserted.",
+   "rationale": "Verified the divergence is not live; latent only. Claims fine and it is fine.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 77
+     "finding_index": 101
     }
    ]
   },
@@ -1721,17 +2296,17 @@
    "location": "util/stats/query_stats.go:402",
    "verdict": "valid-minor",
    "matches_thread": null,
-   "judged_severity": "low",
-   "code_citation": "util/stats/query_stats.go:402-404",
-   "confidence": 0.7,
-   "rationale": "True and pre-existing: NewChild ignores its receiver and now sits beside a constructor that does propagate the flag. Doc-comment nit.",
+   "judged_severity": "nit",
+   "code_citation": "util/stats/query_stats.go:402",
+   "confidence": 0.6,
+   "rationale": "Fair: NewChild discards its receiver with no comment, now sitting beside a constructor that does propagate the parent setting.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 62
+     "finding_index": 86
     }
    ]
   },
@@ -1743,36 +2318,71 @@
    "matches_thread": null,
    "judged_severity": "low",
    "code_citation": "util/stats/query_stats.go:402-417",
-   "confidence": 0.7,
-   "rationale": "True asymmetry: a method and a package function for the same child-from-parent role, which is what forces the extra exported accessor. API shape only.",
+   "confidence": 0.65,
+   "rationale": "Accurate API asymmetry: sibling constructors differ in form and default, forcing the extra exported accessor.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 24
+     "finding_index": 31
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 56
+     "finding_index": 80
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 120
+     "finding_index": 223
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 156
+     "finding_index": 296
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 142
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 200
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 257
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 327
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 363
     }
    ]
   },
@@ -1783,16 +2393,51 @@
    "verdict": "matches-thread",
    "matches_thread": 4,
    "judged_severity": "medium",
-   "code_citation": "util/stats/query_stats.go:423-433",
-   "confidence": 0.75,
-   "rationale": "Same point as the reviewer: the index-by-index merge presumes a 1:1 child/parent step mapping that nothing in the type enforces.",
+   "code_citation": "util/stats/query_stats.go:428-432",
+   "confidence": 0.7,
+   "rationale": "Exactly the reviewer's point at this line: the positional merge assumes a 1:1 child-step to parent-step mapping that the type does not express.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 44
+     "finding_index": 68
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 55
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 135
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 210
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 248
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 359
     }
    ]
   },
@@ -1803,16 +2448,16 @@
    "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "util/stats/query_stats.go:428-431",
-   "confidence": 0.7,
-   "rationale": "True: the sole call site builds the child with the parent's own layout, so the min-length guard is unreachable and untested defensive code.",
+   "code_citation": "util/stats/query_stats.go:428-432",
+   "confidence": 0.6,
+   "rationale": "Accurate: the length-mismatch guard is unreachable at the sole call site and untested.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 122
+     "finding_index": 225
     }
    ]
   },
@@ -1823,16 +2468,23 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "util/stats/query_stats.go:105-111",
-   "confidence": 0.75,
-   "rationale": "Field alignment and ordering checked against the linter config and cleared; no defect.",
+   "code_citation": "util/stats/query_stats.go:105-112",
+   "confidence": 0.8,
+   "rationale": "Cleared: no padding, no ordering issue. No action.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 90
+     "finding_index": 114
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 177
     }
    ]
   },
@@ -1843,16 +2495,30 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "util/stats/query_stats.go:322-368",
-   "confidence": 0.7,
-   "rationale": "Concludes the nil guards match existing siblings and swallow nothing; correct, no defect.",
+   "code_citation": "util/stats/query_stats.go:346-370",
+   "confidence": 0.8,
+   "rationale": "Cleared: nil guards match the file's existing idiom. No defect.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 132
+     "finding_index": 235
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 270
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 312
     }
    ]
   },
@@ -1863,16 +2529,23 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "",
+   "code_citation": "util/stats/query_stats.go:105-112",
    "confidence": 0.8,
-   "rationale": "JSON member order is not significant and nothing pins it; explicitly a non-finding.",
+   "rationale": "Cleared: JSON member order is not significant. No defect.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 134
+     "finding_index": 237
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 274
     }
    ]
   },
@@ -1883,16 +2556,30 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "",
-   "confidence": 0.7,
-   "rationale": "States the new fields add no sharing; correct, QuerySamples stays per-query and single-goroutine.",
+   "code_citation": "util/stats/query_stats.go:263-290",
+   "confidence": 0.85,
+   "rationale": "Cleared: no new sharing. No defect.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 136
+     "finding_index": 239
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 179
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 272
     }
    ]
   },
@@ -1903,16 +2590,30 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "util/stats/query_stats.go:306-308",
+   "code_citation": "util/stats/query_stats.go:297-310",
    "confidence": 0.75,
-   "rationale": "make() panic hypothesis worked through and dismissed; numSteps is at least 1. No defect asserted.",
+   "rationale": "Cleared: numSteps>=1 always, no panic. Claims safe and it is safe.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 75
+     "finding_index": 99
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 168
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 267
     }
    ]
   },
@@ -1924,50 +2625,85 @@
    "matches_thread": 0,
    "judged_severity": "low",
    "code_citation": "promql/engine_test.go:1776-1784",
-   "confidence": 0.6,
-   "rationale": "The shipped IMPLEMENTATION NOTES scratch block is exactly the thing the reviewer said should not be there.",
+   "confidence": 0.8,
+   "rationale": "Same point the reviewer made at this block ('this seems like it shouldn't be here') \u2014 the scratch IMPLEMENTATION NOTES shipped in the test table.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 16
+     "finding_index": 23
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 39
+     "finding_index": 63
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 117
+     "finding_index": 220
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 149
+     "finding_index": 289
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 150
+     "finding_index": 290
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 169
+     "finding_index": 338
+    },
+    {
+     "tool": "anthropic-code-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 14
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 49
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 250
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 320
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 360
     }
    ]
   },
@@ -1978,37 +2714,65 @@
    "verdict": "matches-thread",
    "matches_thread": 3,
    "judged_severity": "low",
-   "code_citation": "promql/engine_test.go:1539-1650",
+   "code_citation": "promql/engine_test.go:1541",
    "confidence": 0.6,
-   "rationale": "Confirmed three byte-identical [30s:30s]@90s cases at 1539/1590/1639 - the same near-duplicate-tests objection the reviewer made.",
+   "rationale": "Same substance as the reviewer's 'a lot of these new tests seem very similar' \u2014 verified byte-identical cases repeated 3x.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 17
+     "finding_index": 24
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 119
+     "finding_index": 222
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 153
+     "finding_index": 293
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 170
+     "finding_index": 339
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 144
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 251
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 322
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 361
     }
    ]
   },
@@ -2021,28 +2785,42 @@
    "judged_severity": "nit",
    "code_citation": "promql/engine_test.go:48-51",
    "confidence": 0.85,
-   "rationale": "Same point as the reviewer: the defaultEpsilon deletion is unrelated churn that belongs in a separate change.",
+   "rationale": "Exactly the reviewer's point: the defaultEpsilon deletion is unrelated to this change.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 27
+     "finding_index": 34
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 64
+     "finding_index": 88
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 177
+     "finding_index": 346
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 329
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 364
     }
    ]
   },
@@ -2053,30 +2831,37 @@
    "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "medium",
-   "code_citation": "promql/engine_test.go:2427-2432",
+   "code_citation": "promql/engine_test.go:2429-2433",
    "confidence": 0.65,
-   "rationale": "Substantive: the table pins two hand-listed number sets with no relational assertion; SamplesRead <= TotalSamples would have caught the subquery double count.",
+   "rationale": "Substantive: the table asserts two hand-listed numbers and no relation; a SamplesRead <= TotalSamples assertion would have caught the verified double count.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 48
+     "finding_index": 72
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 155
+     "finding_index": 295
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 182
+     "finding_index": 351
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 310
     }
    ]
   },
@@ -2084,19 +2869,19 @@
    "cluster_id": "c77",
    "summary": "No test measures actual iterator yield against samplesRead",
    "location": "promql/engine_test.go:0",
-   "verdict": "valid-minor",
+   "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/engine_test.go:2406-2432",
+   "code_citation": "promql/engine_test.go:2429",
    "confidence": 0.5,
-   "rationale": "A reasonable test-infrastructure proposal (tally real iterator yield) rather than a defect report; useful but speculative.",
+   "rationale": "Substantive test suggestion: a counting querier asserting samplesRead against real iterator yield would have caught the verified double count.",
    "reported_by": [
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 181
+     "finding_index": 350
     }
    ]
   },
@@ -2104,26 +2889,82 @@
    "cluster_id": "c78",
    "summary": "Coverage gaps: new exports, nil-receiver paths, step > range, nested subquery in a range query, irregular series",
    "location": "promql/engine_test.go:0",
-   "verdict": "matches-thread",
-   "matches_thread": 1,
+   "verdict": "valid-other",
+   "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/engine_test.go:1603-1620",
-   "confidence": 0.4,
-   "rationale": "Names the same untested shape the reviewer asked for (outer step vs subquery range) among other genuine gaps in the new exports.",
+   "code_citation": "promql/engine_test.go:1508-1790",
+   "confidence": 0.55,
+   "rationale": "Real gaps in a ~1100-line test addition: no negative-offset subquery, no anchored/smoothed selector, no default-step subquery, no new export tested.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 68
+     "finding_index": 92
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
+     "finding_index": 294
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 153
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
      "finding_index": 154
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 155
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 156
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 316
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 317
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 318
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 369
     }
    ]
   },
@@ -2131,26 +2972,47 @@
    "cluster_id": "c79",
    "summary": "The peak-samples max-check was weakened: stats is reassigned from the per-step-disabled run",
    "location": "promql/engine_test.go:2437",
-   "verdict": "valid-minor",
+   "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/engine_test.go:2437-2448",
+   "code_citation": "promql/engine_test.go:2435-2448",
    "confidence": 0.7,
-   "rationale": "Confirmed: stats is reassigned from the per-step-disabled run at 2437 and drives the PeakSamples-1 limit at 2448, a value no assertion constrains.",
+   "rationale": "Real test regression: stats is reassigned from the per-step-disabled run, so the PeakSamples-1 threshold derives from a value never asserted against c.PeakSamples.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 69
+     "finding_index": 93
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 152
+     "finding_index": 292
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 139
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 323
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 366
     }
    ]
   },
@@ -2161,9 +3023,9 @@
    "verdict": "matches-thread",
    "matches_thread": 8,
    "judged_severity": "low",
-   "code_citation": "web/api/v1/api_test.go:983-1000",
+   "code_citation": "web/api/v1/api_test.go:983",
    "confidence": 0.85,
-   "rationale": "Same objection as the reviewer: GreaterOrEqual(SamplesRead, 0) passes whether or not the field is ever populated.",
+   "rationale": "Exactly the reviewer's point at this line: the assertion holds even if the field is never populated.",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -2177,42 +3039,91 @@
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 22
+     "finding_index": 29
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 46
+     "finding_index": 70
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 63
+     "finding_index": 87
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 118
+     "finding_index": 221
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 151
+     "finding_index": 291
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
-     "finding_index": 172
+     "finding_index": 341
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 53
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 131
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 151
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 214
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 253
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 313
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 362
     }
    ]
   },
@@ -2224,15 +3135,29 @@
    "matches_thread": null,
    "judged_severity": "low",
    "code_citation": "util/stats/stats_test.go:51-70",
-   "confidence": 0.7,
-   "rationale": "True: the new exports are exercised only through the engine table. Real but low-consequence gap.",
+   "confidence": 0.6,
+   "rationale": "Accurate: four of the new exported helpers have no direct unit test; only IncrementSamplesReadAtTimestamp is exercised.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 66
+     "finding_index": 90
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 158
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 261
     }
    ]
   },
@@ -2243,9 +3168,9 @@
    "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "docs/feature_flags.md:44-51",
-   "confidence": 0.75,
-   "rationale": "Real mismatch: samplesRead has no omitempty and the counter registers unconditionally, yet both are documented under the promql-per-step-stats flag.",
+   "code_citation": "docs/feature_flags.md:44-52",
+   "confidence": 0.65,
+   "rationale": "Real doc/behavior mismatch: samplesRead and the new counter are documented under promql-per-step-stats but neither is gated by it.",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -2259,21 +3184,56 @@
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 14
+     "finding_index": 21
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 144
+     "finding_index": 284
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 175
+     "finding_index": 344
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 51
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 138
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 252
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 315
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 365
     }
    ]
   },
@@ -2286,7 +3246,7 @@
    "judged_severity": "low",
    "code_citation": "docs/querying/api.md:247",
    "confidence": 0.7,
-   "rationale": "Verified false invariant: the diff's own table has an instant subquery at SamplesRead 2 vs TotalSamples 1, and step-invariant subtrees diverge too. Shipped in four places.",
+   "rationale": "Real doc defect: samplesRead is not equal to totalQueryableSamples for step-invariant expressions or subqueries, contradicting four places.",
    "reported_by": [
     {
      "tool": "anthropic-code-review",
@@ -2300,21 +3260,56 @@
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 13
+     "finding_index": 20
     },
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 42
+     "finding_index": 66
     },
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 143
+     "finding_index": 283
+    },
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 47
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 128
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 247
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 314
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 356
     }
    ]
   },
@@ -2324,17 +3319,17 @@
    "location": "docs/querying/api.md:239",
    "verdict": "valid-minor",
    "matches_thread": null,
-   "judged_severity": "low",
+   "judged_severity": "nit",
    "code_citation": "docs/querying/api.md:239",
-   "confidence": 0.7,
-   "rationale": "Convention verified - 16 'New in' markers in this file - and the new section carries none. Small doc gap.",
+   "confidence": 0.6,
+   "rationale": "Accurate convention gap: the new section lacks the '*New in vX.Y*' marker used elsewhere in the file.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 25
+     "finding_index": 32
     }
    ]
   },
@@ -2342,19 +3337,19 @@
    "cluster_id": "c85",
    "summary": "The new section nests under the range-query heading so it is absent from the instant-query TOC",
    "location": "docs/querying/api.md:239",
-   "verdict": "false-positive",
+   "verdict": "valid-minor",
    "matches_thread": null,
-   "judged_severity": "info",
+   "judged_severity": "nit",
    "code_citation": "docs/querying/api.md:239",
    "confidence": 0.6,
-   "rationale": "Wrong about the structure: '### Query statistics' is a sibling of '### Instant queries' and '### Range queries' under '## Expression queries', not nested under range queries.",
+   "rationale": "Accurate structural nit: the new ### section sits under the range-query heading though the instant-query section links to it.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 26
+     "finding_index": 33
     }
    ]
   },
@@ -2365,16 +3360,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "",
-   "confidence": 0.75,
-   "rationale": "Anchor and wrap-style check that found nothing to change.",
+   "code_citation": "docs/querying/api.md:239",
+   "confidence": 0.8,
+   "rationale": "Cleared: anchors resolve, style matches. No defect.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 84
+     "finding_index": 108
     }
    ]
   },
@@ -2384,17 +3379,24 @@
    "location": "web/api/v1/openapi_schemas.go:584",
    "verdict": "valid-minor",
    "matches_thread": null,
-   "judged_severity": "low",
-   "code_citation": "web/api/v1/openapi_schemas.go:584-605",
-   "confidence": 0.55,
-   "rationale": "The two per-step descriptions do state gating differently; a cosmetic doc inconsistency, with the older sibling being the vaguer one.",
+   "judged_severity": "nit",
+   "code_citation": "web/api/v1/openapi_schemas.go:597-599",
+   "confidence": 0.7,
+   "rationale": "Correct: the new description states the per-step gating while the identically gated sibling does not.",
    "reported_by": [
     {
      "tool": "pr-review-toolkit",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 163
+     "finding_index": 303
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 256
     }
    ]
   },
@@ -2405,16 +3407,30 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "web/api/v1/testdata/openapi_3.1_golden.yaml:2961-2974",
+   "code_citation": "web/api/v1/testdata/openapi_3.1_golden.yaml:2961-2975",
    "confidence": 0.8,
-   "rationale": "Both goldens do carry the new fields; a passing consistency check reported as an item, not a defect.",
+   "rationale": "Checked-and-cleared: both goldens do match the builder. No defect asserted, no action.",
    "reported_by": [
     {
      "tool": "comprehensive-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 32
+     "finding_index": 39
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 175
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 279
     }
    ]
   },
@@ -2425,16 +3441,16 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "web/api/v1/openapi_schemas.go:590-605",
-   "confidence": 0.75,
-   "rationale": "Schema/golden consistency and the absent required list checked and cleared; no defect.",
+   "code_citation": "web/api/v1/testdata/openapi_3.1_golden.yaml:2964",
+   "confidence": 0.8,
+   "rationale": "Cleared: goldens consistent, no required-list mismatch. No action.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 82
+     "finding_index": 106
     }
    ]
   },
@@ -2445,23 +3461,30 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "",
+   "code_citation": "CHANGELOG.md:1",
    "confidence": 0.55,
-   "rationale": "The cluster carries its own refutation: CHANGELOG here is touched only at release cuts, so a missing entry is not a violation.",
+   "rationale": "The cluster's own verification shows CHANGELOG is only touched at release cuts, so the missing entry is not a convention violation.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 81
+     "finding_index": 105
     },
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
-     "finding_index": 178
+     "finding_index": 347
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 172
     }
    ]
   },
@@ -2472,16 +3495,23 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "",
-   "confidence": 0.7,
-   "rationale": "A negative grep result reported as a checked item; no action for anyone.",
+   "code_citation": "util/stats/query_stats.go:105-112",
+   "confidence": 0.8,
+   "rationale": "Cleared: web/ui does not consume the samples stats. No action.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 83
+     "finding_index": 107
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 167
     }
    ]
   },
@@ -2493,15 +3523,15 @@
    "matches_thread": null,
    "judged_severity": "info",
    "code_citation": "model/histogram/float_histogram.go:648",
-   "confidence": 0.75,
-   "rationale": "Supporting measurement for another finding; asserts no defect of its own.",
+   "confidence": 0.8,
+   "rationale": "Cleared hypothesis: HPoint.size() is O(1). Accurate but non-actionable on its own.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 87
+     "finding_index": 111
     }
    ]
   },
@@ -2512,16 +3542,23 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "",
-   "confidence": 0.8,
-   "rationale": "Security non-finding, and correct: per-step totals already expose strictly finer detail.",
+   "code_citation": "util/stats/query_stats.go:105-112",
+   "confidence": 0.75,
+   "rationale": "Cleared: samplesRead is gated exactly like totalQueryableSamples, so no new disclosure. No action.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 96
+     "finding_index": 120
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 183
     }
    ]
   },
@@ -2533,15 +3570,22 @@
    "matches_thread": null,
    "judged_severity": "info",
    "code_citation": "promql/histogram_stats_iterator.go:66",
-   "confidence": 0.7,
-   "rationale": "Pre-existing vet notices at the base commit, self-excluded from the verdict; nothing this change introduces.",
+   "confidence": 0.8,
+   "rationale": "Pre-existing vet notices, explicitly excluded from the verdict; no bearing on this change.",
    "reported_by": [
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 138
+     "finding_index": 241
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 263
     }
    ]
   },
@@ -2549,19 +3593,26 @@
    "cluster_id": "c96",
    "summary": "A semantic change to an existing metric is hidden in a commit advertising only an addition",
    "location": "promql/engine.go:0",
-   "verdict": "valid-minor",
+   "verdict": "valid-other",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/engine.go:2143-2183",
+   "code_citation": "promql/engine.go:2145",
    "confidence": 0.5,
-   "rationale": "The packaging point is fair given the TotalSamples change, but it restates that finding as a commit-hygiene request.",
+   "rationale": "Real: the diff silently changes TotalSamples semantics (verified) inside a commit that advertises only an addition; splitting is the right ask.",
    "reported_by": [
     {
      "tool": "superpowers",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
-     "finding_index": 180
+     "finding_index": 349
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 367
     }
    ]
   },
@@ -2573,15 +3624,15 @@
    "matches_thread": null,
    "judged_severity": "nit",
    "code_citation": "promql/value.go:195",
-   "confidence": 0.75,
-   "rationale": "True asymmetry with totalHPointSize returning int, forcing one cast at the combining site. Cosmetic.",
+   "confidence": 0.7,
+   "rationale": "Correct: countSamplesAfter returns int64 while its same-file sibling returns int, forcing an asymmetric cast at the call site.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 60
+     "finding_index": 84
     }
    ]
   },
@@ -2592,23 +3643,44 @@
    "verdict": "valid-minor",
    "matches_thread": null,
    "judged_severity": "low",
-   "code_citation": "promql/value.go:195-207",
-   "confidence": 0.7,
-   "rationale": "Correct that the helper has no direct unit test, though the table pins its boundary indirectly, as the cluster itself notes.",
+   "code_citation": "promql/value.go:192-207",
+   "confidence": 0.65,
+   "rationale": "Accurate: the feature's core arithmetic has no direct unit test; it is only pinned indirectly through the large table.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 65
+     "finding_index": 89
     },
     {
      "tool": "ours-review",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
-     "finding_index": 121
+     "finding_index": 224
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 157
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 260
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 319
     }
    ]
   },
@@ -2619,16 +3691,707 @@
    "verdict": "trivia",
    "matches_thread": null,
    "judged_severity": "info",
-   "code_citation": "promql/value.go:192-207",
+   "code_citation": "promql/value.go:192",
    "confidence": 0.8,
-   "rationale": "Placement judged consistent with the existing seam; no defect asserted.",
+   "rationale": "Cleared: placement matches the sibling helper. No defect.",
    "reported_by": [
     {
      "tool": "ours-audit",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
-     "finding_index": 85
+     "finding_index": 109
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 178
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 181
+    }
+   ]
+  },
+  {
+   "cluster_id": "c100",
+   "summary": "Half the subquery child allocation is waste: its TotalSamplesPerStep is written and never read",
+   "location": "util/stats/query_stats.go:306",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "util/stats/query_stats.go:411-416",
+   "confidence": 0.7,
+   "rationale": "Correct: the child's TotalSamplesPerStep is allocated and written but never merged or read.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 42
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 140
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 259
+    }
+   ]
+  },
+  {
+   "cluster_id": "c101",
+   "summary": "The new test table encodes the double-count as expected values, so the tests lock the defect in rather than catch it",
+   "location": "promql/engine_test.go:1177",
+   "verdict": "matches-thread",
+   "matches_thread": 5,
+   "judged_severity": "high",
+   "code_citation": "promql/engine_test.go:1533-1536",
+   "confidence": 0.6,
+   "rationale": "Same substance as the reviewer's 'shouldn't this be 1 sample read?': the golden SamplesRead numbers encode the double count.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 46
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 130
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 164
+    }
+   ]
+  },
+  {
+   "cluster_id": "c102",
+   "summary": "Because the metric is a counter, the double-count inflation is written permanently into the time series",
+   "location": "promql/engine.go:686",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:686",
+   "confidence": 0.5,
+   "rationale": "Real consequence: the inflated count (double-count verified) is written permanently into a counter's TSDB history.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 162
+    }
+   ]
+  },
+  {
+   "cluster_id": "c103",
+   "summary": "No benchmark accompanies unconditional new work in the innermost loop, and the existing cases hide the regression",
+   "location": "promql/bench_test.go:0",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/bench_test.go:1",
+   "confidence": 0.45,
+   "rationale": "Reasonable ask given the verified unconditional per-step scan: no benchmark accompanies new work in the innermost loop.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 161
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 370
+    }
+   ]
+  },
+  {
+   "cluster_id": "c104",
+   "summary": "Every fixture explains its TotalSamples derivation but none explains SamplesRead, the new and non-obvious number",
+   "location": "promql/engine_test.go:0",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine_test.go:1508-1790",
+   "confidence": 0.5,
+   "rationale": "Directionally right (15/97 SamplesRead lines commented vs 56/97 for TotalSamples) but the 'every'/'none' quantifiers are both false.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 321
+    }
+   ]
+  },
+  {
+   "cluster_id": "c105",
+   "summary": "The inline comment claiming unchanged TotalSamples semantics is false and contradicts the change below it",
+   "location": "promql/engine.go:2143",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:2143",
+   "confidence": 0.65,
+   "rationale": "Confirmed: the comment claims 'unchanged semantics' for TotalSamples while the probe shows 20 -> 8 for an @-modified range vector.",
+   "reported_by": [
+    {
+     "tool": "comprehensive-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 44
+    }
+   ]
+  },
+  {
+   "cluster_id": "c106",
+   "summary": "The SubqueryExpr restructuring is largely churn that hides the substantive change and drops an explanatory comment",
+   "location": "promql/engine.go:2382",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:2382-2419",
+   "confidence": 0.6,
+   "rationale": "Fair: the restructuring is mostly churn and did drop the comment explaining the step-alignment computation.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 326
+    }
+   ]
+  },
+  {
+   "cluster_id": "c107",
+   "summary": "The subquery-to-outer-step mapping never adds offsetMillis, so an offset skews the per-step attribution",
+   "location": "promql/engine.go:2435",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "promql/engine.go:2430-2438",
+   "confidence": 0.75,
+   "rationale": "Confirmed by probe: with 'offset 100s' all subquery reads collapse onto step 0 (14/2/2/2/2/2 vs 4 per step without offset) because tk is never shifted back.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 132
+    },
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 306
+    }
+   ]
+  },
+  {
+   "cluster_id": "c108",
+   "summary": "The StepInvariantExpr case was left on NewChild(), which hardcodes per-step stats off",
+   "location": "promql/engine.go:2458",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:2458",
+   "confidence": 0.6,
+   "rationale": "Accurate asymmetry: the parallel StepInvariantExpr case still uses NewChild(); the per-step consequence is inert since start==end there.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 152
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 249
+    }
+   ]
+  },
+  {
+   "cluster_id": "c109",
+   "summary": "matrixIterSlice documents a closed window where the code is half-open",
+   "location": "promql/engine.go:2765",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:2760-2765",
+   "confidence": 0.65,
+   "rationale": "Verified: the doc says points in [mint, maxt] are retained while the code drops T <= mint, so the window is half-open and the cutoff's dependency is undocumented.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 145
+    }
+   ]
+  },
+  {
+   "cluster_id": "c110",
+   "summary": "The else branch passes a timestamp that is always discarded, so the fallback attribution is silently positional",
+   "location": "promql/engine.go:2446",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "promql/engine.go:2445-2446",
+   "confidence": 0.65,
+   "rationale": "Correct: in the else branch both per-step slices are nil, so the timestamp argument can never be used; it reads as intent it does not carry.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 141
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 278
+    }
+   ]
+  },
+  {
+   "cluster_id": "c111",
+   "summary": "The definition of samplesRead was never pinned down",
+   "location": ":0",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "promql/engine.go:1874",
+   "confidence": 0.55,
+   "rationale": "Substantive: the confirmed double count and step-invariant asymmetry show the quantity is undefined; instrumenting the evaluator cannot yield 'storage reads'.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 368
+    }
+   ]
+  },
+  {
+   "cluster_id": "c112",
+   "summary": "InitStepTracking has no guard against interval == 0 or numSteps <= 0, and the new call site broadens its inputs",
+   "location": "util/stats/query_stats.go:298",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "util/stats/query_stats.go:297-306",
+   "confidence": 0.65,
+   "rationale": "Accurate: no interval==0 / numSteps<=0 guard, and the new subquery call site widens the set of layouts reaching it.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 166
+    }
+   ]
+  },
+  {
+   "cluster_id": "c113",
+   "summary": "No test bounds the subquery per-step allocation, so a fix would be unprotected against regression",
+   "location": "util/stats/query_stats.go:306",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "util/stats/query_stats.go:411",
+   "confidence": 0.5,
+   "rationale": "Accurate but contingent: no test bounds the subquery per-step allocation, which only matters once the allocation finding is acted on.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 160
+    }
+   ]
+  },
+  {
+   "cluster_id": "c114",
+   "summary": "SamplesReadPerStepMap returns a type named for total samples, exported to downstream consumers",
+   "location": "util/stats/query_stats.go:0",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "util/stats/query_stats.go:182-193",
+   "confidence": 0.7,
+   "rationale": "Accurate: SamplesReadPerStepMap returns *TotalSamplesPerStep, a type named for a different quantity, in an exported package.",
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 258
+    }
+   ]
+  },
+  {
+   "cluster_id": "c115",
+   "summary": "The new field names are bold where the file convention is backticks",
+   "location": "docs/feature_flags.md:46",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "docs/feature_flags.md:47-49",
+   "confidence": 0.65,
+   "rationale": "Accurate style drift: bold field names where the file uses backticks.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 150
+    }
+   ]
+  },
+  {
+   "cluster_id": "c116",
+   "summary": "The array-field regexes lack the trailing anchor the scalar regexes carry",
+   "location": "util/stats/stats_test.go:67",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "util/stats/stats_test.go:67-68",
+   "confidence": 0.6,
+   "rationale": "Accurate: the new array regexes omit the trailing anchor their scalar siblings carry; harmless today.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 213
+    }
+   ]
+  },
+  {
+   "cluster_id": "c117",
+   "summary": "A stray scratch test file was flagged by two agents as part of the change",
+   "location": ":0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine_test.go:1",
+   "confidence": 0.8,
+   "rationale": "A note about the reviewer's own scratch artifact, not about the change under review.",
+   "reported_by": [
+    {
+     "tool": "pr-review-toolkit",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 332
+    }
+   ]
+  },
+  {
+   "cluster_id": "c118",
+   "summary": "Whether any IncrementSamplesAt* site lacks a paired samples-read increment",
+   "location": "promql/engine.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:1817-2747",
+   "confidence": 0.8,
+   "rationale": "Cleared enumeration: every increment site is paired. No defect.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 173
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 269
+    }
+   ]
+  },
+  {
+   "cluster_id": "c119",
+   "summary": "Whether the new counter registration is correct and raises no cardinality concern",
+   "location": "promql/engine.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:461-467",
+   "confidence": 0.85,
+   "rationale": "Cleared: registration correct, zero labels. No defect.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 174
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 271
+    }
+   ]
+  },
+  {
+   "cluster_id": "c120",
+   "summary": "Whether evalSubquery allocates per outer step",
+   "location": "promql/engine.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:2008",
+   "confidence": 0.8,
+   "rationale": "Cleared: evalSubquery runs once per Call node, not per step. No defect.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 180
+    }
+   ]
+  },
+  {
+   "cluster_id": "c121",
+   "summary": "Whether query.max-samples enforcement is weakened",
+   "location": "web/api/v1/api.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:2422-2424",
+   "confidence": 0.8,
+   "rationale": "Cleared: max-samples enforcement untouched. No defect.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 184
+    }
+   ]
+  },
+  {
+   "cluster_id": "c122",
+   "summary": "Whether the empty-window continue loses sample counts",
+   "location": "promql/engine.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:2168",
+   "confidence": 0.75,
+   "rationale": "Cleared: both counts are zero in the skipped branch. No defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "demoted",
+     "finding_index": 203
+    }
+   ]
+  },
+  {
+   "cluster_id": "c123",
+   "summary": "Whether the collector is double-registered or the stats pointer nil-dereferenced",
+   "location": "promql/engine.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:461-467",
+   "confidence": 0.8,
+   "rationale": "Cleared: single registration, no nil deref. No defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 207
+    }
+   ]
+  },
+  {
+   "cluster_id": "c124",
+   "summary": "Whether slice aliasing across the reused evaluation buffer is a Go-semantics hazard",
+   "location": "promql/engine.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:2437",
+   "confidence": 0.8,
+   "rationale": "Reports an empty finding set with hazards traced unreachable; no actionable content.",
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 275
+    }
+   ]
+  },
+  {
+   "cluster_id": "c125",
+   "summary": "Whether the length of the Call eval branch is a god-function problem",
+   "location": "promql/engine.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:2100-2200",
+   "confidence": 0.8,
+   "rationale": "Explicitly declared out of scope and pre-existing; no actionable content.",
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 276
+    }
+   ]
+  },
+  {
+   "cluster_id": "c126",
+   "summary": "Whether the rationale for introducing SamplesRead belongs in the review",
+   "location": ":0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:2425",
+   "confidence": 0.8,
+   "rationale": "Meta-observation about where rationale belongs; no actionable content.",
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 277
+    }
+   ]
+  },
+  {
+   "cluster_id": "c127",
+   "summary": "Whether the ceiling division in the outer-step attribution is correct",
+   "location": "promql/engine.go:2437",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:2437",
+   "confidence": 0.6,
+   "rationale": "Cleared: the ceiling division is judged correct. No defect asserted.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 211
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 268
+    }
+   ]
+  },
+  {
+   "cluster_id": "c128",
+   "summary": "Whether the merge helper naming follows the existing vocabulary",
+   "location": "util/stats/query_stats.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "util/stats/query_stats.go:419-433",
+   "confidence": 0.8,
+   "rationale": "Cleared: naming follows the existing UpdatePeakFromSubquery vocabulary. No action.",
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 182
+    }
+   ]
+  },
+  {
+   "cluster_id": "c129",
+   "summary": "Whether calling InitStepTracking on a nil QuerySamples can dereference nil",
+   "location": "util/stats/query_stats.go:306",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "util/stats/query_stats.go:297-300",
+   "confidence": 0.8,
+   "rationale": "Cleared: nil receiver is guarded. No defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 212
     }
    ]
   }

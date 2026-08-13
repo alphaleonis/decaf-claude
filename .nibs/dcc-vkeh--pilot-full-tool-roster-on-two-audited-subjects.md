@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-10T17:43:28Z
-updated_at: 2026-08-12T17:59:50Z
+updated_at: 2026-08-13T08:41:13Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-5xad
@@ -597,3 +597,49 @@ The null arm as designed cannot produce an absolute noise floor, because "no kno
 demonstration that on a change nobody thought had problems, seven tools found 51 real cluster-
 memberships and exactly one false positive. That is a strong positive result for the tools and a
 negative result for the arm's stated purpose. Recorded rather than reframed.
+
+
+## Prometheus at full strength: 2 repeats, 14 cells (2026-08-13)
+
+371 findings -> 129 clusters -> two independent blind grading passes. Every cell CLEAN. 99 of the 129
+clusters carry over from r1; only 30 are new in r2 — the repeats largely agree on what exists in the
+code, and the variance is in what each tool chooses to report.
+
+| tool | precision | sev-wtd | real | unique | reported | found | find/cell | thread recall | $/real |
+|---|---|---|---|---|---|---|---|---|---|
+| `anthropic-code-review` | 1.00 | 1.00 | 7 | 0 | 7 | 14 | 3.5 | 0.20 | $3.64 |
+| `superpowers` | 0.79 | 0.89 | 22 | **3** | 28 | 28 | 14.0 | **0.70** | **$0.42** |
+| `comprehensive-review` | 0.74 | 0.85 | 17 | 1 | 23 | 29 | 11.5 | **0.70** | $2.79 |
+| `ours-bugs` | 0.60 | 0.83 | 3 | 0 | 5 | 20 | 2.5 | 0.10 | $6.00 |
+| `pr-review-toolkit` | 0.57 | 0.73 | 17 | 0 | 30 | 33 | 15.0 | 0.60 | $2.53 |
+| `ours-review` | 0.50 | 0.68 | 12 | 0 | 24 | 48 | 12.0 | 0.60 | $3.17 |
+| `ours-audit` | 0.46 | 0.66 | 25 | **5** | 54 | 84 | 27.0 | 0.60 | $2.39 |
+
+Judge stability: exact 0.899, kappa6 0.852, real/not-real kappa 0.862, boundary kappa 0.738 over 91
+clusters. STABLE for the fifth consecutive measurement. Judge calibration clean again — zero threads
+a tool raised were graded trivia or false-positive, on any subject, in any pass.
+
+7 of 10 human threads hit; threads 1, 2 and 7 missed by every tool in both passes.
+
+### The precision/recall inversion does NOT survive two repeats
+
+At r1 alone the two precision-1.00 tools had the worst thread recall, on both subjects. At full
+strength on prometheus the picture is different: `superpowers` holds precision 0.79 AND the joint-best
+thread recall 0.70 AND three unique real findings AND the lowest cost per real finding in the roster
+at $0.42 — four axes at once. `anthropic-code-review` still sits at 1.00 / 0.20, but on 7 reported
+clusters.
+
+The inversion was real at n=1 and dissolves with more data for the tools that report enough to
+measure. That is a caution about every single-repeat ranking in this pilot, including ones I reported
+earlier as findings.
+
+### The access controls were exercised, not just installed
+
+`anthropic-code-review` r2 logged **22 gh DENY events against 23 allowed** — the only cell in the
+pilot to hit the shim hard. It tried `gh pr view 18081` (the subject PR) twice, `api .../pulls/10369/
+reviews`, `api .../issues/10369/comments`, five `pr view --comments`, six `commits/<sha>/pulls`, and
+six `pr list --json mergedAt`. Every one refused, including by the field allowlist and the bare-view
+block that `dcc-3cm6` added only after probing found them leaking.
+
+Its r1 on the same subject made zero denied attempts. A single-repeat design would have recorded this
+harness's most important validation as never having happened.
