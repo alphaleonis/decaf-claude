@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-13T09:14:08Z
+updated_at: 2026-08-13T11:40:01Z
 order: zzzzV
 ---
 
@@ -267,10 +267,18 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-j21q: Rewrote the bench-* command surface for v2 and retired v1's. The five v1 commands are deleted and v2
-takes the plain names; bench-analyze-v2 loses its suffix. New v2/status.sh backs /bench-status.
-Every v1 entry point now refuses without BENCH_V1_ALLOW (11 of 12 scripts had no guard at all,
-including the one /bench-status invoked directly). Verified by running both paths.
+Completed dcc-opdr: Backfilled a judge-assigned finding_class onto all 267 pilot clusters from a closed set
+(defect/risk/test-gap/docs/design/style), graded blind to tool identity and blind to the verdict so
+class stays orthogonal to substance. score_pooled.py validates against the closed set, refuses a
+PARTIAL classification (which would report a class mix over a subset as though it covered the
+population), and emits class_distribution; three tests added, all firing.
+
+It immediately changed a conclusion. ours-bugs has the purest defect focus in the roster -- 6 of 7
+reported findings are defect-class, against 26-45% for everyone else -- so the preset is not confused
+about its purpose. But it found 8 of the 16 real defects and reported only 5: defect recall 31%,
+lowest of decaf's three presets, against ours-audit's 81%. ours-audit suppressed 4 real findings and
+none was a defect, which localizes the fault to the bugs preset's own threshold rather than the
+shared demotion machinery.
 
 ## Key Decisions
 

@@ -39,6 +39,15 @@ ALL_VERDICTS = REAL | MINOR | NOISE | WRONG
 
 SEV_WEIGHT = {"critical": 5.0, "high": 4.0, "medium": 2.0, "low": 1.0, "nit": 0.5, "info": 0.25}
 
+# What KIND of thing a finding is, orthogonal to how substantial it is (dcc-opdr). The verdict axis
+# grades substance — a wrong-results defect and a naming suggestion both land in `valid-other`, and
+# on one subject all ten human threads scored `matches-thread` whether they were the single
+# correctness question or one of nine style preferences. This axis separates them.
+#
+# A CLOSED set, deliberately. v1 carried a free-text cluster `category` and accumulated `bug`,
+# `logic` and `correctness` as three labels for one thing, which nothing could aggregate.
+FINDING_CLASSES = {"defect", "risk", "test-gap", "docs", "design", "style"}
+
 # A tool can FIND a defect and then suppress it below its own reporting bar (dcc-c92m). Measured:
 # an anthropic cell headlined "Verdict: No blocking issues found" while its "Sub-threshold
 # observations (verified real, but scored below the reporting bar — not posted)" section described
@@ -153,6 +162,21 @@ def validate(A, threads, key, allow_silent_cells=False):
                      if c.get("judged_severity")} - set(SEV_WEIGHT))
     if badsev:
         errs.append(f"judged_severity values outside {sorted(SEV_WEIGHT)}: {badsev}")
+
+    # finding_class is optional — analyses graded before dcc-opdr carry none — but it is all-or
+    # nothing. A partially classified set silently reports a class mix over whichever subset happened
+    # to be graded, which reads exactly like a mix over the whole population.
+    classed = [c for c in clusters if c.get("finding_class")]
+    if classed:
+        badcls = sorted({c["finding_class"] for c in classed} - FINDING_CLASSES)
+        if badcls:
+            errs.append(f"finding_class values outside the closed set {sorted(FINDING_CLASSES)}: "
+                        f"{badcls}")
+        if len(classed) != len(clusters):
+            missing = [c.get("cluster_id", "?") for c in clusters if not c.get("finding_class")]
+            errs.append(f"finding_class on {len(classed)} of {len(clusters)} clusters — a partial "
+                        f"classification reports a mix over a subset as though it covered the whole "
+                        f"population; missing e.g. {sorted(missing)[:5]}")
 
     if threads is not None:
         admitted = [t for t in threads if t.get("admission") == "admitted"]
@@ -351,6 +375,11 @@ def score(A, threads, key):
         "tools": out_tools,
         "verdict_distribution": {v: sum(1 for c in clusters if c["verdict"] == v)
                                  for v in sorted(ALL_VERDICTS)},
+        # Absent when the analysis predates dcc-opdr; null rather than an empty dict, so a consumer
+        # can tell "not classified" from "classified, none of anything".
+        "class_distribution": ({k: sum(1 for c in clusters if c.get("finding_class") == k)
+                                for k in sorted(FINDING_CLASSES)}
+                               if any(c.get("finding_class") for c in clusters) else None),
     }
 
 
