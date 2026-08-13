@@ -400,6 +400,38 @@ def t_vintage_reaches_the_metrics():
     assert m["vintage"]["provably_clean_from"] == "2026-06-01", m["vintage"]
 
 
+
+
+
+def t_finding_class_closed_set():
+    """A free-text class axis is what v1 had; it accumulated bug/logic/correctness as three labels
+    for one thing and nothing could aggregate it."""
+    a = copy.deepcopy(BASE)
+    for c in a["clusters"]:
+        c["finding_class"] = "defect"
+    a["clusters"][1]["finding_class"] = "regression"
+    expect_defect(a, THREADS, "outside the closed set")
+
+
+def t_finding_class_all_or_nothing():
+    """Partial classification reports a mix over a subset as though it covered the population."""
+    a = copy.deepcopy(BASE)
+    a["clusters"][0]["finding_class"] = "defect"
+    expect_defect(a, THREADS, "partial classification")
+
+
+def t_finding_class_optional_and_distributed():
+    """Absent on a pre-dcc-opdr analysis: valid, and class_distribution says so with null."""
+    m = score(BASE, THREADS, None)
+    assert m["class_distribution"] is None, m["class_distribution"]
+    a = copy.deepcopy(BASE)
+    for c, k in zip(a["clusters"], ("defect", "test-gap", "style", "docs")):
+        c["finding_class"] = k
+    validate(a, THREADS, None)
+    d = score(a, THREADS, None)["class_distribution"]
+    assert d["defect"] == 1 and d["test-gap"] == 1 and d["risk"] == 0, d
+
+
 for name, fn in list(globals().items()):
     if name.startswith("t_"):
         check(name[2:], fn)

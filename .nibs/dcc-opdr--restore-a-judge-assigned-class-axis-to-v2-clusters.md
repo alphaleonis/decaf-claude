@@ -2,11 +2,11 @@
 # dcc-opdr
 version: 1
 title: Restore a judge-assigned class axis to v2 clusters (bug vs improvement)
-status: todo
+status: completed
 type: task
 priority: high
 created_at: 2026-08-13T11:29:27Z
-updated_at: 2026-08-13T11:29:27Z
+updated_at: 2026-08-13T11:40:01Z
 parent: dcc-ho2w
 order: zk
 ---
@@ -65,3 +65,18 @@ subjects and the null arm. [Inference] ~$25.
 - [ ] Backfilled onto the pilot's 267 existing clusters
 - [ ] `/bench-synthesize` reports the mix per tool — the axis exists to answer "what kind of reviewer
       is this", which precision cannot
+
+## Summary
+
+**Completed 2026-08-13** — Backfilled a judge-assigned finding_class onto all 267 pilot clusters from a closed set
+(defect/risk/test-gap/docs/design/style), graded blind to tool identity and blind to the verdict so
+class stays orthogonal to substance. score_pooled.py validates against the closed set, refuses a
+PARTIAL classification (which would report a class mix over a subset as though it covered the
+population), and emits class_distribution; three tests added, all firing.
+
+It immediately changed a conclusion. ours-bugs has the purest defect focus in the roster -- 6 of 7
+reported findings are defect-class, against 26-45% for everyone else -- so the preset is not confused
+about its purpose. But it found 8 of the 16 real defects and reported only 5: defect recall 31%,
+lowest of decaf's three presets, against ours-audit's 81%. ours-audit suppressed 4 real findings and
+none was a defect, which localizes the fault to the bugs preset's own threshold rather than the
+shared demotion machinery.
