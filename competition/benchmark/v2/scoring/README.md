@@ -1,7 +1,7 @@
 # v2 scoring (nib dcc-y2e6)
 
 Deterministic half of the v2 pipeline. The LLM stages (extract → cluster → blind grade) are driven by
-`/bench-analyze-v2`; everything numeric lives here, so no metric is ever produced by a model.
+`/bench-analyze`; everything numeric lives here, so no metric is ever produced by a model.
 
 | File | Role |
 |---|---|

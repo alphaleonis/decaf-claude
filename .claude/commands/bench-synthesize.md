@@ -1,95 +1,80 @@
 ---
-description: Roll every graded subject into the cross-subject synthesis web page (numbers + conclusions)
+description: Roll every scored v2 subject into a cross-subject comparison — deterministic aggregate, then a published page
 ---
 
-> **⚠️ This command drives the retired v1 benchmark.** Its dataset is void (contamination, GitHub
-> leak, unaudited ground truth, unpinned effort) and is archived under
-> `competition/benchmark/v1-archive/` — see that README. **Never cite a v1 number**, and never
-> present its output as a tool comparison. `scripts/bench_next.sh` refuses to run without
-> `BENCH_V1_ALLOW=1`. Current work is v2: `competition/benchmark/v2/README.md`, milestone `dcc-ho2w`.
+Build the cross-subject comparison over every **v2** subject scored so far. This replaced the v1
+synthesis command; v1's dataset is void and its aggregator reads `v1-archive/` — never point this at
+it.
 
-Build the **cross-subject synthesis** over every subject analyzed so far. Inputs are the committed
-`competition/benchmark/v1-archive/analysis/subject-NN/` outputs (`analysis.json`, `metrics.json`, `report.md`).
-Output is a single self-contained web page published as an Artifact.
-
-The operator has approved this format (2026-07-28, 9 subjects / 90 runs) — **follow it**. The live
-example is `competition/benchmark/analysis/synthesis-report.html`; read it before writing a new one.
-
-## Steps
-
-**1. Aggregate — deterministic, do NOT hand-compute.**
-```
-python3 competition/benchmark/analysis/scripts/aggregate_synthesis.py \
-  -o competition/benchmark/analysis/synthesis-data.json
-```
-Emits per-tool aggregates, size slices, the bug-catch matrix, and per-cell rows. It prints sanity
-checks — **every tool's four tiers must sum to 1.000, and `substantive_share` must equal that tool's
-`precision_mean`**. If a check fails, fix it before writing anything.
-
-**2. Read the per-subject `report.md` files.** The numbers come from step 1; the *narrative* (notable
-catches, trap subjects, hallucinated or retrieval-driven findings, judge overrides) comes from these.
-Skim all of them — the memorable specifics that make the synthesis land are only in there.
-
-**3. Write the page**, following the approved section order. Each section = one claim, a chart, then
-one or two short paragraphs:
-
-1. **Masthead** — thesis headline, standfirst, scope chips (subjects / runs / blind-graded / judge model / total spend).
-2. **Headline table** — one row per tool; color-code best/worst cells.
-3. **Recall** — bug-catch matrix (tool × subject, repeats caught out of 2) *and* an explicit statement
-   of how saturated recall is and how few subjects the ranking rests on.
-4. **Signal vs noise** — normalized stacked bars (substantive / valid-minor / trivia) plus absolute
-   findings-per-run beside them.
-5. **False positives** — separate small chart. Report honestly if FP is *not* the differentiator.
-6. **Trust** — severity calibration bars, P(substantive | tool said critical/high).
-7. **Cost** — scatter of cost/run vs substantive share with direct point labels, then a resource table
-   (cost, output tokens, wall, sub-agents, total, $/substantive).
-8. **Size** — pooled table. This is the axis the data supports.
-9. **Conclusions** — one verdict card per tool: role label ("Best overall", "Best value", …), a short
-   honest paragraph, three key figures.
-10. **Method & caveats** — bulleted, including what was deliberately *not* concluded.
-
-**4. Publish** via the Artifact tool (load the `artifact-design` skill first; load `dataviz` before
-writing chart code). Favicon 🔬. Also copy the file to
-`competition/benchmark/analysis/synthesis-report.html` so it survives the scratchpad.
-
-**Update the existing artifact — do not mint a new one.** Pass its URL:
+## 1. Aggregate — deterministic, never by hand
 
 ```
-https://claude.ai/code/artifact/99994352-ac12-4729-a6dc-29f6309ecdc4
+python3 competition/benchmark/v2/scoring/aggregate_pilot.py \
+  competition/benchmark/v2/pooled/<subject> [more subjects …] \
+  competition/benchmark/v2/null/<null-subject> \
+  -o competition/benchmark/v2/analysis/pilot-data.json
 ```
 
-Without `url`, a session that did not itself publish the page gets a *new* URL, and the old one
-stays live with superseded numbers. That has already happened once: `198955f4-3eb…` is a stranded
-2026-07-28 copy carrying the contaminated anthropic figures (#dcc-9kkz) — treat it as dead.
+It **exits 3 rather than emit a number** when a rule fires. Do not work around a refusal:
 
-## Non-negotiables
+- **n ≥ 10 reported clusters** before a precision *ratio* is emitted. Below the floor it writes
+  `precision: null` with an explicit `withheld_reason` and the raw counts. This is not conservatism —
+  during the pilot a tool's precision moved 1.00 → 0.60 when a second repeat took its denominator
+  from 3 to 5.
+- **Precision is the median across grading passes**, with the observed range. A single-pass per-tool
+  figure is not publishable: judge variance exceeds tool variance at every denominator size.
+- **`vintage.check_pooling`** refuses to mix in-window and out-of-window subjects in one figure.
+- **The null arm is reported beside the pooled subjects, never averaged in.**
+- **`scope.single_app_type`** is emitted into the data. If it is true, the page must say so above the
+  numbers — the corpus is designed around size × application type, and a reader must not infer
+  breadth from the cell count.
 
-- **Never pool in-window and out-of-window subjects into one figure.** Every `metrics.json` carries
-  `vintage.status`; a subject that merged before the judge's training cutoff may have been memorized,
-  so its numbers are not comparable with a clean subject's. Call
-  `scoring/vintage.check_pooling()` over the set behind any cross-subject number and show the split
-  rather than the average. In the current corpus **5 of 12 pooled subjects are `in-window` — the
-  whole `backend` row, plus contract L and app-ui M — so there is no reportable backend figure at
-  all.** The seven out-of-window subjects (contract S/M, app-ui S/L, library S/M/L) are the
-  citable set. This is METHODOLOGY-v2 section 5 and it is not a stylistic preference.
-- **Shares, not raw counts**, for every quality comparison. Cluster granularity varies per subject
-  (18–95 observed); raw per-run counts are not comparable across subjects.
-- **Refuse the language axis** and say why — one subject per language×size cell, so a single odd PR
-  would masquerade as a language effect. Size pools 3–4 subjects and *is* reportable.
-- **State where conclusions are weak.** Recall has been saturated on most subjects, so the bug-catch
-  ranking rests on a couple of hard ones — say so plainly rather than presenting it as settled. The
-  operator values the caveat more than the ranking.
-- **Lead with the pivot**: finding the escaped bug is near-universal, so the real comparison is what
-  *else* each tool reports and how well it filters trivia and false positives. Structure the page
-  around that, don't bury it.
-- **No long lists of individual bugs.** Numbers and overall performance; cite a specific finding only
-  when it illustrates a claim (e.g. a tool that ranked the real bug "low").
-- Charts: validated dataviz palette; **max three tiers in a stack** (blue/aqua/yellow passes CVD in
-  both modes — adding red for FP fails dark-mode adjacency, so chart FP separately); 2px segment gaps;
-  direct % labels; theme-aware tokens under `:root`, `@media`, and `[data-theme]`.
-- Treatment is a utilitarian instrument readout, not editorial: system sans + mono pairing, mono for
-  every figure, `tabular-nums`, cool near-neutral ground, one blue accent.
+Read the printed summary. Every withheld tool it names must appear on the page as withheld, not
+omitted.
 
-## Notes
-- Read-only over `runs/` and `subject-NN/` — this command computes and writes up, it never regrades.
-- Re-run it whenever new subjects land; the page is meant to be republished to the same Artifact URL.
+## 2. Read the per-subject material
+
+Numbers come from step 1. The *narrative* — what a tool actually caught, where the judge disagreed
+with itself, which threads nobody raised — is only in `v2/analysis/PILOT-RESULTS.md` and each
+subject's `analysis.json`. Skim them; the specifics are what make a comparison land.
+
+## 3. Write the page
+
+Load `artifact-design` first, and `dataviz` before writing chart code. Sections, each one claim:
+
+1. **Masthead** — thesis headline, standfirst, scope chips (cells / tools / grading passes / findings / clusters / judge / spend).
+2. **Scope notice, above the numbers** — application types covered, subject count, whether ranges overlap. Not a footnote.
+3. **Headline table** — one row per tool, with a `measured` / `withheld` state. A withheld tool keeps its row and its rank position; the reason goes inline.
+4. **Precision with its observed range** — the range across subjects and passes, so overlap is visible rather than asserted.
+5. **The axes against each other** — precision vs thread recall, because they disagree and a merged score would hide it.
+6. **Severity calibration** — P(substantive | the tool called it critical or high), from each cell's
+   *tool-reported* severity against the judge's verdict. This is the axis `score_pooled.py`'s
+   empty-severity guard exists to protect, so it must actually appear. **Caveat it honestly:** at
+   least one tool emits no severity labels of its own on some runs — its extract carries the
+   extractor's inference, not the tool's claim — and a calibration figure over inferred severities
+   measures the extractor. Exclude those cells and say which.
+7. **Cost per real finding.**
+8. **What the data supports** — a small number of claims, each traceable to a figure above.
+9. **What this may not be used for** — application types not covered, rankings not settled, withheld figures, thread identity, pooling refusals.
+10. **Method** — name the aggregator and the rules it enforces by refusing.
+
+Charts: prefer single-hue with identity carried by direct labels — with seven labelled marks there is
+no categorical set to cycle and no legend needed. If you do use a categorical palette, run
+`validate_palette.js` in both themes and fix FAILs before shipping; do not eyeball ΔE.
+
+## 4. Publish
+
+Publish via the Artifact tool, favicon 🔬, and copy the file to
+`competition/benchmark/v2/analysis/pilot-comparison.html` so it survives independently of the
+artifact. **Update the existing artifact rather than minting a new one** — pass its URL:
+
+```
+https://claude.ai/code/artifact/d3f2021d-ed24-4f82-9315-e74e1effa7ad
+```
+
+## Rules
+
+- Never hand-compute a figure. If it is not in `pilot-data.json`, it is not on the page.
+- A withheld precision is shown as withheld, with its n. Omitting the row reads as a missing cell.
+- Report the judge model and that it is pre-cutoff on most subjects.
+- Never present a v1 number, in any form, for any reason.

@@ -67,15 +67,21 @@ templates + model policy in [`tools.json`](./tools.json)):
 
 ## Quick start
 
+**The v1 commands no longer exist.** `/bench-init`, `/bench-status`, `/bench-run`, `/bench-analyze`
+and `/bench-synthesize` were rewritten to drive v2 (`dcc-j21q`) and now refer to the current corpus,
+not this one. The v1 scripts remain under `scripts/`, and **every entry point among them refuses
+unless `BENCH_V1_ALLOW=1`** — a banner on a command was not a control, and eleven of the twelve
+scripts had no guard at all.
+
+To regenerate v1 evidence (reproducing a leak, rebuilding an archived artifact) call the script
+directly and opt in:
+
 ```
-/bench-init                 # generate subjects + manifest, check deps + tool installs (once)
-/bench-status               # what's done / pending / failed
-/bench-run                  # run the next pending cell
-/bench-run --count 2        # run two
-/bench-run 1__ours__r1      # run a specific cell
-/bench-run --tool ours      # next pending cell for one tool
-/bench-run --subject 11     # next pending cell for one subject
+BENCH_V1_ALLOW=1 bash competition/benchmark/scripts/bench_status.sh
+BENCH_V1_ALLOW=1 bash competition/benchmark/scripts/bench_next.sh 1__ours__r1
 ```
+
+Run IDs below are historical, describing what the archive contains.
 
 Run IDs are `<subject_id>__<tool>__r<repeat>` (e.g. `11__tag1-comprehensive-review__r2`).
 
