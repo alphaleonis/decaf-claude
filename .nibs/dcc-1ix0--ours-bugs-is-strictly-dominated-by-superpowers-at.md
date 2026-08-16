@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-16T10:18:32Z
-updated_at: 2026-08-16T11:07:13Z
+updated_at: 2026-08-16T13:15:06Z
 parent: dcc-hyxw
 order: aq
 ---
@@ -103,7 +103,8 @@ wrong — two agents independently converging is evidence whether 4 ran or 12; o
 - [ ] Turn-level cost attribution for one `ours-bugs` cell — which stage consumes the Opus tokens
 - [x] Written comparison of the two implementations, naming what the single-agent path does better —
       `v2/analysis/OURS-BUGS-VS-SUPERPOWERS.md`
-- [ ] A concrete proposal that lands at or below $4/cell, with the mechanism it changes
+- [x] A concrete proposal that lands at or below $4/cell, with the mechanism it changes —
+      `v2/analysis/PROPOSAL-BUGS-SP.md` (implementation: [[dcc-1sbc]]; companion tiering change: [[dcc-dduy]])
 - [ ] Re-measured on both pilot subjects against the known counterfactual: 16 real defects, of which
       this preset currently reports 5 and finds 8
 
