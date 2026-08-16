@@ -303,4 +303,18 @@ reviewer; `superpowers` pays $4.12 for one generalist agent that reports a stric
 the orchestrator's; under `models=low` the judgment reviewers inherit the session model too, so that
 split was unfounded.)
 
+**Caveat (2026-08-16, same day): the "no fixed component" inference is confounded.** The regression
+stands as description, but the pooled presets change **model policy along with roster size** — a
+`bugs` reviewer seat is mostly Haiku, an `audit` seat mostly session-model — so seat price and seat
+count rise together, and the fit cannot distinguish "no fixed cost" from "a real fixed cost plus
+seat prices that rise with preset tier"; both produce the observed $/reviewer sequence
+(2.14 → 2.54 → 2.80). The per-model meters make it concrete: in every `bugs` cell the Haiku lane —
+all three cheap-tier reviewers *plus* the Step 4.95 screeners — cost $0.91–$1.91, while the Opus
+lane (orchestrator + `adversarial-reviewer`, inseparable in `modelUsage`) carried $6.38–$7.92,
+~78–89% of the cell. "~$3.17 per reviewer" is a cross-preset average, not the marginal price of a
+`bugs` seat (a Haiku seat costs cents), and within `bugs` the orchestration share of the Opus lane
+is **unknown, not known-to-be-nothing**. Unaffected: the strict-superset result, the fit itself,
+and the breadth-per-dollar reframing — the domination is measured at the report level and does not
+depend on the cost split.
+
 Any intervention on `bugs` has to come out at or below $4/cell. Tracked in [[dcc-1ix0]].
