@@ -284,3 +284,19 @@ the actual mechanism:
 Option 2 is the most principled and the most invasive; option 1 is the cheapest and is already
 justified in the skill's own words. Neither should ship without re-measuring on both pilot subjects,
 where the counterfactual is known exactly: three real defects, two of them high.
+
+---
+
+## Correction (2026-08-16): the roster-cap recommendation is withdrawn
+
+Signal 1 above proposed raising the `bugs` roster cap to fix detection. **That is the wrong
+direction.** It buys recall with money, and the pilot shows the target result is achievable at half
+what the preset already spends: `superpowers` reports a strict superset of `ours-bugs`' output —
+zero clusters unique to `ours-bugs` across both subjects — at $4.12/cell against $8.56 and ~12 min
+against ~22.
+
+The cost is not in the reviewers. On one cell the cheap-tier reviewers spent **$0.90**; the
+orchestrator spent **$7.66** across **44 turns**, against `superpowers`' 6 turns and $3.46 for a
+single general-purpose agent with a prompt template and no pipeline at all.
+
+Any intervention on `bugs` has to come out at or below $4/cell. Tracked in [[dcc-1ix0]].
