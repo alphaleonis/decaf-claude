@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-16T10:18:32Z
-updated_at: 2026-08-16T13:15:06Z
+updated_at: 2026-08-16T13:24:10Z
 parent: dcc-hyxw
 order: aq
 ---
@@ -100,7 +100,12 @@ wrong — two agents independently converging is evidence whether 4 ran or 12; o
 
 ## Acceptance
 
-- [ ] Turn-level cost attribution for one `ours-bugs` cell — which stage consumes the Opus tokens
+- [x] Turn-level cost attribution for one `ours-bugs` cell — **resolved as unsound, not done**:
+      per-message `usage` blocks do not sum to the session total and `modelUsage` cannot separate
+      same-model lanes, so no per-stage attribution exists (CORRECTION below). Answered by other
+      means: the per-model lane split — Haiku lane (3 reviewers + screeners) $0.91–$1.91/cell,
+      Opus lane (orchestrator + adversarial, inseparable) $6.38–$7.92, ~78–89% of each cell —
+      plus the cross-preset regression, itself caveated below
 - [x] Written comparison of the two implementations, naming what the single-agent path does better —
       `v2/analysis/OURS-BUGS-VS-SUPERPOWERS.md`
 - [x] A concrete proposal that lands at or below $4/cell, with the mechanism it changes —
@@ -161,3 +166,23 @@ That points the investigation at agent design rather than pipeline mechanics:
 
 The cheapest experiment implied: run `bugs` at `roster=1` or `2` with `models=high`, landing near
 $3–6/cell, and measure against the known counterfactual.
+
+### Caveat (2026-08-16, same day): the "no fixed component" inference is confounded
+
+The regression stands as *description*; the inference drawn from its negative intercept does not.
+The 14 pooled cells span presets whose **model policy changes with roster size** — a `bugs`
+reviewer seat is mostly Haiku, an `audit` seat mostly session-model — so seat price and seat count
+rise together, and the fit cannot distinguish "no fixed cost" from "a real fixed cost plus seat
+prices that rise with preset tier". Both fit the observed $/reviewer sequence (2.14 → 2.54 → 2.80).
+
+The per-model meters make it concrete. In every `bugs` cell, the Haiku lane — all three cheap-tier
+reviewers **plus** the Step 4.95 screeners — cost $0.91–$1.91, while the Opus lane (orchestrator +
+`adversarial-reviewer`, inseparable in `modelUsage`) carried $6.38–$7.92: ~78–89% of the cell. So:
+
+- "~$3.17 per reviewer" is a **cross-preset average**, not the marginal price of a `bugs` seat —
+  a Haiku seat costs cents.
+- "No orchestrator overhead worth naming" is **over-concluded**: within `bugs`, how the Opus lane
+  splits between orchestrator and the one deep reviewer is unknown, not known-to-be-nothing.
+
+Unaffected: the strict-superset result, the linear fit itself, and the breadth-per-dollar
+reframing — the domination is measured at the report level and does not depend on the cost split.

@@ -112,10 +112,11 @@ did comparable empirical work on the same subject, but as extra serial turns *af
 the orchestrator's session-model meter.
 
 The shared tree also means four agents each independently pay to read the diff and rebuild the
-same understanding — the cost regression (`cost = −4.19 + 3.17 × reviewers`, R² 0.948) says this
-setup cost recurs per seat with no shared fixed component. What the redundancy produces is
-corroboration, which decaf then *consumes as an admission signal* — the thing `superpowers`'
-findings never needed in the first place.
+same understanding. Under `models=low` the redundant seats are at least cheap — the entire Haiku
+lane, three reviewers plus the Step 4.95 screeners, is $0.91–$1.91 of each `bugs` cell, against
+$6.38–$7.92 for the Opus lane (orchestrator + adversarial, inseparable in `modelUsage`). But what
+the redundancy produces is corroboration, which decaf then *consumes as an admission signal* — the
+thing `superpowers`' findings never needed in the first place.
 
 ## What the single-agent path does better, named
 
