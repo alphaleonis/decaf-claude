@@ -6,7 +6,7 @@ status: todo
 type: task
 priority: high
 created_at: 2026-08-16T10:18:32Z
-updated_at: 2026-08-16T10:19:08Z
+updated_at: 2026-08-16T10:23:36Z
 parent: dcc-hyxw
 order: aq
 ---
@@ -105,3 +105,57 @@ wrong — two agents independently converging is evidence whether 4 ran or 12; o
 - [ ] A concrete proposal that lands at or below $4/cell, with the mechanism it changes
 - [ ] Re-measured on both pilot subjects against the known counterfactual: 16 real defects, of which
       this preset currently reports 5 and finds 8
+
+
+---
+
+## CORRECTION (2026-08-16): the orchestration hypothesis above is WRONG
+
+The section "Where decaf's money goes" attributed the spend to the orchestrator, reading `meter.json`
+`modelUsage` as "Opus = orchestrator, Haiku = reviewers". **That inference is invalid.** Under
+`models=low` the *judgment* reviewers also inherit the session model, so the Opus total contains
+reviewer subagents as well as the orchestrator. `modelUsage` aggregates the whole session and does
+not separate the lanes; the transcript cannot separate them either (its per-message `usage` blocks do
+not sum to the session total, so any split derived from them is unsound).
+
+Measured properly — reviewer count taken from each cell's own report header, against that cell's cost:
+
+| preset | reviewers | mean cost | $/reviewer |
+|---|---|---|---|
+| `ours-bugs` | 4 | $8.57 | ~$2.14 |
+| `ours-review` | 6–9 | $16.73 | ~$2.54 |
+| `ours-audit` | 9–10 | $28.23 | ~$2.80 |
+
+Least squares over **14 cells** spanning 4–10 reviewers, three presets and three subjects:
+
+```
+cost  =  -4.19  +  3.17 × reviewers          R² = 0.948
+```
+
+**The fixed component is negative.** There is no orchestrator overhead worth naming; cost is
+essentially linear in reviewer count at ~$3.17 marginal per reviewer. Cost per reviewer is flat
+across the range (1.99–3.08) — if a fixed orchestration cost dominated, it would fall sharply as the
+roster grows, and it does not.
+
+### The reframed question
+
+decaf pays **~$3.17 per reviewer**. `superpowers` pays **$4.12 for one** generalist agent — about 1.3
+decaf reviewers — and that single agent reports a strict superset of what `ours-bugs`' four produce.
+
+So this is not an orchestration-overhead problem. It is a **breadth-per-dollar** problem:
+
+> Four narrow, individually cheaper reviewers produce strictly less than one deeper generalist
+> costing about a third more than any one of them.
+
+That points the investigation at agent design rather than pipeline mechanics:
+
+- Does the narrow brief each decaf reviewer receives *prevent* the cross-concern connections a
+  generalist makes? `superpowers`' single agent produced findings across all six classes; `ours-bugs`'
+  four produced defects and one design item and nothing else.
+- How much do the four duplicate each other's reading of the same diff? Four agents each paying to
+  read and build the same code is four times the setup cost for one changeset.
+- Is one deep pass simply better than four shallow ones at this budget — and if so, does the same
+  hold at `audit`'s scale, where 10 reviewers produce the roster's best detection?
+
+The cheapest experiment implied: run `bugs` at `roster=1` or `2` with `models=high`, landing near
+$3–6/cell, and measure against the known counterfactual.

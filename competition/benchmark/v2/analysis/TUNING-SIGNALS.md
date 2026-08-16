@@ -295,8 +295,12 @@ what the preset already spends: `superpowers` reports a strict superset of `ours
 zero clusters unique to `ours-bugs` across both subjects — at $4.12/cell against $8.56 and ~12 min
 against ~22.
 
-The cost is not in the reviewers. On one cell the cheap-tier reviewers spent **$0.90**; the
-orchestrator spent **$7.66** across **44 turns**, against `superpowers`' 6 turns and $3.46 for a
-single general-purpose agent with a prompt template and no pipeline at all.
+The cost is **linear in reviewer count**: least squares over 14 decaf cells spanning 4–10 reviewers,
+three presets and three subjects gives `cost = -4.19 + 3.17 × reviewers`, R² = 0.948, with a
+*negative* fixed component — there is no orchestrator overhead worth naming. decaf pays ~$3.17 per
+reviewer; `superpowers` pays $4.12 for one generalist agent that reports a strict superset of what
+`ours-bugs`' four produce. (An earlier draft blamed orchestration overhead, reading Opus tokens as
+the orchestrator's; under `models=low` the judgment reviewers inherit the session model too, so that
+split was unfounded.)
 
 Any intervention on `bugs` has to come out at or below $4/cell. Tracked in [[dcc-1ix0]].
