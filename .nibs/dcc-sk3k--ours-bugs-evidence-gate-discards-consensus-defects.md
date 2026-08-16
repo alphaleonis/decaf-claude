@@ -6,7 +6,7 @@ status: todo
 type: bug
 priority: high
 created_at: 2026-08-13T09:36:56Z
-updated_at: 2026-08-13T11:40:01Z
+updated_at: 2026-08-16T09:50:18Z
 parent: dcc-hyxw
 order: ao
 ---
@@ -131,3 +131,86 @@ sharper statement is:
 > three presets, and it discards three of the eight real defects it manages to find.
 
 Purity is not the problem. Reach is, and the gate is making reach worse.
+
+
+---
+
+## Mechanism, traced (2026-08-16) — and two corrections to the claim above
+
+The earlier statement — "`ours-audit` suppressed 4 real findings and not one was a defect, so the
+machinery can protect correctness findings and the `bugs` threshold does not" — reaches the right
+conclusion by wrong reasoning, twice.
+
+### Correction 1: `ours-audit`'s gate does not *spare* defects, it *judges* them correctly
+
+Both presets fire the screen on defect-class claims at **exactly the same rate**:
+
+| tool | demoted | of which defect-class | defect demoted **and real** |
+|---|---|---|---|
+| `ours-audit` | 50 | **16** | **0** |
+| `ours-bugs` | 33 | **16** | **3** |
+| `ours-review` | 46 | 17 | 1 |
+
+`ours-audit` rejected 16 defect claims and was right about all 16. `ours-bugs` rejected 16 and was
+wrong about 3. The gate is not being avoided on one side and over-applied on the other — it engages
+identically and differs in accuracy.
+
+### Correction 2: it is not the bar, it is the bar interacting with the roster cap
+
+`evidence=strong` admits a cluster as primary at **screen score ≥ 80, or ≥ 60 with two or more
+independent finders** (`code-review` SKILL.md, "What `evidence` admits"). The presets differ on four
+axes at once, and two of them compound here:
+
+| preset | `roster` | `evidence` |
+|---|---|---|
+| `bugs` | **capped at 4** | **`strong`** |
+| `audit` | all gate-matched (10–12) | `any` |
+
+At an uncapped roster almost any real defect attracts a second finder and takes the ≥60 path. At
+`roster≤4` it frequently cannot, and must clear **≥80 on a single reviewer's say-so**.
+
+The three real defects `ours-bugs` binned show exactly this:
+
+| judged severity | finders | found by |
+|---|---|---|
+| medium | 2 | `adversarial-reviewer`, `quick-reviewer` |
+| **high** | **1** | `adversarial-reviewer` |
+| **high** | **1** | `adversarial-reviewer` |
+
+Two high-severity real defects with a single finder each, each requiring ≥80 alone, each rejected —
+and each independently confirmed afterwards by four other tools.
+
+### Why this is a design fault and not a tuning miss
+
+All three came from `adversarial-reviewer`, whose brief is to construct failure scenarios *"in the
+space between pattern-matching reviewers"*. **Its findings are uncorroborated by construction.** The
+corroboration escape hatch in the `strong` bar is therefore systematically unavailable to the one
+agent whose output most depends on it — and `bugs`, the preset that most wants adversarial findings,
+is also the preset that caps the roster hardest.
+
+The skill already documents this interaction one step down the ladder:
+
+> **`low` overrides `evidence` back to `norm` deliberately.** With two reviewers corroboration is
+> scarce, and `strong` would demand a lone reviewer score ≥80 on its own — which would empty the
+> report on the one mode whose whole purpose is fast feedback.
+
+That correction stops at `roster=2`. It was never extended to `bugs` at `roster≤4`, where the same
+argument holds with slightly less force — and the pilot shows it holding hard enough to lose two
+high-severity defects across two subjects.
+
+### What this changes about the intervention
+
+"Lower the `strong` bar" is the wrong fix and would cost precision the preset currently earns —
+`ours-bugs` reported 7 clusters and only 2 were non-substantive, both `low`. Candidates that target
+the actual mechanism:
+
+1. **Extend `low`'s override upward** — `bugs` uses `evidence=norm` at any roster below some floor.
+   Smallest change, matches reasoning already in the skill.
+2. **Make the corroboration clause roster-relative** — "two or more finders" becomes a share of the
+   dispatched roster, so 1-of-4 counts as 3-of-12 does.
+3. **Exempt the adversarial lane** — a finding from an agent whose brief is non-overlapping is
+   scored on its own merits at the ≥60 line without the finder-count requirement.
+
+Option 2 is the most principled and the most invasive; option 1 is the cheapest and is already
+justified in the skill's own words. Neither should ship without re-measuring on both pilot subjects,
+where the counterfactual is known exactly: three real defects, two of them high.
