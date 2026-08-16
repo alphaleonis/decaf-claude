@@ -19,6 +19,7 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 /decaf-quality:code-review bugs            # high-confidence defects in the changed lines only
 /decaf-quality:code-review review          # default — defects plus actionable minor findings
 /decaf-quality:code-review audit           # everything tiered, including pre-existing
+/decaf-quality:code-review bugs-sp         # experimental: one whole-surface deep pass (roster=1, no wave)
 /decaf-quality:code-review review roster=4 # preset with one axis overridden
 /decaf-quality:code-review roster=6 models=high   # axes set directly, without a preset
 /decaf-quality:code-review 42              # review PR #42
