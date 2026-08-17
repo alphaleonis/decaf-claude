@@ -243,3 +243,66 @@ authority, that item is a finding" — rather than prose; (b) `minor, out of rea
 for anything the seat itself rated Low or above (a Low is a finding; "minor" is for nits). Neither
 should be re-run alone at 2 repeats expecting a legible signal; the honest next step for the
 recall question is more repeats or a wider subject slice, not another prompt tweak.
+
+---
+
+## Brief v3 (`ours-bugs-sp3`, 2026-08-17) — closed-set parking reasons, 3 repeats
+
+Same two subjects, **3 repeats each** (the targeted effect, 2–3 defects/run, is the size of the
+seat variance at 2), all six cells CLEAN, folded in as before. Every reported v3 finding landed on
+a pilot-graded cluster; 3 new demoted-only clusters (trivia/false-positive in both passes).
+Calibration 9/14 (prom), 8/12 (efcore). Judge stability over the full pools: κ 0.835 / 0.848.
+
+Because v3 has an extra repeat, union figures over-credit it; the per-cell figures are the fair
+comparison.
+
+| | v1 (2 reps) | v2 (2 reps) | **v3 (3 reps)** | superpowers (2 reps) |
+|---|---|---|---|---|
+| reported clusters, pooled union | 18 | 8 | **9** | 45 |
+| defect share of reported | 44% | 62% | **67%** | 29% |
+| real defects reported, union / found, union (of 16) | 6 / 10 | 5 / 9 | **6 / 8** | 9 / 9 |
+| **real defects reported per cell** — prom / efcore | 3.0 / 2.0 | 3.0 / 1.5 | **3.0 / 1.33** | 5.0 / 2.0 |
+| real defects found per cell — prom / efcore | 4.0 / 4.0 | 5.0 / 2.0 | **3.7 / 2.0** | 5.0 / 2.0 |
+| repeat Jaccard — prom / efcore | 0.36 / 0.43 | 0.50 / 0.50 | **0.59 / 0.67** | 0.36 / 0.41 |
+| cost / cell · seat input side | $5.13 · $2.51 | $6.36 · $3.71 | **$5.69 · $2.91** | $4.29 · $2.68 |
+| seat turns / shell calls | 36 / 40 | 55 / 51 | **38 / 40** | 42 / 44 |
+
+**Against the restated criteria:** composition ✓ (67%, target ≥2/3); stability ✓ (best of the
+three); seat cost ≈ superpowers' agent ✓ ($2.91 vs $2.68), orchestrator ≤ $1 ✓; **recall ✗** —
+6/16 union (target ≥8), and per cell the number the deliverable is about did not move on
+prometheus across three briefs (3.0 / 3.0 / 3.0) and fell on efcore (2.0 → 1.5 → 1.33).
+
+**What the closed set did, cluster by cluster:**
+
+- efcore **e13** (`Coalesce`, high, human thread): parked ×2 under v1; reported 1/2 under v2 and
+  1/3 under v3. The mechanism moves it — some of the time.
+- prometheus **c05** (matches-thread, medium): parked twice under v3 with a *legal* tag,
+  `[unverified]`, and the old rationale in the reason ("stays a documented approximation"). The
+  closed set constrains the label, not the reasoning; the seat wore the tag as a costume. The
+  format-pass count cannot see this — it checks tags, not reasons.
+- prometheus **c107** (subquery-offset attribution, valid-other medium): reported once under v3
+  — the first time any `bugs-sp` brief reported it; superpowers never did.
+- prometheus **c03**, **c07** and efcore **e02**: not found in any v3 repeat. Not disposition
+  losses — the seat never reached them.
+
+**The detection finding.** efcore **e02** (Critical: SQL Server's search-condition conversion
+turns UNKNOWN into `false` once the CASE guard is dropped) was found in **both** v1 repeats and
+in **none of five** v2/v3 repeats. The seat transcripts show why: the v1 seats generated SQL
+Server SQL and saw the `CAST(… AS bit)` shape (42 and 68 mentions each); the v2/v3 seats mostly
+did not (2–9 mentions; three of five never called `ToQueryString`). Nothing in the v2/v3 edits
+addressed probing — [Speculation] the tighter "defect list, nits parked" framing may narrow the
+seat's exploration once its first Critical is confirmed — but the loss is in *what the seat
+chose to look at*, not in what it did with what it found. Same for c03/c07.
+
+**Reading.** Three briefs, one per-cell yield: on prometheus the seat reports 3.0 real defects
+per cell whatever the parking rules say. The intentionality fix is real but worth about one
+defect per run at best, and the seat found a way around it on c05. What actually decides the
+number is which paths the seat probes — and that varies between repeats of the same brief more
+than between briefs. Per cell on prometheus, superpowers' agent *finds* ~5 real defects and
+`bugs-sp`'s finds ~3.7; the remaining parking loss is ~0.7/cell. So the gap that is left is
+mostly detection breadth, and no parking rule reaches it.
+
+`bugs-sp` v3 is the version to keep: highest composition, best stability, seat at superpowers
+parity, and the format-pass count is a free signal. It should not be iterated further on
+disposition. The next lever, if there is one, is exploration — and the honest next measurement
+is a wider subject slice, not another prompt on these two.

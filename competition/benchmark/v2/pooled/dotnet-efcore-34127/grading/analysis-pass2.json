@@ -104,6 +104,30 @@
    "access_denied": 0
   },
   {
+   "tool": "ours-bugs-sp3",
+   "repeat": 1,
+   "cost_usd": 5.6395,
+   "wall_s": 879,
+   "access_total": 55,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-sp3",
+   "repeat": 2,
+   "cost_usd": 6.7141,
+   "wall_s": 1115,
+   "access_total": 57,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-bugs-sp3",
+   "repeat": 3,
+   "cost_usd": 4.6522,
+   "wall_s": 729,
+   "access_total": 45,
+   "access_denied": 0
+  },
+  {
    "tool": "ours-review",
    "repeat": 1,
    "cost_usd": 15.8371,
@@ -307,6 +331,27 @@
     {
      "tool": "ours-bugs-sp2",
      "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 0
@@ -530,6 +575,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 2
     }
    ],
    "finding_class": "defect",
@@ -629,6 +688,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 4
     }
    ],
    "finding_class": "docs",
@@ -735,6 +801,27 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 3
     }
    ],
    "finding_class": "design",
@@ -863,6 +950,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
    ],
    "finding_class": "defect",
@@ -948,6 +1049,13 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 2
     }
    ],
    "finding_class": "design",
@@ -1225,6 +1333,13 @@
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 1
     }
    ],
    "finding_class": "defect",
@@ -1303,6 +1418,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 2
     }
    ],
    "finding_class": "risk",
@@ -1905,6 +2027,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 202
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
    ],
    "finding_class": "style",
@@ -2141,6 +2270,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
     }
    ],
    "finding_class": "defect",
@@ -2436,6 +2572,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 4
     }
    ],
    "finding_class": "defect",
@@ -2868,6 +3018,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
     }
    ],
    "finding_class": "test-gap",
@@ -3295,6 +3452,64 @@
    ],
    "finding_class": "risk",
    "class_confidence": 0.8
+  },
+  {
+   "cluster_id": "e75",
+   "summary": "Populating the HashSet with every sub-expression of the result is super-linear because SqlExpression.GetHashCode is structural and recursive, though it runs only on the compile-once path when the shape gate matches",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580-583",
+   "confidence": 0.65,
+   "rationale": "True that hashing every subtree with structural GetHashCode is O(n\u00b7depth), but the cluster itself concedes it runs on the cached compilation path only when the CASE shape matches; not worth reviewer attention.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "e76",
+   "summary": "The rewritten CASE test is not re-visited after IS NOT NULL conjuncts are dropped, so a conjunct made trivially true or false by the drop is left unsimplified in the emitted SQL",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:590",
+   "verdict": "false-positive",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595-615",
+   "confidence": 0.5,
+   "rationale": "DropNotNullChecks only removes IS NOT NULL leaves from an AndAlso tree and rebuilds via binary.Update; the surviving conjuncts were already visited/folded (constants would have been simplified in VisitSqlBinary), and no conjunct becomes trivially true/false as a consequence of dropping a sibling \u2014 I could not construct the claimed unsimplified output.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 4
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.5
   }
  ]
 }

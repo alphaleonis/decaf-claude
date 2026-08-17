@@ -1,0 +1,98 @@
+[
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "critical",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 626,
+  "category": "correctness",
+  "claim": "NullPropagatedOperands recurses into SqlBinaryExpression.Left/Right for every operator type, including AndAlso/OrElse/Coalesce which do not propagate SQL null under three-valued logic; operands reached through AND/OR are wrongly recorded as null-propagating and DropNotNullChecks then removes the guarding IS NOT NULL. Reachable via the null-semantics rewrite (RewriteNullSemantics produces AndAlso/OrElse), so `x.A != null ? (bool?)(x.A == x.B) : null` loses its ELSE NULL arm and returns TRUE/FALSE instead of NULL \u2014 wrong projected values and wrong rows on every relational provider; none of the five new tests has a boolean-typed WHEN result so the suite does not catch it.",
+  "raw": "#1 \ud83d\udd34 Critical: `NullPropagatedOperands` recurses into `AndAlso`/`OrElse` operands, which do not propagate SQL null \u2014 the optimization then deletes a needed `IS NOT NULL` guard and silently changes query results and result sets",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 578,
+  "category": "missed-optimization",
+  "claim": "IsNull(elseResult) is false when elseResult is C# null (a CASE WHEN t THEN r END with no ELSE), so the semantically identical implicit-NULL-else form is never optimized \u2014 a missed opportunity only, no wrong behavior.",
+  "raw": "[minor] `IsNull(elseResult)` is `false` when `elseResult` is C# `null` (a `CASE WHEN t THEN r END` with no `ELSE`), so the semantically identical implicit-NULL-else form is never optimized",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 598,
+  "category": "readability",
+  "claim": "In DropNotNullChecks, `return null; // true` overloads the nullable return value with a 'the conjunct is vacuously true' meaning; a named sentinel or an out bool would read better. No behavioral consequence.",
+  "raw": "[minor] `return null; // true` overloads the nullable return with a \"the conjunct is vacuously true\" meaning; a named sentinel or an `out bool` would read better",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 619,
+  "category": "performance",
+  "claim": "Every node of the result subtree is added to a HashSet<SqlExpression>, and SqlExpression.GetHashCode is structural (O(subtree)), making the pass roughly O(n\u00b7depth) in hashing; query-compilation-time only and cached, not worth changing at realistic tree sizes.",
+  "raw": "[minor] every node of the result subtree is added to a `HashSet<SqlExpression>`, and `SqlExpression.GetHashCode` is structural (O(subtree)), making the pass roughly O(n\u00b7depth) in hashing",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 590,
+  "category": "sql-quality",
+  "claim": "The rewritten CASE test is not re-visited after IS NOT NULL conjuncts are dropped, so a conjunct that becomes trivially true/false after the drop is not re-simplified. Cosmetic SQL-quality nit.",
+  "raw": "[minor] the rewritten `test` is not re-visited, so a conjunct that becomes trivially true/false after the drop is not re-simplified",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 620,
+  "category": "correctness",
+  "claim": "Considered whether NullPropagatedOperands recursing through Not, Negate and Convert unary operators is unsound; judged false \u2014 NOT NULL, -NULL and CAST(NULL AS x) are all NULL in SQL, so these three are sound.",
+  "raw": "[false] checked whether `Not`, `Negate` and `Convert` are safe to recurse through: `NOT NULL`, `-NULL` and `CAST(NULL AS x)` are all `NULL` in SQL, so these three are sound",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 597,
+  "category": "correctness",
+  "claim": "Considered whether HashSet<SqlExpression>.Contains does what DropNotNullChecks assumes; judged false \u2014 SqlExpression subclasses override structural Equals/GetHashCode and the test's IS NOT NULL operand and the result's occurrence are usually the same instance; a mismatch would only cost a missed optimization, never a wrong drop. Empirically confirmed the intended cases match.",
+  "raw": "[false] checked whether `HashSet<SqlExpression>.Contains` does what the code assumes",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "test/EFCore.Specification.Tests/CustomConvertersTestBase.cs",
+  "line": 1202,
+  "category": "build",
+  "claim": "9 compile errors (CS0023/CS8604) in EFCore.Specification.Tests (CustomConvertersTestBase.cs:1202 and TestUtilities/QueryTestGeneration/InjectWhereExpressionMutator.cs:41) under the installed SDK 10.0.203 vs. the global.json-pinned 9.0.100-preview; unrelated to this change, and it is why the repo's own functional tests could not be run. Also noted that `dotnet build ... | tail` reported exit code 0 while the build had in fact failed.",
+  "raw": "[pre-existing] 9 compile errors (CS0023/CS8604) in `EFCore.Specification.Tests` under the installed SDK 10.0.203 vs. the `global.json`-pinned 9.0.100-preview",
+  "disposition": "demoted"
+ }
+]

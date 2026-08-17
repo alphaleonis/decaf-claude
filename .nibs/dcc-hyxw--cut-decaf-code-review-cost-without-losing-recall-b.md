@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-08-17T10:10:52Z
+updated_at: 2026-08-17T13:08:40Z
 blocked_by:
     - dcc-9kkz
 order: zzzV
@@ -130,19 +130,15 @@ still comes first, but it changes what to expect from each.
 
 ## Current Focus
 
-Completed dcc-pulk: All three parts done. (1) Cost attribution: the seat costs what superpowers' agent costs; the
-whole v1 gap ($0.84/cell) is the shared orchestrator backbone (~35k-token SKILL load re-read over
-~10 turns; report emitted twice) — kept by operator decision, cost criterion restated. (2) Minor
-bucket omitted under narrow; (3) fail closed on traced-and-dismissed defects — both applied as
-brief v2 and re-measured under arm `ours-bugs-sp2` (4 cells, CLEAN). Brief v2 is not an
-improvement on recall (5/16 reported vs 6; found 9 vs 10), improves composition (44%→62%) and
-repeat stability (0.50/0.50), costs $1.23/cell more (all seat: 55 turns vs 36) and loses seat
-parity with superpowers. Cluster-level: fail-closed fired on efcore e13 and under-fired on prom
-c07; `minor, out of reach` swallowed a Low (c03); e02/c05 moved on seat variance. Two repeats do
-not separate a brief effect of this size from single-seat variance. Both briefs' cells stay in the
-matrix (`ours-bugs-sp` = v1, `ours-bugs-sp2` = v2). Fold-in prompts and script preserved under
-`v2/scoring/prompts/` and `v2/scoring/foldin.py`; efcore calibration gap (3/12) recorded there.
-Sharpened-rule candidates recorded in BUGS-SP-RESULTS.md; not re-run.
+Completed dcc-ce0m: Implemented, smoke-tested (the seat reports a comment/doc/test-backed "intended" behavior change
+as a Medium with the doc as counter-argument), run at 3 repeats and scored. v3 meets composition
+(67% defect), stability (Jaccard 0.59/0.67) and seat-cost parity; recall stays at 6/16 union and
+3.0 real defects per cell on prometheus across all three briefs. The closed set moved e13 (1/3)
+but c05 was re-parked under a legal tag with the intent rationale, and the larger movements
+(e02 2/2 → 0/5, c03, c07) are detection changes — the v2/v3 seats did not probe SQL Server SQL
+generation — not disposition. Verdict: keep v3 as the bugs-sp brief; stop iterating on parking
+rules; the remaining gap to superpowers on prometheus (~1.3 real defects/cell) is exploration
+breadth. Full write-up in `v2/analysis/BUGS-SP-RESULTS.md` § Brief v3.
 
 ## ⚠️ Measured premise is VOID (2026-08-10)
 This epic's premise — `ours` at $21.33/run vs anthropic's $7.61, and 0.70 vs 0.90 severity

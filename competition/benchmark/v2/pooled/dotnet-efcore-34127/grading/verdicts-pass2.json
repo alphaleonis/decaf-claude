@@ -628,5 +628,23 @@
   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578-590",
   "confidence": 0.5,
   "rationale": "Speculative DB-dependent perf concern in a contrived shape (an expensive subexpression in a null-propagating position under a guard); the collapse is the PR's intended trade-off and CASE does not reliably guard evaluation of subqueries in SQL Server anyway."
+ },
+ {
+  "cluster_id": "e75",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580-583",
+  "confidence": 0.65,
+  "rationale": "True that hashing every subtree with structural GetHashCode is O(n\u00b7depth), but the cluster itself concedes it runs on the cached compilation path only when the CASE shape matches; not worth reviewer attention."
+ },
+ {
+  "cluster_id": "e76",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595-615",
+  "confidence": 0.5,
+  "rationale": "DropNotNullChecks only removes IS NOT NULL leaves from an AndAlso tree and rebuilds via binary.Update; the surviving conjuncts were already visited/folded (constants would have been simplified in VisitSqlBinary), and no conjunct becomes trivially true/false as a consequence of dropping a sibling \u2014 I could not construct the claimed unsimplified output."
  }
 ]

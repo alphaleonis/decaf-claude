@@ -1,0 +1,98 @@
+[
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "critical",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 626,
+  "category": "correctness",
+  "claim": "NullPropagatedOperands recurses into every SqlBinaryExpression operator including AndAlso/OrElse (and Coalesce), which do not propagate NULL under three-valued logic; so for CASE WHEN a IS NOT NULL THEN (a AND b) ELSE NULL END the guard is dropped by DropNotNullChecks and the CASE collapses to a AND b, yielding FALSE/TRUE where NULL was expected. Reached via the ordinary null-semantics rewrite (a == b -> a = b AND b IS NOT NULL), so x.Nullable != null ? x.Nullable == x.Other : (bool?)null is miscompiled, giving wrong projected values and wrong row sets; the mirror-image transform at :2314-2321 already excludes AndAlso/OrElse. Fix should be an allow-list of genuinely null-propagating operators.",
+  "raw": "#1 \ud83d\udd34 Critical: `NullPropagatedOperands` treats `AndAlso`/`OrElse` operands as null-propagating, so `IS NOT NULL` guards are dropped from CASE expressions that do not actually propagate NULL \u2014 silently wrong query results",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 587,
+  "category": "correctness",
+  "claim": "Returning clause.Result instead of the CaseExpression could change the expression's Type/TypeMapping. Tool checked and marked [false]: CaseExpression derives both from whenClauses[0].Result so they are identical.",
+  "raw": "[false] returning `clause.Result` changes the expression's `Type`/`TypeMapping`",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 633,
+  "category": "null-semantics",
+  "claim": "func.Instance! is dereferenced when InstancePropagatesNullability is true alone, whereas the sibling code at :2394 also requires Instance not null; the internal SqlFunctionExpression constructor permits that combination, though the worst case is a stray null in the HashSet with no observable effect. Tagged [minor] style inconsistency.",
+  "raw": "[minor] `func.Instance!` is dereferenced on `InstancePropagatesNullability == true` alone, whereas the sibling code at `:2394` also requires `Instance: not null`",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 617,
+  "category": "performance",
+  "claim": "NullPropagatedOperands walks the entire result subtree and inserts each node into a HashSet<SqlExpression> whose GetHashCode is structural and recursive, giving super-linear hashing on large result trees; runs only in the compile-once path when the pattern matches. Tagged [minor] micro-optimization.",
+  "raw": "[minor] `NullPropagatedOperands` walks the entire result subtree and inserts each node into a `HashSet<SqlExpression>` whose `GetHashCode` is structural and recursive, giving super-linear hashing on large result trees",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 577,
+  "category": "documentation",
+  "claim": "The `// TODO: optimize expr == null ? null : expr` comment carries no issue reference. Tagged [minor].",
+  "raw": "[minor] the `// TODO: optimize expr == null ? null : expr` comment carries no issue reference",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 578,
+  "category": "null-semantics",
+  "claim": "IsNull(elseResult) could misbehave when the CASE has no ELSE clause. Tool checked and marked [false]: IsNull returns false for a null argument, so the optimization simply does not fire \u2014 a missed optimization, not a wrong result.",
+  "raw": "[false] `IsNull(elseResult)` misbehaves when the CASE has no ELSE clause",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 580,
+  "category": "correctness",
+  "claim": "The HashSet<SqlExpression> of null-propagated operands might rely on reference equality and thus fail to match structurally-equal expressions. Tool checked and marked [false]: ColumnExpression, SqlBinaryExpression and SqlUnaryExpression override Equals/GetHashCode structurally; any type that does not would only cause a missed optimization.",
+  "raw": "[false] `HashSet<SqlExpression>` relies on reference equality",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 539,
+  "category": "correctness",
+  "claim": "RestoreNullValueColumnsList(currentNonNullableColumnsCount) passes the non-nullable columns counter to the null-value columns restore. Tagged [pre-existing]: predates this change per git blame and the new code does not depend on or expose it.",
+  "raw": "[pre-existing] `RestoreNullValueColumnsList(currentNonNullableColumnsCount)` passes the *non-nullable* columns counter to the *null-value* columns restore",
+  "disposition": "demoted"
+ }
+]

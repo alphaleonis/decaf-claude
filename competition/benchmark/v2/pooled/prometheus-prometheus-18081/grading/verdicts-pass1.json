@@ -1204,5 +1204,14 @@
   "code_citation": "util/stats/query_stats.go:358-368",
   "confidence": 0.6,
   "rationale": "Go truncation does map timestamps within one interval before StartTimestamp to index 0 (further-back ones are dropped by the bounds check), but every caller passes a step timestamp >= StartTimestamp (enh.Ts, ev.startTimestamp, ev.endTimestamp), so no misattribution occurs; it mirrors the pre-existing helper and is not actionable."
+ },
+ {
+  "cluster_id": "c135",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "promql/engine.go:2385-2396",
+  "confidence": 0.6,
+  "rationale": "Confirmed reachable: the parser accepts a sub-ms step (foo[1m:0.0001]) and durationMilliseconds yields 0, so the hoisted `/ subqInterval` panics with 'integer divide by zero' (recovered into a query error). Real but pre-existing and only relocated by this change, as the finding itself notes, and impact is an ugly error rather than a crash."
  }
 ]
