@@ -1,0 +1,82 @@
+2026-08-17T18:04:33Z	fs	ALLOW	Read /home/decaf/.claude/plugins/cache/claude-plugins-official/superpowers/6.3.0/skills/requesting-code-review/code-reviewer.md
+2026-08-17T18:04:36Z	fs	ALLOW	Bash (no path)
+2026-08-17T18:05:08Z	fs	ALLOW	Bash (no path)
+2026-08-17T18:05:11Z	fs	ALLOW	Bash (no path)
+2026-08-17T18:05:13Z	fs	ALLOW	Bash (no path)
+2026-08-17T18:05:15Z	fs	ALLOW	Bash public/app/features/expressions/utils/metaSqlExpr.ts
+2026-08-17T18:05:19Z	fs	ALLOW	Bash bcca6eb9:public/app/features/expressions/utils/metaSqlExpr.ts public/app/plugins/datasource/mysql/sqlUtil.ts
+2026-08-17T18:05:34Z	fs	ALLOW	Bash public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx
+2026-08-17T18:05:46Z	fs	ALLOW	Bash public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts
+2026-08-17T18:05:49Z	fs	ALLOW	Bash public/ packages/
+2026-08-17T18:05:52Z	fs	ALLOW	Bash /dev/null
+2026-08-17T18:05:54Z	fs	ALLOW	Bash public/app/plugins/datasource/mysql/mySqlMetaQuery.ts public/app/plugins/datasource/mysql/
+2026-08-17T18:05:57Z	fs	ALLOW	Bash public/app/plugins/datasource/mysql/MySqlDatasource.ts
+2026-08-17T18:06:04Z	fs	ALLOW	Bash node_modules/@grafana/plugin-ui/dist /dev/null node_modules/@grafana/plugin-ui /dev/null
+2026-08-17T18:06:08Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/grafana-grafana-117615/repo/.yarn/cache /dev/null
+2026-08-17T18:06:10Z	fs	ALLOW	Bash /dev/null @grafana/plugin-ui
+2026-08-17T18:06:20Z	fs	ALLOW	Bash https://unpkg.com/@grafana/plugin-ui@0.13.1/dist/index.js
+2026-08-17T18:06:20Z	curl	ALLOW	wayback -sS --max-time 30 -w \n__H__%{http_code} https://web.archive.org/cdx/search/cdx?url=unpkg.com/@grafana/plugin-ui@0.13.1/dist/index.js&to=20260406&limit=-1&output=json&fl=timestamp
+2026-08-17T18:06:52Z	curl	ALLOW	wayback -sS --max-time 30 -w \n__H__%{http_code} https://web.archive.org/cdx/search/cdx?url=unpkg.com/@grafana/plugin-ui@0.13.1/dist/index.js&to=20260406&limit=-1&output=json&fl=timestamp
+2026-08-17T18:07:02Z	docs-at	MISS	https://unpkg.com/@grafana/plugin-ui@0.13.1/dist/index.js (no capture at or before 2026-04-06)
+2026-08-17T18:07:05Z	fs	ALLOW	Bash packages/grafana-sql/src /dev/null packages/
+2026-08-17T18:07:07Z	fs	ALLOW	Bash packages/grafana-sql /dev/null
+2026-08-17T18:07:13Z	fs	ALLOW	Bash pkg/expr/sql/ pkg/expr/sql/*.go
+2026-08-17T18:07:15Z	fs	ALLOW	Bash pkg/expr/sql/parser.go
+2026-08-17T18:07:20Z	fs	ALLOW	Bash public/app/features/expressions/ExpressionQueryEditor.tsx public/app/features/expressions/ public/app/features/alerting/unified/ /dev/null
+2026-08-17T18:07:29Z	fs	ALLOW	Bash public/app/features/expressions/components/SqlExpressions/SqlExpr.test.tsx
+2026-08-17T18:07:36Z	fs	ALLOW	Bash public/app/features/alerting/unified/components/expressions/Expression.tsx public/app/features/expressions/ExpressionQueryEditor.tsx
+2026-08-17T18:07:41Z	fs	ALLOW	Bash /dev/null a=/^[a-zA-Z_][a-zA-Z0-9_\$]*\$/g.test
+2026-08-17T18:07:48Z	fs	ALLOW	Bash public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts public/app/features/expressions/utils/metaSqlExpr.test.ts
+2026-08-17T18:07:52Z	fs	ALLOW	Bash /dev/null
+2026-08-17T18:07:54Z	fs	ALLOW	Bash /dev/null
+2026-08-17T18:07:56Z	fs	ALLOW	Bash ./node_modules/*
+2026-08-17T18:07:58Z	fs	ALLOW	Bash (no path)
+2026-08-17T18:08:00Z	fs	ALLOW	Bash (no path)
+2026-08-17T18:08:04Z	fs	ALLOW	Bash (no path)
+2026-08-17T18:08:11Z	fs	ALLOW	Bash app/plugins/datasource/mysql public/app/features public/app/core /dev/null app/plugins
+2026-08-17T18:08:13Z	fs	ALLOW	Bash (no path)
+2026-08-17T18:08:17Z	fs	ALLOW	Bash public/app/plugins/datasource/mysql/package.json /dev/null
+2026-08-17T18:08:45Z	fs	ALLOW	Bash pkg/expr/sql/parser_allow.go
+2026-08-17T18:08:48Z	fs	ALLOW	Bash public/app/features/expressions/
+2026-08-17T18:08:50Z	fs	ALLOW	Bash public/app/features/expressions/components/SqlExpressions/GenAI/*.ts* public/app/features/expressions/components/SqlExpressions/hooks/useSQLSchemas.ts /dev/null
+2026-08-17T18:09:19Z	fs	ALLOW	Bash public/app/features/alerting/unified/components/rule-editor/QueryEditor.tsx /dev/null public/app/features/query/components/ public/app/features/alerting/unified/components/rule-editor/ /dev/null
+2026-08-17T18:09:21Z	fs	ALLOW	Bash public/app/features/query/components/QueryEditorRowHeader.tsx
+2026-08-17T18:09:23Z	fs	ALLOW	Bash public/app/features/query/components/QueryEditorRowHeader.tsx
+2026-08-17T18:09:33Z	fs	ALLOW	Bash public/app/features/expressions/ public/app/features/expressions/ExpressionDatasource.ts
+2026-08-17T18:09:35Z	fs	ALLOW	Bash public/app/features/expressions/ExpressionDatasource.ts
+2026-08-17T18:09:49Z	fs	ALLOW	Bash /dev/null /tmp/yarn-install.log /tmp/yarn-install.log
+2026-08-17T18:09:53Z	fs	ALLOW	Bash packages/grafana-sql/src/index.ts packages/grafana-sql/src/utils/*.ts /dev/null packages/grafana-sql/src/index.ts
+2026-08-17T18:09:56Z	fs	ALLOW	Bash 113,117:public/app/features/expressions/utils/metaSqlExpr.ts /dev/null
+2026-08-17T18:10:11Z	fs	ALLOW	Bash /dev/null
+2026-08-17T18:10:16Z	fs	ALLOW	Bash /tmp/yarn-install.log /dev/null /dev/null
+2026-08-17T18:10:19Z	fs	ALLOW	Bash public/app/features/expressions/utils/metaSqlExpr.test.ts public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts
+2026-08-17T18:10:30Z	fs	ALLOW	Bash public/app/features/expressions/components/SqlExpressions/SqlExpr.test.tsx
+2026-08-17T18:10:47Z	fs	ALLOW	Bash public/app/features/expressions/utils/metaSqlExpr.test.ts public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts public/app/features/expressions/components/SqlExpressions/SqlExpr.test.tsx public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts public/app/features/expressions/utils/metaSqlExpr.ts
+2026-08-17T18:10:51Z	fs	ALLOW	Bash public/app/features/expressions/utils/metaSqlExpr.test.ts public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts public/app/features/expressions/utils/metaSqlExpr.ts
+2026-08-17T18:11:07Z	fs	ALLOW	Bash /tmp /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/grafana-grafana-117615/repo/public/app/plugins/datasource/mysql/sqlUtil.ts','utf8 // /export quoteIdentifierIfNecessary[\s\S]*?\n}/ /export isValidIdentifier[\s\S]*?\n}/ /: string/g, /: boolean/g, /const / /tmp/qi.js',code /tmp/qi.js
+2026-08-17T18:11:13Z	fs	ALLOW	Bash /tmp /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/grafana-grafana-117615/repo/public/app/plugins/datasource/mysql/sqlUtil.ts','utf8 /export quoteIdentifierIfNecessary[\s\S]*?\n}/ /: string/g, /export isValidIdentifier[\s\S]*?\n}/ /: string/g, /: boolean/g, /const / /tmp/qi.js',r+'\n'+v+'\n'+q+'\nmodule.exports={quoteIdentifierIfNecessary} /tmp/qi.js
+2026-08-17T18:11:27Z	fs	ALLOW	Bash /tmp/review-head /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/grafana-grafana-117615/repo/node_modules /tmp/review-head/node_modules
+2026-08-17T18:11:34Z	fs	ALLOW	Bash /tmp/review-head p='public/app/features/expressions/components/SqlExpressions/SqlExpr.test.tsx / public/app/features/expressions/components/SqlExpressions/SqlExpr.test.tsx
+2026-08-17T18:11:52Z	fs	ALLOW	Bash /tmp/review-head public/app/features/expressions/components/SqlExpressions/SqlExpr.test.tsx
+2026-08-17T18:12:01Z	fs	ALLOW	Bash /tmp/review-head public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx public/app/features/expressions/components/SqlExpressions/SqlExpr.test.tsx
+2026-08-17T18:12:10Z	fs	ALLOW	Bash /tmp/review-head/node_modules /tmp/review-head
+2026-08-17T18:12:15Z	fs	ALLOW	Bash node_modules/@grafana/plugin-ui/dist/ node_modules/@grafana/plugin-ui/dist/*.d.ts /dev/null
+2026-08-17T18:12:17Z	fs	ALLOW	Bash node_modules/@grafana/plugin-ui/dist/esm /dev/null
+2026-08-17T18:12:20Z	fs	ALLOW	Bash node_modules/@grafana/plugin-ui/dist/esm/components/SQLEditor/utils/tokenUtils.js
+2026-08-17T18:12:22Z	fs	ALLOW	Bash node_modules/@grafana/plugin-ui/dist/esm/components/SQLEditor/utils/tokenUtils.js
+2026-08-17T18:12:27Z	fs	ALLOW	Bash node_modules/@grafana/plugin-ui/dist/esm/components/SQLEditor/standardSql/ node_modules/@grafana/plugin-ui/dist/esm/components/SQLEditor/standardSql/language.js
+2026-08-17T18:12:33Z	fs	ALLOW	Bash node_modules/monaco-editor/esm/vs/basic-languages/mysql/mysql.js
+2026-08-17T18:12:34Z	fs	ALLOW	Bash node_modules/monaco-editor/esm/vs/basic-languages/mysql/mysql.js
+2026-08-17T18:12:39Z	fs	ALLOW	Bash node_modules/@grafana/plugin-ui/dist/esm/components/SQLEditor/components/SQLEditor.js
+2026-08-17T18:12:44Z	fs	ALLOW	Bash node_modules/@grafana/plugin-ui/dist/esm/components/SQLEditor/utils/*.js
+2026-08-17T18:12:46Z	fs	ALLOW	Bash node_modules/@grafana/plugin-ui/dist/esm/components/SQLEditor/utils/LinkedToken.js
+2026-08-17T18:12:53Z	fs	ALLOW	Bash node_modules/@grafana/plugin-ui/dist/esm/components/SQLEditor/utils/linkedTokenBuilder.js
+2026-08-17T18:13:02Z	fs	ALLOW	Bash node_modules/@grafana/plugin-ui/dist/esm/components/SQLEditor/
+2026-08-17T18:13:05Z	fs	ALLOW	Bash public/app/plugins/datasource/mysql/sqlCompletionProvider.ts
+2026-08-17T18:13:15Z	fs	ALLOW	Bash pkg/services/featuremgmt/registry.go
+2026-08-17T18:13:32Z	fs	ALLOW	Bash /dev/null /pkg/mod/github.com/dolthub/vitess*/go/vt/sqlparser/ast.go /dev/null
+2026-08-17T18:13:35Z	fs	ALLOW	Bash ./pkg/expr/sql/
+2026-08-17T18:14:02Z	fs	ALLOW	Bash pkg/expr/sql/parser_test.go
+2026-08-17T18:14:08Z	fs	ALLOW	Bash /tmp/vitesscheck /tmp/review-vt /dev/null /tmp/vitesscheck/main_test.go /tmp/vitesscheck/main_test.go pkg/expr/sql/zz_review_test.go ./pkg/expr/sql/ pkg/expr/sql/zz_review_test.go
+2026-08-17T18:14:15Z	fs	ALLOW	Bash (no path)
+2026-08-17T18:14:28Z	fs	ALLOW	Bash public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts public/app/features/expressions/utils/metaSqlExpr.test.ts public/app/features/expressions/utils/metaSqlExpr.ts public/app/features/expressions/utils/metaSqlExpr.ts

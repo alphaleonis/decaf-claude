@@ -1,0 +1,53 @@
+2026-08-17T15:06:38Z	fs	ALLOW	Read /home/decaf/.claude/plugins/cache/claude-plugins-official/superpowers/6.3.0/skills/requesting-code-review/code-reviewer.md
+2026-08-17T15:06:43Z	fs	ALLOW	Bash (no path)
+2026-08-17T15:07:13Z	fs	ALLOW	Bash (no path)
+2026-08-17T15:07:14Z	fs	ALLOW	Bash (no path)
+2026-08-17T15:07:16Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go
+2026-08-17T15:07:17Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response_test.go
+2026-08-17T15:07:35Z	fs	ALLOW	Bash (no path)
+2026-08-17T15:07:35Z	fs	ALLOW	Bash (no path)
+2026-08-17T15:07:39Z	fs	ALLOW	Bash (no path)
+2026-08-17T15:07:39Z	fs	ALLOW	Bash (no path)
+2026-08-17T15:07:46Z	fs	ALLOW	Bash ./server/channels/app/command.go ./server/channels/app/command.go
+2026-08-17T15:07:47Z	fs	ALLOW	Bash ./server/channels/web/webhook.go ./server/public/model/client4.go
+2026-08-17T15:08:26Z	fs	ALLOW	Bash ./server/i18n/en.json ./server/i18n/en.json
+2026-08-17T15:08:27Z	fs	ALLOW	Bash ./server/public/model/*.go ./server/public/model/
+2026-08-17T15:08:35Z	fs	ALLOW	Bash ./server/public/model/incoming_webhook.go ./server/i18n/en.json
+2026-08-17T15:08:36Z	fs	ALLOW	Bash ./server/Makefile ./Makefile /dev/null ./server/i18n
+2026-08-17T15:08:41Z	fs	ALLOW	Bash ./server/i18n/en.json ./server/i18n/en.json ./server/i18n/en.json
+2026-08-17T15:08:42Z	fs	ALLOW	Bash ./server/i18n/en.json
+2026-08-17T15:08:49Z	fs	ALLOW	Bash ./server/i18n/en.json ./server/Makefile ./server/public/model/post.go
+2026-08-17T15:08:49Z	fs	ALLOW	Bash ./.github/workflows/*.yml ./server/Makefile /dev/null
+2026-08-17T15:09:03Z	fs	ALLOW	Bash ./server/public/model/post.go
+2026-08-17T15:09:03Z	fs	ALLOW	Bash server/public/model/command_response
+2026-08-17T15:09:08Z	fs	ALLOW	Bash ./server/public ./model/
+2026-08-17T15:09:09Z	fs	ALLOW	Bash ./server/public/model/
+2026-08-17T15:09:40Z	fs	ALLOW	Bash ./server
+2026-08-17T15:09:40Z	fs	ALLOW	Bash ./server/channels
+2026-08-17T15:09:45Z	fs	ALLOW	Bash ./webapp/channels/src /dev/null ./webapp/platform/types/src /dev/null
+2026-08-17T15:09:46Z	fs	ALLOW	Bash https://developers.mattermost.com/integrate/slash-commands/custom/
+2026-08-17T15:09:46Z	curl	ALLOW	wayback -sS --max-time 30 -w \n__H__%{http_code} https://web.archive.org/cdx/search/cdx?url=developers.mattermost.com/integrate/slash-commands/custom/&to=20260601&limit=-1&output=json&fl=timestamp
+2026-08-17T15:09:50Z	curl	ALLOW	wayback -sS -L --max-time 45 -w \n__HTTP__%{http_code}__URL__%{url_effective} https://web.archive.org/web/20260511143712id_/https://developers.mattermost.com/integrate/slash-commands/custom/
+2026-08-17T15:09:56Z	docs-at	ALLOW	https://developers.mattermost.com/integrate/slash-commands/custom/ snapshot=20260511143712 http=200
+2026-08-17T15:09:59Z	fs	ALLOW	Bash https://developers.mattermost.com/integrate/slash-commands/custom/ /dev/null s/ //g
+2026-08-17T15:09:59Z	curl	ALLOW	wayback -sS --max-time 30 -w \n__H__%{http_code} https://web.archive.org/cdx/search/cdx?url=developers.mattermost.com/integrate/slash-commands/custom/&to=20260601&limit=-1&output=json&fl=timestamp
+2026-08-17T15:10:03Z	curl	ALLOW	wayback -sS -L --max-time 45 -w \n__HTTP__%{http_code}__URL__%{url_effective} https://web.archive.org/web/20260511143712id_/https://developers.mattermost.com/integrate/slash-commands/custom/
+2026-08-17T15:10:10Z	docs-at	ALLOW	https://developers.mattermost.com/integrate/slash-commands/custom/ snapshot=20260511143712 http=200
+2026-08-17T15:10:15Z	fs	ALLOW	Bash https://developers.mattermost.com/integrate/slash-commands/custom/ /dev/null s/ //g
+2026-08-17T15:10:15Z	curl	ALLOW	wayback -sS --max-time 30 -w \n__H__%{http_code} https://web.archive.org/cdx/search/cdx?url=developers.mattermost.com/integrate/slash-commands/custom/&to=20260601&limit=-1&output=json&fl=timestamp
+2026-08-17T15:10:47Z	curl	ALLOW	wayback -sS --max-time 30 -w \n__H__%{http_code} https://web.archive.org/cdx/search/cdx?url=developers.mattermost.com/integrate/slash-commands/custom/&to=20260601&limit=-1&output=json&fl=timestamp
+2026-08-17T15:10:52Z	curl	ALLOW	wayback -sS -L --max-time 45 -w \n__HTTP__%{http_code}__URL__%{url_effective} https://web.archive.org/web/20260511143712id_/https://developers.mattermost.com/integrate/slash-commands/custom/
+2026-08-17T15:10:58Z	docs-at	ALLOW	https://developers.mattermost.com/integrate/slash-commands/custom/ snapshot=20260511143712 http=200
+2026-08-17T15:11:15Z	fs	ALLOW	Bash ./server/channels/app/post.go
+2026-08-17T15:11:15Z	fs	ALLOW	Bash ./server/channels/api4/command.go
+2026-08-17T15:11:30Z	fs	ALLOW	Bash ./.github/workflows/ ./.github/workflows/server-ci-*.yml /dev/null
+2026-08-17T15:11:30Z	fs	ALLOW	Bash ./.github/workflows/
+2026-08-17T15:11:33Z	fs	ALLOW	Bash ./.github/workflows/i18n-ci-template.yml
+2026-08-17T15:11:40Z	fs	ALLOW	Bash ./server/public/shared/i18n/i18n.go ./server/public/model/utils.go
+2026-08-17T15:12:14Z	fs	ALLOW	Bash ./server/public ./model/ -coverprofile=/tmp/cr.out /dev/null -func=/tmp/cr.out
+2026-08-17T15:12:19Z	fs	ALLOW	Bash /tmp/cr.out
+2026-08-17T15:12:35Z	fs	ALLOW	Bash ./server/public/model/*.go
+2026-08-17T15:12:35Z	fs	ALLOW	Bash ./server/public ./model/
+2026-08-17T15:12:40Z	fs	ALLOW	Bash server/public/model/command_response.go server/channels/app/command.go
+2026-08-17T15:12:50Z	fs	ALLOW	Bash ./server
+2026-08-17T15:12:59Z	fs	ALLOW	Bash ./server/channels/app/plugin_commands.go
