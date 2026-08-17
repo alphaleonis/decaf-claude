@@ -2,11 +2,11 @@
 # dcc-dduy
 version: 1
 title: Remove Haiku from code-review reasoning lanes (models=low volume+verification -> Sonnet)
-status: todo
+status: in-progress
 type: feature
 priority: high
 created_at: 2026-08-16T13:14:58Z
-updated_at: 2026-08-16T13:14:58Z
+updated_at: 2026-08-17T13:35:35Z
 parent: dcc-hyxw
 order: arV
 ---
@@ -39,10 +39,10 @@ dcc-c2uc's body when this lands so the two nibs do not disagree.
 
 ## Acceptance
 
-- [ ] Step 2d in `decaf-quality/skills/code-review/SKILL.md`: `models=low` → volume + verification
+- [x] Step 2d in `decaf-quality/skills/code-review/SKILL.md`: `models=low` → volume + verification
       on mid tier; no Haiku assignment remains for reviewer/screener/validator roles at any
       `models` value
-- [ ] Step 5.6 cross-reference, mode table, and `decaf-quality/README.md` item 12 updated to match
-- [ ] `competition/benchmark/tools.json` `model_policy` notes updated (archived runs predate this)
-- [ ] Dev copy synced (`~/.claude/skills/decaf-quality-dev/`)
-- [ ] dcc-c2uc body annotated with the reversal and the METHODOLOGY-v2 citation
+- [x] Step 5.6 cross-reference, mode table, and `decaf-quality/README.md` item 12 updated to match
+- [x] `competition/benchmark/tools.json` `model_policy` notes updated (archived runs predate this)
+- [x] Dev copy synced (`~/.claude/skills/decaf-quality-dev/`)
+- [x] dcc-c2uc body annotated with the reversal and the METHODOLOGY-v2 citation
