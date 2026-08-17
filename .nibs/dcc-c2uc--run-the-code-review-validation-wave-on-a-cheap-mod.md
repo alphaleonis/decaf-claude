@@ -2,14 +2,14 @@
 # dcc-c2uc
 version: 1
 title: Run the code-review validation wave on a cheap model tier
-status: in-progress
+status: scrapped
 type: feature
 priority: high
 estimate: m
 tags:
     - code-review
 created_at: 2026-07-28T20:41:05Z
-updated_at: 2026-07-29T12:10:33Z
+updated_at: 2026-08-17T13:35:24Z
 parent: dcc-hyxw
 order: ak
 ---
@@ -113,3 +113,21 @@ tier, so a re-run is not silently compared against a differently-configured base
 restart onward; its effect on verdict quality is unknown until the re-run.
 
 **Sweep order (decided 2026-07-29):** this change and its sibling are measured together in the *next* benchmark spend, before any further roster or persona change lands — otherwise the results cannot be attributed. #dcc-gcob was scrapped rather than queued behind it. See #dcc-hyxw `# Sequencing`.
+
+## Reversed (2026-08-17, dcc-dduy)
+
+The cheap verification tier this nib shipped is withdrawn. Its evidence — "anthropic does the
+identical job on Haiku and posts the best severity calibration" — was wrong on the first half:
+METHODOLOGY-v2's model-cutoff table records that `anthropic-code-review` runs its review agents on
+Sonnet and uses Haiku for helpers only. Its own named risk (a cheap validator that stops correcting
+its findings downward — the rubber-stamp wave) was never measured because the re-run was
+operator-gated; the v2 pilot has since shown the three wrongly-binned `ours-bugs` real defects died
+in the Haiku screen lane (confounded with the evidence-bar × roster-cap interaction, but that is the
+lane). Verification agents now run the mid tier at every `models` value. The two open acceptance
+items here are moot and this nib closes as superseded.
+
+## Summary
+
+**Scrapped 2026-08-17** — Superseded by dcc-dduy: the cheap verification tier is withdrawn (its anthropic-on-Haiku premise was
+wrong per METHODOLOGY-v2's cutoff table; its rubber-stamp risk was never measured). Verification runs
+mid-tier at every models value from 2026-08-17.
