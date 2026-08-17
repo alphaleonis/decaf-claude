@@ -1,0 +1,1181 @@
+{
+ "subject": "mattermost/mattermost#36824",
+ "instrument": "pooled-adjudication",
+ "judge_model": "claude-opus-5",
+ "merged_at": "2026-07-08T07:06:18Z",
+ "shim": "on",
+ "repeats": 2,
+ "grading_pass": 2,
+ "cells": [
+  {
+   "tool": "ours-bugs-sp3",
+   "repeat": 1,
+   "cost_usd": 3.8285,
+   "wall_s": 766,
+   "access_total": 49,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-bugs-sp3",
+   "repeat": 2,
+   "cost_usd": 3.509,
+   "wall_s": 688,
+   "access_total": 53,
+   "access_denied": 4
+  },
+  {
+   "tool": "ours-bugs",
+   "repeat": 1,
+   "cost_usd": 12.743,
+   "wall_s": 2009,
+   "access_total": 259,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-bugs",
+   "repeat": 2,
+   "cost_usd": 11.0746,
+   "wall_s": 1194,
+   "access_total": 234,
+   "access_denied": 2
+  },
+  {
+   "tool": "superpowers",
+   "repeat": 1,
+   "cost_usd": 3.5187,
+   "wall_s": 644,
+   "access_total": 64,
+   "access_denied": 0
+  },
+  {
+   "tool": "superpowers",
+   "repeat": 2,
+   "cost_usd": 2.3246,
+   "wall_s": 483,
+   "access_total": 53,
+   "access_denied": 0
+  }
+ ],
+ "clusters": [
+  {
+   "cluster_id": "ma01",
+   "summary": "Calling IsValid inside CommandResponseFromJSON turns the previously lenient integration decoder into a hard gate, so payloads that were tolerated before (unrecognized or differently-cased response_type, oversized ephemeral text) now fail the whole command with a 500/400 and lose all sibling content, an unannounced compatibility break with no config gate or deprecation.",
+   "location": "server/public/model/command_response.go:72",
+   "verdict": "matches-thread",
+   "matches_thread": 4,
+   "judged_severity": "high",
+   "code_citation": "server/public/model/command_response.go:72-74; server/channels/app/command.go:595-597; server/channels/web/webhook.go:114-118",
+   "confidence": 0.8,
+   "rationale": "Adding IsValid to the decoder turns previously tolerated payloads (unknown response_type, long text) into a whole-command failure at both ingest sites with no gate; this is exactly thread 4's 'hard error might break existing servers, log a warning instead'.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 16
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
+  },
+  {
+   "cluster_id": "ma02",
+   "summary": "The two new AppError i18n IDs (model.command_response.is_valid.response_type.app_error and .text.app_error) are missing from server/i18n/en.json, so the raw dotted key becomes the error Message in logs, developer-mode responses and Go client errors.",
+   "location": "server/public/model/command_response.go:82",
+   "verdict": "matches-thread",
+   "matches_thread": 1,
+   "judged_severity": "low",
+   "code_citation": "server/public/model/command_response.go:82,87; server/i18n/en.json (no model.command_response.is_valid.* entries)",
+   "confidence": 0.85,
+   "rationale": "grep of server/i18n/en.json finds neither new ID, so translation falls back to the raw key; this is what thread 1 asks to fix via make i18n-extract.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.8
+  },
+  {
+   "cluster_id": "ma03",
+   "summary": "The text-length check compares len(o.Text) bytes against a hardcoded 65535 while the governing post limit is a configurable rune count (PostMessageMaxRunesV2 / determineMaxPostSize), so the two limits neither agree nor nest \u2014 CJK text is rejected that would fit, ASCII passes that fails downstream, and enlarged-column installs get a new fixed ceiling.",
+   "location": "server/public/model/command_response.go:85",
+   "verdict": "matches-thread",
+   "matches_thread": 0,
+   "judged_severity": "medium",
+   "code_citation": "server/public/model/command_response.go:85-86; server/public/model/post.go:72-73,508-510",
+   "confidence": 0.8,
+   "rationale": "len(o.Text) counts bytes against a fixed 65535 whereas Post.IsValid enforces utf8.RuneCountInString against a configurable rune limit (PostMessageMaxRunesV2 or column/4), so the two limits diverge in both directions; this is the byte-vs-character defect thread 0 raises.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 5
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 4
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.75
+  },
+  {
+   "cluster_id": "ma04",
+   "summary": "CommandResponseFromHTTPBody only validates the application/json branch; text/plain bodies go through CommandResponseFromPlainText which never calls IsValid, so the same oversized payload is rejected as JSON but accepted by switching Content-Type.",
+   "location": "server/public/model/command_response.go:36",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/public/model/command_response.go:35-42,45-49",
+   "confidence": 0.65,
+   "rationale": "CommandResponseFromHTTPBody only routes application/json through CommandResponseFromJSON; text/plain goes to CommandResponseFromPlainText with no IsValid, so the same oversized text is rejected or accepted depending solely on Content-Type. Real inconsistency in the new validation, not raised by any thread.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 5
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 5
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
+  },
+  {
+   "cluster_id": "ma05",
+   "summary": "Unbounded recursion of IsValid over ExtraResponses (deep nesting or a cyclic value) as a stack-exhaustion vector \u2014 examined and cleared because encoding/json's nesting cap, the 1 MB LimitReader and Go's growable stack bound it and JSON cannot construct a cycle.",
+   "location": "server/public/model/command_response.go:90",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:90-98",
+   "confidence": 0.9,
+   "rationale": "Cleared note asserting no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "ma06",
+   "summary": "A typed-nil *AppError from IsValid could escape as a non-nil error interface at the CommandResponseFromJSON call site \u2014 examined and cleared because the concrete pointer is nil-tested before conversion.",
+   "location": "server/public/model/command_response.go:72",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:72-74",
+   "confidence": 0.9,
+   "rationale": "Cleared note; the *AppError is nil-tested before it is returned as error, so no typed-nil escape.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
+  },
+  {
+   "cluster_id": "ma07",
+   "summary": "StringifyMessageAttachmentFieldValue is applied only one level deep in CommandResponseFromJSON, so attachments in nested ExtraResponses are never stringified while IsValid now recurses fully (pre-existing asymmetry).",
+   "location": "server/public/model/command_response.go:63",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:63-70,90-98",
+   "confidence": 0.5,
+   "rationale": "The asymmetry is real, but no consumer reads ExtraResponses below the first level (app/command.go:621-628), so nested-nested attachments being unstringified has no effect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "ma08",
+   "summary": "maxLength := 65535 is a function-local magic number rather than a package-level constant (or a reference to the existing PostMessageMaxBytesV2), unlike the file's other constants.",
+   "location": "server/public/model/command_response.go:85",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "server/public/model/command_response.go:85; server/public/model/post.go:72",
+   "confidence": 0.7,
+   "rationale": "65535 is a local literal while PostMessageMaxBytesV2 = 65535 already exists in the same package and the file declares its other constants at package level; correct, small.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 14
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 12
+    }
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "ma09",
+   "summary": "The comment `// check response type` merely restates the following condition and gives no rationale for the allowlist or why the empty string is accepted.",
+   "location": "server/public/model/command_response.go:80",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:80",
+   "confidence": 0.8,
+   "rationale": "The comment restates the next line; purely stylistic.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 12
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 13
+    }
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "ma10",
+   "summary": "The new extra_responses test case is indented with spaces while sibling table cases use tabs.",
+   "location": "server/public/model/command_response_test.go:173",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response_test.go:173-180",
+   "confidence": 0.85,
+   "rationale": "Whitespace inside a raw JSON string literal; purely stylistic.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    }
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.95
+  },
+  {
+   "cluster_id": "ma11",
+   "summary": "Validation lives in the shared bidirectional decoder CommandResponseFromJSON, which Client4.ExecuteCommand/ExecuteCommandWithTeam also use to decode server-emitted responses that are never validated server-side (plugin/built-in commands), so a response the webapp renders fine fails to decode in mmctl and every Go client; validation belongs at the ingest sites, not the decoder.",
+   "location": "server/public/model/client4.go:5961",
+   "verdict": "matches-thread",
+   "matches_thread": 6,
+   "judged_severity": "medium",
+   "code_citation": "server/public/model/client4.go:5961-5964; server/public/model/command_response.go:72-74",
+   "confidence": 0.6,
+   "rationale": "Client4.ExecuteCommand/ExecuteCommandWithTeam decode server-emitted responses through the same CommandResponseFromJSON that now hard-fails on IsValid, while plugin/built-in responses (app/command.go:234-252) never pass through it server-side; the remedy is the same as thread 6's ask (move the call to the two ingest call sites), though the rationale differs.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
+  },
+  {
+   "cluster_id": "ma12",
+   "summary": "The recursive IsValid call returns a nested ExtraResponses failure verbatim, so the error carries no index or path and is indistinguishable from a top-level failure.",
+   "location": "server/public/model/command_response.go:95",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "server/public/model/command_response.go:95-97; server/public/model/post.go:854-856",
+   "confidence": 0.6,
+   "rationale": "The nested error is returned verbatim with no index, unlike Post.IsValid which prefixes the attachment index; a small debuggability nit.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 5
+    }
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "ma13",
+   "summary": "The new test cases assert only assert.Error/assert.Nil (with an ASCII payload that does not pin byte vs rune) and never check the AppError Id or StatusCode, so a case failing for an unrelated reason such as a JSON typo still passes.",
+   "location": "server/public/model/command_response_test.go:167",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/public/model/command_response_test.go:159-182,236-238",
+   "confidence": 0.6,
+   "rationale": "The ShouldError branch checks only assert.Error/assert.Nil, so the new cases (especially the multi-line extra_responses JSON) would still pass if they failed on a JSON syntax error rather than validation; asserting the AppError Id would pin the intent. Correct, small.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 6
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 8
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 6
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
+  },
+  {
+   "cluster_id": "ma14",
+   "summary": "CommandResponseFromHTTPBody returns (nil, nil) when io.ReadAll fails, swallowing the read error and forcing callers into a separate nil check (pre-existing).",
+   "location": "server/public/model/command_response.go:39",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/public/model/command_response.go:39-42",
+   "confidence": 0.5,
+   "rationale": "On io.ReadAll failure the function returns (nil, nil), discarding the error; both callers cope via a nil check but the read error is lost. Pre-existing and small.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "ma15",
+   "summary": "IsValid recurses through all ExtraResponses and propagates any nested failure, so one bad extra entry (even at a depth no consumer ever reads) rejects the whole payload and discards the valid main message, contradicting HandleCommandResponse's per-entry tolerance.",
+   "location": "server/public/model/command_response.go:95",
+   "verdict": "matches-thread",
+   "matches_thread": 4,
+   "judged_severity": "medium",
+   "code_citation": "server/public/model/command_response.go:95-97; server/channels/app/command.go:621-628",
+   "confidence": 0.55,
+   "rationale": "One invalid nested entry makes the whole decode fail and discards the main message, whereas HandleCommandResponse tolerates per-entry failures; this is the hard-error-instead-of-warning defect thread 4 raises, viewed through the nested case.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 3
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "ma16",
+   "summary": "The len(o.Text) > maxLength boundary was checked for an off-by-one against the 65536-byte test and found exact.",
+   "location": "server/public/model/command_response.go:86",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:86",
+   "confidence": 0.9,
+   "rationale": "A considered-and-cleared note asserting no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
+  },
+  {
+   "cluster_id": "ma17",
+   "summary": "The response_type allowlist (in_channel, ephemeral, empty) might be too narrow \u2014 examined and cleared since no other legitimate values were found in built-in commands, plugins or docs.",
+   "location": "server/public/model/command_response.go:81",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:81",
+   "confidence": 0.9,
+   "rationale": "Cleared note asserting no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.65
+  },
+  {
+   "cluster_id": "ma18",
+   "summary": "The http.StatusBadRequest set on IsValid's AppErrors has no observable effect because both call sites wrap it in a fresh outer AppError, so the failure surfaces to the user as a generic 500 via app/command.go.",
+   "location": "server/channels/app/command.go:596",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/channels/app/command.go:595-597; server/channels/web/webhook.go:114-118",
+   "confidence": 0.55,
+   "rationale": "DoCommandRequest wraps the decode error in a fresh 500 AppError and commandWebhook in a fresh hardcoded 400, so the StatusBadRequest set in IsValid is never what the caller sees; true and minor.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
+  },
+  {
+   "cluster_id": "ma19",
+   "summary": "An empty-string ResponseType is accepted by IsValid \u2014 examined and cleared as required for consistency with the plain-text path and empty-means-ephemeral handling.",
+   "location": "server/public/model/command_response.go:81",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:81",
+   "confidence": 0.9,
+   "rationale": "Cleared note asserting no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
+  },
+  {
+   "cluster_id": "ma20",
+   "summary": "commandWebhook reads r.Body without a LimitReader, unlike the outgoing-command path capped at MaxIntegrationResponseSize (pre-existing).",
+   "location": "server/channels/web/webhook.go:114",
+   "verdict": "false-positive",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/channels/web/handlers.go:206-216; server/public/model/config.go:1034-1035",
+   "confidence": 0.55,
+   "rationale": "commandWebhook's r.Body is already wrapped in http.MaxBytesReader (ServiceSettings.MaximumPayloadSizeBytes, default 300000) by the generic handler, so the implied unbounded read does not exist; also pre-existing and outside the diff.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.75
+  },
+  {
+   "cluster_id": "ma21",
+   "summary": "The newly exported IsValid has no nil-receiver guard \u2014 cleared because call sites are non-nil and sibling IsValid methods omit it too.",
+   "location": "server/public/model/command_response.go:79",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:79",
+   "confidence": 0.9,
+   "rationale": "Cleared note asserting no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "ma22",
+   "summary": "err is shadowed at the IsValid call in CommandResponseFromJSON \u2014 idiomatic Go, not a bug.",
+   "location": "server/public/model/command_response.go:72",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:72",
+   "confidence": 0.9,
+   "rationale": "Notes idiomatic shadowing and asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "ma23",
+   "summary": "The test literal \"shliapa_type\" used as an invalid response_type is inert test data, not a defect.",
+   "location": "server/public/model/command_response_test.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response_test.go:161",
+   "confidence": 0.9,
+   "rationale": "Asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.4
+  },
+  {
+   "cluster_id": "ma24",
+   "summary": "ExpectedCommandResponse: nil is never asserted for ShouldError table rows \u2014 a pre-existing table convention.",
+   "location": "server/public/model/command_response_test.go:47",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response_test.go:236-238",
+   "confidence": 0.85,
+   "rationale": "Pre-existing table convention; the summary itself asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.7
+  },
+  {
+   "cluster_id": "ma25",
+   "summary": "The `if resp == nil { continue }` branch of IsValid (and the nested text-length branch) has no test coverage \u2014 no test puts a null element in extra_responses.",
+   "location": "server/public/model/command_response_test.go:159",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "server/public/model/command_response.go:91-93",
+   "confidence": 0.5,
+   "rationale": "No test case puts a null element in extra_responses, so the nil-continue branch of IsValid is untested; correct but a small coverage nit.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 8
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
+  },
+  {
+   "cluster_id": "ma26",
+   "summary": "IsValid's nil-skip lets {\"extra_responses\":[null]} through as a nil element that HandleCommandResponse/HandleCommandResponsePost later dereference, a reachable nil-pointer panic from commandWebhook and custom slash commands.",
+   "location": "server/public/model/command_response.go:90",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "server/public/model/command_response.go:91-93; server/channels/app/command.go:621-623,631-636",
+   "confidence": 0.65,
+   "rationale": "IsValid explicitly skips nil ExtraResponses entries, and HandleCommandResponse passes each entry to HandleCommandResponsePost which dereferences response.Type unguarded, so {\"extra_responses\":[null]} from a command webhook or custom command reaches a nil-pointer panic; pre-existing, but the new validator lets a known-crashing shape through.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 6
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "ma27",
+   "summary": "The tests use 65536 (rejected) but never pin that exactly 65535 passes, so a > to >= regression at the boundary would go unnoticed.",
+   "location": "server/public/model/command_response_test.go:159",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "server/public/model/command_response_test.go:165-170",
+   "confidence": 0.6,
+   "rationale": "Only the 65536 rejection is tested; nothing pins that 65535 is accepted, so a > to >= regression would pass. Small test-boundary nit.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 7
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 7
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
+  },
+  {
+   "cluster_id": "ma28",
+   "summary": "No green-path test asserts that response_type \"in_channel\" alone is accepted \u2014 the only in_channel cases both expect errors.",
+   "location": "server/public/model/command_response_test.go:167",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "server/public/model/command_response_test.go:165-182",
+   "confidence": 0.6,
+   "rationale": "The only two in_channel rows in the table both expect errors, so the accept path for in_channel is unpinned; a fair but small test gap.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 9
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 9
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
+  },
+  {
+   "cluster_id": "ma29",
+   "summary": "IsValid is new exported public API with no direct unit test; it is exercised only transitively through CommandResponseFromJSON.",
+   "location": "server/public/model/command_response_test.go:123",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response_test.go:36-45",
+   "confidence": 0.5,
+   "rationale": "IsValid is fully exercised through the CommandResponseFromJSON table with the same inputs a direct test would use; a direct test is a preference, not a gap.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 10
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 10
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "ma30",
+   "summary": "TestCommandResponseFromHTTPBody is untouched, so the text/plain bypass of the new validation is not pinned in either direction by a test.",
+   "location": "server/public/model/command_response_test.go:159",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "server/public/model/command_response.go:39-40; server/public/model/command_response_test.go:13-31",
+   "confidence": 0.45,
+   "rationale": "TestCommandResponseFromHTTPBody is unchanged and has no case pinning whether text/plain bodies are subject to the new validation; a small, actionable test observation.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 11
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 11
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "ma31",
+   "summary": "The newly exported IsValid has no doc comment stating what it validates.",
+   "location": "server/public/model/command_response.go:79",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:79",
+   "confidence": 0.6,
+   "rationale": "Most IsValid methods in server/public/model (roughly 59 of 69) have no doc comment, so this matches package convention; a preference.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 13
+    }
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.95
+  },
+  {
+   "cluster_id": "ma32",
+   "summary": "The DetailedError strings (\"invalid response type\", \"text is too long\") omit the offending value and actual/max length, unlike Post.IsValid, making the rejection hard to debug for integration authors.",
+   "location": "server/public/model/command_response.go:82",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "server/public/model/command_response.go:82,87; server/public/model/post.go:508-510",
+   "confidence": 0.6,
+   "rationale": "DetailedError omits the offending value and actual/max length while Post.IsValid reports Length/MaxLength; a small actionable debuggability nit.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 15
+    }
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.45
+  },
+  {
+   "cluster_id": "ma33",
+   "summary": "For a change billed as strict validation, IsValid leaves ChannelId, Type (system_ prefix), Username, IconURL, Props and Attachments unvalidated \u2014 narrower scope than the commit message implies.",
+   "location": "server/public/model/command_response.go:79",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/public/model/command_response.go:79-99",
+   "confidence": 0.45,
+   "rationale": "IsValid checks only response_type, text length and recursion; attachments (which already have MessageAttachment.IsValid), URLs, Type, etc. are untouched, so 'strict validation' overstates the scope. Correct but mostly a framing/scope comment.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 16
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 15
+    }
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "ma34",
+   "summary": "server/Makefile's i18n-check target does not run `mmgotool i18n check`, so CI cannot catch missing en.json keys like the ones this change introduces.",
+   "location": "server/Makefile:342",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/Makefile:342-345; tools/mmgotool/commands/i18n.go:51-57",
+   "confidence": 0.5,
+   "rationale": "True that i18n-check runs clean-empty/check-empty-src rather than 'i18n check', but this is a pre-existing repo tooling gap outside the PR's scope; the actionable point for this PR is the missing keys themselves (thread 1).",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 17
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.6
+  },
+  {
+   "cluster_id": "ma35",
+   "summary": "Missing blank line before the final `return nil` in IsValid, inconsistent with the spacing of the other blocks in the function.",
+   "location": "server/public/model/command_response.go:98",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:98-99",
+   "confidence": 0.9,
+   "rationale": "Blank-line spacing; purely stylistic.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 14
+    }
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.95
+  }
+ ]
+}

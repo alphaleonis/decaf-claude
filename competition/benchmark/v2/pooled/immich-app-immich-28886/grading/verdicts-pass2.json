@@ -1,0 +1,254 @@
+[
+ {
+  "cluster_id": "im11",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/src/dtos/asset.dto.ts:24-29",
+  "confidence": 0.5,
+  "rationale": "The v2.6.0 deprecation entry that shipped in the published spec is deleted rather than superseded, and search.dto.ts:46-47 still carries it, so the two rating histories now disagree; a real but small documentation-history concern."
+ },
+ {
+  "cluster_id": "im10",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:27",
+  "confidence": 0.55,
+  "rationale": "The v3 entry is accurate (0 was coerced to null before 99281de and is rejected now); the cluster mostly clears itself, and the residual 'does not mention -1' point is g01's substance."
+ },
+ {
+  "cluster_id": "im19",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/controllers/asset.controller.spec.ts:205-208",
+  "confidence": 0.7,
+  "rationale": "Untouched code, phrased as 'worth confirming' with no asserted defect; the existing controller spec already exercises the lat/long refinement through the extended UpdateAssetDto."
+ },
+ {
+  "cluster_id": "im20",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/repositories/media.repository.ts:118",
+  "confidence": 0.8,
+  "rationale": "A considered-and-cleared note asserting no defect."
+ },
+ {
+  "cluster_id": "im21",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "mobile/openapi/lib/model/update_asset_dto.dart:1",
+  "confidence": 0.85,
+  "rationale": "Observation about diff rendering of generated files; no defect claimed."
+ },
+ {
+  "cluster_id": "im09",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/src/services/duplicate.service.ts:257-265",
+  "confidence": 0.45,
+  "rationale": "Verified: rating starts at 0 and only >0 propagates, so a -1 on a merged duplicate never carries to an unrated keeper; whether rejection should propagate is debatable, so small and pre-existing rather than substantive."
+ },
+ {
+  "cluster_id": "im07",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "web/src/lib/components/asset-viewer/DetailPanelStarRating.svelte:16",
+  "confidence": 0.5,
+  "rationale": "Verified: -1 is cast to Rating and rendered as no stars, so web cannot distinguish rejected from unrated; real UX gap but pre-existing and outside this server-only change."
+ },
+ {
+  "cluster_id": "im27",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "mobile/openapi/lib/model/update_asset_dto.dart:172",
+  "confidence": 0.8,
+  "rationale": "Considered-and-cleared note; the Dart model does a bare int.parse with no bounds check, so nothing to act on."
+ },
+ {
+  "cluster_id": "im12",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:27",
+  "confidence": 0.6,
+  "rationale": "Rating 0 already returned 400 at the checkpoint base (99281de introduced .min(1)); this PR merely relabels the v3 history entry to say so, so it is neither a new breaking change nor undocumented \u2014 only the 'no test pins 0' remark is a minor true nit."
+ },
+ {
+  "cluster_id": "im14",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:16-21",
+  "confidence": 0.6,
+  "rationale": "Probed and cleared for the tested case; the 1e21 double-issue observation has no practical impact and is not worth reviewer attention."
+ },
+ {
+  "cluster_id": "im17",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:1",
+  "confidence": 0.85,
+  "rationale": "Commit-message typos on a squash-merged PR are not a code concern."
+ },
+ {
+  "cluster_id": "im15",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:20",
+  "confidence": 0.65,
+  "rationale": "Purely stylistic preference about the refine error text; the message is accurate."
+ },
+ {
+  "cluster_id": "im02",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:4",
+  "confidence": 0.5,
+  "rationale": "The deleted migration (merged in 99281de on main) irreversibly nulled -1 ratings wherever it ran; nothing can restore them, but a release-note acknowledgment is a reasonable, small ask."
+ },
+ {
+  "cluster_id": "im04",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "server/src/dtos/search.dto.ts:36-49",
+  "confidence": 0.8,
+  "rationale": "Verified: BaseSearchSchema.rating still has .min(1) and the '-1 no longer valid' history, so every search DTO rejects rating -1 with 400 while the update DTO now accepts it \u2014 rejected assets can be set but not searched, and the two histories contradict."
+ },
+ {
+  "cluster_id": "im18",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte:12-19",
+  "confidence": 0.55,
+  "rationale": "options[0] is the 'null' entry so options[rating] for 1-5 is correctly indexed (not off by one), and Number.parseInt('null') yields NaN which JSON-serializes to null; pre-existing and unrelated to the diff besides."
+ },
+ {
+  "cluster_id": "im05",
+  "verdict": "matches-thread",
+  "matches_thread": 1,
+  "judged_severity": "medium",
+  "code_citation": "server/src/dtos/asset.dto.ts:16-21",
+  "confidence": 0.85,
+  "rationale": "Moving bounds into .refine() removes them from the JSON-schema output, so the spec publishes minimum/maximum \u00b19007199254740991 for UpdateAssetDto/AssetBulkUpdateDto.rating \u2014 the same wrong/misleading bounds thread 1 flags."
+ },
+ {
+  "cluster_id": "im22",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "server/src/controllers/asset.controller.spec.ts:251-258",
+  "confidence": 0.75,
+  "rationale": "Verified: the as-is loop still covers only 1 and 5, and the -1 e2e/metadata tests removed by 99281de are not restored, so the PR's headline behavior has no test and a re-restriction would pass CI."
+ },
+ {
+  "cluster_id": "im24",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/controllers/asset.controller.spec.ts:239-248",
+  "confidence": 0.7,
+  "rationale": "Identical error strings for 7 and -2 are inherent to a single refine predicate; the tests still assert 400 with the right message, so nothing actionable."
+ },
+ {
+  "cluster_id": "im16",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/src/dtos/exif.dto.ts:32",
+  "confidence": 0.5,
+  "rationale": "Descriptions now diverge (asset.dto.ts mentions -1/rejected; search.dto.ts:41 and exif.dto.ts:32 do not) and the 'rejected' concept is otherwise undocumented; correct but small."
+ },
+ {
+  "cluster_id": "im25",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/services/workflow-execution.service.ts:318",
+  "confidence": 0.8,
+  "rationale": "Considered-and-cleared note asserting no defect."
+ },
+ {
+  "cluster_id": "im03",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "server/src/services/metadata.service.ts:308",
+  "confidence": 0.8,
+  "rationale": "Verified: extraction still uses validateRange(exifTags.Rating, 1, 5), and sidecar write (metadata.service.ts:509,523) emits Rating -1, so a rejection set via the API or authored as XMP is nulled on the next extraction \u2014 the -1 change is undone by the metadata path."
+ },
+ {
+  "cluster_id": "im01",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "server/src/repositories/database.repository.ts:510-520",
+  "confidence": 0.7,
+  "rationale": "Kysely 0.28's Migrator calls ensureNoMissingMigrations unconditionally (verified in upstream source) and throws 'corrupted migrations: previously executed migration ... is missing', so any database that recorded the deleted migration fails runMigrations at startup; a no-op up() would avoid it."
+ },
+ {
+  "cluster_id": "im06",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/src/dtos/exif.dto.ts:32",
+  "confidence": 0.65,
+  "rationale": "Verified: ExifResponseDto.rating keeps z.int().min(1).max(5) (published as minimum 1 in the spec) while responses may now carry -1; not runtime-enforced since no ZodSerializerDto is applied, but the response contract is now wrong."
+ },
+ {
+  "cluster_id": "im13",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:16-22",
+  "confidence": 0.8,
+  "rationale": "Probed and cleared; the chain handles undefined and null the same as the old .nullish()."
+ },
+ {
+  "cluster_id": "im08",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/utils/duplicate.ts:11",
+  "confidence": 0.55,
+  "rationale": "A -1 rating is genuine EXIF data, so counting it as truthy in the tie-break is not a defect; pre-existing heuristic with no clear action."
+ },
+ {
+  "cluster_id": "im26",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "mobile/lib/widgets/asset_viewer/rating_bar.widget.dart:1",
+  "confidence": 0.8,
+  "rationale": "Scenario checked and dissolved; no defect asserted."
+ },
+ {
+  "cluster_id": "im28",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": ".github/workflows/check-openapi.yml:27",
+  "confidence": 0.75,
+  "rationale": "Considered-and-cleared note; widening request bounds is non-breaking."
+ },
+ {
+  "cluster_id": "im23",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/schema/migrations/1771535611395-ConvertRating0ToNull.ts:1",
+  "confidence": 0.85,
+  "rationale": "States that an untouched file is untouched; no defect."
+ }
+]

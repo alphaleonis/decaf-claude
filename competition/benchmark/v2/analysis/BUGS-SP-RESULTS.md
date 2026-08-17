@@ -306,3 +306,83 @@ mostly detection breadth, and no parking rule reaches it.
 parity, and the format-pass count is a free signal. It should not be iterated further on
 disposition. The next lever, if there is one, is exploration — and the honest next measurement
 is a wider subject slice, not another prompt on these two.
+
+---
+
+## Generalization slice (2026-08-17, dcc-nbgl) — three fresh subjects off library code
+
+**Why:** every figure above rests on two `library` subjects. **Design:** the only subjects that are
+out-of-window for the judge, checkout-ready and never run — `mattermost-36824` (contract/M, 4 human
+threads), `immich-28886` (contract/S, 2 human — thin), `grafana-117615` (app-ui/S, 2 human — thin)
+— × {`ours-bugs` (post-dduy: Sonnet volume seats and screeners), `ours-bugs-sp3`, `superpowers`}
+× 2 repeats. 18 cells, all CLEAN. Scored from scratch per subject with the preserved fold-in
+prompts (extract → cluster → two blind passes → class); judge stability κ 0.87 / 0.89 / 0.89. All
+three subjects are `out-of-window` and poolable. Note the diffs are small (53, 25/43, 135/3
+lines) and the real-defect pools are 6 / 4 / 4.
+
+### The two claims, answered
+
+**Claim 1 — `bugs-sp` v3 dominates the four-seat `bugs` wave at less cost.** *Holds on the
+deliverable as shown; not on gross reporting.*
+
+| pooled over the 3 subjects | `ours-bugs` (wave) | **`ours-bugs-sp3`** | superpowers |
+|---|---|---|---|
+| reported clusters | 19 | **23** | 47 |
+| defect share of reported | 74% | **65%** | 45% |
+| real defects reported / pool 14 | 13 | **12** | 13 |
+| real defects reported per cell (matt / immich / grafana) | 4.5 / 4 / 3 | **3.5 / 4 / 3.5** | 5 / 3.5 / 3 |
+| unique real | 0 | **0** | 4 |
+| thread recall (per subject, identical across arms) | .75 / .5 / 0 | **.75 / .5 / 0** | .75 / .5 / 0 |
+| repeat Jaccard | .67 / .83 / .43 | **.57 / .62 / .62** | .65 / .57 / .77 |
+| cost / cell | $12.75 | **$5.23** | $4.12 |
+| real defects moved to the Minor bucket, of 6 cells | 4 cells, 7 defects | **0** | n/a |
+| cells that stamped APPROVED with real defects found | **1** (matt r2: 0 primary, 5 real defects in Minor) | 0 | 0 |
+
+On gross "reported" the wave and the single seat are within one defect of each other on every
+subject, and every arm hits the same human threads. The wave costs 2.4× per cell for that. And on
+the deliverable a developer actually sees — the primary findings and the verdict — the wave's
+`evidence=strong` × `roster=4` gate (dcc-sk3k) misfired again, now with Sonnet screeners:
+mattermost r2 found five real defects, tiered every one below the fold, and **approved the
+change** that three other cells rejected. `bugs-sp3` never moved a real defect to the Minor bucket
+(it has none under `narrow`) and never approved a change with defects found. So the domination
+that looked total on library code narrows to: same detection, same cost advantage (~60% cheaper),
+and a report that does not bury what it found.
+
+**Claim 2 — superpowers' agent finds more real defects per cell.** *Does not hold off library
+code.* Per-cell real defects reported: superpowers 3.8, `bugs-sp3` 3.7, wave 3.8. On these small
+diffs all three arms exhaust the pool (13/14, 12/14, 13/14). Superpowers' extra volume is
+test-gap/docs/style at low judged value — its precision here is **0.30 / 0.36 / 0.46**, the first
+publishable (n ≥ 10) precision figures it has posted below 0.5 — and its 4 unique real findings are
+non-defect (grafana's GenAI-path gap, test-strategy notes). The one defect any arm missed on
+grafana was the alerting-DAG regression: both decaf arms reported it (4/4 defects), superpowers did
+not (3/4). The prometheus finding
+("superpowers finds ~5/cell to our ~3.7") looks specific to large diffs with deep pools, not a
+general property of the single agent.
+
+### Five subjects pooled (all out-of-window)
+
+| | `ours-bugs` | `ours-bugs-sp3` | superpowers |
+|---|---|---|---|
+| reported clusters | 26 | 32 | 92 |
+| defect share | 77% | 66% | 37% |
+| real defects reported / found, of 30 | 18 / 21 | 18 / 20 | 22 / 22 |
+| total cost | $111 | $66 | $42 |
+
+Caveats that bind: `ours-bugs` on prometheus/efcore is the pre-dduy policy (Haiku seats) and on
+the three new subjects post-dduy — the pooled row mixes two configurations; `ours-bugs-sp3` has 3
+repeats on the two old subjects and 2 on the new; the new subjects' pools are small (4–6), so
+per-subject recall differences of one defect are within a repeat's variance.
+
+### Recommendation on `bugs` and dcc-sk3k
+
+Make `bugs-sp` v3 the mechanism behind the `bugs` preset. Across five subjects and three
+application types it delivers the `bugs` deliverable — a defect list a developer can read
+completely, with the verdict it earns — at ~40% of the wave's cost, with equal detection on small
+diffs and better on large, and without the wave's one failure mode that matters: burying found
+defects under an approval. Keep the four-seat wave available as an explicit `bugs roster=4`
+override for anyone who wants corroboration, and keep `review`/`audit` as waves — nothing here
+measured them. dcc-sk3k (the wave's evidence gate discarding consensus defects) then closes as
+superseded for `bugs`; the mechanism itself still exists in `review`/`audit` and the nib's fix
+(`evidence=norm` below a roster floor) is worth applying there. This is a five-subject, small-pool
+recommendation; it should be re-checked when the full run widens the corpus, and the change should
+land as a preset-mechanism swap with the wave one flag away, not as a deletion.

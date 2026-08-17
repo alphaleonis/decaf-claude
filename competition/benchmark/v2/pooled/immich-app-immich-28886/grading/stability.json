@@ -1,0 +1,53 @@
+{
+  "n_clusters": 28,
+  "judge_model": {
+    "pass1": "claude-opus-5",
+    "pass2": "claude-opus-5"
+  },
+  "same_model": true,
+  "exact_agreement": 0.929,
+  "disagreement_rate": 0.071,
+  "kappa_6way": 0.887,
+  "real_vs_not": {
+    "agreement": 0.964,
+    "kappa": 0.887
+  },
+  "valid_other_vs_trivia_boundary": {
+    "n": 21,
+    "agreement": 0.905,
+    "kappa": 0.767
+  },
+  "matches_thread": {
+    "n_either_pass": 1,
+    "agree_same_index": 1
+  },
+  "confusion": {
+    "false-positive -> false-positive": 2,
+    "matches-thread -> matches-thread": 1,
+    "trivia -> trivia": 15,
+    "trivia -> valid-minor": 1,
+    "valid-minor -> valid-minor": 4,
+    "valid-minor -> valid-other": 1,
+    "valid-other -> valid-other": 4
+  },
+  "disagreements": [
+    {
+      "cluster_id": "im02",
+      "pass1": "trivia",
+      "pass2": "valid-minor",
+      "crosses_real_boundary": false
+    },
+    {
+      "cluster_id": "im22",
+      "pass1": "valid-minor",
+      "pass2": "valid-other",
+      "crosses_real_boundary": true
+    }
+  ],
+  "threshold": {
+    "kappa_floor": 0.6,
+    "exact_floor": 0.7,
+    "pre_registered": true
+  },
+  "stable": true
+}

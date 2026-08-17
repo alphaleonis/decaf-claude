@@ -1,0 +1,1048 @@
+{
+ "subject": "immich-app/immich#28886",
+ "instrument": "pooled-adjudication",
+ "judge_model": "claude-opus-5",
+ "merged_at": "2026-06-10T08:55:51Z",
+ "shim": "on",
+ "repeats": 2,
+ "grading_pass": 1,
+ "cells": [
+  {
+   "tool": "ours-bugs-sp3",
+   "repeat": 1,
+   "cost_usd": 4.9707,
+   "wall_s": 624,
+   "access_total": 69,
+   "access_denied": 2
+  },
+  {
+   "tool": "ours-bugs-sp3",
+   "repeat": 2,
+   "cost_usd": 6.5769,
+   "wall_s": 990,
+   "access_total": 89,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-bugs",
+   "repeat": 1,
+   "cost_usd": 13.1266,
+   "wall_s": 1436,
+   "access_total": 267,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-bugs",
+   "repeat": 2,
+   "cost_usd": 13.3518,
+   "wall_s": 1392,
+   "access_total": 249,
+   "access_denied": 1
+  },
+  {
+   "tool": "superpowers",
+   "repeat": 1,
+   "cost_usd": 3.7419,
+   "wall_s": 540,
+   "access_total": 60,
+   "access_denied": 0
+  },
+  {
+   "tool": "superpowers",
+   "repeat": 2,
+   "cost_usd": 3.1771,
+   "wall_s": 451,
+   "access_total": 56,
+   "access_denied": 0
+  }
+ ],
+ "clusters": [
+  {
+   "cluster_id": "im01",
+   "summary": "Deleting the already-applied ConvertNegativeRatingToNull migration file makes Kysely's unconditional missing-migration check throw 'corrupted migrations' at startup for any database that recorded it, so those servers refuse to boot; keeping the file with a no-op up() avoids it.",
+   "location": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:1",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "high",
+   "code_citation": "server/src/repositories/database.repository.ts:371-393,510-520; server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:0",
+   "confidence": 0.65,
+   "rationale": "runMigrations uses Kysely's Migrator with a FileMigrationProvider and rethrows any error; Kysely's migrator throws 'corrupted migrations: previously executed migration ... is missing' unconditionally when a recorded migration is absent from the folder, so any database that ran the now-deleted file (main/RC builds in the window since #27896) fails at startup. Confidence tempered because the population is pre-release only.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "im02",
+   "summary": "Users who ran the deleted migration on main builds already had -1 ratings irreversibly converted to NULL, and the change ships no remediation or changelog note acknowledging it.",
+   "location": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:0",
+   "confidence": 0.5,
+   "rationale": "True that main-branch databases which ran the migration in the ~3-day window (v3.0.0 unreleased; last tag v2.7.5) had -1 set to NULL irreversibly, but no remediation is possible and the affected population is pre-release; the actionable part of the migration-deletion concern is g22.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 9
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "im03",
+   "summary": "Metadata extraction still clamps with validateRange(exifTags.Rating, 1, 5), so a -1 rating (whether set via the API and written to the sidecar, or authored externally as XMP 'rejected') is converted to NULL on the next extraction, silently losing the rejection.",
+   "location": "server/src/services/metadata.service.ts:308",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "server/src/services/metadata.service.ts:107-116,308; server/src/services/metadata.service.ts:504-533",
+   "confidence": 0.85,
+   "rationale": "metadata extraction still uses validateRange(exifTags.Rating, 1, 5), which returns null for -1, while handleSidecarWrite writes Rating -1 to the sidecar and then unlocks the property; so a -1 set via the API (or authored externally as XMP rejected) is silently dropped to NULL on the next extraction. #27896 changed this from (-1, 5) and this PR does not revert it.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 4
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "im04",
+   "summary": "BaseSearchSchema.rating still carries .min(1) (and the '-1 no longer valid' history entry), so every derived search DTO rejects rating -1 with HTTP 400 and rejected assets can be set but never searched for, while the search and asset DTO histories now contradict each other.",
+   "location": "server/src/dtos/search.dto.ts:38",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "server/src/dtos/search.dto.ts:36-49",
+   "confidence": 0.85,
+   "rationale": "BaseSearchSchema.rating still has .min(1).max(5) and the 'v3: Using -1 as a rating is no longer valid' history entry, so all derived search DTOs return 400 for rating -1 after this PR makes -1 settable, and the search and asset histories now contradict each other. Incomplete revert of #27896, not raised by any thread.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "im05",
+   "summary": "Moving the rating bounds from .min()/.max() into a .refine() hides them from the JSON-Schema emitter, so UpdateAssetDto/AssetBulkUpdateDto.rating publish minimum/maximum \u00b19007199254740991 in the OpenAPI spec and generated Dart client instead of a bounded range.",
+   "location": "server/src/dtos/asset.dto.ts:17",
+   "verdict": "matches-thread",
+   "matches_thread": 1,
+   "judged_severity": "medium",
+   "code_citation": "server/src/dtos/asset.dto.ts:16-21; open-api/immich-openapi-specs.json:16605-16607",
+   "confidence": 0.9,
+   "rationale": "Moving the bounds into .refine() leaves z.int()'s safe-integer bag min/max as the only emitted bounds, so the spec and generated clients publish minimum -9007199254740991 / maximum 9007199254740991 for the rating field; this is exactly thread 1's 'wrong/misleading' comment on that spec line.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
+  },
+  {
+   "cluster_id": "im06",
+   "summary": "ExifResponseDto.rating still declares z.int().min(1).max(5) while GET /assets/:id can now return exifInfo.rating -1, so the response contract contradicts actual values (no runtime failure today only because no @ZodSerializerDto is applied).",
+   "location": "server/src/dtos/exif.dto.ts:32",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/src/dtos/exif.dto.ts:32; open-api/immich-openapi-specs.json ExifResponseDto.rating (minimum 1, maximum 5)",
+   "confidence": 0.6,
+   "rationale": "ExifResponseSchema.rating is still z.int().min(1).max(5) (added by #27896) so the published response contract says 1..5 while the server can now return -1; no runtime failure because no controller uses ZodSerializerDto, but the spec is wrong for consumers.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    }
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "im07",
+   "summary": "The web UI passes a -1 rating through `asset.exifInfo?.rating || null` cast as Rating (1-5|null), so a rejected asset renders with no stars filled and is indistinguishable from unrated (pre-existing behavior made reachable again).",
+   "location": "web/src/lib/components/asset-viewer/DetailPanelStarRating.svelte:16",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "web/src/lib/components/asset-viewer/DetailPanelStarRating.svelte:16; web/src/lib/elements/StarRating.svelte:9,71",
+   "confidence": 0.45,
+   "rationale": "-1 is truthy so it is passed as Rating and StarRating fills no stars ((-1||0) >= value is false), so a rejected asset looks unrated apart from the 'clear' button; a real, pre-existing web gap the server-only PR re-exposes, but out of the PR's scope and longstanding.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 6
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
+  },
+  {
+   "cluster_id": "im08",
+   "summary": "The duplicate-keeper tie-break heuristic counts truthy exif values, so a -1 rating counts as 'has a rating' and nudges a rejected asset ahead where null would not (pre-existing).",
+   "location": "server/src/utils/duplicate.ts:11",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/utils/duplicate.ts:10-12",
+   "confidence": 0.6,
+   "rationale": "True that -1 is truthy and counts toward the EXIF tie-break, but a rejected asset does carry rating information, and this only nudges a size tie-break; pre-existing and not worth reviewer attention.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
+  },
+  {
+   "cluster_id": "im09",
+   "summary": "Duplicate merge only propagates a rating when rating > 0, so merging a rejected (-1) duplicate into an unrated keeper silently drops the rejection and trashes the duplicate (pre-existing, made reachable again).",
+   "location": "server/src/services/duplicate.service.ts:258",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/src/services/duplicate.service.ts:258-266",
+   "confidence": 0.5,
+   "rationale": "The merge loop takes the max rating starting from 0 and only writes it when > 0, so a -1 duplicate merged into an unrated keeper leaves the keeper unrated; correct trace of pre-existing behavior that -1 makes reachable again, but whether a rejection should propagate to the keeper is debatable, so it is small.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "im10",
+   "summary": "The new v3 x-immich-history text 'Using 0 as a rating is no longer valid' on the asset rating field was questioned for accuracy/completeness \u2014 it is factually correct (0 was previously coerced to null) but says nothing about -1 being valid again.",
+   "location": "server/src/dtos/asset.dto.ts:28",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:28",
+   "confidence": 0.6,
+   "rationale": "A considered-and-cleared note: the 'Using 0 as a rating is no longer valid' entry is accurate (0 was previously coerced to null by a transform, now rejected by the refine); the residual point that the history does not mention -1 being re-allowed is a wording preference already covered by g01.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 7
+    }
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "im11",
+   "summary": "The change deletes the shipped v2.6.0 '-1 deprecated' x-immich-history entry instead of superseding it with a v3 entry stating -1 is valid again, rewriting a published API changelog that reads as append-only and leaving asset.dto.ts and search.dto.ts disagreeing about v2.6.0.",
+   "location": "server/src/dtos/asset.dto.ts:25",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/src/dtos/asset.dto.ts:24-29; server/src/dtos/search.dto.ts:42-49",
+   "confidence": 0.5,
+   "rationale": "The v2.6.0 deprecation entry that shipped in a release is deleted from asset.dto.ts's history rather than superseded, while search.dto.ts still carries both the v2.6.0 and 'v3: -1 no longer valid' entries, so the two published histories now contradict each other. Real but small; the substantive half (search still rejecting -1) is g14.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 15
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 6
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 7
+    }
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.75
+  },
+  {
+   "cluster_id": "im12",
+   "summary": "Rating 0 now returns 400 instead of being coerced to null as before the original restriction \u2014 a distinct breaking change that no commit message mentions and no test pins.",
+   "location": "server/src/dtos/asset.dto.ts:0",
+   "verdict": "false-positive",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:16-21",
+   "confidence": 0.55,
+   "rationale": "At the diff's base commit rating 0 was already rejected by .min(1) (introduced by #27896, marked refactor!), so this PR does not introduce the 0->400 change; and the diff itself documents it via the new 'v3: Using 0 as a rating is no longer valid' history entry. Only the 'no test pins 0' kernel is true, and it is minor.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 5
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 17
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "im13",
+   "summary": "The .int().nullable().refine(...).optional() chain ordering on rating was probed for mis-handling omitted/null values and found behaviorally equivalent to the old .nullish() (no defect).",
+   "location": "server/src/dtos/asset.dto.ts:16",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:16-21",
+   "confidence": 0.8,
+   "rationale": "Considered-and-cleared: .nullable() then .refine() accepting null then .optional() behaves the same as .nullish() for omitted/null values; asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
+  },
+  {
+   "cluster_id": "im14",
+   "summary": "The refine predicate was suspected of double-reporting on non-integers; 3.5 emits only the int error, though 1e21 emits two issues with no covering test.",
+   "location": "server/src/dtos/asset.dto.ts:19",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:16-21",
+   "confidence": 0.6,
+   "rationale": "Mostly a cleared suspicion: 3.5 yields only the int error (invalid_type is aborting, continue:false), and an unsafe integer like 1e21 yields a non-aborting too_big plus the refine message; two error strings on a nonsense input is cosmetic and not worth reviewer attention.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
+  },
+  {
+   "cluster_id": "im15",
+   "summary": "The refine error message 'Must be -1, a number from 1 to 5, or null' mixes a literal, a range, and nullability and reads oddly against surrounding message style.",
+   "location": "server/src/dtos/asset.dto.ts:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:20",
+   "confidence": 0.6,
+   "rationale": "Stylistic preference about the refine error string; the message is accurate and unambiguous. Not the same substance as thread 2, which is about the .describe() text.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 8
+    }
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.65
+  },
+  {
+   "cluster_id": "im16",
+   "summary": "Rating field descriptions have drifted across asset.dto.ts, search.dto.ts, and exif.dto.ts, and the new user-facing 'rejected' concept is documented nowhere including the XMP sidecar docs.",
+   "location": "server/src/dtos/asset.dto.ts:23",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/src/dtos/asset.dto.ts:23; server/src/dtos/search.dto.ts:41; server/src/dtos/exif.dto.ts:32",
+   "confidence": 0.5,
+   "rationale": "The three rating field descriptions now disagree ('-1 (rejected)' vs '[1-5], or null' vs 'Rating') and the rejected semantics are documented nowhere; true and actionable but small, and the search half largely follows from g14.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 8
+    }
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.95
+  },
+  {
+   "cluster_id": "im17",
+   "summary": "Commit messages contain typos ('udpate tests', 'gen clientc') and should be squashed before merge.",
+   "location": ":0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "",
+   "confidence": 0.9,
+   "rationale": "Commit-message typos on a PR that will be squash-merged; not a code concern.",
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 11
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 10
+    }
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.75
+  },
+  {
+   "cluster_id": "im18",
+   "summary": "SearchRatingsSection's Number.parseInt on the 'null' option yields NaN and options[rating] indexing is off by one for ratings 1-5 (pre-existing, unrelated to -1).",
+   "location": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte:29",
+   "verdict": "false-positive",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte:12-19,29-30",
+   "confidence": 0.6,
+   "rationale": "options[0] is the 'null' entry and options[1..5] are ratings 1..5, so options[rating] is not off by one; Number.parseInt('null') is NaN but serializes to JSON null, which is what the search API expects for unrated. Also pre-existing and unrelated to the diff by its own admission.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "im19",
+   "summary": "Whether the object-level lat/long .refine() on UpdateAssetBaseSchema survives .extend() in Zod v4 is worth confirming, though the pattern is untouched by this diff.",
+   "location": "server/src/dtos/asset.dto.ts:33",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:33-41",
+   "confidence": 0.7,
+   "rationale": "Zod 4's util.extend keeps the object's checks (it only throws when the new shape overwrites an existing key), and the refine/extend pattern is untouched by the diff and exercised by the existing lat/long tests; a 'worth confirming' note with no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
+  },
+  {
+   "cluster_id": "im20",
+   "summary": "media.repository.ts's Rating mapping (null -> 0, else pass-through) was traced and a -1 rating passes through unchanged \u2014 no defect.",
+   "location": "server/src/repositories/media.repository.ts:118",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/repositories/media.repository.ts:118",
+   "confidence": 0.8,
+   "rationale": "Considered-and-cleared: `Rating: tags.rating === null ? 0 : tags.rating` passes -1 through; asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
+  },
+  {
+   "cluster_id": "im21",
+   "summary": "The generated mobile Dart models appearing as binary diffs is a diff-tool artifact for generated files, not a content defect.",
+   "location": "mobile/openapi/lib/model/update_asset_dto.dart:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "mobile/openapi/lib/model/update_asset_dto.dart:0",
+   "confidence": 0.8,
+   "rationale": "Explains a diff-rendering artifact for generated files; no defect asserted.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "im22",
+   "summary": "No test asserts that rating -1 is accepted: the controller spec's as-is loop still covers only 1 and 5, and the negative-rating e2e, unit (metadata.service.spec), and round-trip coverage deleted by the original restriction is not restored, so a regression re-restricting -1 would pass CI.",
+   "location": "server/src/controllers/asset.controller.spec.ts:251",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/src/controllers/asset.controller.spec.ts:250-257",
+   "confidence": 0.6,
+   "rationale": "The as-is loop still tests only ratings 1 and 5, and the negative-rating e2e and metadata.service.spec cases removed by #27896 are not restored, so nothing in CI asserts -1 is accepted; correct and actionable, small to fix.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 15
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "reported",
+     "finding_index": 10
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
+  },
+  {
+   "cluster_id": "im23",
+   "summary": "The earlier ConvertRating0ToNull migration is untouched by this diff and not implicated in the migration deletion.",
+   "location": "server/src/schema/migrations/1771535611395-ConvertRating0ToNull.ts:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/schema/migrations/1771535611395-ConvertRating0ToNull.ts:0",
+   "confidence": 0.9,
+   "rationale": "Notes an unrelated file is untouched; asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
+  },
+  {
+   "cluster_id": "im24",
+   "summary": "The controller spec's over-max (7) and under-min (-2) rejection cases now assert the same error string, losing diagnostic granularity between the two boundaries (still not a vacuous pass).",
+   "location": "server/src/controllers/asset.controller.spec.ts:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/controllers/asset.controller.spec.ts:239-248",
+   "confidence": 0.7,
+   "rationale": "Both boundary cases now assert the same refine message, an inherent consequence of a single refine; the test still fails on a wrong status or message, so this is a preference, not a defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 16
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 16
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.85
+  },
+  {
+   "cluster_id": "im25",
+   "summary": "Pre-existing rating consumers for sorting and workflow execution were checked and are untouched, with no -1 interaction found.",
+   "location": "server/src/services/workflow-execution.service.ts:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/services/workflow-execution.service.ts:0",
+   "confidence": 0.8,
+   "rationale": "Considered-and-cleared note that other rating consumers are unaffected; asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 17
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.8
+  },
+  {
+   "cluster_id": "im26",
+   "summary": "The mobile rating_bar widget was checked for a crash on rating -1; it renders all stars unfilled with no assert, so the scenario dissolved.",
+   "location": "rating_bar.widget.dart:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "mobile/lib/presentation/widgets/asset_viewer/rating_bar.widget.dart:106-111",
+   "confidence": 0.8,
+   "rationale": "Considered-and-cleared: `_currentRating > index` with -1 renders no filled stars and there is no assert; asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "im27",
+   "summary": "The generated Dart client was checked for rejecting rating -1 by range; update_asset_dto.dart does a bare int.parse with no bounds enforcement, so construction cannot fail.",
+   "location": "update_asset_dto.dart:172",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "mobile/openapi/lib/model/update_asset_dto.dart:0",
+   "confidence": 0.8,
+   "rationale": "Considered-and-cleared: the generated Dart model does no range enforcement; asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
+  },
+  {
+   "cluster_id": "im28",
+   "summary": "The oasdiff breaking-change gate was considered; relaxing minimum/maximum on a request property widens what is accepted and is not breaking, so the check stays green.",
+   "location": ".github/workflows/check-openapi.yml:27",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": ".github/workflows/check-openapi.yml:24-30",
+   "confidence": 0.8,
+   "rationale": "Considered-and-cleared: widening request-property bounds is not a breaking change for oasdiff's fail-on ERR gate; asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
+  }
+ ]
+}
