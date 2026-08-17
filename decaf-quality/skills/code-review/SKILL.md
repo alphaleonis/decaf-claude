@@ -165,7 +165,10 @@ at generation — the `reach` block and the seat's own calibration — not in ma
 6. **Step 5 becomes a format pass only**: verify the report's sections and numbering against the
    Step 6 format and fix format only. Apply **no** gates — not the confidence gate, not the
    deterministic-claim safety net — and never re-tier a finding: the seat's severities and
-   anchors are final.
+   anchors are final. Under `reach=narrow` the seat omits the Minor Findings section by its own
+   rules (minor observations go to Considered But Not Flagged as `minor, out of reach`); do not
+   reconstruct one. Copy the seat's per-finding rows verbatim — in particular keep its `Verified`
+   row as its own table row, do not fold it into Confidence.
 7. **Step 6 runs normally.** Header: `**Mode**: bugs-sp (explicit) · roster=1 (fixed)`,
    `**Reviewers**: solo-reviewer`, `**Validation**: none (bugs-sp — single-seat path)`. The
    Agent Summary table has one row. Step 7 (review history) runs as usual.

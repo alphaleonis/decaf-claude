@@ -48,6 +48,18 @@
   "subjects_note": "experiment scoped to the two v2 pilot subjects (prometheus/prometheus#18081, dotnet/efcore#34127) x 2 repeats, per PROPOSAL-BUGS-SP.md; success criteria live there"
  },
  {
+  "id": "ours-bugs-sp2",
+  "name": "decaf-quality-dev:code-review (bugs-sp, brief v2, --report)",
+  "requires_plugin": "decaf-quality-dev",
+  "install_hint": "scripts/install-dev-plugin.sh \u2014 snapshots decaf-quality from the working tree into ~/.claude/skills/decaf-quality-dev with the namespace rewrite; re-run after any edit to decaf-quality/",
+  "model_policy": "session model; ONE solo-reviewer subagent (roster=1). No volume, verification, or clustering agents \u2014 the seat self-calibrates and its anchors are final. See code-review SKILL.md 'The bugs-sp path' and v2/analysis/PROPOSAL-BUGS-SP.md",
+  "findings_file": ".decaf/code-reviews/CODE_REVIEW_*.md",
+  "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs-sp --report {PR}. This reviews pull request #{PR} of the GitHub repository {REPO} (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "preset": "bugs-sp",
+  "baseline_note": "Second brief revision of the bugs-sp seat (nib dcc-pulk, 2026-08-17): Minor Findings omitted under reach=narrow (minor items parked as `minor, out of reach`); fail closed on defects traced to real code behavior and dismissed as 'documented as intended' / 'unreachable today' (reported at anchor 50 with the counter-argument). Orchestrator unchanged. The ours-bugs-sp cells of 2026-08-17 are the brief-v1 baseline; this arm exists so v1 and v2 can sit side by side.",
+  "subjects_note": "same 2 pilot subjects x 2 repeats as ours-bugs-sp; restated criteria in PROPOSAL-BUGS-SP.md \"Decisions after the first run\""
+ },
+ {
   "id": "ours-review",
   "name": "decaf-quality-dev:code-review (review, --report)",
   "requires_plugin": "decaf-quality-dev",

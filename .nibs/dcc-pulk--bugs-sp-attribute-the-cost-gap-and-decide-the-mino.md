@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: normal
 created_at: 2026-08-17T08:09:33Z
-updated_at: 2026-08-17T08:23:00Z
+updated_at: 2026-08-17T08:48:17Z
 parent: dcc-hyxw
 order: ax
 ---
@@ -51,8 +51,11 @@ a calibration decision — note superpowers' agent reached the same conclusion o
       ~35k-token SKILL.md re-read across ~10 turns, and the report emitted twice. Within-seat
       verification-vs-writing split not measurable (thinking redacted; visible emissions: ~60%
       shell inputs / ~40% report text)
-- [ ] Decision recorded on the Minor bucket under `bugs-sp reach=narrow`, with the brief/SKILL edited
-      if it changes
-- [ ] Decision recorded on the fail-closed question, with the brief edited if it changes
-- [ ] If any brief/SKILL change lands: re-run the 2×2 (operator-gated) and re-fold; do not compare a
-      changed brief against these cells without saying so
+- [x] Decision (operator, 2026-08-17): Minor bucket **omitted** under `bugs-sp reach=narrow` — minor
+      items parked as `minor, out of reach`; tautological-test-is-defect rule kept. Brief + SKILL edited
+- [x] Decision (operator, 2026-08-17): **fail closed** — a defect traced to real code behavior and
+      dismissed as "documented as intended" / "unreachable today" is reported at anchor 50 with the
+      counter-argument. Brief edited. Orchestrator left as is (backbone kept; cost criterion restated
+      in PROPOSAL-BUGS-SP.md)
+- [ ] Re-run the 2×2 under the new arm `ours-bugs-sp2` (brief v2; the 2026-08-17 `ours-bugs-sp`
+      cells stay frozen as brief-v1) and fold in — authorized 2026-08-17

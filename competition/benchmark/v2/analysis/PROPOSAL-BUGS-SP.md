@@ -141,3 +141,36 @@ diff the briefs, not the pipeline.
 Two subjects do not generalize — this promotes `bugs-sp` from experiment to default for nothing
 until replicated on a wider slice; no precision figure below 10 reported clusters; never cite v1;
 all cells through the shim with clean leak audits.
+
+## Decisions after the first run (operator, 2026-08-17)
+
+Measured in `BUGS-SP-RESULTS.md`. Three calls, recorded here so the re-run is judged against them:
+
+1. **Minor bucket omitted under `narrow`.** 8 of the 18 reported clusters were Minor-bucket
+   one-liners (4 design, 2 docs, 1 risk, 1 defect) — items the `bugs` funnel would have hidden.
+   The seat now parks them under Considered But Not Flagged as `minor, out of reach`. The
+   "tautological/snapshot test = defect" rule stays (the judge classes those `test-gap`; that is a
+   class-table reading note, not a brief change).
+2. **Fail closed on traced-and-dismissed defects.** Three real defects (prom c05, c07; efcore
+   e13) were found, traced, and parked as "documented as intended" / "unreachable today". The
+   seat now reports such items at anchor 50 with its counter-argument; the developer decides.
+   Pre-existing items under `narrow` remain parked (reach, not disposition).
+3. **Orchestrator kept as is.** The cost attribution showed the seat costs what superpowers' agent
+   costs and the whole ~$0.85/cell gap is the shared `code-review` backbone (SKILL load, ~10
+   turns, report re-emission). Keeping the backbone is worth that: every future tuning change
+   lands once for all presets. **The cost criterion is therefore restated**: seat cost at
+   superpowers parity, orchestrator overhead ≤ $1/cell — met by the current cells — and the
+   re-run is judged on recall, composition and stability.
+
+**Re-run**: same 2 subjects × 2 repeats under a new benchmark arm id, `ours-bugs-sp2` (brief after
+decisions 1–2). The 2026-08-17 `ours-bugs-sp` cells stay frozen as the brief-v1 baseline; the
+comparison is v1 vs v2 on identical subjects, plus the existing seven tools.
+
+Restated success criteria for `ours-bugs-sp2`:
+
+| criterion | target |
+|---|---|
+| recall — real defects **reported** | ≥ 8 / 16 (v1: 6; found 10) |
+| composition — defect share of reported | ≥ 2/3 (v1: 44%; 70% primary-only) |
+| cost | seat ≈ superpowers' agent; orchestrator ≤ $1/cell (v1: $0.89 exact input-side + share of output) |
+| stability | no worse than v1 (Jaccard 0.36 / 0.43) |
