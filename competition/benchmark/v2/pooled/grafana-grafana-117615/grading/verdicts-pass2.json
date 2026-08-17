@@ -1,0 +1,236 @@
+[
+ {
+  "cluster_id": "gf11",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/GenAI/GenAISQLSuggestionsButton.tsx:62",
+  "confidence": 0.5,
+  "rationale": "SqlExpr passes raw `vars` to SqlQueryActions and the GenAI prompt joins them unquoted (`refIds.join(', ')`), so the AI path was not updated alongside the editor/autocomplete paths; whether the model then emits unquoted SQL is expected LLM behavior, not verifiable, so the impact is uncertain."
+ },
+ {
+  "cluster_id": "gf20",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx:61",
+  "confidence": 0.6,
+  "rationale": "The `v.value!` assertion is pre-existing and only hides a per-element undefined `value`; the empty-array `vars[0]` case is hidden by index typing, not by the `!`, so this is a type-safety style note rather than an actionable defect of the change."
+ },
+ {
+  "cluster_id": "gf26",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.test.ts:12-14",
+  "confidence": 0.8,
+  "rationale": "True that the assertions never inspect refId so the uuid mock is not exercised, but harmless test setup is not worth reviewer attention."
+ },
+ {
+  "cluster_id": "gf02",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "public/app/features/alerting/unified/components/rule-editor/dag.ts:198-206",
+  "confidence": 0.6,
+  "rationale": "cleanTableName strips only `'\"()` and then splits at the first space, so a `FROM \\`gdp per capita\\`` target becomes \"`gdp\", graph.link throws (dag.ts:162) and createDAGFromQueriesSafe drops the SQL expression in the alerting rule editor; spaced refIds were already unlinkable before, so this is an incomplete fix in the alerting path rather than a strict regression, but the newly generated backticked SQL is still not understood there."
+ },
+ {
+  "cluster_id": "gf23",
+  "verdict": "matches-thread",
+  "matches_thread": 7,
+  "judged_severity": "low",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.test.ts:33-39",
+  "confidence": 0.6,
+  "rationale": "The third argument (the `queries.filter(q => q.refId === query.table)` result) is asserted with expect.anything(), which matches an empty array, so the test passes whether or not the source-query lookup succeeded \u2014 the same gap thread 7 raises."
+ },
+ {
+  "cluster_id": "gf14",
+  "verdict": "matches-thread",
+  "matches_thread": 0,
+  "judged_severity": "low",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/SqlExpr.test.tsx:109-121",
+  "confidence": 0.5,
+  "rationale": "Bundled test-gap note; its empty-refIds item is exactly the regression test thread 0 requests (and the read-back item overlaps thread 7), so it echoes the human threads' test asks rather than adding an independent finding."
+ },
+ {
+  "cluster_id": "gf19",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/SqlExpr.test.tsx:109-121",
+  "confidence": 0.85,
+  "rationale": "Considered-and-cleared note asserting no defect."
+ },
+ {
+  "cluster_id": "gf03",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx:13",
+  "confidence": 0.6,
+  "rationale": "mysql is a decoupled workspace package (public/app/plugins/datasource/mysql/package.json, eslint 'grafana/decoupled-plugins-overrides' zone) and metaSqlExpr.ts already carries a local helper, so importing the plugin's internal sqlUtil into core is a real but non-breaking dependency-direction concern; there is limited precedent (loki types) so it is minor."
+ },
+ {
+  "cluster_id": "gf08",
+  "verdict": "matches-thread",
+  "matches_thread": 7,
+  "judged_severity": "medium",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.ts:15-20",
+  "confidence": 0.7,
+  "rationale": "Monaco's mysql tokenizer emits '`' as a separate identifier.quote token and plugin-ui getTableToken returns the first non-whitespace token after FROM, so fetchSQLFields receives a lone backtick, re-quotes it and its refId filter matches nothing; this is the missing source-query lookup / unquote on the read-back path that thread 7 describes."
+ },
+ {
+  "cluster_id": "gf16",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/GenAI/GenAISQLSuggestionsButton.tsx:99",
+  "confidence": 0.8,
+  "rationale": "True observation about button label text for previously saved (already-invalid) expressions, self-judged as not a defect \u2014 considered-and-cleared."
+ },
+ {
+  "cluster_id": "gf01",
+  "verdict": "matches-thread",
+  "matches_thread": 0,
+  "judged_severity": "high",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx:81",
+  "confidence": 0.9,
+  "rationale": "ExpressionQueryEditor.tsx:118 and alerting Expression.tsx:101 build refIds by filtering out only the current query, so vars[0] is undefined when the SQL expression is alone; sqlUtil.ts:53-54 then does regex.test(undefined) (true for 'undefined') followed by undefined.toUpperCase(), a TypeError on render where the old code rendered 'FROM undefined' \u2014 exactly thread 0."
+ },
+ {
+  "cluster_id": "gf22",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "node_modules/monaco-editor/esm/vs/basic-languages/mysql/mysql.js:19-25",
+  "confidence": 0.65,
+  "rationale": "The mysql language configuration's autoClosingPairs are {}, [], (), \" and ' \u2014 backtick is not auto-closed \u2014 so the hypothesized doubled backticks do not arise; the cluster itself is unverified speculation."
+ },
+ {
+  "cluster_id": "gf24",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:15",
+  "confidence": 0.9,
+  "rationale": "Considered-and-cleared note asserting no defect."
+ },
+ {
+  "cluster_id": "gf10",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "node_modules/@grafana/plugin-ui/dist/esm/components/SQLEditor/components/SQLEditor.js:286",
+  "confidence": 0.6,
+  "rationale": "plugin-ui appends ' $0' only when completion === name, so backticked table completions lose the trailing space/cursor stop that unquoted names still get; true and observable, but cosmetic."
+ },
+ {
+  "cluster_id": "gf21",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/plugins/datasource/mysql/sqlUtil.ts:73-76",
+  "confidence": 0.55,
+  "rationale": "Unverified speculation about a dialect keyword mismatch with no concrete word identified; not actionable as stated."
+ },
+ {
+  "cluster_id": "gf09",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:38-46",
+  "confidence": 0.8,
+  "rationale": "The second test has no expect(resolveFunc).toBeDefined() before its `if (resolveFunc)` block and asserts only `name`, so it can pass with zero assertions and never checks the changed `completion` field."
+ },
+ {
+  "cluster_id": "gf12",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.ts:29",
+  "confidence": 0.7,
+  "rationale": "Correct that field-name quoting at line 29 predates the diff, but adding a characterization test for adjacent behavior is not a defect."
+ },
+ {
+  "cluster_id": "gf07",
+  "verdict": "matches-thread",
+  "matches_thread": 2,
+  "judged_severity": "medium",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.ts:114-116",
+  "confidence": 0.85,
+  "rationale": "metaSqlExpr.ts binds to its file-local regex-only quoteIdentifierIfNecessary (no RESERVED_WORDS check) while SqlExpr.tsx and the completion provider use mysql/sqlUtil's version (sqlUtil.ts:52-56), so a reserved-word refId is quoted in the editor but bare in the metadata query \u2014 the inconsistency thread 2 raises."
+ },
+ {
+  "cluster_id": "gf18",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.test.ts:6-14",
+  "confidence": 0.85,
+  "rationale": "Considered-and-cleared note asserting no defect."
+ },
+ {
+  "cluster_id": "gf04",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:11-12",
+  "confidence": 0.9,
+  "rationale": "Verified by running the repo's eslint (14 errors: @typescript-eslint/no-explicit-any at those lines plus import/order in metaSqlExpr.test.ts:3) and prettier --check (both new test files flagged); CI-blocking but not a code defect."
+ },
+ {
+  "cluster_id": "gf17",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "pkg/expr/sql/parser.go:37-40",
+  "confidence": 0.85,
+  "rationale": "Considered-and-cleared note; TablesList records tableName.Name.String(), the unquoted identifier, so backticked refIds do resolve \u2014 no defect asserted."
+ },
+ {
+  "cluster_id": "gf05",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "public/app/plugins/datasource/mysql/sqlUtil.ts:44-46",
+  "confidence": 0.5,
+  "rationale": "quoteIdentifierIfNecessary wraps in backticks without doubling embedded backticks and QueryEditorRowHeader.tsx:51-64 imposes no character restrictions on refIds, so a backtick-containing refId yields malformed SQL; real but a contrived edge case in a pre-existing helper."
+ },
+ {
+  "cluster_id": "gf13",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/plugins/datasource/mysql/sqlUtil.ts:53",
+  "confidence": 0.85,
+  "rationale": "Considered-and-refuted note; the regex literal is re-created per call so lastIndex cannot carry over."
+ },
+ {
+  "cluster_id": "gf06",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts:26-27",
+  "confidence": 0.65,
+  "rationale": "True that '' would become '``', but both callers (ExpressionQueryEditor.tsx:118, alerting Expression.tsx:101-103) always set value and label from a non-empty refId, so the case is unreachable in practice."
+ },
+ {
+  "cluster_id": "gf15",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx:61",
+  "confidence": 0.75,
+  "rationale": "Pre-existing label-vs-value asymmetry between SqlExpr.tsx:61 and sqlCompletionProvider.ts:26; both callers set label === value, and the cluster itself concedes it is only latent."
+ },
+ {
+  "cluster_id": "gf25",
+  "verdict": "matches-thread",
+  "matches_thread": 7,
+  "judged_severity": "low",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.test.ts:21-39",
+  "confidence": 0.55,
+  "rationale": "The recommendation that tests drive the real path (quoted editor text through fetchSQLFields with raw refIds) rather than idealized inputs is the same test-gap thread 7 raises, though stated more generically."
+ }
+]

@@ -1,0 +1,110 @@
+[
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "high",
+  "file": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts",
+  "line": 1,
+  "category": "migration-safety",
+  "claim": "Deleting the already-merged ConvertNegativeRatingToNull migration file makes Kysely's Migrator throw 'corrupted migrations: previously executed migration ... is missing' at startup for every database (nightly/dev/contributor) that already ran it, since the missing-file check is unconditional and allowUnorderedMigrations only guards ordering; no compensating migration restores ratings already nulled. Fix: keep the file with a no-op up().",
+  "raw": "#1 \ud83d\udfe0 High: Deleting an already-merged migration aborts server startup for every database that ran it",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "high",
+  "file": "server/src/dtos/search.dto.ts",
+  "line": 38,
+  "category": "api-design",
+  "claim": "BaseSearchSchema.rating still carries .min(1), so -1 can be set via the update DTO but any search (metadata/random/smart/statistics) filtering for rating -1 returns HTTP 400; the search DTOs and OpenAPI spec still declare minimum 1 and the x-immich-history in search.dto.ts (deprecated/no longer valid for -1) now contradicts asset.dto.ts, which had those entries removed.",
+  "raw": "#2 \ud83d\udfe0 High: `-1` can be set but can never be searched for; the API history now contradicts itself",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "high",
+  "file": "server/src/services/metadata.service.ts",
+  "line": 308,
+  "category": "correctness",
+  "claim": "Metadata extraction still uses validateRange(exifTags.Rating, 1, 5), which converts an XMP/sidecar Rating of -1 (the Lightroom/Bridge 'rejected' convention) to NULL on import, while immich itself writes rating -1 back to sidecars at metadata.service.ts:509,523 \u2014 so 'rejected' does not round-trip. The test covering negative rating handling deleted by 99281de was not restored. Fix: validateRange(exifTags.Rating, -1, 5).",
+  "raw": "#3 \ud83d\udfe0 High: XMP `Rating: -1` is still discarded on import, so \"rejected\" does not round-trip",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "medium",
+  "file": "server/src/dtos/asset.dto.ts",
+  "line": 17,
+  "category": "api-design",
+  "claim": "Moving the rating bounds from .min()/.max() into a .refine() predicate hides them from the JSON-Schema emitter, so UpdateAssetDto.rating and AssetBulkUpdateDto.rating now publish minimum -9007199254740991 / maximum 9007199254740991 in the OpenAPI spec and generated Dart client instead of a bounded range; using .min(-1).max(5).refine(v => v !== 0).nullish() keeps minimum -1 / maximum 5 in the contract with identical runtime validation.",
+  "raw": "#4 \ud83d\udfe1 Medium: The generated API contract loses its rating bounds entirely (avoidable)",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "medium",
+  "file": "server/src/dtos/exif.dto.ts",
+  "line": 32,
+  "category": "api-design",
+  "claim": "ExifResponseDto.rating still declares z.int().min(1).max(5), so the published spec says minimum 1 while GET /assets/:id can now return exifInfo.rating -1; a documentation-vs-behavior divergence (no runtime failure since no @ZodSerializerDto is applied) that breaks spec-validating consumers. Fix: widen to admit -1 and regenerate the spec.",
+  "raw": "#5 \ud83d\udfe1 Medium: `ExifResponseDto` declares `minimum: 1` for a value the server can now return as `-1`",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "web/src/lib/components/asset-viewer/DetailPanelStarRating.svelte",
+  "line": 16,
+  "category": "correctness",
+  "claim": "asset.exifInfo?.rating || null passes -1 through unchanged (it is truthy) into StarRating; this is the pre-99281de behavior that the change restores rather than introduces (tagged pre-existing).",
+  "raw": "`web/src/lib/components/asset-viewer/DetailPanelStarRating.svelte:16` \u2014 [pre-existing] `asset.exifInfo?.rating || null` passes `-1` through unchanged (it is truthy) into `StarRating`",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/src/utils/duplicate.ts",
+  "line": 0,
+  "category": "correctness",
+  "claim": "The duplicate-keeper heuristic counts truthy metadata fields, so a -1 rating counts as 'has a rating' (referenced via duplicate.spec.ts:81); same behavior as before 99281de (tagged pre-existing).",
+  "raw": "`server/src/utils/duplicate.ts` (via `duplicate.spec.ts:81`) \u2014 [pre-existing] the duplicate-keeper heuristic counts truthy metadata fields, so a `-1` rating counts as \"has a rating\"",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/src/dtos/asset.dto.ts",
+  "line": 28,
+  "category": "documentation",
+  "claim": "The new history entry 'Using 0 as a rating is no longer valid' was suspected to be a mis-edit of the -1 entry it replaced; checked against 99281de, the pre-v3 schema did accept 0 and coerce it to null, so the entry is correct as written (tagged false).",
+  "raw": "`server/src/dtos/asset.dto.ts:28` \u2014 [false] the new history entry *\"Using 0 as a rating is no longer valid\"* was suspected to be a mis-edit of the `-1` entry it replaced",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp3",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/src/controllers/asset.controller.spec.ts",
+  "line": 251,
+  "category": "test-coverage",
+  "claim": "-1 and 0 have no positive/negative test at the boundary: asset.controller.spec.ts:251 still iterates only [{rating: 1}, {rating: 5}], and the e2e test 'should set the negative rating' deleted by 99281de was not restored (recorded as out of scope under reach=narrow).",
+  "raw": "Process note (untagged) \u2014 `-1` and `0` have no positive/negative test at the boundary (`asset.controller.spec.ts:251` still iterates only `[{rating: 1}, {rating: 5}]`, and the e2e test \"should set the negative rating\" deleted by `99281de` was not restored)",
+  "disposition": "demoted"
+ }
+]

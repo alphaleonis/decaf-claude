@@ -1,0 +1,317 @@
+[
+ {
+  "cluster_id": "ma11",
+  "verdict": "matches-thread",
+  "matches_thread": 6,
+  "judged_severity": "medium",
+  "code_citation": "server/public/model/client4.go:5961-5964; server/public/model/command_response.go:72-74",
+  "confidence": 0.6,
+  "rationale": "Client4.ExecuteCommand/ExecuteCommandWithTeam decode server-emitted responses through the same CommandResponseFromJSON that now hard-fails on IsValid, while plugin/built-in responses (app/command.go:234-252) never pass through it server-side; the remedy is the same as thread 6's ask (move the call to the two ingest call sites), though the rationale differs."
+ },
+ {
+  "cluster_id": "ma25",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "server/public/model/command_response.go:91-93",
+  "confidence": 0.5,
+  "rationale": "No test case puts a null element in extra_responses, so the nil-continue branch of IsValid is untested; correct but a small coverage nit."
+ },
+ {
+  "cluster_id": "ma03",
+  "verdict": "matches-thread",
+  "matches_thread": 0,
+  "judged_severity": "medium",
+  "code_citation": "server/public/model/command_response.go:85-86; server/public/model/post.go:72-73,508-510",
+  "confidence": 0.8,
+  "rationale": "len(o.Text) counts bytes against a fixed 65535 whereas Post.IsValid enforces utf8.RuneCountInString against a configurable rune limit (PostMessageMaxRunesV2 or column/4), so the two limits diverge in both directions; this is the byte-vs-character defect thread 0 raises."
+ },
+ {
+  "cluster_id": "ma09",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:80",
+  "confidence": 0.8,
+  "rationale": "The comment restates the next line; purely stylistic."
+ },
+ {
+  "cluster_id": "ma16",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:86",
+  "confidence": 0.9,
+  "rationale": "A considered-and-cleared note asserting no defect."
+ },
+ {
+  "cluster_id": "ma08",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "server/public/model/command_response.go:85; server/public/model/post.go:72",
+  "confidence": 0.7,
+  "rationale": "65535 is a local literal while PostMessageMaxBytesV2 = 65535 already exists in the same package and the file declares its other constants at package level; correct, small."
+ },
+ {
+  "cluster_id": "ma28",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "server/public/model/command_response_test.go:165-182",
+  "confidence": 0.6,
+  "rationale": "The only two in_channel rows in the table both expect errors, so the accept path for in_channel is unpinned; a fair but small test gap."
+ },
+ {
+  "cluster_id": "ma06",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:72-74",
+  "confidence": 0.9,
+  "rationale": "Cleared note; the *AppError is nil-tested before it is returned as error, so no typed-nil escape."
+ },
+ {
+  "cluster_id": "ma30",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "server/public/model/command_response.go:39-40; server/public/model/command_response_test.go:13-31",
+  "confidence": 0.45,
+  "rationale": "TestCommandResponseFromHTTPBody is unchanged and has no case pinning whether text/plain bodies are subject to the new validation; a small, actionable test observation."
+ },
+ {
+  "cluster_id": "ma33",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/public/model/command_response.go:79-99",
+  "confidence": 0.45,
+  "rationale": "IsValid checks only response_type, text length and recursion; attachments (which already have MessageAttachment.IsValid), URLs, Type, etc. are untouched, so 'strict validation' overstates the scope. Correct but mostly a framing/scope comment."
+ },
+ {
+  "cluster_id": "ma27",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "server/public/model/command_response_test.go:165-170",
+  "confidence": 0.6,
+  "rationale": "Only the 65536 rejection is tested; nothing pins that 65535 is accepted, so a > to >= regression would pass. Small test-boundary nit."
+ },
+ {
+  "cluster_id": "ma26",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "server/public/model/command_response.go:91-93; server/channels/app/command.go:621-623,631-636",
+  "confidence": 0.65,
+  "rationale": "IsValid explicitly skips nil ExtraResponses entries, and HandleCommandResponse passes each entry to HandleCommandResponsePost which dereferences response.Type unguarded, so {\"extra_responses\":[null]} from a command webhook or custom command reaches a nil-pointer panic; pre-existing, but the new validator lets a known-crashing shape through."
+ },
+ {
+  "cluster_id": "ma29",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response_test.go:36-45",
+  "confidence": 0.5,
+  "rationale": "IsValid is fully exercised through the CommandResponseFromJSON table with the same inputs a direct test would use; a direct test is a preference, not a gap."
+ },
+ {
+  "cluster_id": "ma14",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/public/model/command_response.go:39-42",
+  "confidence": 0.5,
+  "rationale": "On io.ReadAll failure the function returns (nil, nil), discarding the error; both callers cope via a nil check but the read error is lost. Pre-existing and small."
+ },
+ {
+  "cluster_id": "ma17",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:81",
+  "confidence": 0.9,
+  "rationale": "Cleared note asserting no defect."
+ },
+ {
+  "cluster_id": "ma12",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "server/public/model/command_response.go:95-97; server/public/model/post.go:854-856",
+  "confidence": 0.6,
+  "rationale": "The nested error is returned verbatim with no index, unlike Post.IsValid which prefixes the attachment index; a small debuggability nit."
+ },
+ {
+  "cluster_id": "ma15",
+  "verdict": "matches-thread",
+  "matches_thread": 4,
+  "judged_severity": "medium",
+  "code_citation": "server/public/model/command_response.go:95-97; server/channels/app/command.go:621-628",
+  "confidence": 0.55,
+  "rationale": "One invalid nested entry makes the whole decode fail and discards the main message, whereas HandleCommandResponse tolerates per-entry failures; this is the hard-error-instead-of-warning defect thread 4 raises, viewed through the nested case."
+ },
+ {
+  "cluster_id": "ma05",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:90-98",
+  "confidence": 0.9,
+  "rationale": "Cleared note asserting no defect."
+ },
+ {
+  "cluster_id": "ma07",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:63-70,90-98",
+  "confidence": 0.5,
+  "rationale": "The asymmetry is real, but no consumer reads ExtraResponses below the first level (app/command.go:621-628), so nested-nested attachments being unstringified has no effect."
+ },
+ {
+  "cluster_id": "ma32",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "server/public/model/command_response.go:82,87; server/public/model/post.go:508-510",
+  "confidence": 0.6,
+  "rationale": "DetailedError omits the offending value and actual/max length while Post.IsValid reports Length/MaxLength; a small actionable debuggability nit."
+ },
+ {
+  "cluster_id": "ma19",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:81",
+  "confidence": 0.9,
+  "rationale": "Cleared note asserting no defect."
+ },
+ {
+  "cluster_id": "ma20",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/channels/web/handlers.go:206-216; server/public/model/config.go:1034-1035",
+  "confidence": 0.55,
+  "rationale": "commandWebhook's r.Body is already wrapped in http.MaxBytesReader (ServiceSettings.MaximumPayloadSizeBytes, default 300000) by the generic handler, so the implied unbounded read does not exist; also pre-existing and outside the diff."
+ },
+ {
+  "cluster_id": "ma01",
+  "verdict": "matches-thread",
+  "matches_thread": 4,
+  "judged_severity": "high",
+  "code_citation": "server/public/model/command_response.go:72-74; server/channels/app/command.go:595-597; server/channels/web/webhook.go:114-118",
+  "confidence": 0.8,
+  "rationale": "Adding IsValid to the decoder turns previously tolerated payloads (unknown response_type, long text) into a whole-command failure at both ingest sites with no gate; this is exactly thread 4's 'hard error might break existing servers, log a warning instead'."
+ },
+ {
+  "cluster_id": "ma35",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:98-99",
+  "confidence": 0.9,
+  "rationale": "Blank-line spacing; purely stylistic."
+ },
+ {
+  "cluster_id": "ma34",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/Makefile:342-345; tools/mmgotool/commands/i18n.go:51-57",
+  "confidence": 0.5,
+  "rationale": "True that i18n-check runs clean-empty/check-empty-src rather than 'i18n check', but this is a pre-existing repo tooling gap outside the PR's scope; the actionable point for this PR is the missing keys themselves (thread 1)."
+ },
+ {
+  "cluster_id": "ma04",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/public/model/command_response.go:35-42,45-49",
+  "confidence": 0.65,
+  "rationale": "CommandResponseFromHTTPBody only routes application/json through CommandResponseFromJSON; text/plain goes to CommandResponseFromPlainText with no IsValid, so the same oversized text is rejected or accepted depending solely on Content-Type. Real inconsistency in the new validation, not raised by any thread."
+ },
+ {
+  "cluster_id": "ma23",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response_test.go:161",
+  "confidence": 0.9,
+  "rationale": "Asserts no defect."
+ },
+ {
+  "cluster_id": "ma21",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:79",
+  "confidence": 0.9,
+  "rationale": "Cleared note asserting no defect."
+ },
+ {
+  "cluster_id": "ma10",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response_test.go:173-180",
+  "confidence": 0.85,
+  "rationale": "Whitespace inside a raw JSON string literal; purely stylistic."
+ },
+ {
+  "cluster_id": "ma22",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:72",
+  "confidence": 0.9,
+  "rationale": "Notes idiomatic shadowing and asserts no defect."
+ },
+ {
+  "cluster_id": "ma02",
+  "verdict": "matches-thread",
+  "matches_thread": 1,
+  "judged_severity": "low",
+  "code_citation": "server/public/model/command_response.go:82,87; server/i18n/en.json (no model.command_response.is_valid.* entries)",
+  "confidence": 0.85,
+  "rationale": "grep of server/i18n/en.json finds neither new ID, so translation falls back to the raw key; this is what thread 1 asks to fix via make i18n-extract."
+ },
+ {
+  "cluster_id": "ma24",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response_test.go:236-238",
+  "confidence": 0.85,
+  "rationale": "Pre-existing table convention; the summary itself asserts no defect."
+ },
+ {
+  "cluster_id": "ma13",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/public/model/command_response_test.go:159-182,236-238",
+  "confidence": 0.6,
+  "rationale": "The ShouldError branch checks only assert.Error/assert.Nil, so the new cases (especially the multi-line extra_responses JSON) would still pass if they failed on a JSON syntax error rather than validation; asserting the AppError Id would pin the intent. Correct, small."
+ },
+ {
+  "cluster_id": "ma18",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/channels/app/command.go:595-597; server/channels/web/webhook.go:114-118",
+  "confidence": 0.55,
+  "rationale": "DoCommandRequest wraps the decode error in a fresh 500 AppError and commandWebhook in a fresh hardcoded 400, so the StatusBadRequest set in IsValid is never what the caller sees; true and minor."
+ },
+ {
+  "cluster_id": "ma31",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:79",
+  "confidence": 0.6,
+  "rationale": "Most IsValid methods in server/public/model (roughly 59 of 69) have no doc comment, so this matches package convention; a preference."
+ }
+]
