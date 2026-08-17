@@ -2,11 +2,11 @@
 # dcc-dduy
 version: 1
 title: Remove Haiku from code-review reasoning lanes (models=low volume+verification -> Sonnet)
-status: in-progress
+status: completed
 type: feature
 priority: high
 created_at: 2026-08-16T13:14:58Z
-updated_at: 2026-08-17T13:35:35Z
+updated_at: 2026-08-17T13:35:44Z
 parent: dcc-hyxw
 order: arV
 ---
@@ -46,3 +46,12 @@ dcc-c2uc's body when this lands so the two nibs do not disagree.
 - [x] `competition/benchmark/tools.json` `model_policy` notes updated (archived runs predate this)
 - [x] Dev copy synced (`~/.claude/skills/decaf-quality-dev/`)
 - [x] dcc-c2uc body annotated with the reversal and the METHODOLOGY-v2 citation
+
+## Summary
+
+**Completed 2026-08-17** — Done. Step 2d: no agent that reasons about code runs on the cheap tier — under models=low and norm,
+volume and verification agents run the mid tier (Sonnet); high unchanged (verification already
+mid). low and norm now share a model policy and differ only through the presets that select them —
+accepted, to be rearranged if a cheaper reasoning tier appears. README, screen/validator
+cross-references and the axis intro aligned; tools.json model_policy notes record that pre-2026-08-17
+ours-* cells measured the old policy; dcc-c2uc annotated and closed as superseded. Dev copy synced.

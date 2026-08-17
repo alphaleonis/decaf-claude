@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-08-17T13:08:40Z
+updated_at: 2026-08-17T13:35:44Z
 blocked_by:
     - dcc-9kkz
 order: zzzV
@@ -130,15 +130,12 @@ still comes first, but it changes what to expect from each.
 
 ## Current Focus
 
-Completed dcc-ce0m: Implemented, smoke-tested (the seat reports a comment/doc/test-backed "intended" behavior change
-as a Medium with the doc as counter-argument), run at 3 repeats and scored. v3 meets composition
-(67% defect), stability (Jaccard 0.59/0.67) and seat-cost parity; recall stays at 6/16 union and
-3.0 real defects per cell on prometheus across all three briefs. The closed set moved e13 (1/3)
-but c05 was re-parked under a legal tag with the intent rationale, and the larger movements
-(e02 2/2 → 0/5, c03, c07) are detection changes — the v2/v3 seats did not probe SQL Server SQL
-generation — not disposition. Verdict: keep v3 as the bugs-sp brief; stop iterating on parking
-rules; the remaining gap to superpowers on prometheus (~1.3 real defects/cell) is exploration
-breadth. Full write-up in `v2/analysis/BUGS-SP-RESULTS.md` § Brief v3.
+Completed dcc-dduy: Done. Step 2d: no agent that reasons about code runs on the cheap tier — under models=low and norm,
+volume and verification agents run the mid tier (Sonnet); high unchanged (verification already
+mid). low and norm now share a model policy and differ only through the presets that select them —
+accepted, to be rearranged if a cheaper reasoning tier appears. README, screen/validator
+cross-references and the axis intro aligned; tools.json model_policy notes record that pre-2026-08-17
+ours-* cells measured the old policy; dcc-c2uc annotated and closed as superseded. Dev copy synced.
 
 ## ⚠️ Measured premise is VOID (2026-08-10)
 This epic's premise — `ours` at $21.33/run vs anthropic's $7.61, and 0.70 vs 0.90 severity
