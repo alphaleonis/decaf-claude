@@ -1,71 +1,632 @@
 [
-{"cluster_id":"e68","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:577","confidence":0.65,"rationale":"Asks for a test pinning the un-optimized behavior of a shape the TODO defers; no defect and no realistic maintainer action."},
-{"cluster_id":"e52","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"test/EFCore.SqlServer.FunctionalTests/Query/AdHocMiscellaneousQuerySqlServerTest.cs:1678","confidence":0.7,"rationale":"Hypothesis searched and cleared: no stale baselines left. Claim that things are fine and they are fine."},
-{"cluster_id":"e22","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:638","confidence":0.6,"rationale":"IsNiladic is a defensive guard; a niladic nullable function inside such a CASE is near-unreachable. Coverage note with no consequence."},
-{"cluster_id":"e66","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:1633-1635","confidence":0.7,"rationale":"Explicitly a claim the finder withdrew; IsNull's parameter arm is unreachable here. Correctly cleared, so no defect reported."},
-{"cluster_id":"e67","verdict":"trivia","matches_thread":null,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:587","confidence":0.5,"rationale":"CONCAT_NULL_YIELDS_NULL OFF is deprecated and contradicts EF's whole null-semantics model; raising it costs attention more than it informs."},
-{"cluster_id":"e04","verdict":"valid-other","matches_thread":null,"judged_severity":"medium","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:539","confidence":0.8,"rationale":"Real bug: RestoreNullValueColumnsList gets currentNonNullableColumnsCount; sibling at :534 uses the right watermark. Pre-existing (17a9035ad) but actionable."},
-{"cluster_id":"e42","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:587","confidence":0.75,"rationale":"Hypothesis cleared and correctly so: CaseExpression derives Type/TypeMapping from the first when-result; the same collapse already exists at :545."},
-{"cluster_id":"e65","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:602","confidence":0.75,"rationale":"Claims the AndAlso-only descent is conservative and correct — it is; dropping a check under OrElse would be unsound. No defect asserted."},
-{"cluster_id":"e10","verdict":"matches-thread","matches_thread":4,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617","confidence":0.85,"rationale":"Same substance as the reviewer's 'maybe DetectNullPropagatingNodes?': the noun-phrase name misreads for a void accumulator."},
-{"cluster_id":"e35","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626","confidence":0.8,"rationale":"Cleared correctly: RelationalSqlTranslatingExpressionVisitor.cs:442 rewrites boolean & to AndAlso, so surviving And/Or is integer bitwise and does propagate."},
-{"cluster_id":"e71","verdict":"matches-thread","matches_thread":5,"judged_severity":"medium","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-648","confidence":0.55,"rationale":"Verified duplication with ProcessNullNotNull (:2242, :2392); same substance as the reviewer asking for something more general than a local utility."},
-{"cluster_id":"e15","verdict":"matches-thread","matches_thread":1,"judged_severity":"nit","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633","confidence":0.45,"rationale":"Reviewer's stated rule is 'is for any constant check'; this flags == true where :1506/:2394 use the is-pattern. Same norm, different line."},
-{"cluster_id":"e36","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626","confidence":0.75,"rationale":"Cleared hypothesis and correct: NULL ^ x is NULL, so ExclusiveOr genuinely propagates. No defect claimed."},
-{"cluster_id":"e34","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:621-622","confidence":0.8,"rationale":"Correct as stated: SqlUnaryExpression allows only Equal/NotEqual/Convert/Not/Negate, so Not/Negate/Convert is exactly the propagating subset."},
-{"cluster_id":"e28","verdict":"valid-minor","matches_thread":null,"judged_severity":"nit","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:590","confidence":0.6,"rationale":"Accurate style asymmetry: :537 spells CaseWhenClause out, and the second list allocation is avoidable. Cosmetic."},
-{"cluster_id":"e56","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578","confidence":0.6,"rationale":"A scoping clarification on someone else's claim — which boolean results stay correct. Accurate but carries no action."},
-{"cluster_id":"e39","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578","confidence":0.6,"rationale":"Claims ignoring allowOptimizedExpansion is correct, and it is: the rewrite asserts an unconditional equivalence, not a predicate-only one."},
-{"cluster_id":"e43","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:559","confidence":0.75,"rationale":"Cleared and correct: nullable |= elseResult nullability runs at :557-559 before the new block, so the early return leaves it true."},
-{"cluster_id":"e70","verdict":"valid-other","matches_thread":null,"judged_severity":"medium","code_citation":"test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1074-1100","confidence":0.6,"rationale":"Verified: negative1/2 guard on LeaderNickname but project LEN(Nickname)/g0, so they cannot exercise the new path. No negative test is added."},
-{"cluster_id":"e32","verdict":"matches-thread","matches_thread":10,"judged_severity":"high","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630","confidence":0.5,"rationale":"Same remedy the reviewer asks for — make the binary arm operator-driven and audit non-propagating operators so new ones fail closed."},
-{"cluster_id":"e07","verdict":"matches-thread","matches_thread":2,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580-583","confidence":0.4,"rationale":"Converges on the reviewer's 'move nullPropagatedOperands below': defer/gate the operand collection. Different rationale, same code motion."},
-{"cluster_id":"e21","verdict":"valid-minor","matches_thread":null,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633-636","confidence":0.65,"rationale":"Accurate: only the ArgumentsPropagateNullability loop is exercised (LEN baselines); the instance branch has no test. Small, real gap."},
-{"cluster_id":"e40","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:597","confidence":0.75,"rationale":"Correctly cleared: unary NotEqual is by construction IS NOT NULL in this tree, so matching only it is sufficient."},
-{"cluster_id":"e02","verdict":"valid-other","matches_thread":null,"judged_severity":"critical","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585-587","confidence":0.75,"rationale":"Real and unraised: a search-condition THEN is re-wrapped as CASE WHEN c THEN 1 ELSE 0 END with no NULL arm — see negative1's baseline — so NULL becomes false."},
-{"cluster_id":"e26","verdict":"valid-minor","matches_thread":null,"judged_severity":"nit","code_citation":"test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1044","confidence":0.55,"rationale":"Verified markers at :1018/:1031/:1044 on the baselines this diff makes optimal. Doc hygiene only."},
-{"cluster_id":"e62","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:593","confidence":0.75,"rationale":"Cleared and correct: CaseWhenClause has structural Equals, so Update's SequenceEqual sees the reassignment. No defect."},
-{"cluster_id":"e44","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:587","confidence":0.7,"rationale":"Alias/ORDER BY hypothesis raised and dismissed; the dismissal is right — ProjectionExpression owns the alias independently."},
-{"cluster_id":"e14","verdict":"valid-other","matches_thread":null,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633-635","confidence":0.6,"rationale":"Verified: the sibling at :2394 guards Instance: not null, and the ctor (SqlFunctionExpression.cs:192-224) permits instance null with propagation true. Latent NRE."},
-{"cluster_id":"e69","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"benchmark/EFCore.Benchmarks/Query/QueryCompilationTests.cs:41-60","confidence":0.7,"rationale":"Factually right that no fixture has a conditional-null projection, but nobody adds a compilation benchmark for one optimizer branch."},
-{"cluster_id":"e73","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576-649","confidence":0.85,"rationale":"An out-of-scope check reported as clear. Accurate and entirely without actionable content."},
-{"cluster_id":"e48","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:611-613","confidence":0.7,"rationale":"Correctly cleared: unknown subclasses hit the else arm and simply forgo the optimization. Safe direction, no defect."},
-{"cluster_id":"e06","verdict":"valid-other","matches_thread":null,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578","confidence":0.5,"rationale":"Verified: IsNull (:1633) is false for a C# null elseResult, so the semantically identical no-ELSE CASE is skipped. Real missed optimization in an optimization PR."},
-{"cluster_id":"e16","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlExpressions/SqlFunctionExpression.cs:215-224","confidence":0.6,"rationale":"As stated the claim is that the index pairing is fine — and it is; the ctor throws InconsistentNumberOfArguments. Cleared hypothesis."},
-{"cluster_id":"e38","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:499-650","confidence":0.7,"rationale":"Self-described as having no nameable consequence; a size observation restating what the diff plainly shows."},
-{"cluster_id":"e25","verdict":"valid-minor","matches_thread":null,"judged_severity":"low","code_citation":"test/EFCore.Sqlite.FunctionalTests/Query/NullSemanticsQuerySqliteTest.cs:1","confidence":0.55,"rationale":"Accurate (24 overrides, none for the five new tests) but consistent with the file's selective-override norm. Small."},
-{"cluster_id":"e09","verdict":"matches-thread","matches_thread":0,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:600","confidence":0.8,"rationale":"Same point as 'cleaner to return a TRUE expression here': null-as-true is the wrong polarity, documented only by the // true comment."},
-{"cluster_id":"e13","verdict":"matches-thread","matches_thread":10,"judged_severity":"high","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630","confidence":0.85,"rationale":"Exactly the reviewer's point: SqlBinaryExpression admits Coalesce (IsValidOperator:102), which is not null-propagating, and the unfiltered recursion harvests it."},
-{"cluster_id":"e51","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576","confidence":0.75,"rationale":"Checked and cleared: no in-repo release-note artifact exists, so there is no standard to violate. No action."},
-{"cluster_id":"e47","verdict":"matches-thread","matches_thread":6,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-648","confidence":0.45,"rationale":"Same substance as the reviewer naming AtTimeZone/Collate: null-propagating node types omitted from the collector. Different exemplar node."},
-{"cluster_id":"e58","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1022","confidence":0.75,"rationale":"Sargability hypothesis raised and correctly dismissed — the original predicate was already non-sargable. No defect."},
-{"cluster_id":"e19","verdict":"valid-other","matches_thread":null,"judged_severity":"medium","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:642","confidence":0.6,"rationale":"Real gap: the argumentsPropagateNullability==false arm is the only thing stopping a COALESCE collapse, and no test pins the CASE being retained."},
-{"cluster_id":"e46","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617","confidence":0.75,"rationale":"Raised then self-dismissed, correctly: Visit already recurses the same tree with larger frames, so the helpers add no new depth risk."},
-{"cluster_id":"e20","verdict":"valid-minor","matches_thread":null,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:621-622","confidence":0.6,"rationale":"Accurate: the new unary test uses ~ (Not); Negate has no test anywhere in the diff. Small coverage asymmetry."},
-{"cluster_id":"e41","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580","confidence":0.7,"rationale":"Allocation cost raised and dismissed as below the bar — right, this is compile-time work inside an already-narrow branch."},
-{"cluster_id":"e55","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"test/EFCore.Specification.Tests/TestModels/NullSemanticsModel/NullSemanticsData.cs:1","confidence":0.75,"rationale":"Verification that the seed matrix is adequate, reported as adequate. Correct and non-actionable."},
-{"cluster_id":"e54","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"test/EFCore.Specification.Tests/Query/CustomConvertersTestBase.cs:1202","confidence":0.55,"rationale":"A local SDK/toolchain build failure unrelated to the diff, reported as unrelated. Nothing here for the author of this change."},
-{"cluster_id":"e03","verdict":"valid-other","matches_thread":null,"judged_severity":"high","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:508-533","confidence":0.65,"rationale":"Verified: the test is visited with preserveColumnNullabilityInformation and _nonNullableColumns is not restored before the result is visited, so the result assumes the very fact the rewrite drops."},
-{"cluster_id":"e17","verdict":"valid-other","matches_thread":null,"judged_severity":"high","code_citation":"test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2298","confidence":0.7,"rationale":"Correct and consequential: all five tests use ~, int +, and string concat — total-propagation shapes — so the suite cannot detect the unsound path."},
-{"cluster_id":"e37","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:631-647","confidence":0.7,"rationale":"Consistency check performed and reported clean; the flag usage does mirror VisitSqlFunction. No defect."},
-{"cluster_id":"e45","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585-587","confidence":0.6,"rationale":"Cleared hypothesis; correct for the built-ins it enumerates (NULL/0, LEN(NULL), CAST all yield NULL rather than erroring)."},
-{"cluster_id":"e08","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580","confidence":0.75,"rationale":"Cleared and correct: set and probe both go through SqlExpression's structural Equals, and a mismatch would only forgo the optimization."},
-{"cluster_id":"e53","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/Internal/RelationalCommandCache.cs:139","confidence":0.7,"rationale":"Cache-poisoning hypothesis checked and cleared; parameter nullability is part of the cache key, as the :1632 comment already states."},
-{"cluster_id":"e01","verdict":"matches-thread","matches_thread":10,"judged_severity":"critical","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630","confidence":0.6,"rationale":"Same defect the reviewer names: the unfiltered binary arm harvests operands of non-propagating operators, so a load-bearing IS NOT NULL is dropped."},
-{"cluster_id":"e60","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595","confidence":0.8,"rationale":"Observes a placement that matches the file's own convention (TryNegate) and says so. No defect, no action."},
-{"cluster_id":"e49","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2270","confidence":0.8,"rationale":"Reported as refuted, and rightly: C# string concat with null yields empty, never an NRE. Cleared claim."},
-{"cluster_id":"e05","verdict":"valid-minor","matches_thread":null,"judged_severity":"nit","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:577","confidence":0.6,"rationale":"Accurate: the new TODO has no tracking issue, unlike the #16050 markers nearby. Documentation nit."},
-{"cluster_id":"e31","verdict":"valid-minor","matches_thread":null,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576","confidence":0.5,"rationale":"Fair: the comment describes the identity case while the code handles conjunctions and deep subtrees. A missing-comment request."},
-{"cluster_id":"e23","verdict":"valid-minor","matches_thread":null,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:607-609","confidence":0.6,"rationale":"Accurate: no new test leaves two surviving conjuncts, so binary.Update and the right-is-null arm are unexercised. Narrow gap."},
-{"cluster_id":"e24","verdict":"valid-minor","matches_thread":null,"judged_severity":"nit","code_citation":"test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2270","confidence":0.55,"rationale":"Correct: _with_partial_checks collapses fully while _with_mixed_checks is the only partial drop. Test-naming nit."},
-{"cluster_id":"e59","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:631","confidence":0.7,"rationale":"Aggregate hypothesis checked and cleared; translators pass argumentsPropagateNullability false and SqlServerAggregateFunctionExpression falls to the default."},
-{"cluster_id":"e57","verdict":"valid-other","matches_thread":null,"judged_severity":"medium","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:631-647","confidence":0.45,"rationale":"The surviving half is real: the guard previously kept a UDF from being evaluated on NULL rows, and a mis-declared PropagatesNullability now yields wrong rows."},
-{"cluster_id":"e50","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1022","confidence":0.7,"rationale":"Baseline churn audited and reported sound, which it is: LEN(NULL)=5 is UNKNOWN and filters as the CASE did. No defect."},
-{"cluster_id":"e29","verdict":"valid-minor","matches_thread":null,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:619","confidence":0.6,"rationale":"Correct: Add's result is discarded and recursion is unconditional, so shared subtrees are re-walked. One-line fix, compile-time cost only."},
-{"cluster_id":"e30","verdict":"matches-thread","matches_thread":3,"judged_severity":"nit","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-648","confidence":0.8,"rationale":"Same as the reviewer's 'this can all be one nice switch statement with pattern matching' on the type-dispatch chain."},
-{"cluster_id":"e11","verdict":"matches-thread","matches_thread":5,"judged_severity":"medium","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617","confidence":0.75,"rationale":"The reviewer asks for exactly this: extensibility for provider-specific expression types, which static local functions cannot offer."},
-{"cluster_id":"e63","verdict":"trivia","matches_thread":null,"judged_severity":"info","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:498","confidence":0.75,"rationale":"Raised then correctly dismissed: VisitCase already returned non-CaseExpression values at :545 and :573, so the doc stays accurate."},
-{"cluster_id":"e12","verdict":"matches-thread","matches_thread":6,"judged_severity":"low","code_citation":"src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-648","confidence":0.75,"rationale":"Names AtTimeZone and Collate among the omitted propagating node types — the reviewer's comment verbatim in substance."},
-{"cluster_id":"e27","verdict":"valid-minor","matches_thread":null,"judged_severity":"nit","code_citation":"test/EFCore.SqlServer.FunctionalTests/Query/NullSemanticsQuerySqlServerTest.cs:4537","confidence":0.5,"rationale":"Core point holds — the inner CASE collapses first, so no nested DropNotNullChecks runs — though 'byte-identical' is wrong (int vs string columns)."},
-{"cluster_id":"e18","verdict":"valid-minor","matches_thread":null,"judged_severity":"low","code_citation":"test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250","confidence":0.55,"rationale":"Accurate: the file has an established useRelationalNulls:true pattern (19 sites) and the new tests use only the default mode. Small."}
+ {
+  "cluster_id": "e68",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:577",
+  "confidence": 0.65,
+  "rationale": "Asks for a test pinning the un-optimized behavior of a shape the TODO defers; no defect and no realistic maintainer action."
+ },
+ {
+  "cluster_id": "e52",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/AdHocMiscellaneousQuerySqlServerTest.cs:1678",
+  "confidence": 0.7,
+  "rationale": "Hypothesis searched and cleared: no stale baselines left. Claim that things are fine and they are fine."
+ },
+ {
+  "cluster_id": "e22",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:638",
+  "confidence": 0.6,
+  "rationale": "IsNiladic is a defensive guard; a niladic nullable function inside such a CASE is near-unreachable. Coverage note with no consequence."
+ },
+ {
+  "cluster_id": "e66",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:1633-1635",
+  "confidence": 0.7,
+  "rationale": "Explicitly a claim the finder withdrew; IsNull's parameter arm is unreachable here. Correctly cleared, so no defect reported."
+ },
+ {
+  "cluster_id": "e67",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:587",
+  "confidence": 0.5,
+  "rationale": "CONCAT_NULL_YIELDS_NULL OFF is deprecated and contradicts EF's whole null-semantics model; raising it costs attention more than it informs."
+ },
+ {
+  "cluster_id": "e04",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:539",
+  "confidence": 0.8,
+  "rationale": "Real bug: RestoreNullValueColumnsList gets currentNonNullableColumnsCount; sibling at :534 uses the right watermark. Pre-existing (17a9035ad) but actionable."
+ },
+ {
+  "cluster_id": "e42",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:587",
+  "confidence": 0.75,
+  "rationale": "Hypothesis cleared and correctly so: CaseExpression derives Type/TypeMapping from the first when-result; the same collapse already exists at :545."
+ },
+ {
+  "cluster_id": "e65",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:602",
+  "confidence": 0.75,
+  "rationale": "Claims the AndAlso-only descent is conservative and correct \u2014 it is; dropping a check under OrElse would be unsound. No defect asserted."
+ },
+ {
+  "cluster_id": "e10",
+  "verdict": "matches-thread",
+  "matches_thread": 4,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617",
+  "confidence": 0.85,
+  "rationale": "Same substance as the reviewer's 'maybe DetectNullPropagatingNodes?': the noun-phrase name misreads for a void accumulator."
+ },
+ {
+  "cluster_id": "e35",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
+  "confidence": 0.8,
+  "rationale": "Cleared correctly: RelationalSqlTranslatingExpressionVisitor.cs:442 rewrites boolean & to AndAlso, so surviving And/Or is integer bitwise and does propagate."
+ },
+ {
+  "cluster_id": "e71",
+  "verdict": "matches-thread",
+  "matches_thread": 5,
+  "judged_severity": "medium",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-648",
+  "confidence": 0.55,
+  "rationale": "Verified duplication with ProcessNullNotNull (:2242, :2392); same substance as the reviewer asking for something more general than a local utility."
+ },
+ {
+  "cluster_id": "e15",
+  "verdict": "matches-thread",
+  "matches_thread": 1,
+  "judged_severity": "nit",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633",
+  "confidence": 0.45,
+  "rationale": "Reviewer's stated rule is 'is for any constant check'; this flags == true where :1506/:2394 use the is-pattern. Same norm, different line."
+ },
+ {
+  "cluster_id": "e36",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
+  "confidence": 0.75,
+  "rationale": "Cleared hypothesis and correct: NULL ^ x is NULL, so ExclusiveOr genuinely propagates. No defect claimed."
+ },
+ {
+  "cluster_id": "e34",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:621-622",
+  "confidence": 0.8,
+  "rationale": "Correct as stated: SqlUnaryExpression allows only Equal/NotEqual/Convert/Not/Negate, so Not/Negate/Convert is exactly the propagating subset."
+ },
+ {
+  "cluster_id": "e28",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:590",
+  "confidence": 0.6,
+  "rationale": "Accurate style asymmetry: :537 spells CaseWhenClause out, and the second list allocation is avoidable. Cosmetic."
+ },
+ {
+  "cluster_id": "e56",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
+  "confidence": 0.6,
+  "rationale": "A scoping clarification on someone else's claim \u2014 which boolean results stay correct. Accurate but carries no action."
+ },
+ {
+  "cluster_id": "e39",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
+  "confidence": 0.6,
+  "rationale": "Claims ignoring allowOptimizedExpansion is correct, and it is: the rewrite asserts an unconditional equivalence, not a predicate-only one."
+ },
+ {
+  "cluster_id": "e43",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:559",
+  "confidence": 0.75,
+  "rationale": "Cleared and correct: nullable |= elseResult nullability runs at :557-559 before the new block, so the early return leaves it true."
+ },
+ {
+  "cluster_id": "e70",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1074-1100",
+  "confidence": 0.6,
+  "rationale": "Verified: negative1/2 guard on LeaderNickname but project LEN(Nickname)/g0, so they cannot exercise the new path. No negative test is added."
+ },
+ {
+  "cluster_id": "e32",
+  "verdict": "matches-thread",
+  "matches_thread": 10,
+  "judged_severity": "high",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
+  "confidence": 0.5,
+  "rationale": "Same remedy the reviewer asks for \u2014 make the binary arm operator-driven and audit non-propagating operators so new ones fail closed."
+ },
+ {
+  "cluster_id": "e07",
+  "verdict": "matches-thread",
+  "matches_thread": 2,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580-583",
+  "confidence": 0.4,
+  "rationale": "Converges on the reviewer's 'move nullPropagatedOperands below': defer/gate the operand collection. Different rationale, same code motion."
+ },
+ {
+  "cluster_id": "e21",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633-636",
+  "confidence": 0.65,
+  "rationale": "Accurate: only the ArgumentsPropagateNullability loop is exercised (LEN baselines); the instance branch has no test. Small, real gap."
+ },
+ {
+  "cluster_id": "e40",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:597",
+  "confidence": 0.75,
+  "rationale": "Correctly cleared: unary NotEqual is by construction IS NOT NULL in this tree, so matching only it is sufficient."
+ },
+ {
+  "cluster_id": "e02",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "critical",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585-587",
+  "confidence": 0.75,
+  "rationale": "Real and unraised: a search-condition THEN is re-wrapped as CASE WHEN c THEN 1 ELSE 0 END with no NULL arm \u2014 see negative1's baseline \u2014 so NULL becomes false."
+ },
+ {
+  "cluster_id": "e26",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1044",
+  "confidence": 0.55,
+  "rationale": "Verified markers at :1018/:1031/:1044 on the baselines this diff makes optimal. Doc hygiene only."
+ },
+ {
+  "cluster_id": "e62",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:593",
+  "confidence": 0.75,
+  "rationale": "Cleared and correct: CaseWhenClause has structural Equals, so Update's SequenceEqual sees the reassignment. No defect."
+ },
+ {
+  "cluster_id": "e44",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:587",
+  "confidence": 0.7,
+  "rationale": "Alias/ORDER BY hypothesis raised and dismissed; the dismissal is right \u2014 ProjectionExpression owns the alias independently."
+ },
+ {
+  "cluster_id": "e14",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633-635",
+  "confidence": 0.6,
+  "rationale": "Verified: the sibling at :2394 guards Instance: not null, and the ctor (SqlFunctionExpression.cs:192-224) permits instance null with propagation true. Latent NRE."
+ },
+ {
+  "cluster_id": "e69",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "benchmark/EFCore.Benchmarks/Query/QueryCompilationTests.cs:41-60",
+  "confidence": 0.7,
+  "rationale": "Factually right that no fixture has a conditional-null projection, but nobody adds a compilation benchmark for one optimizer branch."
+ },
+ {
+  "cluster_id": "e73",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576-649",
+  "confidence": 0.85,
+  "rationale": "An out-of-scope check reported as clear. Accurate and entirely without actionable content."
+ },
+ {
+  "cluster_id": "e48",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:611-613",
+  "confidence": 0.7,
+  "rationale": "Correctly cleared: unknown subclasses hit the else arm and simply forgo the optimization. Safe direction, no defect."
+ },
+ {
+  "cluster_id": "e06",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
+  "confidence": 0.5,
+  "rationale": "Verified: IsNull (:1633) is false for a C# null elseResult, so the semantically identical no-ELSE CASE is skipped. Real missed optimization in an optimization PR."
+ },
+ {
+  "cluster_id": "e16",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlExpressions/SqlFunctionExpression.cs:215-224",
+  "confidence": 0.6,
+  "rationale": "As stated the claim is that the index pairing is fine \u2014 and it is; the ctor throws InconsistentNumberOfArguments. Cleared hypothesis."
+ },
+ {
+  "cluster_id": "e38",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:499-650",
+  "confidence": 0.7,
+  "rationale": "Self-described as having no nameable consequence; a size observation restating what the diff plainly shows."
+ },
+ {
+  "cluster_id": "e25",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "test/EFCore.Sqlite.FunctionalTests/Query/NullSemanticsQuerySqliteTest.cs:1",
+  "confidence": 0.55,
+  "rationale": "Accurate (24 overrides, none for the five new tests) but consistent with the file's selective-override norm. Small."
+ },
+ {
+  "cluster_id": "e09",
+  "verdict": "matches-thread",
+  "matches_thread": 0,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:600",
+  "confidence": 0.8,
+  "rationale": "Same point as 'cleaner to return a TRUE expression here': null-as-true is the wrong polarity, documented only by the // true comment."
+ },
+ {
+  "cluster_id": "e13",
+  "verdict": "matches-thread",
+  "matches_thread": 10,
+  "judged_severity": "high",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
+  "confidence": 0.85,
+  "rationale": "Exactly the reviewer's point: SqlBinaryExpression admits Coalesce (IsValidOperator:102), which is not null-propagating, and the unfiltered recursion harvests it."
+ },
+ {
+  "cluster_id": "e51",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576",
+  "confidence": 0.75,
+  "rationale": "Checked and cleared: no in-repo release-note artifact exists, so there is no standard to violate. No action."
+ },
+ {
+  "cluster_id": "e47",
+  "verdict": "matches-thread",
+  "matches_thread": 6,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-648",
+  "confidence": 0.45,
+  "rationale": "Same substance as the reviewer naming AtTimeZone/Collate: null-propagating node types omitted from the collector. Different exemplar node."
+ },
+ {
+  "cluster_id": "e58",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1022",
+  "confidence": 0.75,
+  "rationale": "Sargability hypothesis raised and correctly dismissed \u2014 the original predicate was already non-sargable. No defect."
+ },
+ {
+  "cluster_id": "e19",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:642",
+  "confidence": 0.6,
+  "rationale": "Real gap: the argumentsPropagateNullability==false arm is the only thing stopping a COALESCE collapse, and no test pins the CASE being retained."
+ },
+ {
+  "cluster_id": "e46",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617",
+  "confidence": 0.75,
+  "rationale": "Raised then self-dismissed, correctly: Visit already recurses the same tree with larger frames, so the helpers add no new depth risk."
+ },
+ {
+  "cluster_id": "e20",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:621-622",
+  "confidence": 0.6,
+  "rationale": "Accurate: the new unary test uses ~ (Not); Negate has no test anywhere in the diff. Small coverage asymmetry."
+ },
+ {
+  "cluster_id": "e41",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580",
+  "confidence": 0.7,
+  "rationale": "Allocation cost raised and dismissed as below the bar \u2014 right, this is compile-time work inside an already-narrow branch."
+ },
+ {
+  "cluster_id": "e55",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "test/EFCore.Specification.Tests/TestModels/NullSemanticsModel/NullSemanticsData.cs:1",
+  "confidence": 0.75,
+  "rationale": "Verification that the seed matrix is adequate, reported as adequate. Correct and non-actionable."
+ },
+ {
+  "cluster_id": "e54",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "test/EFCore.Specification.Tests/Query/CustomConvertersTestBase.cs:1202",
+  "confidence": 0.55,
+  "rationale": "A local SDK/toolchain build failure unrelated to the diff, reported as unrelated. Nothing here for the author of this change."
+ },
+ {
+  "cluster_id": "e03",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:508-533",
+  "confidence": 0.65,
+  "rationale": "Verified: the test is visited with preserveColumnNullabilityInformation and _nonNullableColumns is not restored before the result is visited, so the result assumes the very fact the rewrite drops."
+ },
+ {
+  "cluster_id": "e17",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2298",
+  "confidence": 0.7,
+  "rationale": "Correct and consequential: all five tests use ~, int +, and string concat \u2014 total-propagation shapes \u2014 so the suite cannot detect the unsound path."
+ },
+ {
+  "cluster_id": "e37",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:631-647",
+  "confidence": 0.7,
+  "rationale": "Consistency check performed and reported clean; the flag usage does mirror VisitSqlFunction. No defect."
+ },
+ {
+  "cluster_id": "e45",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585-587",
+  "confidence": 0.6,
+  "rationale": "Cleared hypothesis; correct for the built-ins it enumerates (NULL/0, LEN(NULL), CAST all yield NULL rather than erroring)."
+ },
+ {
+  "cluster_id": "e08",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580",
+  "confidence": 0.75,
+  "rationale": "Cleared and correct: set and probe both go through SqlExpression's structural Equals, and a mismatch would only forgo the optimization."
+ },
+ {
+  "cluster_id": "e53",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/Internal/RelationalCommandCache.cs:139",
+  "confidence": 0.7,
+  "rationale": "Cache-poisoning hypothesis checked and cleared; parameter nullability is part of the cache key, as the :1632 comment already states."
+ },
+ {
+  "cluster_id": "e01",
+  "verdict": "matches-thread",
+  "matches_thread": 10,
+  "judged_severity": "critical",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
+  "confidence": 0.6,
+  "rationale": "Same defect the reviewer names: the unfiltered binary arm harvests operands of non-propagating operators, so a load-bearing IS NOT NULL is dropped."
+ },
+ {
+  "cluster_id": "e60",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595",
+  "confidence": 0.8,
+  "rationale": "Observes a placement that matches the file's own convention (TryNegate) and says so. No defect, no action."
+ },
+ {
+  "cluster_id": "e49",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2270",
+  "confidence": 0.8,
+  "rationale": "Reported as refuted, and rightly: C# string concat with null yields empty, never an NRE. Cleared claim."
+ },
+ {
+  "cluster_id": "e05",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:577",
+  "confidence": 0.6,
+  "rationale": "Accurate: the new TODO has no tracking issue, unlike the #16050 markers nearby. Documentation nit."
+ },
+ {
+  "cluster_id": "e31",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576",
+  "confidence": 0.5,
+  "rationale": "Fair: the comment describes the identity case while the code handles conjunctions and deep subtrees. A missing-comment request."
+ },
+ {
+  "cluster_id": "e23",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:607-609",
+  "confidence": 0.6,
+  "rationale": "Accurate: no new test leaves two surviving conjuncts, so binary.Update and the right-is-null arm are unexercised. Narrow gap."
+ },
+ {
+  "cluster_id": "e24",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2270",
+  "confidence": 0.55,
+  "rationale": "Correct: _with_partial_checks collapses fully while _with_mixed_checks is the only partial drop. Test-naming nit."
+ },
+ {
+  "cluster_id": "e59",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:631",
+  "confidence": 0.7,
+  "rationale": "Aggregate hypothesis checked and cleared; translators pass argumentsPropagateNullability false and SqlServerAggregateFunctionExpression falls to the default."
+ },
+ {
+  "cluster_id": "e57",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:631-647",
+  "confidence": 0.45,
+  "rationale": "The surviving half is real: the guard previously kept a UDF from being evaluated on NULL rows, and a mis-declared PropagatesNullability now yields wrong rows."
+ },
+ {
+  "cluster_id": "e50",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1022",
+  "confidence": 0.7,
+  "rationale": "Baseline churn audited and reported sound, which it is: LEN(NULL)=5 is UNKNOWN and filters as the CASE did. No defect."
+ },
+ {
+  "cluster_id": "e29",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:619",
+  "confidence": 0.6,
+  "rationale": "Correct: Add's result is discarded and recursion is unconditional, so shared subtrees are re-walked. One-line fix, compile-time cost only."
+ },
+ {
+  "cluster_id": "e30",
+  "verdict": "matches-thread",
+  "matches_thread": 3,
+  "judged_severity": "nit",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-648",
+  "confidence": 0.8,
+  "rationale": "Same as the reviewer's 'this can all be one nice switch statement with pattern matching' on the type-dispatch chain."
+ },
+ {
+  "cluster_id": "e11",
+  "verdict": "matches-thread",
+  "matches_thread": 5,
+  "judged_severity": "medium",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617",
+  "confidence": 0.75,
+  "rationale": "The reviewer asks for exactly this: extensibility for provider-specific expression types, which static local functions cannot offer."
+ },
+ {
+  "cluster_id": "e63",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:498",
+  "confidence": 0.75,
+  "rationale": "Raised then correctly dismissed: VisitCase already returned non-CaseExpression values at :545 and :573, so the doc stays accurate."
+ },
+ {
+  "cluster_id": "e12",
+  "verdict": "matches-thread",
+  "matches_thread": 6,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617-648",
+  "confidence": 0.75,
+  "rationale": "Names AtTimeZone and Collate among the omitted propagating node types \u2014 the reviewer's comment verbatim in substance."
+ },
+ {
+  "cluster_id": "e27",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "test/EFCore.SqlServer.FunctionalTests/Query/NullSemanticsQuerySqlServerTest.cs:4537",
+  "confidence": 0.5,
+  "rationale": "Core point holds \u2014 the inner CASE collapses first, so no nested DropNotNullChecks runs \u2014 though 'byte-identical' is wrong (int vs string columns)."
+ },
+ {
+  "cluster_id": "e18",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250",
+  "confidence": 0.55,
+  "rationale": "Accurate: the file has an established useRelationalNulls:true pattern (19 sites) and the new tests use only the default mode. Small."
+ },
+ {
+  "cluster_id": "e74",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:579-590",
+  "confidence": 0.5,
+  "rationale": "Speculative cost concern: a scalar subquery only loses the guard if it sits under a null-propagating node with the checked operand (uncommon), and SQL engines don't guarantee CASE short-circuits subquery evaluation anyway; no concrete regression shown."
+ }
 ]

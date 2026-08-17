@@ -1,21 +1,21 @@
 {
-  "n_clusters": 69,
+  "n_clusters": 70,
   "judge_model": {
     "pass1": "claude-opus-5",
     "pass2": "claude-opus-5"
   },
   "same_model": true,
-  "exact_agreement": 0.899,
-  "disagreement_rate": 0.101,
-  "kappa_6way": 0.842,
+  "exact_agreement": 0.9,
+  "disagreement_rate": 0.1,
+  "kappa_6way": 0.843,
   "real_vs_not": {
-    "agreement": 0.942,
-    "kappa": 0.855
+    "agreement": 0.943,
+    "kappa": 0.856
   },
   "valid_other_vs_trivia_boundary": {
-    "n": 47,
-    "agreement": 0.915,
-    "kappa": 0.757
+    "n": 48,
+    "agreement": 0.917,
+    "kappa": 0.758
   },
   "matches_thread": {
     "n_either_pass": 12,
@@ -24,7 +24,7 @@
   "confusion": {
     "matches-thread -> matches-thread": 10,
     "matches-thread -> valid-minor": 2,
-    "trivia -> trivia": 36,
+    "trivia -> trivia": 37,
     "valid-minor -> false-positive": 1,
     "valid-minor -> trivia": 2,
     "valid-minor -> valid-minor": 9,

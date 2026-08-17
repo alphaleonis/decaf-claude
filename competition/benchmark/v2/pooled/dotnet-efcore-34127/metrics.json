@@ -10,8 +10,8 @@
     "provably_clean_from": "2026-06-01",
     "why": "claude-opus-5 publishes a month-granular cutoff of 2026-05; a subject is provably out-of-window only if it merged on or after 2026-06-01"
   },
-  "n_clusters": 69,
-  "n_cells": 16,
+  "n_clusters": 70,
+  "n_cells": 18,
   "threads": {
     "admitted": 11,
     "admitted_human": 10,
@@ -318,6 +318,61 @@
         "recall_found": 0.8
       }
     },
+    "ours-bugs-sp2": {
+      "clusters_reported": 2,
+      "clusters_found": 13,
+      "real": 2,
+      "valid_minor": 0,
+      "trivia": 0,
+      "false_positive": 0,
+      "precision": 1.0,
+      "precision_severity_weighted": 1.0,
+      "trivia_ratio": 0.0,
+      "unique_real": 0,
+      "unique_real_ids": [],
+      "per_cell": {
+        "findings": 1.0,
+        "false_positive": 0.0,
+        "trivia": 0.0
+      },
+      "thread_recall": 0.0,
+      "thread_recall_found": 0.0,
+      "demotion_gap": 0.0,
+      "threads_hit": 0,
+      "incumbent_agreement": 0.0,
+      "incumbent_agreement_found": 0.0,
+      "real_found": 5,
+      "demoted_real": 3,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 11.1951,
+      "cost_per_real_finding": 5.5976,
+      "class_distribution": {
+        "reported": {
+          "defect": 2,
+          "design": 0,
+          "docs": 0,
+          "risk": 0,
+          "style": 0,
+          "test-gap": 0
+        },
+        "found": {
+          "defect": 7,
+          "design": 2,
+          "docs": 1,
+          "risk": 2,
+          "style": 0,
+          "test-gap": 1
+        }
+      },
+      "defect_recall": {
+        "pool": 5,
+        "reported": 2,
+        "found": 3,
+        "recall_reported": 0.4,
+        "recall_found": 0.6
+      }
+    },
     "ours-review": {
       "clusters_reported": 15,
       "clusters_found": 37,
@@ -493,7 +548,7 @@
     "false-positive": 0,
     "matches-key": 0,
     "matches-thread": 12,
-    "trivia": 36,
+    "trivia": 37,
     "valid-minor": 12,
     "valid-other": 9
   },
@@ -501,7 +556,7 @@
     "defect": 24,
     "design": 14,
     "docs": 5,
-    "risk": 4,
+    "risk": 5,
     "style": 6,
     "test-gap": 16
   }

@@ -1186,5 +1186,23 @@
   "code_citation": "promql/engine.go:1868-1874,2427; util/stats/query_stats.go:322-344",
   "confidence": 0.65,
   "rationale": "A considered-and-cleared note. Independently traced: the evalSubquery child only receives IncrementSamplesAtTimestamp(ev.endTimestamp) (index numSteps-1) and step-indexed writes bounded by the same loop formula, so no out-of-range write is reachable; the note asserts no defect."
+ },
+ {
+  "cluster_id": "c133",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2426-2449",
+  "confidence": 0.75,
+  "rationale": "A considered-and-cleared note: parent non-nil per-step implies StepTrackingEnabled() true, so NewChildWithStepTracking (engine.go:2397) always initializes the child slice; the asymmetric arm is indeed unreachable and the note asserts no defect."
+ },
+ {
+  "cluster_id": "c134",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "util/stats/query_stats.go:358-368",
+  "confidence": 0.5,
+  "rationale": "Go truncation toward zero does map a timestamp within one interval before StartTimestamp to index 0 (earlier ones are dropped by the i>=0 guard), but every caller passes ev.startTimestamp, ev.endTimestamp or enh.Ts, all inside the step range, and the sibling IncrementSamplesAtTimestamp has the same arithmetic \u2014 true but not actionable here."
  }
 ]

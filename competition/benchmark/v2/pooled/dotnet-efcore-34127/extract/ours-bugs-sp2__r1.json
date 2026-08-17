@@ -1,0 +1,86 @@
+[
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "critical",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 626,
+  "category": "correctness",
+  "claim": "NullPropagatedOperands recurses into Left/Right for every SqlBinaryExpression operator, including AndAlso/OrElse which do not propagate NULL under three-valued logic; operands inside boolean expressions are marked null-propagated, DropNotNullChecks removes their IS NOT NULL guard, and CASE WHEN x IS NOT NULL THEN <bool expr> ELSE NULL END collapses to the bare boolean, returning true/false where null is required (e.g. x.NullableIntA != null ? (bool?)(x.NullableIntA == x.NullableIntB) : null returns False for A=null,B=null). Executed before/after comparison shows six regressing shapes; the new tests only project int?/string results so miss the bool? case; fix is an operator allow-list.",
+  "raw": "#1 \ud83d\udd34 Critical: `NullPropagatedOperands` treats `AND`/`OR` as null-propagating, so the guard is dropped from `CASE WHEN x IS NOT NULL THEN <boolean expr over x> ELSE NULL END` and the query returns `true`/`false` where it must return `null`",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "medium",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 626,
+  "category": "correctness",
+  "claim": "The same SqlBinaryExpression arm also treats ExpressionType.Coalesce as null-propagating; COALESCE(a, b) does not propagate null from a, so dropping a IS NOT NULL from CASE WHEN a IS NOT NULL THEN COALESCE(a, b) ELSE NULL END yields b instead of NULL. Not reachable via the stock pipeline today (?? becomes a SqlFunctionExpression; QuerySqlGenerator.GetOperator throws for binary Coalesce), but the operator is legal per IsValidOperator and buildable via public MakeBinary; excluded by the same allow-list.",
+  "raw": "#2 \ud83d\udfe1 Medium: `Coalesce` is also traversed as null-propagating",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 539,
+  "category": "correctness",
+  "claim": "RestoreNullValueColumnsList(currentNonNullableColumnsCount) passes the non-nullable-columns count to the null-value-columns restore; it should be currentNullValueColumnsCount. Pre-existing (blame 17a9035ad, 2023-10-23), outside the diff.",
+  "raw": "`SqlNullabilityProcessor.cs:539` \u2014 `RestoreNullValueColumnsList(currentNonNullableColumnsCount)` passes the non-nullable-columns count to the null-value-columns restore; it should be `currentNullValueColumnsCount` \u2014 pre-existing, out of reach",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 633,
+  "category": "null-safety",
+  "claim": "func.Instance! is dereferenced when InstancePropagatesNullability == true without checking Instance for null, unlike the sibling at :2394 which guards with is { Instance: not null, InstancePropagatesNullability: true }; the SqlFunctionExpression constructor does not validate instance vs instancePropagatesNullability, so a potential NRE exists (unverified \u2014 no such expression could be constructed in the repo).",
+  "raw": "`SqlNullabilityProcessor.cs:633-635` \u2014 `func.Instance!` is dereferenced on `InstancePropagatesNullability == true`, whereas the sibling at `:2394` guards with `is { Instance: not null, InstancePropagatesNullability: true }`",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 580,
+  "category": "performance",
+  "claim": "The HashSet<SqlExpression> at :580/:619 uses the structural Equals/GetHashCode of the expression subclasses, which is correct semantics for the membership test, but the O(subtree) hash recomputed at every node is a theoretical cost.",
+  "raw": "`SqlNullabilityProcessor.cs:580` / `:619` \u2014 `HashSet<SqlExpression>` with the default comparer uses the structural `Equals`/`GetHashCode` of the expression subclasses ... The `O(subtree)` hash recomputed at every node is a theoretical cost, not a defect \u2014 minor, out of reach",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 0,
+  "category": "performance",
+  "claim": "Collapsing the CASE moves evaluation of the WHEN-result onto rows where the guard was false, which matters only when the result is expensive (e.g. a scalar subquery).",
+  "raw": "Collapsing the `CASE` moves evaluation of the WHEN-result onto rows where the guard was false (relevant only for an expensive result such as a scalar subquery). minor, out of reach under `narrow`.",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 587,
+  "category": "type-mapping",
+  "claim": "Returning clause.Result at :587 can hand back an expression whose Type/TypeMapping differs from caseExpression's when earlier WHEN clauses were dropped as false (CaseExpression takes its type from whenClauses[0].Result); the identical pattern already exists at :547, so pre-existing.",
+  "raw": "Returning `clause.Result` at `:587` can hand back an expression whose `Type`/`TypeMapping` differs from `caseExpression`'s when earlier WHEN clauses were dropped as false ... The identical pattern already exists at `:547` \u2014 pre-existing, out of reach",
+  "disposition": "demoted"
+ }
+]

@@ -10,8 +10,8 @@
     "provably_clean_from": "2026-06-01",
     "why": "claude-opus-5 publishes a month-granular cutoff of 2026-05; a subject is provably out-of-window only if it merged on or after 2026-06-01"
   },
-  "n_clusters": 132,
-  "n_cells": 16,
+  "n_clusters": 134,
+  "n_cells": 18,
   "threads": {
     "admitted": 10,
     "admitted_human": 10,
@@ -161,12 +161,11 @@
       "precision": 0.593,
       "precision_severity_weighted": 0.792,
       "trivia_ratio": 0.074,
-      "unique_real": 10,
+      "unique_real": 9,
       "unique_real_ids": [
         "c08",
         "c102",
         "c109",
-        "c15",
         "c31",
         "c32",
         "c41",
@@ -324,6 +323,61 @@
         "reported": 4,
         "found": 6,
         "recall_reported": 0.333,
+        "recall_found": 0.5
+      }
+    },
+    "ours-bugs-sp2": {
+      "clusters_reported": 6,
+      "clusters_found": 18,
+      "real": 5,
+      "valid_minor": 1,
+      "trivia": 0,
+      "false_positive": 0,
+      "precision": 0.833,
+      "precision_severity_weighted": 0.923,
+      "trivia_ratio": 0.0,
+      "unique_real": 0,
+      "unique_real_ids": [],
+      "per_cell": {
+        "findings": 3.0,
+        "false_positive": 0.0,
+        "trivia": 0.0
+      },
+      "thread_recall": 0.3,
+      "thread_recall_found": 0.3,
+      "demotion_gap": 0.0,
+      "threads_hit": 3,
+      "incumbent_agreement": null,
+      "incumbent_agreement_found": null,
+      "real_found": 9,
+      "demoted_real": 4,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 14.2383,
+      "cost_per_real_finding": 2.8477,
+      "class_distribution": {
+        "reported": {
+          "defect": 3,
+          "design": 2,
+          "docs": 0,
+          "risk": 0,
+          "style": 0,
+          "test-gap": 1
+        },
+        "found": {
+          "defect": 9,
+          "design": 4,
+          "docs": 1,
+          "risk": 3,
+          "style": 0,
+          "test-gap": 1
+        }
+      },
+      "defect_recall": {
+        "pool": 12,
+        "reported": 3,
+        "found": 6,
+        "recall_reported": 0.25,
         "recall_found": 0.5
       }
     },
@@ -501,12 +555,12 @@
     "false-positive": 2,
     "matches-key": 0,
     "matches-thread": 8,
-    "trivia": 61,
+    "trivia": 63,
     "valid-minor": 31,
     "valid-other": 30
   },
   "class_distribution": {
-    "defect": 32,
+    "defect": 34,
     "design": 17,
     "docs": 21,
     "risk": 32,

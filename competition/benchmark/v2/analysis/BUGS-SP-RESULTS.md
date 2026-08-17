@@ -187,3 +187,59 @@ housekeeping into two shell turns instead of eight. Together these plausibly lan
 `bugs` wave on a regression that its own caveat later called confounded. On the one preset where the
 lanes are separable — one seat, so the residual is the orchestrator — the overhead is real and
 measured: ~$0.85 of $5.13, and 100% of the gap to a tool with the same seat.
+
+---
+
+## Brief v2 (`ours-bugs-sp2`, 2026-08-17) — Minor bucket omitted under `narrow`, fail closed
+
+Same two subjects × 2 repeats, all CLEAN, folded in the same way (extract → cluster against the
+pools → blind-grade only new clusters inside relabelled calibration samples, two passes + class).
+Every *reported* v2 finding again landed on a pilot-graded cluster; 3 new clusters, all
+demoted-only. Pilot tools' figures unchanged except `ours-audit`'s prometheus `unique_real` (−1:
+v2 *found* c15, which only audit had reported — correct semantics, not drift). Calibration: 10/14
+(prom), **3/12 (efcore)** — see `scoring/prompts/README.md`; efcore's one new cluster is
+demoted-only trivia in both passes so no reported figure rests on today's judge.
+
+| per cell (mean of 4) | v1 `bugs-sp` | **v2 `bugs-sp2`** | superpowers |
+|---|---|---|---|
+| reported clusters (pooled) | 18 | **8** | 45 |
+| defect share of reported | 44% (70% primary-only) | **62%** | 29% |
+| real defects reported / found (of 16) | 6 / 10 | **5 / 9** | 9 / 9 |
+| real clusters reported (pooled) | 12 | **7** | 31 |
+| repeat Jaccard, prom / efcore | 0.36 / 0.43 | **0.50 / 0.50** | 0.36 / 0.41 |
+| cost / cell | $5.13 | **$6.36** | $4.29 |
+| seat input side (exact) | $2.51 | **$3.71** | $2.68 |
+| orchestrator input side (exact) | $0.89 | $0.88 | $0.40 |
+| seat turns / shell calls | 36 / 40 | **55 / 51** | 42 / 44 |
+
+**Against the restated criteria**: recall reported 5/16 ✗ (target ≥8; v1 6); composition 62% ✗
+(target ≥2/3; v1 44%); seat cost at superpowers parity ✗ ($3.71 vs $2.68; v1 met it);
+orchestrator ≤ $1 ✓; stability no worse than v1 ✓ (better: 0.50/0.50).
+
+**What each decision did, cluster by cluster:**
+
+- *Fail closed* fired once — efcore **e13** (`Coalesce`, high, human thread): demoted twice in v1,
+  **reported** in v2 r1 as a Medium with the counter-argument. It **under-fired** on prometheus
+  **c07** (`samplesRead` lookback over-count, valid-other medium): parked in both v2 repeats with
+  the exact reasoning the rule names — "the docs explicitly scope the delta optimization … cannot
+  be distinguished from the stated design". The rule needs a sharper trigger than a paragraph.
+- *Minor bucket omitted* raised composition 44% → 62% and cut reported volume 18 → 8, but the new
+  `minor, out of reach` label became an **off-ramp for a Low**: prometheus **c03** (judged medium,
+  valid-other) was a Low primary finding in v1 r2 and was parked as minor in v2 r2.
+- *Seat variance dominated the rest*: efcore **e02** (Critical, reported in both v1 repeats) was
+  not found in either v2 repeat; prometheus c05 vanished; c04 was gained (both v2 repeats vs one
+  in v1). None of these track the brief edits.
+- *Cost*: the whole +$1.23/cell is the seat — 55 turns against 36, 51 shell calls against 40 —
+  under a brief that asks it not to dismiss what it traced. It investigated more and reported
+  less. Orchestrator unchanged.
+
+**Reading.** Brief v2 is not an improvement on recall and is a small one on composition and
+stability, at a seat cost that lost superpowers parity. Two of the four movements that decide the
+recall figure (e02, c05) are unrelated to the edits; at 2 repeats the brief effect and single-seat
+variance are not separable for changes of this size — which is PILOT-RESULTS' warning again, now
+measured on our own preset. Concretely for the brief: (a) the fail-closed rule needs an operational
+trigger — e.g. "if your Considered-But-Not-Flagged reason cites a doc, comment, or test as the
+authority, that item is a finding" — rather than prose; (b) `minor, out of reach` should be barred
+for anything the seat itself rated Low or above (a Low is a finding; "minor" is for nits). Neither
+should be re-run alone at 2 repeats expecting a legible signal; the honest next step for the
+recall question is more repeats or a wider subject slice, not another prompt tweak.

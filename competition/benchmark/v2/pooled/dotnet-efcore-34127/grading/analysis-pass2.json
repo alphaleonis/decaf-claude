@@ -72,6 +72,38 @@
    "access_denied": 0
   },
   {
+   "tool": "ours-bugs-sp",
+   "repeat": 1,
+   "cost_usd": 5.0622,
+   "wall_s": 913,
+   "access_total": 50,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-sp",
+   "repeat": 2,
+   "cost_usd": 4.8631,
+   "wall_s": 878,
+   "access_total": 54,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-sp2",
+   "repeat": 1,
+   "cost_usd": 5.5615,
+   "wall_s": 840,
+   "access_total": 55,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-sp2",
+   "repeat": 2,
+   "cost_usd": 5.6336,
+   "wall_s": 937,
+   "access_total": 58,
+   "access_denied": 0
+  },
+  {
    "tool": "ours-review",
    "repeat": 1,
    "cost_usd": 15.8371,
@@ -250,8 +282,38 @@
      "severity": "high",
      "disposition": "demoted",
      "finding_index": 42
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e02",
@@ -305,8 +367,24 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 219
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 1
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e03",
@@ -368,7 +446,9 @@
      "disposition": "demoted",
      "finding_index": 176
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "e04",
@@ -429,8 +509,31 @@
      "severity": "low",
      "disposition": "demoted",
      "finding_index": 232
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 2
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "e05",
@@ -512,8 +615,24 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 102
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 3
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "e06",
@@ -602,8 +721,24 @@
      "severity": "medium",
      "disposition": "demoted",
      "finding_index": 35
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 1
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e07",
@@ -658,7 +793,9 @@
      "disposition": "reported",
      "finding_index": 172
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "e08",
@@ -712,8 +849,24 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 177
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 4
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "e09",
@@ -781,8 +934,24 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 228
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e10",
@@ -837,7 +1006,9 @@
      "disposition": "reported",
      "finding_index": 230
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e11",
@@ -885,7 +1056,9 @@
      "disposition": "reported",
      "finding_index": 85
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "e12",
@@ -926,7 +1099,9 @@
      "disposition": "demoted",
      "finding_index": 98
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e13",
@@ -1029,8 +1204,31 @@
      "severity": "medium",
      "disposition": "demoted",
      "finding_index": 218
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 1
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "e14",
@@ -1098,8 +1296,17 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 128
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 3
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e15",
@@ -1119,7 +1326,9 @@
      "disposition": "reported",
      "finding_index": 54
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e16",
@@ -1195,7 +1404,9 @@
      "disposition": "demoted",
      "finding_index": 182
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "e17",
@@ -1291,8 +1502,17 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 132
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e18",
@@ -1312,7 +1532,9 @@
      "disposition": "reported",
      "finding_index": 240
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e19",
@@ -1353,7 +1575,9 @@
      "disposition": "reported",
      "finding_index": 253
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e20",
@@ -1394,7 +1618,9 @@
      "disposition": "reported",
      "finding_index": 170
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e21",
@@ -1442,7 +1668,9 @@
      "disposition": "reported",
      "finding_index": 226
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e22",
@@ -1462,7 +1690,9 @@
      "disposition": "reported",
      "finding_index": 208
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e23",
@@ -1489,7 +1719,9 @@
      "disposition": "reported",
      "finding_index": 206
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e24",
@@ -1516,7 +1748,9 @@
      "disposition": "reported",
      "finding_index": 211
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "e25",
@@ -1571,7 +1805,9 @@
      "disposition": "demoted",
      "finding_index": 186
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "e26",
@@ -1619,7 +1855,9 @@
      "disposition": "reported",
      "finding_index": 229
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.75
   },
   {
    "cluster_id": "e27",
@@ -1639,7 +1877,9 @@
      "disposition": "reported",
      "finding_index": 141
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "e28",
@@ -1666,7 +1906,9 @@
      "disposition": "reported",
      "finding_index": 202
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "e29",
@@ -1706,8 +1948,24 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 231
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 2
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "e30",
@@ -1727,7 +1985,9 @@
      "disposition": "reported",
      "finding_index": 201
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "e31",
@@ -1796,7 +2056,9 @@
      "disposition": "reported",
      "finding_index": 258
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e32",
@@ -1830,7 +2092,9 @@
      "disposition": "reported",
      "finding_index": 259
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "e34",
@@ -1870,8 +2134,17 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 181
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e35",
@@ -1911,8 +2184,24 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 179
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e36",
@@ -1946,7 +2235,9 @@
      "disposition": "demoted",
      "finding_index": 178
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e37",
@@ -1966,7 +2257,9 @@
      "disposition": "demoted",
      "finding_index": 114
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e38",
@@ -1986,7 +2279,9 @@
      "disposition": "demoted",
      "finding_index": 72
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e39",
@@ -2013,7 +2308,9 @@
      "disposition": "reported",
      "finding_index": 221
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "e40",
@@ -2033,7 +2330,9 @@
      "disposition": "demoted",
      "finding_index": 148
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "e41",
@@ -2060,7 +2359,9 @@
      "disposition": "demoted",
      "finding_index": 190
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "e42",
@@ -2121,8 +2422,24 @@
      "severity": "medium",
      "disposition": "demoted",
      "finding_index": 39
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e43",
@@ -2169,8 +2486,24 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 184
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e44",
@@ -2190,7 +2523,9 @@
      "disposition": "demoted",
      "finding_index": 158
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e45",
@@ -2216,8 +2551,24 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 175
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 4
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.65
   },
   {
    "cluster_id": "e46",
@@ -2258,7 +2609,9 @@
      "disposition": "demoted",
      "finding_index": 188
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e47",
@@ -2278,7 +2631,9 @@
      "disposition": "demoted",
      "finding_index": 74
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e48",
@@ -2298,7 +2653,9 @@
      "disposition": "demoted",
      "finding_index": 155
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e49",
@@ -2318,7 +2675,9 @@
      "disposition": "demoted",
      "finding_index": 115
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "e50",
@@ -2352,7 +2711,9 @@
      "disposition": "demoted",
      "finding_index": 131
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "e51",
@@ -2379,7 +2740,9 @@
      "disposition": "demoted",
      "finding_index": 103
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.75
   },
   {
    "cluster_id": "e52",
@@ -2413,7 +2776,9 @@
      "disposition": "reported",
      "finding_index": 260
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e53",
@@ -2447,7 +2812,9 @@
      "disposition": "demoted",
      "finding_index": 106
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "e54",
@@ -2494,8 +2861,17 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 234
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.4
   },
   {
    "cluster_id": "e55",
@@ -2522,7 +2898,9 @@
      "disposition": "demoted",
      "finding_index": 130
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "e56",
@@ -2542,7 +2920,9 @@
      "disposition": "demoted",
      "finding_index": 214
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.65
   },
   {
    "cluster_id": "e57",
@@ -2569,7 +2949,9 @@
      "disposition": "reported",
      "finding_index": 25
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e58",
@@ -2589,7 +2971,9 @@
      "disposition": "demoted",
      "finding_index": 189
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.4
   },
   {
    "cluster_id": "e59",
@@ -2608,8 +2992,17 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 100
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e60",
@@ -2629,7 +3022,9 @@
      "disposition": "demoted",
      "finding_index": 101
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "e62",
@@ -2649,7 +3044,9 @@
      "disposition": "demoted",
      "finding_index": 174
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e63",
@@ -2669,7 +3066,9 @@
      "disposition": "demoted",
      "finding_index": 183
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "e65",
@@ -2689,7 +3088,9 @@
      "disposition": "demoted",
      "finding_index": 99
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "e66",
@@ -2709,7 +3110,9 @@
      "disposition": "demoted",
      "finding_index": 233
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e67",
@@ -2742,8 +3145,24 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 257
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "e68",
@@ -2763,7 +3182,9 @@
      "disposition": "reported",
      "finding_index": 90
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "e69",
@@ -2783,7 +3204,9 @@
      "disposition": "reported",
      "finding_index": 92
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e70",
@@ -2803,7 +3226,9 @@
      "disposition": "reported",
      "finding_index": 225
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "e71",
@@ -2823,7 +3248,9 @@
      "disposition": "reported",
      "finding_index": 26
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "e73",
@@ -2843,7 +3270,31 @@
      "disposition": "demoted",
      "finding_index": 107
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "e74",
+   "summary": "Collapsing the CASE evaluates the WHEN-result on rows where the guard was false, so an expensive result such as a scalar subquery now runs for every row",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578-590",
+   "confidence": 0.5,
+   "rationale": "Speculative DB-dependent perf concern in a contrived shape (an expensive subexpression in a null-propagating position under a guard); the collapse is the PR's intended trade-off and CASE does not reliably guard evaluation of subqueries in SQL Server anyway.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.8
   }
  ]
 }
