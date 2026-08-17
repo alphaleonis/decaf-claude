@@ -132,3 +132,58 @@ entirely disposition. And composition failed through the Minor bucket, not throu
   the funnel would have hidden.
 - **Two subjects; the pilot's rules bind.** Nothing here promotes `bugs-sp` beyond experimental,
   and no cross-tool ranking from this run is publishable on its own.
+
+---
+
+## Cost attribution (2026-08-17, dcc-pulk item 1)
+
+Where the $0.84/cell gap to superpowers goes, from the eight cell transcripts (four per tool, same
+two subjects). Method: dedupe per-request `usage` by `requestId` — after which **cache-read tokens
+reconcile to `meter.json` exactly in all eight cells**, so turn structure and the input side are
+attributable per lane. Per-request `output_tokens` in transcripts is *not* usable (it sums to 19–35%
+of the meter, non-uniformly — the earlier correction's warning stands), so output is taken from the
+meter as a whole-cell total. Prices are fitted from the meters themselves (least squares over 50 Opus
+rows: $26/M out, $0.52/M cache-read, $6.6/M cache-write; median error 2%), not from memory.
+
+| per cell (mean of 4) | `bugs-sp` | `superpowers` | Δ |
+|---|---|---|---|
+| orchestrator, input side — **exact** | $0.89 | $0.40 | **+$0.49** |
+| seat, input side — **exact** | $2.51 | $2.68 | −$0.17 |
+| output, all lanes (meter) | $1.71 | $1.22 | +$0.49 |
+| meter | $5.13 | $4.29 | +$0.84 |
+| orchestrator turns (with thinking) | 10.2 (6.2) | 4.8 (1.2) | |
+| seat turns (with thinking) | 36.2 (28.0) | 41.8 (29.2) | |
+
+**The seat is not the gap.** Its input side is slightly *cheaper* than superpowers' agent, and its
+visible emissions match on every axis that can be measured: 22–38k vs 25–30k chars emitted, 35–45 vs
+37–51 shell calls, 6–14 vs 11–12 build/test runs, 2–3 vs 2–3 temporary worktrees, 28 vs 29 thinking
+turns. [Inference] The output-side Δ is therefore orchestrator too — the seat lanes are equal, and
+the orchestrator emits the seat's 15–18k-char report a second time as a 15–24k-char file plus
+thinking on 6 turns against 1.
+
+**What the orchestrator's extra ~$0.85 is**, read off its turns:
+
+1. **The 69 KB `code-review` SKILL.md is ~35k tokens of context** — cache-read jumps from 16k to
+   51k on the turn after the skill loads — and every one of the ~10 orchestrator turns re-reads it.
+   Superpowers' skill is 95 lines. This is most of the exact $0.49: `bugs-sp` needs ~2.5 KB of that
+   file (its own section) and loads all of it.
+2. **~10 turns instead of ~5**: four context-gathering shell turns (diff stat, log, a per-file diff,
+   spec-discovery globs), then after the seat returns: read the `--report` convention file, `git
+   status`, `mkdir`/`date`, **Write the report**, `git status` again, closing text.
+3. **The report is emitted twice**: the seat returns it as text (its return value), then the
+   orchestrator re-emits it — reformatted with header, rationale and agent-summary ceremony, 1.3–1.6×
+   longer — through the Write tool. There is no "pipe tool result to file" primitive, so this costs
+   the whole report in output tokens a second time (~$0.15–0.20/cell at fitted prices), plus a turn.
+
+**Levers, in order of size** [Inference from the above; unmeasured until re-run]: (a) stop loading
+the whole SKILL.md on the `bugs-sp` path — a thin skill or a split file, saving ~30k tokens × ~10
+turns of cache reads (~$0.15–0.20) and shrinking every orchestrator turn; (b) let the seat write the
+report file itself and return a one-line summary — sound on this path because there is no shared
+tree, and it removes the re-emission and one turn (~$0.20–0.25); (c) fold the context-gathering and
+housekeeping into two shell turns instead of eight. Together these plausibly land `bugs-sp` at
+≈$4.3–4.5/cell — the superpowers anchor — without touching the seat.
+
+**Note on the earlier correction.** dcc-1ix0's CORRECTION dismissed "orchestrator overhead" for the
+`bugs` wave on a regression that its own caveat later called confounded. On the one preset where the
+lanes are separable — one seat, so the residual is the orchestrator — the overhead is real and
+measured: ~$0.85 of $5.13, and 100% of the gap to a tool with the same seat.
