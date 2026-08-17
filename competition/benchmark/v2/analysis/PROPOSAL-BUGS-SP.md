@@ -174,3 +174,16 @@ Restated success criteria for `ours-bugs-sp2`:
 | composition — defect share of reported | ≥ 2/3 (v1: 44%; 70% primary-only) |
 | cost | seat ≈ superpowers' agent; orchestrator ≤ $1/cell (v1: $0.89 exact input-side + share of output) |
 | stability | no worse than v1 (Jaccard 0.36 / 0.43) |
+
+## Brief v3 (2026-08-17, dcc-ce0m) — closed-set parking reasons
+
+v2's fail-closed paragraph under-fired (prom c07 parked in both repeats with the exact wording the
+rule named) and its `minor, out of reach` label swallowed a Low (prom c03). The seat's filter was
+operating on *intentionality* — "the doc/comment/test says this is intended", "unreachable today" —
+on top of class and confidence. v3 removes the option instead of arguing with it: Considered But Not
+Flagged takes exactly `[unverified]` `[false]` `[pre-existing]` `[minor]`; `[minor]` is nits only
+(Low+ is a finding); the intentionality sentences are findings at anchor 50 with the counter-argument
+in Evidence; the orchestrator counts untagged parkings in the header, never re-tiers. Arm
+`ours-bugs-sp3`, **3 repeats** — the targeted effect (2–3 defects/run) is the size of the seat
+variance at 2. Ceiling on the pool if the three wrong drops move: ≈9/16 reported at ≥60% defect
+share — superpowers' defect recall at a quarter of its reading.

@@ -168,10 +168,15 @@ at generation — the `reach` block and the seat's own calibration — not in ma
    anchors are final. Under `reach=narrow` the seat omits the Minor Findings section by its own
    rules (minor observations go to Considered But Not Flagged as `minor, out of reach`); do not
    reconstruct one. Copy the seat's per-finding rows verbatim — in particular keep its `Verified`
-   row as its own table row, do not fold it into Confidence.
+   row as its own table row, do not fold it into Confidence. **Check the parking tags**: every
+   Considered But Not Flagged entry must carry exactly one of `[unverified]` `[false]`
+   `[pre-existing]` `[minor]`. Count entries that carry none, or whose stated reason is one of the
+   non-reasons the seat's brief names ("intended", "documented", "commented", "tested as such",
+   "unreachable today"), and record the count in the report header (below). Do **not** promote,
+   re-tag, or re-tier them — the count is the signal; the seat's report is otherwise final.
 7. **Step 6 runs normally.** Header: `**Mode**: bugs-sp (explicit) · roster=1 (fixed)`,
-   `**Reviewers**: solo-reviewer`, `**Validation**: none (bugs-sp — single-seat path)`. The
-   Agent Summary table has one row. Step 7 (review history) runs as usual.
+   `**Reviewers**: solo-reviewer`, `**Validation**: none (bugs-sp — single-seat path) · parked N
+   (K without a closed-set reason)`. The Agent Summary table has one row. Step 7 (review history) runs as usual.
 
 **When to use it:** it is an experiment (its benchmark arm is `ours-bugs-sp`), not a default.
 Until re-measured beyond the two pilot subjects, prefer `bugs` for anything where a wrong verdict
