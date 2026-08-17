@@ -1,0 +1,68 @@
+2026-08-17T08:48:52Z	fs	ALLOW	Bash (no path)
+2026-08-17T08:48:53Z	fs	ALLOW	Bash (no path)
+2026-08-17T08:48:56Z	fs	ALLOW	Bash promql/engine.go promql/value.go util/stats/query_stats.go util/stats/stats_test.go web/api/v1/openapi_schemas.go docs/ web/api/v1/api_test.go web/api/v1/testdata/
+2026-08-17T08:49:08Z	fs	ALLOW	Bash /dev/null /dev/null
+2026-08-17T08:49:48Z	fs	ALLOW	Bash promql/engine.go promql/value.go util/stats/query_stats.go util/stats/stats_test.go
+2026-08-17T08:49:52Z	fs	ALLOW	Bash promql/engine.go
+2026-08-17T08:50:31Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-17T08:50:33Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-17T08:50:51Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-17T08:51:07Z	fs	ALLOW	Bash promql/engine.go
+2026-08-17T08:51:18Z	fs	ALLOW	Bash promql/functions.go
+2026-08-17T08:51:58Z	fs	ALLOW	Bash promql/engine.go
+2026-08-17T08:52:05Z	fs	ALLOW	Bash promql/engine.go
+2026-08-17T08:52:15Z	fs	ALLOW	Bash promql/engine.go
+2026-08-17T08:52:55Z	fs	ALLOW	Bash ./promql/... ./util/stats/...
+2026-08-17T08:53:00Z	fs	ALLOW	Bash /tmp/srchk /tmp/srchk /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo
+2026-08-17T08:55:05Z	fs	ALLOW	Write /tmp/srchk/go.mod
+2026-08-17T08:55:07Z	fs	ALLOW	Write /tmp/srchk/go.work
+2026-08-17T08:55:10Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
+2026-08-17T08:55:14Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
+2026-08-17T08:55:25Z	fs	ALLOW	Bash ./promql/
+2026-08-17T08:55:30Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
+2026-08-17T08:56:01Z	fs	ALLOW	Write /tmp/srchk/stats_test.go
+2026-08-17T08:56:03Z	fs	DENY	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/...
+2026-08-17T08:56:15Z	fs	ALLOW	Bash /tmp/srchk
+2026-08-17T08:56:23Z	fs	ALLOW	Bash GOWORK=/tmp/srchk/go.work /tmp/srchk
+2026-08-17T08:56:26Z	fs	ALLOW	Write /tmp/srchk/go.work
+2026-08-17T08:56:28Z	fs	ALLOW	Bash GOWORK=/tmp/srchk/go.work /tmp/srchk
+2026-08-17T08:56:30Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
+2026-08-17T08:56:33Z	fs	ALLOW	Bash /tmp/srchk
+2026-08-17T08:56:36Z	fs	ALLOW	Bash GOWORK=/tmp/srchk/go.work /tmp/srchk
+2026-08-17T08:56:49Z	fs	ALLOW	Bash /tmp/base /tmp/base /tmp/base /tmp/base
+2026-08-17T08:56:51Z	fs	ALLOW	Write /tmp/basechk/go.mod
+2026-08-17T08:56:54Z	fs	ALLOW	Bash /tmp/srchk/stats_test.go /tmp/basechk/stats_test.go s/^package srchk/package basechk/ /tmp/basechk/stats_test.go \n\t.\n\t/tmp/base\n /tmp/basechk/go.work /tmp/basechk/go.work
+2026-08-17T08:56:59Z	fs	ALLOW	Bash /tmp/basechk p='/tmp/basechk/stats_test.go /tmp/basechk/stats_test.go
+2026-08-17T08:57:01Z	fs	ALLOW	Bash GOWORK=/tmp/basechk/go.work /tmp/basechk
+2026-08-17T08:58:32Z	fs	ALLOW	Write /tmp/srchk/nest_test.go
+2026-08-17T08:58:35Z	fs	ALLOW	Bash GOWORK=/tmp/srchk/go.work /tmp/srchk
+2026-08-17T08:58:47Z	fs	ALLOW	Bash docs/ web/api/v1/openapi_schemas.go web/api/v1/api_test.go
+2026-08-17T08:59:12Z	fs	ALLOW	Bash (no path)
+2026-08-17T08:59:15Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo
+2026-08-17T08:59:18Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
+2026-08-17T08:59:34Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo
+2026-08-17T08:59:40Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
+2026-08-17T09:00:37Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
+2026-08-17T09:01:27Z	fs	ALLOW	Write /tmp/srchk/edge_test.go
+2026-08-17T09:01:29Z	fs	ALLOW	Bash GOWORK=/tmp/srchk/go.work /tmp/srchk
+2026-08-17T09:01:59Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/docs/feature_flags.md /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/docs/feature_flags.md
+2026-08-17T09:02:08Z	fs	ALLOW	Bash ./web/api/v1/
+2026-08-17T09:02:14Z	fs	ALLOW	Bash ./util/stats/ ./promql/
+2026-08-17T09:02:30Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-17T09:02:35Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-17T09:02:46Z	fs	ALLOW	Bash promql/engine_test.go r'//.*','',b
+2026-08-17T09:03:13Z	fs	ALLOW	Bash promql/bench_test.go promql/bench_test.go
+2026-08-17T09:03:16Z	fs	ALLOW	Bash ./promql/ BenchmarkRangeQuery/expr=rate\ /
+2026-08-17T09:03:23Z	fs	ALLOW	Bash ./promql/
+2026-08-17T09:03:43Z	fs	ALLOW	Bash ./promql/
+2026-08-17T09:04:05Z	fs	ALLOW	Bash ./promql/ BenchmarkRangeQuery/expr=changes\
+2026-08-17T09:04:14Z	fs	ALLOW	Bash /tmp/base ./promql/ BenchmarkRangeQuery/expr=changes\
+2026-08-17T09:04:35Z	fs	ALLOW	Bash ./promql/ BenchmarkRangeQuery/expr=rate\ /tmp/base ./promql/ BenchmarkRangeQuery/expr=rate\
+2026-08-17T09:04:59Z	fs	ALLOW	Bash promql/bench_test.go
+2026-08-17T09:05:35Z	fs	ALLOW	Bash promql/engine.go
+2026-08-17T09:05:37Z	fs	ALLOW	Bash promql/engine.go
+2026-08-17T09:05:50Z	fs	ALLOW	Bash docs/feature_flags.md docs/querying/api.md util/stats/query_stats.go promql/engine_test.go
+2026-08-17T09:05:54Z	fs	ALLOW	Bash /tmp/srchk /tmp/basechk /tmp/base
+2026-08-17T09:07:26Z	fs	ALLOW	Bash .decaf/code-reviews/ /dev/null
+2026-08-17T09:08:46Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/.decaf/code-reviews/CODE_REVIEW_2026-08-17_11-07-26.md
+2026-08-17T09:08:49Z	fs	ALLOW	Bash (no path)
