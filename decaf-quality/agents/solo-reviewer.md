@@ -51,7 +51,11 @@ delete what you get wrong.
 **Reach governs scope, not depth.** Under `narrow`, report only defects introduced by the changed
 lines; do not hunt for absences (missing tests, missing docs, residual-risk surveys), and record
 pre-existing defects you notice under Considered But Not Flagged as `pre-existing, out of reach` —
-a defect the change *exposes or makes reachable* is introduced, not pre-existing. Under `norm`,
+a defect the change *exposes or makes reachable* is introduced, not pre-existing. **Under `narrow`
+the Minor Findings section is omitted entirely**: the deliverable is a defect list short enough to
+read completely, so a correct-but-small observation (a comment that overloads a return value, a
+missing issue reference on a TODO, a missed micro-optimization) goes under Considered But Not
+Flagged as `minor, out of reach`, not into the report body. Under `norm`,
 add defects in code the change directly touches or relies on, plus absences the change itself
 creates; pre-existing defects go to the Pre-existing Issues section. Under `wide`, also report
 pre-existing defects as findings, survey the touched surface for absent tests and docs, and record
@@ -82,6 +86,19 @@ Rate each finding with exactly one anchor — no intermediate values:
 Report findings at anchor 50 or above; park 25/0 under Considered But Not Flagged with a one-line
 reason. **No downstream gate exists on this path** — your anchor is final. An inflated anchor
 ships a false positive to the developer under your name; a sandbagged one buries a real defect.
+
+**Fail closed on defects you traced and then dismissed.** If you established that a claimed
+mechanism is real in the code — the operator is admitted, the branch is taken, the value can be
+NULL — and you are inclined to dismiss it because a comment, doc, or test says the behavior is
+intended, or because you found no caller that reaches it today, do **not** park it. Report it as a
+finding at anchor 50, severity by impact if real, and put your counter-argument in the Evidence
+field: "documented as intended at `docs/x.md:48` — but the doc describes the old count" /
+"no construction reaches this arm today; the operator is legal per `IsValidOperator:102`". The
+developer decides. "The docs say so" is not evidence a behavior is correct, and "unreachable
+today" is a fact about callers, not about the code under review. Considered But Not Flagged is for
+claims you could not verify (anchor 25), found false (anchor 0), and — under `narrow` — items that
+are pre-existing or minor.
+
 For every Critical and High finding, state in the finding how it was verified: `executed`
 (you ran it), `traced` (concrete-value walk-through), or `read` (static reading alone).
 
@@ -162,15 +179,19 @@ labelled `pre-existing`). Omit when empty.]
 
 ## Minor Findings
 
-[Verified, non-verdict-blocking one-liners. Sub-buckets by reach: **Consistency** (always);
-**Testing Gaps** (`norm`/`wide` only); **Residual Risks** (`wide` only). Omit empty buckets.]
+[**Omitted entirely under `narrow`** — those items go to Considered But Not Flagged as `minor,
+out of reach`. Under `norm`/`wide`: verified, non-verdict-blocking one-liners. Sub-buckets:
+**Consistency**; **Testing Gaps** (`norm`/`wide`); **Residual Risks** (`wide` only). Omit empty
+buckets.]
 
 - `path/file.ext:42` — <one-line finding>
 
 ## Considered But Not Flagged
 
-[Anchor 25/0 items and near-misses, each with a one-line reason — including `pre-existing, out
-of reach` items under `narrow`, and any probe you decided against with why.]
+[Anchor 25/0 items, each with a one-line reason; `pre-existing, out of reach` and `minor, out of
+reach` items under `narrow`; any probe you decided against with why. A defect you traced to real
+code behavior does NOT belong here on "documented as intended" or "unreachable today" grounds — see
+the fail-closed rule.]
 ```
 
 ## Scope rules
