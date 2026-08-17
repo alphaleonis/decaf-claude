@@ -72,6 +72,22 @@
    "access_denied": 2
   },
   {
+   "tool": "ours-bugs-sp",
+   "repeat": 1,
+   "cost_usd": 6.3049,
+   "wall_s": 894,
+   "access_total": 53,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-sp",
+   "repeat": 2,
+   "cost_usd": 4.3081,
+   "wall_s": 777,
+   "access_total": 41,
+   "access_denied": 0
+  },
+  {
    "tool": "ours-review",
    "repeat": 1,
    "cost_usd": 17.151,
@@ -229,6 +245,20 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 355
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
     }
    ],
    "finding_class": "defect",
@@ -342,6 +372,20 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 352
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
     }
    ],
    "finding_class": "defect",
@@ -484,6 +528,13 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 353
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 2
     }
    ],
    "finding_class": "defect",
@@ -576,6 +627,13 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 354
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
     }
    ],
    "finding_class": "defect",
@@ -640,6 +698,13 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 358
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
     }
    ],
    "finding_class": "defect",
@@ -754,6 +819,13 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 357
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
    ],
    "finding_class": "defect",
@@ -1094,6 +1166,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 264
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
     }
    ],
    "finding_class": "defect",
@@ -1386,6 +1465,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 117
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 15
     }
    ],
    "finding_class": "risk",
@@ -1618,6 +1704,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 78
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 5
     }
    ],
    "finding_class": "risk",
@@ -1689,6 +1782,13 @@
      "severity": "medium",
      "disposition": "demoted",
      "finding_index": 331
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
    ],
    "finding_class": "risk",
@@ -1725,6 +1825,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 230
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
     }
    ],
    "finding_class": "risk",
@@ -2348,6 +2455,20 @@
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 311
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
     }
    ],
    "finding_class": "defect",
@@ -2758,6 +2879,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 267
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
     }
    ],
    "finding_class": "risk",
@@ -2850,6 +2985,13 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 360
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 3
     }
    ],
    "finding_class": "test-gap",
@@ -3171,6 +3313,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 366
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 5
     }
    ],
    "finding_class": "test-gap",
@@ -3284,6 +3433,20 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 362
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 3
     }
    ],
    "finding_class": "test-gap",
@@ -3398,6 +3561,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 365
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 6
     }
    ],
    "finding_class": "docs",
@@ -3542,6 +3712,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 108
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
    ],
    "finding_class": "style",
@@ -3947,6 +4124,13 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 259
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 8
     }
    ],
    "finding_class": "design",
@@ -4652,6 +4836,72 @@
    ],
    "finding_class": "risk",
    "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "c130",
+   "summary": "IncrementSamplesAtTimestamp has no bounds check on its computed index, unlike the new IncrementSamplesReadAtTimestamp; pre-existing and outside the change",
+   "location": "util/stats/query_stats.go:331",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "util/stats/query_stats.go:334-344,357-368",
+   "confidence": 0.45,
+   "rationale": "IncrementSamplesAtTimestamp indexes TotalSamplesPerStep[i] without a range check while its new twin IncrementSamplesReadAtTimestamp guards 0 <= i < len; the asymmetry is real and cheap to fix, though the unguarded write predates the PR and no reachable out-of-range case was found.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "c131",
+   "summary": "require.NotNil on the int64 TotalQueryableSamples field is tautological; pre-existing assertion outside the change",
+   "location": "web/api/v1/api_test.go:981",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "web/api/v1/api_test.go:981",
+   "confidence": 0.5,
+   "rationale": "require.NotNil on an int64 is indeed tautological, but the line predates the PR and removing it has no practical value; not something a reviewer of this change needs to spend attention on.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "c132",
+   "summary": "Whether the newly non-nil TotalSamplesPerStep on evalSubquery's child exposes IncrementSamplesAtStep's unguarded index to an out-of-range write; every write reachable from the child evaluation was traced and none exceeds numSteps-1",
+   "location": "promql/engine.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:1866-1867; util/stats/query_stats.go:322-330",
+   "confidence": 0.7,
+   "rationale": "A considered-and-cleared note: the child is built with the parent's own start/end/interval so IncrementSamplesAtTimestamp(ev.endTimestamp, ...) lands on numSteps-1; it asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
   }
  ]
 }

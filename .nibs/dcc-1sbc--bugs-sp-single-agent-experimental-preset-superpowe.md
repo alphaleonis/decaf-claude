@@ -2,11 +2,11 @@
 # dcc-1sbc
 version: 1
 title: 'bugs-sp: single-agent experimental preset (superpowers-adapted solo reviewer)'
-status: in-progress
+status: completed
 type: feature
 priority: high
 created_at: 2026-08-16T13:14:39Z
-updated_at: 2026-08-17T07:30:26Z
+updated_at: 2026-08-17T08:09:52Z
 parent: dcc-hyxw
 order: ar
 ---
@@ -37,10 +37,10 @@ benchmark matrix.
       pilot's Aug 6 snapshot before re-running it, so the sync carries only this change
 - [x] Benchmark arm: `run_cell_v2.sh` INVOKE case (+ unknown-tool list) + `tools.json` entry with
       `model_policy`; `capture_tool_artifacts.sh` already sweeps `.decaf/` so no change needed there
-- [ ] Experiment run (operator-gated spend): 2 pilot subjects × 2 repeats, re-adjudicated pooled,
-      scored against the proposal's success criteria (recall ≥8/16 reported, ≤$4.30/cell mean,
-      defect-share ≥2/3, repeat stability) — **cells done 2026-08-17 (4/4 CLEAN, $5.13 mean —
-      cost criterion missed); grading pending**
+- [x] Experiment run (operator-gated spend): 2 pilot subjects × 2 repeats, re-adjudicated pooled,
+      scored against the proposal's success criteria — done 2026-08-17; results in
+      `v2/analysis/BUGS-SP-RESULTS.md`. Recall 6/16 reported (10 found) ✗, cost $5.13 ✗,
+      defect share 44% (70% primary-only) ✗, stability superpowers-like ~
 
 ## Smoke test (2026-08-16)
 
@@ -88,3 +88,17 @@ assembly; check against the transcripts before changing anything.
 
 Recall / composition / stability criteria await pooled re-adjudication (`/bench-analyze` on both
 subjects with the new arm folded in, blind, two passes).
+
+## Summary
+
+**Completed 2026-08-17** — Implemented, run and scored. `bugs-sp` = one `solo-reviewer` seat on the session model, no wave,
+no funnel; benchmark arm `ours-bugs-sp`. Run 2026-08-17 on both pilot subjects × 2 repeats, all
+CLEAN, folded into the pooled adjudication incrementally (48/51 findings merged into pilot-graded
+clusters; 3 new demoted-only clusters graded blind in two calibrated passes; every existing tool's
+figure unchanged). Results: `v2/analysis/BUGS-SP-RESULTS.md`. Verdict: dominates `bugs` on every
+reported axis at ~40% less cost (18 vs 7 reported, 8 vs 6 defect-class, 10 vs 8 real defects found,
+$1.33–2.48 vs $6.00–8.29 per real finding) but misses 3 of 4 pre-registered criteria — reported
+recall 6/16 (found 10), cost $5.13 vs ≤$4.30, defect share 44% (70% primary-only) — and does not
+reproduce superpowers (18 vs 45 reported, 12 vs 31 real). Stays experimental. Follow-up: dcc-pulk.
+Also landed: `score_pooled.py` per-tool `class_distribution` + `defect_recall` (tested, reproduces
+TUNING-SIGNALS' hand counts).

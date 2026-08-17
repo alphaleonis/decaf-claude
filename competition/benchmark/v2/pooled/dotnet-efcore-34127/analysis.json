@@ -72,6 +72,22 @@
    "access_denied": 0
   },
   {
+   "tool": "ours-bugs-sp",
+   "repeat": 1,
+   "cost_usd": 5.0622,
+   "wall_s": 913,
+   "access_total": 50,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-sp",
+   "repeat": 2,
+   "cost_usd": 4.8631,
+   "wall_s": 878,
+   "access_total": 54,
+   "access_denied": 0
+  },
+  {
    "tool": "ours-review",
    "repeat": 1,
    "cost_usd": 15.8371,
@@ -250,6 +266,20 @@
      "severity": "high",
      "disposition": "demoted",
      "finding_index": 42
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
     }
    ],
    "finding_class": "defect",
@@ -307,6 +337,20 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 219
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 1
     }
    ],
    "finding_class": "defect",
@@ -435,6 +479,20 @@
      "severity": "low",
      "disposition": "demoted",
      "finding_index": 232
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
     }
    ],
    "finding_class": "defect",
@@ -520,6 +578,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 102
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
     }
    ],
    "finding_class": "docs",
@@ -612,6 +677,13 @@
      "severity": "medium",
      "disposition": "demoted",
      "finding_index": 35
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 3
     }
    ],
    "finding_class": "design",
@@ -726,6 +798,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 177
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
    ],
    "finding_class": "defect",
@@ -797,6 +876,20 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 228
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
     }
    ],
    "finding_class": "design",
@@ -1053,6 +1146,20 @@
      "severity": "medium",
      "disposition": "demoted",
      "finding_index": 218
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
     }
    ],
    "finding_class": "defect",
@@ -1323,6 +1430,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 132
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
     }
    ],
    "finding_class": "test-gap",
@@ -1762,6 +1876,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 231
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 2
     }
    ],
    "finding_class": "design",
@@ -1934,6 +2055,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 181
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
    ],
    "finding_class": "defect",
@@ -1977,6 +2105,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 179
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
     }
    ],
    "finding_class": "defect",
@@ -2201,6 +2343,13 @@
      "severity": "medium",
      "disposition": "demoted",
      "finding_index": 39
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
     }
    ],
    "finding_class": "defect",
@@ -2251,6 +2400,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 184
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
    ],
    "finding_class": "defect",
@@ -2302,6 +2458,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 175
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
     }
    ],
    "finding_class": "defect",
@@ -2722,6 +2885,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 100
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
     }
    ],
    "finding_class": "defect",
@@ -2868,6 +3038,20 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 257
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
     }
    ],
    "finding_class": "defect",

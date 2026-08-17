@@ -2,11 +2,11 @@
 # dcc-1ix0
 version: 1
 title: ours-bugs is strictly dominated by superpowers at half the cost — find out why
-status: in-progress
+status: completed
 type: task
 priority: high
 created_at: 2026-08-16T10:18:32Z
-updated_at: 2026-08-16T13:24:10Z
+updated_at: 2026-08-17T08:09:53Z
 parent: dcc-hyxw
 order: aq
 ---
@@ -110,8 +110,9 @@ wrong — two agents independently converging is evidence whether 4 ran or 12; o
       `v2/analysis/OURS-BUGS-VS-SUPERPOWERS.md`
 - [x] A concrete proposal that lands at or below $4/cell, with the mechanism it changes —
       `v2/analysis/PROPOSAL-BUGS-SP.md` (implementation: [[dcc-1sbc]]; companion tiering change: [[dcc-dduy]])
-- [ ] Re-measured on both pilot subjects against the known counterfactual: 16 real defects, of which
-      this preset currently reports 5 and finds 8
+- [x] Re-measured on both pilot subjects against the known counterfactual: 16 real defects, of which
+      this preset currently reports 5 and finds 8 — via the `bugs-sp` arm ([[dcc-1sbc]],
+      `v2/analysis/BUGS-SP-RESULTS.md`): the single seat reports 6 and finds 10 at ~40% less cost
 
 
 ---
@@ -186,3 +187,15 @@ reviewers **plus** the Step 4.95 screeners — cost $0.91–$1.91, while the Opu
 
 Unaffected: the strict-superset result, the linear fit itself, and the breadth-per-dollar
 reframing — the domination is measured at the report level and does not depend on the cost split.
+
+## Summary
+
+**Completed 2026-08-17** — Answered. Not orchestration overhead (that inference was confounded by tier policy — recorded in the
+CORRECTION and its caveat) but breadth-per-dollar and disposition: under `models=low` `bugs` fields
+one session-model seat (adversarial, narrow brief) plus three Haiku seats and a funnel that binned 3
+of the 8 real defects the reviewers found, where superpowers spends the whole budget on one
+whole-surface Opus agent that owns its verdict. Comparison in `OURS-BUGS-VS-SUPERPOWERS.md`;
+proposal `PROPOSAL-BUGS-SP.md`; measured in `BUGS-SP-RESULTS.md`: the single-seat adaptation finds
+10/16 (superpowers 9) and reports 6 at $5.13/cell — dominates `bugs`, does not reach superpowers.
+Open work moved to dcc-pulk (cost attribution, Minor bucket, fail-closed) and dcc-dduy (Haiku out of
+the reasoning lanes).

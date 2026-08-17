@@ -233,6 +233,11 @@ def score(A, threads, key):
             if r.get("disposition", "reported") == "reported":
                 tool_reported[r["tool"]].add(c["cluster_id"])
 
+    # Class axis presence, decided once for the whole analysis (validate() has already refused a
+    # partial classification, so "any" and "all" agree here).
+    classed = any(c.get("finding_class") for c in clusters)
+    real_defect_pool = [c for c in clusters if c["verdict"] in REAL and c.get("finding_class") == "defect"]
+
     out_tools = {}
     for tool in tools:
         ids = tool_clusters[tool]                      # found: reported + demoted
@@ -305,6 +310,29 @@ def score(A, threads, key):
         }
         cu = out_tools[tool]["cost_usd"]
         out_tools[tool]["cost_per_real_finding"] = round(cu / len(real), 4) if real else None
+
+        # Per-tool class mix and defect recall (dcc-opdr, dcc-1sbc). The class axis is graded blind
+        # to verdict and tool, so this is the one per-tool composition figure that does not depend on
+        # the substance call. Reported and found are split like every other per-tool figure: what a
+        # user was shown against what the tool is capable of. defect_recall's denominator is the pool
+        # of REAL defect-class clusters any tool found — the same "16 real defects" TUNING-SIGNALS
+        # counted by hand — and is null when the analysis carries no class axis at all.
+        if classed:
+            out_tools[tool]["class_distribution"] = {
+                "reported": {k: sum(1 for c in cs if c.get("finding_class") == k) for k in sorted(FINDING_CLASSES)},
+                "found": {k: sum(1 for c in cs_found if c.get("finding_class") == k) for k in sorted(FINDING_CLASSES)},
+            }
+            rd = [c for c in real if c.get("finding_class") == "defect"]
+            fd = [c for c in cs_found if c["verdict"] in REAL and c.get("finding_class") == "defect"]
+            out_tools[tool]["defect_recall"] = {
+                "pool": len(real_defect_pool),
+                "reported": len(rd), "found": len(fd),
+                "recall_reported": round(len(rd) / len(real_defect_pool), 3) if real_defect_pool else None,
+                "recall_found": round(len(fd) / len(real_defect_pool), 3) if real_defect_pool else None,
+            }
+        else:
+            out_tools[tool]["class_distribution"] = None
+            out_tools[tool]["defect_recall"] = None
 
     # Judge calibration: an admitted HUMAN thread that a tool DID report, but the judge called
     # not-real. Human only — the judge disagreeing with a bot is a disagreement between tools, not a
