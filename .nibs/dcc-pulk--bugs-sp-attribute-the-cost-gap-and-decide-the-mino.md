@@ -2,11 +2,11 @@
 # dcc-pulk
 version: 1
 title: 'bugs-sp: attribute the cost gap and decide the Minor-bucket / fail-closed questions'
-status: in-progress
+status: completed
 type: task
 priority: normal
 created_at: 2026-08-17T08:09:33Z
-updated_at: 2026-08-17T08:48:17Z
+updated_at: 2026-08-17T10:10:52Z
 parent: dcc-hyxw
 order: ax
 ---
@@ -57,5 +57,25 @@ a calibration decision — note superpowers' agent reached the same conclusion o
       dismissed as "documented as intended" / "unreachable today" is reported at anchor 50 with the
       counter-argument. Brief edited. Orchestrator left as is (backbone kept; cost criterion restated
       in PROPOSAL-BUGS-SP.md)
-- [ ] Re-run the 2×2 under the new arm `ours-bugs-sp2` (brief v2; the 2026-08-17 `ours-bugs-sp`
-      cells stay frozen as brief-v1) and fold in — authorized 2026-08-17
+- [x] Re-run the 2×2 under the new arm `ours-bugs-sp2` (brief v2) and fold in — done 2026-08-17,
+      `v2/analysis/BUGS-SP-RESULTS.md` § Brief v2. Result: not an improvement on recall (5/16
+      reported vs v1 6; found 9 vs 10), composition 44%→62%, stability better (0.50/0.50), seat
+      cost up $1.20 (55 turns vs 36; superpowers parity lost). Fail-closed fired on e13, under-fired
+      on c07; the `minor, out of reach` label swallowed a Low (c03); e02/c05 movements are seat
+      variance. Two repeats cannot separate brief effect from seat variance at this size
+
+## Summary
+
+**Completed 2026-08-17** — All three parts done. (1) Cost attribution: the seat costs what superpowers' agent costs; the
+whole v1 gap ($0.84/cell) is the shared orchestrator backbone (~35k-token SKILL load re-read over
+~10 turns; report emitted twice) — kept by operator decision, cost criterion restated. (2) Minor
+bucket omitted under narrow; (3) fail closed on traced-and-dismissed defects — both applied as
+brief v2 and re-measured under arm `ours-bugs-sp2` (4 cells, CLEAN). Brief v2 is not an
+improvement on recall (5/16 reported vs 6; found 9 vs 10), improves composition (44%→62%) and
+repeat stability (0.50/0.50), costs $1.23/cell more (all seat: 55 turns vs 36) and loses seat
+parity with superpowers. Cluster-level: fail-closed fired on efcore e13 and under-fired on prom
+c07; `minor, out of reach` swallowed a Low (c03); e02/c05 moved on seat variance. Two repeats do
+not separate a brief effect of this size from single-seat variance. Both briefs' cells stay in the
+matrix (`ours-bugs-sp` = v1, `ours-bugs-sp2` = v2). Fold-in prompts and script preserved under
+`v2/scoring/prompts/` and `v2/scoring/foldin.py`; efcore calibration gap (3/12) recorded there.
+Sharpened-rule candidates recorded in BUGS-SP-RESULTS.md; not re-run.

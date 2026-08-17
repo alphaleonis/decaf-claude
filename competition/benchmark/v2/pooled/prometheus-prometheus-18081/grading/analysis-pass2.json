@@ -88,6 +88,22 @@
    "access_denied": 0
   },
   {
+   "tool": "ours-bugs-sp2",
+   "repeat": 1,
+   "cost_usd": 7.3301,
+   "wall_s": 1221,
+   "access_total": 68,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-bugs-sp2",
+   "repeat": 2,
+   "cost_usd": 6.9082,
+   "wall_s": 965,
+   "access_total": 74,
+   "access_denied": 0
+  },
+  {
    "tool": "ours-review",
    "repeat": 1,
    "cost_usd": 17.151,
@@ -259,6 +275,20 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
     }
    ],
    "finding_class": "defect",
@@ -386,6 +416,20 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
     }
    ],
    "finding_class": "defect",
@@ -535,6 +579,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
    ],
    "finding_class": "defect",
@@ -634,6 +685,20 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
     }
    ],
    "finding_class": "defect",
@@ -826,6 +891,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
     }
    ],
    "finding_class": "defect",
@@ -1044,6 +1123,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 79
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
     }
    ],
    "finding_class": "defect",
@@ -1173,6 +1259,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 12
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
     }
    ],
    "finding_class": "defect",
@@ -1789,6 +1882,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 10
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
    ],
    "finding_class": "risk",
@@ -1829,6 +1929,20 @@
     {
      "tool": "ours-bugs-sp",
      "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 11
@@ -2247,6 +2361,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 115
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
     }
    ],
    "finding_class": "design",
@@ -2634,6 +2755,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 363
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
     }
    ],
    "finding_class": "design",
@@ -3063,6 +3191,13 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 361
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 4
     }
    ],
    "finding_class": "design",
@@ -3447,6 +3582,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 3
     }
    ],
    "finding_class": "test-gap",
@@ -3568,6 +3710,20 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
    ],
    "finding_class": "docs",
@@ -4131,6 +4287,13 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 8
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 3
     }
    ],
    "finding_class": "design",
@@ -4437,6 +4600,13 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 166
+    },
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 4
     }
    ],
    "finding_class": "risk",
@@ -4902,6 +5072,50 @@
    ],
    "finding_class": "defect",
    "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "c133",
+   "summary": "The two arms of the SubqueryExpr SamplesReadPerStep merge handle nil versus non-nil slices asymmetrically; the parent-non-nil/child-nil combination was traced and found unreachable because per-step-stats implies a non-nil slice on both",
+   "location": "promql/engine.go:2426",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:2426-2449",
+   "confidence": 0.75,
+   "rationale": "A considered-and-cleared note: parent non-nil per-step implies StepTrackingEnabled() true, so NewChildWithStepTracking (engine.go:2397) always initializes the child slice; the asymmetric arm is indeed unreachable and the note asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
+  },
+  {
+   "cluster_id": "c134",
+   "summary": "IncrementSamplesReadAtTimestamp clamps a timestamp earlier than StartTimestamp to index 0 instead of rejecting it, copying the pre-existing IncrementSamplesAtTimestamp behavior so early samples are misattributed to the first step",
+   "location": "util/stats/query_stats.go:359",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "util/stats/query_stats.go:358-368",
+   "confidence": 0.5,
+   "rationale": "Go truncation toward zero does map a timestamp within one interval before StartTimestamp to index 0 (earlier ones are dropped by the i>=0 guard), but every caller passes ev.startTimestamp, ev.endTimestamp or enh.Ts, all inside the step range, and the sibling IncrementSamplesAtTimestamp has the same arithmetic \u2014 true but not actionable here.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp2",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
   }
  ]
 }

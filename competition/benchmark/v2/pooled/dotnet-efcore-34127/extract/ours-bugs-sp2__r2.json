@@ -1,0 +1,86 @@
+[
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "critical",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 626,
+  "category": "correctness",
+  "claim": "NullPropagatedOperands recurses into Left/Right of every SqlBinaryExpression regardless of operator, but logical AndAlso/OrElse (and Coalesce) do not propagate NULL; operands under them are wrongly registered as null-propagating, DropNotNullChecks removes the IS NOT NULL test, and the CASE collapses to an expression returning TRUE/FALSE where the original returned NULL. Because RewriteNullSemantics manufactures AndAlso/OrElse for a==b / a!=b with nullable b, every 'nullableA != null ? (nullableA <op> nullableB) : null' regresses, producing wrong projected values and extra rows in Where; the five added tests use only genuinely propagating results and cannot catch it. Fix: exclude AndAlso/OrElse/Coalesce from the recursion (verified by execution against 27-row NullSemanticsData on SQLite).",
+  "raw": "#1 \ud83d\udd34 Critical: `NullPropagatedOperands` recurses through `AndAlso`/`OrElse`, which do not propagate NULL \u2014 silently wrong query results",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 1633,
+  "category": "missed-optimization",
+  "claim": "CASE with no ELSE (elseResult == null) is not optimized: IsNull(null) returns false, so 'CASE WHEN x IS NOT NULL THEN f(x) END' misses the rewrite even though a missing ELSE is semantically NULL. Missed optimization, not a defect.",
+  "raw": "`elseResult == null` (CASE with no ELSE) is not optimized",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 619,
+  "category": "performance",
+  "claim": "NullPropagatedOperands ignores the HashSet.Add return value, so shared subtrees are re-traversed; 'if (!operands.Add(expression)) return;' would dedupe and prune. No realistic query found where this exceeds a constant factor.",
+  "raw": "`NullPropagatedOperands` ignores the `HashSet.Add` return value (line 619)",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 577,
+  "category": "code-quality",
+  "claim": "The '// TODO: optimize expr == null ? null : expr' comment at line 577 carries no issue reference, and 'return null; // true' at line 600 overloads the return value with a sentinel meaning 'unconditionally true' instead of a named result.",
+  "raw": "`// TODO: optimize expr == null ? null : expr` (line 577) carries no issue reference",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 0,
+  "category": "correctness",
+  "claim": "Dropping the IS NOT NULL test exposes the result expression on rows where it was previously not evaluated, so an expression that errors rather than returning NULL (e.g. divide-by-zero on rows where the tested column is NULL) could now throw. SQLite returned NULL with no error for the probe; SQL Server behavior unverified.",
+  "raw": "Dropping the test exposes the result expression on rows where it was previously not evaluated",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 1880,
+  "category": "nullability-tracking",
+  "claim": "On the new optimization path 'nullable' is unconditionally reported as true (because elseResult is a NULL constant) even when the returned clause.Result is genuinely non-nullable, e.g. after the null-semantics rewrite sets nullable = false. Over-conservative: can add redundant checks downstream but never remove needed ones.",
+  "raw": "`nullable` is reported as `true` when the optimization returns a genuinely non-nullable `clause.Result`",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs-sp2",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "test/EFCore.Specification.Tests",
+  "line": 0,
+  "category": "test-environment",
+  "claim": "The existing test suites were not executed: test/EFCore.Specification.Tests does not compile in this environment (9 pre-existing CS0023/CS8604 errors in CustomConvertersTestBase.cs and QueryTestGeneration/InjectWhereExpressionMutator.cs) because the installed SDK 10.0.203 differs from the global.json-pinned 9.0.100-preview.5; the change was verified against purpose-built probes rather than the repo's suites.",
+  "raw": "Existing test suites not executed.",
+  "disposition": "demoted"
+ }
+]
