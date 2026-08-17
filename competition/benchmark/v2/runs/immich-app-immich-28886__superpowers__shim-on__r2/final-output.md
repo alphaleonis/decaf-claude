@@ -1,0 +1,114 @@
+Reviewer subagent's report, verbatim:
+
+---
+
+I reviewed the diff in three passes (server DTO/validation, generated artifacts + contract, and the surrounding rating code paths + migration mechanics), verifying claims empirically where I could.
+
+---
+
+### Strengths
+
+- **The validation logic itself is correct.** I ran the exact schema against zod 4.3.6 (the pinned version): `undefined`, `null`, `-1`, `1`–`5` accepted; `0`, `7`, `-2` rejected with the custom message; `3.5` rejected by the `int` check before the refine runs. No off-by-one, no ordering bug in `.nullable().refine().optional()`.
+- **Generated artifacts are genuinely in sync.** All five files containing the description string (`server/src/dtos/asset.dto.ts`, `open-api/immich-openapi-specs.json`, `packages/sdk/src/fetch-client.ts`, and both Dart models) were regenerated together. `check-openapi` should pass.
+- **Tests were updated in lockstep** with the new error message rather than left red.
+- **The error message is better than what it replaced** — `Must be -1, a number from 1 to 5, or null` is far more useful than zod's default `Too big: expected number to be <=5`.
+- **The author correctly noticed that `0` is the newly-invalid value** (pre-27896 the bound was `min(-1)`, so `0` *was* accepted) and recorded it in the history entry.
+- **No dangling references to the deleted migration** anywhere in the repo — that was checked and is clean.
+
+---
+
+### Issues
+
+#### Critical (Must Fix)
+
+**1. Deleting an already-applied migration will prevent affected servers from starting.**
+`server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts` (deleted in `6c9a6e7`)
+
+`1780592070031-ConvertNegativeRatingToNull` landed on `main` in 99281de on 2026-06-04 and `.github/workflows/docker.yml` builds on every push to `main`, so `:main` preview images containing it have been published for ~3 days. I unpacked kysely 0.28.17 (the pinned version) and confirmed `Migrator.migrateToLatest()` calls `#ensureNoMissingMigrations` **unconditionally** — it is not gated by `allowUnorderedMigrations` (migrator.js:447-449) — and throws `corrupted migrations: previously executed migration ${executed} is missing` (migrator.js:495). `DatabaseRepository.runMigrations` (`server/src/repositories/database.repository.ts:388-391`) rethrows, so the server will not boot.
+
+Failure scenario: a user on `ghcr.io/immich-app/immich-server:main` pulled any build from the last three days, the migration ran, they pull the build containing this PR → startup dies with `corrupted migrations`, with no obvious remedy short of hand-editing `kysely_migrations`.
+
+There *is* precedent for accepting this (0975b15 removed `1773175313374-Test.ts` after 4 days on `main`), so the team may consciously take the risk — but it should be a stated decision, not a side effect. The zero-risk alternative is to keep the file and reduce `up()` to a no-op.
+
+Separately, and unavoidably: anyone who already ran the migration has had their `-1` ratings converted to `NULL`, and this change cannot restore them. Worth a line in the PR description.
+
+#### Important (Should Fix)
+
+**2. The OpenAPI contract no longer expresses the valid range at all.**
+`server/src/dtos/asset.dto.ts:16-23` → `open-api/immich-openapi-specs.json:16606-16607` and `:26429-26430`
+
+Swapping `.min(1).max(5)` for `.refine(...)` means zod's JSON-Schema emitter has nothing to emit — `.refine` is not representable — so the bounds collapse to `minimum: -9007199254740991, maximum: 9007199254740991`. That propagates into the Dart client, which now literally documents `/// Minimum value: -9007199254740991` (`mobile/openapi/lib/model/update_asset_dto.dart:80-84`). Before 27896 the spec correctly said `minimum: -1, maximum: 5`.
+
+Why it matters: every generated client, spec-driven validator, mock server, and API gateway now believes any safe integer is a valid rating. Only the server rejects it, and only at runtime.
+
+Fix — I verified both alternatives against zod 4.3.6:
+```ts
+z.int().min(-1).max(5).nullable().refine((v) => v !== 0, { error: '...' })
+// → { "minimum": -1, "maximum": 5 }   (matches the pre-27896 contract exactly)
+```
+This keeps `0` rejected while restoring the published bounds. A `z.union([z.literal(-1), z.int().min(1).max(5)])` also works and emits a precise `anyOf`, but is noisier in the spec.
+
+**3. The revert is partial — search still rejects `-1`, so `-1`-rated assets are unfindable.**
+`server/src/dtos/search.dto.ts:36-48`
+
+`BaseSearchSchema.rating` is still `.min(1).max(5)` and still carries `.updated('v3', 'Using -1 as a rating is no longer valid.')`. This propagates to `MetadataSearchDto`, `RandomSearchDto`, `SmartSearchDto`, `StatisticsSearchDto`, and the `rating` query parameter (spec line 10017, still `minimum: 1`).
+
+Net effect: a client can `PUT /assets/:id { rating: -1 }` but gets a 400 trying to search for it. The API history is now self-contradictory — `asset.dto.ts` and `search.dto.ts` tell opposite stories about what v3 did to `-1`.
+
+**4. The revert is partial — `ExifResponseDto` documents `minimum: 1` but the server will return `-1`.**
+`server/src/dtos/exif.dto.ts:32` → spec line 18671
+
+`rating: z.int().min(1).max(5).nullish().default(null)`. This is documentation-only today: `ZodSerializerInterceptor` is registered globally (`server/src/app.module.ts:48`) but nestjs-zod only validates handlers annotated with `@ZodSerializerDto`, and I confirmed there are zero such annotations in `server/src`. So it's a contract lie now — but it becomes a serialization exception the moment the project acts on its own scattered `// TODO: use ZodSerializerDto on the controllers` comments.
+
+**5. The revert is partial — XMP ingestion still discards `-1`, and Immich now writes a value its own reader refuses.**
+`server/src/services/metadata.service.ts:308` and `:509,523`
+
+Extraction is still `rating: exifTags.Rating === 0 ? null : validateRange(exifTags.Rating, 1, 5)`, and `validateRange` returns `null` for anything below `min` (`metadata.service.ts:107-117`). `-1` is the standard `xmp:Rating` "rejected" value written by Lightroom/digiKam, so an asset imported with such a sidecar still lands as `null` — while the same value set through the API is kept.
+
+Meanwhile `handleSidecarWrite` writes `Rating: rating` from `asset.exifInfo.rating ?? 0` (`:509`, `:523`), so a `-1` in the DB is written out to the `.xmp` — a value the extractor will then throw away.
+
+One mitigating detail I confirmed: an API-set rating is added to `lockedProperties` (`server/src/services/asset.service.ts:519-525`, `updateLockedColumns`) and extraction runs with `lockedPropertiesBehavior: 'skip'`, so a user's `-1` is *not* clobbered by a metadata re-extraction. The gap is limited to externally authored `-1`. That may be an intentional scope boundary — but it should be an explicit decision, since "Immich accepts `-1` from the API but silently drops `-1` from sidecars" is a surprising asymmetry.
+
+**6. Nothing tests that `-1` is accepted — the entire point of the change.**
+`server/src/controllers/asset.controller.spec.ts:238-249`
+
+The updated spec only asserts *rejections* (`7`, `3.5`, `-2`). The two tests that covered the actual behavior were deleted by 27896 and not restored:
+- `e2e/src/specs/server/api/asset.e2e-spec.ts` — `should set the negative rating` (near the surviving `should set the rating` at line 481)
+- `server/src/services/metadata.service.spec.ts` — `should handle valid negative rating value`
+
+A regression that re-restricts `-1` would sail through CI. At minimum, add `-1` (and `null`) to the accepted side of the controller spec; restoring the e2e test is the higher-value fix since it exercises the DTO, the service, and the response together.
+
+**7. No test for `rating: 0`.** The new history entry explicitly declares `0` newly invalid in v3, and it's a genuinely new boundary (the refine rejects it; the old `min(-1)` bound accepted it). It's the one value whose behavior this PR *changes* relative to both the pre- and post-27896 states, and it's untested.
+
+#### Minor (Nice to Have)
+
+**8. Deleting the v2.6.0 history entry rewrites a published changelog.**
+`server/src/dtos/asset.dto.ts:25-29`
+
+`x-immich-history` is a shipped API changelog. v2.6.0 *did* announce the `-1` deprecation; removing that entry pretends it never happened, rather than recording that the deprecation was withdrawn. Keeping `.updated('v2.6.0', ...)` and adding a v3 entry that says `-1` is supported again would be more honest — and would stop `asset.dto.ts` and `search.dto.ts` from disagreeing about v2.6.0's contents (see issue 3). Nothing enforces append-only here (`HistoryBuilder`, `server/src/decorators.ts:199-250`), so this is a convention call.
+
+**9. Description drift across the rating surface.** `asset.dto.ts:23` now says `Rating in range [1-5], -1 (rejected) or null (unrated)`, while `search.dto.ts:41` still says `Filter by rating [1-5], or null for unrated` and `exif.dto.ts:32` just says `Rating`. Also, "rejected" is a new user-facing concept with no documentation behind it — `docs/docs/features/xmp-sidecars.md` documents the `xmp:Rating` mapping but says nothing about `-1`.
+
+**10. The web UI renders a `-1` rating as an unrated asset that offers a "clear" button.**
+`web/src/lib/elements/StarRating.svelte:9`, `web/src/lib/components/asset-viewer/DetailPanelStarRating.svelte:16`
+
+`type Rating = 1 | 2 | 3 | 4 | 5 | null`, and `asset.exifInfo?.rating || null` is cast `as Rating`, so `-1` escapes the type. No stars fill (`(ratingSelection || 0) >= value` is false for all), no radio is checked, but `ratingSelection !== null` so the "clear rating" control renders (`StarRating.svelte:104`). Cosmetic, and pre-existing — but this PR makes it reachable again.
+
+**11. Commit message typos:** `udpate tests`, `gen clientc`. Irrelevant if squashed.
+
+---
+
+### Recommendations
+
+1. **Decide and state the scope.** The single most useful thing for this PR is one sentence in the description: is this a *full* revert of #27896 (in which case issues 3, 4, and 5 are bugs), or a *narrow* fix restoring only API write compatibility for third-party clients (in which case they're accepted limitations that deserve a comment)? Right now the code reads as the former and behaves as the latter.
+2. **Prefer expressible constraints over `.refine()` in DTOs.** `.min(-1).max(5).refine(v => v !== 0)` gets identical runtime behavior *and* a correct spec. Worth treating as a general rule in this codebase — any `.refine()` on a scalar is invisible to every generated client.
+3. **Add a regression test at the boundary you're changing.** The pattern in `asset.controller.spec.ts` currently only tests the rejection side of the rating rule; an accepted-values loop alongside it would have caught the whole class of issue.
+4. **For migration removal, prefer no-op over delete.** Emptying `up()` costs one file and removes the startup-failure class entirely.
+
+---
+
+### Assessment
+
+**Ready to merge?** No
+
+**Reasoning:** The core validation change is correct and the generated artifacts are properly in sync, but the change ships two defects that are independently blocking: deleting a migration that has been live on `main` for three days will throw `corrupted migrations` and prevent startup for anyone who ran it (verified against kysely 0.28.17's source), and the `.refine()` rewrite silently erases the rating bounds from the published OpenAPI contract, replacing `minimum: -1, maximum: 5` with `±9007199254740991` across every generated client. Beyond those, the revert only touched the update DTO — search filters, the EXIF response schema, and XMP ingestion still reject `-1`, so the value is settable but unsearchable and un-importable, and no test asserts that `-1` is accepted at all.

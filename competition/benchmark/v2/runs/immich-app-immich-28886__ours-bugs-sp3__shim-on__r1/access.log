@@ -1,0 +1,69 @@
+2026-08-17T16:02:51Z	fs	ALLOW	Bash (no path)
+2026-08-17T16:02:52Z	fs	ALLOW	Bash (no path)
+2026-08-17T16:02:54Z	fs	ALLOW	Bash server/ packages/ open-api/
+2026-08-17T16:03:03Z	fs	ALLOW	Bash (no path)
+2026-08-17T16:03:53Z	fs	ALLOW	Bash :!mobile/openapi
+2026-08-17T16:03:53Z	fs	ALLOW	Bash server/package.json
+2026-08-17T16:03:58Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server/src/dtos/asset.dto.ts
+2026-08-17T16:03:59Z	fs	ALLOW	Bash server/src/schema/migrations/ server/src/bin/ server/src/bin/*.ts
+2026-08-17T16:04:21Z	fs	ALLOW	Bash server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts
+2026-08-17T16:04:22Z	fs	ALLOW	Bash -L1,40:server/src/dtos/asset.dto.ts /dev/null server/src/dtos/asset.dto.ts
+2026-08-17T16:04:26Z	fs	ALLOW	Bash server/src
+2026-08-17T16:04:28Z	fs	ALLOW	Bash server/src web/src e2e/src open-api/typescript-sdk /dev/null
+2026-08-17T16:04:41Z	fs	ALLOW	Bash server/src/dtos/exif.dto.ts server/src/dtos/search.dto.ts server/src/services/metadata.service.ts server/src/utils/duplicate.ts
+2026-08-17T16:04:42Z	fs	ALLOW	Bash server/src/utils/database.ts /dev/null server/src/utils/ server/src/*.ts server/src/utils/*.ts server/src/repositories/database.repository.ts /dev/null
+2026-08-17T16:04:49Z	fs	ALLOW	Bash server/src/main.ts server/src/app.module.ts server/src/middleware/*.ts /dev/null server/src
+2026-08-17T16:04:49Z	fs	ALLOW	Bash server/src/repositories/database.repository.ts
+2026-08-17T16:05:03Z	fs	ALLOW	Bash src/ node_modules/nestjs-zod node_modules/nestjs-zod/dist/*.js /dev/null
+2026-08-17T16:05:04Z	fs	ALLOW	Bash node_modules/kysely/dist/cjs/migration/migrator.js
+2026-08-17T16:05:11Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server
+2026-08-17T16:05:19Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server node_modules/.pnpm/kysely*/node_modules/kysely/dist/cjs/migration/migrator.js
+2026-08-17T16:05:20Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server node_modules/.pnpm/nestjs-zod*/node_modules/nestjs-zod/dist/serializer.js /dev/null node_modules/.pnpm/
+2026-08-17T16:05:23Z	fs	DENY	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/node_modules/.pnpm
+2026-08-17T16:05:25Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server kysely/package.json nestjs-zod/package.json
+2026-08-17T16:05:30Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server/node_modules/kysely/dist/cjs/migration/migrator.js
+2026-08-17T16:05:31Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server/node_modules/nestjs-zod/dist/ /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server/node_modules/nestjs-zod/dist/index.cjs
+2026-08-17T16:05:45Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server node_modules/kysely/dist/cjs/migration/migrator.js
+2026-08-17T16:05:46Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/controllers/asset.controller.spec.ts
+2026-08-17T16:05:50Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/packages/plugin-sdk
+2026-08-17T16:05:53Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/packages/plugin-sdk /dev/null
+2026-08-17T16:05:55Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/packages/plugin-sdk
+2026-08-17T16:05:58Z	fs	DENY	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/plugin-sdk
+2026-08-17T16:06:01Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/packages/sdk
+2026-08-17T16:06:04Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/packages/plugin-sdk
+2026-08-17T16:06:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/controllers/asset.controller.spec.ts
+2026-08-17T16:06:13Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server /dev/null
+2026-08-17T16:06:15Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server test/vitest.config.mjs src/controllers/asset.controller.spec.ts
+2026-08-17T16:06:46Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/dtos/exif.dto.ts src/
+2026-08-17T16:06:47Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/services/metadata.service.ts
+2026-08-17T16:07:00Z	fs	ALLOW	Bash open-api/immich-openapi-specs.json
+2026-08-17T16:07:04Z	fs	ALLOW	Bash ./open-api/immich-openapi-specs.json
+2026-08-17T16:07:13Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server/src/scratch-review.spec.ts
+2026-08-17T16:07:15Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server test/vitest.config.mjs src/scratch-review.spec.ts
+2026-08-17T16:07:27Z	fs	ALLOW	Bash server/package.json server/src/schema/migrations/
+2026-08-17T16:07:37Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/repositories/database.repository.ts
+2026-08-17T16:07:40Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/repositories/database.repository.ts
+2026-08-17T16:07:46Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server node_modules/kysely/dist/cjs/migration/migrator.js
+2026-08-17T16:08:01Z	fs	ALLOW	Bash web/src
+2026-08-17T16:08:02Z	fs	ALLOW	Bash e2e/src
+2026-08-17T16:08:05Z	fs	ALLOW	Bash web/src e2e/src /dev/null
+2026-08-17T16:08:12Z	fs	ALLOW	Bash mobile/lib
+2026-08-17T16:08:19Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/bin/sync-open-api.ts
+2026-08-17T16:08:22Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/bin/sync-open-api.ts
+2026-08-17T16:08:33Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server/src/scratch-jsonschema.spec.ts
+2026-08-17T16:08:36Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server test/vitest.config.mjs src/scratch-jsonschema.spec.ts
+2026-08-17T16:08:46Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/services/asset.service.ts src/enum.ts
+2026-08-17T16:08:48Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/services/asset.service.ts
+2026-08-17T16:08:57Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/utils/asset.util.ts /dev/null src/
+2026-08-17T16:09:00Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/
+2026-08-17T16:09:02Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/utils/database.ts src/enum.ts
+2026-08-17T16:09:05Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/ src/enum.ts
+2026-08-17T16:09:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/database.ts
+2026-08-17T16:09:13Z	fs	ALLOW	Bash e2e/src
+2026-08-17T16:09:14Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server src/scratch-review.spec.ts src/scratch-jsonschema.spec.ts
+2026-08-17T16:09:51Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/server node_modules/nestjs-zod/dist/index.cjs src/decorators.ts
+2026-08-17T16:10:02Z	fs	ALLOW	Bash mobile/openapi
+2026-08-17T16:10:25Z	fs	ALLOW	Bash (no path)
+2026-08-17T16:11:35Z	fs	ALLOW	Bash .decaf/code-reviews FILE=.decaf/code-reviews/CODE_REVIEW_$ .decaf/code-reviews/ /dev/null
+2026-08-17T16:12:46Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/immich-app-immich-28886/repo/.decaf/code-reviews/CODE_REVIEW_2026-08-17_18-11-35.md
+2026-08-17T16:12:49Z	fs	ALLOW	Bash (no path)
