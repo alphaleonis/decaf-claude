@@ -10,8 +10,8 @@
     "provably_clean_from": "2026-06-01",
     "why": "claude-opus-5 publishes a month-granular cutoff of 2026-05; a subject is provably out-of-window only if it merged on or after 2026-06-01"
   },
-  "n_clusters": 134,
-  "n_cells": 18,
+  "n_clusters": 135,
+  "n_cells": 21,
   "threads": {
     "admitted": 10,
     "admitted_human": 10,
@@ -376,6 +376,61 @@
         "recall_found": 0.545
       }
     },
+    "ours-bugs-sp3": {
+      "clusters_reported": 7,
+      "clusters_found": 22,
+      "real": 6,
+      "valid_minor": 1,
+      "trivia": 0,
+      "false_positive": 0,
+      "precision": 0.857,
+      "precision_severity_weighted": 0.933,
+      "trivia_ratio": 0.0,
+      "unique_real": 0,
+      "unique_real_ids": [],
+      "per_cell": {
+        "findings": 2.33,
+        "false_positive": 0.0,
+        "trivia": 0.0
+      },
+      "thread_recall": 0.3,
+      "thread_recall_found": 0.7,
+      "demotion_gap": 0.4,
+      "threads_hit": 3,
+      "incumbent_agreement": null,
+      "incumbent_agreement_found": null,
+      "real_found": 12,
+      "demoted_real": 6,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 17.1504,
+      "cost_per_real_finding": 2.8584,
+      "class_distribution": {
+        "reported": {
+          "defect": 4,
+          "design": 1,
+          "docs": 0,
+          "risk": 0,
+          "style": 0,
+          "test-gap": 2
+        },
+        "found": {
+          "defect": 8,
+          "design": 4,
+          "docs": 2,
+          "risk": 5,
+          "style": 0,
+          "test-gap": 3
+        }
+      },
+      "defect_recall": {
+        "pool": 11,
+        "reported": 4,
+        "found": 5,
+        "recall_reported": 0.364,
+        "recall_found": 0.455
+      }
+    },
     "ours-review": {
       "clusters_reported": 24,
       "clusters_found": 48,
@@ -551,11 +606,11 @@
     "matches-key": 0,
     "matches-thread": 8,
     "trivia": 63,
-    "valid-minor": 38,
+    "valid-minor": 39,
     "valid-other": 23
   },
   "class_distribution": {
-    "defect": 34,
+    "defect": 35,
     "design": 17,
     "docs": 21,
     "risk": 32,

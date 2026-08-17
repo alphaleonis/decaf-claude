@@ -104,6 +104,30 @@
    "access_denied": 0
   },
   {
+   "tool": "ours-bugs-sp3",
+   "repeat": 1,
+   "cost_usd": 5.6475,
+   "wall_s": 892,
+   "access_total": 43,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-sp3",
+   "repeat": 2,
+   "cost_usd": 5.4836,
+   "wall_s": 958,
+   "access_total": 50,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-sp3",
+   "repeat": 3,
+   "cost_usd": 6.0193,
+   "wall_s": 999,
+   "access_total": 52,
+   "access_denied": 2
+  },
+  {
    "tool": "ours-review",
    "repeat": 1,
    "cost_usd": 17.151,
@@ -289,6 +313,27 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
     }
    ],
    "finding_class": "defect",
@@ -430,6 +475,27 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
     }
    ],
    "finding_class": "defect",
@@ -699,6 +765,20 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
     }
    ],
    "finding_class": "defect",
@@ -770,6 +850,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
     }
    ],
    "finding_class": "defect",
@@ -949,6 +1043,13 @@
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 288
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
     }
    ],
    "finding_class": "docs",
@@ -1775,6 +1876,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 266
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
     }
    ],
    "finding_class": "risk",
@@ -1946,6 +2054,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 11
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
     }
    ],
    "finding_class": "risk",
@@ -2078,6 +2193,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 231
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
    ],
    "finding_class": "defect",
@@ -2368,6 +2490,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
     }
    ],
    "finding_class": "design",
@@ -2590,6 +2719,27 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
     }
    ],
    "finding_class": "defect",
@@ -2819,6 +2969,13 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 359
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
     }
    ],
    "finding_class": "risk",
@@ -3120,6 +3277,27 @@
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 3
     }
    ],
    "finding_class": "test-gap",
@@ -3198,6 +3376,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
    ],
    "finding_class": "design",
@@ -3248,6 +3433,20 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 364
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
    ],
    "finding_class": "design",
@@ -3455,6 +3654,20 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
     }
    ],
    "finding_class": "test-gap",
@@ -3589,6 +3802,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 2
     }
    ],
    "finding_class": "test-gap",
@@ -3724,6 +3944,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 10
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
     }
    ],
    "finding_class": "docs",
@@ -4294,6 +4528,20 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 4
     }
    ],
    "finding_class": "design",
@@ -4476,6 +4724,13 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 306
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 3
     }
    ],
    "finding_class": "defect",
@@ -4607,6 +4862,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
    ],
    "finding_class": "risk",
@@ -5024,6 +5293,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 13
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    },
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
     }
    ],
    "finding_class": "risk",
@@ -5116,6 +5399,28 @@
    ],
    "finding_class": "defect",
    "class_confidence": 0.7
+  },
+  {
+   "cluster_id": "c135",
+   "summary": "The hoisted subqStart computation divides by subqInterval, which is zero for a sub-millisecond subquery step; the division predates the change and was moved verbatim",
+   "location": "promql/engine.go:2391",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:2385-2396",
+   "confidence": 0.6,
+   "rationale": "Confirmed reachable: the parser accepts a sub-ms step (foo[1m:0.0001]) and durationMilliseconds yields 0, so the hoisted `/ subqInterval` panics with 'integer divide by zero' (recovered into a query error). Real but pre-existing and only relocated by this change, as the finding itself notes, and impact is an ugly error rather than a crash.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp3",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.75
   }
  ]
 }

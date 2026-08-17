@@ -1204,5 +1204,14 @@
   "code_citation": "util/stats/query_stats.go:358-368",
   "confidence": 0.5,
   "rationale": "Go truncation toward zero does map a timestamp within one interval before StartTimestamp to index 0 (earlier ones are dropped by the i>=0 guard), but every caller passes ev.startTimestamp, ev.endTimestamp or enh.Ts, all inside the step range, and the sibling IncrementSamplesAtTimestamp has the same arithmetic \u2014 true but not actionable here."
+ },
+ {
+  "cluster_id": "c135",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2385-2392; promql/durations.go:84-95",
+  "confidence": 0.7,
+  "rationale": "A sub-millisecond step is truncated to 0 by calculateDuration (time.Duration(duration*1000)*Millisecond), which makes e.Step == 0 and routes to the noStepSubqueryIntervalFn arm, so the division never sees a sub-ms divisor; the cluster itself concedes the expression predates the PR and was moved verbatim."
  }
 ]

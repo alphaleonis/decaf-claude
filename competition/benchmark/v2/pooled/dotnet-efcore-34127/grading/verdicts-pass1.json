@@ -628,5 +628,23 @@
   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:579-590",
   "confidence": 0.5,
   "rationale": "Speculative cost concern: a scalar subquery only loses the guard if it sits under a null-propagating node with the checked operand (uncommon), and SQL engines don't guarantee CASE short-circuits subquery evaluation anyway; no concrete regression shown."
+ },
+ {
+  "cluster_id": "e75",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:619",
+  "confidence": 0.6,
+  "rationale": "SqlBinaryExpression.GetHashCode is recursive, so hashing every subtree is O(n*depth), but n is a projection expression and this runs once per compiled query behind the shape gate, as the cluster itself concedes; not actionable."
+ },
+ {
+  "cluster_id": "e76",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595-615",
+  "confidence": 0.6,
+  "rationale": "DropNotNullChecks only removes whole conjuncts and returns the surviving side directly (left is null ? right : ...); every surviving conjunct was already visited and simplified before this point and no constant is ever introduced, so nothing is left trivially true/false to re-simplify."
  }
 ]
