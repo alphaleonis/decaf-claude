@@ -1,0 +1,24 @@
+I'll run the code-review skill as requested.
+I'll start by gathering context on the change under review.
+Diffstat gathered. Checking for a spec and confirming the change context.
+No spec found. Dispatching the review.
+
+**Review team** (preset `bugs-sp` — explicit · roster=1 fixed · seat on session model · evidence self-calibrated · reach=narrow):
+- `solo-reviewer` (the preset's single seat) — session model
+- wave agents: not evaluated — bugs-sp replaces the wave
+
+Step 3.0 pre-flight is skipped on this path (the seat runs its own targeted gates).
+The single seat has returned. Running the format pass and writing the report.
+No prior reviews exist (Step 7 skipped), and the working tree is clean — the seat restored its instrumentation.
+✅ Review complete: `.decaf/code-reviews/CODE_REVIEW_2026-08-17_14-03-43.md`
+
+**Verdict: ❌ NEEDS_CHANGES** — 2 High, 3 Low, 0 Critical. Both High findings were confirmed by execution, not static reasoning.
+
+**#1 — `TotalSamples` regresses for `@`-anchored range selectors** (`promql/engine.go:2145`). The new `fullWindowCount` variable is declared inside the step loop but assigned only inside the `if ts == ev.startTimestamp || selVS.Timestamp == nil` block. Previously the increment used the live `floats`/`histograms` slices, which stay populated across steps when `@` lets data be reused; now every step after the first contributes 0. This silently changes the *existing* `totalQueryableSamples` and the `prometheus_engine_query_samples_total` counter — precisely what the added comment claims is unchanged. Reachable via multi-argument range functions (`quantile_over_time`, `predict_linear`, `double_exponential_smoothing`); single-argument calls are wrapped in `StepInvariantExpr`, which masks it and is why the existing `@` tests still pass. Measured against a base-commit worktree: `TotalSamples` 20 → 8, per-step `[5 5 5 5]` → `[5 1 1 1]`.
+
+**#2 — `SamplesRead` double-counts every subquery** (`promql/engine.go:1874`). `evalSubquery` merges the child's `SamplesRead` into the parent, and the synthetic matrix it returns is then counted again by the range-vector branch. The comment this change deleted said exactly why the child used to be discarded. Measured at exactly 2× (`rate(m[5m:1m])`: `TotalSamples=5`, `SamplesRead=10`). Two consequences: the feature's headline metric is inflated for any query containing a subquery, and `samplesRead` can exceed `totalQueryableSamples` — contradicting the invariant this same commit writes into `docs/querying/api.md:246`. The change's own test table records both the doubling (`// subquery + outer`) and a case where `SamplesRead: 102` against `TotalSamples: 78`, so the numbers were captured rather than derived — which is finding #4.
+
+The Low findings: a tautological API assertion (`SamplesRead >= 0` passes even if the field is never populated), the test table's committed scratch note *"Some sample count calculations may need refinement"* plus two duplicated cases, and a dead `TotalSamplesPerStep` allocation per subquery.
+
+Two caveats on the shape of this result. `bugs-sp` is a single-seat experimental path — no screen, no validation wave, no corroboration, so these carry one agent's variance; the seat's own confidence anchors are final and I applied no gates. And `reach=narrow` means nothing was hunted for that's merely *absent* — the seat parked 8 items under Considered But Not Flagged, including three it actively probed and refuted (negative-index panic, division by zero, misaligned merge indices).
+
