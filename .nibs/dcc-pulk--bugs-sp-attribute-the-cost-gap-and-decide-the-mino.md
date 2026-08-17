@@ -2,11 +2,11 @@
 # dcc-pulk
 version: 1
 title: 'bugs-sp: attribute the cost gap and decide the Minor-bucket / fail-closed questions'
-status: todo
+status: in-progress
 type: task
 priority: normal
 created_at: 2026-08-17T08:09:33Z
-updated_at: 2026-08-17T08:09:33Z
+updated_at: 2026-08-17T08:23:00Z
 parent: dcc-hyxw
 order: ax
 ---
@@ -43,8 +43,14 @@ a calibration decision — note superpowers' agent reached the same conclusion o
 
 ## Acceptance
 
-- [ ] Token attribution for the four cells: seat vs orchestrator, and within the seat verification
-      vs report writing (from transcripts, not `modelUsage`)
+- [x] Token attribution for the four cells: seat vs orchestrator — done 2026-08-17, recorded in
+      `v2/analysis/BUGS-SP-RESULTS.md` § Cost attribution. Input side exact per lane (cache-read
+      reconciles to the meter in all 8 cells); output only as a meter total (per-request
+      `output_tokens` is 19–35% of the meter, non-uniform). Result: the seat costs the same as
+      superpowers' agent on every measurable axis; the whole $0.84 gap is the orchestrator —
+      ~35k-token SKILL.md re-read across ~10 turns, and the report emitted twice. Within-seat
+      verification-vs-writing split not measurable (thinking redacted; visible emissions: ~60%
+      shell inputs / ~40% report text)
 - [ ] Decision recorded on the Minor bucket under `bugs-sp reach=narrow`, with the brief/SKILL edited
       if it changes
 - [ ] Decision recorded on the fail-closed question, with the brief edited if it changes
