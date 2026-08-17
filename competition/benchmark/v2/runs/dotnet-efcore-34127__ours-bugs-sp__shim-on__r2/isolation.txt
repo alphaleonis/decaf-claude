@@ -1,0 +1,15 @@
+Cell isolation check: /home/decaf/code/decaf-claude/competition/benchmark/v2/runs/dotnet-efcore-34127__ours-bugs-sp__shim-on__r2
+  session:    ac07ed3c-4e1d-4a17-88af-d748a509c60f
+  transcripts: 1
+
+  clean threads\.json                                 
+  clean answer-key\.json                              
+  clean fixture\.json                                 
+  clean final-output\.md                              
+  clean /v2/analysis/                                 
+  clean /v2/runs/                                     
+  clean /v2/pooled/[^/]*/(threads|fixture)            
+  clean HARNESS-REVIEW|GROUND-TRUTH-AUDIT|CANDIDATES\.md|METHODOLOGY
+  clean git network transport (clone/remote add/fetch URL)
+
+CLEAN: no transcript reference to any scoring artifact.

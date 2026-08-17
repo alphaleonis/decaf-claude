@@ -6,7 +6,7 @@ status: in-progress
 type: feature
 priority: high
 created_at: 2026-08-16T13:14:39Z
-updated_at: 2026-08-16T14:00:01Z
+updated_at: 2026-08-17T07:30:26Z
 parent: dcc-hyxw
 order: ar
 ---
@@ -39,7 +39,8 @@ benchmark matrix.
       `model_policy`; `capture_tool_artifacts.sh` already sweeps `.decaf/` so no change needed there
 - [ ] Experiment run (operator-gated spend): 2 pilot subjects × 2 repeats, re-adjudicated pooled,
       scored against the proposal's success criteria (recall ≥8/16 reported, ≤$4.30/cell mean,
-      defect-share ≥2/3, repeat stability)
+      defect-share ≥2/3, repeat stability) — **cells done 2026-08-17 (4/4 CLEAN, $5.13 mean —
+      cost criterion missed); grading pending**
 
 ## Smoke test (2026-08-16)
 
@@ -56,3 +57,34 @@ start, so `decaf-quality-dev:solo-reviewer` was dispatched via a general-purpose
 brief inlined. The registry error listed all 23 sibling agents from the same directory, so fresh
 sessions (every harness cell is one) discover it by the same mechanism. Verify trivially at the
 start of the experiment run: the first cell's team announcement names the agent.
+
+## Experiment run (2026-08-17) — cells done, grading pending
+
+`run_pilot.sh prometheus-prometheus-18081,dotnet-efcore-34127 ours-bugs-sp 2` — 4/4 ok, all
+isolation CLEAN, log `v2/runs/pilot-20260817T063038Z.tsv`.
+
+| cell | cost | wall | Opus out | turns | report summary (C/H/M/L/Minor) |
+|---|---|---|---|---|---|
+| prometheus r1 | $6.30 | 894s | 70,981 | 14 | 0/3/1/2/3 |
+| prometheus r2 | $4.31 | 777s | 61,741 | 10 | 0/2/0/2/2 |
+| efcore r1 | $5.06 | 913s | 66,581 | 14 | 2/0/0/0/3 |
+| efcore r2 | $4.86 | 878s | 63,182 | 13 | 2/0/1/0/2 |
+| **mean** | **$5.13** | **866s** | | | |
+
+Mechanics all held in fresh sessions: `solo-reviewer` resolved as an agent type and appears in
+every team announcement; pre-flight skipped as specified; one Opus lane per cell (no other
+models); the report was written to `.decaf/code-reviews/` and captured (15–24 KB) in every cell;
+capture ratio 82–84% (`final-output.md` is a fragment as expected — `cell-report.md` is the
+scoreable text, and the report file is the finding set). One format drift: efcore r1 folded the
+`Verified` tag into the Confidence cell (`100 (verified by execution)`) instead of its own row.
+
+**Cost criterion (≤ $4.30 mean) — NOT met at $5.13.** Like-for-like on the same subjects,
+`superpowers` cost $4.36–$4.82 (prometheus) and $3.47–$4.51 (efcore); `ours-bugs` cost
+$8.19–$9.82 (prometheus). So `bugs-sp` sits ~20% above superpowers and ~40% below `ours-bugs`,
+on ~40% more Opus output than superpowers (62–71k vs 38–55k). Repeat spread on prometheus
+($6.30 vs $4.31) is the single-seat variance the proposal named. Where the extra output goes is
+unattributed — candidates: the per-finding table format (Evidence field, tables) and Step 6
+assembly; check against the transcripts before changing anything.
+
+Recall / composition / stability criteria await pooled re-adjudication (`/bench-analyze` on both
+subjects with the new arm folded in, blind, two passes).
