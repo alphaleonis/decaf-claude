@@ -68,6 +68,14 @@ It scores **anchor_recall 0.0 / anchor_recall_found 1.0**. A tool that finds eve
 nothing is not the same product as one that finds nothing — and the fix for the first is a threshold
 change, not a better model.
 
+## Per-tool class mix and defect recall
+
+`tools.<tool>.class_distribution` (`reported` / `found`, over the closed class set) and
+`tools.<tool>.defect_recall` (`pool` = real defect-class clusters any tool found; `reported`, `found`,
+and the two recalls) are emitted whenever the analysis carries a class axis, and are `null` when it
+does not. Same reported/found split as every other per-tool figure. Added for the `bugs-sp`
+experiment (dcc-1sbc); reproduces the hand-built tables in `analysis/TUNING-SIGNALS.md`.
+
 ## Verdicts
 
 `matches-key` · `matches-thread` · `valid-other` · `valid-minor` · `trivia` · `false-positive`

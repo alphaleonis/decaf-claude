@@ -318,3 +318,16 @@ and the breadth-per-dollar reframing — the domination is measured at the repor
 depend on the cost split.
 
 Any intervention on `bugs` has to come out at or below $4/cell. Tracked in [[dcc-1ix0]].
+
+---
+
+## `bugs-sp` measured (2026-08-17)
+
+The single-seat preset proposed from the correction above was run on both pilot subjects
+(`analysis/BUGS-SP-RESULTS.md`). Headline: it dominates `bugs` on every reported axis at ~40% less
+cost (18 vs 7 reported clusters, 8 vs 6 defect-class, 10 vs 8 real defects *found*), but does not
+reproduce `superpowers` (18 vs 45 reported, 12 vs 31 real, $5.13 vs $4.30/cell) and misses three of
+its four pre-registered criteria. Its four "suppressed" real defects are not funnel losses — there is
+no funnel — but items the seat examined and argued away (one is `reach=narrow` working as designed).
+The class table and defect-recall figures now come from `score_pooled.py` (`class_distribution`,
+`defect_recall` per tool), which reproduces the hand counts in this file exactly.

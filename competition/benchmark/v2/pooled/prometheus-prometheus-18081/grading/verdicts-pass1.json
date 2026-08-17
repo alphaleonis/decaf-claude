@@ -1159,5 +1159,32 @@
   "code_citation": "util/stats/stats_test.go:67-68",
   "confidence": 0.6,
   "rationale": "Accurate: the new array regexes omit the trailing anchor their scalar siblings carry; harmless today."
+ },
+ {
+  "cluster_id": "c130",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "util/stats/query_stats.go:334-344,357-368",
+  "confidence": 0.45,
+  "rationale": "IncrementSamplesAtTimestamp indexes TotalSamplesPerStep[i] without a range check while its new twin IncrementSamplesReadAtTimestamp guards 0 <= i < len; the asymmetry is real and cheap to fix, though the unguarded write predates the PR and no reachable out-of-range case was found."
+ },
+ {
+  "cluster_id": "c131",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "web/api/v1/api_test.go:981",
+  "confidence": 0.5,
+  "rationale": "require.NotNil on an int64 is indeed tautological, but the line predates the PR and removing it has no practical value; not something a reviewer of this change needs to spend attention on."
+ },
+ {
+  "cluster_id": "c132",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:1866-1867; util/stats/query_stats.go:322-330",
+  "confidence": 0.7,
+  "rationale": "A considered-and-cleared note: the child is built with the parent's own start/end/interval so IncrementSamplesAtTimestamp(ev.endTimestamp, ...) lands on numSteps-1; it asserts no defect."
  }
 ]

@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-08-13T09:36:56Z
+updated_at: 2026-08-17T08:09:53Z
 blocked_by:
     - dcc-9kkz
 order: zzzV
@@ -130,30 +130,15 @@ still comes first, but it changes what to expect from each.
 
 ## Current Focus
 
-Completed dcc-3fl5: **Third branch of the pre-set rule: a suggestion amplifier, not a safety net.** Step 5.5 promotes
-0.39 findings per run — 7 across the 18 archived `ours` runs, from 891 CBNF bullets. Three were
-graded `valid-minor`, four `trivia`, and **none substantive**. The channel has never recovered a
-real defect in this corpus.
-
-Its own best case is the indictment: on subject 9 repeat 2 three reviewers each independently
-traced every constructor and ruled out a nil-deref; Step 5.5 overrode all three and shipped it, and
-the blind judge graded it trivia. On the evidence the step is not rescuing findings reviewers
-talked themselves out of — it is overriding reviewers who dismissed correctly.
-
-**This nib's cost premise was wrong and no removal case follows from it.** CBNF sections are 19.8%
-of sub-agent report text but only ~1.8% of a run's 260.8k output tokens, so deleting the reviewer
-section would not move $21.33/run. The orchestrator's Step 5.5 pass over 49.5 bullets/run is the
-real cost and is not isolated by this analysis. Per the rule, the keep/drop call moves to #dcc-e0wj
-workstream 3 — carrying the note that promoted items are ranked like any other finding and land
-ahead of explicit dismissals, which makes the severity contract a cheaper lever than deletion.
-
-Shipped `analysis/scripts/cbnf_yield.py` (deterministic candidate finder + cost meter, `--json`)
-and `analysis/cbnf-adjudication.json` (the read of each candidate against that run's actual
-bullets, with the borderline calls marked). A similarity threshold was tried as the decision rule
-and rejected — it identified 2 of 7 at 0.5 and traded errors both ways at 0.3 — so the script
-reports candidates and defers to the committed adjudication, flagging any unadjudicated one rather
-than dropping it. Undercount risk stated: a promotion merged into a sub-agent's cluster would be
-invisible.
+Completed dcc-1ix0: Answered. Not orchestration overhead (that inference was confounded by tier policy — recorded in the
+CORRECTION and its caveat) but breadth-per-dollar and disposition: under `models=low` `bugs` fields
+one session-model seat (adversarial, narrow brief) plus three Haiku seats and a funnel that binned 3
+of the 8 real defects the reviewers found, where superpowers spends the whole budget on one
+whole-surface Opus agent that owns its verdict. Comparison in `OURS-BUGS-VS-SUPERPOWERS.md`;
+proposal `PROPOSAL-BUGS-SP.md`; measured in `BUGS-SP-RESULTS.md`: the single-seat adaptation finds
+10/16 (superpowers 9) and reports 6 at $5.13/cell — dominates `bugs`, does not reach superpowers.
+Open work moved to dcc-pulk (cost attribution, Minor bucket, fail-closed) and dcc-dduy (Haiku out of
+the reasoning lanes).
 
 ## ⚠️ Measured premise is VOID (2026-08-10)
 This epic's premise — `ours` at $21.33/run vs anthropic's $7.61, and 0.70 vs 0.90 severity

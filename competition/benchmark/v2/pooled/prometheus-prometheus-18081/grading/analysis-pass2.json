@@ -72,6 +72,22 @@
    "access_denied": 2
   },
   {
+   "tool": "ours-bugs-sp",
+   "repeat": 1,
+   "cost_usd": 6.3049,
+   "wall_s": 894,
+   "access_total": 53,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-sp",
+   "repeat": 2,
+   "cost_usd": 4.3081,
+   "wall_s": 777,
+   "access_total": 41,
+   "access_denied": 0
+  },
+  {
    "tool": "ours-review",
    "repeat": 1,
    "cost_usd": 17.151,
@@ -229,8 +245,24 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 355
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c02",
@@ -340,8 +372,24 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 352
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c02b",
@@ -361,7 +409,9 @@
      "disposition": "demoted",
      "finding_index": 9
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c03",
@@ -478,8 +528,17 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 353
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 2
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c04",
@@ -568,8 +627,17 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 354
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.65
   },
   {
    "cluster_id": "c05",
@@ -630,8 +698,17 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 358
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c06",
@@ -700,7 +777,9 @@
      "disposition": "reported",
      "finding_index": 325
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c07",
@@ -740,8 +819,17 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 357
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c08",
@@ -761,7 +849,9 @@
      "disposition": "reported",
      "finding_index": 74
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c09",
@@ -781,7 +871,9 @@
      "disposition": "reported",
      "finding_index": 288
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c10",
@@ -801,7 +893,9 @@
      "disposition": "reported",
      "finding_index": 348
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "c11",
@@ -849,7 +943,9 @@
      "disposition": "reported",
      "finding_index": 159
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
   },
   {
    "cluster_id": "c12",
@@ -876,7 +972,9 @@
      "disposition": "demoted",
      "finding_index": 236
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.65
   },
   {
    "cluster_id": "c13",
@@ -903,7 +1001,9 @@
      "disposition": "demoted",
      "finding_index": 112
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c14",
@@ -923,7 +1023,9 @@
      "disposition": "demoted",
      "finding_index": 38
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "c15",
@@ -943,7 +1045,9 @@
      "disposition": "reported",
      "finding_index": 79
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "c16",
@@ -963,7 +1067,9 @@
      "disposition": "reported",
      "finding_index": 300
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c17",
@@ -983,7 +1089,9 @@
      "disposition": "demoted",
      "finding_index": 240
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c18",
@@ -1058,8 +1166,17 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 264
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "c19",
@@ -1100,7 +1217,9 @@
      "disposition": "demoted",
      "finding_index": 330
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.65
   },
   {
    "cluster_id": "c20",
@@ -1120,7 +1239,9 @@
      "disposition": "demoted",
      "finding_index": 234
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "c21",
@@ -1147,7 +1268,9 @@
      "disposition": "demoted",
      "finding_index": 104
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c22",
@@ -1167,7 +1290,9 @@
      "disposition": "demoted",
      "finding_index": 116
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.75
   },
   {
    "cluster_id": "c23",
@@ -1187,7 +1312,9 @@
      "disposition": "demoted",
      "finding_index": 119
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c24",
@@ -1207,7 +1334,9 @@
      "disposition": "demoted",
      "finding_index": 121
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c25",
@@ -1227,7 +1356,9 @@
      "disposition": "demoted",
      "finding_index": 194
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c26",
@@ -1247,7 +1378,9 @@
      "disposition": "demoted",
      "finding_index": 232
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "c27",
@@ -1267,7 +1400,9 @@
      "disposition": "demoted",
      "finding_index": 238
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c28",
@@ -1287,7 +1422,9 @@
      "disposition": "demoted",
      "finding_index": 118
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c29",
@@ -1307,7 +1444,9 @@
      "disposition": "demoted",
      "finding_index": 195
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "c30",
@@ -1326,8 +1465,17 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 117
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 15
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c31",
@@ -1354,7 +1502,9 @@
      "disposition": "reported",
      "finding_index": 134
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c32",
@@ -1374,7 +1524,9 @@
      "disposition": "reported",
      "finding_index": 75
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
   },
   {
    "cluster_id": "c33",
@@ -1415,7 +1567,9 @@
      "disposition": "reported",
      "finding_index": 328
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c34",
@@ -1435,7 +1589,9 @@
      "disposition": "demoted",
      "finding_index": 124
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c35",
@@ -1455,7 +1611,9 @@
      "disposition": "demoted",
      "finding_index": 6
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c36",
@@ -1475,7 +1633,9 @@
      "disposition": "demoted",
      "finding_index": 103
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "c37",
@@ -1523,7 +1683,9 @@
      "disposition": "demoted",
      "finding_index": 266
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c38",
@@ -1542,8 +1704,17 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 78
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 5
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c39",
@@ -1611,8 +1782,17 @@
      "severity": "medium",
      "disposition": "demoted",
      "finding_index": 331
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c40",
@@ -1645,8 +1825,17 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 230
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c41",
@@ -1666,7 +1855,9 @@
      "disposition": "reported",
      "finding_index": 69
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c42",
@@ -1686,7 +1877,9 @@
      "disposition": "reported",
      "finding_index": 302
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c43",
@@ -1706,7 +1899,9 @@
      "disposition": "reported",
      "finding_index": 76
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "c44",
@@ -1726,7 +1921,9 @@
      "disposition": "reported",
      "finding_index": 64
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.65
   },
   {
    "cluster_id": "c45",
@@ -1746,7 +1943,9 @@
      "disposition": "reported",
      "finding_index": 96
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "c46",
@@ -1766,7 +1965,9 @@
      "disposition": "demoted",
      "finding_index": 231
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c47",
@@ -1786,7 +1987,9 @@
      "disposition": "demoted",
      "finding_index": 233
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c48",
@@ -1806,7 +2009,9 @@
      "disposition": "demoted",
      "finding_index": 7
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c49",
@@ -1826,7 +2031,9 @@
      "disposition": "demoted",
      "finding_index": 8
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c50",
@@ -1846,7 +2053,9 @@
      "disposition": "demoted",
      "finding_index": 122
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c51",
@@ -1866,7 +2075,9 @@
      "disposition": "demoted",
      "finding_index": 110
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c52",
@@ -1914,7 +2125,9 @@
      "disposition": "demoted",
      "finding_index": 273
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.65
   },
   {
    "cluster_id": "c53",
@@ -1941,7 +2154,9 @@
      "disposition": "reported",
      "finding_index": 163
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c54",
@@ -1989,7 +2204,9 @@
      "disposition": "reported",
      "finding_index": 148
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c55",
@@ -2009,7 +2226,9 @@
      "disposition": "reported",
      "finding_index": 91
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c56",
@@ -2029,7 +2248,9 @@
      "disposition": "demoted",
      "finding_index": 115
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "c57",
@@ -2049,7 +2270,9 @@
      "disposition": "reported",
      "finding_index": 94
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c58",
@@ -2083,7 +2306,9 @@
      "disposition": "demoted",
      "finding_index": 15
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c59",
@@ -2110,7 +2335,9 @@
      "disposition": "demoted",
      "finding_index": 242
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "c60",
@@ -2130,7 +2357,9 @@
      "disposition": "reported",
      "finding_index": 82
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c61",
@@ -2226,8 +2455,24 @@
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 311
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "c62",
@@ -2268,7 +2513,9 @@
      "disposition": "reported",
      "finding_index": 254
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.95
   },
   {
    "cluster_id": "c63",
@@ -2288,7 +2535,9 @@
      "disposition": "demoted",
      "finding_index": 101
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c64",
@@ -2308,7 +2557,9 @@
      "disposition": "reported",
      "finding_index": 86
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c65",
@@ -2384,7 +2635,9 @@
      "disposition": "reported",
      "finding_index": 363
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c66",
@@ -2439,7 +2692,9 @@
      "disposition": "reported",
      "finding_index": 359
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.75
   },
   {
    "cluster_id": "c67",
@@ -2459,7 +2714,9 @@
      "disposition": "reported",
      "finding_index": 225
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c68",
@@ -2486,7 +2743,9 @@
      "disposition": "demoted",
      "finding_index": 177
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c69",
@@ -2520,7 +2779,9 @@
      "disposition": "reported",
      "finding_index": 312
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c70",
@@ -2547,7 +2808,9 @@
      "disposition": "demoted",
      "finding_index": 274
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "c71",
@@ -2581,7 +2844,9 @@
      "disposition": "demoted",
      "finding_index": 272
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "c72",
@@ -2614,8 +2879,24 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 267
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c73",
@@ -2704,8 +2985,17 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 360
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 3
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "c74",
@@ -2774,7 +3064,9 @@
      "disposition": "reported",
      "finding_index": 361
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c75",
@@ -2822,7 +3114,9 @@
      "disposition": "reported",
      "finding_index": 364
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "c76",
@@ -2863,7 +3157,9 @@
      "disposition": "reported",
      "finding_index": 310
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
   },
   {
    "cluster_id": "c77",
@@ -2883,7 +3179,9 @@
      "disposition": "reported",
      "finding_index": 350
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
   },
   {
    "cluster_id": "c78",
@@ -2966,7 +3264,9 @@
      "disposition": "reported",
      "finding_index": 369
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
   },
   {
    "cluster_id": "c79",
@@ -3013,8 +3313,17 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 366
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 5
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c81",
@@ -3124,8 +3433,24 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 362
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 3
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
   },
   {
    "cluster_id": "c91",
@@ -3159,7 +3484,9 @@
      "disposition": "reported",
      "finding_index": 261
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
   },
   {
    "cluster_id": "c82",
@@ -3234,8 +3561,17 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 365
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 6
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c83",
@@ -3311,7 +3647,9 @@
      "disposition": "reported",
      "finding_index": 356
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c84",
@@ -3331,7 +3669,9 @@
      "disposition": "reported",
      "finding_index": 32
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "c85",
@@ -3351,7 +3691,9 @@
      "disposition": "reported",
      "finding_index": 33
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c86",
@@ -3370,8 +3712,17 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 108
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c87",
@@ -3398,7 +3749,9 @@
      "disposition": "reported",
      "finding_index": 256
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c88",
@@ -3432,7 +3785,9 @@
      "disposition": "demoted",
      "finding_index": 279
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.75
   },
   {
    "cluster_id": "c89",
@@ -3452,7 +3807,9 @@
      "disposition": "demoted",
      "finding_index": 106
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "c90",
@@ -3486,7 +3843,9 @@
      "disposition": "demoted",
      "finding_index": 172
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.95
   },
   {
    "cluster_id": "c92",
@@ -3513,7 +3872,9 @@
      "disposition": "reported",
      "finding_index": 167
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "c93",
@@ -3533,7 +3894,9 @@
      "disposition": "demoted",
      "finding_index": 111
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c94",
@@ -3560,7 +3923,9 @@
      "disposition": "demoted",
      "finding_index": 183
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c95",
@@ -3587,7 +3952,9 @@
      "disposition": "demoted",
      "finding_index": 263
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c96",
@@ -3614,7 +3981,9 @@
      "disposition": "reported",
      "finding_index": 367
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c97",
@@ -3634,7 +4003,9 @@
      "disposition": "reported",
      "finding_index": 84
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c98",
@@ -3682,7 +4053,9 @@
      "disposition": "reported",
      "finding_index": 319
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
   },
   {
    "cluster_id": "c99",
@@ -3716,7 +4089,9 @@
      "disposition": "demoted",
      "finding_index": 181
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c100",
@@ -3749,8 +4124,17 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 259
+    },
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 8
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c101",
@@ -3784,7 +4168,9 @@
      "disposition": "reported",
      "finding_index": 164
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
   },
   {
    "cluster_id": "c102",
@@ -3804,7 +4190,9 @@
      "disposition": "reported",
      "finding_index": 162
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "c103",
@@ -3831,7 +4219,9 @@
      "disposition": "reported",
      "finding_index": 370
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.8
   },
   {
    "cluster_id": "c104",
@@ -3851,7 +4241,9 @@
      "disposition": "reported",
      "finding_index": 321
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.65
   },
   {
    "cluster_id": "c105",
@@ -3871,7 +4263,9 @@
      "disposition": "reported",
      "finding_index": 44
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c106",
@@ -3891,7 +4285,9 @@
      "disposition": "reported",
      "finding_index": 326
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c107",
@@ -3918,7 +4314,9 @@
      "disposition": "reported",
      "finding_index": 306
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c108",
@@ -3945,7 +4343,9 @@
      "disposition": "reported",
      "finding_index": 249
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "c109",
@@ -3965,7 +4365,9 @@
      "disposition": "reported",
      "finding_index": 145
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c110",
@@ -3992,7 +4394,9 @@
      "disposition": "demoted",
      "finding_index": 278
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c111",
@@ -4012,7 +4416,9 @@
      "disposition": "reported",
      "finding_index": 368
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.55
   },
   {
    "cluster_id": "c112",
@@ -4032,7 +4438,9 @@
      "disposition": "reported",
      "finding_index": 166
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "c113",
@@ -4052,7 +4460,9 @@
      "disposition": "reported",
      "finding_index": 160
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c114",
@@ -4072,7 +4482,9 @@
      "disposition": "reported",
      "finding_index": 258
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c115",
@@ -4092,7 +4504,9 @@
      "disposition": "reported",
      "finding_index": 150
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.9
   },
   {
    "cluster_id": "c116",
@@ -4112,7 +4526,9 @@
      "disposition": "demoted",
      "finding_index": 213
     }
-   ]
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.7
   },
   {
    "cluster_id": "c117",
@@ -4132,7 +4548,9 @@
      "disposition": "demoted",
      "finding_index": 332
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c118",
@@ -4159,7 +4577,9 @@
      "disposition": "demoted",
      "finding_index": 269
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c119",
@@ -4186,7 +4606,9 @@
      "disposition": "demoted",
      "finding_index": 271
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c120",
@@ -4206,7 +4628,9 @@
      "disposition": "demoted",
      "finding_index": 180
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.45
   },
   {
    "cluster_id": "c121",
@@ -4226,7 +4650,9 @@
      "disposition": "demoted",
      "finding_index": 184
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c122",
@@ -4246,7 +4672,9 @@
      "disposition": "demoted",
      "finding_index": 203
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c123",
@@ -4266,7 +4694,9 @@
      "disposition": "demoted",
      "finding_index": 207
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.5
   },
   {
    "cluster_id": "c124",
@@ -4286,7 +4716,9 @@
      "disposition": "demoted",
      "finding_index": 275
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.75
   },
   {
    "cluster_id": "c125",
@@ -4306,7 +4738,9 @@
      "disposition": "demoted",
      "finding_index": 276
     }
-   ]
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c126",
@@ -4326,7 +4760,9 @@
      "disposition": "demoted",
      "finding_index": 277
     }
-   ]
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.4
   },
   {
    "cluster_id": "c127",
@@ -4353,7 +4789,9 @@
      "disposition": "demoted",
      "finding_index": 268
     }
-   ]
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   },
   {
    "cluster_id": "c128",
@@ -4373,7 +4811,9 @@
      "disposition": "demoted",
      "finding_index": 182
     }
-   ]
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.85
   },
   {
    "cluster_id": "c129",
@@ -4393,7 +4833,75 @@
      "disposition": "demoted",
      "finding_index": 212
     }
-   ]
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "c130",
+   "summary": "IncrementSamplesAtTimestamp has no bounds check on its computed index, unlike the new IncrementSamplesReadAtTimestamp; pre-existing and outside the change",
+   "location": "util/stats/query_stats.go:331",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "util/stats/query_stats.go:331-341 vs 355-364",
+   "confidence": 0.5,
+   "rationale": "The asymmetry is real (IncrementSamplesAtTimestamp indexes without a bounds check while the new IncrementSamplesReadAtTimestamp guards), but the code is pre-existing, the cluster labels it out of scope, and no reachable out-of-range write exists in the changed call sites.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "c131",
+   "summary": "require.NotNil on the int64 TotalQueryableSamples field is tautological; pre-existing assertion outside the change",
+   "location": "web/api/v1/api_test.go:981",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "web/api/v1/api_test.go:981",
+   "confidence": 0.55,
+   "rationale": "require.NotNil on an int64 field is indeed tautological, but the line is pre-existing and untouched by the diff (the cluster says so itself); it is not actionable review of this change.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "c132",
+   "summary": "Whether the newly non-nil TotalSamplesPerStep on evalSubquery's child exposes IncrementSamplesAtStep's unguarded index to an out-of-range write; every write reachable from the child evaluation was traced and none exceeds numSteps-1",
+   "location": "promql/engine.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "promql/engine.go:1868-1874,2427; util/stats/query_stats.go:322-344",
+   "confidence": 0.65,
+   "rationale": "A considered-and-cleared note. Independently traced: the evalSubquery child only receives IncrementSamplesAtTimestamp(ev.endTimestamp) (index numSteps-1) and step-indexed writes bounded by the same loop formula, so no out-of-range write is reachable; the note asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-sp",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.9
   }
  ]
 }

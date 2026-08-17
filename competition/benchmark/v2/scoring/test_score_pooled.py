@@ -432,6 +432,31 @@ def t_finding_class_optional_and_distributed():
     assert d["defect"] == 1 and d["test-gap"] == 1 and d["risk"] == 0, d
 
 
+def t_per_tool_class_and_defect_recall():
+    """Per-tool class mix and defect recall (dcc-1sbc): reported vs found split, pool = real
+    defect-class clusters any tool found; null everywhere when the analysis carries no class axis."""
+    m = score(BASE, THREADS, None)
+    assert m["tools"]["alpha"]["class_distribution"] is None
+    assert m["tools"]["alpha"]["defect_recall"] is None
+    a = copy.deepcopy(BASE)
+    # c1 real defect (alpha reported); c2 real defect (alpha reported, beta reported);
+    # c3 trivia style (beta); c4 false-positive defect claim (beta) — NOT in the real-defect pool.
+    for c, k in zip(a["clusters"], ("defect", "defect", "style", "defect")):
+        c["finding_class"] = k
+    # beta also FOUND c1 but demoted it — must count in found, not reported.
+    a["clusters"][0]["reported_by"].append({"tool": "beta", "repeat": 1, "severity": "low",
+                                            "disposition": "demoted"})
+    validate(a, THREADS, None)
+    m = score(a, THREADS, None)
+    al, be = m["tools"]["alpha"], m["tools"]["beta"]
+    assert al["class_distribution"]["reported"]["defect"] == 2, al["class_distribution"]
+    assert be["class_distribution"]["reported"] == {"defect": 2, "design": 0, "docs": 0, "risk": 0, "style": 1, "test-gap": 0}, be["class_distribution"]
+    assert be["class_distribution"]["found"]["defect"] == 3, be["class_distribution"]
+    assert al["defect_recall"] == {"pool": 2, "reported": 2, "found": 2, "recall_reported": 1.0, "recall_found": 1.0}, al["defect_recall"]
+    # beta reported c2 (real defect) and c4 (false-positive: not real, excluded); found c1 demoted.
+    assert be["defect_recall"] == {"pool": 2, "reported": 1, "found": 2, "recall_reported": 0.5, "recall_found": 1.0}, be["defect_recall"]
+
+
 for name, fn in list(globals().items()):
     if name.startswith("t_"):
         check(name[2:], fn)
