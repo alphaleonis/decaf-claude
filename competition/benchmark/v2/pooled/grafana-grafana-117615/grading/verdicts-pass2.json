@@ -232,5 +232,113 @@
   "code_citation": "public/app/features/expressions/utils/metaSqlExpr.test.ts:21-39",
   "confidence": 0.55,
   "rationale": "The recommendation that tests drive the real path (quoted editor text through fetchSQLFields with raw refIds) rather than idealized inputs is the same test-gap thread 7 raises, though stated more generically."
+ },
+ {
+  "cluster_id": "gf27",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:18",
+  "confidence": 0.85,
+  "rationale": "Confirmed against the dependency's typings (node_modules/@grafana/plugin-ui/dist/esm/index.d.ts:276: resolve: (TableIdentifier: TableIdentifier | null) => ...), so the two zero-argument resolveFunc() calls are TS2554 typecheck errors."
+ },
+ {
+  "cluster_id": "gf28",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "public/app/features/alerting/unified/components/expressions/Expression.tsx:141-147",
+  "confidence": 0.6,
+  "rationale": "Verified that the alerting editor renders SqlExpr with queries={[]}, so fetchSQLFields' queries.filter (metaSqlExpr.ts:20) is always empty and column autocomplete cannot resolve there; real but pre-existing and untouched by the diff."
+ },
+ {
+  "cluster_id": "gf29",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:5",
+  "confidence": 0.6,
+  "rationale": "getFields is a required constructor argument, so supplying a jest.fn() is idiomatic even when unexercised; calling it dead setup is a stylistic quibble."
+ },
+ {
+  "cluster_id": "gf30",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:4-47",
+  "confidence": 0.75,
+  "rationale": "Purely stylistic preference for it.each; the two tests assert different things and duplication is minimal."
+ },
+ {
+  "cluster_id": "gf31",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.test.ts:21-47",
+  "confidence": 0.55,
+  "rationale": "Correct that every new test uses only space-containing names, so the backtick-escaping weakness in quoteIdentifierIfNecessary (sqlUtil.ts:44) is untested; a small but real coverage nit."
+ },
+ {
+  "cluster_id": "gf32",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.ts:110-120",
+  "confidence": 0.6,
+  "rationale": "Considered-and-cleared note about ALLOWED_FUNCTIONS drift, explicitly untouched by this change and fail-closed."
+ },
+ {
+  "cluster_id": "gf33",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx:75-81",
+  "confidence": 0.7,
+  "rationale": "Considered-and-refuted note asserting no defect about formatSQL mangling backticks."
+ },
+ {
+  "cluster_id": "gf34",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts:26-27",
+  "confidence": 0.85,
+  "rationale": "Considered-and-dismissed note asserting no defect; name-as-label vs completion-as-inserted-text is indeed the intended split."
+ },
+ {
+  "cluster_id": "gf35",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.ts:11-15",
+  "confidence": 0.8,
+  "rationale": "Considered-and-dismissed note; the `if (!query.table) return []` guard does narrow to string, so no defect is asserted."
+ },
+ {
+  "cluster_id": "gf36",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:11-12",
+  "confidence": 0.8,
+  "rationale": "A considered-and-cleared note that asserts no defect; the conclusion is also correct since the provider body ignores monaco and only spreads language."
+ },
+ {
+  "cluster_id": "gf37",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "pkg/expr/sql/db.go:1-40",
+  "confidence": 0.6,
+  "rationale": "Considered-and-dismissed resource-amplification note that asserts no defect and concerns code outside the change."
+ },
+ {
+  "cluster_id": "gf38",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts:33-45",
+  "confidence": 0.8,
+  "rationale": "Considered-and-dismissed note asserting no defect; the columns.resolve path is indeed feature-toggle gated and untouched by the diff."
  }
 ]

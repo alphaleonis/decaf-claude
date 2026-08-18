@@ -144,6 +144,22 @@
    "access_denied": 1
   },
   {
+   "tool": "ours-review-postdduy",
+   "repeat": 3,
+   "cost_usd": 12.3336,
+   "wall_s": 1152,
+   "access_total": 157,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-review-postdduy",
+   "repeat": 4,
+   "cost_usd": 16.6038,
+   "wall_s": 528,
+   "access_total": 189,
+   "access_denied": 0
+  },
+  {
    "tool": "pr-review-toolkit",
    "repeat": 1,
    "cost_usd": 23.2198,
@@ -355,6 +371,20 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 0
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
     }
    ],
    "finding_class": "defect",
@@ -423,6 +453,13 @@
     {
      "tool": "ours-bugs-sp",
      "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 1
@@ -695,6 +732,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 4
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 20
     }
    ],
    "finding_class": "docs",
@@ -822,6 +873,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 3
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
     }
    ],
    "finding_class": "design",
@@ -879,6 +937,13 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 172
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
    ],
    "finding_class": "design",
@@ -964,6 +1029,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
     }
    ],
    "finding_class": "defect",
@@ -1056,6 +1128,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 2
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 21
     }
    ],
    "finding_class": "design",
@@ -1113,6 +1199,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 230
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 6
     }
    ],
    "finding_class": "style",
@@ -1163,6 +1256,20 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 85
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 22
     }
    ],
    "finding_class": "design",
@@ -1340,6 +1447,20 @@
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 1
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
     }
    ],
    "finding_class": "defect",
@@ -1425,6 +1546,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 2
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 3
     }
    ],
    "finding_class": "risk",
@@ -1525,6 +1660,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 182
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
     }
    ],
    "finding_class": "defect",
@@ -1631,6 +1773,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 11
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
     }
    ],
    "finding_class": "test-gap",
@@ -1739,6 +1895,13 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 170
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 4
     }
    ],
    "finding_class": "test-gap",
@@ -1789,6 +1952,13 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 226
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 5
     }
    ],
    "finding_class": "test-gap",
@@ -1869,6 +2039,13 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 211
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 6
     }
    ],
    "finding_class": "style",
@@ -1926,6 +2103,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 186
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 7
     }
    ],
    "finding_class": "test-gap",
@@ -1976,6 +2160,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 229
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 5
     }
    ],
    "finding_class": "docs",
@@ -2113,6 +2304,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 201
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
     }
    ],
    "finding_class": "style",
@@ -2184,6 +2382,13 @@
      "severity": "info",
      "disposition": "reported",
      "finding_index": 258
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
     }
    ],
    "finding_class": "docs",
@@ -2277,6 +2482,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 5
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 17
     }
    ],
    "finding_class": "defect",
@@ -2334,6 +2546,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
    ],
    "finding_class": "defect",
@@ -2370,6 +2589,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 178
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 15
     }
    ],
    "finding_class": "defect",
@@ -2586,6 +2812,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 4
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
     }
    ],
    "finding_class": "defect",
@@ -2650,6 +2883,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 5
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
     }
    ],
    "finding_class": "defect",
@@ -2758,6 +2998,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 188
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 18
     }
    ],
    "finding_class": "defect",
@@ -2860,6 +3114,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 131
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 24
     }
    ],
    "finding_class": "defect",
@@ -3156,6 +3417,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 16
     }
    ],
    "finding_class": "defect",
@@ -3316,6 +3584,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 5
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 7
     }
    ],
    "finding_class": "defect",
@@ -3484,6 +3759,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 5
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 19
     }
    ],
    "finding_class": "risk",
@@ -3510,6 +3792,50 @@
    ],
    "finding_class": "risk",
    "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "e77",
+   "summary": "SqlConstantExpression breaks the Equals/GetHashCode contract by hashing the raw Value while Equals compares IList values element-wise, so structurally equal constants hash differently and the new operand set fails to match them",
+   "location": "src/EFCore.Relational/Query/SqlExpressions/SqlConstantExpression.cs:129",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "src/EFCore.Relational/Query/SqlExpressions/SqlConstantExpression.cs:89-130",
+   "confidence": 0.6,
+   "rationale": "The asymmetry is real: Equals compares IList values element-wise (lines 99-126) while GetHashCode hashes Value directly (line 130), so the new HashSet<SqlExpression> at SqlNullabilityProcessor.cs:580 could miss structurally equal list constants. Pre-existing and practically unreachable here, since an IS NOT NULL operand is essentially never a list-valued constant.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 3,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 4
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.85
+  },
+  {
+   "cluster_id": "e78",
+   "summary": "Whether the new tests' names and [ConditionalTheory]/[MemberData(nameof(IsAsyncData))] structure follow the conventions of the adjacent tests",
+   "location": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2294",
+   "confidence": 0.8,
+   "rationale": "A considered-and-cleared conformance check: the new tests do use [ConditionalTheory]/[MemberData(nameof(IsAsyncData))] and neighbor naming, so no defect is asserted.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 23
+    }
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.65
   }
  ]
 }

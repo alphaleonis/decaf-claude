@@ -250,5 +250,140 @@
   "code_citation": "server/src/schema/migrations/1771535611395-ConvertRating0ToNull.ts:1",
   "confidence": 0.85,
   "rationale": "States that an untouched file is untouched; no defect."
+ },
+ {
+  "cluster_id": "im29",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:17-22",
+  "confidence": 0.8,
+  "rationale": "Purely stylistic: the .nullable()/.optional() split is forced by inserting .refine(), and the cluster identifies no behavioral consequence."
+ },
+ {
+  "cluster_id": "im30",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:16-23",
+  "confidence": 0.55,
+  "rationale": "An argument against the PR's deliberate premise (re-allowing the -1 sentinel) rather than a defect in the code; the consumer-special-casing costs it alludes to are raised concretely by other findings."
+ },
+ {
+  "cluster_id": "im31",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/src/controllers/asset.controller.spec.ts:22-60",
+  "confidence": 0.75,
+  "rationale": "Correct: the PUT /assets (bulk) describe block sends duplicateId and ids only, so the shared rating rule is exercised only through PUT /assets/:id \u2014 a small, real coverage gap."
+ },
+ {
+  "cluster_id": "im32",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:16-30",
+  "confidence": 0.85,
+  "rationale": "A considered-and-cleared note asserting no defect; the generated spec in the diff does carry the description and x-immich-history, confirming the modifiers attach correctly."
+ },
+ {
+  "cluster_id": "im33",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:19",
+  "confidence": 0.9,
+  "rationale": "An accurate enumeration of the refine predicate's accepted set that explicitly finds no defect."
+ },
+ {
+  "cluster_id": "im34",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:24-29",
+  "confidence": 0.8,
+  "rationale": "A cleared check: the emitted spec still shows x-immich-state 'Stable', so the unchanged marker is consistent with the edited history chain; no defect."
+ },
+ {
+  "cluster_id": "im35",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/sync.dto.ts:154",
+  "confidence": 0.9,
+  "rationale": "Accurate (z.int().nullable() with no bounds) and explicitly concludes no drift is introduced."
+ },
+ {
+  "cluster_id": "im36",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "mobile/lib/widgets/search/search_filter/star_rating_picker.dart:17-22",
+  "confidence": 0.6,
+  "rationale": "Verified that no first-party client path produces -1 (mobile rating bar maps its clear action to 0/null, the search filter model documents some(1-5)|null, and web StarRating types Rating as 1..5|null), so the server-only revert leaves the feature unusable from Immich's own clients \u2014 a legitimate completeness question, though possibly intentional scoping."
+ },
+ {
+  "cluster_id": "im37",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/src/dtos/asset.dto.ts:16;server/src/dtos/search.dto.ts:36;server/src/dtos/exif.dto.ts:32;server/src/dtos/sync.dto.ts:154",
+  "confidence": 0.7,
+  "rationale": "Correct and actionable: four inline rating rules now disagree, and the file's own latitudeSchema/longitudeSchema show the shared-constant pattern \u2014 a structural suggestion rather than a defect in itself."
+ },
+ {
+  "cluster_id": "im38",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/services/metadata.service.ts:509",
+  "confidence": 0.85,
+  "rationale": "Correct reading of `rating: asset.exifInfo.rating ?? 0` but explicitly concludes no defect; a cleared note."
+ },
+ {
+  "cluster_id": "im39",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/services/job.service.ts:75",
+  "confidence": 0.75,
+  "rationale": "An explicitly cleared hypothesis that concludes no defect exists; nothing actionable for a reviewer."
+ },
+ {
+  "cluster_id": "im40",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/schema/tables/asset-exif.table.ts:107-108",
+  "confidence": 0.9,
+  "rationale": "Accurate but asserts no defect: the column is a plain nullable integer with no CHECK, so no schema work is implied."
+ },
+ {
+  "cluster_id": "im41",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:1-9",
+  "confidence": 0.85,
+  "rationale": "True (the migration was a data UPDATE only) but asserts no defect; it is the cleared complement of the real deletion concern."
+ },
+ {
+  "cluster_id": "im42",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/dtos/asset.dto.ts:19-36",
+  "confidence": 0.85,
+  "rationale": "Stylistic observation about error: vs message: that the cluster itself notes is supported and predates the diff."
+ },
+ {
+  "cluster_id": "im43",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:1-9",
+  "confidence": 0.85,
+  "rationale": "A negative sweep result confirming nothing in the tree references the deleted file; no defect asserted."
  }
 ]

@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-18T08:40:37Z
-updated_at: 2026-08-18T14:55:41Z
+updated_at: 2026-08-18T17:45:46Z
 parent: dcc-hyxw
 order: ary
 ---
@@ -38,7 +38,6 @@ confirmed/refuted/uncertain — the rubber-stamp risk dcc-c2uc named and never m
 ## Acceptance
 
 - [x] 10 (or 16) cells CLEAN, committed — the 10 `ours-review` cells are done (2026-08-18): prom r4/r5, efcore r3/r4, mattermost r1/r2, immich r1/r2, grafana-117615 r1/r2. All rc=0, is_error=false, isolation CLEAN, artifact captured. A prom r3 was lost to [[dcc-xhku]] and is committed as a failure record, not evidence; r5 replaced it. The 6 optional `ours-audit` cells are not run.
-- [ ] Folded in; existing per-tool figures asserted unchanged; calibration reported per subject
-- [ ] Readout in `v2/analysis/` (new section or file) incl. the pre/post-dduy line for `review`
-- [ ] Recommendation: is `review` post-dduy fit to ship, and does anything in it need the same
-      treatment `bugs` got
+- [x] Folded in as arm `ours-review-postdduy` (foldin.py refuses a tool already present; see tools.json). Calibration reported per subject: 53/75 vs pilot p1, 51/75 vs p2, all five PASS the pre-registered threshold. Existing figures were asserted and 12 movements found — NOT unchanged: 6 benign (`unique_real` lost to a second reporter) and 6 structural (the real-defect pool grew on immich 4→5 and grafana 4→6, deflating every tool's recall). See [[dcc-dirp]] — the criterion is wrong as written.
+- [x] Readout: `v2/analysis/REVIEW-POSTDDUY.md`, incl. the pre/post-dduy line on prom/efcore and the first measurement of the dcc-c2uc rubber-stamp question.
+- [x] Recommendation: ship (no regression found), but dduy's benefit to `review` is unmeasurable at two subjects — the two move in opposite directions with repeat variance exceeding the effect. Single-seat `review` worth exploring on a wider slice; not before [[dcc-n5h2]].

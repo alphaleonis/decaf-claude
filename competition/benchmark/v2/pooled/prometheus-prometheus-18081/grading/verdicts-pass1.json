@@ -1213,5 +1213,86 @@
   "code_citation": "promql/engine.go:2385-2396",
   "confidence": 0.6,
   "rationale": "Confirmed reachable: the parser accepts a sub-ms step (foo[1m:0.0001]) and durationMilliseconds yields 0, so the hoisted `/ subqInterval` panics with 'integer divide by zero' (recovered into a query error). Real but pre-existing and only relocated by this change, as the finding itself notes, and impact is an ugly error rather than a crash."
+ },
+ {
+  "cluster_id": "c136",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2149-2166",
+  "confidence": 0.8,
+  "rationale": "Cleared-and-dismissed note; the reasoning is correct \u2014 maxt = ts - offset shifts identically at every step, so maxt-ev.interval is exactly the previous step's maxt. No defect asserted."
+ },
+ {
+  "cluster_id": "c137",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2152-2166",
+  "confidence": 0.8,
+  "rationale": "Considered-and-cleared, and the clearing is right: the Anchored/Smoothed adjustment shifts maxt by a per-query constant at every step, so maxt-ev.interval still equals the previous step's maxt. No defect asserted."
+ },
+ {
+  "cluster_id": "c138",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "promql/engine.go:2425-2445",
+  "confidence": 0.55,
+  "rationale": "Accurate about the code: the one-line comment explains neither the ceiling choice nor the sum invariant, and the clamp at 2438-2441 is indeed load-bearing against an out-of-bounds write yet documented only by its effect. A documentation request, not a defect."
+ },
+ {
+  "cluster_id": "c139",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/value.go:192-208",
+  "confidence": 0.8,
+  "rationale": "Considered-and-cleared: h.size() weighting in countSamplesAfter does match totalHPointSize used for fullWindowCount at promql/engine.go:2160; the note asserts no defect."
+ },
+ {
+  "cluster_id": "c140",
+  "verdict": "matches-thread",
+  "matches_thread": 2,
+  "judged_severity": "low",
+  "code_citation": "promql/engine_test.go:2066-2068,2135-2137",
+  "confidence": 0.9,
+  "rationale": "Exactly the human thread's point: the 'PHASE 3: RANGE QUERY + SUBQUERY COMBINATIONS' banner appears twice over different case groups (and no PHASE 1 banner exists), so the banners do not index the file."
+ },
+ {
+  "cluster_id": "c141",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "promql/engine_test.go:2266,2296",
+  "confidence": 0.5,
+  "rationale": "The comment 'High step count efficiency test - subquery evaluates inner at each step (instant)' is repeated verbatim over two different cases ([300s:10s] at T=600 and [2m:10s] at T=240); true and worth tidying, though it does describe both loosely. Adjacent in spirit to the human thread about near-identical tests but anchored elsewhere, so scored on its own."
+ },
+ {
+  "cluster_id": "c142",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "util/stats/query_stats.go:406-415",
+  "confidence": 0.65,
+  "rationale": "The doc comment says the function initializes tracking with 'the outer query step layout', but the SubqueryExpr call site at promql/engine.go:2397 passes subqStart/subqEnd/subqInterval (the subquery's own layout) while evalSubquery at 1869 passes the outer layout \u2014 a correct but small doc/code inconsistency."
+ },
+ {
+  "cluster_id": "c143",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2426-2446",
+  "confidence": 0.8,
+  "rationale": "Self-refuted and correctly so: the ceiling loop runs only when both SamplesReadPerStep slices are non-nil, and IncrementSamplesReadAtTimestamp's floor index is the else arm, so the two never apply to the same increment."
+ },
+ {
+  "cluster_id": "c144",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "util/stats/query_stats.go:183-190",
+  "confidence": 0.8,
+  "rationale": "The int(s.V) narrowing is identical to the pre-existing TotalSamplesPerStepMap accessor at lines 172-179, and the cluster itself clears it; a considered-and-cleared note asserting no defect."
  }
 ]
