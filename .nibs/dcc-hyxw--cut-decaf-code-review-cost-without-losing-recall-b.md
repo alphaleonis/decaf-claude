@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-08-17T18:47:50Z
+updated_at: 2026-08-18T07:37:42Z
 blocked_by:
     - dcc-9kkz
 order: zzzV
@@ -130,18 +130,11 @@ still comes first, but it changes what to expect from each.
 
 ## Current Focus
 
-Completed dcc-nbgl: Done: 18 cells (mattermost-36824 contract/M, immich-28886 contract/S, grafana-117615 app-ui/S ×
-{ours-bugs post-dduy, ours-bugs-sp3, superpowers} × 2), all CLEAN; three subjects scored from
-scratch (κ 0.87/0.89/0.89, all out-of-window). Claim 1 (bugs-sp3 dominates the wave) holds on the
-deliverable as shown — same detection (12 vs 13 of 14 pool defects), same thread hits, ~40% of the
-cost, and no real defect ever moved to the Minor bucket — but not on gross reporting, where the two
-are within one defect on every subject; the wave's evidence gate misfired again (mattermost r2: five
-real defects tiered to Minor, 0 primary, verdict APPROVED). Claim 2 (superpowers finds more per
-cell) does not hold off library code: per-cell real defects 3.8 / 3.7 / 3.8, superpowers' extra
-volume is low-value (precision 0.30–0.46, first publishable sub-0.5 figures), and it missed
-grafana's alerting-DAG regression both decaf arms caught. Recommendation recorded: make bugs-sp v3
-the mechanism behind the `bugs` preset with the wave one flag away; close dcc-sk3k as superseded
-for `bugs`, apply its fix to review/audit. Write-up: BUGS-SP-RESULTS.md § Generalization.
+Completed dcc-pjix: Done. `bugs` is the single-seat solo-reviewer path (brief v3); `bugs-sp` is an alias; the four-seat
+wave lives behind `bugs roster=N` (N≥2) with evidence=norm. SKILL, brief, CLAUDE.md, README, tools.json
+(ours-bugs = single seat from 2026-08-18; ours-bugs-wave added; sp arms historical), runner updated;
+dev copy synced; dcc-sk3k closed as superseded. Fresh-session probes confirmed both paths announce
+and dispatch as specified.
 
 ## ⚠️ Measured premise is VOID (2026-08-10)
 This epic's premise — `ours` at $21.33/run vs anthropic's $7.61, and 0.70 vs 0.90 severity
