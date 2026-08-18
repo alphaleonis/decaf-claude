@@ -178,13 +178,19 @@ Environment notes:
 
 Report every finding with a file:line reference and a clear statement of what is wrong."
 
-# /tmp is tmpfs on this machine — RAM, not disk. Tools build the subject in it, and a
+# /tmp was tmpfs on the first benchmark machine — RAM, not disk. Tools build the subject in it, and a
 # comprehensive-review cell on prometheus exhausted memory with two full worktrees of a
 # 14,360-commit repo and aborted after 62 minutes, $18.68 spent, no output. Give the cell a
 # disk-backed TMPDIR, refuse to start one when tmpfs is already tight, and sweep afterwards.
+# Cells on DIFFERENT subjects may run concurrently: the sweep is scoped by a live-cell registry
+# (cell_tmp.sh, dcc-xhku) so a finishing cell never removes a running sibling's files. Same-subject
+# overlap is still refused by reset_repo() above.
 export BENCH_CELL_TMPDIR="/var/tmp/bench-v2/${SUBJ_ID}__${TOOL}__r${REP}"
 rm -rf "$BENCH_CELL_TMPDIR"; mkdir -p "$BENCH_CELL_TMPDIR"
 export TMPDIR="$BENCH_CELL_TMPDIR" TMP="$BENCH_CELL_TMPDIR" TEMP="$BENCH_CELL_TMPDIR"
+# The live-cell registry (cell_tmp.sh, dcc-xhku) keys liveness on this pid: it must be the process
+# that lives for the whole cell, i.e. this runner — not the helper's own short-lived shell.
+export BENCH_CELL_PID=$$
 bash "$V2/cell_tmp.sh" preflight "$OUT" "$REPO" || exit 80
 
 echo "[$SUBJ_ID/$TOOL shim=$SHIM r$REP] checkpoint ${CP:0:12}, date $DATE, model $BENCH_MODEL effort $BENCH_EFFORT"

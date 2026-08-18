@@ -2,11 +2,11 @@
 # dcc-xhku
 version: 1
 title: cell_tmp.sh cleanup deletes a concurrently-running cell's /tmp files
-status: todo
+status: completed
 type: bug
 priority: high
 created_at: 2026-08-18T09:18:01Z
-updated_at: 2026-08-18T09:18:18Z
+updated_at: 2026-08-18T11:10:35Z
 parent: dcc-ho2w
 order: zo
 ---
@@ -44,6 +44,16 @@ Until fixed, **cells must be run one at a time**.
 
 ## Acceptance
 
-- [ ] Step 4 cannot remove a path belonging to another live cell
-- [ ] A test exercises the two-cell case
-- [ ] `v2/README.md` states whether concurrent cells are supported
+- [x] Step 4 cannot remove a path belonging to another live cell — scoped by a live-cell registry with a quiescent baseline; a cell finishing with siblings live defers (recorded), the last one out sweeps the group; dead-pid registrations dropped
+- [x] A test exercises the two-cell case — `v2/test_cell_tmp.sh` (14 checks: two-cell deferral + group sweep, baseline preserved, PROTECT honored, stale pid, own TMPDIR/worktree removed under concurrency); plus a live shakedown on the real /tmp
+- [x] `v2/README.md` § Concurrency and the bench-run skill state it: different subjects may overlap, same subject may not
+
+## Summary
+
+**Completed 2026-08-18** — Fixed. cell_tmp.sh's top-of-/tmp sweep is scoped by a live-cell registry instead of a per-cell
+snapshot: preflight registers the cell (runner pid via BENCH_CELL_PID) and, if nothing else is live,
+takes a quiescent baseline; cleanup steps 1–3 stay cell-scoped; step 4 runs only when the cell is the
+last one live and sweeps against the baseline, otherwise defers and records it; dead-pid registrations
+are dropped. flock-serialized. test_cell_tmp.sh covers the two-cell case (14 checks) and a live
+shakedown on the real /tmp confirmed defer-then-sweep. README § Concurrency and the bench-run skill
+now say different-subject cells may run concurrently. Cause of the $17.61 loss on 2026-08-18.

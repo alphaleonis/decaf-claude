@@ -150,6 +150,18 @@ sidechains — showed no cell read it, so the results stand; the guard closes th
 run. Note that the *outputs* alone could not have settled this: only the transcripts record what was
 read.
 
+## Concurrency
+
+Cells on **different subjects** may run at the same time; cells on the **same subject** may not
+(`run_cell_v2.sh` resets the checkout before every cell). Two things make cross-subject concurrency
+safe, and both are tested: each cell's `TMPDIR` is its own disk-backed directory, and the top-of-`/tmp`
+sweep in `cell_tmp.sh` is scoped by a **live-cell registry** — the first cell of a group takes a
+quiescent baseline, a cell that finishes while siblings are live *defers* the sweep (recorded as
+`deferred` in its `tmp-cleanup.tsv`), and the last cell out sweeps everything absent from the
+baseline; dead registrations are dropped so a crashed cell cannot pin the sweep off. Before
+2026-08-18 the sweep differenced a per-cell snapshot and the first cell to finish deleted a running
+sibling's files (dcc-xhku). `bash v2/test_cell_tmp.sh` runs the two-cell case against a scratch tree.
+
 ## Two rules that are easy to get wrong
 
 **Fetch the checkpoint and nothing else.** A second `fetch --depth 1` of the merge base re-shallows

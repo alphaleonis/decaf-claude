@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-13T11:40:01Z
+updated_at: 2026-08-18T11:10:35Z
 order: zzzzV
 ---
 
@@ -267,18 +267,13 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-opdr: Backfilled a judge-assigned finding_class onto all 267 pilot clusters from a closed set
-(defect/risk/test-gap/docs/design/style), graded blind to tool identity and blind to the verdict so
-class stays orthogonal to substance. score_pooled.py validates against the closed set, refuses a
-PARTIAL classification (which would report a class mix over a subset as though it covered the
-population), and emits class_distribution; three tests added, all firing.
-
-It immediately changed a conclusion. ours-bugs has the purest defect focus in the roster -- 6 of 7
-reported findings are defect-class, against 26-45% for everyone else -- so the preset is not confused
-about its purpose. But it found 8 of the 16 real defects and reported only 5: defect recall 31%,
-lowest of decaf's three presets, against ours-audit's 81%. ours-audit suppressed 4 real findings and
-none was a defect, which localizes the fault to the bugs preset's own threshold rather than the
-shared demotion machinery.
+Completed dcc-xhku: Fixed. cell_tmp.sh's top-of-/tmp sweep is scoped by a live-cell registry instead of a per-cell
+snapshot: preflight registers the cell (runner pid via BENCH_CELL_PID) and, if nothing else is live,
+takes a quiescent baseline; cleanup steps 1–3 stay cell-scoped; step 4 runs only when the cell is the
+last one live and sweeps against the baseline, otherwise defers and records it; dead-pid registrations
+are dropped. flock-serialized. test_cell_tmp.sh covers the two-cell case (14 checks) and a live
+shakedown on the real /tmp confirmed defer-then-sweep. README § Concurrency and the bench-run skill
+now say different-subject cells may run concurrently. Cause of the $17.61 loss on 2026-08-18.
 
 ## Key Decisions
 

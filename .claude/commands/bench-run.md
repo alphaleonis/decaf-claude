@@ -51,11 +51,17 @@ only for completion is silent through a crashloop.
 ## Rules the runner enforces, and one it cannot
 
 - Cells on the **same subject can never overlap** — `run_cell_v2.sh` resets that subject's checkout
-  before every cell, so a second cell would wipe the first's working tree mid-review. Different
-  subjects have different checkouts and *could* run in parallel; keep them serial anyway, because a
-  cell that dies from resource contention is indistinguishable in the artifacts from a tool that
-  found nothing. If a matrix is already running on a subject, **queue** rather than launch: wait for
-  the driver's done-marker, and give up loudly if it never arrives.
+  before every cell, so a second cell would wipe the first's working tree mid-review. If a matrix
+  is already running on a subject, **queue** rather than launch: wait for the driver's done-marker,
+  and give up loudly if it never arrives.
+- Cells on **different subjects may run concurrently** as of 2026-08-18 (dcc-xhku): the `/tmp`
+  sweep in `cell_tmp.sh` is scoped by a live-cell registry, so a finishing cell defers its
+  top-level sweep while siblings are live and the last one out sweeps the group (before that fix,
+  the first cell to finish deleted the other's build artifacts — a $17.61 prometheus cell was lost).
+  Watch RAM and disk when you do: a cell that dies from resource contention is indistinguishable in
+  the artifacts from a tool that found nothing, and `tmp-cleanup.tsv` records `deferred` rather than
+  `removed` for a cell that finished with siblings live. `bash v2/test_cell_tmp.sh` exercises the
+  two-cell case.
 - Resume skips a cell that already **succeeded**, judged by `is_error` in `meter.json`, not by file
   size. Pass `BENCH_FORCE=1` to re-run regardless.
 - The runner refuses on a dirty checkout (77), a missing checkpoint (78), a surviving worktree (79)
