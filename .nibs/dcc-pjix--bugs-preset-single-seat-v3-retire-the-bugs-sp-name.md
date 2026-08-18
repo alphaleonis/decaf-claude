@@ -2,11 +2,11 @@
 # dcc-pjix
 version: 1
 title: bugs preset = single-seat v3; retire the bugs-sp name; wave behind roster flag
-status: in-progress
+status: completed
 type: feature
 priority: high
 created_at: 2026-08-18T07:04:38Z
-updated_at: 2026-08-18T07:06:35Z
+updated_at: 2026-08-18T07:37:42Z
 parent: dcc-hyxw
 order: arw
 ---
@@ -35,8 +35,18 @@ resolves to `bugs` so existing invocations and the benchmark arms keep working.
 ## Acceptance
 
 - [x] SKILL + brief + docs edited; no `bugs-sp`-as-preset text left except the alias line
-- [ ] Dev copy synced; benchmark arms updated (`ours-bugs` → new bugs, `ours-bugs-wave` added,
+- [x] Dev copy synced; benchmark arms updated (`ours-bugs` → new bugs, `ours-bugs-wave` added,
       sp arms marked historical); tools.json baseline notes
-- [ ] One probe cell (r0, never scored) of `ours-bugs` on a fresh session confirms `bugs` resolves to
-      the single seat and `bugs roster=4` announces the wave with `evidence=norm`
+- [x] Probe cells (r0, never scored) on mattermost in fresh sessions: `ours-bugs` announced
+      `preset bugs — single seat · roster=1`, one Opus lane, $3.42; `ours-bugs-wave` announced
+      `preset bugs — wave (roster=4 explicit) · models=low · evidence=norm`, Opus+Sonnet, 3 High/2
+      Medium primary (no Minor-bucket burial), $12.73
 - [x] dcc-sk3k closed as superseded; results/proposal docs carry the decision
+
+## Summary
+
+**Completed 2026-08-18** — Done. `bugs` is the single-seat solo-reviewer path (brief v3); `bugs-sp` is an alias; the four-seat
+wave lives behind `bugs roster=N` (N≥2) with evidence=norm. SKILL, brief, CLAUDE.md, README, tools.json
+(ours-bugs = single seat from 2026-08-18; ours-bugs-wave added; sp arms historical), runner updated;
+dev copy synced; dcc-sk3k closed as superseded. Fresh-session probes confirmed both paths announce
+and dispatch as specified.
