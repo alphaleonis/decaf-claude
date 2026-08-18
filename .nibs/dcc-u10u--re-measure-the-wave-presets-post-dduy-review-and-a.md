@@ -2,11 +2,11 @@
 # dcc-u10u
 version: 1
 title: 'Re-measure the wave presets post-dduy: review (and audit) on the five adjudicated subjects'
-status: todo
+status: in-progress
 type: task
 priority: high
 created_at: 2026-08-18T08:40:37Z
-updated_at: 2026-08-18T08:40:37Z
+updated_at: 2026-08-18T08:46:12Z
 parent: dcc-hyxw
 order: ary
 ---
