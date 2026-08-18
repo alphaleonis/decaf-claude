@@ -1,0 +1,21 @@
+{
+  "languages": [
+    "js",
+    "go"
+  ],
+  "package_managers": [
+    "yarn",
+    "go"
+  ],
+  "lockfiles": [
+    "yarn.lock",
+    "hack/go.sum"
+  ],
+  "restore_commands": [
+    "corepack yarn install --immutable",
+    "GOFLAGS=-mod=readonly go mod download"
+  ],
+  "missing_toolchains": [],
+  "date_neutral": true,
+  "build_possible": true
+}
