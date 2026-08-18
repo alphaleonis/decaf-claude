@@ -9,17 +9,17 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 ### Code review
 | Skill | Purpose |
 |-------|---------|
-| `code-review` | Orchestrate review agents (`bugs` / `review` / `audit` presets over four axes, each overridable), consolidate findings, write a timestamped report to `.decaf/code-reviews/` |
+| `code-review` | `bugs` runs one deep `solo-reviewer` seat; `review` / `audit` orchestrate a wave of reviewer agents (four axes, each overridable) and consolidate findings; all write a timestamped report to `.decaf/code-reviews/` |
 | `resolve-code-review` | Walk through the findings one at a time and decide a resolution for each — fix (optionally TDD), skip, dismiss, or defer to a work item. `auto` mode resolves autonomously after one upfront confirmation. |
 | `auto-code-review` | The full loop: review → triage → fix (via subagent) → re-review, iterating until the code stabilizes or the iteration cap is hit |
 | `resolve-pr-feedback` | Walk through unresolved PR review threads (ADO or GitHub) and resolve each — fix, reply, decline with evidence, or escalate. Replies are drafted, batch-approved, signed, and posted with matching thread-status changes. |
 
 ```
 /decaf-quality:code-review                 # mode chosen interactively (default mid), uncommitted changes
-/decaf-quality:code-review bugs            # high-confidence defects in the changed lines only
+/decaf-quality:code-review bugs            # high-confidence defects in the changed lines only — one deep seat, no wave
 /decaf-quality:code-review review          # default — defects plus actionable minor findings
 /decaf-quality:code-review audit           # everything tiered, including pre-existing
-/decaf-quality:code-review bugs-sp         # experimental: one whole-surface deep pass (roster=1, no wave)
+/decaf-quality:code-review bugs roster=4   # the legacy four-seat wave behind bugs, if you want corroboration
 /decaf-quality:code-review review roster=4 # preset with one axis overridden
 /decaf-quality:code-review roster=6 models=high   # axes set directly, without a preset
 /decaf-quality:code-review 42              # review PR #42
@@ -93,6 +93,7 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 | `go-reviewer` | Go idiom misuse — goroutines, errors, typed nil, channels, context, defer |
 | `rust-reviewer` | Rust idiom misuse — panic paths, unsafe invariants, async hazards, lock discipline |
 | `prior-feedback-reviewer` | The diff vs. existing PR threads — unaddressed requests, partial fixes, regressions of prior fixes (PR reviews with prior feedback only) |
+| `solo-reviewer` | The single seat of `bugs` — whole-surface deep pass with inline verification, self-calibrated anchors, closed-set parking reasons; never part of a wave |
 | `finding-validator` | Adversarial re-verification of one consolidated finding (validation wave; not part of the review roster) |
 | `pr-thread-resolver` | Resolves one PR review thread — verify, fix or decline, draft the reply (resolve-pr-feedback only; never posts) |
 

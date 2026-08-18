@@ -386,3 +386,15 @@ superseded for `bugs`; the mechanism itself still exists in `review`/`audit` and
 (`evidence=norm` below a roster floor) is worth applying there. This is a five-subject, small-pool
 recommendation; it should be re-checked when the full run widens the corpus, and the change should
 land as a preset-mechanism swap with the wave one flag away, not as a deletion.
+
+---
+
+## Decision (operator, 2026-08-18) — `bugs` is the single seat
+
+The recommendation above was accepted. As of 2026-08-18 (`dcc-pjix`) the `bugs` preset **is** the
+single-seat `solo-reviewer` path (brief v3): `bugs` = roster 1, seat on the session model,
+self-calibrated, `reach=narrow`. The four-seat wave is reachable only as `bugs roster=N` (N ≥ 2)
+and runs `evidence=norm` there (dcc-sk3k's fix). `bugs-sp` is retained as an alias. Benchmark
+arms: `ours-bugs` now measures the single seat; `ours-bugs-wave` measures the wave; the
+`ours-bugs-sp*` arms are historical. `ours-bugs` cells dated before 2026-08-18 are the wave and
+must not be pooled with later `ours-bugs` cells.

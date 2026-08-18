@@ -1,6 +1,6 @@
 ---
 name: solo-reviewer
-description: "Whole-surface single-pass reviewer — the sole seat of the bugs-sp preset. Reads the entire changeset across every concern class, verifies findings empirically inline, self-calibrates severity and confidence, and returns a complete report carrying full responsibility for the verdict. Dispatch (hard gate) — only as the single seat of code-review's bugs-sp path (roster=1); never added to a multi-agent wave: its execution license assumes sole ownership of the working tree."
+description: "Whole-surface single-pass reviewer — the sole seat of the `bugs` preset. Reads the entire changeset across every concern class, verifies findings empirically inline, self-calibrates severity and confidence, and returns a complete report carrying full responsibility for the verdict. Dispatch (hard gate) — only as the single seat of code-review's `bugs` path (roster=1); never added to a multi-agent wave: its execution license assumes sole ownership of the working tree."
 model: inherit
 color: yellow
 ---
