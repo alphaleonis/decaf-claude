@@ -1,0 +1,37 @@
+2026-08-18T19:25:08Z	fs	ALLOW	Bash (no path)
+2026-08-18T19:25:13Z	fs	ALLOW	Bash (no path)
+2026-08-18T19:25:15Z	fs	ALLOW	Bash docs/ promql/engine.go promql/value.go util/stats/ web/api/v1/
+2026-08-18T19:25:29Z	fs	ALLOW	Bash docs/plans docs/specs /dev/null
+2026-08-18T19:26:44Z	fs	ALLOW	Bash promql/engine.go promql/value.go util/stats/query_stats.go util/stats/stats_test.go web/api/v1/ docs/
+2026-08-18T19:26:49Z	fs	ALLOW	Bash promql/engine.go promql/engine.go
+2026-08-18T19:27:08Z	fs	ALLOW	Bash promql/engine.go
+2026-08-18T19:27:11Z	fs	ALLOW	Bash promql/engine.go
+2026-08-18T19:27:22Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-18T19:27:50Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-18T19:27:52Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-18T19:28:10Z	fs	ALLOW	Bash promql/engine_test.go promql/engine_test.go
+2026-08-18T19:28:12Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-18T19:28:16Z	fs	ALLOW	Bash ./util/stats/...
+2026-08-18T19:28:18Z	fs	ALLOW	Bash ./util/stats/...
+2026-08-18T19:28:21Z	fs	ALLOW	Bash ./promql/
+2026-08-18T19:28:28Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-18T19:28:40Z	fs	ALLOW	Bash promql/zz_review_probe_test.go github.com/prometheus/prometheus/promql github.com/prometheus/prometheus/promql/promqltest github.com/stretchr/testify/require // // ./promql/
+2026-08-18T19:28:51Z	fs	ALLOW	Bash /tmp /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo /tmp/promqbase
+2026-08-18T19:29:02Z	fs	ALLOW	Bash /tmp/promqbase/promql/zz_review_probe_test.go github.com/prometheus/prometheus/promql github.com/prometheus/prometheus/promql/promqltest github.com/stretchr/testify/require /tmp/promqbase ./promql/
+2026-08-18T19:29:53Z	fs	ALLOW	Bash promql/engine.go util/stats/query_stats.go
+2026-08-18T19:30:57Z	fs	ALLOW	Bash /tmp /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo /tmp/promqhead /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/zz_review_probe_test.go /tmp/promqhead/promql/ s/^\tparentSamplesStats.MergeSamplesReadFromSubquery $/\t\/\/PROBE removed/ /tmp/promqhead/promql/engine.go /tmp/promqhead/promql/engine.go
+2026-08-18T19:31:00Z	fs	ALLOW	Bash /tmp/promqhead ./promql/
+2026-08-18T19:31:37Z	fs	ALLOW	Bash promql/zz_review_probe_test.go /tmp/promqhead /tmp/promqbase
+2026-08-18T19:31:39Z	fs	ALLOW	Bash ./web/api/v1/
+2026-08-18T19:31:47Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-18T19:32:08Z	fs	ALLOW	Bash ./promql/
+2026-08-18T19:32:28Z	fs	ALLOW	Bash promql/engine.go promql/value.go util/stats/query_stats.go web/api/v1/api_test.go promql/engine_test.go promql/*.go promql/**/*.go /dev/null
+2026-08-18T19:32:36Z	fs	ALLOW	Bash docs/feature_flags.md docs/feature_flags.md
+2026-08-18T19:32:46Z	fs	ALLOW	Bash /^\t\t\tQuery:/ promql/engine_test.go promql/engine_test.go
+2026-08-18T19:33:26Z	fs	ALLOW	Bash promql/engine.go util/stats/query_stats.go promql/engine.go
+2026-08-18T19:33:32Z	fs	ALLOW	Bash // // promql/engine_test.go docs/feature_flags.md
+2026-08-18T19:33:40Z	fs	ALLOW	Bash util/stats/query_stats.go
+2026-08-18T19:34:54Z	fs	ALLOW	Bash /home/decaf/.claude/skills/decaf-quality-dev/conventions/session-report.md /dev/null
+2026-08-18T19:34:59Z	fs	ALLOW	Bash (no path)
+2026-08-18T19:35:02Z	fs	ALLOW	Bash .decaf/code-reviews .decaf/code-reviews/ /dev/null
+2026-08-18T19:36:15Z	fs	ALLOW	Bash .decaf/code-reviews/CODE_REVIEW_2026-08-18_21-34-59.md +1409/-34 ./promql/ Critical/High/Medium/Low promql/value.go:195 promql/engine_test.go:1406 util/stats/query_stats.go:358 promql/engine.go:2385 / promql/engine_test.go:2438 promql/engine.go:1874 promql/engine.go:2184 I/O docs/feature_flags.md:48 promql/engine_test.go:1184 promql/engine.go:2143 / util/stats/query_stats.go:271 / / / / / / ./promql ./promql/ / // promql/engine_test.go:1548 // promql/engine_test.go:1184 docs/feature_flags.md:48 // docs/feature_flags.md:48 docs/feature_flags.md:48 docs/querying/api.md promql/engine.go:2472 promql/engine_test.go:1364 web/api/v1/api_test.go:983 util/stats/query_stats.go util/stats/query_stats.go:298 promql/engine.go:2437 / promql/engine.go:2443 util/stats/query_stats.go:183 promql/engine_test.go:1541,1590,1639 1556/1624 / promql/engine_test.go:1777 promql/engine_test.go:51 promql/promqltest/test.go:59 /tmp n/a ./promql/ .decaf/code-reviews/
