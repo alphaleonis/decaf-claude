@@ -6,7 +6,7 @@ status: in-progress
 type: task
 priority: high
 created_at: 2026-08-18T08:40:37Z
-updated_at: 2026-08-18T08:46:12Z
+updated_at: 2026-08-18T14:55:41Z
 parent: dcc-hyxw
 order: ary
 ---
@@ -37,7 +37,7 @@ confirmed/refuted/uncertain — the rubber-stamp risk dcc-c2uc named and never m
 
 ## Acceptance
 
-- [ ] 10 (or 16) cells CLEAN, committed
+- [x] 10 (or 16) cells CLEAN, committed — the 10 `ours-review` cells are done (2026-08-18): prom r4/r5, efcore r3/r4, mattermost r1/r2, immich r1/r2, grafana-117615 r1/r2. All rc=0, is_error=false, isolation CLEAN, artifact captured. A prom r3 was lost to [[dcc-xhku]] and is committed as a failure record, not evidence; r5 replaced it. The 6 optional `ours-audit` cells are not run.
 - [ ] Folded in; existing per-tool figures asserted unchanged; calibration reported per subject
 - [ ] Readout in `v2/analysis/` (new section or file) incl. the pre/post-dduy line for `review`
 - [ ] Recommendation: is `review` post-dduy fit to ship, and does anything in it need the same
