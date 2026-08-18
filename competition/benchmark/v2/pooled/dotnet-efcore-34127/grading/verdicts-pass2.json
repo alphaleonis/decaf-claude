@@ -646,5 +646,23 @@
   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595-615",
   "confidence": 0.5,
   "rationale": "DropNotNullChecks only removes IS NOT NULL leaves from an AndAlso tree and rebuilds via binary.Update; the surviving conjuncts were already visited/folded (constants would have been simplified in VisitSqlBinary), and no conjunct becomes trivially true/false as a consequence of dropping a sibling \u2014 I could not construct the claimed unsimplified output."
+ },
+ {
+  "cluster_id": "e77",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlExpressions/SqlConstantExpression.cs:95-130",
+  "confidence": 0.45,
+  "rationale": "The contract violation is real (Equals compares IList values element-wise at lines 106-123 while GetHashCode at line 130 hashes the raw object), and the new HashSet<SqlExpression> at SqlNullabilityProcessor.cs:580 does depend on it; but the only consequence here is that the optimization silently fails to fire, and IS NOT NULL over a list-valued constant is not a shape that arises."
+ },
+ {
+  "cluster_id": "e78",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2295",
+  "confidence": 0.8,
+  "rationale": "A considered-and-cleared note asserting no defect: the new tests do follow the adjacent [ConditionalTheory]/[MemberData(nameof(IsAsyncData))] pattern."
  }
 ]

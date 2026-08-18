@@ -313,5 +313,86 @@
   "code_citation": "server/public/model/command_response.go:79; server/public/model/post.go:479; server/public/model/command.go:67",
   "confidence": 0.8,
   "rationale": "Sibling IsValid methods in the model package (Post, Command) also lack doc comments; stylistic preference, not a defect."
+ },
+ {
+  "cluster_id": "ma36",
+  "verdict": "matches-thread",
+  "matches_thread": 3,
+  "judged_severity": "high",
+  "code_citation": "server/public/model/command_response.go:72-74",
+  "confidence": 0.65,
+  "rationale": "Same defect as the maintainer's \"let's not throw a hard error, this might break existing servers\" comment on that exact return: validation is welded into the decoder so callers cannot parse and then decide, and the fix (move it out of FromJSON) is what the thread asks for."
+ },
+ {
+  "cluster_id": "ma37",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "server/channels/app/command.go:621-630",
+  "confidence": 0.5,
+  "rationale": "No cap on len(ExtraResponses) anywhere, and each entry becomes a post insert plus broadcast; the global 300KB payload cap (server/channels/web/handlers.go:213-216) bounds but does not eliminate the amplification. Pre-existing, and the strict-validation change is the natural place to bound it."
+ },
+ {
+  "cluster_id": "ma38",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/channels/web/handlers.go:425-427",
+  "confidence": 0.8,
+  "rationale": "Cleared note asserting no defect; the clearing checks out \u2014 c.Err.WipeDetailed() runs whenever EnableDeveloper is off, and the two new detail strings are static."
+ },
+ {
+  "cluster_id": "ma39",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:90-98",
+  "confidence": 0.85,
+  "rationale": "Cleared note asserting no defect; the clearing is correct (server/public/go.mod declares go 1.26.3, so loop variables are per-iteration, and nothing escapes the loop)."
+ },
+ {
+  "cluster_id": "ma40",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response_test.go:231-234",
+  "confidence": 0.85,
+  "rationale": "Cleared note asserting no defect; correct, since the module targets go 1.26.3 where the range variable is per-iteration."
+ },
+ {
+  "cluster_id": "ma41",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response_test.go:235-237",
+  "confidence": 0.8,
+  "rationale": "Cleared note asserting no defect; the reading is right \u2014 the ShouldError branch previously asserted only assert.Nil(t, response)."
+ },
+ {
+  "cluster_id": "ma42",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:79-99",
+  "confidence": 0.6,
+  "rationale": "A considered-and-cleared note that asserts no defect; it also reaches the opposite conclusion from thread 4, which wants the URL fields validated more strictly, so it is not a match."
+ },
+ {
+  "cluster_id": "ma43",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:85-88",
+  "confidence": 0.6,
+  "rationale": "Considered-and-cleared note that asserts no defect introduced by the change."
+ },
+ {
+  "cluster_id": "ma44",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/channels/web/webhook.go:114-118",
+  "confidence": 0.6,
+  "rationale": "Verified ordering: commandWebhook returns 400 on a parse/validation failure before HandleCommandWebhook reaches CommandWebhook().TryUse (server/channels/app/webhook.go:982), so the newly enlarged class of rejected bodies never consumes one of the five uses. Real but low impact."
  }
 ]

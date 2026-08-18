@@ -232,5 +232,113 @@
   "code_citation": "pkg/expr/sql/parser.go:36-41",
   "confidence": 0.8,
   "rationale": "Considered-and-cleared note asserting no defect; TablesList records tableName.Name.String(), which the vitess parser yields without backticks, so backticked identifiers resolve server-side as stated."
+ },
+ {
+  "cluster_id": "gf27",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:18-43",
+  "confidence": 0.8,
+  "rationale": "Verified against the installed types: plugin-ui declares tables.resolve as (TableIdentifier: TableIdentifier | null) => Promise<TableDefinition[]> (node_modules/@grafana/plugin-ui/dist/esm/index.d.ts:276), so the zero-argument calls at lines 18 and 43 are TS2554 errors and typecheck fails."
+ },
+ {
+  "cluster_id": "gf28",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "public/app/features/alerting/unified/components/expressions/Expression.tsx:141-147",
+  "confidence": 0.7,
+  "rationale": "Verified: the alerting editor renders SqlExpr with queries={[]}, and runMetaSQLExprQuery posts [...queries, metaQuery] (ExpressionDatasource.ts:94), so the source frame is never sent and column autocomplete cannot resolve there. Pre-existing rather than introduced here, but a real gap in the surface this change targets."
+ },
+ {
+  "cluster_id": "gf29",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:5",
+  "confidence": 0.6,
+  "rationale": "getFields is a required member of CompletionProviderGetterArgs, so supplying a jest.fn() stub is ordinary dependency setup rather than dead code worth a reviewer's attention."
+ },
+ {
+  "cluster_id": "gf30",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:4-47",
+  "confidence": 0.85,
+  "rationale": "Purely stylistic preference for it.each over two explicit cases; no defect and no behavioral consequence."
+ },
+ {
+  "cluster_id": "gf31",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "public/app/plugins/datasource/mysql/sqlUtil.ts:44-45",
+  "confidence": 0.6,
+  "rationale": "Correct that every new test uses only space-containing identifiers and none covers an embedded backtick, which is the input where the helper actually misbehaves; a real but small test-coverage gap."
+ },
+ {
+  "cluster_id": "gf32",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.ts:119-125",
+  "confidence": 0.6,
+  "rationale": "Considered-and-cleared note on an allow-list unrelated to this change; asserts no defect."
+ },
+ {
+  "cluster_id": "gf33",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx:78-83",
+  "confidence": 0.7,
+  "rationale": "Considered-and-cleared note about the formatter preserving backticks; asserts no defect."
+ },
+ {
+  "cluster_id": "gf34",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts:25-28",
+  "confidence": 0.8,
+  "rationale": "Considered-and-cleared note; plugin-ui maps name to the suggestion label and completion to insertText, so the asymmetry is intended and no defect is asserted."
+ },
+ {
+  "cluster_id": "gf35",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/utils/metaSqlExpr.ts:11-15",
+  "confidence": 0.85,
+  "rationale": "Considered-and-cleared note; the early return on a falsy table does narrow query.table to string before the quoting call, so nothing actionable is claimed."
+ },
+ {
+  "cluster_id": "gf36",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:11-12",
+  "confidence": 0.8,
+  "rationale": "A considered-and-cleared note asserting no defect; the monaco argument is genuinely unused by the returned provider and language is only spread, so nothing actionable is claimed."
+ },
+ {
+  "cluster_id": "gf37",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "pkg/expr/sql/db.go:1-1",
+  "confidence": 0.5,
+  "rationale": "Considered-and-dismissed note about a server path untouched by this diff; asserts no defect, and I did not re-verify the limits it cites."
+ },
+ {
+  "cluster_id": "gf38",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts:34-45",
+  "confidence": 0.75,
+  "rationale": "Considered-and-cleared note; the column resolution path is feature-toggle gated and untouched by this diff, so no defect is asserted."
  }
 ]

@@ -313,5 +313,86 @@
   "code_citation": "server/public/model/command_response.go:79",
   "confidence": 0.6,
   "rationale": "Most IsValid methods in server/public/model (roughly 59 of 69) have no doc comment, so this matches package convention; a preference."
+ },
+ {
+  "cluster_id": "ma36",
+  "verdict": "matches-thread",
+  "matches_thread": 5,
+  "judged_severity": "medium",
+  "code_citation": "server/public/model/command_response.go:72-74",
+  "confidence": 0.7,
+  "rationale": "The new IsValid call is embedded in the shared decoder so callers cannot parse then decide; thread 5 asks for exactly that relocation (move the call into the two CommandResponseFromHTTPBody call sites)."
+ },
+ {
+  "cluster_id": "ma37",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "server/public/model/command_response.go:90-98",
+  "confidence": 0.5,
+  "rationale": "No cap on ExtraResponses count, and HandleCommandResponse creates one post per entry (server/channels/app/command.go:617-630), so a single body under the payload cap fans out to very many inserts and broadcasts; actionable for a change whose stated purpose is bounding this payload, though pre-existing."
+ },
+ {
+  "cluster_id": "ma38",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/channels/web/handlers.go:396-430",
+  "confidence": 0.7,
+  "rationale": "Cleared note asserting no defect; it raises DetailedError exposure only to dismiss it via WipeDetailed."
+ },
+ {
+  "cluster_id": "ma39",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:90",
+  "confidence": 0.9,
+  "rationale": "Cleared note asserting no defect; no closure or goroutine captures the loop variable here in any case."
+ },
+ {
+  "cluster_id": "ma40",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response_test.go:230-232",
+  "confidence": 0.85,
+  "rationale": "Cleared note asserting no defect about loop-variable capture in the table-driven parallel subtests."
+ },
+ {
+  "cluster_id": "ma41",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response_test.go:235-237",
+  "confidence": 0.9,
+  "rationale": "Cleared note asserting no defect; correct that the error was previously unasserted, but it states no issue with the change."
+ },
+ {
+  "cluster_id": "ma42",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:79-99",
+  "confidence": 0.6,
+  "rationale": "Cleared note that asserts no defect; it raises GotoLocation only to dismiss it, so it carries no actionable claim even though a later human thread does discuss URL validation."
+ },
+ {
+  "cluster_id": "ma43",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "server/public/model/command_response.go:85-88",
+  "confidence": 0.8,
+  "rationale": "Cleared note asserting no new gap; raises attachment text only to dismiss it."
+ },
+ {
+  "cluster_id": "ma44",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "server/channels/web/webhook.go:113-117",
+  "confidence": 0.6,
+  "rationale": "Correct: parse/validation failure returns 400 in commandWebhook before HandleCommandWebhook reaches TryUse (server/channels/app/webhook.go:983), so newly-rejected bodies no longer burn a use; real behavior change but bounded by CommandWebhookLifetime, hence small."
  }
 ]

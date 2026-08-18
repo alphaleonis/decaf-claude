@@ -1,0 +1,38 @@
+{
+  "n_clusters": 24,
+  "judge_model": {
+    "pass1": "claude-opus-5",
+    "pass2": "claude-opus-5"
+  },
+  "same_model": true,
+  "exact_agreement": 1.0,
+  "disagreement_rate": 0.0,
+  "kappa_6way": 1.0,
+  "real_vs_not": {
+    "agreement": 1.0,
+    "kappa": 1.0
+  },
+  "valid_other_vs_trivia_boundary": {
+    "n": 9,
+    "agreement": 1.0,
+    "kappa": 1.0
+  },
+  "matches_thread": {
+    "n_either_pass": 5,
+    "agree_same_index": 5
+  },
+  "confusion": {
+    "false-positive -> false-positive": 4,
+    "matches-thread -> matches-thread": 5,
+    "trivia -> trivia": 8,
+    "valid-minor -> valid-minor": 6,
+    "valid-other -> valid-other": 1
+  },
+  "disagreements": [],
+  "threshold": {
+    "kappa_floor": 0.6,
+    "exact_floor": 0.7,
+    "pre_registered": true
+  },
+  "stable": true
+}

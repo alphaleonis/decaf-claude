@@ -8,6 +8,22 @@
  "grading_pass": 1,
  "cells": [
   {
+   "tool": "ours-bugs",
+   "repeat": 1,
+   "cost_usd": 13.1266,
+   "wall_s": 1436,
+   "access_total": 267,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-bugs",
+   "repeat": 2,
+   "cost_usd": 13.3518,
+   "wall_s": 1392,
+   "access_total": 249,
+   "access_denied": 1
+  },
+  {
    "tool": "ours-bugs-sp3",
    "repeat": 1,
    "cost_usd": 4.9707,
@@ -24,20 +40,20 @@
    "access_denied": 1
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-review-postdduy",
    "repeat": 1,
-   "cost_usd": 13.1266,
-   "wall_s": 1436,
-   "access_total": 267,
-   "access_denied": 1
+   "cost_usd": 16.228,
+   "wall_s": 1443,
+   "access_total": 321,
+   "access_denied": 0
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-review-postdduy",
    "repeat": 2,
-   "cost_usd": 13.3518,
-   "wall_s": 1392,
-   "access_total": 249,
-   "access_denied": 1
+   "cost_usd": 16.7915,
+   "wall_s": 3165,
+   "access_total": 278,
+   "access_denied": 3
   },
   {
    "tool": "superpowers",
@@ -116,6 +132,20 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 0
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 1
     }
    ],
    "finding_class": "defect",
@@ -138,6 +168,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 9
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 7
     }
    ],
    "finding_class": "defect",
@@ -195,6 +232,27 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 4
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 20
     }
    ],
    "finding_class": "defect",
@@ -248,6 +306,20 @@
     },
     {
      "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-review-postdduy",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
@@ -323,6 +395,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 11
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 5
     }
    ],
    "finding_class": "defect",
@@ -387,6 +473,27 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 11
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
     }
    ],
    "finding_class": "design",
@@ -430,6 +537,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 14
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 7
     }
    ],
    "finding_class": "defect",
@@ -459,6 +573,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 13
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 18
     }
    ],
    "finding_class": "defect",
@@ -481,6 +602,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 5
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 10
     }
    ],
    "finding_class": "defect",
@@ -524,6 +652,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 7
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 19
     }
    ],
    "finding_class": "docs",
@@ -574,6 +709,27 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 7
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 22
     }
    ],
    "finding_class": "docs",
@@ -610,6 +766,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 17
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 21
     }
    ],
    "finding_class": "defect",
@@ -639,6 +802,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 16
     }
    ],
    "finding_class": "defect",
@@ -756,6 +933,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 23
     }
    ],
    "finding_class": "defect",
@@ -778,6 +962,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 15
     }
    ],
    "finding_class": "defect",
@@ -900,6 +1091,34 @@
      "severity": "info",
      "disposition": "reported",
      "finding_index": 10
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 11
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 12
     }
    ],
    "finding_class": "test-gap",
@@ -922,6 +1141,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 13
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 21
     }
    ],
    "finding_class": "defect",
@@ -951,6 +1177,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 16
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 15
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 17
     }
    ],
    "finding_class": "test-gap",
@@ -995,6 +1235,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 11
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 8
     }
    ],
    "finding_class": "defect",
@@ -1017,6 +1264,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 12
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 16
     }
    ],
    "finding_class": "defect",
@@ -1043,6 +1297,343 @@
    ],
    "finding_class": "defect",
    "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "im29",
+   "summary": "The rating field's .nullable()...optional() split replaces the previous .nullish() purely because .refine() had to be inserted between the modifiers, leaving the declaration stylistically out of step with the sibling rating fields in search.dto.ts and exif.dto.ts.",
+   "location": "server/src/dtos/asset.dto.ts:18",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:17-22",
+   "confidence": 0.8,
+   "rationale": "Stylistic-only: the .nullable()/.optional() split is a mechanical consequence of inserting .refine() and is behaviorally identical to .nullish().",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 8
+    }
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.8
+  },
+  {
+   "cluster_id": "im30",
+   "summary": "Re-adopting -1 as an out-of-band 'rejected' sentinel inside a 1-5 ordinal happens at the one moment retiring it was cheapest (an unreleased major with the breaking change and backfill already written), forcing every consumer to special-case it and pushing removal to a second major bump.",
+   "location": "server/src/dtos/asset.dto.ts:16",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:16-30",
+   "confidence": 0.5,
+   "rationale": "A design/product argument against the PR's explicit premise rather than a defect; its concrete consequences are covered by the specific findings elsewhere. Boundary call \u2014 a maintainer could reasonably want this debate, hence low confidence.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 9
+    }
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "im31",
+   "summary": "The rating field on UpdateAssetBaseSchema backs AssetBulkUpdateDto as well, but the bulk-update spec block never sends a rating at all, so that DTO's rating validation has no test coverage of any value (pre-existing).",
+   "location": "server/src/controllers/asset.controller.spec.ts:22",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/src/controllers/asset.controller.spec.ts:22-58",
+   "confidence": 0.6,
+   "rationale": "True \u2014 the PUT /assets block only exercises ids and duplicateId, so the bulk DTO's rating validation (inherited through .extend()) is untested; a small but actionable coverage gap given the schema was just restructured.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 10
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.95
+  },
+  {
+   "cluster_id": "im32",
+   "summary": "Placing .describe() and .meta() after the new .refine() was checked for attaching to the wrong schema node; both attach correctly and the description plus x-immich-history extension appear as expected in the generated spec.",
+   "location": "server/src/dtos/asset.dto.ts:22",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:16-30",
+   "confidence": 0.85,
+   "rationale": "A considered-and-cleared note asserting no defect; the generated spec in the diff does carry both the new description and the x-immich-history extension, so the observation is true but actionless.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "im33",
+   "summary": "The refine predicate's accepted value set was enumerated against the stated intent: null, -1 and 1..5 accept while 0, -2, 6 and 3.5 reject, matching exactly.",
+   "location": "server/src/dtos/asset.dto.ts:19",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:19-21",
+   "confidence": 0.85,
+   "rationale": "An accurate enumeration of the refine's accepted set that concludes it matches intent \u2014 a cleared note with no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.8
+  },
+  {
+   "cluster_id": "im34",
+   "summary": "The unchanged x-immich-state 'Stable' marker was checked against the edited history chain and remains correct, because the extension is derived from the last non-Added/Updated entry.",
+   "location": "server/src/dtos/asset.dto.ts:24",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:24-29",
+   "confidence": 0.7,
+   "rationale": "A cleared check on the unchanged x-immich-state marker; asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
+    }
+   ],
+   "finding_class": "docs",
+   "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "im35",
+   "summary": "SyncAssetExifV1.rating is declared z.int().nullable() with no bounds, so the delta-sync surface already tolerates -1 and mirrors the DB column deliberately \u2014 no drift is introduced.",
+   "location": "server/src/dtos/sync.dto.ts:154",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/sync.dto.ts:154",
+   "confidence": 0.85,
+   "rationale": "Correct that SyncAssetExifV1.rating is unbounded z.int().nullable() and introduces no drift; a cleared note with no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 17
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 25
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "im36",
+   "summary": "The client-side half of the original restriction is not reverted: the Dart widgets, action/search models and web StarRating.svelte that were changed to stop sending -1 remain as-is, so first-party clients still cannot set a rejection even though the API now accepts it.",
+   "location": "mobile/lib:0",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "web/src/lib/elements/StarRating.svelte:9-18",
+   "confidence": 0.75,
+   "rationale": "Confirmed against the commit being partially reverted: the client-side changes (web Rating type, mobile rating bar / search filter models) are untouched here, so no first-party client can produce -1 even though the API accepts it again.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 20
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.65
+  },
+  {
+   "cluster_id": "im37",
+   "summary": "The rating validity rule is written inline at four sites with now-divergent rulesets (asset.dto.ts, exif.dto.ts, search.dto.ts, sync.dto.ts) instead of a shared schema constant like the file's own latitudeSchema/longitudeSchema, which is what let the definitions drift apart.",
+   "location": "server/src/dtos/asset.dto.ts:16",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/src/dtos/asset.dto.ts:16-19",
+   "confidence": 0.6,
+   "rationale": "Fair and actionable: the file imports latitudeSchema/longitudeSchema from validation.ts as the local convention while the rating rule is duplicated inline across four DTOs that have now demonstrably drifted; still a refactor suggestion rather than a defect itself.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 9
+    }
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.8
+  },
+  {
+   "cluster_id": "im38",
+   "summary": "The sidecar write path maps rating ?? 0 when emitting XMP, which is pre-existing and coherent with the extraction side's 0 -> null mapping.",
+   "location": "server/src/services/metadata.service.ts:509",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/services/metadata.service.ts:509",
+   "confidence": 0.85,
+   "rationale": "Accurate reading of `rating: asset.exifInfo.rating ?? 0` and coherent with the 0 -> null extraction mapping, but the cluster asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 22
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
+  },
+  {
+   "cluster_id": "im39",
+   "summary": "The extraction that nulls the rating was checked for re-queuing another sidecar write and thus a self-amplifying job loop; no AssetExtractMetadata -> SidecarWrite edge exists, so the chain terminates after one round trip.",
+   "location": "server/src/services/job.service.ts:75",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/services/job.service.ts:75",
+   "confidence": 0.7,
+   "rationale": "A considered-and-cleared note about a hypothetical job loop that concludes no defect exists; no action for a reviewer.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
+  },
+  {
+   "cluster_id": "im40",
+   "summary": "The asset_exif.rating column carries no CHECK constraint or non-null bound, so the range restriction was always application-level and re-permitting -1 implies no database schema work.",
+   "location": "server/src/schema/tables/asset-exif.table.ts:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/schema/tables/asset-exif.table.ts:107-108",
+   "confidence": 0.85,
+   "rationale": "Correct that the column is a bare nullable integer with no CHECK, but the cluster asserts no defect \u2014 it only confirms no schema work is implied.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 18
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "im41",
+   "summary": "The deleted migration performed a data UPDATE with no DDL, so removing it introduces no code-first schema or snapshot drift.",
+   "location": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:1-9",
+   "confidence": 0.75,
+   "rationale": "True that the deleted migration was data-only with no DDL, hence no snapshot drift \u2014 but it asserts no defect and sidesteps the real hazard of deleting an executed migration.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 19
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.55
+  },
+  {
+   "cluster_id": "im42",
+   "summary": "The new field-level refine passes its message via `error:` while the untouched object-level lat/long refine uses `message:`; both are supported and the mixed usage predates the diff.",
+   "location": "server/src/dtos/asset.dto.ts:16",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/dtos/asset.dto.ts:20",
+   "confidence": 0.85,
+   "rationale": "Purely stylistic observation about `error:` vs `message:` that the cluster itself clears as both-supported and pre-existing.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 24
+    }
+   ],
+   "finding_class": "style",
+   "class_confidence": 0.85
+  },
+  {
+   "cluster_id": "im43",
+   "summary": "The tree was swept for dangling references to the deleted migration \u2014 no manifest, index, seed or doc names it \u2014 confirming the breakage lives in the recorded database row rather than in the repository.",
+   "location": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:1-9",
+   "confidence": 0.75,
+   "rationale": "A sweep confirming no in-tree references to the deleted file; correct (Kysely discovers migrations by directory listing) and asserts no defect on its own.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 26
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
   }
  ]
 }

@@ -10,8 +10,8 @@
     "provably_clean_from": "2026-06-01",
     "why": "claude-opus-5 publishes a month-granular cutoff of 2026-05; a subject is provably out-of-window only if it merged on or after 2026-06-01"
   },
-  "n_clusters": 72,
-  "n_cells": 21,
+  "n_clusters": 74,
+  "n_cells": 23,
   "threads": {
     "admitted": 11,
     "admitted_human": 10,
@@ -483,6 +483,61 @@
         "recall_found": 1.0
       }
     },
+    "ours-review-postdduy": {
+      "clusters_reported": 15,
+      "clusters_found": 32,
+      "real": 7,
+      "valid_minor": 7,
+      "trivia": 1,
+      "false_positive": 0,
+      "precision": 0.467,
+      "precision_severity_weighted": 0.731,
+      "trivia_ratio": 0.067,
+      "unique_real": 0,
+      "unique_real_ids": [],
+      "per_cell": {
+        "findings": 7.5,
+        "false_positive": 0.0,
+        "trivia": 0.5
+      },
+      "thread_recall": 0.3,
+      "thread_recall_found": 0.5,
+      "demotion_gap": 0.2,
+      "threads_hit": 3,
+      "incumbent_agreement": 0.0,
+      "incumbent_agreement_found": 0.0,
+      "real_found": 11,
+      "demoted_real": 4,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 28.9374,
+      "cost_per_real_finding": 4.1339,
+      "class_distribution": {
+        "reported": {
+          "defect": 4,
+          "design": 2,
+          "docs": 2,
+          "risk": 1,
+          "style": 2,
+          "test-gap": 4
+        },
+        "found": {
+          "defect": 15,
+          "design": 4,
+          "docs": 3,
+          "risk": 2,
+          "style": 4,
+          "test-gap": 4
+        }
+      },
+      "defect_recall": {
+        "pool": 5,
+        "reported": 2,
+        "found": 3,
+        "recall_reported": 0.4,
+        "recall_found": 0.6
+      }
+    },
     "pr-review-toolkit": {
       "clusters_reported": 24,
       "clusters_found": 28,
@@ -493,9 +548,8 @@
       "precision": 0.5,
       "precision_severity_weighted": 0.782,
       "trivia_ratio": 0.083,
-      "unique_real": 2,
+      "unique_real": 1,
       "unique_real_ids": [
-        "e30",
         "e70"
       ],
       "per_cell": {
@@ -603,16 +657,16 @@
     "false-positive": 1,
     "matches-key": 0,
     "matches-thread": 12,
-    "trivia": 38,
-    "valid-minor": 12,
+    "trivia": 39,
+    "valid-minor": 13,
     "valid-other": 9
   },
   "class_distribution": {
-    "defect": 24,
+    "defect": 25,
     "design": 14,
     "docs": 5,
     "risk": 7,
-    "style": 6,
+    "style": 7,
     "test-gap": 16
   }
 }

@@ -1213,5 +1213,86 @@
   "code_citation": "promql/engine.go:2385-2392; promql/durations.go:84-95",
   "confidence": 0.7,
   "rationale": "A sub-millisecond step is truncated to 0 by calculateDuration (time.Duration(duration*1000)*Millisecond), which makes e.Step == 0 and routes to the noStepSubqueryIntervalFn arm, so the division never sees a sub-ms divisor; the cluster itself concedes the expression predates the PR and was moved verbatim."
+ },
+ {
+  "cluster_id": "c136",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2150-2164",
+  "confidence": 0.7,
+  "rationale": "Correctly cleared: maxt = ts - offset shifts every step by the same constant, so maxt - ev.interval is exactly the previous step's maxt; the note asserts no defect."
+ },
+ {
+  "cluster_id": "c137",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2152-2164",
+  "confidence": 0.7,
+  "rationale": "Correctly cleared: the Anchored/Smoothed lookbackDelta adjustments shift mint/maxt by a per-query constant applied at every step, so maxt - ev.interval still equals the previous step's maxt; no defect asserted."
+ },
+ {
+  "cluster_id": "c138",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "promql/engine.go:2425-2444",
+  "confidence": 0.5,
+  "rationale": "The one-line comment at 2425 does not record why the ceiling mapping was chosen, why out-of-window inner steps are clamped rather than dropped, or that the clamp at 2440-2441 is what keeps SamplesReadPerStep[outerStep] in bounds - all true of code whose semantics the human reviewers dispute. Legitimate but soft; it names no defect."
+ },
+ {
+  "cluster_id": "c139",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/value.go:192-207",
+  "confidence": 0.7,
+  "rationale": "Cleared check: countSamplesAfter's h.size() weighting matches totalHPointSize used for fullWindowCount at engine.go:2160, so the two counts are on the same scale; no defect asserted."
+ },
+ {
+  "cluster_id": "c140",
+  "verdict": "matches-thread",
+  "matches_thread": 2,
+  "judged_severity": "low",
+  "code_citation": "promql/engine_test.go:2066,2135",
+  "confidence": 0.85,
+  "rationale": "'PHASE 3: RANGE QUERY + SUBQUERY COMBINATIONS' appears at both 2066 and 2135 (and no PHASE 1 exists), which is exactly thread 2's observation that there is another phase 3 comment a few cases earlier."
+ },
+ {
+  "cluster_id": "c141",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "promql/engine_test.go:2266,2296",
+  "confidence": 0.45,
+  "rationale": "The comment 'High step count efficiency test - subquery evaluates inner at each step (instant)' is duplicated verbatim over two different cases ([300s:10s] @600 and [2m:10s] @240), which is true and small; the stronger claim that it 'describes neither' is overstated since it fits both. Adjacent to but not the same as thread 3's complaint about redundant tests in the earlier block."
+ },
+ {
+  "cluster_id": "c142",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "util/stats/query_stats.go:406-417",
+  "confidence": 0.75,
+  "rationale": "The doc comment says step tracking is initialized 'with the given outer query step layout', which is true of the evalSubquery call site (engine.go:1869 passes ev.startTimestamp/endTimestamp/interval) but false of engine.go:2397, which passes subqStart/subqEnd/subqInterval; a real but small comment-code mismatch on a function whose two callers differ in exactly this respect."
+ },
+ {
+  "cluster_id": "c143",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2426-2446",
+  "confidence": 0.65,
+  "rationale": "Self-refuted check: the ceiling mapping (2437) and IncrementSamplesReadAtTimestamp's floor index are on mutually exclusive arms of the SamplesReadPerStep != nil test, so the two never disagree; asserts no defect."
+ },
+ {
+  "cluster_id": "c144",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "util/stats/query_stats.go:183-192",
+  "confidence": 0.7,
+  "rationale": "SamplesReadPerStepMap's int(s.V) narrowing is byte-for-byte the pattern of the sibling TotalSamplesPerStepMap at lines 170-180, and the cluster itself clears it; no defect asserted."
  }
 ]

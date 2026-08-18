@@ -8,6 +8,22 @@
  "grading_pass": 1,
  "cells": [
   {
+   "tool": "ours-bugs",
+   "repeat": 1,
+   "cost_usd": 12.743,
+   "wall_s": 2009,
+   "access_total": 259,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-bugs",
+   "repeat": 2,
+   "cost_usd": 11.0746,
+   "wall_s": 1194,
+   "access_total": 234,
+   "access_denied": 2
+  },
+  {
    "tool": "ours-bugs-sp3",
    "repeat": 1,
    "cost_usd": 3.8285,
@@ -24,20 +40,20 @@
    "access_denied": 4
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-review-postdduy",
    "repeat": 1,
-   "cost_usd": 12.743,
-   "wall_s": 2009,
-   "access_total": 259,
-   "access_denied": 1
+   "cost_usd": 21.5445,
+   "wall_s": 1615,
+   "access_total": 473,
+   "access_denied": 0
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-review-postdduy",
    "repeat": 2,
-   "cost_usd": 11.0746,
-   "wall_s": 1194,
-   "access_total": 234,
-   "access_denied": 2
+   "cost_usd": 12.1788,
+   "wall_s": 1148,
+   "access_total": 219,
+   "access_denied": 7
   },
   {
    "tool": "superpowers",
@@ -109,6 +125,20 @@
      "severity": "info",
      "disposition": "reported",
      "finding_index": 16
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 25
     }
    ],
    "finding_class": "defect",
@@ -166,6 +196,20 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 5
     }
    ],
    "finding_class": "defect",
@@ -223,6 +267,27 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 4
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 18
     }
    ],
    "finding_class": "defect",
@@ -280,6 +345,20 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 5
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
     }
    ],
    "finding_class": "defect",
@@ -330,6 +409,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
     }
    ],
    "finding_class": "risk",
@@ -359,6 +452,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 13
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 15
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 15
     }
    ],
    "finding_class": "defect",
@@ -388,6 +495,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 24
     }
    ],
    "finding_class": "defect",
@@ -431,6 +545,20 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 12
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 4
     }
    ],
    "finding_class": "style",
@@ -472,6 +600,13 @@
      "tool": "superpowers",
      "repeat": 2,
      "severity": "low",
+     "disposition": "reported",
+     "finding_index": 13
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "nit",
      "disposition": "reported",
      "finding_index": 13
     }
@@ -553,6 +688,20 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 1
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2
     }
    ],
    "finding_class": "defect",
@@ -575,6 +724,20 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 5
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 9
     }
    ],
    "finding_class": "design",
@@ -611,6 +774,20 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 6
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 11
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 13
     }
    ],
    "finding_class": "test-gap",
@@ -683,6 +860,27 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 3
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 6
     }
    ],
    "finding_class": "defect",
@@ -727,6 +925,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 16
     }
    ],
    "finding_class": "defect",
@@ -756,6 +961,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 19
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 11
     }
    ],
    "finding_class": "defect",
@@ -778,6 +997,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 11
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 16
     }
    ],
    "finding_class": "defect",
@@ -939,6 +1165,13 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 6
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 17
     }
    ],
    "finding_class": "defect",
@@ -966,6 +1199,20 @@
      "tool": "superpowers",
      "repeat": 2,
      "severity": "high",
+     "disposition": "reported",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 10
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
      "disposition": "reported",
      "finding_index": 7
     }
@@ -997,6 +1244,13 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 9
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 12
     }
    ],
    "finding_class": "test-gap",
@@ -1055,6 +1309,13 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 11
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 8
     }
    ],
    "finding_class": "test-gap",
@@ -1099,6 +1360,20 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 15
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 9
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 10
     }
    ],
    "finding_class": "design",
@@ -1128,6 +1403,13 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 15
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 17
     }
    ],
    "finding_class": "design",
@@ -1176,6 +1458,218 @@
    ],
    "finding_class": "style",
    "class_confidence": 0.95
+  },
+  {
+   "cluster_id": "ma36",
+   "summary": "Validation is welded into the deserializer itself, unlike every other *FromJSON in the package (and unlike the structural sibling OutgoingWebhookResponse, which has no IsValid at all), so callers lose the ability to parse first and decide about validity separately.",
+   "location": "server/public/model/command_response.go:72",
+   "verdict": "matches-thread",
+   "matches_thread": 3,
+   "judged_severity": "high",
+   "code_citation": "server/public/model/command_response.go:72-74",
+   "confidence": 0.65,
+   "rationale": "Same defect as the maintainer's \"let's not throw a hard error, this might break existing servers\" comment on that exact return: validation is welded into the decoder so callers cannot parse and then decide, and the fix (move it out of FromJSON) is what the thread asks for.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 6
+    }
+   ],
+   "finding_class": "design",
+   "class_confidence": 0.9
+  },
+  {
+   "cluster_id": "ma37",
+   "summary": "The number of ExtraResponses entries is left unbounded even though the new validator walks them all, so a single body under the payload cap can demand thousands of post inserts and websocket broadcasts downstream.",
+   "location": "server/public/model/command_response.go:90",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "server/channels/app/command.go:621-630",
+   "confidence": 0.5,
+   "rationale": "No cap on len(ExtraResponses) anywhere, and each entry becomes a post insert plus broadcast; the global 300KB payload cap (server/channels/web/handlers.go:213-216) bounds but does not eliminate the amplification. Pre-existing, and the strict-validation change is the natural place to bound it.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 18
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 12
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.85
+  },
+  {
+   "cluster_id": "ma38",
+   "summary": "The new AppError DetailedError strings reaching an untrusted integration caller were examined and cleared, since the web handler calls WipeDetailed whenever EnableDeveloper is off and the strings carry no state or configuration.",
+   "location": "server/channels/web/handlers.go:426",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/channels/web/handlers.go:425-427",
+   "confidence": 0.8,
+   "rationale": "Cleared note asserting no defect; the clearing checks out \u2014 c.Err.WipeDetailed() runs whenever EnableDeveloper is off, and the two new detail strings are static.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 20
+    },
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 21
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
+  },
+  {
+   "cluster_id": "ma39",
+   "summary": "Loop-variable capture in the `for _, resp := range o.ExtraResponses` loop was examined and cleared: the module targets a Go version with per-iteration semantics and no goroutine escapes the loop.",
+   "location": "server/public/model/command_response.go:90",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:90-98",
+   "confidence": 0.85,
+   "rationale": "Cleared note asserting no defect; the clearing is correct (server/public/go.mod declares go 1.26.3, so loop variables are per-iteration, and nothing escapes the loop).",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 21
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.8
+  },
+  {
+   "cluster_id": "ma40",
+   "summary": "Capture of the table-driven test case variable under t.Parallel() was examined and cleared, since the module's Go version gives per-iteration loop variables.",
+   "location": "server/public/model/command_response_test.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response_test.go:231-234",
+   "confidence": 0.85,
+   "rationale": "Cleared note asserting no defect; correct, since the module targets go 1.26.3 where the range variable is per-iteration.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 19
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "ma41",
+   "summary": "Whether the added assert.Error(t, err) duplicates an existing assertion was examined and cleared: the ShouldError branch previously inspected only the nil response and never the error, so the line closes a pre-existing gap.",
+   "location": "server/public/model/command_response_test.go:0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response_test.go:235-237",
+   "confidence": 0.8,
+   "rationale": "Cleared note asserting no defect; the reading is right \u2014 the ShouldError branch previously asserted only assert.Nil(t, response).",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 22
+    }
+   ],
+   "finding_class": "test-gap",
+   "class_confidence": 0.85
+  },
+  {
+   "cluster_id": "ma42",
+   "summary": "GotoLocation is left unvalidated by the new IsValid, so a malicious slash-command server can set an arbitrary redirect target \u2014 cleared because the webapp gates navigation on isUrlSafe.",
+   "location": "server/public/model/command_response.go:72",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:79-99",
+   "confidence": 0.6,
+   "rationale": "A considered-and-cleared note that asserts no defect; it also reaches the opposite conclusion from thread 4, which wants the URL fields validated more strictly, so it is not a match.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 20
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.65
+  },
+  {
+   "cluster_id": "ma43",
+   "summary": "Attachment text is an unbounded alternate channel around the new Text limit \u2014 examined and cleared because attachments remain bounded downstream by PostPropsMaxRunes, so the change opens no new gap.",
+   "location": "server/public/model/command_response.go:85",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "server/public/model/command_response.go:85-88",
+   "confidence": 0.6,
+   "rationale": "Considered-and-cleared note that asserts no defect introduced by the change.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 22
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.7
+  },
+  {
+   "cluster_id": "ma44",
+   "summary": "A parse failure in the delayed-response endpoint returns 400 before CommandWebhook.TryUse is called, so a retrying integration never consumes one of its five uses and can re-fail indefinitely.",
+   "location": "server/channels/web/webhook.go:114",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "server/channels/web/webhook.go:114-118",
+   "confidence": 0.6,
+   "rationale": "Verified ordering: commandWebhook returns 400 on a parse/validation failure before HandleCommandWebhook reaches CommandWebhook().TryUse (server/channels/app/webhook.go:982), so the newly enlarged class of rejected bodies never consumes one of the five uses. Real but low impact.",
+   "reported_by": [
+    {
+     "tool": "ours-review-postdduy",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 23
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.5
   }
  ]
 }

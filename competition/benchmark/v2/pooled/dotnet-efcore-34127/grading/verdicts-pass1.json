@@ -646,5 +646,23 @@
   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595-615",
   "confidence": 0.6,
   "rationale": "DropNotNullChecks only removes whole conjuncts and returns the surviving side directly (left is null ? right : ...); every surviving conjunct was already visited and simplified before this point and no constant is ever introduced, so nothing is left trivially true/false to re-simplify."
+ },
+ {
+  "cluster_id": "e77",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlExpressions/SqlConstantExpression.cs:89-130",
+  "confidence": 0.6,
+  "rationale": "The asymmetry is real: Equals compares IList values element-wise (lines 99-126) while GetHashCode hashes Value directly (line 130), so the new HashSet<SqlExpression> at SqlNullabilityProcessor.cs:580 could miss structurally equal list constants. Pre-existing and practically unreachable here, since an IS NOT NULL operand is essentially never a list-valued constant."
+ },
+ {
+  "cluster_id": "e78",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2294",
+  "confidence": 0.8,
+  "rationale": "A considered-and-cleared conformance check: the new tests do use [ConditionalTheory]/[MemberData(nameof(IsAsyncData))] and neighbor naming, so no defect is asserted."
  }
 ]

@@ -1,0 +1,8 @@
+prometheus-prometheus-18081      calib vs pilot-p1 10/15   vs pilot-p2 8/15   today p1-vs-p2 24/24   kappa=1.0  exact=1.0  PASS
+dotnet-efcore-34127              calib vs pilot-p1 12/15   vs pilot-p2 12/15   today p1-vs-p2 14/17   kappa=0.717  exact=0.824  PASS
+mattermost-mattermost-36824      calib vs pilot-p1 10/15   vs pilot-p2 10/15   today p1-vs-p2 20/24   kappa=0.731  exact=0.833  PASS
+immich-app-immich-28886          calib vs pilot-p1 11/15   vs pilot-p2 11/15   today p1-vs-p2 27/30   kappa=0.737  exact=0.9  PASS
+grafana-grafana-117615           calib vs pilot-p1 10/15   vs pilot-p2 10/15   today p1-vs-p2 23/27   kappa=0.833  exact=0.852  PASS
+
+pre-registered threshold: real_vs_not.kappa >= 0.60 AND exact_agreement >= 0.70
+subjects meeting it: 5/5
