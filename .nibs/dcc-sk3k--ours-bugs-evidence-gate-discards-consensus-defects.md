@@ -2,11 +2,11 @@
 # dcc-sk3k
 version: 1
 title: ours-bugs' evidence gate discards consensus defects
-status: todo
+status: scrapped
 type: bug
 priority: high
 created_at: 2026-08-13T09:36:56Z
-updated_at: 2026-08-16T09:50:18Z
+updated_at: 2026-08-18T07:06:35Z
 parent: dcc-hyxw
 order: ao
 ---
@@ -214,3 +214,15 @@ the actual mechanism:
 Option 2 is the most principled and the most invasive; option 1 is the cheapest and is already
 justified in the skill's own words. Neither should ship without re-measuring on both pilot subjects,
 where the counterfactual is known exactly: three real defects, two of them high.
+
+## Summary
+
+**Scrapped 2026-08-18** — Superseded for `bugs` (2026-08-18, dcc-pjix): the `bugs` preset no longer runs the four-seat wave —
+it is the single-seat solo-reviewer path, which has no evidence gate to misfire. The wave survives
+only as `bugs roster=N` (N ≥ 2), and on that path this nib's own option 1 is applied: `evidence=norm`
+instead of `strong`, because at ≤4 seats corroboration is scarce and `strong` demanded a lone
+reviewer score ≥80. The generalization slice re-confirmed the failure one last time under Sonnet
+screeners (mattermost r2: five real defects tiered to Minor, 0 primary, verdict APPROVED). The
+mechanism (evidence bar × small roster) does not arise in `review`/`audit` as configured (`norm`/
+`any` bars, larger rosters), so no further change is filed; revisit if a small-roster `review`
+override ever shows the same pattern.

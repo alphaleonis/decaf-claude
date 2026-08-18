@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Run parallel code review agents and consolidate findings into a unified report
-argument-hint: "[bugs|review|audit|bugs-sp] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--spec <path>] [--report] [PR#] [path] [instructions]"
+argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--spec <path>] [--report] [PR#] [path] [instructions]"
 ---
 
 # Code Review
@@ -11,7 +11,7 @@ This command orchestrates code review agents and consolidates their findings int
 ## Argument Parsing
 
 Parse `$ARGUMENTS` to determine:
-1. **Preset**: `bugs`, `review`, or `audit` — a named point in the axis space defined under [Review axes](#review-axes) below — or the experimental single-agent preset `bugs-sp`, which replaces the wave entirely (see [The `bugs-sp` path](#the-bugs-sp-path-experimental)). The legacy mode keywords `low`/`mid`/`high`/`max` (and their aliases `quick`/`std`) still resolve; see [Legacy mode keywords](#legacy-mode-keywords). When none is given, the preset is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `review`.
+1. **Preset**: `bugs`, `review`, or `audit` — a named point in the axis space defined under [Review axes](#review-axes) below. `bugs` is a **single-seat** path (one `solo-reviewer`, no wave, no funnel — see [The `bugs` path](#the-bugs-path-single-seat)); `review` and `audit` are waves. `bugs-sp` is accepted as an alias for `bugs` (it was the experimental name of this path). The legacy mode keywords `low`/`mid`/`high`/`max` (and their aliases `quick`/`std`) still resolve; see [Legacy mode keywords](#legacy-mode-keywords). When none is given, the preset is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `review`.
    - **Roster cap (optional)**: an integer suffixed directly to the mode keyword — `mid4`, `high6`, `max8` (alias forms `std4` etc.) — sets the `roster` axis directly. It applies to `mid`, `high`, and `max`; on `low` it is ignored (the floor is already exactly two agents). The cap **counts the two floor agents** (so `mid4` = floor + the 2 best-fitting specialists) but **not** the Step 5.6 validators, and it does **not** change the mode's `models` policy or validation policy. Applied in Step 2b.5.
    - **Per-axis override (optional)**: `roster=<N>`, `models=<low|norm|high>`, `evidence=<strong|norm|any>` and `reach=<narrow|norm|wide>` set an axis directly, overriding whatever the mode implies. `roster=6` and `mid6` mean the same thing; the long form exists so an axis can be set without picking a mode. Later arguments win.
 2. **Spec**: `--spec <path | work-item-ID>` — a specification/plan document, or an ADO work item ID whose Description and Acceptance Criteria serve as the spec. When omitted, spec discovery (Step 1.5) may find one automatically.
@@ -87,10 +87,9 @@ it tries. Pick the deliverable; the axes follow.
 
 | preset | `roster` | `models` | `evidence` | `reach` | what you get |
 |---|---|---|---|---|---|
-| **`bugs`** | size-derived, capped at 4 | `low` | `strong` | `narrow` | high-confidence defects introduced by the changed lines. Short enough to read completely |
+| **`bugs`** | **1** — one `solo-reviewer` seat | seat on session model | self-calibrated (no screen, no gate) | `narrow` | high-confidence defects introduced by the changed lines, from one whole-surface deep pass. Short enough to read completely. `bugs roster=N` (N ≥ 2) runs the legacy four-seat wave instead — see [The `bugs` path](#the-bugs-path-single-seat) |
 | **`review`** *(default)* | size-derived | `norm` | `norm` | `norm` | the above plus actionable minor findings — convention drift, stale comments, change-introduced gaps |
 | **`audit`** | all gate-matched | `high` | `any` | `wide` | everything, tiered: pre-existing defects, absent tests and docs, residual risks |
-| **`bugs-sp`** *(experimental)* | **1, fixed** | seat on session model | inert — self-calibrated | `narrow` | the `bugs` deliverable from one whole-surface deep pass — no wave, no funnel. See [The `bugs-sp` path](#the-bugs-sp-path-experimental) |
 
 Any axis can be overridden after a preset — `review models=high`, `audit roster=8`. Later arguments
 win, so the preset sets defaults rather than locking anything.
@@ -99,27 +98,34 @@ win, so the preset sets defaults rather than locking anything.
 cross-product is not, and never will be — four axes at three-ish values is ~100 combinations at
 benchmark prices. Feel for off-preset combinations comes from use, not from the study.
 
-### The `bugs-sp` path (experimental)
+### The `bugs` path (single seat)
 
-`bugs-sp` ("single pass") produces the `bugs` deliverable — high-confidence defects introduced by
-the changed lines — from **one whole-surface reviewer** instead of a wave and a funnel. The v2
-pilot measured a single deep generalist reporting a strict superset of the four-agent `bugs`
-wave's output at half the cost; this preset is the controlled adaptation of that mechanism
-(nib `dcc-1sbc`; proposal in the benchmark's `v2/analysis/PROPOSAL-BUGS-SP.md`). Filtering happens
-at generation — the `reach` block and the seat's own calibration — not in machinery afterwards.
+`bugs` produces its deliverable — high-confidence defects introduced by the changed lines — from
+**one whole-surface reviewer**, `decaf-quality:solo-reviewer`, instead of a wave and a funnel. The
+v2 benchmark measured this across five subjects and three application types (`competition/benchmark/
+v2/analysis/BUGS-SP-RESULTS.md`): the single seat matches the four-seat wave's detection at ~40% of
+its cost, and never buries a found defect below an approval — the wave's `evidence=strong` gate at a
+four-seat roster tiered real defects into the Minor bucket on three of five subjects and once
+approved a change with five real defects found. Filtering happens at generation — the `reach` block
+and the seat's own calibration and closed-set parking reasons — not in machinery afterwards. `bugs`
+was decided as the default mechanism on 2026-08-18 (nib `dcc-pjix`); the path was developed as the
+experimental `bugs-sp` preset, which remains an alias.
 
 **Rules:**
 
-- **Explicit only.** Never recommended by Step 2a.5, never a non-interactive default.
-- **The roster is exactly one seat**: `decaf-quality:solo-reviewer`, dispatched on the session
-  model (judgment tier). The two-agent floor does not apply — this path replaces the wave rather
-  than capping it. An explicit `roster=N` alongside `bugs-sp` is ignored, with a note in the
-  announcement (`roster fixed at 1 by bugs-sp`). The seat never appears in wave rosters; its
-  dispatch gate is this preset itself.
+- **The roster is exactly one seat**: `decaf-quality:solo-reviewer`, dispatched on the session model
+  (judgment tier). The two-agent floor does not apply — this path replaces the wave rather than
+  capping it. The seat never appears in wave rosters; its dispatch gate is this preset itself.
 - **`models` and `evidence` are inert here.** The seat always inherits the session model (the
-  never-tier-up rule covers the rest), and no screen or confidence gate runs — the seat
-  self-assigns anchors and they are final. **`reach` fully applies**, defaults to `narrow`, and
-  may be overridden (`bugs-sp reach=norm`).
+  never-tier-up rule covers the rest), and no screen or confidence gate runs — the seat self-assigns
+  anchors and they are final. **`reach` fully applies**, defaults to `narrow`, and may be overridden
+  (`bugs reach=norm`).
+- **`bugs roster=N` with N ≥ 2 runs the legacy wave** — the four-seat roster (floor + gate-matched
+  specialists, capped at N), `models=low`, `reach=narrow` — with **`evidence=norm`**, not `strong`:
+  at a roster this small corroboration is scarce, and `strong` demanded a lone reviewer score ≥80
+  alone, which is exactly how the wave binned consensus defects (dcc-sk3k). Announce it as
+  `preset bugs — wave (roster=N explicit) · evidence=norm`. This is an override for anyone who wants
+  corroboration; it is not the default and not recommended.
 
 **Execution — which steps run:**
 
@@ -127,9 +133,9 @@ at generation — the `reach` block and the seat's own calibration — not in ma
 2. **Steps 2a–2d collapse** to the Step 2c announcement:
 
    ```
-   Review team (preset `bugs-sp` — explicit · roster=1 fixed · seat on session model · evidence self-calibrated · reach=narrow):
+   Review team (preset `bugs` — single seat · roster=1 · seat on session model · evidence self-calibrated · reach=narrow):
    - solo-reviewer (the preset's single seat) — session model
-   - wave agents: not evaluated — bugs-sp replaces the wave
+   - wave agents: not evaluated — bugs is a single-seat path (use `bugs roster=N` for the wave)
    ```
 
 3. **Step 3.0 pre-flight: skip.** The seat is the only actor in the tree and runs its own
@@ -167,7 +173,7 @@ at generation — the `reach` block and the seat's own calibration — not in ma
    Step 6 format and fix format only. Apply **no** gates — not the confidence gate, not the
    deterministic-claim safety net — and never re-tier a finding: the seat's severities and
    anchors are final. Under `reach=narrow` the seat omits the Minor Findings section by its own
-   rules (minor observations go to Considered But Not Flagged as `minor, out of reach`); do not
+   rules (minor observations go to Considered But Not Flagged tagged `[minor]`); do not
    reconstruct one. Copy the seat's per-finding rows verbatim — in particular keep its `Verified`
    row as its own table row, do not fold it into Confidence. **Check the parking tags**: every
    Considered But Not Flagged entry must carry exactly one of `[unverified]` `[false]`
@@ -175,13 +181,10 @@ at generation — the `reach` block and the seat's own calibration — not in ma
    non-reasons the seat's brief names ("intended", "documented", "commented", "tested as such",
    "unreachable today"), and record the count in the report header (below). Do **not** promote,
    re-tag, or re-tier them — the count is the signal; the seat's report is otherwise final.
-7. **Step 6 runs normally.** Header: `**Mode**: bugs-sp (explicit) · roster=1 (fixed)`,
-   `**Reviewers**: solo-reviewer`, `**Validation**: none (bugs-sp — single-seat path) · parked N
-   (K without a closed-set reason)`. The Agent Summary table has one row. Step 7 (review history) runs as usual.
-
-**When to use it:** it is an experiment (its benchmark arm is `ours-bugs-sp`), not a default.
-Until re-measured beyond the two pilot subjects, prefer `bugs` for anything where a wrong verdict
-is expensive, and treat `bugs-sp` results as bearing a single agent's variance.
+7. **Step 6 runs normally.** Header: `**Mode**: bugs (single seat) · roster=1`,
+   `**Reviewers**: solo-reviewer`, `**Validation**: none (single-seat path) · parked N
+   (K without a closed-set reason)`. The Agent Summary table has one row. Step 7 (review history)
+   runs as usual.
 
 ### Legacy mode keywords
 
@@ -276,11 +279,9 @@ Skip this step entirely when the user gave an explicit preset or legacy mode —
 First compute the **recommendation** from the Step 2a classification:
 
 - **`audit`** — the change parses or evaluates untrusted input, is substantially AI-generated, or touches a high-risk domain (auth, payments/financial, data mutations, external API integration) with ≥50 executable lines. These are the changesets where the deep single-finder catches justify the premium, and where pre-existing weaknesses in the touched code matter.
-- **`bugs`** — small (<50 executable lines), mechanical or low-risk, no specialist surface.
+- **`bugs`** — small (<50 executable lines), mechanical or low-risk, no specialist surface. (`bugs`
+  is the single-seat path; it is a full review, just one reviewer deep rather than a wave.)
 - **`review`** — everything else.
-
-The recommendation only ever names these three. `bugs-sp` is experimental and explicit-only — it
-is never recommended and never a default.
 
 Then:
 
@@ -291,8 +292,9 @@ Then:
 
 | Preset | Rule |
 |--------|------|
-| `bugs` at `roster=2` (legacy `low`) | Floor only: `quick-reviewer` + `broad-reviewer` |
-| `bugs` / `review` (default) | Floor + every agent whose dispatch gate matches the changeset, then the `roster` cap |
+| `bugs` (default, roster=1) | Not a wave — the single `solo-reviewer` seat; this step is skipped (see The `bugs` path) |
+| `bugs roster=2` (legacy `low`) | Floor only: `quick-reviewer` + `broad-reviewer` |
+| `bugs roster=N≥3` / `review` (default) | Floor + every agent whose dispatch gate matches the changeset, then the `roster` cap |
 | `audit` | Floor + all agents **except** those excluded by a hard negative gate |
 
 Current roster gates (authoritative text lives in each agent's `## Dispatch Gate` section — keep this table in sync when adding agents):
@@ -325,7 +327,7 @@ Current roster gates (authoritative text lives in each agent's `## Dispatch Gate
 
 #### Step 2b.5: Resolve the `roster` axis
 
-Determine `N`, then resolve the roster against it. In `low` mode this step is always a no-op (the roster is already the two-agent floor) — note any cap that was given and move on.
+Determine `N`, then resolve the roster against it. Under `bugs` without an explicit `roster`, `N` is 1 and this step does not apply (single seat). In `low` mode this step is always a no-op (the roster is already the two-agent floor) — note any cap that was given and move on.
 
 **Determining `N`:**
 
@@ -541,7 +543,7 @@ Group every reviewer finding into clusters of *one underlying issue* before the 
 about any of them. This is the step that makes Step 5 cheap: deduplication is the largest single
 line item in orchestrator thinking, and it does not need the session model.
 
-1. **Dispatch one clustering agent on the mid tier** (Step 2d — it is not moved by the `models` axis). In `low` mode, cluster inline in the orchestrator instead: with two reviewers there is little to merge, and a sub-agent round-trip costs more latency than the mode's whole premise allows. Under `bugs-sp` there is one report and nothing to cluster — skip this step entirely. Give it every
+1. **Dispatch one clustering agent on the mid tier** (Step 2d — it is not moved by the `models` axis). In `low` mode, cluster inline in the orchestrator instead: with two reviewers there is little to merge, and a sub-agent round-trip costs more latency than the mode's whole premise allows. Under `bugs` (single seat) there is one report and nothing to cluster — skip this step entirely. Give it every
    reviewer finding normalized to `{id, agent, severity, anchor, file, line, category, claim}` —
    **reviewer findings only**. Validator output does not exist yet at this point, and would be
    trivially mergeable with what it verifies.
@@ -569,8 +571,8 @@ clustering pass that returns only merged text has destroyed the review's stronge
 Score each cluster once, cheaply, before the orchestrator does any deep reasoning — so its thinking
 is spent on findings that will survive rather than on ones about to be tiered down.
 
-1. **Skip this step** in `low` mode, under `bugs-sp` (no screen exists on that path — the seat's
-   anchors are final), and when `evidence=any` *and* no cluster is below score 25 — there is
+1. **Skip this step** in `low` mode, under `bugs` at roster=1 (no screen exists on the single-seat
+   path — the seat's anchors are final), and when `evidence=any` *and* no cluster is below score 25 — there is
    nothing for it to decide.
 2. **Dispatch one screening agent per cluster, in parallel** (single message, multiple Agent calls,
    `run_in_background: false`), on the **mid tier** (Step 2d — verification agents). Each receives: the cluster's merged claim,
@@ -599,8 +601,8 @@ numbers above imply.
 
 ### Step 5: Consolidate Findings
 
-Under `bugs-sp` this step is a **format pass only** — verify sections and numbering, apply no
-gates, never re-tier (see [The `bugs-sp` path](#the-bugs-sp-path-experimental)). Otherwise, apply
+Under `bugs` (single seat) this step is a **format pass only** — verify sections and numbering,
+apply no gates, never re-tier (see [The `bugs` path](#the-bugs-path-single-seat)). Otherwise, apply
 the consolidation rules:
 
 @../../conventions/code-review-consolidation.md
@@ -616,8 +618,8 @@ the consolidation rules:
 
 ### Step 5.5: Review "Considered But Not Flagged" Items
 
-Under `bugs-sp`, skip — the seat's own Considered But Not Flagged section is carried into the
-report as-is.
+Under `bugs` (single seat), skip — the seat's own Considered But Not Flagged section is carried into
+the report as-is.
 
 **IMPORTANT**: Agents may inconsistently dismiss legitimate issues. For each agent's "Considered But Not Flagged" section:
 
@@ -640,7 +642,7 @@ Independent re-verification of the few primary findings the Step 4.95 screen cou
 
 **Most of this wave has moved to the screen.** Step 4.95 already asked "is this claim real?" of every cluster, cheaply and before consolidation. Re-asking it here of everything would be paying twice for one question — the wave now exists for the cases a per-cluster score genuinely cannot decide.
 
-**Skip this step** in `low` mode (speed is the point — record `Validation: skipped (low mode)` in the report header), under `bugs-sp` (record `Validation: none (bugs-sp — single-seat path)`), and when zero primary findings survived.
+**Skip this step** in `low` mode (speed is the point — record `Validation: skipped (low mode)` in the report header), under `bugs` at roster=1 (record `Validation: none (single-seat path)`), and when zero primary findings survived.
 
 1. **Select findings — validate only what the screen left open.** From the surviving primary findings, validate:
    - **every Critical** — high stakes; always worth an independent check, even when corroborated and even when the screen scored it high;
@@ -879,13 +881,13 @@ Keep this lightweight — match on file path + category only. Skip this step if 
 ```
 /decaf-quality:code-review                              # mode chosen interactively (default mid), uncommitted changes
 /decaf-quality:code-review                              # preset chosen interactively (default review)
-/decaf-quality:code-review bugs                         # high-confidence defects in the changed lines only
+/decaf-quality:code-review bugs                         # high-confidence defects in the changed lines only — one deep seat
 /decaf-quality:code-review review                       # default — defects plus actionable minor findings
 /decaf-quality:code-review audit                        # everything tiered, including pre-existing
 /decaf-quality:code-review review roster=4              # default deliverable, roster held to 4
 /decaf-quality:code-review review models=high           # default deliverable, session model where it matters
 /decaf-quality:code-review audit reach=norm             # audit's breadth, but no pre-existing hunt
-/decaf-quality:code-review bugs-sp                      # experimental — one whole-surface deep pass (roster=1)
+/decaf-quality:code-review bugs roster=4                # the legacy four-seat wave, if you want corroboration
 /decaf-quality:code-review bugs src/Tools/MyTool.cs     # bugs preset, specific file
 /decaf-quality:code-review audit src/                   # audit preset, directory
 /decaf-quality:code-review review focus on null safety  # default preset with custom instructions

@@ -187,3 +187,8 @@ in Evidence; the orchestrator counts untagged parkings in the header, never re-t
 `ours-bugs-sp3`, **3 repeats** — the targeted effect (2–3 defects/run) is the size of the seat
 variance at 2. Ceiling on the pool if the three wrong drops move: ≈9/16 reported at ≥60% defect
 share — superpowers' defect recall at a quarter of its reading.
+
+## Outcome (2026-08-18)
+
+Adopted. The single-seat path is the `bugs` preset (dcc-pjix); `bugs-sp` is an alias. See
+`BUGS-SP-RESULTS.md` § Decision.

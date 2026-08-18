@@ -20,14 +20,31 @@
  },
  {
   "id": "ours-bugs",
-  "name": "decaf-quality-dev:code-review (bugs, --report)",
+  "name": "decaf-quality-dev:code-review (bugs = single seat, --report)",
   "requires_plugin": "decaf-quality-dev",
   "install_hint": "cp -rL decaf-quality ~/.claude/skills/decaf-quality-dev, rename the plugin to decaf-quality-dev in .claude-plugin/plugin.json, and rewrite every 'decaf-quality:' reference inside the copy to 'decaf-quality-dev:' \u2014 the skill dispatches agents by fully-qualified name and will otherwise pull the stable plugin's agents into a run of the new orchestrator",
-  "model_policy": "set by the bugs preset; see code-review SKILL.md 'Presets' \u2014 NOTE 2026-08-17 (dcc-dduy): the cheap tier is retired for every reasoning lane; under models=low and norm, volume and verification agents now run the mid tier (Sonnet). Cells run before this date measured the pre-dduy policy (bugs: three Haiku reviewer seats + Haiku screeners) and are not the same tool as cells after it.",
+  "model_policy": "session model; ONE solo-reviewer seat (roster=1). No volume, verification or clustering agents. Since 2026-08-18 (dcc-pjix). set by the bugs preset; see code-review SKILL.md 'Presets' \u2014 NOTE 2026-08-17 (dcc-dduy): the cheap tier is retired for every reasoning lane; under models=low and norm, volume and verification agents now run the mid tier (Sonnet). Cells run before this date measured the pre-dduy policy (bugs: three Haiku reviewer seats + Haiku screeners) and are not the same tool as cells after it.",
   "findings_file": ".decaf/code-reviews/CODE_REVIEW_*.md",
   "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs --report {PR}. This reviews pull request #{PR} of the GitHub repository {REPO} (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
   "preset": "bugs",
-  "baseline_note": "Not comparable to the archived `ours` cells: those ran the pre-axis skill at mid --report, before the roster, models, evidence and reach axes existed.",
+  "baseline_note": "MECHANISM CHANGE 2026-08-18 (dcc-pjix): `bugs` is now the single-seat solo-reviewer path (brief v3, formerly ours-bugs-sp3). Every ours-bugs cell dated BEFORE 2026-08-18 ran the four-seat wave (pre-dduy Haiku seats on prometheus/efcore up to 2026-08-16; post-dduy Sonnet seats on mattermost/immich/grafana on 2026-08-17) \u2014 those are the wave, now measured under ours-bugs-wave. Do not pool pre- and post-2026-08-18 ours-bugs cells as one tool. Not comparable to the archived `ours` cells: those ran the pre-axis skill at mid --report, before the roster, models, evidence and reach axes existed.",
+  "subjects": [
+   1,
+   5,
+   9
+  ],
+  "subjects_note": "one per size class (1 small, 5 medium, 9 large) \u2014 enough to compare presets on identical code and to exercise the size-derived roster across all three bands"
+ },
+ {
+  "id": "ours-bugs-wave",
+  "name": "decaf-quality-dev:code-review (bugs roster=4 = legacy four-seat wave, --report)",
+  "requires_plugin": "decaf-quality-dev",
+  "install_hint": "cp -rL decaf-quality ~/.claude/skills/decaf-quality-dev, rename the plugin to decaf-quality-dev in .claude-plugin/plugin.json, and rewrite every 'decaf-quality:' reference inside the copy to 'decaf-quality-dev:' \u2014 the skill dispatches agents by fully-qualified name and will otherwise pull the stable plugin's agents into a run of the new orchestrator",
+  "model_policy": "set by the bugs wave override: floor + gate-matched specialists capped at 4, models=low (post-dduy: Sonnet volume seats and screeners), evidence=norm (dcc-sk3k fix), reach=narrow",
+  "findings_file": ".decaf/code-reviews/CODE_REVIEW_*.md",
+  "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs roster=4 --report {PR}. This reviews pull request #{PR} of the GitHub repository {REPO} (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
+  "preset": "bugs roster=4",
+  "baseline_note": "The four-seat wave that WAS `bugs` until 2026-08-18. Comparable to ours-bugs cells dated before 2026-08-18 except for evidence (now norm, was strong \u2014 dcc-sk3k). Kept measurable behind the roster flag.",
   "subjects": [
    1,
    5,
@@ -44,7 +61,7 @@
   "findings_file": ".decaf/code-reviews/CODE_REVIEW_*.md",
   "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs-sp --report {PR}. This reviews pull request #{PR} of the GitHub repository {REPO} (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
   "preset": "bugs-sp",
-  "baseline_note": "Experimental arm (nib dcc-1sbc), added 2026-08-16 \u2014 after the v2 pilot. The ours-* pilot cells (2026-08-12) predate this preset and are the comparison baselines; no existing cell ran it.",
+  "baseline_note": "HISTORICAL \u2014 brief revision v1 of the single-seat path during the dcc-1sbc/dcc-pulk/dcc-ce0m experiments; superseded 2026-08-18 by ours-bugs (dcc-pjix). Do not run again; the `bugs-sp` argument is now an alias for `bugs`. Experimental arm (nib dcc-1sbc), added 2026-08-16 \u2014 after the v2 pilot. The ours-* pilot cells (2026-08-12) predate this preset and are the comparison baselines; no existing cell ran it.",
   "subjects_note": "experiment scoped to the two v2 pilot subjects (prometheus/prometheus#18081, dotnet/efcore#34127) x 2 repeats, per PROPOSAL-BUGS-SP.md; success criteria live there"
  },
  {
@@ -56,7 +73,7 @@
   "findings_file": ".decaf/code-reviews/CODE_REVIEW_*.md",
   "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs-sp --report {PR}. This reviews pull request #{PR} of the GitHub repository {REPO} (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
   "preset": "bugs-sp",
-  "baseline_note": "Second brief revision of the bugs-sp seat (nib dcc-pulk, 2026-08-17): Minor Findings omitted under reach=narrow (minor items parked as `minor, out of reach`); fail closed on defects traced to real code behavior and dismissed as 'documented as intended' / 'unreachable today' (reported at anchor 50 with the counter-argument). Orchestrator unchanged. The ours-bugs-sp cells of 2026-08-17 are the brief-v1 baseline; this arm exists so v1 and v2 can sit side by side.",
+  "baseline_note": "HISTORICAL \u2014 brief revision v2 of the single-seat path during the dcc-1sbc/dcc-pulk/dcc-ce0m experiments; superseded 2026-08-18 by ours-bugs (dcc-pjix). Do not run again; the `bugs-sp` argument is now an alias for `bugs`. Second brief revision of the bugs-sp seat (nib dcc-pulk, 2026-08-17): Minor Findings omitted under reach=narrow (minor items parked as `minor, out of reach`); fail closed on defects traced to real code behavior and dismissed as 'documented as intended' / 'unreachable today' (reported at anchor 50 with the counter-argument). Orchestrator unchanged. The ours-bugs-sp cells of 2026-08-17 are the brief-v1 baseline; this arm exists so v1 and v2 can sit side by side.",
   "subjects_note": "same 2 pilot subjects x 2 repeats as ours-bugs-sp; restated criteria in PROPOSAL-BUGS-SP.md \"Decisions after the first run\""
  },
  {
@@ -68,7 +85,7 @@
   "findings_file": ".decaf/code-reviews/CODE_REVIEW_*.md",
   "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs-sp --report {PR}. This reviews pull request #{PR} of the GitHub repository {REPO} (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
   "preset": "bugs-sp",
-  "baseline_note": "Third brief revision of the bugs-sp seat (nib dcc-ce0m, 2026-08-17): Considered But Not Flagged takes a closed set of parking reasons \u2014 [unverified] [false] [pre-existing] [minor] (nits only; Low+ is a finding) \u2014 and 'intended by design / documented / tested as such / unreachable today' are findings at anchor 50 with the counter-argument in Evidence. The orchestrator counts untagged parkings in the report header without re-tiering. Replaces v2's fail-closed prose, which under-fired (prom c07 parked in both v2 repeats). ours-bugs-sp (v1) and ours-bugs-sp2 (v2) cells stay frozen; run this arm at 3 repeats.",
+  "baseline_note": "HISTORICAL \u2014 brief revision v3 (= today's bugs) of the single-seat path during the dcc-1sbc/dcc-pulk/dcc-ce0m experiments; superseded 2026-08-18 by ours-bugs (dcc-pjix). Do not run again; the `bugs-sp` argument is now an alias for `bugs`. Third brief revision of the bugs-sp seat (nib dcc-ce0m, 2026-08-17): Considered But Not Flagged takes a closed set of parking reasons \u2014 [unverified] [false] [pre-existing] [minor] (nits only; Low+ is a finding) \u2014 and 'intended by design / documented / tested as such / unreachable today' are findings at anchor 50 with the counter-argument in Evidence. The orchestrator counts untagged parkings in the report header without re-tiering. Replaces v2's fail-closed prose, which under-fired (prom c07 parked in both v2 repeats). ours-bugs-sp (v1) and ours-bugs-sp2 (v2) cells stay frozen; run this arm at 3 repeats.",
   "subjects_note": "same 2 pilot subjects x 2 repeats as ours-bugs-sp; restated criteria in PROPOSAL-BUGS-SP.md \"Decisions after the first run\""
  },
  {
