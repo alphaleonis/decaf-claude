@@ -1,0 +1,48 @@
+2026-08-18T19:39:49Z	fs	ALLOW	Bash (no path)
+2026-08-18T19:39:53Z	fs	ALLOW	Bash (no path)
+2026-08-18T19:40:01Z	fs	ALLOW	Bash (no path)
+2026-08-18T19:40:50Z	fs	ALLOW	Bash (no path)
+2026-08-18T19:40:51Z	fs	ALLOW	Bash src/
+2026-08-18T19:40:56Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-18T19:40:57Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-18T19:41:25Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs src/EFCore.Relational/Query/SqlExpressions/SqlBinaryExpression.cs
+2026-08-18T19:41:26Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressions/SqlBinaryExpression.cs src/EFCore.Relational/Query/SqlExpressions/SqlUnaryExpression.cs
+2026-08-18T19:42:21Z	fs	ALLOW	Bash test/EFCore.Relational.Specification.Tests test/EFCore.SqlServer.FunctionalTests/Query/NullSemanticsQuerySqlServerTest.cs
+2026-08-18T19:43:06Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-18T19:43:07Z	fs	ALLOW	Bash test/ test/EFCore.Sqlite.FunctionalTests/Query/
+2026-08-18T19:43:33Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs src/EFCore.Relational/Query/SqlExpressions/SqlBinaryExpression.cs src/EFCore.Relational/Query/SqlExpressions/SqlUnaryExpression.cs src/EFCore.Relational/Query/SqlExpressions/ColumnExpression.cs src/EFCore.Relational/Query/SqlExpressions/SqlExpression.cs /dev/null
+2026-08-18T19:43:34Z	fs	ALLOW	Bash /dev/null
+2026-08-18T19:43:39Z	fs	ALLOW	Bash /dev/null test/EFCore.Sqlite.FunctionalTests/EFCore.Sqlite.FunctionalTests.csproj
+2026-08-18T19:44:08Z	fs	ALLOW	Bash src/EFCore.Sqlite/EFCore.Sqlite.csproj
+2026-08-18T19:44:17Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo/artifacts/bin /dev/null
+2026-08-18T19:44:23Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo/artifacts/bin/EFCore.Sqlite.Core/Debug/net8.0/
+2026-08-18T19:44:24Z	fs	ALLOW	Bash artifacts/bin/EFCore.Relational/Debug/net8.0/Microsoft.EntityFrameworkCore.Relational.dll
+2026-08-18T19:44:43Z	fs	ALLOW	Bash /tmp/efprobe /tmp/efprobe/probe.csproj /OutputType /TargetFramework /Nullable /LangVersion /AssemblyName /RootNamespace /EnableDefaultCompileItems /PropertyGroup / / / / /ItemGroup REPO/artifacts/bin/EFCore.Sqlite.Core/Debug/net8.0/Microsoft.EntityFrameworkCore.dll /HintPath /Reference REPO/artifacts/bin/EFCore.Sqlite.Core/Debug/net8.0/Microsoft.EntityFrameworkCore.Abstractions.dll /HintPath /Reference REPO/artifacts/bin/EFCore.Sqlite.Core/Debug/net8.0/Microsoft.EntityFrameworkCore.Relational.dll /HintPath /Reference REPO/artifacts/bin/EFCore.Sqlite.Core/Debug/net8.0/Microsoft.EntityFrameworkCore.Sqlite.dll /HintPath /Reference REPO/artifacts/bin/EFCore.Sqlite.Core/Debug/net8.0/Microsoft.Data.Sqlite.dll /HintPath /Reference /ItemGroup /Project s#REPO#/home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo#g /tmp/efprobe/probe.csproj
+2026-08-18T19:44:56Z	fs	ALLOW	Bash /tmp/efprobe/Program.cs Source=/tmp/efprobe/probe.db // // // // // // // /tmp/efprobe/probe.csproj
+2026-08-18T19:45:03Z	fs	ALLOW	Bash /tmp/efprobe s/Version="8.0.0"/Version="9.0.0"/g /tmp/efprobe/probe.csproj
+2026-08-18T19:45:09Z	fs	ALLOW	Bash /tmp/efprobe /tmp/efprobe/probe.csproj
+2026-08-18T19:45:15Z	fs	ALLOW	Bash /tmp/efprobe / / / /tmp/efprobe/probe.csproj
+2026-08-18T19:45:25Z	fs	ALLOW	Bash /tmp/efprobe / / / / / / / /tmp/efprobe/probe.csproj
+2026-08-18T19:45:52Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressionFactory.cs
+2026-08-18T19:45:58Z	fs	ALLOW	Bash /tmp/efprobe/Program2.txt /tmp/efprobe/Program.cs // // // // // // /tmp/efprobe/Program.cs','w /tmp/efprobe/probe.csproj
+2026-08-18T19:46:15Z	fs	ALLOW	Bash /tmp/efbase /tmp/efbase/src/EFCore.Sqlite/EFCore.Sqlite.csproj
+2026-08-18T19:46:27Z	fs	ALLOW	Bash /tmp/efbase/artifacts/bin/EFCore.Sqlite.Core/Debug/net8.0/ /tmp/efprobe_base /tmp/efprobe/Program.cs /tmp/efprobe_base/ s#/home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo/artifacts#/tmp/efbase/artifacts#g /tmp/efprobe/probe.csproj /tmp/efprobe_base/probe.csproj s#/tmp/efprobe/probe.db#/tmp/efprobe_base/probe.db# /tmp/efprobe_base/Program.cs /tmp/efprobe_base/probe.csproj
+2026-08-18T19:47:23Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressions/SqlFunctionExpression.cs
+2026-08-18T19:47:45Z	fs	ALLOW	Bash /tmp/efprobe/Program.cs /tmp/efprobe/probe.db /tmp/efprobe/Program.cs /tmp/efprobe_base/Program.cs s#/tmp/efprobe/probe.db#/tmp/efprobe_base/probe.db# /tmp/efprobe_base/Program.cs /tmp/efprobe/probe.csproj
+2026-08-18T19:47:56Z	fs	ALLOW	Bash /tmp ['/tmp/efprobe/Program.cs','/tmp/efprobe_base/Program.cs']: /tmp/efprobe/probe.csproj /tmp/efprobe_base/probe.csproj
+2026-08-18T19:48:18Z	fs	ALLOW	Bash test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs
+2026-08-18T19:48:19Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs /tmp/efbase/src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-18T19:48:32Z	fs	ALLOW	Bash test/EFCore.Sqlite.FunctionalTests/Query/GearsOfWarQuerySqliteTest.cs test/EFCore.SqlServer.FunctionalTests/Query/TPTGearsOfWarQuerySqlServerTest.cs
+2026-08-18T19:48:34Z	fs	ALLOW	Bash test/EFCore.Relational.Specification.Tests/TestModels/*NullSemantics*/*.cs /dev/null
+2026-08-18T19:48:38Z	fs	ALLOW	Bash test/EFCore.Specification.Tests/TestModels/NullSemanticsModel/NullSemanticsContext.cs
+2026-08-18T19:48:40Z	fs	ALLOW	Bash test/EFCore.Specification.Tests/TestModels/NullSemanticsModel/NullSemanticsData.cs
+2026-08-18T19:49:11Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-18T19:49:35Z	fs	ALLOW	Bash /tmp/efprobe/Program.cs Source=/tmp/efprobe/probe.db /tmp/efprobe/probe.csproj
+2026-08-18T19:49:47Z	fs	ALLOW	Bash /tmp/efprobe/Program.cs /tmp/efprobe_base/Program.cs s#/tmp/efprobe/probe.db#/tmp/efprobe_base/probe.db# /tmp/efprobe_base/Program.cs /tmp/efprobe_base/probe.csproj
+2026-08-18T19:50:04Z	fs	ALLOW	Bash /tmp/efprobe/Program.cs Source=/tmp/efprobe/probe2.db /tmp/efprobe/Program.cs /tmp/efprobe_base/Program.cs s#/tmp/efprobe/probe2.db#/tmp/efprobe_base/probe2.db# /tmp/efprobe_base/Program.cs /tmp/efprobe/probe.csproj /tmp/efprobe_base/probe.csproj
+2026-08-18T19:50:58Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressions/CaseExpression.cs
+2026-08-18T19:51:04Z	fs	ALLOW	Bash /tmp/efbase /tmp/efprobe /tmp/efprobe_base
+2026-08-18T19:51:14Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs
+2026-08-18T19:52:54Z	fs	ALLOW	Bash .decaf/code-reviews/ /dev/null
+2026-08-18T19:52:57Z	fs	ALLOW	Bash .decaf/code-reviews .decaf/code-reviews/CODE_REVIEW_$
+2026-08-18T19:54:16Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo/.decaf/code-reviews/CODE_REVIEW_2026-08-18_21-52-57.md

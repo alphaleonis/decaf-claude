@@ -1,0 +1,37 @@
+2026-08-18T20:46:24Z	fs	ALLOW	Bash (no path)
+2026-08-18T20:46:28Z	fs	ALLOW	Bash (no path)
+2026-08-18T20:46:41Z	fs	ALLOW	Bash .decaf/code-reviews /dev/null docs/plans docs/specs /dev/null
+2026-08-18T20:47:28Z	fs	ALLOW	Bash (no path)
+2026-08-18T20:47:28Z	fs	ALLOW	Bash (no path)
+2026-08-18T20:47:34Z	fs	ALLOW	Bash src/
+2026-08-18T20:47:35Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-18T20:48:32Z	fs	ALLOW	Bash test/EFCore.Relational.Specification.Tests test/EFCore.SqlServer.FunctionalTests/Query/NullSemanticsQuerySqlServerTest.cs
+2026-08-18T20:48:33Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressions/SqlBinaryExpression.cs src/EFCore.Relational/Query/SqlExpressions/SqlBinaryExpression.cs
+2026-08-18T20:48:41Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressions/SqlBinaryExpression.cs src/EFCore.Relational/Query/SqlExpressions/SqlBinaryExpression.cs
+2026-08-18T20:48:42Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressions/SqlUnaryExpression.cs IsNull/IsTrue/IsFalse src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-18T20:49:23Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs src/EFCore.Relational/Query/SqlExpressions/SqlUnaryExpression.cs
+2026-08-18T20:49:26Z	fs	ALLOW	Bash test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs test/EFCore.Sqlite.FunctionalTests/Query/GearsOfWarQuerySqliteTest.cs
+2026-08-18T20:50:00Z	fs	ALLOW	Bash /dev/null
+2026-08-18T20:50:00Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-18T20:50:18Z	fs	ALLOW	Bash src/EFCore.Sqlite/EFCore.Sqlite.csproj
+2026-08-18T20:50:38Z	fs	ALLOW	Bash /tmp/nullrepro /tmp/nullrepro /OutputType /TargetFramework /Nullable /LangVersion /AssemblyName /RootNamespace /PropertyGroup Include="/home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo/src/EFCore.Sqlite.Core/EFCore.Sqlite.Core.csproj / /ItemGroup /Project
+2026-08-18T20:50:56Z	fs	ALLOW	Bash /tmp/nullrepro
+2026-08-18T20:51:00Z	fs	ALLOW	Bash /tmp/nullrepro
+2026-08-18T20:51:06Z	fs	ALLOW	Bash /tmp/nullrepro /Project / /ItemGroup /Project
+2026-08-18T20:51:14Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo/eng/Versions.props /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo/src/Microsoft.Data.Sqlite.Core/*.csproj /dev/null
+2026-08-18T20:51:17Z	fs	ALLOW	Bash /tmp/nullrepro
+2026-08-18T20:51:30Z	fs	ALLOW	Bash /tmp/efcore-base
+2026-08-18T20:51:35Z	fs	ALLOW	Bash /tmp/nullrepro-base /tmp/nullrepro/Program.cs /tmp/nullrepro-base/ /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo/src /tmp/efcore-base/src /tmp/nullrepro/nullrepro.csproj /tmp/nullrepro-base/nullrepro-base.csproj /tmp/nullrepro-base
+2026-08-18T20:51:45Z	fs	ALLOW	Bash /tmp/nullrepro-base
+2026-08-18T20:51:55Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlExpressionFactory.cs
+2026-08-18T20:52:37Z	fs	ALLOW	Bash /tmp/nullrepro p='/tmp/nullrepro/Program.cs
+2026-08-18T20:52:48Z	fs	ALLOW	Bash /tmp/nullrepro
+2026-08-18T20:53:14Z	fs	ALLOW	Bash /tmp/nullrepro-base /tmp/nullrepro/Program.cs
+2026-08-18T20:53:18Z	fs	ALLOW	Bash src/EFCore.Relational/Query/QuerySqlGenerator.cs src/EFCore.Relational/Query/SqlExpressions/CaseExpression.cs src/EFCore.Relational/Query/SqlExpressions/SqlFunctionExpression.cs
+2026-08-18T20:54:14Z	fs	ALLOW	Bash test/EFCore.SqlServer.FunctionalTests/Query/TPCGearsOfWarQuerySqlServerTest.cs test/EFCore.SqlServer.FunctionalTests/Query/TPTGearsOfWarQuerySqlServerTest.cs test/EFCore.SqlServer.FunctionalTests/Query/TemporalGearsOfWarQuerySqlServerTest.cs
+2026-08-18T20:54:21Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-18T20:54:24Z	fs	ALLOW	Bash /tmp/nullrepro /tmp/nullrepro-base /tmp/efcore-base
+2026-08-18T20:54:33Z	fs	ALLOW	Bash src/EFCore.Relational/Query/SqlNullabilityProcessor.cs src/EFCore.Relational/Query/SqlNullabilityProcessor.cs
+2026-08-18T20:54:47Z	fs	ALLOW	Bash test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs test/EFCore.SqlServer.FunctionalTests/Query/NullSemanticsQuerySqlServerTest.cs
+2026-08-18T20:56:11Z	fs	ALLOW	Bash .decaf/code-reviews .decaf/code-reviews/CODE_REVIEW_$
+2026-08-18T20:57:23Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/dotnet-efcore-34127/repo/.decaf/code-reviews/CODE_REVIEW_2026-08-18_22-56-11.md
