@@ -117,3 +117,14 @@ of the scoring-model decision:
 
 Run `python3 test_score_pooled.py` after any change. A guard without a passing test is a guard that
 has not been shown to fire.
+
+## Helper scripts added 2026-08-17/18
+
+| script | purpose |
+|---|---|
+| `foldin.py` | fold a new tool arm into an already-graded subject without touching existing verdicts (see `prompts/README.md`) |
+| `assemble_scratch.py` | build `analysis.json` / `findings.json` / `grading/*` for a FRESH subject from a from-scratch clustering, two blind verdict passes, a class pass and the cell meters (`assemble_scratch.py <subject-dir> <clusters.json> <pass1.json> <pass2.json> <classes.json> <blind-key.json>`); the blind key maps `g01..` → real cluster ids |
+| `cost_attrib.py` | per-cell lane split from the session transcripts: dedupes per-request `usage` by `requestId` (after which cache-read reconciles to `meter.json` exactly) and reports orchestrator vs subagent input-side tokens; per-request `output_tokens` is NOT reliable (19–35% of the meter) — use the meter's total for output |
+| `cost_emit.py` | per-lane emitted characters (thinking is redacted in transcripts; text and tool-call inputs are visible) and a shell-call classification for the seat — the accounting-independent comparison used in `analysis/BUGS-SP-RESULTS.md` § Cost attribution |
+
+`cost_attrib.py`/`cost_emit.py` read `~/.claude/projects/*/<session>.jsonl` and its `subagents/` — transcripts live only on the machine that ran the cells.
