@@ -1,0 +1,17 @@
+{
+  "languages": [
+    "go"
+  ],
+  "package_managers": [
+    "go"
+  ],
+  "lockfiles": [
+    "compliance/go.sum"
+  ],
+  "restore_commands": [
+    "GOFLAGS=-mod=readonly go mod download"
+  ],
+  "missing_toolchains": [],
+  "date_neutral": true,
+  "build_possible": true
+}
