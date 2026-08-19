@@ -4,9 +4,10 @@
     "name": "Anthropic /code-review",
     "requires_plugin": "code-review",
     "install_hint": "claude plugin install code-review@claude-plugins-official",
-    "model_policy": "hard-pins by role, independent of session model: 5 parallel Sonnet review agents (step 4); Haiku for eligibility, CLAUDE.md path discovery, PR summary, per-issue confidence scoring, and the re-check (steps 1/2/3/5/7). No Opus subagents \u2014 only the orchestrator runs on the session model",
+    "model_policy": "DECLARED vs OBSERVED \u2014 they differ, and the observed one is what the numbers rest on. DECLARED (the plugin's commands/code-review.md, verbatim): 5 parallel Sonnet review agents (step 4); 'Use a Haiku agent' for eligibility, CLAUDE.md path discovery, PR summary, per-issue confidence scoring and the re-check (steps 1/2/3/5/7); only the orchestrator on the session model. OBSERVED from every cell's meter.json modelUsage (2026-08-19): NO HAIKU IN ANY CELL. The scoreable cells run Sonnet 60-67% of cost with the Opus 5 orchestrator taking the rest; two cells ran Opus 5 only, with no Sonnet lane dispatched at all. The plugin pins models in PROSE ('use a Haiku agent'), not by an enforced model parameter, so the pin is a request the orchestrator did not honour. Consequence: this arm is dearer and more capable than its declared policy implies, and the earlier claim that 'its reviewers sit at a DIFFERENT cutoff than the rest of the roster' does not hold for the observed models \u2014 Sonnet 5 and Opus 5 are the same generation as BENCH_MODEL. Re-verify with modelUsage rather than trusting this field: the plugin ships unversioned ('Version: unknown') and was reinstalled from marketplace HEAD on 2026-08-18.",
     "findings_file": "",
-    "invocation": "Use the Skill tool to run `code-review:code-review` \u2014 the plugin-qualified command from code-review@claude-plugins-official. It is NOT `decaf-quality:code-review`: a different tool ships a skill of the same bare name, so never invoke a bare `/code-review`, and abort rather than substituting anything else if the qualified skill does not resolve. Review pull request #{PR} of the GitHub repository {REPO}. Do NOT pass --comment and do NOT post anything to GitHub \u2014 output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references."
+    "invocation": "Use the Skill tool to run `code-review:code-review` \u2014 the plugin-qualified command from code-review@claude-plugins-official. It is NOT `decaf-quality:code-review`: a different tool ships a skill of the same bare name, so never invoke a bare `/code-review`, and abort rather than substituting anything else if the qualified skill does not resolve. Review pull request #{PR} of the GitHub repository {REPO}. Do NOT pass --comment and do NOT post anything to GitHub \u2014 output the review to the terminal only. Fetch the PR with gh. Print every finding you would post, with file:line references.",
+    "observed_models_note": "The four `2__anthropic-code-review__*` cells ran claude-opus-4-8 at 100% of cost. That is an older BENCH_MODEL from an earlier era of the corpus, NOT the tool pinning a model \u2014 and those four cells are DO NOT SCORE (isolation MISSING) regardless. No scoreable cell used opus-4-8."
   },
   {
     "id": "superpowers",
@@ -132,5 +133,49 @@
       9
     ],
     "subjects_note": "one per size class (1 small, 5 medium, 9 large) \u2014 enough to compare presets on identical code and to exercise the size-derived roster across all three bands"
+  },
+  {
+    "id": "ours-bugs-narrow",
+    "name": "decaf-quality-dev:code-review (bugs reach=narrow, --report)",
+    "requires_plugin": "decaf-quality-dev",
+    "install_hint": "scripts/install-dev-plugin.sh \u2014 snapshots decaf-quality from the working tree into ~/.claude/skills/decaf-quality-dev with the namespace rewrite; re-run after any edit to decaf-quality/",
+    "model_policy": "session model; ONE solo-reviewer seat (roster=1). OBSERVED: claude-opus-5 at 100% of cost in all 6 cells \u2014 the seat inherits the session model and there is no other lane to spend on.",
+    "findings_file": ".decaf/code-reviews/CODE_REVIEW_*.md",
+    "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs reach=narrow --report",
+    "preset": "bugs reach=narrow",
+    "baseline_note": "The CONTROL arm of dcc-tmz2. Identical to today's `bugs` except that reach=narrow is stated EXPLICITLY rather than inherited from the preset default, so the treatment arm (ours-bugs-reachnorm) differs by exactly one token rather than by the presence of an argument. Re-run locally on 2026-08-18 rather than compared against the existing ours-bugs-sp3 cells, because those ran on the previous machine and their transcripts did not travel \u2014 and this experiment is about what the seat looked at."
+  },
+  {
+    "id": "ours-bugs-reachnorm",
+    "name": "decaf-quality-dev:code-review (bugs reach=norm, --report)",
+    "requires_plugin": "decaf-quality-dev",
+    "install_hint": "scripts/install-dev-plugin.sh \u2014 snapshots decaf-quality from the working tree into ~/.claude/skills/decaf-quality-dev with the namespace rewrite; re-run after any edit to decaf-quality/",
+    "model_policy": "session model; ONE solo-reviewer seat (roster=1). OBSERVED: claude-opus-5 at 100% of cost in all 6 cells.",
+    "findings_file": ".decaf/code-reviews/CODE_REVIEW_*.md",
+    "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs reach=norm --report",
+    "preset": "bugs reach=norm",
+    "baseline_note": "The TREATMENT arm of dcc-tmz2. Probed first (r0, never scored): the override is not a no-op \u2014 the narrow report omits Pre-existing Issues and Minor Findings and says so, the norm report carries both and states 'reach=norm overriding the preset default of narrow'. Result: higher defect-pool hit rate per cell (0.458 vs narrow 0.375) and the demotion gap falls from 0.72 to 0.41, at ~12% more cost and 8% noise. PROVISIONAL \u2014 two subjects."
+  },
+  {
+    "id": "pr-review-toolkit",
+    "name": "Anthropic pr-review-toolkit /review-pr all",
+    "requires_plugin": "pr-review-toolkit",
+    "install_hint": "claude plugin install pr-review-toolkit@claude-plugins-official",
+    "model_policy": "Not declared by the plugin, which ships commands/ and agents/ with no model pins. OBSERVED: claude-opus-5 dominant with a claude-sonnet-5 lane on some cells; one cell ran Opus only, so the Sonnet lane is not always dispatched.",
+    "findings_file": "",
+    "local_diff": true,
+    "invocation": "Use the Skill tool to run `pr-review-toolkit:review-pr` with arguments: all. Dispatch the review agents in parallel. Do NOT post anything to GitHub and do NOT run `gh pr view` to look the change up \u2014 the change under review is the local diff range given below, not a pull request, and the working tree is clean at its head, so use `git diff <base> <head>` wherever the workflow says to inspect changed files. Print every finding with file:line references.",
+    "baseline_note": "Backfilled 2026-08-19: this arm had cells on prometheus and efcore since the pilot but no tools.json entry, so no model policy or install hint was recorded. The plugin ships COMMANDS, not skills."
+  },
+  {
+    "id": "comprehensive-review",
+    "name": "Tag1 /comprehensive-review (--local)",
+    "requires_plugin": "comprehensive-review",
+    "install_hint": "claude plugin marketplace add tag1consulting/claude-plugins; claude plugin install comprehensive-review@tag1consulting",
+    "model_policy": "Not declared. OBSERVED: claude-opus-5 dominant with a claude-sonnet-5 lane on most cells; one cell ran Opus only.",
+    "findings_file": "",
+    "local_diff": true,
+    "invocation": "Use the Skill tool to run `comprehensive-review:comprehensive-review` with arguments: --local --base {BASE}. This repository is a detached checkout with NO git remote and NO branches; the change under review is the diff range given below. Treat provider operations as unavailable and run the review locally. Print every finding with file:line references.",
+    "baseline_note": "Backfilled 2026-08-19: cells since the pilot, no tools.json entry until now. VERSION DRIFT: competition/README.md surveyed v1.12.2; the installed plugin on 2026-08-18 is v1.13.0, and no cell records the version it ran. Cells run today are not provably the same tool as the pilot's."
   }
 ]
