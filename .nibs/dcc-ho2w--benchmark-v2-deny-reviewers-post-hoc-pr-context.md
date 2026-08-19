@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-19T16:57:58Z
+updated_at: 2026-08-19T17:19:43Z
 order: zzzzV
 ---
 
@@ -267,28 +267,24 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-n4nf: Standing samples built and committed for all five adjudicated subjects — 15 clusters each,
-stratified across the six verdicts, chosen once from a subject-scoped seed so the choice is
-reproducible from the repo alone. `build_calibration_sample.py` REFUSES to re-draw without --force,
-because re-drawing makes today's calibration incomparable with every earlier one.
+Completed dcc-7zyf: An empty thread axis is now distinguishable from tools performing badly.
 
-`judge_stability.py --calibration` compares today's verdicts against the pilot's pass 1 AND pass 2
-on that sample, and reports the DIRECTION of disagreement (harsher / softer / same) — the property
-that decides whether comparative claims survive. It refuses an ungraded sample rather than reporting
-0/0: a missing measurement is not a calibration of zero.
+`score_pooled.py` emits `threads.human_axis_empty` when no tool matched ANY human thread, separate
+from `human_axis_thin`. It fires on grafana-117615 alone; immich-28886 is thin but not empty (1 of 2
+hit), so the flags discriminate. Tested.
 
-`score_pooled.py` exits 3 for a subject with no calibration record, with the exact command to fix
-it; `--no-calibration` covers a first scoring. Tested both ways.
+`thread_band.py` renders an empty axis as n/a with the recorded reason and suppresses the per-tool
+table entirely, rather than printing a column of 0.00s that cannot separate arms.
+`pooled/grafana-grafana-117615/THREAD-AXIS-NOTE.md` carries both thread bodies verbatim so a reader
+can see why: one is a reviewer saying they are unfamiliar with the area, the other a naming request
+about fixture data. Neither states a defect, so there was nothing for a tool to miss.
 
-The 2026-08-17/18/19 numbers are recorded in pooled/CALIBRATION-HISTORY.md. The per-subject
-backfills are marked BACKFILL and partial (n=3-5 of 15) because both earlier grading days drew their
-own samples — exactly the confound the standing sample removes. Real calibration starts from the
-next grading day.
-
-The finding worth carrying: 2026-08-19's judge was systematically harsher than the pilot — 11
-disagreements, 11 of them harsher, three pilot-real clusters downgraded and none upgraded — while
-agreeing with itself 24/24 on prometheus. Self-agreement cannot detect this, which is the whole
-argument for the standing sample.
+Decided against requiring defect-stating human threads at screen time: that selects FOR matchability
+and would inflate thread recall corpus-wide, converting the miss detector into a measure of how
+findable the corpus was chosen to be. The actual defect is that grafana-117615 has 3 human threads
+total and 2 admitted, so it never met a >=5 HUMAN bar — it passed on a count that included bots,
+which is dcc-qwt3. The screen should count admitted HUMAN threads; empty axes that still occur get
+flagged, not selected against.
 
 ## Key Decisions
 

@@ -90,6 +90,21 @@ def main():
         missed = sorted(human_idx - set.union(*cov.values())) if cov else []
         print(f"    corpus coverage (any tool): {lo}-{hi} of {n} threads   "
               f"missed under BOTH passes: {missed if missed else 'none'}")
+        # EMPTY is not a score of zero (nib dcc-7zyf). If no tool matched any human thread, every
+        # arm reads 0.00 and the axis cannot separate them — pooling it drags every average down by
+        # the same amount while saying nothing about any tool. Render n/a with the reason instead.
+        if hi == 0:
+            reason = os.path.join(d, "THREAD-AXIS-NOTE.md")
+            why = ""
+            if os.path.exists(reason):
+                for line in open(reason):
+                    if line.startswith("REASON:"):
+                        why = line.split(":", 1)[1].strip(); break
+            print(f"    *** HUMAN AXIS EMPTY — no tool matched any human thread under either pass.")
+            print(f"        Per-tool recall is n/a, NOT 0.00, and must be excluded from any pooled")
+            print(f"        thread figure. It cannot discriminate between arms.")
+            print(f"        {'REASON: ' + why if why else 'REASON: not recorded — add THREAD-AXIS-NOTE.md'}\n")
+            continue
         tools = sorted({r["tool"] for c in an["clusters"] for r in c.get("reported_by", [])})
         print(f"    {'arm':<24}{'pass1':>8}{'pass2':>8}{'band':>20}{'delta':>8}")
         for tool in tools:

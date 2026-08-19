@@ -385,6 +385,16 @@ def score(A, threads, key):
             # there is 0/0.5/1.0 quantization, not a measurement. The flag travels with the metrics
             # so a synthesis must show n and may not pool or headline a thin cell's recall.
             "human_axis_thin": 0 < len(human_idx) <= THIN_HUMAN_AXIS_MAX,
+            # THIN and EMPTY are different failures and must not read the same (nib dcc-7zyf).
+            # Empty = no tool matched ANY human thread, so every arm scores 0.00 and the axis cannot
+            # discriminate between them — yet pooled naively it still drags every average down by
+            # the same amount, making the corpus look worse at matching human review than the
+            # evidence supports. Measured on grafana-117615: both its human threads are non-defect
+            # comments (a reviewer saying they are unfamiliar with the area; a naming request about
+            # fixture data), so 0.00 is the right answer to a question that cannot separate tools.
+            # A view must render this as n/a WITH THE REASON, never as a score of zero, and exclude
+            # it from any pooled thread figure.
+            "human_axis_empty": len(human_idx) > 0 and len(hit_any_found & human_idx) == 0,
             # Everything below is the HUMAN axis — the miss detector.
             # "reported": what a user would have been shown. "found": what the field is capable of.
             "hit_by_any_tool": len(hit_any & human_idx),

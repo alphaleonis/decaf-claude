@@ -490,6 +490,25 @@ def t_refuses_metrics_without_a_calibration_record():
     r = run()
     assert r.returncode == 0, f"a present calibration record should satisfy the guard: {r.stderr[:200]}"
 
+def t_empty_human_axis_is_distinct_from_thin():
+    # THIN = too few threads to trust a ratio. EMPTY = no tool matched ANY of them, so the axis
+    # cannot separate tools at all and must never be pooled as a score of zero (nib dcc-7zyf).
+    import copy as _c
+    a = _c.deepcopy(BASE)
+    # nobody matches any thread
+    for c in a["clusters"]:
+        c["matches_thread"] = None
+        if c.get("verdict") == "matches-thread":
+            c["verdict"] = "valid-other"
+    m = score(a, THREADS, None)
+    assert m["threads"]["human_axis_empty"] is True, m["threads"]
+    assert m["threads"]["hit_by_any_tool_found"] == 0, m["threads"]
+    # the baseline fixture DOES have a match, so empty must be false there
+    m2 = score(BASE, THREADS, None)
+    assert m2["threads"]["human_axis_empty"] is False, m2["threads"]
+    # thin and empty are independent: BASE is thin (2 human threads) but not empty
+    assert m2["threads"]["human_axis_thin"] is True, m2["threads"]
+
 for name, fn in list(globals().items()):
     if name.startswith("t_"):
         check(name[2:], fn)
