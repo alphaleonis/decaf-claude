@@ -2,11 +2,11 @@
 # dcc-t83x
 version: 1
 title: 'Analysis is not reproducible: build compare_arms.py, a metric glossary, and a no-interpretation-before-artifact rule'
-status: todo
+status: in-progress
 type: feature
 priority: high
 created_at: 2026-08-19T13:44:36Z
-updated_at: 2026-08-19T15:44:58Z
+updated_at: 2026-08-19T16:10:35Z
 parent: dcc-ho2w
 order: zq
 ---
@@ -98,11 +98,9 @@ but touches every artifact and script for no analytic gain; do it in published r
 
 ## Acceptance
 
-- [ ] `emit_facts.py` + the three jsonl files committed, regenerable, with a test asserting they
-      round-trip the metrics they were derived from
-- [ ] `compare_arms.py` as a view over the facts + tests: n<10 withheld, mixed-config refusal,
-      cross-coverage-group ranking refusal
-- [ ] `METRICS.md`; `precision_note` emitted; test asserting its presence
-- [ ] `/bench-analyze` and `/bench-run` carry the no-interpretation rule
-- [ ] [[dcc-tmz2]]'s conclusion re-derived from the facts and marked provisional until it is
+- [x] `emit_facts.py` + the three jsonl files committed (353 clusters / 1429 observations / 82 cells across five subjects), regenerable, round-trip vs metrics.json asserted and tested
+- [x] `compare_arms.py` as a view over the facts + tests: n<10 withheld, incompatible-model-set refusal (fires on `ours-bugs`, correctly does NOT fire on merely nested sets), coverage groups separated
+- [x] `METRICS.md`; `precision_note` emitted by score_pooled.py; `t_precision_note_travels_with_the_number` asserts it
+- [x] `/bench-analyze` and `/bench-run` carry the no-interpretation rule
+- [x] [[dcc-tmz2]] re-derived from the facts: pool hit/cell reachnorm 0.458 > superpowers 0.438 > narrow 0.375 > sp3 0.354 — identical to the ad-hoc figures, confirming the reversals were misreadings rather than arithmetic errors
 - [ ] Each of the five reversals is re-checkable from the committed facts

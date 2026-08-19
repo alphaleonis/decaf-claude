@@ -457,6 +457,17 @@ def t_per_tool_class_and_defect_recall():
     assert be["defect_recall"] == {"pool": 2, "reported": 1, "found": 2, "recall_reported": 0.5, "recall_found": 1.0}, be["defect_recall"]
 
 
+
+def t_precision_note_travels_with_the_number():
+    # precision counts valid-minor as a MISS, so an arm whose output is almost entirely correct can
+    # score 0.50. That was read as "half is wrong" on 2026-08-19 (nib dcc-t83x). The caveat must ship
+    # inside metrics.json, not only in a code comment.
+    m = score(BASE, THREADS, None)
+    for tool, t in m["tools"].items():
+        assert "precision_note" in t, f"{tool} has no precision_note"
+        assert "valid_minor" in t["precision_note"], t["precision_note"]
+        assert "METRICS.md" in t["precision_note"], t["precision_note"]
+
 for name, fn in list(globals().items()):
     if name.startswith("t_"):
         check(name[2:], fn)
