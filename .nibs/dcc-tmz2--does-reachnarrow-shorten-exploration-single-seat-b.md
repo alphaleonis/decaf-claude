@@ -2,11 +2,11 @@
 # dcc-tmz2
 version: 1
 title: Does reach=narrow shorten exploration? Single-seat bugs at reach=norm, 3 repeats, found-per-cell
-status: todo
+status: in-progress
 type: task
 priority: high
 created_at: 2026-08-18T19:14:54Z
-updated_at: 2026-08-18T19:15:25Z
+updated_at: 2026-08-18T19:24:35Z
 parent: dcc-hyxw
 order: arz
 ---

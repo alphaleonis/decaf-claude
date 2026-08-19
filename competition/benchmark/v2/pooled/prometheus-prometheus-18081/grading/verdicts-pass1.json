@@ -1294,5 +1294,50 @@
   "code_citation": "util/stats/query_stats.go:183-190",
   "confidence": 0.8,
   "rationale": "The int(s.V) narrowing is identical to the pre-existing TotalSamplesPerStepMap accessor at lines 172-179, and the cluster itself clears it; a considered-and-cleared note asserting no defect."
+ },
+ {
+  "cluster_id": "c145",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "util/stats/query_stats.go:427-432",
+  "confidence": 0.6,
+  "rationale": "The cluster itself concedes no asymmetric call can be constructed; parent and child are both built from the same EnablePerStepStats flag, so the slices are either both nil or both allocated."
+ },
+ {
+  "cluster_id": "c146",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "util/stats/query_stats.go:352-354",
+  "confidence": 0.55,
+  "rationale": "IncrementSamplesReadAtStep checks only i < len while IncrementSamplesReadAtTimestamp at line 364 also checks i >= 0; the asymmetry is real and cheap to fix, though no current caller passes a negative index."
+ },
+ {
+  "cluster_id": "c147",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2160",
+  "confidence": 0.7,
+  "rationale": "Considered-and-cleared performance note; totalHPointSize was already computed once per step at the old IncrementSamplesAtStep call site, so it asserts no defect."
+ },
+ {
+  "cluster_id": "c148",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "promql/engine.go:2148-2166",
+  "confidence": 0.6,
+  "rationale": "The buffer-reuse branch is reachable via at-modifier-unsafe range functions such as predict_linear(foo[5m] @ T, y) in a range query, and no test in TestQueryStatistics covers that shape, so the TotalSamples change on that branch is unguarded by tests."
+ },
+ {
+  "cluster_id": "c149",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2164",
+  "confidence": 0.7,
+  "rationale": "A considered-and-cleared note that asserts no defect; the instant path sets interval 1 and every evaluator that reaches this line derives a non-zero interval, so nothing is actionable."
  }
 ]

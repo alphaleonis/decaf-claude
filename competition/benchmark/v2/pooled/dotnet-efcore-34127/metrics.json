@@ -10,8 +10,8 @@
     "provably_clean_from": "2026-06-01",
     "why": "claude-opus-5 publishes a month-granular cutoff of 2026-05; a subject is provably out-of-window only if it merged on or after 2026-06-01"
   },
-  "n_clusters": 74,
-  "n_cells": 23,
+  "n_clusters": 79,
+  "n_cells": 29,
   "threads": {
     "admitted": 11,
     "admitted_human": 10,
@@ -260,6 +260,116 @@
         "reported": 2,
         "found": 4,
         "recall_reported": 0.4,
+        "recall_found": 0.8
+      }
+    },
+    "ours-bugs-narrow": {
+      "clusters_reported": 2,
+      "clusters_found": 16,
+      "real": 2,
+      "valid_minor": 0,
+      "trivia": 0,
+      "false_positive": 0,
+      "precision": 1.0,
+      "precision_severity_weighted": 1.0,
+      "trivia_ratio": 0.0,
+      "unique_real": 0,
+      "unique_real_ids": [],
+      "per_cell": {
+        "findings": 0.67,
+        "false_positive": 0.0,
+        "trivia": 0.0
+      },
+      "thread_recall": 0.0,
+      "thread_recall_found": 0.1,
+      "demotion_gap": 0.1,
+      "threads_hit": 0,
+      "incumbent_agreement": 0.0,
+      "incumbent_agreement_found": 0.0,
+      "real_found": 7,
+      "demoted_real": 5,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 14.5486,
+      "cost_per_real_finding": 7.2743,
+      "class_distribution": {
+        "reported": {
+          "defect": 2,
+          "design": 0,
+          "docs": 0,
+          "risk": 0,
+          "style": 0,
+          "test-gap": 0
+        },
+        "found": {
+          "defect": 10,
+          "design": 3,
+          "docs": 1,
+          "risk": 2,
+          "style": 0,
+          "test-gap": 0
+        }
+      },
+      "defect_recall": {
+        "pool": 5,
+        "reported": 2,
+        "found": 4,
+        "recall_reported": 0.4,
+        "recall_found": 0.8
+      }
+    },
+    "ours-bugs-reachnorm": {
+      "clusters_reported": 12,
+      "clusters_found": 24,
+      "real": 8,
+      "valid_minor": 3,
+      "trivia": 1,
+      "false_positive": 0,
+      "precision": 0.667,
+      "precision_severity_weighted": 0.897,
+      "trivia_ratio": 0.083,
+      "unique_real": 0,
+      "unique_real_ids": [],
+      "per_cell": {
+        "findings": 4.0,
+        "false_positive": 0.0,
+        "trivia": 0.33
+      },
+      "thread_recall": 0.2,
+      "thread_recall_found": 0.2,
+      "demotion_gap": 0.0,
+      "threads_hit": 2,
+      "incumbent_agreement": 0.0,
+      "incumbent_agreement_found": 0.0,
+      "real_found": 9,
+      "demoted_real": 1,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 15.7154,
+      "cost_per_real_finding": 1.9644,
+      "class_distribution": {
+        "reported": {
+          "defect": 5,
+          "design": 3,
+          "docs": 2,
+          "risk": 0,
+          "style": 0,
+          "test-gap": 2
+        },
+        "found": {
+          "defect": 15,
+          "design": 3,
+          "docs": 2,
+          "risk": 2,
+          "style": 0,
+          "test-gap": 2
+        }
+      },
+      "defect_recall": {
+        "pool": 5,
+        "reported": 4,
+        "found": 4,
+        "recall_reported": 0.8,
         "recall_found": 0.8
       }
     },
@@ -657,15 +767,15 @@
     "false-positive": 1,
     "matches-key": 0,
     "matches-thread": 12,
-    "trivia": 39,
-    "valid-minor": 13,
+    "trivia": 43,
+    "valid-minor": 14,
     "valid-other": 9
   },
   "class_distribution": {
-    "defect": 25,
+    "defect": 28,
     "design": 14,
     "docs": 5,
-    "risk": 7,
+    "risk": 9,
     "style": 7,
     "test-gap": 16
   }

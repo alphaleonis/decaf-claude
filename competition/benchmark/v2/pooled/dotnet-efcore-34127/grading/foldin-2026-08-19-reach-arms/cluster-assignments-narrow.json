@@ -1,0 +1,27 @@
+{"assignments": [
+{"nid": "n1-00", "cluster_id": "e01", "confidence": 0.95, "why": "unfiltered recursion admits AndAlso/OrElse"},
+{"nid": "n1-01", "cluster_id": "e02", "confidence": 0.95, "why": "boolean THEN result loses NULL via search-condition conversion"},
+{"nid": "n1-02", "cluster_id": "e04", "confidence": 0.95, "why": "wrong count passed to RestoreNullValueColumnsList"},
+{"nid": "n1-03", "cluster_id": "e42", "confidence": 0.9, "why": "collapse may drop CaseExpression Type/TypeMapping"},
+{"nid": "n1-04", "cluster_id": "e06", "confidence": 0.95, "why": "missing-ELSE shape never optimized"},
+{"nid": "n1-05", "cluster_id": "e45", "confidence": 0.9, "why": "dropped guard exposing division/arithmetic error"},
+{"nid": "n1-06", "cluster_id": "e08", "confidence": 0.7, "why": "HashSet equality semantics for operand lookup; existing cluster is phrased structural-vs-reference while this cites ColumnExpression.IsNullable in equality, but same lookup-may-fail issue"},
+{"nid": "n1-07", "cluster_id": "e79", "confidence": 0.85, "why": "operand dropped by early return; no existing cluster"},
+{"nid": "n2-00", "cluster_id": "e01", "confidence": 0.95, "why": "unfiltered recursion admits AndAlso/OrElse"},
+{"nid": "n2-01", "cluster_id": "e29", "confidence": 0.95, "why": "operands.Add result discarded, shared nodes re-traversed"},
+{"nid": "n2-02", "cluster_id": "e07", "confidence": 0.9, "why": "full result walk before the test is inspected"},
+{"nid": "n2-03", "cluster_id": "e05", "confidence": 0.95, "why": "TODO lacks issue reference"},
+{"nid": "n2-04", "cluster_id": "e04", "confidence": 0.95, "why": "wrong count passed to RestoreNullValueColumnsList"},
+{"nid": "n2-05", "cluster_id": "e66", "confidence": 0.6, "why": "IsNull matching a null-valued parameter makes the rewrite parameter-dependent; overlaps e53 which frames the same concern as compiled-query-cache poisoning, so the split between the two is uncertain"},
+{"nid": "n2-06", "cluster_id": "e43", "confidence": 0.9, "why": "nullable out-parameter after the collapse"},
+{"nid": "n3-00", "cluster_id": "e01", "confidence": 0.95, "why": "unfiltered recursion admits AndAlso/OrElse"},
+{"nid": "n3-01", "cluster_id": "e13", "confidence": 0.9, "why": "Coalesce is a legal operator reaching the recursion arm"},
+{"nid": "n3-02", "cluster_id": "e14", "confidence": 0.95, "why": "func.Instance! without the Instance: not null half"},
+{"nid": "n3-03", "cluster_id": "e16", "confidence": 0.9, "why": "loop bound on ArgumentsPropagateNullability.Count"},
+{"nid": "n3-04", "cluster_id": "e06", "confidence": 0.95, "why": "missing-ELSE shape never optimized"},
+{"nid": "n3-05", "cluster_id": "e05", "confidence": 0.95, "why": "TODO lacks issue reference"},
+{"nid": "n3-06", "cluster_id": "e42", "confidence": 0.9, "why": "returned result's CLR type differs from the CASE type"}
+],
+ "new_clusters": [
+{"cluster_id": "e79", "summary": "The early return of clause.Result discards caseExpression.Operand, which would drop a simple-CASE operand were the block reachable for one", "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578", "members": ["n1-07"]}
+]}

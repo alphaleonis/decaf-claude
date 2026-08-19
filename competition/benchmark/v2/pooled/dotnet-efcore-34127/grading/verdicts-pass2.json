@@ -664,5 +664,50 @@
   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2295",
   "confidence": 0.8,
   "rationale": "A considered-and-cleared note asserting no defect: the new tests do follow the adjacent [ConditionalTheory]/[MemberData(nameof(IsAsyncData))] pattern."
+ },
+ {
+  "cluster_id": "e79",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:507,578-583",
+  "confidence": 0.8,
+  "rationale": "The block is guarded by testIsCondition, which is defined as caseExpression.Operand == null, so no simple-CASE operand can be discarded; the cluster itself concedes the block is unreachable for one and asserts no defect."
+ },
+ {
+  "cluster_id": "e80",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "",
+  "confidence": 0.7,
+  "rationale": "The cluster states outright that the rendering is pre-existing and unchanged by this diff, so it asserts no defect in the change under review."
+ },
+ {
+  "cluster_id": "e81",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlExpressions/SqlFunctionExpression.cs:242-243",
+  "confidence": 0.8,
+  "rationale": "Correct \u2014 [MemberNotNullWhen(false, nameof(Arguments), nameof(ArgumentsPropagateNullability))] is what makes the guard load-bearing \u2014 but it is a considered-and-cleared note defending existing code and asserts no defect."
+ },
+ {
+  "cluster_id": "e82",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlExpressions/SqlUnaryExpression.cs:19-26",
+  "confidence": 0.8,
+  "rationale": "SqlUnaryExpression's allowed operators are Equal, NotEqual, Convert, Not, Negate, and unary NotEqual is by construction IS NOT NULL, so the over-match concern is cleared with no defect asserted."
+ },
+ {
+  "cluster_id": "e83",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578-593,617-619",
+  "confidence": 0.5,
+  "rationale": "Membership is structural equality over SqlExpression, so two separate evaluations of the same non-deterministic nullable expression are treated as one; the soundness argument ('operand null implies result null') then does not hold. Real but exotic."
  }
 ]
