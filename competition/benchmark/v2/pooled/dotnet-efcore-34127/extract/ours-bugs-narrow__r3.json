@@ -1,0 +1,86 @@
+[
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 3,
+    "subagent": "solo-reviewer",
+    "severity": "critical",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 626,
+    "category": "correctness",
+    "claim": "NullPropagatedOperands recurses into binary.Left/binary.Right for every SqlBinaryExpression operator type, including AndAlso, OrElse and Coalesce, which do not propagate NULL. Operands reached only through such a node are wrongly recorded as null-propagating, so DropNotNullChecks deletes a load-bearing IS NOT NULL guard and the CASE wrapper is removed, yielding wrong scalar values and wrong rows.",
+    "raw": "NullPropagatedOperands treats AndAlso/OrElse as null-propagating, so a load-bearing IS NOT NULL guard is deleted",
+    "disposition": "reported"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 3,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 626,
+    "category": "correctness",
+    "claim": "A SqlBinaryExpression with ExpressionType.Coalesce also reaches the buggy recursion arm — legal per SqlBinaryExpression.IsValidOperator and constructible via the public SqlExpressionFactory.MakeBinary — but the core translator emits COALESCE as a SqlFunctionExpression, so no core-translator repro could be built.",
+    "raw": "[unverified] SqlBinaryExpression with ExpressionType.Coalesce also reaches the buggy arm",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 3,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 635,
+    "category": "null-dereference",
+    "claim": "func.Instance! is dereferenced on InstancePropagatesNullability == true alone, whereas the sibling code at :2394 also requires Instance: not null, and nothing in the SqlFunctionExpression constructor ties the two. Traced as an inconsistency rather than a defect since HashSet.Add(null) is legal.",
+    "raw": "[minor] func.Instance! dereferenced on InstancePropagatesNullability alone, inconsistent with sibling at :2394",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 3,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 640,
+    "category": "consistency",
+    "claim": "The loop bound is ArgumentsPropagateNullability.Count while the sibling loop at :2401 uses Arguments.Count; the constructor enforces equal counts, so the two are equivalent.",
+    "raw": "[minor] loop bound is ArgumentsPropagateNullability.Count while the sibling loop at :2401 uses Arguments.Count",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 3,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 578,
+    "category": "missed-optimization",
+    "claim": "IsNull(elseResult) returns false when ElseResult is absent, so CASE WHEN x IS NOT NULL THEN f(x) END — semantically identical to the handled shape — is not optimized. Missed optimization only, no correctness impact.",
+    "raw": "[minor] IsNull(elseResult) returns false when ElseResult is absent, so the no-ELSE shape is not optimized",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 3,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 577,
+    "category": "comment-hygiene",
+    "claim": "The comment // TODO: optimize expr == null ? null : expr carries no issue reference.",
+    "raw": "[minor] TODO comment carries no issue reference",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 3,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 585,
+    "category": "type-mismatch",
+    "claim": "Returning clause.Result can hand back an expression whose CLR Type is the non-nullable variant of caseExpression.Type (e.g. int vs int?). Checked and judged false: the method already does this at :545 and :571, and an executed probe read back null correctly.",
+    "raw": "[false] returning clause.Result can hand back an expression whose CLR Type is the non-nullable variant of caseExpression.Type",
+    "disposition": "demoted"
+  }
+]

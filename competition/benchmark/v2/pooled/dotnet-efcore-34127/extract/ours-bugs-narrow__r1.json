@@ -1,0 +1,98 @@
+[
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 1,
+    "subagent": "solo-reviewer",
+    "severity": "critical",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 626,
+    "category": "correctness",
+    "claim": "NullPropagatedOperands recurses into every SqlBinaryExpression operator including AndAlso/OrElse, which are three-valued in SQL and do not propagate NULL, so DropNotNullChecks deletes a load-bearing IS NOT NULL guard. The query then returns true/false where it previously returned NULL, in both projections and WHERE row sets, with no error; Coalesce via ISqlExpressionFactory.MakeBinary has the same defect.",
+    "raw": "#1 Critical: `NullPropagatedOperands` treats `AndAlso`/`OrElse` as null-propagating, so a load-bearing `IS NOT NULL` guard is dropped",
+    "disposition": "reported"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 1,
+    "subagent": "solo-reviewer",
+    "severity": "critical",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 587,
+    "category": "correctness",
+    "claim": "When clause.Result is a search condition (boolean predicate), collapsing the CASE removes the ELSE NULL arm that carried UNKNOWN into bool?. On SQL Server, SearchConditionConvertingExpressionVisitor later rewrites the predicate to CASE WHEN <pred> THEN 1 ELSE 0 END, which cannot produce NULL, so UNKNOWN silently becomes false and the returned row set changes in predicate contexts.",
+    "raw": "#2 Critical: collapsing the `CASE` when the result is a search condition turns UNKNOWN into `false`",
+    "disposition": "reported"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 1,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 539,
+    "category": "correctness",
+    "claim": "RestoreNullValueColumnsList(currentNonNullableColumnsCount) passes the non-nullable-columns count to the null-value-columns restore, an apparent mismatch. Judged pre-existing: present verbatim at 051c33a79:539 and untouched by this change.",
+    "raw": "[pre-existing] `RestoreNullValueColumnsList(currentNonNullableColumnsCount)` passes the non-nullable-columns count to the null-value-columns restore",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 1,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 587,
+    "category": "type-mapping",
+    "claim": "`return clause.Result` can hand back an expression whose Type/TypeMapping differ from the CaseExpression's. Left unverified: an int? projection collapsing to [NullableIntA] + [NullableIntB] materialized NULLs correctly, the identical early return already existed at line 545 pre-change, and no misbehaving shape was found.",
+    "raw": "[unverified] `return clause.Result` can hand back an expression whose `Type`/`TypeMapping` differ from the `CaseExpression`'s",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 1,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 578,
+    "category": "missed-optimization",
+    "claim": "IsNull(elseResult) is false when elseResult is null (a CASE with no ELSE), which is semantically the same as ELSE NULL, so the optimization does not fire there. Judged false as a defect — a missed optimization, not a wrong result.",
+    "raw": "[false] `IsNull(elseResult)` is false when `elseResult` is `null` (a `CASE` with no `ELSE`), which is semantically the same as `ELSE NULL`",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 1,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 595,
+    "category": "correctness",
+    "claim": "Dropping an IS NOT NULL that also short-circuits a hazardous sibling in the same AndAlso (division, error-on-NULL function) could introduce an error. Judged false: SQL guarantees no evaluation order and NULL operands yield NULL rather than an error; the mixed_checks baseline is correct.",
+    "raw": "[false] dropping an `IS NOT NULL` that also short-circuits a hazardous sibling in the same `AndAlso` (division, error-on-NULL function)",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 1,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 617,
+    "category": "correctness",
+    "claim": "HashSet<SqlExpression> containment could fail because ColumnExpression.Equals/GetHashCode include IsNullable. Judged false: VisitColumn returns the column instance unchanged, so the test's operand and the result's leaf are the same object and the optimization does fire.",
+    "raw": "[false] `HashSet<SqlExpression>` containment could fail because `ColumnExpression.Equals`/`GetHashCode` include `IsNullable`",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 1,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 578,
+    "category": "correctness",
+    "claim": "The CaseExpression operand could be lost by the early `return clause.Result`. Judged false: testIsCondition is caseExpression.Operand == null, so operand is always null inside this block.",
+    "raw": "[false] `operand` could be lost by the early `return clause.Result`",
+    "disposition": "demoted"
+  }
+]
