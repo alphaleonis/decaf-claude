@@ -1,0 +1,86 @@
+[
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 2,
+    "subagent": "solo-reviewer",
+    "severity": "critical",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 626,
+    "category": "correctness",
+    "claim": "NullPropagatedOperands recurses into every SqlBinaryExpression unconditionally on OperatorType, but AndAlso/OrElse (and Coalesce) do not propagate NULL under SQL three-valued logic, so the IS NOT NULL guard is wrongly dropped and the CASE collapses. Queries whose THEN result is a boolean expression silently return true/false where the C# expression evaluates to null; on SQL Server bare comparisons in result position are also non-propagating because SearchConditionConvertingExpressionVisitor maps UNKNOWN to false.",
+    "raw": "#1 🔴 Critical: `NullPropagatedOperands` treats *every* `SqlBinaryExpression` as NULL-propagating, so `AND`/`OR` results lose their null guard and return `true`/`false` where the query must return `null`",
+    "disposition": "reported"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 2,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 619,
+    "category": "performance",
+    "claim": "operands.Add(expression) discards its return value, so a shared subtree is re-traversed on every path that reaches it; `if (!operands.Add(expression)) return;` would memoize the traversal.",
+    "raw": "[unverified] `operands.Add(expression)` discards its return value, so a shared subtree is re-traversed on every path that reaches it",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 2,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 578,
+    "category": "performance",
+    "claim": "The HashSet<SqlExpression> is allocated and the result tree fully walked before the test is inspected, so a single-clause CASE ... ELSE NULL whose test contains no IS NOT NULL pays the full traversal for nothing.",
+    "raw": "[minor] the `HashSet<SqlExpression>` is allocated and the result tree fully walked before the test is inspected",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 2,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 577,
+    "category": "comment-quality",
+    "claim": "The `// TODO: optimize expr == null ? null : expr` comment carries no issue reference.",
+    "raw": "[minor] the `// TODO: optimize expr == null ? null : expr` comment carries no issue reference. Cosmetic.",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 2,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 537,
+    "category": "correctness",
+    "claim": "RestoreNullValueColumnsList(currentNonNullableColumnsCount) inside the when-clause loop passes the non-nullable columns count to the null-value columns restore. Pre-existing at the parent commit; the change neither touches nor exposes it.",
+    "raw": "[pre-existing] `RestoreNullValueColumnsList(currentNonNullableColumnsCount)` inside the when-clause loop passes the *non-nullable* columns count to the *null-value* columns restore",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 2,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 578,
+    "category": "query-caching",
+    "claim": "Considered whether IsNull(elseResult) returning true for a null-valued parameter could bake a parameter-dependent rewrite into a cached command. Judged false: VisitCase routes every elseResult through Visit and the existing canCache machinery covers it.",
+    "raw": "[false] Checked whether `IsNull(elseResult)` returning `true` for a null-valued *parameter* (line 1635) could bake a parameter-dependent rewrite into a cached command.",
+    "disposition": "demoted"
+  },
+  {
+    "tool": "ours-bugs-narrow",
+    "repeat": 2,
+    "subagent": "solo-reviewer",
+    "severity": "info",
+    "file": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+    "line": 587,
+    "category": "correctness",
+    "claim": "Considered whether the early return could report a stale `nullable` out-parameter. Judged false: the block is only reached when IsNull(elseResult) holds, which forces elseResultNullable and hence nullable to true before line 587.",
+    "raw": "[false] Checked whether the early return could report a stale `nullable` out-parameter.",
+    "disposition": "demoted"
+  }
+]
