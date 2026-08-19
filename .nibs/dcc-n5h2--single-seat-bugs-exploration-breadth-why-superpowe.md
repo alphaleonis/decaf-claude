@@ -2,11 +2,11 @@
 # dcc-n5h2
 version: 1
 title: 'Single-seat bugs: exploration breadth — why superpowers'' seat finds more per cell on large diffs'
-status: todo
+status: in-progress
 type: research
 priority: normal
 created_at: 2026-08-18T08:40:37Z
-updated_at: 2026-08-18T08:40:37Z
+updated_at: 2026-08-19T11:11:24Z
 parent: dcc-hyxw
 order: axV
 ---

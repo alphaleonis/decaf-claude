@@ -72,6 +72,54 @@
    "access_denied": 0
   },
   {
+   "tool": "ours-bugs-narrow",
+   "repeat": 1,
+   "cost_usd": 4.5509,
+   "wall_s": 794,
+   "access_total": 43,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-narrow",
+   "repeat": 2,
+   "cost_usd": 4.5362,
+   "wall_s": 876,
+   "access_total": 50,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-narrow",
+   "repeat": 3,
+   "cost_usd": 5.4615,
+   "wall_s": 820,
+   "access_total": 54,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-reachnorm",
+   "repeat": 1,
+   "cost_usd": 5.0261,
+   "wall_s": 888,
+   "access_total": 48,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-reachnorm",
+   "repeat": 2,
+   "cost_usd": 7.2908,
+   "wall_s": 1198,
+   "access_total": 68,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-bugs-reachnorm",
+   "repeat": 3,
+   "cost_usd": 3.3985,
+   "wall_s": 684,
+   "access_total": 37,
+   "access_denied": 0
+  },
+  {
    "tool": "ours-bugs-sp",
    "repeat": 1,
    "cost_usd": 5.0622,
@@ -385,6 +433,48 @@
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 3,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0
     }
    ],
    "finding_class": "defect",
@@ -461,6 +551,20 @@
      "tool": "ours-review-postdduy",
      "repeat": 4,
      "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "high",
      "disposition": "reported",
      "finding_index": 1
     }
@@ -626,6 +730,41 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 3
     }
    ],
    "finding_class": "defect",
@@ -746,6 +885,27 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 20
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 5
     }
    ],
    "finding_class": "docs",
@@ -880,6 +1040,41 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
     }
    ],
    "finding_class": "design",
@@ -944,6 +1139,27 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 10
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 2
     }
    ],
    "finding_class": "design",
@@ -1036,6 +1252,27 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 11
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
     }
    ],
    "finding_class": "defect",
@@ -1270,6 +1507,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 22
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 6
     }
    ],
    "finding_class": "design",
@@ -1461,6 +1705,34 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
     }
    ],
    "finding_class": "defect",
@@ -1560,6 +1832,20 @@
      "severity": "low",
      "disposition": "reported",
      "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
    ],
    "finding_class": "risk",
@@ -1664,6 +1950,27 @@
     {
      "tool": "ours-review-postdduy",
      "repeat": 4,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 12
@@ -1787,6 +2094,27 @@
      "severity": "high",
      "disposition": "reported",
      "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 1
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 1
     }
    ],
    "finding_class": "test-gap",
@@ -2110,6 +2438,13 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 6
     }
    ],
    "finding_class": "test-gap",
@@ -2282,6 +2617,13 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 1
     }
    ],
    "finding_class": "design",
@@ -2389,6 +2731,20 @@
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 2
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 5
     }
    ],
    "finding_class": "docs",
@@ -2489,6 +2845,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 17
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 8
     }
    ],
    "finding_class": "defect",
@@ -2819,6 +3189,34 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 14
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 3
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 9
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
     }
    ],
    "finding_class": "defect",
@@ -2890,6 +3288,34 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 13
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 6
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "reported",
+     "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
     }
    ],
    "finding_class": "defect",
@@ -2955,6 +3381,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 4
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
     }
    ],
    "finding_class": "defect",
@@ -3121,6 +3561,20 @@
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 24
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 12
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
     }
    ],
    "finding_class": "defect",
@@ -3534,6 +3988,13 @@
      "severity": "high",
      "disposition": "demoted",
      "finding_index": 233
+    },
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 5
     }
    ],
    "finding_class": "defect",
@@ -3591,6 +4052,13 @@
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
     }
    ],
    "finding_class": "defect",
@@ -3836,6 +4304,123 @@
    ],
    "finding_class": "style",
    "class_confidence": 0.65
+  },
+  {
+   "cluster_id": "e79",
+   "summary": "The early return of clause.Result discards caseExpression.Operand, which would drop a simple-CASE operand were the block reachable for one",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:507,578,587",
+   "confidence": 0.8,
+   "rationale": "testIsCondition is defined as caseExpression.Operand == null, so the guarded block can only run when there is no simple-CASE operand; the cluster concedes this itself, making it a considered-and-cleared note.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-narrow",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.5
+  },
+  {
+   "cluster_id": "e80",
+   "summary": "The xor conditional shape renders as a three-column projection on SQLite, a pre-existing rendering unchanged by this diff",
+   "location": ":0",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576-591",
+   "confidence": 0.75,
+   "rationale": "The cluster states outright that the rendering is pre-existing and unchanged by this diff, so it asserts no defect in the change under review.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 14
+    }
+   ],
+   "finding_class": "risk",
+   "class_confidence": 0.4
+  },
+  {
+   "cluster_id": "e81",
+   "summary": "The !IsNiladic guard is what makes Arguments and ArgumentsPropagateNullability non-null on the loop path, so treating it as redundant would introduce a null dereference",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:638",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "src/EFCore.Relational/Query/SqlExpressions/SqlFunctionExpression.cs:242-243",
+   "confidence": 0.8,
+   "rationale": "Accurate \u2014 IsNiladic carries [MemberNotNullWhen(false, nameof(Arguments), nameof(ArgumentsPropagateNullability))] \u2014 but it defends the code as written and asserts no defect, so it is not something a reviewer needs to act on.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 11
+    },
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 10
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.6
+  },
+  {
+   "cluster_id": "e82",
+   "summary": "Whether a SqlUnaryExpression with OperatorType NotEqual reliably denotes an IS NOT NULL test, so DropNotNullChecks cannot over-match some other unary comparison",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:596",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "info",
+   "code_citation": "src/EFCore.Relational/Query/SqlExpressions/SqlUnaryExpression.cs:19-26",
+   "confidence": 0.75,
+   "rationale": "SqlUnaryExpression's allowed operators are Equal, NotEqual, Convert, Not, Negate, and unary NotEqual is by construction IS NOT NULL, so the over-match concern is cleared and asserts no defect.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.7
+  },
+  {
+   "cluster_id": "e83",
+   "summary": "Structural set membership can match a non-deterministic expression such as NEWID() appearing in both the test and the result, which are separate evaluations at runtime",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:596",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580-583,598",
+   "confidence": 0.45,
+   "rationale": "The HashSet<SqlExpression> membership test uses structural equality (SqlFunctionExpression.Equals, SqlFunctionExpression.cs:405-419), so two textually identical calls to a nullable non-deterministic function in the test and the result would be conflated across two separate runtime evaluations; real but exotic, since non-deterministic nullable functions are rare.",
+   "reported_by": [
+    {
+     "tool": "ours-bugs-reachnorm",
+     "repeat": 3,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 13
+    }
+   ],
+   "finding_class": "defect",
+   "class_confidence": 0.82
   }
  ]
 }

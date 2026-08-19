@@ -1,0 +1,5 @@
+prometheus-prometheus-18081      calib vs pilot-p1 9/15   vs pilot-p2 6/15   today p1-vs-p2 16/20   kappa=1.0  exact=0.8  PASS
+dotnet-efcore-34127              calib vs pilot-p1 9/15   vs pilot-p2 8/15   today p1-vs-p2 20/20   kappa=1.0  exact=1.0  PASS
+
+pre-registered threshold: real_vs_not.kappa >= 0.60 AND exact_agreement >= 0.70
+subjects meeting it: 2/2

@@ -1294,5 +1294,50 @@
   "code_citation": "util/stats/query_stats.go:183-192",
   "confidence": 0.7,
   "rationale": "SamplesReadPerStepMap's int(s.V) narrowing is byte-for-byte the pattern of the sibling TotalSamplesPerStepMap at lines 170-180, and the cluster itself clears it; no defect asserted."
+ },
+ {
+  "cluster_id": "c145",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "util/stats/query_stats.go:423-435",
+  "confidence": 0.65,
+  "rationale": "The cluster refutes itself: both slices are allocated together in InitStepTracking and the child is built by NewChildWithStepTracking from the parent's EnablePerStepStats, so the asymmetric-nil case it worries about cannot be constructed. Asserts no defect."
+ },
+ {
+  "cluster_id": "c146",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "util/stats/query_stats.go:347-356",
+  "confidence": 0.7,
+  "rationale": "Accurate reading of the guards, but no caller can supply a negative index (step counters start at 0 and the only literal is 0), and the pre-existing IncrementSamplesAtStep has no bounds check at all, so the new method is already stricter than its sibling."
+ },
+ {
+  "cluster_id": "c147",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2159-2161",
+  "confidence": 0.75,
+  "rationale": "Considered-and-cleared performance note that concludes cost-neutral; the pre-change code also called totalHPointSize once per step at the IncrementSamplesAtStep call. Asserts no defect."
+ },
+ {
+  "cluster_id": "c148",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "promql/engine.go:2142-2166",
+  "confidence": 0.5,
+  "rationale": "The path where fullWindowCount stays zero (selVS.Timestamp != nil and ts != startTimestamp) is untested, which is a real gap for the behavior change in g19. Marked down because the summary's literal claim is contradicted by engine_test.go:1352, an @-modified matrix selector in a range query that reaches the code via the StepInvariantExpr path instead."
+ },
+ {
+  "cluster_id": "c149",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "promql/engine.go:2160-2166",
+  "confidence": 0.75,
+  "rationale": "A considered-and-cleared note that asserts no defect: the instant path sets interval 1 and every evaluator construction derives a non-zero interval, so maxt-ev.interval is well defined. No action for a reviewer."
  }
 ]

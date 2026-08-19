@@ -664,5 +664,50 @@
   "code_citation": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:2250-2294",
   "confidence": 0.8,
   "rationale": "A considered-and-cleared conformance check: the new tests do use [ConditionalTheory]/[MemberData(nameof(IsAsyncData))] and neighbor naming, so no defect is asserted."
+ },
+ {
+  "cluster_id": "e79",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:507,578,587",
+  "confidence": 0.8,
+  "rationale": "testIsCondition is defined as caseExpression.Operand == null, so the guarded block can only run when there is no simple-CASE operand; the cluster concedes this itself, making it a considered-and-cleared note."
+ },
+ {
+  "cluster_id": "e80",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576-591",
+  "confidence": 0.75,
+  "rationale": "The cluster states outright that the rendering is pre-existing and unchanged by this diff, so it asserts no defect in the change under review."
+ },
+ {
+  "cluster_id": "e81",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlExpressions/SqlFunctionExpression.cs:242-243",
+  "confidence": 0.8,
+  "rationale": "Accurate \u2014 IsNiladic carries [MemberNotNullWhen(false, nameof(Arguments), nameof(ArgumentsPropagateNullability))] \u2014 but it defends the code as written and asserts no defect, so it is not something a reviewer needs to act on."
+ },
+ {
+  "cluster_id": "e82",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "info",
+  "code_citation": "src/EFCore.Relational/Query/SqlExpressions/SqlUnaryExpression.cs:19-26",
+  "confidence": 0.75,
+  "rationale": "SqlUnaryExpression's allowed operators are Equal, NotEqual, Convert, Not, Negate, and unary NotEqual is by construction IS NOT NULL, so the over-match concern is cleared and asserts no defect."
+ },
+ {
+  "cluster_id": "e83",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:580-583,598",
+  "confidence": 0.45,
+  "rationale": "The HashSet<SqlExpression> membership test uses structural equality (SqlFunctionExpression.Equals, SqlFunctionExpression.cs:405-419), so two textually identical calls to a nullable non-deterministic function in the test and the result would be conflated across two separate runtime evaluations; real but exotic, since non-deterministic nullable functions are rare."
  }
 ]
