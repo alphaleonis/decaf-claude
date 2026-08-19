@@ -166,3 +166,23 @@ Then two things that need a human eye:
 - Blind grading is non-negotiable — never tell the grader which tool produced a cluster.
 - Never hand-compute a metric. If a number is not in `metrics.json`, it is not a result.
 - Report the judge's model and training cutoff alongside results; it is pre-cutoff on most subjects.
+
+## Reporting discipline — no interpretation before the artifact (nib dcc-t83x)
+
+**Do not interpret a stage's output before the deterministic artifact exists.** Extraction counts,
+cluster assignments, a single grading pass and `new_clusters` are all intermediates. Report them as
+bare counts — "47 new clusters, ungraded" — and attach no reading.
+
+On 2026-08-19 five conclusions about one dataset reversed inside a session. Four had the same cause:
+an intermediate was interpreted in place of the pre-registered metric.
+
+- **`new_clusters` is NOT a detection measure.** It counts claims not already in the pool. A defect
+  eleven earlier arms recorded produces no new cluster when a twelfth finds it. Whenever it is
+  surfaced, label it "claims not already in the pool — NOT a detection measure".
+- **`precision` excludes `valid_minor`**, which is correct-and-actionable. Use `noise%` for "how much
+  of this is worth reading". See `v2/scoring/METRICS.md`.
+- **`finding_class` is what a finding is about; `verdict` is whether it is right.** A
+  considered-and-cleared note is `defect`-class and `trivia`-verdict.
+
+The comparison table comes from `v2/scoring/emit_facts.py` then `v2/scoring/compare_arms.py`, never
+from ad-hoc code written for the question at hand.

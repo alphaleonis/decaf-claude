@@ -286,6 +286,10 @@ def score(A, threads, key):
             "clusters_found": len(cs_found),
             "real": len(real), "valid_minor": len(minor), "trivia": len(noise), "false_positive": len(wrong),
             "precision": round(len(real) / len(cs), 3) if cs else None,
+            # The caveat travels with the number: `precision` counts valid-minor as a MISS, so an
+            # arm whose output is 92% correct can score 0.50. Reading it as "half is wrong" is a
+            # factual error that has been made (nib dcc-t83x). Use noise% for that question.
+            "precision_note": "excludes valid_minor (correct but small); see scoring/METRICS.md",
             "precision_severity_weighted": round(wr / wall, 3) if cs else None,
             "trivia_ratio": round(len(noise) / len(cs), 3) if cs else None,
             "unique_real": len(uniq),
