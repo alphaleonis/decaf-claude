@@ -2,11 +2,11 @@
 # dcc-7zyf
 version: 1
 title: 'Thread axis: distinguish an EMPTY axis (no tool matched anything) from tools performing badly'
-status: todo
+status: completed
 type: bug
 priority: normal
 created_at: 2026-08-19T17:11:29Z
-updated_at: 2026-08-19T17:12:00Z
+updated_at: 2026-08-19T17:19:43Z
 parent: dcc-ho2w
 order: zzV
 ---
@@ -64,7 +64,28 @@ with 10 threads that averages out. On one with 2, it can empty the axis complete
 
 ## Acceptance
 
-- [ ] `human_axis_empty` emitted and tested, distinct from `human_axis_thin`
-- [ ] Views render it as n/a-with-reason and exclude it from pooled thread figures
-- [ ] grafana-117615's reason recorded beside the subject
-- [ ] Decide whether the screen should require human threads that state a defect, not merely exist
+- [x] `human_axis_empty` emitted by score_pooled.py and tested (`t_empty_human_axis_is_distinct_from_thin`). Fires on grafana-117615 only; immich-28886 is thin-but-not-empty (1 of 2 hit), so the two flags discriminate.
+- [x] `thread_band.py` suppresses the per-tool table for an empty axis and prints n/a plus the recorded reason instead of a column of 0.00s.
+- [x] `pooled/grafana-grafana-117615/THREAD-AXIS-NOTE.md`, with both thread bodies verbatim and a machine-readable `REASON:` line the view reads.
+- [x] DECIDED: **no.** Requiring human threads that state a defect would select FOR matchability and inflate thread recall corpus-wide — a worse validity problem than an occasional empty axis, and it would quietly convert the miss detector into a measure of how findable the corpus was chosen to be. The real defect here is different: grafana-117615 has 3 human threads in total and 2 admitted, so it never met a >=5 HUMAN bar. It passed on a count that included bots — the [[dcc-qwt3]] problem. Fix the screen to count ADMITTED HUMAN threads, which METHODOLOGY-v2 already states as the criterion, and accept that some subjects will still land empty; flag them rather than select against them.
+
+## Summary
+
+**Completed 2026-08-19** — An empty thread axis is now distinguishable from tools performing badly.
+
+`score_pooled.py` emits `threads.human_axis_empty` when no tool matched ANY human thread, separate
+from `human_axis_thin`. It fires on grafana-117615 alone; immich-28886 is thin but not empty (1 of 2
+hit), so the flags discriminate. Tested.
+
+`thread_band.py` renders an empty axis as n/a with the recorded reason and suppresses the per-tool
+table entirely, rather than printing a column of 0.00s that cannot separate arms.
+`pooled/grafana-grafana-117615/THREAD-AXIS-NOTE.md` carries both thread bodies verbatim so a reader
+can see why: one is a reviewer saying they are unfamiliar with the area, the other a naming request
+about fixture data. Neither states a defect, so there was nothing for a tool to miss.
+
+Decided against requiring defect-stating human threads at screen time: that selects FOR matchability
+and would inflate thread recall corpus-wide, converting the miss detector into a measure of how
+findable the corpus was chosen to be. The actual defect is that grafana-117615 has 3 human threads
+total and 2 admitted, so it never met a >=5 HUMAN bar — it passed on a count that included bots,
+which is dcc-qwt3. The screen should count admitted HUMAN threads; empty axes that still occur get
+flagged, not selected against.
