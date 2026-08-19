@@ -2,11 +2,11 @@
 # dcc-p3wg
 version: 1
 title: 'Interactive cross-arm report: filterable view over the emitted fact tables'
-status: todo
+status: in-progress
 type: feature
 priority: normal
 created_at: 2026-08-19T15:44:59Z
-updated_at: 2026-08-19T15:45:58Z
+updated_at: 2026-08-19T17:50:08Z
 parent: dcc-ho2w
 blocked_by:
     - dcc-t83x
@@ -44,6 +44,6 @@ external calls. Load `artifact-design` first and `dataviz` before any chart code
 
 ## Acceptance
 
-- [ ] Page renders from the committed fact tables with no hand-entered numbers
-- [ ] Every guard above is enforced in the view, not just documented
-- [ ] A figure picked at random is re-derivable by hand from the fact tables
+- [x] `scoring/build_report.py` GENERATES the page from the three fact tables; no number is hand-entered. Provenance line carries the repo sha and a sha256 of the facts, and prints the two commands that rebuild it.
+- [x] Enforced in the view: ratios below n=10 render as a hatched WITHHELD chip carrying the raw counts; coverage groups are separate blocks each stating its own pool size, with ranking declared valid inside a block only; valid-minor is its own band in the composition bar and never folded into real or noise; noise% sits beside precision with the note that it is NOT 1-precision.
+- [x] Everything is a GROUP BY over the inlined facts, computed client-side at render, so any figure is re-derivable from the same three files. `scoring/test_reversals.py` already demonstrates this independently for five specific figures.
