@@ -186,3 +186,27 @@ an intermediate was interpreted in place of the pre-registered metric.
 
 The comparison table comes from `v2/scoring/emit_facts.py` then `v2/scoring/compare_arms.py`, never
 from ad-hoc code written for the question at hand.
+
+## Grade the standing calibration sample — every time (nib dcc-n4nf)
+
+Every grading day that touches a subject must grade that subject's **standing calibration sample**
+(`pooled/<subject>/grading/calibration-sample.json` — 15 clusters, chosen once, stratified across
+the six verdicts), relabelled and mixed into whatever else is being graded so the judge cannot tell
+a calibration cluster from a live one. Then record it:
+
+    judge_stability.py <pass1> <pass2> \
+      --calibration pooled/<subject>/grading/calibration-sample.json \
+      -o pooled/<subject>/grading/calibration-<date>.json
+
+**Do not draw a fresh sample.** A fresh draw confounds sampling with drift, and two days' numbers
+are then not comparable — which is what happened on 2026-08-18 and 2026-08-19. The same clusters
+every day makes a difference in the number a difference in the judge.
+
+`score_pooled.py` exits 3 for a subject with no calibration record. Pass `--no-calibration` only
+when a subject is being scored for the very first time.
+
+**Self-agreement is not calibration.** On 2026-08-19 the judge on prometheus agreed with itself
+24/24 (kappa 1.0) while agreeing with the pilot on 9/15 and 6/15, and every one of its 11
+disagreements was in the harsher direction. `judge_stability.py`'s stability mode cannot see that,
+because it never looks at the baseline. Report the direction too: a uniformly harsher judge leaves
+comparative claims intact while making absolute counts unpublishable.

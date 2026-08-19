@@ -1,0 +1,129 @@
+{
+ "subject": "dotnet-efcore-34127",
+ "chosen_on": "2026-08-19",
+ "n": 15,
+ "seed": "dcc-n4nf:standing-calibration:dotnet-efcore-34127",
+ "note": "STANDING sample \u2014 chosen once. Grade it blind (relabelled, mixed with live clusters) on every grading day that touches this subject, and record the result with judge_stability.py --calibration. Do not re-draw: a fresh draw confounds sampling with drift.",
+ "clusters": [
+  {
+   "cluster_id": "e02",
+   "summary": "A boolean/search-condition THEN result loses NULL: SearchConditionConvertingExpressionVisitor re-materializes it with no NULL arm, so NULL becomes false",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "e05",
+   "summary": "The new TODO carries no issue reference or rationale for deferring the symmetric case",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:577",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "docs"
+  },
+  {
+   "cluster_id": "e11",
+   "summary": "The null-propagation helpers are static local functions, so providers with custom null-propagating node types have no extension seam",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:595",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "design"
+  },
+  {
+   "cluster_id": "e15",
+   "summary": "== true is used where the file elsewhere uses an is { ... : true } pattern",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "style"
+  },
+  {
+   "cluster_id": "e19",
+   "summary": "No negative test pins the argumentsPropagateNullability == false branch",
+   "location": "test/EFCore.Relational.Specification.Tests/Query/NullSemanticsQueryTestBase.cs:0",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "e23",
+   "summary": "The DropNotNullChecks single-operand and binary.Update arms are uncovered by tests",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:608",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "e26",
+   "summary": "Baselines this diff makes optimal still carry stale // issue #16050 markers",
+   "location": "test/EFCore.SqlServer.FunctionalTests/Query/GearsOfWarQuerySqlServerTest.cs:1044",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "docs"
+  },
+  {
+   "cluster_id": "e31",
+   "summary": "The soundness contract the rewrite depends on is never stated: the steering comment describes only the degenerate identity case",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:576",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "docs"
+  },
+  {
+   "cluster_id": "e43",
+   "summary": "Whether the nullable out-parameter is left wrong after the collapse",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "e47",
+   "summary": "Whether LikeExpression should be handled by NullPropagatedOperands",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:617",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "design"
+  },
+  {
+   "cluster_id": "e55",
+   "summary": "Whether the seed data is adequate for the added tests",
+   "location": "test/EFCore.Specification.Tests/TestModels/NullSemanticsModel/NullSemanticsData.cs:0",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "e56",
+   "summary": "Whether every boolean THEN result is affected, or some stay correct",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:578",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "e57",
+   "summary": "Whether the optimization silently strengthens the contract of the propagate-nullability flags",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:633",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "risk"
+  },
+  {
+   "cluster_id": "e62",
+   "summary": "Whether caseExpression.Update ignores the reassigned whenClauses",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:585",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "e76",
+   "summary": "The rewritten CASE test is not re-visited after IS NOT NULL conjuncts are dropped, so a conjunct made trivially true or false by the drop is left unsimplified in the emitted SQL",
+   "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:590",
+   "pilot_pass1": "false-positive",
+   "pilot_pass2": "false-positive",
+   "finding_class": "risk"
+  }
+ ]
+}

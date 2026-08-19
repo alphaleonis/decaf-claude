@@ -2,11 +2,11 @@
 # dcc-n4nf
 version: 1
 title: 'Judge calibration protocol: a standing per-subject sample graded every grading day'
-status: todo
+status: completed
 type: feature
 priority: normal
 created_at: 2026-08-18T08:40:37Z
-updated_at: 2026-08-18T08:40:37Z
+updated_at: 2026-08-19T16:57:58Z
 parent: dcc-ho2w
 order: zs
 ---
@@ -38,3 +38,28 @@ calibration ad hoc; nothing makes it standing.
 - [ ] `judge_stability.py --calibration` + a test; `score_pooled.py` guard + a test
 - [ ] `/bench-analyze` and `prompts/README.md` say to grade the sample every time
 - [ ] The 2026-08-17 numbers (10/14, 3/12, 9/14, 8/12) recorded as the first entries
+
+## Summary
+
+**Completed 2026-08-19** — Standing samples built and committed for all five adjudicated subjects — 15 clusters each,
+stratified across the six verdicts, chosen once from a subject-scoped seed so the choice is
+reproducible from the repo alone. `build_calibration_sample.py` REFUSES to re-draw without --force,
+because re-drawing makes today's calibration incomparable with every earlier one.
+
+`judge_stability.py --calibration` compares today's verdicts against the pilot's pass 1 AND pass 2
+on that sample, and reports the DIRECTION of disagreement (harsher / softer / same) — the property
+that decides whether comparative claims survive. It refuses an ungraded sample rather than reporting
+0/0: a missing measurement is not a calibration of zero.
+
+`score_pooled.py` exits 3 for a subject with no calibration record, with the exact command to fix
+it; `--no-calibration` covers a first scoring. Tested both ways.
+
+The 2026-08-17/18/19 numbers are recorded in pooled/CALIBRATION-HISTORY.md. The per-subject
+backfills are marked BACKFILL and partial (n=3-5 of 15) because both earlier grading days drew their
+own samples — exactly the confound the standing sample removes. Real calibration starts from the
+next grading day.
+
+The finding worth carrying: 2026-08-19's judge was systematically harsher than the pilot — 11
+disagreements, 11 of them harsher, three pilot-real clusters downgraded and none upgraded — while
+agreeing with itself 24/24 on prometheus. Self-agreement cannot detect this, which is the whole
+argument for the standing sample.

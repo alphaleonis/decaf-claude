@@ -25,7 +25,7 @@ guarded because both already produced published numbers that were wrong:
   - artifacts describing different finding sets (scrapped dcc-z13k: 20 findings in the extract, 33
     in findings.json, 1 in common, and analysis.json clustering the stale set)
 """
-import json, sys, argparse
+import json, sys, argparse, os, glob
 from collections import defaultdict
 import vintage
 
@@ -422,8 +422,27 @@ def main():
     ap.add_argument("--allow-silent-cells", action="store_true",
                     help="permit a cell that produced no cluster — required for the NULL ARM, where "
                          "a tool reporting nothing is the result, not an extraction failure")
+    ap.add_argument("--no-calibration", action="store_true",
+                    help="emit metrics for a subject with no calibration record (nib dcc-n4nf). "
+                         "Only for a subject being scored for the very first time.")
     a = ap.parse_args()
     A = json.load(open(a.analysis))
+
+    # Every verdict-derived number depends on the grading day. A subject whose verdicts have never
+    # been calibrated against the pilot's has an unmeasured baseline: on 2026-08-17 the same model
+    # with the same prompt agreed with the pilot at 3/12 on one subject, and self-agreement could
+    # not see it. Refuse rather than emit a number whose judge is unaccounted for (nib dcc-n4nf).
+    if not a.no_calibration:
+        gd = os.path.join(os.path.dirname(os.path.abspath(a.analysis)), "grading")
+        recs = sorted(glob.glob(os.path.join(gd, "calibration-2*.json")))
+        if not recs:
+            print(f"DATA DEFECT — refusing to emit metrics:\n  no calibration record under {gd}. "
+                  f"Grade this subject's standing sample and record it with\n"
+                  f"    judge_stability.py <p1> <p2> --calibration {gd}/calibration-sample.json "
+                  f"-o {gd}/calibration-<date>.json\n"
+                  f"  or pass --no-calibration if this subject is being scored for the first time.",
+                  file=sys.stderr)
+            sys.exit(3)
     threads = json.load(open(a.threads)) if a.threads else None
     key = json.load(open(a.key)) if a.key else None
     try:

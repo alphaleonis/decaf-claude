@@ -1,0 +1,129 @@
+{
+ "subject": "prometheus-prometheus-18081",
+ "chosen_on": "2026-08-19",
+ "n": 15,
+ "seed": "dcc-n4nf:standing-calibration:prometheus-prometheus-18081",
+ "note": "STANDING sample \u2014 chosen once. Grade it blind (relabelled, mixed with live clusters) on every grading day that touches this subject, and record the result with judge_stability.py --calibration. Do not re-draw: a fresh draw confounds sampling with drift.",
+ "clusters": [
+  {
+   "cluster_id": "c03",
+   "summary": "NewChildWithStepTracking allocates two numSteps-sized []int64 per subquery, sized by unvalidated subquery resolution, where NewChild allocated none",
+   "location": "promql/engine.go:2397",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "c07",
+   "summary": "samplesRead is named and documented as an I/O count but increments once per step per series, so it over-counts memoized reads",
+   "location": "promql/engine.go:427",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "c101",
+   "summary": "The new test table encodes the double-count as expected values, so the tests lock the defect in rather than catch it",
+   "location": "promql/engine_test.go:1177",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "c124",
+   "summary": "Whether slice aliasing across the reused evaluation buffer is a Go-semantics hazard",
+   "location": "promql/engine.go:0",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "risk"
+  },
+  {
+   "cluster_id": "c13",
+   "summary": "querySamplesRead.Add fires in the defer for failed, cancelled and timed-out queries, adding partial counts",
+   "location": "promql/engine.go:686",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "c138",
+   "summary": "The subquery attribution loop's design choices ship with only a fragment of rationale: nothing records why ceiling rather than floor, why out-of-window steps are clamped rather than dropped, that the clamp is load-bearing against an out-of-bounds write, or the intended sum invariant",
+   "location": "promql/engine.go:2425",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "docs"
+  },
+  {
+   "cluster_id": "c140",
+   "summary": "The test file's PHASE banners are unusable as an index: the PHASE 3 banner appears twice over different content and no PHASE 1 banner exists",
+   "location": "promql/engine_test.go:2135",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "docs"
+  },
+  {
+   "cluster_id": "c25",
+   "summary": "Double-registration of the new collector",
+   "location": "promql/engine.go:0",
+   "pilot_pass1": "false-positive",
+   "pilot_pass2": "trivia",
+   "finding_class": "risk"
+  },
+  {
+   "cluster_id": "c41",
+   "summary": "The \"after last outer step\" clamp is dead code under the test suite",
+   "location": "promql/engine.go:2439",
+   "pilot_pass1": "false-positive",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "c60",
+   "summary": "New doc comments use different wording from the sibling helpers",
+   "location": "util/stats/query_stats.go:346",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "style"
+  },
+  {
+   "cluster_id": "c73",
+   "summary": "Test expectations were captured from the implementation output rather than derived, and an IMPLEMENTATION NOTES scratch block admitting they may need refinement shipped with them",
+   "location": "promql/engine_test.go:1777",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "c76",
+   "summary": "No test asserts the invariants SamplesRead <= TotalSamples or SamplesRead == sum(SamplesReadPerStep)",
+   "location": "promql/engine_test.go:0",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "c91",
+   "summary": "The four new exported helpers have no direct tests",
+   "location": "util/stats/stats_test.go:0",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-other",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "c92",
+   "summary": "Whether web UI types need updating",
+   "location": "web/ui:0",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "design"
+  },
+  {
+   "cluster_id": "c97",
+   "summary": "countSamplesAfter returns int64 while its same-file sibling returns int, forcing a cast at the combining call site",
+   "location": "promql/value.go:195",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "design"
+  }
+ ]
+}

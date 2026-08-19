@@ -6,7 +6,8 @@ The arithmetic tests matter as much as the guards here — a stability figure th
 worse than none, because it is the thing that licenses every other number in the pilot.
 """
 import copy
-from judge_stability import validate, score, kappa, DataDefect, KAPPA_FLOOR, EXACT_FLOOR
+from judge_stability import (validate, score, kappa, DataDefect, KAPPA_FLOOR,
+                             EXACT_FLOOR, calibration)
 
 
 def P(label, verdicts, model="claude-opus-5"):
@@ -149,6 +150,34 @@ def t_cross_model_is_flagged_not_refused():
     m = score(PASS1, p)
     assert m["same_model"] is False
 
+
+def t_calibration_measures_against_the_pilot_not_itself():
+    # Self-agreement and agreement-with-the-baseline are different properties. On 2026-08-19 the
+    # judge was 24/24 with itself while 9/15 and 6/15 against the pilot (nib dcc-n4nf).
+    import tempfile, os, json as _j
+    d = tempfile.mkdtemp(); sample = os.path.join(d, "s.json")
+    _j.dump({"subject": "s", "n": 3, "clusters": [
+        {"cluster_id": "c1", "pilot_pass1": "valid-other", "pilot_pass2": "valid-other"},
+        {"cluster_id": "c2", "pilot_pass1": "valid-other", "pilot_pass2": "trivia"},
+        {"cluster_id": "c3", "pilot_pass1": "trivia", "pilot_pass2": "trivia"}]}, open(sample, "w"))
+    m = calibration(sample, {"c1": "valid-other", "c2": "trivia", "c3": "trivia"})
+    assert m["vs_pilot_pass1"] == {"agree": 2, "n": 3}, m["vs_pilot_pass1"]
+    assert m["vs_pilot_pass2"] == {"agree": 3, "n": 3}, m["vs_pilot_pass2"]
+    assert m["direction_vs_pilot_pass1"] == {"harsher": 1, "softer": 0, "same": 2}, m
+
+
+def t_calibration_refuses_an_ungraded_sample():
+    # An ungraded sample is a MISSING measurement, not a calibration of zero.
+    import tempfile, os, json as _j
+    d = tempfile.mkdtemp(); sample = os.path.join(d, "s.json")
+    _j.dump({"subject": "s", "n": 1, "clusters": [
+        {"cluster_id": "c1", "pilot_pass1": "trivia", "pilot_pass2": "trivia"}]}, open(sample, "w"))
+    try:
+        calibration(sample, {"g01": "trivia"})     # blind ids, never mapped back
+    except DataDefect as e:
+        assert "not a calibration of 0" in str(e), str(e)
+        return
+    assert False, "accepted a sample that was never graded"
 
 for name, fn in sorted(globals().items()):
     if name.startswith("t_"):

@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-19T16:19:08Z
+updated_at: 2026-08-19T16:57:58Z
 order: zzzzV
 ---
 
@@ -267,25 +267,28 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-di47: Resolved toward option 3, with option 1 as the reporting form. `scoring/thread_band.py` reports two
-things and says which is trustworthy:
+Completed dcc-n4nf: Standing samples built and committed for all five adjudicated subjects — 15 clusters each,
+stratified across the six verdicts, chosen once from a subject-scoped seed so the choice is
+reproducible from the repo alone. `build_calibration_sample.py` REFUSES to re-draw without --force,
+because re-drawing makes today's calibration incomparable with every earlier one.
 
-CORPUS COVERAGE (did any tool raise this thread) is stable across both grading passes on every
-scored subject — prometheus 8-8 of 10, mattermost 2-2 of 4, immich 1-1 of 2, grafana 0-0 of 2. This
-is the miss detector METHODOLOGY-v2 section 2 justifies the thread set for, and it is the defensible
-number.
+`judge_stability.py --calibration` compares today's verdicts against the pilot's pass 1 AND pass 2
+on that sample, and reports the DIRECTION of disagreement (harsher / softer / same) — the property
+that decides whether comparative claims survive. It refuses an ungraded sample rather than reporting
+0/0: a missing measurement is not a calibration of zero.
 
-PER-TOOL ATTRIBUTION is not a point estimate. It is printed as a range with n attached, and flagged
-when the spread reaches 0.20. On today's fuller pools the spread is 0.10 on prometheus — one
-thread's worth, since 10 threads quantize recall at 0.10 — and 0.00 elsewhere. The pilot's 0.20 came
-from the thinner r1-only pool.
+`score_pooled.py` exits 3 for a subject with no calibration record, with the exact command to fix
+it; `--no-calibration` covers a first scoring. Tested both ways.
 
-Subjects with n<=2 human threads are marked THIN and per-subject disclosure only. grafana-117615 is
-the case that matters: 0 of its 2 human threads were raised by ANY tool under either pass, so its
-human thread axis carries no information at all, while 5 of its 7 admitted threads are bot-authored.
+The 2026-08-17/18/19 numbers are recorded in pooled/CALIBRATION-HISTORY.md. The per-subject
+backfills are marked BACKFILL and partial (n=3-5 of 15) because both earlier grading days drew their
+own samples — exactly the confound the standing sample removes. Real calibration starts from the
+next grading day.
 
-The script refuses to compute a band from one grading pass, and reports an unscored subject as
-SKIPPED rather than as a subject with no coverage.
+The finding worth carrying: 2026-08-19's judge was systematically harsher than the pilot — 11
+disagreements, 11 of them harsher, three pilot-real clusters downgraded and none upgraded — while
+agreeing with itself 24/24 on prometheus. Self-agreement cannot detect this, which is the whole
+argument for the standing sample.
 
 ## Key Decisions
 

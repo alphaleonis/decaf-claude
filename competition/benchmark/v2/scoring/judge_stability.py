@@ -168,10 +168,85 @@ def score(p1, p2):
     }
 
 
+# ---------------------------------------------------------------------------------------------
+# Calibration mode (nib dcc-n4nf): today's verdicts against the PILOT's, on a standing sample.
+#
+# Self-agreement and agreement-with-the-baseline are different properties, and a run can have the
+# first without the second. Measured 2026-08-19 on prometheus: today's two passes agreed 24/24
+# (kappa 1.0) while agreeing with the pilot on 9/15 and 6/15. A pipeline reporting only kappa would
+# have called that a flawless grading day.
+# ---------------------------------------------------------------------------------------------
+RANK = {"matches-thread": 5, "matches-key": 5, "valid-other": 4,
+        "valid-minor": 3, "trivia": 2, "false-positive": 1}
+
+
+def calibration(sample_path, today1, today2=None):
+    """Agreement of today's verdicts with the pilot's, on the standing sample.
+
+    `today1`/`today2` map REAL cluster_id -> verdict. Callers holding blind ids must map back
+    through the grading key first; a blind id here would silently match nothing and report 0/0,
+    so an empty overlap is an error rather than a result.
+    """
+    doc = json.load(open(sample_path))
+    rows = doc["clusters"]
+    seen = [r for r in rows if r["cluster_id"] in today1]
+    if not seen:
+        raise DataDefect(
+            f"none of the {len(rows)} standing-sample clusters appear in today's verdicts. "
+            f"Either the sample was not graded today, or blind ids were passed without mapping "
+            f"them back. An ungraded sample is not a calibration of 0 — it is a missing measurement.")
+    def agree(key):
+        pairs = [(r[key], today1[r["cluster_id"]]) for r in seen if r.get(key)]
+        return {"agree": sum(1 for a, b in pairs if a == b), "n": len(pairs)}
+    out = {"subject": doc["subject"], "sample_n": len(rows), "graded_today": len(seen),
+           "vs_pilot_pass1": agree("pilot_pass1"), "vs_pilot_pass2": agree("pilot_pass2")}
+    # direction of disagreement: a judge that is uniformly harsher suppresses every arm equally, so
+    # comparative claims survive it while absolute counts do not. Report which it is.
+    d = {"harsher": 0, "softer": 0, "same": 0}
+    for r in seen:
+        base, now = r.get("pilot_pass1"), today1[r["cluster_id"]]
+        if not base:
+            continue
+        if base == now:
+            d["same"] += 1
+        elif RANK.get(now, 0) < RANK.get(base, 0):
+            d["harsher"] += 1
+        else:
+            d["softer"] += 1
+    out["direction_vs_pilot_pass1"] = d
+    if today2:
+        both = [r["cluster_id"] for r in seen if r["cluster_id"] in today2]
+        out["today_pass1_vs_pass2"] = {
+            "agree": sum(1 for c in both if today1[c] == today2[c]), "n": len(both)}
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("pass1"); ap.add_argument("pass2"); ap.add_argument("-o", "--out")
+    ap.add_argument("pass1"); ap.add_argument("pass2", nargs="?"); ap.add_argument("-o", "--out")
+    ap.add_argument("--calibration", metavar="SAMPLE",
+                    help="path to grading/calibration-sample.json; compares today's verdicts "
+                         "against the pilot's on the standing sample")
     a = ap.parse_args()
+
+    if a.calibration:
+        t1 = {v["cluster_id"]: v.get("verdict") for v in _load(a.pass1)["verdicts"]}
+        t2 = ({v["cluster_id"]: v.get("verdict") for v in _load(a.pass2)["verdicts"]}
+              if a.pass2 else None)
+        try:
+            m = calibration(a.calibration, t1, t2)
+        except DataDefect as e:
+            print(f"DATA DEFECT — refusing to emit a calibration figure:\n  {e}", file=sys.stderr)
+            sys.exit(3)
+        s = json.dumps(m, indent=2)
+        if a.out:
+            open(a.out, "w").write(s + "\n"); print(f"wrote {a.out}")
+        else:
+            print(s)
+        return
+
+    if not a.pass2:
+        print("stability mode needs two passes", file=sys.stderr); sys.exit(2)
     try:
         p1, p2 = _load(a.pass1), _load(a.pass2)
         validate(p1, p2)
