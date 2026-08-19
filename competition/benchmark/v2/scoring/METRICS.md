@@ -5,14 +5,23 @@ and four of the five were caused by reading the wrong quantity rather than by ba
 now live here and are printed by `compare_arms.py` on every run, so a caveat cannot get separated
 from the number it applies to.
 
-## The two orthogonal axes
+## The three orthogonal axes
 
-Every cluster carries both. Conflating them caused the first reversal.
+Every graded cluster carries all three, and they vary independently. Conflating the first two caused
+reversal 1; assuming the third is part of the pool definition is a separate and equally easy error.
 
 | axis | question | values |
 |---|---|---|
-| **`verdict`** | is the claim **right**? | `matches-thread` · `matches-key` · `valid-other` · `valid-minor` · `trivia` · `false-positive` |
 | **`finding_class`** | what is it **about**? | `defect` · `risk` · `test-gap` · `docs` · `design` · `style` |
+| **`verdict`** | is the claim **right and substantive**? | `matches-thread` · `matches-key` · `valid-other` · `valid-minor` · `trivia` · `false-positive` |
+| **`judged_severity`** | what is the **impact if real**? | `critical` · `high` · `medium` · `low` · `nit` · `info` |
+
+**`valid-minor` is not the same as `low` severity, and the two are frequently mistaken for each
+other.** `valid-minor` is a judgement about *substance* — correct, but too small for the judge to
+call it substantive. `low` is a judgement about *impact if real* — and a low-impact issue can still
+be a fully substantive finding. Measured on the corpus: 5 clusters are `low` severity **and** in the
+real-defect pool (prometheus `c15`, `c102`; mattermost `ma02`, which a human reviewer raised), while
+13 defect-class clusters are excluded for being `valid-minor` at various severities.
 
 A "considered whether X could crash — it cannot" note is **`defect`-class and `trivia`-verdict**. It
 is *about* a potential defect, and it is *not* a finding. Counting defect-class clusters as defects
@@ -59,8 +68,21 @@ noise% = (trivia + false-positive) / reported
 
 ## Pools and denominators
 
-- **real-defect pool** — clusters that are `real` **and** `defect`-class. The denominator for
-  defect recall.
+- **real-defect pool** — exactly two conditions, and **severity is not one of them**:
+
+  ```python
+  in_defect_pool = verdict in {matches-thread, matches-key, valid-other} and finding_class == "defect"
+  ```
+
+  So a `low`-severity cluster is in the pool if its verdict is real; a `critical`-severity claim the
+  judge called `trivia` is not. Corpus composition of the 33-cluster pool: 2 critical, 6 high,
+  20 medium, 5 low — and by verdict, 20 `valid-other` and 13 `matches-thread`.
+
+  **The exclusions are larger than the pool.** 138 clusters are defect-*class*; only 33 survive as
+  real. The other 105 are 89 `trivia`, 13 `valid-minor`, 3 `false-positive`. The 89 are mostly
+  considered-and-cleared notes — "checked whether X could crash; it cannot" — which class as
+  `defect` because they are *about* a defect and grade as `trivia` because they assert none.
+  Reading defect-class counts as defects found inflates the number roughly 4x; that is reversal 1.
 - **The pool is dynamic.** It is the union of what tools found, so adding an arm that finds
   something genuinely new *enlarges it* and retroactively lowers every other arm's recall. On
   2026-08-18 folding in one arm moved immich 4 → 5 and grafana 4 → 6, dropping `ours-bugs` from
