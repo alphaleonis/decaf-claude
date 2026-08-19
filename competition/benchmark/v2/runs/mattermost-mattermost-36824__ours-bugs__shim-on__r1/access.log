@@ -1,259 +1,49 @@
-2026-08-17T13:36:45Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:36:46Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:36:49Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:36:55Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go
-2026-08-17T13:36:55Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response_test.go
-2026-08-17T13:37:54Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:37:55Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:37:58Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:38:00Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo
-2026-08-17T13:38:07Z	fs	ALLOW	Bash ./public/model/...
-2026-08-17T13:38:15Z	fs	ALLOW	Bash server/public ./model/...
-2026-08-17T13:38:19Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public ./model/...
-2026-08-17T13:38:30Z	fs	ALLOW	Bash ./model/ ./model/
-2026-08-17T13:39:20Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go
-2026-08-17T13:39:32Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/command_response_test.go
-2026-08-17T13:39:33Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/command_response_test.go
-2026-08-17T13:39:39Z	fs	ALLOW	Bash model/post.go
-2026-08-17T13:39:44Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go
-2026-08-17T13:39:45Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response_test.go
-2026-08-17T13:39:48Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/client4.go
-2026-08-17T13:39:49Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/app/command.go
-2026-08-17T13:39:49Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/web/webhook.go
-2026-08-17T13:39:49Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server channels/app/command.go
-2026-08-17T13:40:02Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/
-2026-08-17T13:40:02Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/
-2026-08-17T13:40:03Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/post.go server/channels/app/command.go server/channels/web/webhook.go /dev/null
-2026-08-17T13:40:06Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/ /dev/null
-2026-08-17T13:40:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/ /dev/null
-2026-08-17T13:40:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/post.go
-2026-08-17T13:40:14Z	fs	ALLOW	Bash model/app_error.go
-2026-08-17T13:40:15Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go
-2026-08-17T13:40:15Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo
-2026-08-17T13:40:16Z	fs	ALLOW	Bash model/
-2026-08-17T13:40:18Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/ /dev/null
-2026-08-17T13:40:18Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/app/command.go
-2026-08-17T13:40:21Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server /dev/null public/model/app_error.go /dev/null
-2026-08-17T13:40:21Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo
-2026-08-17T13:40:22Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/app/command.go
-2026-08-17T13:40:22Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels server/public
-2026-08-17T13:40:24Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server /dev/null public/model/app_error.go
-2026-08-17T13:40:26Z	fs	ALLOW	Bash model/app_error.go /dev/null
-2026-08-17T13:40:28Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:40:30Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:40:31Z	fs	ALLOW	Bash model/utils.go
-2026-08-17T13:40:41Z	fs	ALLOW	Bash model/command_response.go
-2026-08-17T13:40:42Z	fs	ALLOW	Bash model/*.go
-2026-08-17T13:40:43Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/app/command.go
-2026-08-17T13:40:44Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/web/webhook.go
-2026-08-17T13:40:46Z	fs	ALLOW	Bash ../../i18n/en.json /dev/null / /dev/null
-2026-08-17T13:40:47Z	fs	ALLOW	Bash ../../channels/app/command.go /dev/null ../../channels/web/webhook.go /dev/null model/client4.go /dev/null
-2026-08-17T13:40:50Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server
-2026-08-17T13:40:51Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/ /dev/null
-2026-08-17T13:40:52Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/command_response.go server/public/model/command_response.go
-2026-08-17T13:40:52Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server /dev/null
-2026-08-17T13:40:56Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server channels/web/webhook.go
-2026-08-17T13:40:56Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/
-2026-08-17T13:40:57Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/client4.go
-2026-08-17T13:41:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo ./server/public /dev/null /dev/null
-2026-08-17T13:41:08Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/i18n/en.json
-2026-08-17T13:41:13Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public model/app_error.go model/app_error.go
-2026-08-17T13:41:14Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels web/webhook.go web/webhook.go app/command.go
-2026-08-17T13:41:18Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels app/command.go
-2026-08-17T13:41:19Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels web/webhook.go
-2026-08-17T13:41:23Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/post.go
-2026-08-17T13:41:24Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/app/*.go server/public/model/*.go /dev/null
-2026-08-17T13:41:27Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/post.go
-2026-08-17T13:41:27Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server /dev/null
-2026-08-17T13:41:28Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/app/*.go /dev/null
-2026-08-17T13:41:29Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server /dev/null
-2026-08-17T13:41:33Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/ server/channels/web/
-2026-08-17T13:41:34Z	fs	ALLOW	Bash model/client4.go
-2026-08-17T13:41:35Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/ webapp/ /dev/null
-2026-08-17T13:41:39Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/ /dev/null
-2026-08-17T13:41:39Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/app/platform/*.go /dev/null
-2026-08-17T13:41:43Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo
-2026-08-17T13:41:43Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public model/*.go
-2026-08-17T13:41:44Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server channels/app/plugin_api.go channels/app/command.go /dev/null
-2026-08-17T13:41:46Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server channels/app/command.go
-2026-08-17T13:41:56Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public model/post.go model/*.go /dev/null
-2026-08-17T13:41:56Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public model/*.go
-2026-08-17T13:42:00Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server channels/app/command.go
-2026-08-17T13:42:05Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server channels/api4/command.go
-2026-08-17T13:42:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server channels/api4/command.go
-2026-08-17T13:42:10Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server channels/api4/command.go
-2026-08-17T13:42:26Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/store/sqlstore/post_store.go
-2026-08-17T13:42:26Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/db/migrations/ /dev/null
-2026-08-17T13:42:29Z	fs	ALLOW	Bash /dev/null /dev/null $GOROOT/src/encoding/json/ /dev/null
-2026-08-17T13:42:47Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/ /dev/null
-2026-08-17T13:42:48Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/app/platform/config.go /dev/null server/channels/app/platform/config.go
-2026-08-17T13:43:02Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public model/bot.go model/channel_bookmark.go
-2026-08-17T13:43:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public model/app_error.go
-2026-08-17T13:43:10Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public /dev/null
-2026-08-17T13:43:27Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo /dev/null
-2026-08-17T13:43:28Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo docs/ /dev/null /dev/null
-2026-08-17T13:43:36Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:43:52Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo
-2026-08-17T13:43:52Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo /dev/null */i18n/en.json /dev/null
-2026-08-17T13:43:55Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/i18n/en.json
-2026-08-17T13:43:56Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/*.go server/i18n/en.json
-2026-08-17T13:44:01Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/app_error.go
-2026-08-17T13:44:01Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/app_error.go
-2026-08-17T13:44:03Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo /dev/null
-2026-08-17T13:44:05Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/ /dev/null
-2026-08-17T13:44:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/utils.go
-2026-08-17T13:44:14Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/i18n/en.json server/i18n/en.json
-2026-08-17T13:44:16Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/i18n/en.json
-2026-08-17T13:44:23Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/utils.go
-2026-08-17T13:44:24Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/utils.go
-2026-08-17T13:44:28Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/utils.go
-2026-08-17T13:44:28Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/utils.go
-2026-08-17T13:44:39Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo */shared/i18n/*.go /dev/null
-2026-08-17T13:44:40Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo *shared/i18n* /dev/null
-2026-08-17T13:44:42Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/shared/i18n/i18n.go
-2026-08-17T13:44:45Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/shared/i18n/i18n.go
-2026-08-17T13:46:24Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/channels/app/command.go
-2026-08-17T13:46:25Z	fs	ALLOW	Bash server/channels/app/command.go server/channels/web/webhook.go
-2026-08-17T13:50:12Z	fs	ALLOW	Bash server/
-2026-08-17T13:50:14Z	fs	ALLOW	Bash server/i18n/en.json server/scripts/ /dev/null server/Makefile
-2026-08-17T13:50:34Z	fs	ALLOW	Bash server/Makefile tools/mattermost-govet/ /dev/null
-2026-08-17T13:50:36Z	fs	ALLOW	Bash server/ server/
-2026-08-17T13:50:47Z	fs	ALLOW	Bash server/ webapp/e2e/api api/ /dev/null
-2026-08-17T13:50:47Z	fs	ALLOW	Bash server/Makefile .github/ /dev/null .github/workflows /dev/null
-2026-08-17T13:51:35Z	fs	ALLOW	Bash server/channels/app/*.go server/channels/app/command_webhook.go /dev/null
-2026-08-17T13:55:39Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:55:39Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go
-2026-08-17T13:55:46Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:55:47Z	fs	ALLOW	Bash server/channels/app/command.go
-2026-08-17T13:55:51Z	fs	ALLOW	Bash (no path)
-2026-08-17T13:55:52Z	fs	ALLOW	Bash server/channels/app/command.go
-2026-08-17T13:56:06Z	fs	ALLOW	Bash server/channels/api4/command.go server/channels/api4/command.go
-2026-08-17T13:56:07Z	fs	ALLOW	Bash server/channels/web/webhook.go
-2026-08-17T13:56:13Z	fs	ALLOW	Bash server/channels/api4/command.go
-2026-08-17T13:56:13Z	fs	ALLOW	Bash server/public/model/client4.go
-2026-08-17T13:56:17Z	fs	ALLOW	Bash server/channels/api4/command.go
-2026-08-17T13:56:18Z	fs	ALLOW	Bash server/channels/app/slashcommands/*.go server/channels/app/*.go /dev/null
-2026-08-17T13:56:50Z	fs	ALLOW	Bash server/channels/store/sqlstore/post_store.go server/channels
-2026-08-17T13:56:50Z	fs	ALLOW	Bash server/channels/app/post.go
-2026-08-17T13:57:27Z	fs	ALLOW	Bash server/public/plugin/*.go
-2026-08-17T13:57:29Z	fs	ALLOW	Bash server/cmd /dev/null server/channels/app\ server/channels/api4\ public/model/client4.go
-2026-08-17T13:58:10Z	fs	ALLOW	Bash server/public/plugin\ app/command.go\ api4/command.go server/i18n/en.json /dev/null
-2026-08-17T13:58:11Z	fs	ALLOW	Bash server/public/model/command_response_test.go
-2026-08-17T13:58:35Z	fs	ALLOW	Bash server/public/model/post.go server/public/model/post.go
-2026-08-17T13:58:36Z	fs	ALLOW	Bash server/channels/app/webhook.go
-2026-08-17T13:59:18Z	fs	ALLOW	Bash server/channels/app/webhook.go server/channels/app/command.go
-2026-08-17T14:00:24Z	fs	ALLOW	Bash server/channels/api4/command.go
-2026-08-17T14:00:25Z	fs	ALLOW	Bash server/public/model/client4.go server/channels/app/plugin_commands.go
-2026-08-17T14:00:55Z	fs	ALLOW	Bash server/channels/app/post.go
-2026-08-17T14:01:14Z	fs	ALLOW	Bash server/public/model/command_response.go
-2026-08-17T14:01:15Z	fs	ALLOW	Bash server/channels/api4/command.go
-2026-08-17T14:01:18Z	fs	ALLOW	Bash server/channels/app/command.go
-2026-08-17T14:01:18Z	fs	ALLOW	Bash server/channels/app/command.go
-2026-08-17T14:01:22Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/command.go
-2026-08-17T14:01:23Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/command.go
-2026-08-17T14:01:28Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/command.go
-2026-08-17T14:01:28Z	fs	ALLOW	Bash server/channels/app/plugin_commands.go
-2026-08-17T14:01:32Z	fs	ALLOW	Bash server/public/model/post.go
-2026-08-17T14:01:33Z	fs	ALLOW	Bash server/public/model/command_response.go
-2026-08-17T14:01:35Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/plugin_commands.go
-2026-08-17T14:01:35Z	fs	ALLOW	Bash server/public/plugin/hooks.go server/public/plugin/*.go /dev/null
-2026-08-17T14:01:36Z	fs	ALLOW	Bash server/public/model/post.go server/public/model/terms_of_service.go server/public/model/channel.go
-2026-08-17T14:01:37Z	fs	ALLOW	Bash server/channels/store/sqlstore/post_store.go
-2026-08-17T14:01:37Z	fs	ALLOW	Bash server/public/model/post.go
-2026-08-17T14:01:39Z	fs	ALLOW	Bash server/public/model/client4.go
-2026-08-17T14:01:43Z	fs	ALLOW	Bash server/channels/app/command.go
-2026-08-17T14:01:43Z	fs	ALLOW	Bash server/channels/app/post.go
-2026-08-17T14:01:46Z	fs	ALLOW	Bash server/channels/app/post.go
-2026-08-17T14:01:46Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go
-2026-08-17T14:01:46Z	fs	ALLOW	Bash server/channels/app/post.go
-2026-08-17T14:01:47Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/command.go
-2026-08-17T14:01:51Z	fs	ALLOW	Bash server/channels/app/post.go
-2026-08-17T14:01:52Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/command.go
-2026-08-17T14:01:53Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/web/webhook.go
-2026-08-17T14:01:53Z	fs	ALLOW	Bash server/channels/app/post.go
-2026-08-17T14:01:53Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response_test.go
-2026-08-17T14:01:53Z	fs	ALLOW	Bash server/channels/app/post.go
-2026-08-17T14:01:56Z	fs	ALLOW	Bash server/channels/app/*.go server/channels/api4/*.go /dev/null
-2026-08-17T14:01:56Z	fs	ALLOW	Bash server/public/model/*_test.go /dev/null server/channels/api4/*_test.go
-2026-08-17T14:01:58Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/command.go
-2026-08-17T14:02:02Z	fs	ALLOW	Bash ./public/model/...
-2026-08-17T14:02:02Z	fs	ALLOW	Bash server/channels/api4/command_test.go server/channels/api4/commands_test.go /dev/null
-2026-08-17T14:02:04Z	fs	ALLOW	Bash server/public/model/command_response.go
-2026-08-17T14:02:04Z	fs	ALLOW	Bash server/i18n/en.json server/i18n/en.json server/i18n/en.json
-2026-08-17T14:02:05Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go
-2026-08-17T14:02:07Z	fs	ALLOW	Bash server/public/model/command_response.go
-2026-08-17T14:02:08Z	fs	ALLOW	Bash server/channels/app/ server/channels/app/*.go
-2026-08-17T14:02:09Z	fs	DENY	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/...
-2026-08-17T14:02:09Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/utils.go
-2026-08-17T14:02:09Z	fs	ALLOW	Bash server/public/shared/shared/i18n/i18n.go
-2026-08-17T14:02:11Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo *shared/i18n/i18n.go /dev/null
-2026-08-17T14:02:12Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/slashcommands/*.go
-2026-08-17T14:02:13Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/shared/i18n/i18n.go
-2026-08-17T14:02:14Z	fs	ALLOW	Bash server/public/model/*.go
-2026-08-17T14:02:14Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/slashcommands/*.go
-2026-08-17T14:02:17Z	fs	ALLOW	Bash server/public/model/utils.go server/public/model/app_error.go /dev/null server/public/model/
-2026-08-17T14:02:20Z	fs	ALLOW	Bash server/public/model/utils.go server/
-2026-08-17T14:02:21Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/plugin/hooks.go /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/command_response.go /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model/command_response.go
-2026-08-17T14:02:21Z	fs	ALLOW	Bash server/
-2026-08-17T14:02:26Z	fs	ALLOW	Bash server/channels/app/command.go server/channels/web/webhook.go
-2026-08-17T14:02:33Z	fs	ALLOW	Bash server/public/model/app_error.go server/public/model/utils.go /dev/null server/public/model/*.go
-2026-08-17T14:02:35Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/utils.go
-2026-08-17T14:02:42Z	fs	ALLOW	Bash server/i18n/en.json
-2026-08-17T14:02:43Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/cmd/mmctl /dev/null /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo server/public/model\ server/channels/app\ server/channels/api4
-2026-08-17T14:02:46Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo /dev/null
-2026-08-17T14:02:51Z	fs	ALLOW	Bash server/public/model/utils.go server/channels/app/command_webhook.go server/channels/web/context.go
-2026-08-17T14:02:54Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/plugin_commands_test.go
-2026-08-17T14:02:57Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/utils.go
-2026-08-17T14:02:57Z	fs	ALLOW	Bash server/channels/web/handlers.go /dev/null server/channels/web/*.go
-2026-08-17T14:02:59Z	fs	ALLOW	Bash server/channels/web/handlers.go
-2026-08-17T14:03:03Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/*.go
-2026-08-17T14:03:12Z	fs	ALLOW	Bash server/channels/ server/public/model/command_response.go /dev/null
-2026-08-17T14:03:15Z	fs	ALLOW	Bash server/Makefile /dev/null server/Makefile .github/workflows/ /dev/null
-2026-08-17T14:03:19Z	fs	ALLOW	Bash .github/workflows/i18n-ci-pr.yml /dev/null .github/workflows/i18n-ci-template.yml /dev/null
-2026-08-17T14:03:24Z	fs	ALLOW	Bash .github/ /dev/null */tools/mmgotool* /dev/null
-2026-08-17T14:03:26Z	fs	ALLOW	Bash .github/workflows/webapp-ci.yml
-2026-08-17T14:04:00Z	fs	ALLOW	Bash server/public/model/utils.go server/channels/web/webhook.go
-2026-08-17T14:05:26Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go
-2026-08-17T14:05:27Z	fs	ALLOW	Bash server/public/model/client4.go
-2026-08-17T14:05:31Z	fs	ALLOW	Bash server/channels/api4/command.go
-2026-08-17T14:05:31Z	fs	ALLOW	Bash server/channels/app/command.go
-2026-08-17T14:05:37Z	fs	ALLOW	Bash server/channels/app/command.go
-2026-08-17T14:05:37Z	fs	ALLOW	Bash server/channels/app/*.go
-2026-08-17T14:05:40Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/command.go
-2026-08-17T14:05:41Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/command.go
-2026-08-17T14:05:43Z	fs	ALLOW	Bash server/public/model/command_response.go
-2026-08-17T14:05:44Z	fs	ALLOW	Bash server/public/model/post.go
-2026-08-17T14:05:47Z	fs	ALLOW	Bash server/channels/store/sqlstore/post_store.go
-2026-08-17T14:05:47Z	fs	ALLOW	Bash server/public/model/post.go
-2026-08-17T14:05:48Z	fs	ALLOW	Bash server/channels/app/post.go
-2026-08-17T14:05:48Z	fs	ALLOW	Bash server/channels/app/command.go
-2026-08-17T14:05:49Z	fs	ALLOW	Bash server/public/plugin/*.go
-2026-08-17T14:05:50Z	fs	ALLOW	Bash server/channels/app/plugin_commands.go
-2026-08-17T14:05:58Z	fs	ALLOW	Bash server/public/model/command_response.go
-2026-08-17T14:06:02Z	fs	ALLOW	Bash server/channels/app/command.go
-2026-08-17T14:06:02Z	fs	ALLOW	Bash server/channels/app/command.go
-2026-08-17T14:06:05Z	fs	ALLOW	Bash server/channels/api4/*_test.go server/cmd /dev/null
-2026-08-17T14:06:05Z	fs	ALLOW	Bash server/public/model/client4.go
-2026-08-17T14:06:07Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/channels/app/command.go
-2026-08-17T14:06:07Z	fs	ALLOW	Bash server/channels/web/webhook.go
-2026-08-17T14:06:10Z	fs	ALLOW	Bash public/model/command_response.go public/model/command_response.go /dev/null
-2026-08-17T14:06:12Z	fs	ALLOW	Bash server/public/model/command_response.go HEAD~1:server/public/model/command_response.go /dev/null server/public/model/command_response.go
-2026-08-17T14:06:17Z	fs	ALLOW	Bash server/channels/store/sqlstore/post_store.go server/
-2026-08-17T14:06:18Z	fs	ALLOW	Bash server/channels/store/sqlstore/*.go
-2026-08-17T14:06:18Z	fs	ALLOW	Bash server/channels/app/command.go
-2026-08-17T14:06:21Z	fs	ALLOW	Bash (no path)
-2026-08-17T14:06:22Z	fs	ALLOW	Bash channels/store/sqlstore/post_store.go
-2026-08-17T14:06:23Z	fs	ALLOW	Bash server/public/model/command_response_test.go
-2026-08-17T14:06:33Z	fs	ALLOW	Bash (no path)
-2026-08-17T14:06:38Z	fs	ALLOW	Bash (no path)
-2026-08-17T14:06:38Z	fs	ALLOW	Bash public/model/command_response.go
-2026-08-17T14:06:40Z	fs	ALLOW	Bash public/model/command_response_test.go
-2026-08-17T14:06:42Z	fs	ALLOW	Bash server/public/model/command_response.go server/public/model/command_response_test.go
-2026-08-17T14:07:02Z	fs	ALLOW	Bash public/model/command_response.go
-2026-08-17T14:07:09Z	fs	ALLOW	Bash server/channels/app/command.go server/channels/app/command.go
-2026-08-17T14:07:21Z	fs	ALLOW	Bash server/public/model/command_response.go
-2026-08-17T14:07:23Z	fs	ALLOW	Bash server/public ./model/...
-2026-08-17T14:08:12Z	fs	ALLOW	Bash (no path)
-2026-08-17T14:08:19Z	fs	ALLOW	Bash .decaf/code-reviews .decaf/code-reviews/CODE_REVIEW_$
-2026-08-17T14:09:49Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/.decaf/code-reviews/CODE_REVIEW_2026-08-17_16-08-20.md
-2026-08-17T14:09:52Z	fs	ALLOW	Bash .decaf/code-reviews/ /dev/null
+2026-08-17T14:30:53Z	fs	ALLOW	Bash (no path)
+2026-08-17T14:30:54Z	fs	ALLOW	Bash (no path)
+2026-08-17T14:30:58Z	fs	ALLOW	Bash (no path)
+2026-08-17T14:31:42Z	fs	ALLOW	Bash (no path)
+2026-08-17T14:31:42Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go
+2026-08-17T14:31:52Z	fs	ALLOW	Bash (no path)
+2026-08-17T14:31:53Z	fs	ALLOW	Bash server/i18n/en.json /dev/null server/i18n/en.json
+2026-08-17T14:32:00Z	fs	ALLOW	Bash (no path)
+2026-08-17T14:32:01Z	fs	ALLOW	Bash server/i18n/en.json server/i18n/en.json
+2026-08-17T14:32:08Z	fs	ALLOW	Bash server/channels/app/command.go
+2026-08-17T14:32:09Z	fs	ALLOW	Bash server/channels/web/webhook.go
+2026-08-17T14:32:15Z	fs	ALLOW	Bash server/
+2026-08-17T14:32:16Z	fs	ALLOW	Bash webapp/ /dev/null api/ /dev/null
+2026-08-17T14:32:43Z	fs	ALLOW	Bash server/channels/app/command.go
+2026-08-17T14:32:44Z	fs	ALLOW	Bash server/public/model/utils.go server/public/model/*.go
+2026-08-17T14:32:48Z	fs	ALLOW	Bash server/public/model/utils.go
+2026-08-17T14:32:49Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response_test.go
+2026-08-17T14:32:59Z	fs	ALLOW	Bash server/Makefile .github/workflows/*.yml /dev/null
+2026-08-17T14:33:00Z	fs	ALLOW	Bash server/public/shared/i18n/i18n.go
+2026-08-17T14:33:08Z	fs	ALLOW	Bash server/Makefile server/build /dev/null server/Makefile
+2026-08-17T14:33:09Z	fs	ALLOW	Bash server/
+2026-08-17T14:33:30Z	fs	ALLOW	Bash server/public/model/post.go server/channels/app/post.go
+2026-08-17T14:33:31Z	fs	ALLOW	Bash server/public/model/post.go
+2026-08-17T14:34:11Z	fs	ALLOW	Bash server/ server/public/model/command_response
+2026-08-17T14:34:12Z	fs	ALLOW	Bash server/public/model/client4.go
+2026-08-17T14:34:22Z	fs	DENY	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/...
+2026-08-17T14:34:26Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model
+2026-08-17T14:34:30Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model
+2026-08-17T14:35:20Z	fs	ALLOW	Bash server/ server/channels/store/sqlstore/post_store.go
+2026-08-17T14:35:21Z	fs	ALLOW	Bash .github/workflows/ .github/workflows/*.yml
+2026-08-17T14:35:30Z	fs	ALLOW	Bash server/i18n/en.json server/i18n/en.json server/channels/store/sqlstore/post_store.go
+2026-08-17T14:35:31Z	fs	ALLOW	Bash server/public/model/command_response.go
+2026-08-17T14:36:06Z	fs	ALLOW	Bash server/public/model/*.go /tmp/ids.txt /tmp/ids.txt server/i18n/en.json /tmp/ids.txt
+2026-08-17T14:36:18Z	fs	ALLOW	Bash server/channels/web/context.go server/channels/api4/*.go /dev/null / /proc /dev/null
+2026-08-17T14:38:23Z	fs	ALLOW	Bash server/channels/web/ server/channels/api4/ server/public/model/ /dev/null
+2026-08-17T14:38:29Z	fs	ALLOW	Bash server/channels/web/handlers.go
+2026-08-17T14:38:43Z	fs	ALLOW	Bash server/channels/app/command.go
+2026-08-17T14:38:52Z	fs	ALLOW	Bash server/public/model/config.go server/public/model/config.go
+2026-08-17T14:39:28Z	fs	ALLOW	Bash (no path)
+2026-08-17T14:39:33Z	fs	ALLOW	Edit /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model/command_response.go
+2026-08-17T14:39:38Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model
+2026-08-17T14:39:47Z	fs	ALLOW	Bash server/public/model/command_response.go
+2026-08-17T14:39:54Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/server/public/model
+2026-08-17T14:39:55Z	fs	ALLOW	Bash server/channels/app/slashcommands/
+2026-08-17T14:40:06Z	fs	ALLOW	Bash /src/encoding/json/scanner.go /dev/null
+2026-08-17T14:41:37Z	fs	ALLOW	Read /home/decaf/.claude/skills/decaf-quality-dev/conventions/session-report.md
+2026-08-17T14:41:43Z	fs	ALLOW	Bash .decaf/code-reviews /dev/null
+2026-08-17T14:43:02Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/mattermost-mattermost-36824/repo/.decaf/code-reviews/CODE_REVIEW_2026-08-17_16-41-43.md
+2026-08-17T14:43:07Z	fs	ALLOW	Bash (no path)

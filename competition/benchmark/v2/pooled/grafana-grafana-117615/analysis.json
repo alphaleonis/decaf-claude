@@ -8,7 +8,7 @@
  "grading_pass": 1,
  "cells": [
   {
-   "tool": "ours-bugs",
+   "tool": "ours-bugs-wave",
    "repeat": 1,
    "cost_usd": 14.7958,
    "wall_s": 1440,
@@ -16,7 +16,7 @@
    "access_denied": 1
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-bugs-wave",
    "repeat": 2,
    "cost_usd": 11.3842,
    "wall_s": 1390,
@@ -24,7 +24,7 @@
    "access_denied": 0
   },
   {
-   "tool": "ours-bugs-sp3",
+   "tool": "ours-bugs",
    "repeat": 1,
    "cost_usd": 5.9777,
    "wall_s": 807,
@@ -32,7 +32,7 @@
    "access_denied": 2
   },
   {
-   "tool": "ours-bugs-sp3",
+   "tool": "ours-bugs",
    "repeat": 2,
    "cost_usd": 6.517,
    "wall_s": 891,
@@ -85,28 +85,28 @@
    "rationale": "With refIds empty vars[0] is undefined and isValidIdentifier calls identifier.toUpperCase() \u2192 TypeError during render, where it previously rendered 'FROM undefined'; exactly thread 0.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
@@ -156,21 +156,21 @@
    "rationale": "cleanTableName strips only ['\"()] and splits at the first space, so the now-default `FROM \\`gdp per capita\\`` yields target \"`gdp\", Graph.link throws for a nonexistent node, and createDAGFromQueriesSafe rejects the SQL expression; the PR generates such queries by default (alerting refIds are renamable) without fixing the DAG parser.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
@@ -192,28 +192,28 @@
    "rationale": "mysql is a decoupled plugin workspace (own package.json/webpack config, listed under grafana/decoupled-plugins-overrides) and no other core code imports from it; core depending on a plugin internal is a real but small dependency-direction concern, not blocked by lint.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 10
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -263,28 +263,28 @@
    "rationale": "Verified: both test files carry trailing-whitespace lines (prettier), use `as any` under @typescript-eslint/no-explicit-any: 'error', and metaSqlExpr.test.ts lacks the required blank line between parent and sibling import groups \u2014 real CI lint failures, but mechanical.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "low",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
@@ -334,28 +334,28 @@
    "rationale": "Correct that the helper wraps without escaping embedded backticks so a refId containing ` yields malformed SQL; real but an extreme edge case in a pre-existing helper.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -412,14 +412,14 @@
    "rationale": "Technically true, but ExpressionQueryEditor always sets value/label to q.refId so a refId with neither is unreachable in practice.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -469,28 +469,28 @@
    "rationale": "metaSqlExpr.ts binds to a file-local regex-only quoteIdentifierIfNecessary (no reserved-word check) while SqlExpr/completion use the mysql helper, so a reserved-word refId is quoted in the editor but bare in the metadata query \u2014 precisely thread 2.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "low",
      "disposition": "reported",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -511,7 +511,7 @@
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -547,28 +547,28 @@
    "rationale": "Monaco's mysql grammar emits the backtick as its own identifier.quote token, getTableToken returns it, fetchSQLFields re-quotes it and its refId filter matches nothing so column completion returns []; this is the production read-back defect thread 7 describes (quoted query.table vs raw refId lookup).",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
@@ -589,7 +589,7 @@
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -625,28 +625,28 @@
    "rationale": "Verified: the second test has no expect(resolveFunc).toBeDefined() before the if-guard and asserts only name, so it can pass vacuously and does not exercise the changed completion line \u2014 a correct small test-quality nit.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "low",
      "disposition": "reported",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "nit",
      "disposition": "demoted",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -703,14 +703,14 @@
    "rationale": "Verified: insertText appends ' $0' only when completion === name, so quoted completions lose the trailing space/tab stop \u2014 a cosmetic difference in a third-party helper, not worth reviewer attention.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -746,14 +746,14 @@
    "rationale": "SqlQueryActions receives refIds={vars} (raw refId.value) and the prompt injects them unquoted with no quoting instruction, so the GenAI surface is left outside the fix; whether generated SQL actually fails depends on the model, so this is a follow-up gap rather than a verified defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -789,14 +789,14 @@
    "rationale": "True that line 29's field-name quoting predates the diff so the third test is characterization, but adding such a test is harmless and not actionable.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 10
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -825,14 +825,14 @@
    "rationale": "Self-refuted note; the regex literal is re-created per call so lastIndex does not carry over.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -932,7 +932,7 @@
    "rationale": "Self-described latent inconsistency with no observable effect since the only caller sets label === value.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -968,7 +968,7 @@
    "rationale": "True label change for previously-saved (broken) unquoted initial queries, but self-declared not a defect \u2014 a cleared note.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -997,7 +997,7 @@
    "rationale": "Considered-and-cleared note asserting no defect; TablesList records tableName.Name.String(), which the vitess parser yields without backticks, so backticked identifiers resolve server-side as stated.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1019,7 +1019,7 @@
    "rationale": "Considered-and-cleared note asserting no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1041,14 +1041,14 @@
    "rationale": "A considered-and-cleared note asserting no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 13
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -1070,7 +1070,7 @@
    "rationale": "Without the `!`, vars would be (string|undefined)[] and quoteIdentifierIfNecessary(vars[0]) would not type-check, so the assertion is what let the crash-prone call compile; but the real undefined comes from an empty array (no noUncheckedIndexedAccess), so the causal framing is loose and the line predates the diff.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -1092,7 +1092,7 @@
    "rationale": "Unverified speculation about a dialect mismatch with no concrete offending word identified; the pre-existing MySQL keyword list is a reasonable choice for a go-mysql-server/vitess backend.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1114,7 +1114,7 @@
    "rationale": "The editor uses Monaco's mysql language configuration whose autoClosingPairs are {}, [], (), \", ' \u2014 no backtick pair \u2014 so a typed backtick is not auto-closed and the doubled-backtick scenario does not arise.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1165,7 +1165,7 @@
    "rationale": "Considered-and-cleared note asserting no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1209,7 +1209,7 @@
    "rationale": "True that expect.objectContaining never checks refId so the uuid mock is unused by any assertion, but dead test setup is not worth a reviewer's attention.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",

@@ -1,30 +1,22 @@
-✅ Review complete: `.decaf/code-reviews/CODE_REVIEW_2026-08-17_17-36-23.md`
+✅ Review complete: `.decaf/code-reviews/CODE_REVIEW_2026-08-17_18-11-35.md`
 
-Working tree unchanged — only the untracked `.decaf/` report was added.
+Tracked source is untouched (only the untracked report directory was added). No prior reviews exist, so the Recurring Findings step was skipped.
 
-## Verdict: ❌ NEEDS_CHANGES
+## Verdict: ❌ NEEDS_CHANGES — 3 High, 2 Medium
 
-**The change does not deliver what its title promises.** Commit `99281de` restricted `rating` in **four** server files; this change reverts only `asset.dto.ts`.
+The change re-allows `rating: -1` on the asset update DTO, but the commit it reverses (`99281de`, "refactor!: disallow star rating < 1") had removed `-1` from **five** places. Only the first is restored, leaving `-1` accepted on write, rejected on search, discarded on import, and out-of-range on read.
 
-| # | Sev | Finding |
-|---|---|---|
-| 1 | 🔴 | Deleting the already-merged migration makes affected databases **fail to boot** |
-| 2 | 🔴 | A `-1` rating is accepted, then **silently destroyed** by the server's own job pipeline |
-| 3 | 🟠 | `.refine()` **erases the bound** from the published OpenAPI contract |
-| 4 | 🟠 | Search DTOs still reject `-1` — rejected assets are settable but **unfindable** |
-| 5 | 🟡 | EXIF response schema still declares `[1-5]`, so `-1` violates the published contract |
+**#1 🟠 High — `server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts` (deleted)**
+Kysely's `Migrator` throws `corrupted migrations: previously executed migration … is missing` when a row in `kysely_migrations` has no file. The migration was on `main` for three days, so every nightly/dev database that ran it now fails at boot. `allowUnorderedMigrations` guards only the *ordering* check, so dev isn't exempt (`kysely/dist/cjs/migration/migrator.js:447,491-497`). Fix: keep the file, empty the `up()` body. Anchor 75 — the library mechanism is settled from source, but "some real deployment ran it" stays inferential (no Postgres was stood up).
 
-All four validators returned **confirmed**; zero refuted.
+**#2 🟠 High — `server/src/dtos/search.dto.ts:38`** — `BaseSearchSchema.rating` still has `.min(1)`, so a "rejected" asset can be set but never searched for (400 on metadata/random/smart/statistics search). The `x-immich-history` blocks now contradict each other for the same concept.
 
-### The two that matter most
+**#3 🟠 High — `server/src/services/metadata.service.ts:308`** — `validateRange(exifTags.Rating, 1, 5)` nulls out XMP `Rating: -1` on import, which is the Lightroom/Bridge "rejected" convention this feature exists for. Immich writes `-1` to sidecars at `:509,523` but refuses to read it back. User-set values survive refresh (locked-column logic), so damage is confined to ingest.
 
-**#2 — `server/src/services/metadata.service.ts:308`.** I traced every link and a validator re-derived it independently. `PUT /assets/:id {rating:-1}` → `updateExif` locks `rating` and queues `SidecarWrite` → `handleSidecarWrite` writes `Rating: -1` to XMP then **unlocks** `rating` (`metadata.service.ts:539`) → `job.service.ts:75-81` chains to `AssetExtractMetadata` → line 308 still reads `validateRange(exifTags.Rating, 1, 5)`, which returns `null` for `-1` → `upsertExif` with `lockedPropertiesBehavior: 'skip'` no longer skips, so **`NULL` overwrites the `-1`**. Ratings 1–5 round-trip fine; only the newly re-enabled value is lost. `99281de` also deleted the unit and e2e tests that would have caught this, and neither is restored.
+**#4 🟡 Medium — `server/src/dtos/asset.dto.ts:17-21`** — moving bounds into `.refine()` hides them from the JSON-Schema emitter; the spec now publishes `minimum: -9007199254740991, maximum: 9007199254740991`. `.min(-1).max(5).refine(v => v !== 0)` yields identical runtime validation while keeping `minimum: -1, maximum: 5` in the contract.
 
-**#1 — the deleted migration.** Kysely's `#ensureNoMissingMigrations` (migrator.js:491-498) throws `corrupted migrations: …` and runs at line 447, *before* the `allowUnorderedMigrations` gate. `runMigrations()` rethrows, and the validator traced the throw all the way up through `event.repository.ts:227-237` with no `try/catch` anywhere — restart loop until an operator hand-edits `kysely_migrations`. The population is real: the migration was on `main` for 3 days, `.github/workflows/docker.yml` pushes images on every `main` push, the *following* migration is retained, and this repo already did exactly this once (`0975b15`).
+**#5 🟡 Medium — `server/src/dtos/exif.dto.ts:32`** — the response schema still declares `minimum: 1` for a field that can now return `-1`. Documentation-vs-behavior divergence only (no `@ZodSerializerDto` is applied), hence Medium.
 
-### Two things to know about the run
+The predicate itself is correct on every boundary (`-1/1/5/null/undefined` pass, `0/6/-2` rejected), the `.nullable().refine().optional()` ordering is sound, and the "Using 0 as a rating is no longer valid" history entry is factually accurate — verified against `99281de`, where `0` really was coerced to `null`. `asset.controller.spec.ts` passes 42/42.
 
-- **Roster cap traded away hard-gate coverage.** The `bugs` preset capped the roster at 4, dropping `test-reviewer` and `typescript-reviewer` despite both hard gates matching. Re-run as `bugs roster=6` if you want it.
-- **One confirmed bug was tiered down by `evidence=strong`** and sits in Considered But Not Flagged: `duplicate.service.ts:258-267` computes `let rating = 0; … if (rating > 0)`, so merging a rejected (`-1`) duplicate into an unrated keeper silently discards the rejection. Single finder, score 60 — real, but below the `bugs` bar. Worth a look.
-
-I deviated from the skill on two steps — clustering (4.9) and screening (4.95) were done inline rather than by dispatched agents, since the overlaps were exact and I had already verified each claim against source. Both deviations, plus the four nominated probes I did *not* execute as tree mutations, are recorded in the report's Anomalies section.
+Caveat worth weighing: `bugs-sp` is the experimental single-seat preset, so these results carry one agent's variance with no validation wave, no clustering, and no evidence screen behind them.

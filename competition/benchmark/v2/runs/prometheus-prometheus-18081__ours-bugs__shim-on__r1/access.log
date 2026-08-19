@@ -1,160 +1,43 @@
-2026-08-11T20:14:12Z	fs	ALLOW	Bash (no path)
-2026-08-11T20:14:14Z	fs	ALLOW	Bash (no path)
-2026-08-11T20:14:17Z	fs	ALLOW	Bash promql/engine.go promql/value.go util/stats/query_stats.go util/stats/stats_test.go web/api/v1/openapi_schemas.go docs/
-2026-08-11T20:14:33Z	fs	ALLOW	Bash (no path)
-2026-08-11T20:14:33Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/util/stats/query_stats.go
-2026-08-11T20:15:46Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:15:49Z	fs	ALLOW	Bash efbdc3f886abbd87e5cba34cbd48c2c52eb3c553:promql/engine.go
-2026-08-11T20:16:11Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:16:12Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:16:58Z	fs	ALLOW	Bash ./promql/... ./util/stats/... ./web/api/v1/... ./promql/... ./util/stats/...
-2026-08-11T20:17:00Z	fs	ALLOW	Bash promql/engine_test.go promql/engine_test.go
-2026-08-11T20:17:05Z	fs	ALLOW	Bash promql/engine_test.go efbdc3f886abbd87e5cba34cbd48c2c52eb3c553:promql/engine_test.go
-2026-08-11T20:17:35Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:17:35Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:17:56Z	fs	ALLOW	Bash ./util/stats/... ./promql/
-2026-08-11T20:18:33Z	fs	ALLOW	Bash (no path)
-2026-08-11T20:18:36Z	fs	ALLOW	Bash promql/value.go util/stats/query_stats.go promql/engine.go
-2026-08-11T20:18:40Z	fs	ALLOW	Bash util/stats/query_stats.go
-2026-08-11T20:18:43Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/value.go
-2026-08-11T20:18:45Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:18:47Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:18:48Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo /dev/null
-2026-08-11T20:18:52Z	fs	ALLOW	Bash (no path)
-2026-08-11T20:18:55Z	fs	ALLOW	Bash util/stats/query_stats.go
-2026-08-11T20:18:58Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:19:06Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:19:10Z	fs	ALLOW	Bash promql/value.go
-2026-08-11T20:19:13Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:19:15Z	fs	ALLOW	Bash util/stats/query_stats.go promql/value.go
-2026-08-11T20:19:15Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:19:16Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:19:18Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:19:20Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:19:21Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:19:22Z	fs	ALLOW	Bash promql/engine.go promql/engine.go
-2026-08-11T20:19:22Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:19:24Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:19:27Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:19:30Z	fs	ALLOW	Bash promql/engine_test.go
-2026-08-11T20:19:30Z	fs	ALLOW	Bash promql/engine_test.go util/stats/stats_test.go web/api/v1/api_test.go
-2026-08-11T20:19:33Z	fs	ALLOW	Bash promql/engine_test.go
-2026-08-11T20:19:34Z	fs	ALLOW	Bash promql/engine_test.go
-2026-08-11T20:19:36Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/util/stats/query_stats.go
-2026-08-11T20:19:37Z	fs	ALLOW	Bash ec715759357ab2230118539062a37a3cb051645c:promql/engine_test.go
-2026-08-11T20:19:40Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:19:43Z	fs	ALLOW	Bash promql/engine_test.go
-2026-08-11T20:19:46Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:19:48Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:19:52Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:19:55Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:20:00Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:20:02Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:20:02Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:20:05Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:20:32Z	fs	ALLOW	Bash ec715759357ab2230118539062a37a3cb051645c:promql/engine.go
-2026-08-11T20:20:40Z	fs	ALLOW	Bash /tmp/check_stats.py /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go', /tmp/check_stats.py
-2026-08-11T20:20:50Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:20:50Z	fs	ALLOW	Bash promql/parser/*.go promql/engine.go
-2026-08-11T20:20:57Z	fs	ALLOW	Bash /tmp/check_semantics.py /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go', /tmp/check_semantics.py
-2026-08-11T20:20:58Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:21:01Z	fs	ALLOW	Bash ./promql/
-2026-08-11T20:21:07Z	fs	ALLOW	Bash /tmp/analyze_issues.py /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go', /tmp/analyze_issues.py
-2026-08-11T20:21:08Z	fs	ALLOW	Bash promql/parser/functions.go
-2026-08-11T20:21:10Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/util/stats/query_stats.go instant/range promql/engine.go
-2026-08-11T20:21:13Z	fs	ALLOW	Bash promql/ promql/parser/
-2026-08-11T20:21:15Z	fs	ALLOW	Bash promql/
-2026-08-11T20:21:17Z	fs	ALLOW	Bash promql/functions.go
-2026-08-11T20:21:17Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:21:24Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:21:25Z	fs	ALLOW	Bash promql/engine_test.go promql/engine_test.go
-2026-08-11T20:21:30Z	fs	ALLOW	Bash ec715759357ab2230118539062a37a3cb051645c:util/stats/query_stats.go
-2026-08-11T20:21:33Z	fs	ALLOW	Bash ec715759357ab2230118539062a37a3cb051645c:util/stats/query_stats.go
-2026-08-11T20:21:39Z	fs	DENY	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/...
-2026-08-11T20:21:53Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:21:56Z	fs	ALLOW	Bash zz_advprobe_tmp/probe_test.go github.com/prometheus/prometheus/promql github.com/prometheus/prometheus/promql/promqltest github.com/prometheus/prometheus/util/stats ./zz_advprobe_tmp/
-2026-08-11T20:21:57Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:22:02Z	fs	ALLOW	Bash ./promql/
-2026-08-11T20:22:06Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:22:10Z	fs	ALLOW	Bash ec715759357ab2230118539062a37a3cb051645c:promql/engine.go
-2026-08-11T20:22:12Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:22:16Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/util/stats/query_stats.go
-2026-08-11T20:22:19Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/util/stats/query_stats.go
-2026-08-11T20:22:22Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:22:23Z	fs	ALLOW	Bash /tmp/check_duplicates.py /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go', /tmp/check_duplicates.py
-2026-08-11T20:22:27Z	fs	ALLOW	Bash util/stats/stats_test.go
-2026-08-11T20:22:27Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:22:30Z	fs	ALLOW	Bash web/api/v1/api_test.go
-2026-08-11T20:22:34Z	fs	ALLOW	Bash zz_advprobe_tmp/probe2_test.go ./zz_advprobe_tmp/
-2026-08-11T20:22:36Z	fs	ALLOW	Bash promql/engine_test.go
-2026-08-11T20:22:37Z	fs	ALLOW	Bash ec715759357ab2230118539062a37a3cb051645c:util/stats/query_stats.go
-2026-08-11T20:22:46Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:23:00Z	fs	ALLOW	Bash /tmp/check_zero_values.py /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go', /tmp/check_zero_values.py
-2026-08-11T20:23:07Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:23:11Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:23:17Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:23:20Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:23:29Z	fs	ALLOW	Bash /tmp/final_check.py /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go', End/Interval End/Interval End/Interval End/Interval /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go /tmp/final_check.py
-2026-08-11T20:23:32Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:23:48Z	fs	ALLOW	Bash zz_advprobe_tmp/probe3_test.go github.com/prometheus/prometheus/promql github.com/prometheus/prometheus/promql/promqltest a/ b/ ./zz_advprobe_tmp/
-2026-08-11T20:24:32Z	fs	ALLOW	Bash promql/engine_test.go
-2026-08-11T20:24:35Z	fs	ALLOW	Bash promql/engine_test.go
-2026-08-11T20:24:39Z	fs	ALLOW	Bash docs/ web/api/v1/openapi_schemas.go
-2026-08-11T20:24:44Z	fs	ALLOW	Bash zz_advprobe_tmp/probe4_test.go github.com/prometheus/prometheus/promql github.com/prometheus/prometheus/promql/promqltest / ./zz_advprobe_tmp/
-2026-08-11T20:25:06Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:25:11Z	fs	ALLOW	Bash zz_advprobe_tmp/probe5_test.go // // ./zz_advprobe_tmp/
-2026-08-11T20:25:43Z	fs	ALLOW	Bash zz_advprobe_tmp/gen.txt zz_advprobe_tmp/probe6_test.go ./zz_advprobe_tmp/
-2026-08-11T20:25:50Z	fs	ALLOW	Bash ./promql/
-2026-08-11T20:25:53Z	fs	ALLOW	Bash ./promql/
-2026-08-11T20:25:58Z	fs	ALLOW	Bash ^./util/stats
-2026-08-11T20:26:08Z	fs	ALLOW	Bash (no path)
-2026-08-11T20:26:17Z	fs	ALLOW	Bash promql/engine.go util/stats/query_stats.go
-2026-08-11T20:27:33Z	fs	ALLOW	Bash promql/parser/*.go promql/*.go /dev/null
-2026-08-11T20:27:37Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:27:38Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:27:49Z	fs	ALLOW	Bash promql/engine_test.go promql/engine_test.go promql/engine_test.go
-2026-08-11T20:27:53Z	fs	ALLOW	Bash promql/engine_test.go
-2026-08-11T20:28:12Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/zzprobe_review_test.go
-2026-08-11T20:28:15Z	fs	ALLOW	Bash ./promql/
-2026-08-11T20:28:31Z	fs	ALLOW	Bash /tmp/prom-base
-2026-08-11T20:28:43Z	fs	ALLOW	Bash /tmp/prom-base/promql/zzprobe_base_test.go github.com/stretchr/testify/require github.com/prometheus/prometheus/promql github.com/prometheus/prometheus/promql/promqltest off/ on/ github.com/prometheus/prometheus/promql
-2026-08-11T20:28:49Z	fs	ALLOW	Bash /tmp/prom-base ./promql/
-2026-08-11T20:29:23Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/zzprobe_review_test.go /tmp/prom-base/promql/zzprobe_base_test.go /tmp/prom-base
-2026-08-11T20:30:04Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:30:04Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:30:05Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/util/stats/query_stats.go
-2026-08-11T20:30:11Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:30:18Z	fs	ALLOW	Bash promql/engine.go util/stats/query_stats.go docs/
-2026-08-11T20:30:33Z	fs	ALLOW	Bash promql/engine.go
-2026-08-11T20:30:42Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:30:45Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:30:51Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:30:54Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:31:10Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:31:16Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:31:19Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:31:24Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:31:25Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo
-2026-08-11T20:31:28Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/value.go
-2026-08-11T20:31:30Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/value.go
-2026-08-11T20:31:55Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/docs/feature_flags.md
-2026-08-11T20:31:59Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:32:01Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
-2026-08-11T20:32:03Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo
-2026-08-11T20:32:06Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/value.go
-2026-08-11T20:32:08Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/value.go
-2026-08-11T20:32:39Z	fs	ALLOW	Bash (no path)
-2026-08-11T20:32:41Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo
-2026-08-11T20:32:44Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:32:47Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:32:50Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:32:55Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:33:00Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:33:10Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine_test.go
-2026-08-11T20:33:28Z	fs	ALLOW	Bash promql/engine_test.go promql/engine.go promql/value.go promql/parse_value.go promql/parse_value_test.go util/stats/query_stats.go
-2026-08-11T20:33:30Z	fs	ALLOW	Bash ./promql
-2026-08-11T20:33:51Z	fs	ALLOW	Bash promql/engine_test.go
-2026-08-11T20:34:12Z	fs	ALLOW	Bash promql/engine.go .decaf/code-reviews/ /dev/null
-2026-08-11T20:34:15Z	fs	ALLOW	Bash .decaf/code-reviews .decaf/code-reviews/CODE_REVIEW_$
-2026-08-11T20:36:00Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/.decaf/code-reviews/CODE_REVIEW_2026-08-11_22-34-15.md
-2026-08-11T20:36:05Z	fs	ALLOW	Bash (no path)
+2026-08-17T11:16:50Z	fs	ALLOW	Bash (no path)
+2026-08-17T11:16:51Z	fs	ALLOW	Bash (no path)
+2026-08-17T11:16:55Z	fs	ALLOW	Bash promql/engine.go promql/value.go util/stats/query_stats.go util/stats/stats_test.go web/api/v1/openapi_schemas.go docs/ web/api/v1/testdata/
+2026-08-17T11:17:05Z	fs	ALLOW	Bash docs/plans /dev/null
+2026-08-17T11:17:12Z	fs	ALLOW	Bash web/api/v1/api_test.go
+2026-08-17T11:18:35Z	fs	ALLOW	Bash (no path)
+2026-08-17T11:18:36Z	fs	ALLOW	Bash util/stats/ promql/value.go docs/ web/
+2026-08-17T11:18:41Z	fs	ALLOW	Bash promql/engine.go
+2026-08-17T11:18:41Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-17T11:21:12Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
+2026-08-17T11:21:13Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/engine.go
+2026-08-17T11:21:26Z	fs	ALLOW	Bash promql/engine.go promql/engine.go
+2026-08-17T11:21:26Z	fs	ALLOW	Bash promql/engine.go promql/engine.go
+2026-08-17T11:21:30Z	fs	ALLOW	Bash (no path)
+2026-08-17T11:21:30Z	fs	ALLOW	Bash promql/engine.go
+2026-08-17T11:21:36Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-17T11:21:47Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-17T11:22:24Z	fs	ALLOW	Bash promql/engine.go promql/engine.go
+2026-08-17T11:22:24Z	fs	ALLOW	Bash promql/ promql/engine.go
+2026-08-17T11:22:37Z	fs	ALLOW	Bash promql/engine_test.go promql/engine_test.go
+2026-08-17T11:22:50Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/zz_probe_test.go
+2026-08-17T11:22:55Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/zz_probe_read_test.go
+2026-08-17T11:22:57Z	fs	ALLOW	Bash ./promql/
+2026-08-17T11:23:06Z	fs	ALLOW	Bash /tmp/promprobe
+2026-08-17T11:23:10Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/zz_probe_test.go /tmp/promprobe/promql/zz_probe_test.go github.com/prometheus/prometheus/util/stats"\n\nfunc /tmp/promprobe/promql/zz_probe_read_test.go /tmp/promprobe ./promql/
+2026-08-17T11:24:06Z	fs	ALLOW	Bash util/stats/query_stats.go promql/engine.go
+2026-08-17T11:24:20Z	fs	ALLOW	Bash promql/engine.go promql/engine.go
+2026-08-17T11:24:26Z	fs	ALLOW	Bash promql/engine.go
+2026-08-17T11:25:15Z	fs	ALLOW	Bash ./promql/ ./util/stats/...
+2026-08-17T11:25:29Z	fs	ALLOW	Bash promql/engine_test.go /dev/null promql/engine_test.go ?://[^\n]*\n\s+
+2026-08-17T11:26:05Z	fs	ALLOW	Bash ./util/stats/... ./web/api/v1/...
+2026-08-17T11:26:14Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/promql/zz_probe2_test.go
+2026-08-17T11:26:17Z	fs	ALLOW	Bash /var/tmp/bench-v2/prometheus-prometheus-18081__ours-bugs-sp3__r1/claude-1002/-home-decaf-code-decaf-claude-competition-benchmark-v2-pooled-prometheus-prometheus-18081-repo/917d195d-ff8f-4b63-808b-91b5ba1529a3/tasks/bk06cj9xw.output ./promql/
+2026-08-17T11:26:44Z	fs	ALLOW	Bash docs/feature_flags.md docs/feature_flags.md
+2026-08-17T11:26:56Z	fs	ALLOW	Bash promql/zz_probe_test.go promql/zz_probe_read_test.go promql/zz_probe2_test.go /tmp/promprobe promql/engine.go promql/value.go util/stats/query_stats.go web/api/v1/openapi_schemas.go promql/engine_test.go ./promql/ ./util/stats/
+2026-08-17T11:27:44Z	fs	ALLOW	Bash promql/engine.go util/stats/query_stats.go promql/value.go
+2026-08-17T11:27:45Z	fs	ALLOW	Bash promql/engine_test.go
+2026-08-17T11:27:49Z	fs	ALLOW	Bash promql/engine.go promql/engine.go
+2026-08-17T11:29:45Z	fs	ALLOW	Bash (no path)
+2026-08-17T11:29:45Z	fs	ALLOW	Read /home/decaf/.claude/skills/decaf-quality-dev/conventions/session-report.md
+2026-08-17T11:29:56Z	fs	ALLOW	Bash .decaf/code-reviews/ /dev/null
+2026-08-17T11:30:01Z	fs	ALLOW	Bash .decaf/code-reviews .decaf/code-reviews/CODE_REVIEW_$
+2026-08-17T11:31:18Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/prometheus-prometheus-18081/repo/.decaf/code-reviews/CODE_REVIEW_2026-08-17_13-30-01.md

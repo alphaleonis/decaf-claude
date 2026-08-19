@@ -8,7 +8,7 @@
  "grading_pass": 2,
  "cells": [
   {
-   "tool": "ours-bugs-sp3",
+   "tool": "ours-bugs",
    "repeat": 1,
    "cost_usd": 3.8285,
    "wall_s": 766,
@@ -16,7 +16,7 @@
    "access_denied": 1
   },
   {
-   "tool": "ours-bugs-sp3",
+   "tool": "ours-bugs",
    "repeat": 2,
    "cost_usd": 3.509,
    "wall_s": 688,
@@ -24,7 +24,7 @@
    "access_denied": 4
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-bugs-wave",
    "repeat": 1,
    "cost_usd": 12.743,
    "wall_s": 2009,
@@ -32,7 +32,7 @@
    "access_denied": 1
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-bugs-wave",
    "repeat": 2,
    "cost_usd": 11.0746,
    "wall_s": 1194,
@@ -69,28 +69,28 @@
    "rationale": "Adding IsValid to the decoder turns previously tolerated payloads (unknown response_type, long text) into a whole-command failure at both ingest sites with no gate; this is exactly thread 4's 'hard error might break existing servers, log a warning instead'.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -126,28 +126,28 @@
    "rationale": "grep of server/i18n/en.json finds neither new ID, so translation falls back to the raw key; this is what thread 1 asks to fix via make i18n-extract.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -183,28 +183,28 @@
    "rationale": "len(o.Text) counts bytes against a fixed 65535 whereas Post.IsValid enforces utf8.RuneCountInString against a configurable rune limit (PostMessageMaxRunesV2 or column/4), so the two limits diverge in both directions; this is the byte-vs-character defect thread 0 raises.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -240,28 +240,28 @@
    "rationale": "CommandResponseFromHTTPBody only routes application/json through CommandResponseFromJSON; text/plain goes to CommandResponseFromPlainText with no IsValid, so the same oversized text is rejected or accepted depending solely on Content-Type. Real inconsistency in the new validation, not raised by any thread.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -297,35 +297,35 @@
    "rationale": "Cleared note asserting no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -347,14 +347,14 @@
    "rationale": "Cleared note; the *AppError is nil-tested before it is returned as error, so no typed-nil escape.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -376,14 +376,14 @@
    "rationale": "The asymmetry is real, but no consumer reads ExtraResponses below the first level (app/command.go:621-628), so nested-nested attachments being unstringified has no effect.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -405,14 +405,14 @@
    "rationale": "65535 is a local literal while PostMessageMaxBytesV2 = 65535 already exists in the same package and the file declares its other constants at package level; correct, small.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -448,14 +448,14 @@
    "rationale": "The comment restates the next line; purely stylistic.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -491,7 +491,7 @@
    "rationale": "Whitespace inside a raw JSON string literal; purely stylistic.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -513,21 +513,21 @@
    "rationale": "Client4.ExecuteCommand/ExecuteCommandWithTeam decode server-emitted responses through the same CommandResponseFromJSON that now hard-fails on IsValid, while plugin/built-in responses (app/command.go:234-252) never pass through it server-side; the remedy is the same as thread 6's ask (move the call to the two ingest call sites), though the rationale differs.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -570,7 +570,7 @@
    "rationale": "The nested error is returned verbatim with no index, unlike Post.IsValid which prefixes the attachment index; a small debuggability nit.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "low",
      "disposition": "reported",
@@ -592,7 +592,7 @@
    "rationale": "The ShouldError branch checks only assert.Error/assert.Nil, so the new cases (especially the multi-line extra_responses JSON) would still pass if they failed on a JSON syntax error rather than validation; asserting the AppError Id would pin the intent. Correct, small.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "low",
      "disposition": "reported",
@@ -628,14 +628,14 @@
    "rationale": "On io.ReadAll failure the function returns (nil, nil), discarding the error; both callers cope via a nil check but the read error is lost. Pre-existing and small.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 10
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -657,14 +657,14 @@
    "rationale": "One invalid nested entry makes the whole decode fail and discards the main message, whereas HandleCommandResponse tolerates per-entry failures; this is the hard-error-instead-of-warning defect thread 4 raises, viewed through the nested case.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -700,7 +700,7 @@
    "rationale": "A considered-and-cleared note asserting no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -722,7 +722,7 @@
    "rationale": "Cleared note asserting no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -744,14 +744,14 @@
    "rationale": "DoCommandRequest wraps the decode error in a fresh 500 AppError and commandWebhook in a fresh hardcoded 400, so the StatusBadRequest set in IsValid is never what the caller sees; true and minor.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 10
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -773,7 +773,7 @@
    "rationale": "Cleared note asserting no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -795,7 +795,7 @@
    "rationale": "commandWebhook's r.Body is already wrapped in http.MaxBytesReader (ServiceSettings.MaximumPayloadSizeBytes, default 300000) by the generic handler, so the implied unbounded read does not exist; also pre-existing and outside the diff.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -817,7 +817,7 @@
    "rationale": "Cleared note asserting no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -839,7 +839,7 @@
    "rationale": "Notes idiomatic shadowing and asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -861,7 +861,7 @@
    "rationale": "Asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -883,7 +883,7 @@
    "rationale": "Pre-existing table convention; the summary itself asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -905,7 +905,7 @@
    "rationale": "No test case puts a null element in extra_responses, so the nil-continue branch of IsValid is untested; correct but a small coverage nit.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",

@@ -31,7 +31,7 @@
    "access_denied": 1
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-bugs-wave",
    "repeat": 1,
    "cost_usd": 8.2283,
    "wall_s": 1276,
@@ -97,7 +97,7 @@
      "finding_index": 34
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
@@ -161,7 +161,7 @@
      "finding_index": 32
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
@@ -225,7 +225,7 @@
      "finding_index": 43
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
@@ -482,7 +482,7 @@
      "finding_index": 55
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
@@ -604,7 +604,7 @@
      "finding_index": 9
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "low",
      "disposition": "demoted",
@@ -654,7 +654,7 @@
      "finding_index": 21
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
@@ -863,7 +863,7 @@
      "finding_index": 59
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "nit",
      "disposition": "demoted",
@@ -992,7 +992,7 @@
      "finding_index": 41
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
@@ -1350,7 +1350,7 @@
    "rationale": "The claim as stated is that the name is clear enough and naming is out of scope \u2014 i.e. no defect. Nothing actionable.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "nit",
      "disposition": "demoted",
@@ -1372,7 +1372,7 @@
    "rationale": "Accurate but inconsequential: one client allocation on a once-per-process boot path, explicitly stated as having no correctness impact.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "nit",
      "disposition": "demoted",
@@ -1423,7 +1423,7 @@
      "finding_index": 56
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1466,7 +1466,7 @@
      "finding_index": 57
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1488,7 +1488,7 @@
    "rationale": "Cleared: pkg/setting already depended on the openfeature module via memprovider, and openfeature is external so no cycle is possible. No defect asserted.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1517,7 +1517,7 @@
      "finding_index": 61
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1546,7 +1546,7 @@
    "rationale": "Claim is that operators on sso_api_token alone are unaffected. True, and it is a clearance rather than a defect report.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1823,7 +1823,7 @@
    "rationale": "Verified: Authorization is attached only when the URL is prefixed by the configured grafana.com API URL, so --pluginUrl downloads do not receive it. Asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1852,7 +1852,7 @@
    "rationale": "Verified: the director sets Authorization only when the token is non-empty, so an unresolved field degrades to anonymous. Claim asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1947,7 +1947,7 @@
      "finding_index": 12
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -2027,7 +2027,7 @@
    "rationale": "Mutation claims check out for the three named mutations. This is a clearance, not a defect report, so it carries no action for a maintainer.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",

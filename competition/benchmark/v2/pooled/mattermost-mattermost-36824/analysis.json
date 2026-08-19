@@ -8,7 +8,7 @@
  "grading_pass": 1,
  "cells": [
   {
-   "tool": "ours-bugs",
+   "tool": "ours-bugs-wave",
    "repeat": 1,
    "cost_usd": 12.743,
    "wall_s": 2009,
@@ -16,7 +16,7 @@
    "access_denied": 1
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-bugs-wave",
    "repeat": 2,
    "cost_usd": 11.0746,
    "wall_s": 1194,
@@ -24,7 +24,7 @@
    "access_denied": 2
   },
   {
-   "tool": "ours-bugs-sp3",
+   "tool": "ours-bugs",
    "repeat": 1,
    "cost_usd": 3.8285,
    "wall_s": 766,
@@ -32,7 +32,7 @@
    "access_denied": 1
   },
   {
-   "tool": "ours-bugs-sp3",
+   "tool": "ours-bugs",
    "repeat": 2,
    "cost_usd": 3.509,
    "wall_s": 688,
@@ -85,28 +85,28 @@
    "rationale": "Calling IsValid inside the decoder turns previously tolerated payloads into hard failures at both ingest sites (500 in DoCommandRequest, 400 in commandWebhook) with no config gate \u2014 the same compatibility-break concern the human thread raised when asking for a logged warning instead of an error.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -156,28 +156,28 @@
    "rationale": "grep of server/i18n/en.json finds no model.command_response.is_valid.* entries, so the raw id becomes the translated message; this is the human thread's request to run i18n-extract for the new error ids.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -227,28 +227,28 @@
    "rationale": "len(o.Text) counts bytes against a hardcoded 65535 while Post.IsValid enforces a configurable rune count (PostMessageMaxRunesV2 / determineMaxPostSize), which is exactly the byte-vs-character concern the human thread raised.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -305,28 +305,28 @@
    "rationale": "CommandResponseFromPlainText never calls IsValid, so the text-length rule applies only to application/json bodies; a real inconsistency in the new validation, though the length is re-checked at post creation so practical impact is small.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "low",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -376,35 +376,35 @@
    "rationale": "Considered-and-cleared stack-exhaustion note; asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -440,14 +440,14 @@
    "rationale": "Cleared note: the *AppError is nil-tested as a concrete pointer before being returned as error, so no typed-nil escape.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -483,14 +483,14 @@
    "rationale": "The asymmetry is real (stringification is one level deep, IsValid recurses), but nested ExtraResponses beyond one level are never consumed by HandleCommandResponse, so nothing observable follows.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -519,14 +519,14 @@
    "rationale": "65535 is a function-local literal that duplicates PostMessageMaxBytesV2 rather than referencing it or a package constant, unlike the file's other constants; correct and actionable but small.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -576,14 +576,14 @@
    "rationale": "The comment restates the condition; purely stylistic, no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -626,7 +626,7 @@
    "rationale": "Space indentation inside a raw string literal in one test case; purely cosmetic and untouched by gofmt.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -648,21 +648,21 @@
    "rationale": "CommandResponseFromJSON is also the decoder used by Client4.ExecuteCommand/ExecuteCommandWithTeam for server-emitted responses that are never run through IsValid server-side, so placing validation in the shared decoder is misplaced; the human thread asks for the same relocation of the call to commandWebhook/DoCommandRequest, albeit motivated by logger context rather than client breakage.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -719,7 +719,7 @@
    "rationale": "The nested error is returned verbatim with no index or path, so an integration author cannot tell which extra_responses entry failed; small debuggability gap.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "low",
      "disposition": "reported",
@@ -755,7 +755,7 @@
    "rationale": "The new ShouldError cases only assert.Error/assert.Nil and never check the AppError Id or StatusCode, so a case failing for an unrelated reason would still pass, and the ASCII payload cannot distinguish byte from rune counting; correct, actionable test-strength nit.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "low",
      "disposition": "reported",
@@ -805,14 +805,14 @@
    "rationale": "When io.ReadAll fails the function returns (nil, nil), discarding the error and forcing callers into a separate nil check that reports a generic 'empty response'; true but pre-existing and outside the changed hunk.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 10
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -834,14 +834,14 @@
    "rationale": "One invalid nested entry (even at depth 2, which HandleCommandResponse never reads) rejects the entire payload with a hard error, contrasting with HandleCommandResponse's per-entry continue-and-log; this is a facet of the human thread's objection to hard-erroring instead of logging a warning.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -898,7 +898,7 @@
    "rationale": "A considered-and-cleared note asserting no defect (the > 65535 vs 65536-byte test is indeed exact).",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -920,7 +920,7 @@
    "rationale": "Considered-and-cleared note asserting the allowlist is fine; no defect claimed.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -949,14 +949,14 @@
    "rationale": "Accurate that both server call sites wrap the AppError in a fresh outer error with their own fixed status (500 / 400) and Client4 wraps in fmt.Errorf, but this is the existing convention for every model IsValid and offers no clear action for this change.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 10
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -992,7 +992,7 @@
    "rationale": "Considered-and-cleared note that empty ResponseType is intentionally accepted; no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1021,7 +1021,7 @@
    "rationale": "commandWebhook is served through web.Handler which wraps r.Body in http.MaxBytesReader(MaximumPayloadSizeBytes) before the handler runs, so the body is already bounded; the implied unbounded-read concern does not hold (and is pre-existing regardless).",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1043,7 +1043,7 @@
    "rationale": "Considered-and-cleared nil-receiver note; sibling IsValid methods omit the guard too.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1065,7 +1065,7 @@
    "rationale": "Self-described as not a bug; idiomatic if-scoped err.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -1087,7 +1087,7 @@
    "rationale": "Explicitly asserts no defect; test-data naming.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -1109,7 +1109,7 @@
    "rationale": "Notes a pre-existing table convention without asserting a defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -1131,7 +1131,7 @@
    "rationale": "No table case puts a null element in extra_responses, so the nil-skip branch of IsValid (and the nested text-length branch) is exercised only by construction; a small but correct coverage gap.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",

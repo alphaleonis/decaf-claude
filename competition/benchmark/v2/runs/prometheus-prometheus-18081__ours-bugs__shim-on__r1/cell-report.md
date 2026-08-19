@@ -1,35 +1,24 @@
-I'll start by invoking the requested skill.
-I'll start by gathering context on the changeset.
-Change is Go — PromQL engine sample-accounting, ~200 executable non-test lines plus ~1100 test lines. Let me get the full picture before dispatching.
-Now let me run pre-flight gates and check the existing test coverage for the `@` modifier path.
-Build passes; `go vet` reports only pre-existing `Seek` signature warnings in untouched code. Let me run the targeted stats tests as the pre-flight gate.
-Pre-flight green. Dispatching the review team.
+I'll run the code review skill as requested.
+I'll start by gathering context on the change under review.
+Review team (preset `bugs-sp` — explicit · roster=1 fixed · seat on session model · evidence self-calibrated · reach=narrow):
+- solo-reviewer (the preset's single seat) — session model
+- wave agents: not evaluated — bugs-sp replaces the wave
 
-**Review team** (preset `bugs` — explicit · roster N=4 · models=low · evidence=strong · reach=narrow):
-- `quick-reviewer` (always) — cheap tier
-- `broad-reviewer` (always) — cheap tier
-- `adversarial-reviewer` — 189 changed executable lines; sample-accounting arithmetic across subquery/step-invariant composition — session model
-- `test-reviewer` — 1131 lines of new test expectations (hard gate) — cheap tier
-- `go-reviewer`: dropped — roster N=4 (derived: `bugs` cap): ranked below the 2 specialists kept (Go slice-aliasing coverage traded away)
-- `design-reviewer`, `performance-reviewer`, `knowledge-reviewer`, `consistency-reviewer`: dropped — roster N=4
-All four reviewers returned; no probe requests. Verifying the tree is intact, then independently confirming the findings.
-Both mechanisms confirmed by reading: `predict_linear` is in `AtModifierUnsafeFunctions` (functions.go:2248) and `case *parser.MatrixSelector` returns `shouldWrap=false` (engine.go:4364). Let me confirm the runtime impact with an untracked probe.
-Now the probe — an untracked test file, which I'll remove after running.
-All three confirmed. Now let me verify the pre-change `TotalSamples` value in an isolated worktree at the base commit.
-Confirmed against the base commit. Cleaning up my probes.
-Tree clean, worktree removed. One finding turns on design intent rather than observable behavior, so I'll validate that one.
-Now writing the consolidated report.
-✅ Review complete: `.decaf/code-reviews/CODE_REVIEW_2026-08-11_22-34-15.md`
+**Spec**: none found. **Pre-flight**: skipped (the seat runs its own targeted gates under bugs-sp).
+✅ Review complete: `.decaf/code-reviews/CODE_REVIEW_2026-08-17_13-30-01.md`
 
-Tree is unmodified — only the untracked `.decaf/` report directory was added; the reviewed diff is byte-identical (11 files, +1409/−34). Nothing was posted anywhere.
+**Mode**: `bugs-sp` (explicit) · roster=1 fixed · reach=narrow · no validation wave (single-seat path)
+**Verdict**: ❌ NEEDS_CHANGES — 2 High, 1 Medium, 2 Low
 
-**Verdict: ❌ NEEDS_CHANGES** — 2 High, 1 Medium. All three were reproduced by executing the built engine, two of them against both the base and head commits.
+The findings below are the seat's, verified by it (two by execution against the tree and a base-commit worktree); I independently confirmed only that the working tree came back clean — `git status --porcelain` empty, no leftover worktrees. No code was modified; the only file written is the review report.
 
-**#1 High — `promql/engine.go:2145`.** `fullWindowCount` is declared inside the per-step loop and assigned only inside the data-loading branch, so it stays 0 whenever that branch is skipped. The line it replaced incremented unconditionally from the retained buffer. This changes the **pre-existing** `totalQueryableSamples` / `prometheus_engine_query_samples_total`, not the new metric — and the in-diff comment claims "unchanged semantics". Reachable when a range selector carries `@` but escapes `StepInvariantExpr` wrapping, which happens for `predict_linear` (in `AtModifierUnsafeFunctions`) because `preprocessExprHelper` deliberately never wraps a `MatrixSelector`. Measured: `predict_linear(metric[50s] @ 100, 3600)` reports `TotalSamples=55` on base, `5` on head; sibling `rate(metric[50s] @ 100)` is unchanged at 55, so the regression is silent and shape-specific.
+**#1 🟠 High — `SamplesRead` double-counts every subquery feeding a range-vector function** (`promql/engine.go:1874`, second count at `:2184`). `evalSubquery` merges the child's `SamplesRead` into the parent, then hands the range-vector loop a *materialized* matrix (`:2008`) whose points get counted again. Measured: `rate(x[5m:1m])` reports read=10 vs total=5; nested, 38 vs 10. `read = total + child reads` held exactly across four queries, with a bare subquery as the 1× control. It also makes `samplesRead > totalQueryableSamples`, which the docs added in this same PR say cannot happen.
 
-**#2 High — `promql/engine.go:2397`.** Subquery children now inherit per-step tracking (previously `NewChild()` hard-coded it off), so `InitStepTracking` allocates two `int64` slices sized by subquery step count up front, before any sample is read and unrelated to `max-samples`. Measured: `sum_over_time(metric[6h:1ms])` with `MaxSamples=1` allocates 0 MB on base and 329 MB on head — both still returning `ErrTooManySamples`. Linear at 16 B/step, so `[30d:1ms]` commits ~41 GB. Gated behind `promql-per-step-stats` + `stats=all`.
+**#2 🟠 High — pre-existing `TotalSamples` regresses for `@`-modifier reuse** (`promql/engine.go:2145`). `fullWindowCount` is declared inside the step loop and only assigned on the non-reuse branch, so steps after the first now contribute 0 where they previously contributed the full window. Measured at base vs HEAD on `quantile_over_time(scalar(y), x[60s] @ 30)`: total 39 → 15. This silently changes the existing `totalQueryableSamples` field and `prometheus_engine_query_samples_total` counter — contradicting both the in-line comment claiming unchanged semantics and the new doc text.
 
-**#3 Medium — `promql/engine.go:1874`.** Subquery data lands in `SamplesRead` twice: raw storage reads via `MergeSamplesReadFromSubquery`, then the materialized in-memory output via the range-vector loop. `TotalSamples` merges only the latter, so `samplesRead` exceeds `totalQueryableSamples` (measured 100 vs 50, and 60 vs 10), inverting the two new counters. This contradicts all four statements of intent added by this same change. The change's own tests pin the behavior rather than catch it — `engine_test.go:1676` asserts `SamplesRead: 45` against `TotalSamples: 18` on an instant query.
+**#3 🟡 Medium** — the ~900 added test rows are recorded output, not derived expectations (the file says so at `engine_test.go:1777`); they pin #1's 2× overcount as expected, and four cases are exact duplicates.
 
-Two things worth flagging about the run itself. `broad-reviewer`, on the cheap tier under the `bugs` preset's `models=low`, returned zero findings and affirmatively dismissed both High findings at anchor 100 — the documented down-tier trade, materialized. And `test-reviewer` reported that all cases satisfy the `SamplesRead == TotalSamples` contract for non-range-vector queries, which `engine_test.go:1669-1679` contradicts; that discrepancy is folded into Finding #3. The `bugs` roster cap of 4 also dropped `go-reviewer` and `performance-reviewer` whose gates both matched — `bugs roster=6` would restore them.
+**#4/#5 🟢 Low** — `countSamplesAfter` full-scans an ascending slice for a tail query in the hot path; subquery children now allocate a write-only `TotalSamplesPerStep` array (~700 KB for `x[1h:1s]` in a 24h range query).
+
+The seat also confirmed the riskiest-looking refactor is clean: the hoisted subquery `start`/`interval` computation is behaviorally identical to what it replaced, including the `setOffsetForAtModifier` condition.
 

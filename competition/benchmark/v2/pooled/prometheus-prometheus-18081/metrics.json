@@ -214,35 +214,35 @@
       }
     },
     "ours-bugs": {
-      "clusters_reported": 5,
-      "clusters_found": 20,
-      "real": 3,
-      "valid_minor": 2,
+      "clusters_reported": 7,
+      "clusters_found": 22,
+      "real": 6,
+      "valid_minor": 1,
       "trivia": 0,
       "false_positive": 0,
-      "precision": 0.6,
+      "precision": 0.857,
       "precision_note": "excludes valid_minor (correct but small); see scoring/METRICS.md",
-      "precision_severity_weighted": 0.833,
+      "precision_severity_weighted": 0.933,
       "trivia_ratio": 0.0,
       "unique_real": 0,
       "unique_real_ids": [],
       "per_cell": {
-        "findings": 2.5,
+        "findings": 2.33,
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.1,
-      "thread_recall_found": 0.4,
-      "demotion_gap": 0.3,
-      "threads_hit": 1,
+      "thread_recall": 0.3,
+      "thread_recall_found": 0.7,
+      "demotion_gap": 0.4,
+      "threads_hit": 3,
       "incumbent_agreement": null,
       "incumbent_agreement_found": null,
-      "real_found": 6,
-      "demoted_real": 3,
+      "real_found": 12,
+      "demoted_real": 6,
       "anchor_recall": null,
       "anchor_recall_found": null,
-      "cost_usd": 18.011,
-      "cost_per_real_finding": 6.0037,
+      "cost_usd": 17.1504,
+      "cost_per_real_finding": 2.8584,
       "class_distribution": {
         "reported": {
           "defect": 4,
@@ -250,23 +250,23 @@
           "docs": 0,
           "risk": 0,
           "style": 0,
-          "test-gap": 0
+          "test-gap": 2
         },
         "found": {
-          "defect": 9,
-          "design": 1,
-          "docs": 0,
-          "risk": 8,
+          "defect": 8,
+          "design": 4,
+          "docs": 2,
+          "risk": 5,
           "style": 0,
-          "test-gap": 2
+          "test-gap": 3
         }
       },
       "defect_recall": {
         "pool": 11,
-        "reported": 3,
-        "found": 4,
-        "recall_reported": 0.273,
-        "recall_found": 0.364
+        "reported": 4,
+        "found": 5,
+        "recall_reported": 0.364,
+        "recall_found": 0.455
       }
     },
     "ours-bugs-narrow": {
@@ -493,36 +493,36 @@
         "recall_found": 0.545
       }
     },
-    "ours-bugs-sp3": {
-      "clusters_reported": 7,
-      "clusters_found": 22,
-      "real": 6,
-      "valid_minor": 1,
+    "ours-bugs-wave": {
+      "clusters_reported": 5,
+      "clusters_found": 20,
+      "real": 3,
+      "valid_minor": 2,
       "trivia": 0,
       "false_positive": 0,
-      "precision": 0.857,
+      "precision": 0.6,
       "precision_note": "excludes valid_minor (correct but small); see scoring/METRICS.md",
-      "precision_severity_weighted": 0.933,
+      "precision_severity_weighted": 0.833,
       "trivia_ratio": 0.0,
       "unique_real": 0,
       "unique_real_ids": [],
       "per_cell": {
-        "findings": 2.33,
+        "findings": 2.5,
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.3,
-      "thread_recall_found": 0.7,
-      "demotion_gap": 0.4,
-      "threads_hit": 3,
+      "thread_recall": 0.1,
+      "thread_recall_found": 0.4,
+      "demotion_gap": 0.3,
+      "threads_hit": 1,
       "incumbent_agreement": null,
       "incumbent_agreement_found": null,
-      "real_found": 12,
-      "demoted_real": 6,
+      "real_found": 6,
+      "demoted_real": 3,
       "anchor_recall": null,
       "anchor_recall_found": null,
-      "cost_usd": 17.1504,
-      "cost_per_real_finding": 2.8584,
+      "cost_usd": 18.011,
+      "cost_per_real_finding": 6.0037,
       "class_distribution": {
         "reported": {
           "defect": 4,
@@ -530,23 +530,23 @@
           "docs": 0,
           "risk": 0,
           "style": 0,
-          "test-gap": 2
+          "test-gap": 0
         },
         "found": {
-          "defect": 8,
-          "design": 4,
-          "docs": 2,
-          "risk": 5,
+          "defect": 9,
+          "design": 1,
+          "docs": 0,
+          "risk": 8,
           "style": 0,
-          "test-gap": 3
+          "test-gap": 2
         }
       },
       "defect_recall": {
         "pool": 11,
-        "reported": 4,
-        "found": 5,
-        "recall_reported": 0.364,
-        "recall_found": 0.455
+        "reported": 3,
+        "found": 4,
+        "recall_reported": 0.273,
+        "recall_found": 0.364
       }
     },
     "ours-review": {

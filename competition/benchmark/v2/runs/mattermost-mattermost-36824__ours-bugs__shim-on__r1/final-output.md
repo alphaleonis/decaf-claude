@@ -1,20 +1,19 @@
-No prior reviews exist, so the Recurring Findings step is skipped.
+✅ Review complete: `.decaf/code-reviews/CODE_REVIEW_2026-08-17_16-41-43.md`
 
-✅ Review complete: `.decaf/code-reviews/CODE_REVIEW_2026-08-17_16-08-20.md`
+**Mode**: `bugs-sp` (explicit) · roster=1 fixed · reach=narrow · no wave, no screen, no validation.
+**Scope**: 2 files, +53/−0 — `server/public/model/command_response.go` and its test.
+**Verdict**: ❌ NEEDS_CHANGES (1 High, 2 Medium, 1 Low)
 
-## Verdict: ❌ NEEDS_CHANGES — 2 High, 1 Medium, 1 Minor
+## Findings
 
-All three primary findings were independently confirmed by a validation wave.
+**#1 🟠 High — `command_response.go:72`**: adding a hard `IsValid()` gate to a previously-lenient parser on the third-party integration ingress path turns tolerated payloads into hard failures. An unrecognized `response_type` from an outgoing slash command now surfaces to the end user as a **500** (`app/command.go:595-596` wraps the parse error as `execute_command.failed.app_error` / `StatusInternalServerError`), discarding `text`, `attachments`, `goto_location`, and `props` that previously got delivered. Sharpest part is the all-or-nothing recursion at lines 90-98: `HandleCommandResponse` (`app/command.go:614-628`) deliberately posts each `ExtraResponses` entry independently and only *logs* per-entry errors — rejecting the whole document because one nested entry is bad turns a 5-message response with one typo into zero messages. `OutgoingHookResponseTypeComment = "comment"` (`outgoing_webhook.go:80`) is a real value in this same codebase that would now hard-fail. Verified by mutation probe (removing lines 72-74 → both payloads parse fine).
 
-**#1 🟠 High — `server/public/model/command_response.go:72`**
-Validation was placed *inside* `CommandResponseFromJSON`, but that deserializer is also how the Go SDK parses the **server's own** API response (`client4.go:5961`, `:5982`). There's no matching check on the write path — `api4/command.go:428` encodes whatever `App.ExecuteCommand` returned, and a plugin's `ExecuteCommand` hook crosses a gob/net-rpc boundary with an unconstrained `ResponseType`, while `CreateCommandPost` (`app/command.go:73-84`) falls through both branches and returns success for an unrecognized value. Result: the command runs, the post is created, the server returns 200, and `Client4.ExecuteCommand` returns `failed to decode command response`. The type can't round-trip its own output. No built-in command triggers it today; any plugin can.
+**#2 🟡 Medium — `command_response.go:82`, `:87`**: both new i18n IDs are absent from `server/i18n/en.json`, so `NewAppError`'s `Translate` leaves `Message` as the raw dotted identifier, which reaches logs, the API body under `EnableDeveloper`, and Go-client errors verbatim. Measured: 513 of 516 `model.*.app_error` IDs in that package are present; the two missing ones are introduced here. No CI gates this (`make i18n-check` only looks for empty strings), so it ships silently.
 
-**#2 🟠 High — `command_response.go:85`**
-`maxLength := 65535` is an undeclared local that duplicates the exported `PostMessageMaxBytesV2` in the same package; it counts bytes via `len()` where every sibling validator counts runes via `utf8.RuneCountInString` (`post.go:508`, `terms_of_service.go:32`, `channel.go:324`); and it puts a hardcoded ceiling *upstream* of the configurable one computed from the DB column size (`post_store.go:2658`), with no admin override. Ephemeral responses — never length-checked before (`SendEphemeralPost` does no validation) — are now capped too. The validator argued for Medium since the regression needs an enlarged `Posts.Message` column to bite; I kept High per the highest-finder rule and recorded the dissent in the report.
+**#3 🟡 Medium — `command_response.go:85`** (anchor 50): `maxLength := 65535` is a hardcoded *byte* count, while the real downstream limit is a runtime *rune* count from `determineMaxPostSize` that scales with an enlarged `Posts.Message` column. Installations that enlarged the column regress; and in the default config the check is also too loose (16383-rune limit ≈ under the byte cap), so it doesn't actually shield the caller. Also duplicates the existing `PostMessageMaxBytesV2` constant.
 
-**#3 🟡 Medium — `command_response.go:95`**
-Recursing into `ExtraResponses` makes the parse all-or-nothing: one bad nested entry now discards a valid main message, yielding a 500 (`app/command.go:597`) or 400 (`webhook.go:113-116`) with no post. That contradicts `HandleCommandResponse` (`app/command.go:605-637`), which deliberately tolerates per-entry failures via `lastError` — a contract this diff doesn't touch but now runs ahead of. No diagnostic says which entry failed. The new test at `command_response_test.go:171-182` encodes the behavior.
+**#4 🟢 Low — `command_response.go:72`**: validation landed in `CommandResponseFromJSON`, not `CommandResponseFromHTTPBody`, so the plain-text branch bypasses it entirely — the same 100 KB is rejected as JSON and accepted as `text/plain`.
 
-**Minor** — both new `AppError` translation IDs are absent from `server/i18n/en.json`; tiered down because the raw ID only reaches logs and dev-mode `detailed_error`.
+The `assert.Error(t, err)` addition at `command_response_test.go:236` is a real fix — the `ShouldError` branch would previously have passed on a `(nil, nil)` return. All three new test cases were confirmed non-vacuous by removing the `IsValid()` call.
 
-Two caveats on the run itself, both in the report: `test-reviewer` was **dropped by the `bugs` preset's roster cap of 4** even though its hard gate matched and half the diff is test code — `bugs roster=6` would restore it. And `adversarial-reviewer` died twice on transient API 529s before succeeding, so its three findings come from a single run at its self-declared "quick" depth tier.
+Caveats worth carrying: this is a single agent's variance (`bugs-sp` is experimental — no second opinion, no validation wave), and one parked item lacks a closed-set dismissal tag. The working tree is unchanged (`HEAD` still `e9ef9dbd`); the only addition is the untracked `.decaf/` report directory. Nothing was posted anywhere.

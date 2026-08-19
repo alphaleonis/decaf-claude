@@ -1,28 +1,21 @@
-✅ Review complete: `.decaf/code-reviews/CODE_REVIEW_2026-08-17_16-27-55.md`
+✅ Review complete: `.decaf/code-reviews/CODE_REVIEW_2026-08-17_16-53-36.md`
 
-No tracked file was modified (`git status` shows only the untracked `.decaf/` report dir); tests pass.
+**Mode**: `bugs-sp` (explicit) · roster=1 fixed · reach=narrow · no wave, no validation funnel — the single seat's severities and anchors are final.
 
-## The headline you need to read past
+**Verdict: ❌ NEEDS_CHANGES** — 1 High, 4 Medium, 2 Low.
 
-The mechanical verdict is **APPROVED with 0 primary findings** — but that is the `bugs` preset's bar talking, not a clean change. Under `evidence=strong`, a cluster found by only one reviewer must score ≥80 on the screen. The two most substantive issues scored **78** and **72**. Both were independently verified; the 72 was also confirmed by a validator. Both got tiered to Minor for want of a second finder. Re-run as `/decaf-quality-dev:code-review review` and they become verdict-bearing.
+The change adds `CommandResponse.IsValid()` and calls it from `CommandResponseFromJSON`. The core problem is *where* the validation was placed:
 
-## The two that matter
+- **#1 High** (`command_response.go:72`) — validating inside the parser makes it all-or-nothing on two live integration ingress paths. A payload with a valid parent and one bad `extra_responses` entry used to deliver the parent post (`app/command.go:604-613`); now the whole parse fails and nothing is posted. That converts a partial-delivery degradation into total failure for integrations that work today, with no flag or deprecation window.
+- **#5 Medium** — the same parser decodes the server's *own* response in `Client4.ExecuteCommand` (`client4.go:5961`), so `mmctl` and third-party Go consumers of `server/public` now fail to decode HTTP 200s carrying a plugin-set `response_type`. The sibling `IncomingWebhookRequestFromJSON` deliberately does not validate.
 
-**The new limits are bypassable by changing one header** (`command_response.go:36-41`, screen 78). The gate went into `CommandResponseFromJSON` — the `application/json` branch only. The other branch of the same ingest function returns `CommandResponseFromPlainText`, which never validates. Probe-confirmed against this commit:
+Two findings say the length check doesn't do what it looks like it does, both verified by execution:
 
-```
-CommandResponseFromHTTPBody("text/plain",       <65536 bytes>) → accepted, err=nil
-CommandResponseFromHTTPBody("application/json", {same bytes})  → "text is too long"
-```
+- **#3 Medium** — `len(o.Text) > 65535` counts **bytes**; the limit that actually governs this text is `Post.IsValid`'s `utf8.RuneCountInString` against a configurable `maxPostSize` (reference value 16383). 21 845 CJK runes pass the new check and are rejected downstream anyway.
+- **#4 Medium** — a `text/plain` response body skips `CommandResponseFromJSON` entirely, so a 100 KB body parses with no error. One header flips the limit off.
 
-`commandWebhook` (`web/webhook.go:114`) is registered `RequireSession: false`, so Content-Type is caller-controlled. The screener traced why nothing downstream catches it: plain text means `ResponseType == ""` → `SendEphemeralPost` → broadcast over websocket, never persisted, so the store's size check never runs.
+**#2 Medium** is the cheapest fix: neither new error ID is in `server/i18n/en.json`, so `AppError.Message` surfaces the raw dotted ID (`grep -c` → 0, exit 1; every sibling ID of this shape is registered).
 
-**Strict validation turns a tolerated response into a total command failure** (`command_response.go:81-88`, screen 72, validator confirmed). Previously an unrecognized `response_type` fell through both branches of `CreateCommandPost` — that one post was skipped, but the command returned HTTP 200 with sibling `extra_responses` posted and `goto_location` intact. Now the parse fails, `command.go:596` wraps it into a 500, `HandleCommandResponse` is never reached, and siblings plus `goto_location` plus `trigger_id` are all lost. The comparison is **case-sensitive**, so `"IN_CHANNEL"` trips it.
+The seat also credited real strengths — the `assert.Error(t, err)` addition at `command_response_test.go:236` closes a genuine hole where `(nil, nil)` would have passed silently, and the `""` response type is correctly admitted.
 
-Worth flagging: quick-reviewer and adversarial-reviewer both *dismissed* this one, arguing a loud error beats a silent drop. The screener and validator each examined that argument and found it accounts for the dropped response but not the collateral loss. I've recorded the dissent in the report rather than hiding it.
-
-Also reported: client4 now validates server-produced data after a non-idempotent command already ran (45); both new `AppError` IDs are missing from `en.json`, though the impact is developer-facing only — no CI enforces it (45); validation recurses to unlimited `ExtraResponses` depth while consumers walk one level (30); and `maxLength := 65535` duplicates `PostMessageMaxBytesV2` while counting bytes against rune-based post semantics.
-
-Test changes are clean — test-reviewer traced all three new cases to the branch each claims, and the added `assert.Error` closes a real gap.
-
-Two caveats on how this ran. The `bugs` cap of 4 dropped `design-reviewer`, `go-reviewer` and `security-reviewer`, all of which matched their gates; since every high-scoring cluster came from the one session-model seat, a wider roster would plausibly have supplied the second finder those 78 and 72 needed. And `quick-reviewer` spawned its own nested subagent, so its reported token figure may or may not include that child — noted as [Unverified] in the metrics.
+Two caveats on this result: `bugs-sp` is a single-agent path, so the findings carry one agent's variance with no independent validation; and one of the 5 parked items lacks a closed-set dismissal reason (it records a methodology decision, not a dismissed finding). No files were modified — the working tree was verified clean before and after.
