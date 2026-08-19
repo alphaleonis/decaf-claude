@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-18T11:10:35Z
+updated_at: 2026-08-19T16:19:08Z
 order: zzzzV
 ---
 
@@ -267,13 +267,25 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-xhku: Fixed. cell_tmp.sh's top-of-/tmp sweep is scoped by a live-cell registry instead of a per-cell
-snapshot: preflight registers the cell (runner pid via BENCH_CELL_PID) and, if nothing else is live,
-takes a quiescent baseline; cleanup steps 1–3 stay cell-scoped; step 4 runs only when the cell is the
-last one live and sweeps against the baseline, otherwise defers and records it; dead-pid registrations
-are dropped. flock-serialized. test_cell_tmp.sh covers the two-cell case (14 checks) and a live
-shakedown on the real /tmp confirmed defer-then-sweep. README § Concurrency and the bench-run skill
-now say different-subject cells may run concurrently. Cause of the $17.61 loss on 2026-08-18.
+Completed dcc-di47: Resolved toward option 3, with option 1 as the reporting form. `scoring/thread_band.py` reports two
+things and says which is trustworthy:
+
+CORPUS COVERAGE (did any tool raise this thread) is stable across both grading passes on every
+scored subject — prometheus 8-8 of 10, mattermost 2-2 of 4, immich 1-1 of 2, grafana 0-0 of 2. This
+is the miss detector METHODOLOGY-v2 section 2 justifies the thread set for, and it is the defensible
+number.
+
+PER-TOOL ATTRIBUTION is not a point estimate. It is printed as a range with n attached, and flagged
+when the spread reaches 0.20. On today's fuller pools the spread is 0.10 on prometheus — one
+thread's worth, since 10 threads quantize recall at 0.10 — and 0.00 elsewhere. The pilot's 0.20 came
+from the thinner r1-only pool.
+
+Subjects with n<=2 human threads are marked THIN and per-subject disclosure only. grafana-117615 is
+the case that matters: 0 of its 2 human threads were raised by ANY tool under either pass, so its
+human thread axis carries no information at all, while 5 of its 7 admitted threads are bot-authored.
+
+The script refuses to compute a band from one grading pass, and reports an unscored subject as
+SKIPPED rather than as a subject with no coverage.
 
 ## Key Decisions
 

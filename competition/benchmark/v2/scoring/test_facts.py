@@ -169,5 +169,49 @@ try:
 finally:
     shutil.rmtree(tmp, ignore_errors=True)
 
+print("\n== assert_foldin_movements: benign vs unexplained (nib dcc-dirp) ==")
+tmp = tempfile.mkdtemp()
+try:
+    def mt(path, tools):
+        json.dump({"subject": "s", "tools": tools}, open(os.path.join(tmp, path), "w"))
+
+    # benign: unique_real falls because a second arm now reports it; pool grows because the new arm
+    # found a real defect nobody had recorded.
+    mt("b1.json", {"old": {"unique_real": 3, "unique_real_ids": ["a", "b", "c"],
+                           "defect_recall": {"pool": 4, "reported": 4, "found": 4,
+                                             "recall_reported": 1.0, "recall_found": 1.0}}})
+    mt("a1.json", {"old": {"unique_real": 2, "unique_real_ids": ["b", "c"],
+                           "defect_recall": {"pool": 6, "reported": 4, "found": 4,
+                                             "recall_reported": 0.667, "recall_found": 0.667}},
+                   "new": {"unique_real": 1}})
+    r = run("assert_foldin_movements.py", os.path.join(tmp, "b1.json"), os.path.join(tmp, "a1.json"))
+    check("accepts unique_real falling to a second reporter",
+          r.returncode == 0 and "unique_real-lost" in r.stdout, f"rc={r.returncode}")
+    check("accepts a pool that grew, naming the arm that did not change",
+          "pool-grew" in r.stdout and "WITHOUT this arm changing" in r.stdout)
+
+    # unexplained: a pre-existing arm's OWN counts moved, which a fold-in must not cause
+    mt("b2.json", {"old": {"defect_recall": {"pool": 4, "reported": 4, "found": 4,
+                                             "recall_reported": 1.0, "recall_found": 1.0}}})
+    mt("a2.json", {"old": {"defect_recall": {"pool": 4, "reported": 2, "found": 4,
+                                             "recall_reported": 0.5, "recall_found": 1.0}}})
+    r = run("assert_foldin_movements.py", os.path.join(tmp, "b2.json"), os.path.join(tmp, "a2.json"))
+    check("REFUSES when a pre-existing arm's own counts moved",
+          r.returncode == 3 and "UNEXPLAINED" in r.stderr, f"rc={r.returncode}")
+
+    # unexplained: unique_real rising is impossible from a fold-in
+    mt("b3.json", {"old": {"unique_real": 1}})
+    mt("a3.json", {"old": {"unique_real": 4}})
+    r = run("assert_foldin_movements.py", os.path.join(tmp, "b3.json"), os.path.join(tmp, "a3.json"))
+    check("REFUSES unique_real rising, which a fold-in cannot cause", r.returncode == 3)
+
+    # a tool vanishing is never benign
+    mt("b4.json", {"old": {"unique_real": 1}})
+    mt("a4.json", {})
+    r = run("assert_foldin_movements.py", os.path.join(tmp, "b4.json"), os.path.join(tmp, "a4.json"))
+    check("REFUSES a pre-existing arm disappearing", r.returncode == 3 and "DISAPPEARED" in r.stderr)
+finally:
+    shutil.rmtree(tmp, ignore_errors=True)
+
 print(f"\n{ok} passed, {fail} failed")
 sys.exit(1 if fail else 0)

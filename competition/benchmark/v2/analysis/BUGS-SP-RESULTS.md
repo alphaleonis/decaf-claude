@@ -359,6 +359,14 @@ not (3/4). The prometheus finding
 ("superpowers finds ~5/cell to our ~3.7") looks specific to large diffs with deep pools, not a
 general property of the single agent.
 
+> **SUPERSEDED (2026-08-18, nib dcc-dirp).** The defect-recall figures for `immich-28886` and
+> `grafana-117615` in this section were computed against a real-defect pool of 4 on each subject.
+> Folding in `ours-review-postdduy` enlarged those pools to 5 and 6, because it found real
+> defect-class clusters nobody had recorded. Every arm's recall on those two subjects fell without
+> the arm changing: `ours-bugs` and `ours-bugs-sp3` 1.000 -> 0.800 (immich) and 1.000 -> 0.667
+> (grafana); `superpowers` 0.750 -> 0.500 (grafana). The pooled axis is bounded by the union of tool
+> output, so this is inherent. Cite these numbers only with their pool size, or recompute.
+
 ### Five subjects pooled (all out-of-window)
 
 | | `ours-bugs` | `ours-bugs-sp3` | superpowers |

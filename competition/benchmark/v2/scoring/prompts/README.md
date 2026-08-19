@@ -18,3 +18,21 @@ verdicts is reported as calibration. On 2026-08-17 that calibration was 10–11/
 **3/12 on efcore** (today's two passes agreed 9/12 with each other) — the pilot's efcore judge was
 the lenient one on inspection (a thread match to a mangled suggestion nit; a match to a rejected bot
 thread). Report the calibration every time; do not assume the judge is stable across weeks.
+
+## The fold-in acceptance criterion (nib dcc-dirp)
+
+**Not "existing per-tool figures unchanged" — that is unachievable and rewards a weak arm.** An arm
+contributing nothing novel passes trivially; one that finds a real defect nobody had recorded
+necessarily fails. The gate is that **every movement is EXPLAINED**, checked by
+`scoring/assert_foldin_movements.py <before-metrics.json> <after-metrics.json>`, which exits 3 only
+on an unexplained one.
+
+Two classes are benign:
+
+- `unique_real-lost` — "unique" means only-that-tool, so a second reporter correctly removes it.
+- `pool-grew` — the real-defect pool is the union of what tools found, so a new arm finding a real
+  defect enlarges it and lowers every other arm's recall **without those arms changing**. Measured
+  2026-08-18: immich 4 -> 5 and grafana 4 -> 6, dropping `ours-bugs` from 1.000 to 0.800 and 0.667.
+
+Consequence: **a defect-recall figure is only comparable against figures from the SAME pool.** Print
+the pool size beside it, always, and never compare a recall across fold-ins.

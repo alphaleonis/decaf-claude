@@ -102,6 +102,20 @@ threads and 66% of the human defect statements), and **tool output posted under 
 undetectable**, so the axis is defensible as "what expert reviewers chose to say", never as "what
 unaided humans found".
 
+**A third limit, measured 2026-08-19 (nib `dcc-chdq`): stripping `origin` blinds the judge to the
+metadata, not to the style.** The grading payload carries exactly `{index, path, line, body}` — no
+author, no origin, verified structurally. But a body can announce itself: mattermost's admitted
+thread 0 opens `🎯 Functional Correctness | 🟠 Major | ⚡ Quick win` followed by `🧩 Analysis chain`.
+A thread cannot be graded without its body, so this cannot be fixed by removing more fields.
+
+Measured, it does not appear to bite: threads matched by at least one cluster run **18/28 (0.64) for
+human authors and 5/8 (0.62) for bots**, and bot threads whose bodies visibly read as machine-written
+matched *more* often, not less (2/2 vs 3/6 — and those two are also the longest bodies, so length
+confounds it). **This clears a gross effect only.** With 8 bot threads in the whole corpus a small
+bias is undetectable, and `matches_thread` conflates judge behaviour with tool coverage — a thread no
+tool addressed cannot match however the judge reads it. Treat the blinding as sound for metadata and
+unproven for style; revisit if a subject with a large bot population enters the corpus.
+
 Thread density therefore becomes a **corpus selection criterion**, not an accident. The v1 corpus
 averaged badly (15 threads across five subjects, 12 of them on one) because it was selected for
 reverts; selecting for review discipline means requiring substantive threads up front.

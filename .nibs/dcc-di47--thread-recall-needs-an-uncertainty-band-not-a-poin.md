@@ -2,11 +2,11 @@
 # dcc-di47
 version: 1
 title: Thread recall needs an uncertainty band, not a point estimate
-status: todo
+status: completed
 type: task
 priority: high
 created_at: 2026-08-12T07:12:02Z
-updated_at: 2026-08-13T08:40:48Z
+updated_at: 2026-08-19T16:19:08Z
 parent: dcc-ho2w
 order: z
 ---
@@ -155,3 +155,25 @@ the effect that matters most is neither: it is n.
 The earlier recommendation here — favour grading passes over repeats to save ~$1,200 on the full run
 — **is withdrawn**. It rested on one subject. Both controls are needed, and the cheap win is the
 n>=10 publication floor, which costs nothing.
+
+## Summary
+
+**Completed 2026-08-19** — Resolved toward option 3, with option 1 as the reporting form. `scoring/thread_band.py` reports two
+things and says which is trustworthy:
+
+CORPUS COVERAGE (did any tool raise this thread) is stable across both grading passes on every
+scored subject — prometheus 8-8 of 10, mattermost 2-2 of 4, immich 1-1 of 2, grafana 0-0 of 2. This
+is the miss detector METHODOLOGY-v2 section 2 justifies the thread set for, and it is the defensible
+number.
+
+PER-TOOL ATTRIBUTION is not a point estimate. It is printed as a range with n attached, and flagged
+when the spread reaches 0.20. On today's fuller pools the spread is 0.10 on prometheus — one
+thread's worth, since 10 threads quantize recall at 0.10 — and 0.00 elsewhere. The pilot's 0.20 came
+from the thinner r1-only pool.
+
+Subjects with n<=2 human threads are marked THIN and per-subject disclosure only. grafana-117615 is
+the case that matters: 0 of its 2 human threads were raised by ANY tool under either pass, so its
+human thread axis carries no information at all, while 5 of its 7 admitted threads are bot-authored.
+
+The script refuses to compute a band from one grading pass, and reports an unscored subject as
+SKIPPED rather than as a subject with no coverage.
