@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-19T17:19:43Z
+updated_at: 2026-08-19T17:25:37Z
 order: zzzzV
 ---
 
@@ -267,24 +267,27 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-7zyf: An empty thread axis is now distinguishable from tools performing badly.
+Completed dcc-t83x: Facts first, views second. `emit_facts.py` writes clusters/observations/cells as tidy long-format
+tables (353 / 1429 / 82 across five subjects) and refuses to emit unless they round-trip against
+metrics.json. `compare_arms.py` is one view over them, printing its legend every run.
 
-`score_pooled.py` emits `threads.human_axis_empty` when no tool matched ANY human thread, separate
-from `human_axis_thin`. It fires on grafana-117615 alone; immich-28886 is thin but not empty (1 of 2
-hit), so the flags discriminate. Tested.
+Guards, each tested (23 in test_facts): refuses an arm with incompatible model sets (fires on
+ours-bugs, correctly does NOT fire on merely nested sets, which mean a lane was not dispatched);
+withholds any ratio below n=10; separates coverage groups so a 2-subject arm cannot be ranked against
+a 5-subject one; prints the pool size beside every group.
 
-`thread_band.py` renders an empty axis as n/a with the recorded reason and suppresses the per-tool
-table entirely, rather than printing a column of 0.00s that cannot separate arms.
-`pooled/grafana-grafana-117615/THREAD-AXIS-NOTE.md` carries both thread bodies verbatim so a reader
-can see why: one is a reviewer saying they are unfamiliar with the area, the other a naming request
-about fixture data. Neither states a defect, so there was nothing for a tool to miss.
+METRICS.md defines real vs found vs reported, what precision excludes, and that finding_class and
+verdict are orthogonal. score_pooled.py emits precision_note inline. /bench-analyze and /bench-run
+carry the no-interpretation-before-the-artifact rule.
 
-Decided against requiring defect-stating human threads at screen time: that selects FOR matchability
-and would inflate thread recall corpus-wide, converting the miss detector into a measure of how
-findable the corpus was chosen to be. The actual defect is that grafana-117615 has 3 human threads
-total and 2 admitted, so it never met a >=5 HUMAN bar — it passed on a count that included bots,
-which is dcc-qwt3. The screen should count admitted HUMAN threads; empty axes that still occur get
-flagged, not selected against.
+test_reversals.py re-derives all five 2026-08-19 reversals from the facts alone — 13 checks, and the
+arithmetic reproduces exactly (reachnorm 0.458 vs narrow 0.375), confirming the reversals were
+misreadings rather than calculation errors.
+
+Writing that test found a real gap and it is now documented rather than hidden: cluster NOVELTY is
+not derivable from the fact tables, and the set-difference that looks like it works is precisely the
+substitution that caused three of the five reversals. Novelty is a property of a fold-in event, not
+of a cluster; anything needing it must read the grading artifact.
 
 ## Key Decisions
 

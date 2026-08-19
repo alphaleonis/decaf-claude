@@ -95,3 +95,19 @@ direction. Comparative claims within one grading wave survive that; absolute tri
 
 Thread recall is the least stable axis — two blind passes over identical clusters moved it by up to
 0.20 — and should be reported as a band with `n` attached (nib dcc-di47).
+
+## A limitation of the fact tables, found by testing them
+
+**"This cluster was new in fold-in X" is not derivable from the facts.** `clusters.jsonl` records
+what a cluster *is*, not when it entered the pool, and set arithmetic over `observations.jsonl`
+cannot recover it: `reported(armB) − reported(armA)` also picks up long-standing clusters that armA
+simply did not report. Those are different sets, and confusing them is exactly the substitution that
+caused three of the 2026-08-19 reversals.
+
+If you need novelty, read the committed grading artifact for that fold-in
+(`pooled/<subject>/grading/foldin-<date>-<arm>/cluster-assignments-*.json`), which lists
+`new_clusters` explicitly. `scoring/test_reversals.py` names the ids for that reason.
+
+This is a deliberate omission rather than an oversight: novelty is a property of a *fold-in event*,
+not of a cluster, and putting it on the cluster row would make it wrong as soon as another arm is
+added. Anything that wants it should read the event.

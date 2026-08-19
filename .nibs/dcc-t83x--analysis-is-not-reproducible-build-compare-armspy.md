@@ -2,11 +2,11 @@
 # dcc-t83x
 version: 1
 title: 'Analysis is not reproducible: build compare_arms.py, a metric glossary, and a no-interpretation-before-artifact rule'
-status: in-progress
+status: completed
 type: feature
 priority: high
 created_at: 2026-08-19T13:44:36Z
-updated_at: 2026-08-19T16:10:35Z
+updated_at: 2026-08-19T17:25:37Z
 parent: dcc-ho2w
 order: zq
 ---
@@ -103,4 +103,28 @@ but touches every artifact and script for no analytic gain; do it in published r
 - [x] `METRICS.md`; `precision_note` emitted by score_pooled.py; `t_precision_note_travels_with_the_number` asserts it
 - [x] `/bench-analyze` and `/bench-run` carry the no-interpretation rule
 - [x] [[dcc-tmz2]] re-derived from the facts: pool hit/cell reachnorm 0.458 > superpowers 0.438 > narrow 0.375 > sp3 0.354 — identical to the ad-hoc figures, confirming the reversals were misreadings rather than arithmetic errors
-- [ ] Each of the five reversals is re-checkable from the committed facts
+- [x] `scoring/test_reversals.py` re-derives all five from the fact tables alone, 13 checks. Writing it exposed a genuine gap: cluster NOVELTY is not derivable from the facts, because `reported(armB) - reported(armA)` also picks up clusters armA merely did not report — the exact substitution behind three of the reversals. Recorded in METRICS.md as a deliberate omission (novelty is a property of a fold-in event, not of a cluster) with the pointer to the grading artifact that does carry it.
+
+## Summary
+
+**Completed 2026-08-19** — Facts first, views second. `emit_facts.py` writes clusters/observations/cells as tidy long-format
+tables (353 / 1429 / 82 across five subjects) and refuses to emit unless they round-trip against
+metrics.json. `compare_arms.py` is one view over them, printing its legend every run.
+
+Guards, each tested (23 in test_facts): refuses an arm with incompatible model sets (fires on
+ours-bugs, correctly does NOT fire on merely nested sets, which mean a lane was not dispatched);
+withholds any ratio below n=10; separates coverage groups so a 2-subject arm cannot be ranked against
+a 5-subject one; prints the pool size beside every group.
+
+METRICS.md defines real vs found vs reported, what precision excludes, and that finding_class and
+verdict are orthogonal. score_pooled.py emits precision_note inline. /bench-analyze and /bench-run
+carry the no-interpretation-before-the-artifact rule.
+
+test_reversals.py re-derives all five 2026-08-19 reversals from the facts alone — 13 checks, and the
+arithmetic reproduces exactly (reachnorm 0.458 vs narrow 0.375), confirming the reversals were
+misreadings rather than calculation errors.
+
+Writing that test found a real gap and it is now documented rather than hidden: cluster NOVELTY is
+not derivable from the fact tables, and the set-difference that looks like it works is precisely the
+substitution that caused three of the five reversals. Novelty is a property of a fold-in event, not
+of a cluster; anything needing it must read the grading artifact.
