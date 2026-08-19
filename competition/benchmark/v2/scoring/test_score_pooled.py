@@ -468,6 +468,28 @@ def t_precision_note_travels_with_the_number():
         assert "valid_minor" in t["precision_note"], t["precision_note"]
         assert "METRICS.md" in t["precision_note"], t["precision_note"]
 
+def t_refuses_metrics_without_a_calibration_record():
+    # Every verdict-derived number depends on the grading day. A subject whose verdicts were never
+    # calibrated against the pilot has an unmeasured baseline — on 2026-08-17 the same model agreed
+    # with the pilot at 3/12 on one subject, and self-agreement could not see it (nib dcc-n4nf).
+    import tempfile, os, subprocess, sys as _s, json as _j
+    d = tempfile.mkdtemp()
+    ap = os.path.join(d, "analysis.json"); tp = os.path.join(d, "threads.json")
+    _j.dump(BASE, open(ap, "w")); _j.dump(THREADS, open(tp, "w"))
+    here = os.path.dirname(os.path.abspath(__file__))
+    run = lambda *x: subprocess.run([_s.executable, os.path.join(here, "score_pooled.py"), ap,
+                                     "--threads", tp, "-o", os.path.join(d, "m.json"), *x],
+                                    capture_output=True, text=True)
+    r = run()
+    assert r.returncode == 3, f"expected refusal, got {r.returncode}"
+    assert "no calibration record" in r.stderr, r.stderr[:200]
+    r = run("--no-calibration")
+    assert r.returncode == 0, f"--no-calibration should permit a first scoring: {r.stderr[:200]}"
+    os.makedirs(os.path.join(d, "grading"), exist_ok=True)
+    _j.dump({"subject": "x"}, open(os.path.join(d, "grading", "calibration-2026-01-01.json"), "w"))
+    r = run()
+    assert r.returncode == 0, f"a present calibration record should satisfy the guard: {r.stderr[:200]}"
+
 for name, fn in list(globals().items()):
     if name.startswith("t_"):
         check(name[2:], fn)

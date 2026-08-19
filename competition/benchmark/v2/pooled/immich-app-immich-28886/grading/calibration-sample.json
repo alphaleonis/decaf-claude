@@ -1,0 +1,129 @@
+{
+ "subject": "immich-app-immich-28886",
+ "chosen_on": "2026-08-19",
+ "n": 15,
+ "seed": "dcc-n4nf:standing-calibration:immich-app-immich-28886",
+ "note": "STANDING sample \u2014 chosen once. Grade it blind (relabelled, mixed with live clusters) on every grading day that touches this subject, and record the result with judge_stability.py --calibration. Do not re-draw: a fresh draw confounds sampling with drift.",
+ "clusters": [
+  {
+   "cluster_id": "im01",
+   "summary": "Deleting the already-applied ConvertNegativeRatingToNull migration file makes Kysely's unconditional missing-migration check throw 'corrupted migrations' at startup for any database that recorded it, so those servers refuse to boot; keeping the file with a no-op up() avoids it.",
+   "location": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:1",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "im02",
+   "summary": "Users who ran the deleted migration on main builds already had -1 ratings irreversibly converted to NULL, and the change ships no remediation or changelog note acknowledging it.",
+   "location": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:0",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "im04",
+   "summary": "BaseSearchSchema.rating still carries .min(1) (and the '-1 no longer valid' history entry), so every derived search DTO rejects rating -1 with HTTP 400 and rejected assets can be set but never searched for, while the search and asset DTO histories now contradict each other.",
+   "location": "server/src/dtos/search.dto.ts:38",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "im05",
+   "summary": "Moving the rating bounds from .min()/.max() into a .refine() hides them from the JSON-Schema emitter, so UpdateAssetDto/AssetBulkUpdateDto.rating publish minimum/maximum \u00b19007199254740991 in the OpenAPI spec and generated Dart client instead of a bounded range.",
+   "location": "server/src/dtos/asset.dto.ts:17",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "im12",
+   "summary": "Rating 0 now returns 400 instead of being coerced to null as before the original restriction \u2014 a distinct breaking change that no commit message mentions and no test pins.",
+   "location": "server/src/dtos/asset.dto.ts:0",
+   "pilot_pass1": "false-positive",
+   "pilot_pass2": "false-positive",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "im14",
+   "summary": "The refine predicate was suspected of double-reporting on non-integers; 3.5 emits only the int error, though 1e21 emits two issues with no covering test.",
+   "location": "server/src/dtos/asset.dto.ts:19",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "im16",
+   "summary": "Rating field descriptions have drifted across asset.dto.ts, search.dto.ts, and exif.dto.ts, and the new user-facing 'rejected' concept is documented nowhere including the XMP sidecar docs.",
+   "location": "server/src/dtos/asset.dto.ts:23",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "docs"
+  },
+  {
+   "cluster_id": "im18",
+   "summary": "SearchRatingsSection's Number.parseInt on the 'null' option yields NaN and options[rating] indexing is off by one for ratings 1-5 (pre-existing, unrelated to -1).",
+   "location": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte:29",
+   "pilot_pass1": "false-positive",
+   "pilot_pass2": "false-positive",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "im22",
+   "summary": "No test asserts that rating -1 is accepted: the controller spec's as-is loop still covers only 1 and 5, and the negative-rating e2e, unit (metadata.service.spec), and round-trip coverage deleted by the original restriction is not restored, so a regression re-restricting -1 would pass CI.",
+   "location": "server/src/controllers/asset.controller.spec.ts:251",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-other",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "im24",
+   "summary": "The controller spec's over-max (7) and under-min (-2) rejection cases now assert the same error string, losing diagnostic granularity between the two boundaries (still not a vacuous pass).",
+   "location": "server/src/controllers/asset.controller.spec.ts:0",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "im27",
+   "summary": "The generated Dart client was checked for rejecting rating -1 by range; update_asset_dto.dart does a bare int.parse with no bounds enforcement, so construction cannot fail.",
+   "location": "update_asset_dto.dart:172",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "im31",
+   "summary": "The rating field on UpdateAssetBaseSchema backs AssetBulkUpdateDto as well, but the bulk-update spec block never sends a rating at all, so that DTO's rating validation has no test coverage of any value (pre-existing).",
+   "location": "server/src/controllers/asset.controller.spec.ts:22",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "im36",
+   "summary": "The client-side half of the original restriction is not reverted: the Dart widgets, action/search models and web StarRating.svelte that were changed to stop sending -1 remain as-is, so first-party clients still cannot set a rejection even though the API now accepts it.",
+   "location": "mobile/lib:0",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "im39",
+   "summary": "The extraction that nulls the rating was checked for re-queuing another sidecar write and thus a self-amplifying job loop; no AssetExtractMetadata -> SidecarWrite edge exists, so the chain terminates after one round trip.",
+   "location": "server/src/services/job.service.ts:75",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "im43",
+   "summary": "The tree was swept for dangling references to the deleted migration \u2014 no manifest, index, seed or doc names it \u2014 confirming the breakage lives in the recorded database row rather than in the repository.",
+   "location": "server/src/schema/migrations/1780592070031-ConvertNegativeRatingToNull.ts:0",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "defect"
+  }
+ ]
+}

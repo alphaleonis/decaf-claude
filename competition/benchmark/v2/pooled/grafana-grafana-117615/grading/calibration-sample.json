@@ -1,0 +1,129 @@
+{
+ "subject": "grafana-grafana-117615",
+ "chosen_on": "2026-08-19",
+ "n": 15,
+ "seed": "dcc-n4nf:standing-calibration:grafana-grafana-117615",
+ "note": "STANDING sample \u2014 chosen once. Grade it blind (relabelled, mixed with live clusters) on every grading day that touches this subject, and record the result with judge_stability.py --calibration. Do not re-draw: a fresh draw confounds sampling with drift.",
+ "clusters": [
+  {
+   "cluster_id": "gf01",
+   "summary": "quoteIdentifierIfNecessary(vars[0]) is called with undefined when the SQL expression has no sibling query, so isValidIdentifier's toUpperCase throws a TypeError and the editor crashes on render where it previously rendered 'FROM undefined'.",
+   "location": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx:81",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "gf02",
+   "summary": "The alerting DAG's cleanTableName strips quotes and parens but not backticks and truncates at the first space, so backtick-quoted FROM targets no longer match any refId, Graph.link throws, and the SQL expression is dropped from the alert graph.",
+   "location": "public/app/features/alerting/unified/components/rule-editor/dag.ts:198",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "gf03",
+   "summary": "Core feature code imports quoteIdentifierIfNecessary from the decoupled mysql datasource plugin workspace, coupling core to a plugin internal in the wrong dependency direction.",
+   "location": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx:13",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "design"
+  },
+  {
+   "cluster_id": "gf04",
+   "summary": "The two new test files fail the repo's CI lint gates: @typescript-eslint/no-explicit-any and import/order errors plus prettier --check failures from trailing whitespace and formatting.",
+   "location": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:11",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "style"
+  },
+  {
+   "cluster_id": "gf08",
+   "summary": "The read-back path never unquotes: Monaco tokenizes a backtick-quoted table name into separate tokens so getTableToken yields a lone backtick or quoted name, which fetchSQLFields re-quotes into broken SQL and whose refId filter matches nothing, so column autocomplete silently returns empty for the very refIds this change enables.",
+   "location": "public/app/features/expressions/utils/metaSqlExpr.ts:15",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "gf14",
+   "summary": "The new tests leave the currently-broken paths uncovered: no case for empty refIds, a reserved-word refId, or an already-quoted table on the read-back path.",
+   "location": "public/app/features/expressions/utils/metaSqlExpr.test.ts:0",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "gf16",
+   "summary": "Because initialQuery is now quoted it no longer equals previously-saved spaced-refId expressions, so GenAISQLSuggestionsButton shows 'Improve query' instead of 'Generate suggestion' for them \u2014 judged not a real defect.",
+   "location": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx:81",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "gf19",
+   "summary": "The new SqlExpr test reads onChange.mock.calls[0][0] after only waiting for onChange to be called; the mount-only effect is the sole reachable caller so calls[0] is unambiguous and matches the sibling test's convention.",
+   "location": "public/app/features/expressions/components/SqlExpressions/SqlExpr.test.tsx:0",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "gf20",
+   "summary": "`refIds.map((v) => v.value!)` uses a non-null assertion that hides the undefined-vars[0] case from the type checker; the line is outside the diff.",
+   "location": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx:61",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "trivia",
+   "finding_class": "risk"
+  },
+  {
+   "cluster_id": "gf22",
+   "summary": "If Monaco auto-closes a typed backtick, inserting an already-backticked completion could produce doubled backticks \u2014 unverified, depends on the editor's language configuration.",
+   "location": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts:27",
+   "pilot_pass1": "false-positive",
+   "pilot_pass2": "false-positive",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "gf24",
+   "summary": "Considered whether the first completion-provider test's `if (resolveFunc)` guard could pass vacuously; it is preceded by expect(resolveFunc).toBeDefined() at line 15, so it cannot.",
+   "location": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:15",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "gf27",
+   "summary": "Both new completion-provider tests call resolveFunc() with no argument although the plugin-ui contract declares resolve(TableIdentifier | null), so typecheck fails with two TS2554 errors and the change cannot pass CI.",
+   "location": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:18",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "gf28",
+   "summary": "The alerting rule editor renders SqlExpr with an empty queries array, so the metadata path's queries.filter finds no matching frame and column autocomplete can never resolve there regardless of quoting.",
+   "location": "public/app/features/expressions/utils/metaSqlExpr.ts:20",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "gf29",
+   "summary": "The getFields jest mock in the completion-provider tests is dead setup: it is reachable only through columns.resolve, which neither test invokes, and it is never asserted on.",
+   "location": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.test.ts:5",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "gf31",
+   "summary": "No test feeds an identifier containing an embedded backtick, so every suite exercises only the benign spaces input and none would fail if the quoting were weakened on the inputs that make it a sanitization control rather than a formatter.",
+   "location": "public/app/features/expressions/utils/metaSqlExpr.test.ts:0",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "test-gap"
+  }
+ ]
+}

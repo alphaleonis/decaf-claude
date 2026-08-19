@@ -1,0 +1,129 @@
+{
+ "subject": "mattermost-mattermost-36824",
+ "chosen_on": "2026-08-19",
+ "n": 15,
+ "seed": "dcc-n4nf:standing-calibration:mattermost-mattermost-36824",
+ "note": "STANDING sample \u2014 chosen once. Grade it blind (relabelled, mixed with live clusters) on every grading day that touches this subject, and record the result with judge_stability.py --calibration. Do not re-draw: a fresh draw confounds sampling with drift.",
+ "clusters": [
+  {
+   "cluster_id": "ma02",
+   "summary": "The two new AppError i18n IDs (model.command_response.is_valid.response_type.app_error and .text.app_error) are missing from server/i18n/en.json, so the raw dotted key becomes the error Message in logs, developer-mode responses and Go client errors.",
+   "location": "server/public/model/command_response.go:82",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "ma04",
+   "summary": "CommandResponseFromHTTPBody only validates the application/json branch; text/plain bodies go through CommandResponseFromPlainText which never calls IsValid, so the same oversized payload is rejected as JSON but accepted by switching Content-Type.",
+   "location": "server/public/model/command_response.go:36",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-other",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "ma11",
+   "summary": "Validation lives in the shared bidirectional decoder CommandResponseFromJSON, which Client4.ExecuteCommand/ExecuteCommandWithTeam also use to decode server-emitted responses that are never validated server-side (plugin/built-in commands), so a response the webapp renders fine fails to decode in mmctl and every Go client; validation belongs at the ingest sites, not the decoder.",
+   "location": "server/public/model/client4.go:5961",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "ma13",
+   "summary": "The new test cases assert only assert.Error/assert.Nil (with an ASCII payload that does not pin byte vs rune) and never check the AppError Id or StatusCode, so a case failing for an unrelated reason such as a JSON typo still passes.",
+   "location": "server/public/model/command_response_test.go:167",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "ma15",
+   "summary": "IsValid recurses through all ExtraResponses and propagates any nested failure, so one bad extra entry (even at a depth no consumer ever reads) rejects the whole payload and discards the valid main message, contradicting HandleCommandResponse's per-entry tolerance.",
+   "location": "server/public/model/command_response.go:95",
+   "pilot_pass1": "matches-thread",
+   "pilot_pass2": "matches-thread",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "ma18",
+   "summary": "The http.StatusBadRequest set on IsValid's AppErrors has no observable effect because both call sites wrap it in a fresh outer AppError, so the failure surfaces to the user as a generic 500 via app/command.go.",
+   "location": "server/channels/app/command.go:596",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "ma20",
+   "summary": "commandWebhook reads r.Body without a LimitReader, unlike the outgoing-command path capped at MaxIntegrationResponseSize (pre-existing).",
+   "location": "server/channels/web/webhook.go:114",
+   "pilot_pass1": "false-positive",
+   "pilot_pass2": "false-positive",
+   "finding_class": "risk"
+  },
+  {
+   "cluster_id": "ma23",
+   "summary": "The test literal \"shliapa_type\" used as an invalid response_type is inert test data, not a defect.",
+   "location": "server/public/model/command_response_test.go:0",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "ma26",
+   "summary": "IsValid's nil-skip lets {\"extra_responses\":[null]} through as a nil element that HandleCommandResponse/HandleCommandResponsePost later dereference, a reachable nil-pointer panic from commandWebhook and custom slash commands.",
+   "location": "server/public/model/command_response.go:90",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "ma29",
+   "summary": "IsValid is new exported public API with no direct unit test; it is exercised only transitively through CommandResponseFromJSON.",
+   "location": "server/public/model/command_response_test.go:123",
+   "pilot_pass1": "valid-minor",
+   "pilot_pass2": "trivia",
+   "finding_class": "test-gap"
+  },
+  {
+   "cluster_id": "ma35",
+   "summary": "Missing blank line before the final `return nil` in IsValid, inconsistent with the spacing of the other blocks in the function.",
+   "location": "server/public/model/command_response.go:98",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "style"
+  },
+  {
+   "cluster_id": "ma37",
+   "summary": "The number of ExtraResponses entries is left unbounded even though the new validator walks them all, so a single body under the payload cap can demand thousands of post inserts and websocket broadcasts downstream.",
+   "location": "server/public/model/command_response.go:90",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-other",
+   "finding_class": "risk"
+  },
+  {
+   "cluster_id": "ma40",
+   "summary": "Capture of the table-driven test case variable under t.Parallel() was examined and cleared, since the module's Go version gives per-iteration loop variables.",
+   "location": "server/public/model/command_response_test.go:0",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "defect"
+  },
+  {
+   "cluster_id": "ma43",
+   "summary": "Attachment text is an unbounded alternate channel around the new Text limit \u2014 examined and cleared because attachments remain bounded downstream by PostPropsMaxRunes, so the change opens no new gap.",
+   "location": "server/public/model/command_response.go:85",
+   "pilot_pass1": "trivia",
+   "pilot_pass2": "trivia",
+   "finding_class": "risk"
+  },
+  {
+   "cluster_id": "ma44",
+   "summary": "A parse failure in the delayed-response endpoint returns 400 before CommandWebhook.TryUse is called, so a retrying integration never consumes one of its five uses and can re-fail indefinitely.",
+   "location": "server/channels/web/webhook.go:114",
+   "pilot_pass1": "valid-other",
+   "pilot_pass2": "valid-minor",
+   "finding_class": "risk"
+  }
+ ]
+}
