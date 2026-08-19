@@ -63,7 +63,9 @@
     "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs-sp --report {PR}. This reviews pull request #{PR} of the GitHub repository {REPO} (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
     "preset": "bugs-sp",
     "baseline_note": "HISTORICAL \u2014 brief revision v1 of the single-seat path during the dcc-1sbc/dcc-pulk/dcc-ce0m experiments; superseded 2026-08-18 by ours-bugs (dcc-pjix). Do not run again; the `bugs-sp` argument is now an alias for `bugs`. Experimental arm (nib dcc-1sbc), added 2026-08-16 \u2014 after the v2 pilot. The ours-* pilot cells (2026-08-12) predate this preset and are the comparison baselines; no existing cell ran it.",
-    "subjects_note": "experiment scoped to the two v2 pilot subjects (prometheus/prometheus#18081, dotnet/efcore#34127) x 2 repeats, per PROPOSAL-BUGS-SP.md; success criteria live there"
+    "subjects_note": "experiment scoped to the two v2 pilot subjects (prometheus/prometheus#18081, dotnet/efcore#34127) x 2 repeats, per PROPOSAL-BUGS-SP.md; success criteria live there",
+    "retired": true,
+    "retired_reason": "Brief revision v1 of the single-seat path (dcc-1sbc). `bugs-sp` is now an ALIAS for `bugs`, so re-running this id today would execute today's mechanism under a 2026-08-16 label and silently pollute a frozen baseline. Its 4 cells stay citable as the brief-v1 baseline."
   },
   {
     "id": "ours-bugs-sp2",
@@ -75,7 +77,9 @@
     "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs-sp --report {PR}. This reviews pull request #{PR} of the GitHub repository {REPO} (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
     "preset": "bugs-sp",
     "baseline_note": "HISTORICAL \u2014 brief revision v2 of the single-seat path during the dcc-1sbc/dcc-pulk/dcc-ce0m experiments; superseded 2026-08-18 by ours-bugs (dcc-pjix). Do not run again; the `bugs-sp` argument is now an alias for `bugs`. Second brief revision of the bugs-sp seat (nib dcc-pulk, 2026-08-17): Minor Findings omitted under reach=narrow (minor items parked as `minor, out of reach`); fail closed on defects traced to real code behavior and dismissed as 'documented as intended' / 'unreachable today' (reported at anchor 50 with the counter-argument). Orchestrator unchanged. The ours-bugs-sp cells of 2026-08-17 are the brief-v1 baseline; this arm exists so v1 and v2 can sit side by side.",
-    "subjects_note": "same 2 pilot subjects x 2 repeats as ours-bugs-sp; restated criteria in PROPOSAL-BUGS-SP.md \"Decisions after the first run\""
+    "subjects_note": "same 2 pilot subjects x 2 repeats as ours-bugs-sp; restated criteria in PROPOSAL-BUGS-SP.md \"Decisions after the first run\"",
+    "retired": true,
+    "retired_reason": "Brief revision v2 (dcc-pulk). Same reason as ours-bugs-sp: the invocation now resolves to today's `bugs`. Its 4 cells stay citable as the brief-v2 baseline."
   },
   {
     "id": "ours-bugs-sp3",
@@ -86,8 +90,9 @@
     "findings_file": ".decaf/code-reviews/CODE_REVIEW_*.md",
     "invocation": "Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs-sp --report {PR}. This reviews pull request #{PR} of the GitHub repository {REPO} (its origin remote). This is REVIEW-ONLY: never post any comment, review, or status to the PR. When finished, print the path of the generated review file under .decaf/code-reviews/ and a one-line count of findings by severity.",
     "preset": "bugs-sp",
-    "baseline_note": "HISTORICAL \u2014 brief revision v3 (= today's bugs) of the single-seat path during the dcc-1sbc/dcc-pulk/dcc-ce0m experiments; superseded 2026-08-18 by ours-bugs (dcc-pjix). Do not run again; the `bugs-sp` argument is now an alias for `bugs`. Third brief revision of the bugs-sp seat (nib dcc-ce0m, 2026-08-17): Considered But Not Flagged takes a closed set of parking reasons \u2014 [unverified] [false] [pre-existing] [minor] (nits only; Low+ is a finding) \u2014 and 'intended by design / documented / tested as such / unreachable today' are findings at anchor 50 with the counter-argument in Evidence. The orchestrator counts untagged parkings in the report header without re-tiering. Replaces v2's fail-closed prose, which under-fired (prom c07 parked in both v2 repeats). ours-bugs-sp (v1) and ours-bugs-sp2 (v2) cells stay frozen; run this arm at 3 repeats.",
-    "subjects_note": "same 2 pilot subjects x 2 repeats as ours-bugs-sp; restated criteria in PROPOSAL-BUGS-SP.md \"Decisions after the first run\""
+    "baseline_note": "KEEPER \u2014 the canonical single-seat dataset. Brief v3, which is the mechanism `bugs` became on 2026-08-18 (dcc-pjix). 12 cells across all five adjudicated subjects, Opus 5 only, one configuration throughout \u2014 unlike `ours-bugs`, whose cells mix the pre-dduy Haiku wave on prometheus/efcore with the post-dduy single seat on the three small subjects, which is why the model-set guard in compare_arms.py refuses to pool it. Invokes `bugs-sp --report`; `bugs-sp` is an alias for `bugs`, so a new cell here measures today's single seat.",
+    "subjects_note": "same 2 pilot subjects x 2 repeats as ours-bugs-sp; restated criteria in PROPOSAL-BUGS-SP.md \"Decisions after the first run\"",
+    "retired": false
   },
   {
     "id": "ours-review",

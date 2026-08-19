@@ -127,6 +127,22 @@ fi
 # one tool at the answer while the others got the local diff. It also made that tool's result depend
 # on the shim's field filter, which turned out to be leaking anyway (dcc-3cm6). Every tool now
 # reviews the same thing by the same route: the checked-out diff.
+# A tool flagged `retired` in tools.json must not produce new cells. Flagging without enforcing is
+# how a frozen baseline gets polluted: `ours-bugs-sp` and `-sp2` both invoke `bugs-sp --report`, and
+# `bugs-sp` is now an ALIAS for `bugs` — so a cell run today under either id would measure today's
+# mechanism while carrying a 2026-08-16 label. Old cells stay citable; new ones are refused.
+# BENCH_ALLOW_RETIRED=1 overrides, for the rare case of deliberately reproducing a historical arm.
+if [ -z "${BENCH_ALLOW_RETIRED:-}" ] && [ -f "$BENCH/tools.json" ] && command -v jq >/dev/null; then
+  retired="$(jq -r --arg t "$TOOL" '.[] | select(.id==$t and .retired==true) | .retired_reason // "no reason recorded"' "$BENCH/tools.json")"
+  if [ -n "$retired" ]; then
+    echo "[$SUBJ_ID/$TOOL] REFUSING: this arm is RETIRED and must not produce new cells." >&2
+    echo "  $retired" >&2
+    echo "  Its existing cells remain valid and citable. Set BENCH_ALLOW_RETIRED=1 only if you" >&2
+    echo "  deliberately intend to reproduce a historical arm, and say why in the nib." >&2
+    exit 81
+  fi
+fi
+
 case "$TOOL" in
   ours-review) INVOKE="Use the Skill tool to run /decaf-quality-dev:code-review with arguments: review --report" ;;
   # bugs = the single-seat solo-reviewer path since 2026-08-18 (dcc-pjix). Cells before that date ran the
