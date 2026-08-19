@@ -2,11 +2,11 @@
 # dcc-dirp
 version: 1
 title: 'Fold-in acceptance: require every per-tool movement explained, not zero movements'
-status: todo
+status: completed
 type: task
 priority: normal
 created_at: 2026-08-18T17:44:27Z
-updated_at: 2026-08-18T17:45:05Z
+updated_at: 2026-08-19T16:19:08Z
 parent: dcc-ho2w
 order: zw
 ---
@@ -44,3 +44,20 @@ the union of tool output" — so it will recur for every arm that finds somethin
 - [ ] `assert_foldin_movements.py` + a test covering both benign classes and one unexplained case
 - [ ] `BUGS-SP-RESULTS.md` carries a note that its immich/grafana defect-recall figures are
       superseded by the post-`ours-review-postdduy` pool
+
+## Summary
+
+**Completed 2026-08-19** — The criterion is now "every movement is EXPLAINED", not "no movement".
+
+`scoring/assert_foldin_movements.py` diffs before/after metrics.json, classifies each movement as
+`unique_real-lost` (a second arm now reports it, so "unique" correctly falls) or `pool-grew` (the
+new arm found a real defect nobody had recorded, so the union pool enlarged and every other arm's
+recall fell without those arms changing), and exits 3 on anything else. Replayed against the
+2026-08-18 u10u fold-in it explains all 8 movements and refuses none.
+
+Five tests: both benign classes accepted; a pre-existing arm's own counts moving REFUSED;
+unique_real rising REFUSED (a fold-in cannot cause it); an arm disappearing REFUSED.
+
+`prompts/README.md` carries the reworded criterion. `compare_arms.py` prints the pool size beside
+every group. `BUGS-SP-RESULTS.md` now marks its immich/grafana defect-recall figures superseded, with
+the before/after pools, so they are not cited as-is.
