@@ -112,6 +112,7 @@ tbody tr:hover{background:var(--accent-soft)}
 .hit.full{color:var(--real);font-weight:600}
 .hit.none{color:var(--void)}
 .hit.na{color:var(--void);opacity:.5}
+.warnflag{color:var(--wrong);margin-left:5px;cursor:help;font-size:12px}
 th abbr{text-decoration:underline dotted var(--line);text-underline-offset:3px;cursor:help}
 #gloss,#terms{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:5px 16px;margin:0}
 #gloss dt,#terms dt{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;color:var(--accent)}
@@ -131,6 +132,7 @@ const TERMS=[
  ["judged_severity","the judge's view of IMPACT IF REAL: critical / high / medium / low / nit / info. Independent of the other two."],
  ["valid-minor vs low severity","NOT the same thing. valid-minor is about SUBSTANCE — correct but too small to call substantive. low is about IMPACT. A low-severity finding can be fully substantive and sit in the pool; 5 pool clusters are low severity."],
  ["reported vs found","reported = shown to the developer. found = reported + demoted, i.e. everything the arm formed a claim about. Detection and disposition are different capabilities."],
+ ["\u26a0 incomplete data","Two kinds, both marked. (1) An ARM that did not run on every selected subject: its whole row is computed over a subset, against a pool drawn from that subset. (2) A POOL assembled from few contributing arms, which is mechanically easier to hit — on prometheus 13 arms contributed and no arm exceeds 6/11 even across all repeats, while on the 4-contributor subjects arms reach 100%. Numbers either side of a warning are not comparable."],
  ["dynamic denominator","the pool is the union of what tools found, so adding an arm that finds something new ENLARGES it and lowers every other arm's recall without those arms changing. Filter the arm list here and watch the pool chip move."],
 ];
 const COLS=[
@@ -167,6 +169,10 @@ function render(){
   $("#poolsize").textContent=`real-defect pool: ${pool.length}`;
 
   const armList=[...arms].filter(a=>OB.some(o=>o.arm===a&&subs.has(o.subject)));
+  // How many arms ran on each subject: a pool assembled from 4 arms is mechanically easier to hit
+  // than one assembled from 13, because each arm supplied a larger share of the union itself.
+  const contrib={}; [...subs].forEach(s=>contrib[s]=new Set(CE.filter(c=>c.subject===s).map(c=>c.arm)).size);
+  const selN=subs.size;
   // coverage groups: an arm scored on 2 subjects sits against a different pool than one on 5
   const cov=new Map(armList.map(a=>[a,uniq(CE.filter(c=>c.arm===a&&subs.has(c.subject)).map(c=>c.subject)).join(", ")]));
   const groups=new Map();
@@ -187,11 +193,17 @@ function render(){
       const perSubj=cells.length/Math.max(1,gsubs.length);
       const denom=gpool*perSubj;
       const cost=cells.reduce((s,c)=>s+(c.cost_usd||0),0);
+      const ranOn=new Set(cells.map(c=>c.subject));
+      const absent=[...subs].filter(x=>!ranOn.has(x));
       return {arm,cells:cells.length,shown:shown.length,found:found.length,real,minor,noise,
-              hit:denom?hits.size/denom:null,cost:cells.length?cost/cells.length:null};
+              hit:denom?hits.size/denom:null,cost:cells.length?cost/cells.length:null,
+              absent,ranOn:ranOn.size};
     }).sort((a,b)=>(b.hit||0)-(a.hit||0));
 
-    out+=`<div class="grouphdr">COVERAGE GROUP · ${gsubs.length} subject${gsubs.length===1?"":"s"} · <span class="poolchip">pool ${gpool}</span> — ${gk||"none"}<br>
+    const cmin=Math.min(...gsubs.map(x=>contrib[x]||0)), cmax=Math.max(...gsubs.map(x=>contrib[x]||0));
+    const thin=cmin<=5;
+    const cwarn=thin?`<span class="warnflag" title="INCOMPLETE POOL — subjects in this group had as few as ${cmin} arms contributing to the union. A pool assembled from few arms is mechanically EASIER to hit, because each arm supplied a large share of it. Measured: on prometheus (13 contributors, pool 11) no arm exceeds 6/11 even across all repeats, while on the 4-contributor subjects arms reach 100%.">&#9888;</span>`:"";
+    out+=`<div class="grouphdr">COVERAGE GROUP · ${gsubs.length} subject${gsubs.length===1?"":"s"} · <span class="poolchip">pool ${gpool}${cwarn}</span> · ${cmin===cmax?cmin:cmin+"–"+cmax} arms contributed — ${gk||"none"}<br>
       Ranking is valid inside this block only; another block sits against a different denominator.</div>`;
     out+=`<div class="scroll"><table><thead><tr>`+
       COLS.map(([n,t])=>`<th title="${t.replace(/"/g,"&quot;")}"><abbr>${n}</abbr></th>`).join("")+
@@ -205,7 +217,9 @@ function render(){
       const prec=r.shown>=N_FLOOR?`<span class="num">${(r.real/r.shown).toFixed(3)}</span>`
         :`<span class="chip wh" title="n=${r.shown} reported, floor is ${N_FLOOR}. Raw: ${r.real} real of ${r.shown}.">withheld n=${r.shown}</span>`;
       const gap=r.found?((r.found-r.shown)/r.found).toFixed(2):"–";
-      out+=`<tr><td class="arm">${r.arm}</td><td class="num">${r.cells}</td>
+      const warn=r.absent.length
+        ? `<span class="warnflag" title="INCOMPLETE — this arm never ran on ${r.absent.length} of the ${selN} selected subject(s): ${r.absent.join(", ")}. Every figure in this row is computed over the ${r.ranOn} subject(s) it did run, against a pool drawn from those only. Do not compare it with an arm of different coverage.">&#9888;</span>` : "";
+      out+=`<tr><td class="arm">${r.arm}${warn}</td><td class="num">${r.cells}</td>
         <td class="num">${r.shown}</td><td>${bar}</td>
         <td class="num">${r.real}</td><td class="num">${r.minor}</td>
         <td class="num">${r.shown?pct(r.noise,r.shown)+"%":"–"}</td><td>${prec}</td>
@@ -226,7 +240,7 @@ function render(){
     m+=`<tr><td>${c.subject}</td><td class="arm">${c.cluster_id}</td><td>${c.judged_severity||"–"}</td>`;
     armList.forEach(a=>{
       const n=CE.filter(x=>x.arm===a&&x.subject===c.subject).length;
-      if(!n){m+=`<td class="hit na">–</td>`;return;}
+      if(!n){m+=`<td class="hit na" title="This arm never ran on ${c.subject} — no result is possible here. Not a miss.">–</td>`;return;}
       const r=new Set(OB.filter(x=>x.arm===a&&x.subject===c.subject&&x.cluster_id===c.cluster_id).map(x=>x.repeat));
       const cl=r.size===n?"full":(r.size===0?"none":"");
       m+=`<td class="hit ${cl}">${r.size}/${n}</td>`;
@@ -308,6 +322,9 @@ def main():
       <span class="k"><b style="background:var(--real)"></b>real</span>
       <span class="k"><b style="background:var(--minor)"></b>valid-minor — correct and actionable</span>
       <span class="k"><b style="background:var(--trivia)"></b>noise</span>
+      <br><span class="warnflag">&#9888;</span> marks a figure resting on <b>incomplete data</b> —
+      an arm that did not run on every selected subject, or a pool assembled from few contributing
+      arms. Hover it for what is missing. Never rank across a warning boundary.
       <br><b>noise% is not 1 − precision.</b> Precision counts valid-minor as a miss, so an arm whose
       output is almost entirely correct can score 0.50. Use noise% for "is this worth reading".</p>
     <div id="cmp"></div>

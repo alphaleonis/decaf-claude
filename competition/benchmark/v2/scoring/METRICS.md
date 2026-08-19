@@ -133,3 +133,27 @@ If you need novelty, read the committed grading artifact for that fold-in
 This is a deliberate omission rather than an oversight: novelty is a property of a *fold-in event*,
 not of a cluster, and putting it on the cluster row would make it wrong as soon as another arm is
 added. Anything that wants it should read the event.
+
+## Coverage binds narrative, not only tables
+
+`compare_arms.py` refuses to rank arms across coverage groups, and the explorer marks every figure
+resting on incomplete data with a warning. **The same rule binds prose.** On 2026-08-19 it was
+broken three separate times in written analysis while the tooling was enforcing it correctly:
+
+- `ours-audit`'s 81% union recall was put at the top of a table beside 5-subject arms. It ran on
+  **2 subjects**. The figure was correctly scoped to its own 16-cluster pool and then wrongly ranked.
+- "18% of the pool was found by exactly one arm" counted `gf27`, `gf28` and `im36` as unique when
+  only **4 arms ran** on those subjects. Against a full field, only 3 of 33 are genuinely unique.
+- The comparison ignored that a pool's difficulty depends on how many arms built it.
+
+**Two kinds of incompleteness, both now flagged in the explorer:**
+
+| kind | what it means |
+|---|---|
+| **incomplete arm** | the arm did not run on every selected subject; its whole row is computed over a subset, against a pool drawn from that subset |
+| **incomplete pool** | few arms contributed to the union, so it is mechanically easier to hit — each contributor supplied a large share of it |
+
+Measured, the second effect is large. prometheus has **13 contributing arms and a pool of 11**, and
+no arm exceeds **6/11** even across all its repeats. The three subjects with **4 contributors** see
+arms reach 100%. Those denominators are not the same difficulty, and a figure that averages across
+them is not one number.
