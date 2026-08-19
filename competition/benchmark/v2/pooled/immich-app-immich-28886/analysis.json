@@ -8,7 +8,7 @@
  "grading_pass": 1,
  "cells": [
   {
-   "tool": "ours-bugs",
+   "tool": "ours-bugs-wave",
    "repeat": 1,
    "cost_usd": 13.1266,
    "wall_s": 1436,
@@ -16,7 +16,7 @@
    "access_denied": 1
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-bugs-wave",
    "repeat": 2,
    "cost_usd": 13.3518,
    "wall_s": 1392,
@@ -24,7 +24,7 @@
    "access_denied": 1
   },
   {
-   "tool": "ours-bugs-sp3",
+   "tool": "ours-bugs",
    "repeat": 1,
    "cost_usd": 4.9707,
    "wall_s": 624,
@@ -32,7 +32,7 @@
    "access_denied": 2
   },
   {
-   "tool": "ours-bugs-sp3",
+   "tool": "ours-bugs",
    "repeat": 2,
    "cost_usd": 6.5769,
    "wall_s": 990,
@@ -85,42 +85,42 @@
    "rationale": "runMigrations uses Kysely's Migrator with a FileMigrationProvider and rethrows any error; Kysely's migrator throws 'corrupted migrations: previously executed migration ... is missing' unconditionally when a recorded migration is absent from the folder, so any database that ran the now-deleted file (main/RC builds in the window since #27896) fails at startup. Confidence tempered because the population is pre-release only.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -192,28 +192,28 @@
    "rationale": "metadata extraction still uses validateRange(exifTags.Rating, 1, 5), which returns null for -1, while handleSidecarWrite writes Rating -1 to the sidecar and then unlocks the property; so a -1 set via the API (or authored externally as XMP rejected) is silently dropped to NULL on the next extraction. #27896 changed this from (-1, 5) and this PR does not revert it.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
@@ -270,28 +270,28 @@
    "rationale": "BaseSearchSchema.rating still has .min(1).max(5) and the 'v3: Using -1 as a rating is no longer valid' history entry, so all derived search DTOs return 400 for rating -1 after this PR makes -1 settable, and the search and asset histories now contradict each other. Incomplete revert of #27896, not raised by any thread.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
@@ -341,28 +341,28 @@
    "rationale": "Moving the bounds into .refine() leaves z.int()'s safe-integer bag min/max as the only emitted bounds, so the spec and generated clients publish minimum -9007199254740991 / maximum 9007199254740991 for the rating field; this is exactly thread 1's 'wrong/misleading' comment on that spec line.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
@@ -383,14 +383,14 @@
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -426,28 +426,28 @@
    "rationale": "ExifResponseSchema.rating is still z.int().min(1).max(5) (added by #27896) so the published response contract says 1..5 while the server can now return -1; no runtime failure because no controller uses ZodSerializerDto, but the spec is wrong for consumers.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -468,7 +468,7 @@
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -511,14 +511,14 @@
    "rationale": "-1 is truthy so it is passed as Rating and StarRating fills no stars ((-1||0) >= value is false), so a rejected asset looks unrated apart from the 'clear' button; a real, pre-existing web gap the server-only PR re-exposes, but out of the PR's scope and longstanding.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "low",
      "disposition": "reported",
@@ -532,7 +532,7 @@
      "finding_index": 9
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -561,14 +561,14 @@
    "rationale": "True that -1 is truthy and counts toward the EXIF tie-break, but a rejected asset does carry rating information, and this only nudges a size tie-break; pre-existing and not worth reviewer attention.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -597,7 +597,7 @@
    "rationale": "The merge loop takes the max rating starting from 0 and only writes it when > 0, so a -1 duplicate merged into an unrated keeper leaves the keeper unrated; correct trace of pre-existing behavior that -1 makes reachable again, but whether a rejection should propagate to the keeper is debatable, so it is small.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -626,13 +626,6 @@
    "rationale": "A considered-and-cleared note: the 'Using 0 as a rating is no longer valid' entry is accurate (0 was previously coerced to null by a transform, now rejected by the refine); the residual point that the history does not mention -1 being re-allowed is a wording preference already covered by g01.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
-     "repeat": 1,
-     "severity": "info",
-     "disposition": "demoted",
-     "finding_index": 7
-    },
-    {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
@@ -640,7 +633,14 @@
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -676,21 +676,21 @@
    "rationale": "The v2.6.0 deprecation entry that shipped in a release is deleted from asset.dto.ts's history rather than superseded, while search.dto.ts still carries both the v2.6.0 and 'v3: -1 no longer valid' entries, so the two published histories now contradict each other. Real but small; the substantive half (search still rejecting -1) is g14.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -761,7 +761,7 @@
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -790,14 +790,14 @@
    "rationale": "Considered-and-cleared: .nullable() then .refine() accepting null then .optional() behaves the same as .nullish() for omitted/null values; asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -833,7 +833,7 @@
    "rationale": "Mostly a cleared suspicion: 3.5 yields only the int error (invalid_type is aborting, continue:false), and an unsafe integer like 1e21 yields a non-aborting too_big plus the refine message; two error strings on a nonsense input is cosmetic and not worth reviewer attention.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -928,7 +928,7 @@
    "rationale": "options[0] is the 'null' entry and options[1..5] are ratings 1..5, so options[rating] is not off by one; Number.parseInt('null') is NaN but serializes to JSON null, which is what the search API expects for unrated. Also pre-existing and unrelated to the diff by its own admission.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -957,7 +957,7 @@
    "rationale": "Zod 4's util.extend keeps the object's checks (it only throws when the new shape overwrites an existing key), and the refine/extend pattern is untouched by the diff and exercised by the existing lat/long tests; a 'worth confirming' note with no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -986,7 +986,7 @@
    "rationale": "Considered-and-cleared: `Rating: tags.rating === null ? 0 : tags.rating` passes -1 through; asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1008,7 +1008,7 @@
    "rationale": "Explains a diff-rendering artifact for generated files; no defect asserted.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1030,21 +1030,21 @@
    "rationale": "The as-is loop still tests only ratings 1 and 5, and the negative-rating e2e and metadata.service.spec cases removed by #27896 are not restored, so nothing in CI asserts -1 is accepted; correct and actionable, small to fix.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "low",
      "disposition": "reported",
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
@@ -1065,21 +1065,21 @@
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 14
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1136,7 +1136,7 @@
    "rationale": "Notes an unrelated file is untouched; asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1165,14 +1165,14 @@
    "rationale": "Both boundary cases now assert the same refine message, an inherent consequence of a single refine; the test still fails on a wrong status or message, so this is a preference, not a defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 16
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -1208,7 +1208,7 @@
    "rationale": "Considered-and-cleared note that other rating consumers are unaffected; asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -1230,7 +1230,7 @@
    "rationale": "Considered-and-cleared: `_currentRating > index` with -1 renders no filled stars and there is no assert; asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -1259,7 +1259,7 @@
    "rationale": "Considered-and-cleared: the generated Dart model does no range enforcement; asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -1288,7 +1288,7 @@
    "rationale": "Considered-and-cleared: widening request-property bounds is not a breaking change for oasdiff's fail-on ERR gate; asserts no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",

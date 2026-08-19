@@ -214,7 +214,7 @@
     },
     "ours-bugs": {
       "clusters_reported": 2,
-      "clusters_found": 20,
+      "clusters_found": 14,
       "real": 2,
       "valid_minor": 0,
       "trivia": 0,
@@ -226,13 +226,13 @@
       "unique_real": 0,
       "unique_real_ids": [],
       "per_cell": {
-        "findings": 1.0,
+        "findings": 0.67,
         "false_positive": 0.0,
         "trivia": 0.0
       },
       "thread_recall": 0.0,
-      "thread_recall_found": 0.0,
-      "demotion_gap": 0.0,
+      "thread_recall_found": 0.1,
+      "demotion_gap": 0.1,
       "threads_hit": 0,
       "incumbent_agreement": 0.0,
       "incumbent_agreement_found": 0.0,
@@ -240,8 +240,8 @@
       "demoted_real": 4,
       "anchor_recall": null,
       "anchor_recall_found": null,
-      "cost_usd": 16.5847,
-      "cost_per_real_finding": 8.2924,
+      "cost_usd": 17.0058,
+      "cost_per_real_finding": 8.5029,
       "class_distribution": {
         "reported": {
           "defect": 2,
@@ -252,20 +252,20 @@
           "test-gap": 0
         },
         "found": {
-          "defect": 13,
-          "design": 1,
-          "docs": 0,
-          "risk": 1,
-          "style": 0,
-          "test-gap": 5
+          "defect": 6,
+          "design": 2,
+          "docs": 1,
+          "risk": 3,
+          "style": 1,
+          "test-gap": 1
         }
       },
       "defect_recall": {
         "pool": 5,
         "reported": 2,
-        "found": 4,
+        "found": 3,
         "recall_reported": 0.4,
-        "recall_found": 0.8
+        "recall_found": 0.6
       }
     },
     "ours-bugs-narrow": {
@@ -492,9 +492,9 @@
         "recall_found": 0.6
       }
     },
-    "ours-bugs-sp3": {
+    "ours-bugs-wave": {
       "clusters_reported": 2,
-      "clusters_found": 14,
+      "clusters_found": 20,
       "real": 2,
       "valid_minor": 0,
       "trivia": 0,
@@ -506,13 +506,13 @@
       "unique_real": 0,
       "unique_real_ids": [],
       "per_cell": {
-        "findings": 0.67,
+        "findings": 1.0,
         "false_positive": 0.0,
         "trivia": 0.0
       },
       "thread_recall": 0.0,
-      "thread_recall_found": 0.1,
-      "demotion_gap": 0.1,
+      "thread_recall_found": 0.0,
+      "demotion_gap": 0.0,
       "threads_hit": 0,
       "incumbent_agreement": 0.0,
       "incumbent_agreement_found": 0.0,
@@ -520,8 +520,8 @@
       "demoted_real": 4,
       "anchor_recall": null,
       "anchor_recall_found": null,
-      "cost_usd": 17.0058,
-      "cost_per_real_finding": 8.5029,
+      "cost_usd": 16.5847,
+      "cost_per_real_finding": 8.2924,
       "class_distribution": {
         "reported": {
           "defect": 2,
@@ -532,20 +532,20 @@
           "test-gap": 0
         },
         "found": {
-          "defect": 6,
-          "design": 2,
-          "docs": 1,
-          "risk": 3,
-          "style": 1,
-          "test-gap": 1
+          "defect": 13,
+          "design": 1,
+          "docs": 0,
+          "risk": 1,
+          "style": 0,
+          "test-gap": 5
         }
       },
       "defect_recall": {
         "pool": 5,
         "reported": 2,
-        "found": 3,
+        "found": 4,
         "recall_reported": 0.4,
-        "recall_found": 0.6
+        "recall_found": 0.8
       }
     },
     "ours-review": {

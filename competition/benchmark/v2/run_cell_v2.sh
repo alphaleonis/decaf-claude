@@ -159,10 +159,6 @@ case "$TOOL" in
   # dismissed defects — PROPOSAL-BUGS-SP.md "Decisions after the first run"). A separate arm id so
   # the 2026-08-17 ours-bugs-sp cells stay frozen as the brief-v1 baseline; the comparison is v1 vs v2.
   ours-bugs-sp2) INVOKE="Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs-sp --report" ;;
-  # Third brief revision: Considered-But-Not-Flagged takes a closed set of parking reasons
-  # ([unverified] [false] [pre-existing] [minor]); "intended/documented/unreachable today" are findings
-  # (nib dcc-ce0m). v1/v2 cells stay frozen under their own arm ids.
-  ours-bugs-sp3) INVOKE="Use the Skill tool to run /decaf-quality-dev:code-review with arguments: bugs-sp --report" ;;
   ours-audit)  INVOKE="Use the Skill tool to run /decaf-quality-dev:code-review with arguments: audit --report" ;;
   anthropic-code-review)
     INVOKE="Use the Skill tool to run \`code-review:code-review\` — the plugin-qualified command from code-review@claude-plugins-official. It is NOT \`decaf-quality:code-review\`: a different tool ships a skill of the same bare name, so never invoke a bare /code-review, and abort rather than substituting anything else if the qualified skill does not resolve.
@@ -177,7 +173,7 @@ Review the proposed change checked out in this repository. Do NOT pass --comment
     INVOKE="Use the Skill tool to run \`pr-review-toolkit:review-pr\` with arguments: all. Dispatch the review agents in parallel. Do NOT post anything to GitHub and do NOT run \`gh pr view\` to look the change up — the change under review is the local diff range given below, not a pull request, and the working tree is clean at its head, so use \`git diff <base> <head>\` wherever the workflow says to inspect changed files. Print every finding with file:line references." ;;
   comprehensive-review)
     INVOKE="Use the Skill tool to run \`comprehensive-review:comprehensive-review\` with arguments: --local --base $BASE. This repository is a detached checkout with NO git remote and NO branches; the change under review is the diff range given below. Treat provider operations as unavailable and run the review locally — do not stop on provider detection, and do not post anything anywhere. Print every finding with file:line references." ;;
-  *) echo "unknown tool: $TOOL (known: ours-bugs ours-bugs-narrow ours-bugs-reachnorm ours-bugs-wave ours-bugs-sp ours-bugs-sp2 ours-bugs-sp3 ours-review ours-audit anthropic-code-review superpowers pr-review-toolkit comprehensive-review)" >&2; exit 2 ;;
+  *) echo "unknown tool: $TOOL (known: ours-bugs ours-bugs-wave ours-bugs-narrow ours-bugs-reachnorm ours-bugs-sp ours-bugs-sp2 ours-review ours-audit anthropic-code-review superpowers pr-review-toolkit comprehensive-review)" >&2; exit 2 ;;
 esac
 
 PROMPT="$INVOKE

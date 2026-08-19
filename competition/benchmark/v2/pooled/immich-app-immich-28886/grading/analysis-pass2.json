@@ -8,7 +8,7 @@
  "grading_pass": 2,
  "cells": [
   {
-   "tool": "ours-bugs-sp3",
+   "tool": "ours-bugs",
    "repeat": 1,
    "cost_usd": 4.9707,
    "wall_s": 624,
@@ -16,7 +16,7 @@
    "access_denied": 2
   },
   {
-   "tool": "ours-bugs-sp3",
+   "tool": "ours-bugs",
    "repeat": 2,
    "cost_usd": 6.5769,
    "wall_s": 990,
@@ -24,7 +24,7 @@
    "access_denied": 1
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-bugs-wave",
    "repeat": 1,
    "cost_usd": 13.1266,
    "wall_s": 1436,
@@ -32,7 +32,7 @@
    "access_denied": 1
   },
   {
-   "tool": "ours-bugs",
+   "tool": "ours-bugs-wave",
    "repeat": 2,
    "cost_usd": 13.3518,
    "wall_s": 1392,
@@ -69,42 +69,42 @@
    "rationale": "Kysely 0.28's Migrator calls ensureNoMissingMigrations unconditionally (verified in upstream source) and throws 'corrupted migrations: previously executed migration ... is missing', so any database that recorded the deleted migration fails runMigrations at startup; a no-op up() would avoid it.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -155,28 +155,28 @@
    "rationale": "Verified: extraction still uses validateRange(exifTags.Rating, 1, 5), and sidecar write (metadata.service.ts:509,523) emits Rating -1, so a rejection set via the API or authored as XMP is nulled on the next extraction \u2014 the -1 change is undone by the metadata path.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 0
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "critical",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
@@ -212,28 +212,28 @@
    "rationale": "Verified: BaseSearchSchema.rating still has .min(1) and the '-1 no longer valid' history, so every search DTO rejects rating -1 with 400 while the update DTO now accepts it \u2014 rejected assets can be set but not searched, and the two histories contradict.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
@@ -269,28 +269,28 @@
    "rationale": "Moving bounds into .refine() removes them from the JSON-schema output, so the spec publishes minimum/maximum \u00b19007199254740991 for UpdateAssetDto/AssetBulkUpdateDto.rating \u2014 the same wrong/misleading bounds thread 1 flags.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "high",
      "disposition": "reported",
      "finding_index": 2
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
@@ -311,14 +311,14 @@
      "finding_index": 1
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 9
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -340,28 +340,28 @@
    "rationale": "Verified: ExifResponseDto.rating keeps z.int().min(1).max(5) (published as minimum 1 in the spec) while responses may now carry -1; not runtime-enforced since no ZodSerializerDto is applied, but the response contract is now wrong.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 4
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "nit",
      "disposition": "reported",
@@ -382,7 +382,7 @@
      "finding_index": 3
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -404,14 +404,14 @@
    "rationale": "Verified: -1 is cast to Rating and rendered as no stars, so web cannot distinguish rejected from unrated; real UX gap but pre-existing and outside this server-only change.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "low",
      "disposition": "reported",
@@ -425,7 +425,7 @@
      "finding_index": 9
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -447,14 +447,14 @@
    "rationale": "A -1 rating is genuine EXIF data, so counting it as truthy in the tie-break is not a defect; pre-existing heuristic with no clear action.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -476,7 +476,7 @@
    "rationale": "Verified: rating starts at 0 and only >0 propagates, so a -1 on a merged duplicate never carries to an unrated keeper; whether rejection should propagate is debatable, so small and pre-existing rather than substantive.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -498,13 +498,6 @@
    "rationale": "The v3 entry is accurate (0 was coerced to null before 99281de and is rejected now); the cluster mostly clears itself, and the residual 'does not mention -1' point is g01's substance.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
-     "repeat": 1,
-     "severity": "info",
-     "disposition": "demoted",
-     "finding_index": 7
-    },
-    {
      "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
@@ -512,7 +505,14 @@
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 7
+    },
+    {
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -541,21 +541,21 @@
    "rationale": "The v2.6.0 deprecation entry that shipped in the published spec is deleted rather than superseded, and search.dto.ts:46-47 still carries it, so the two rating histories now disagree; a real but small documentation-history concern.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "medium",
      "disposition": "reported",
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -605,7 +605,7 @@
      "finding_index": 6
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -627,14 +627,14 @@
    "rationale": "Probed and cleared; the chain handles undefined and null the same as the old .nullish().",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -656,7 +656,7 @@
    "rationale": "Probed and cleared for the tested case; the 1e21 double-issue observation has no practical impact and is not worth reviewer attention.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -751,7 +751,7 @@
    "rationale": "options[0] is the 'null' entry so options[rating] for 1-5 is correctly indexed (not off by one), and Number.parseInt('null') yields NaN which JSON-serializes to null; pre-existing and unrelated to the diff besides.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -773,7 +773,7 @@
    "rationale": "Untouched code, phrased as 'worth confirming' with no asserted defect; the existing controller spec already exercises the lat/long refinement through the extended UpdateAssetDto.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -795,7 +795,7 @@
    "rationale": "A considered-and-cleared note asserting no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -817,7 +817,7 @@
    "rationale": "Observation about diff rendering of generated files; no defect claimed.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -839,21 +839,21 @@
    "rationale": "Verified: the as-is loop still covers only 1 and 5, and the -1 e2e/metadata tests removed by 99281de are not restored, so the PR's headline behavior has no test and a re-restriction would pass CI.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
     },
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "low",
      "disposition": "reported",
      "finding_index": 7
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "high",
      "disposition": "reported",
@@ -874,21 +874,21 @@
      "finding_index": 5
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 14
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 8
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -917,7 +917,7 @@
    "rationale": "States that an untouched file is untouched; no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -939,14 +939,14 @@
    "rationale": "Identical error strings for 7 and -2 are inherent to a single refine predicate; the tests still assert 400 with the right message, so nothing actionable.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
      "finding_index": 16
     },
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -968,7 +968,7 @@
    "rationale": "Considered-and-cleared note asserting no defect.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 1,
      "severity": "info",
      "disposition": "demoted",
@@ -990,7 +990,7 @@
    "rationale": "Scenario checked and dissolved; no defect asserted.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -1012,7 +1012,7 @@
    "rationale": "Considered-and-cleared note; the Dart model does a bare int.parse with no bounds check, so nothing to act on.",
    "reported_by": [
     {
-     "tool": "ours-bugs",
+     "tool": "ours-bugs-wave",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",
@@ -1034,7 +1034,7 @@
    "rationale": "Considered-and-cleared note; widening request bounds is non-breaking.",
    "reported_by": [
     {
-     "tool": "ours-bugs-sp3",
+     "tool": "ours-bugs",
      "repeat": 2,
      "severity": "info",
      "disposition": "demoted",

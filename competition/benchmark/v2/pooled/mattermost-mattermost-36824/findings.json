@@ -1,258 +1,6 @@
 [
  {
-  "tool": "ours-bugs-sp3",
-  "repeat": 1,
-  "subagent": "solo-reviewer",
-  "severity": "high",
-  "file": "server/public/model/command_response.go",
-  "line": 72,
-  "category": "api-design",
-  "claim": "Adding a hard IsValid() gate to the previously-lenient CommandResponseFromJSON parser turns tolerated integration payloads (e.g. an unrecognized response_type such as \"comment\") into hard failures: an outgoing slash-command response now surfaces to the user as a 500 via app/command.go:595-596, discarding text/attachments/goto_location/props that were previously delivered; /hooks/commands returns 400; and Client4.ExecuteCommand can no longer decode a server/plugin response with a non-standard response_type. The all-or-nothing recursion over ExtraResponses (lines 90-98) defeats HandleCommandResponse's per-entry partial-delivery design \u2014 one bad nested entry discards the whole valid main response.",
-  "raw": "#1 \ud83d\udfe0 High: Previously-tolerated slash-command responses now fail the whole execution, and one bad `extra_responses` entry discards the valid main response",
-  "disposition": "reported"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 1,
-  "subagent": "solo-reviewer",
-  "severity": "medium",
-  "file": "server/public/model/command_response.go",
-  "line": 82,
-  "category": "i18n",
-  "claim": "The two new AppError i18n IDs model.command_response.is_valid.response_type.app_error (line 82) and model.command_response.is_valid.text.app_error (line 87) are missing from server/i18n/en.json, so NewAppError's Translate leaves Message as the raw dotted identifier, which reaches server logs, the API body under EnableDeveloper, and Go-client errors verbatim; no CI gate catches this.",
-  "raw": "#2 \ud83d\udfe1 Medium: Both new i18n string IDs are missing from `server/i18n/en.json`",
-  "disposition": "reported"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 1,
-  "subagent": "solo-reviewer",
-  "severity": "medium",
-  "file": "server/public/model/command_response.go",
-  "line": 85,
-  "category": "correctness",
-  "claim": "maxLength := 65535 is a hardcoded byte count while the real downstream post limit is a runtime rune count from determineMaxPostSize that scales with an enlarged Posts.Message column, so installations with an enlarged column can have previously-postable responses rejected; in the default config the check is also too loose (16383-rune limit vs 65535 bytes) so it does not shield the caller from post-creation failure; and it duplicates the existing PostMessageMaxBytesV2 constant as an unnamed local.",
-  "raw": "#3 \ud83d\udfe1 Medium: Hardcoded 65535-*byte* text cap ignores the configurable post size and can reject responses that previously posted fine",
-  "disposition": "reported"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 1,
-  "subagent": "solo-reviewer",
-  "severity": "low",
-  "file": "server/public/model/command_response.go",
-  "line": 72,
-  "category": "correctness",
-  "claim": "Validation was added to CommandResponseFromJSON rather than CommandResponseFromHTTPBody, so the text/plain branch (CommandResponseFromPlainText) bypasses IsValid entirely \u2014 the same oversized text is rejected as JSON but accepted as plain text on both ingress paths (web/webhook.go:114 and app/command.go:586,595), so the cap does not achieve its stated bound.",
-  "raw": "#4 \ud83d\udfe2 Low: The text cap is bypassed entirely for non-JSON content types",
-  "disposition": "reported"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 1,
-  "subagent": "solo-reviewer",
-  "severity": "info",
-  "file": "server/public/model/command_response.go",
-  "line": 90,
-  "category": "resource-exhaustion",
-  "claim": "Unbounded recursion over ExtraResponses in IsValid could cause stack exhaustion from a deeply nested payload (dismissed as false: encoding/json's maxNestingDepth of 10000 makes json.Unmarshal fail before IsValid recurses; ~5000 frames is within Go's growable stack).",
-  "raw": "[false] Unbounded recursion over `ExtraResponses` causing stack exhaustion from a deeply nested payload",
-  "disposition": "demoted"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 1,
-  "subagent": "solo-reviewer",
-  "severity": "info",
-  "file": "server/public/model/command_response.go",
-  "line": 72,
-  "category": "null-semantics",
-  "claim": "Typed-nil *AppError from IsValid could escape as a non-nil error interface (dismissed as false: err is declared as the concrete *AppError in the if statement, so the nil test is a pointer comparison and conversion to error only occurs on the non-nil path).",
-  "raw": "[false] Typed-nil `*AppError` escaping as a non-nil `error` interface",
-  "disposition": "demoted"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 1,
-  "subagent": "solo-reviewer",
-  "severity": "info",
-  "file": "server/public/model/command_response.go",
-  "line": 63,
-  "category": "consistency",
-  "claim": "StringifyMessageAttachmentFieldValue is applied only one level deep (lines 63-70), so attachments nested inside ExtraResponses[i].ExtraResponses are never stringified \u2014 now visibly asymmetric next to IsValid's full recursion (tagged pre-existing; the shallow loop predates the change).",
-  "raw": "[pre-existing] `StringifyMessageAttachmentFieldValue` is applied only one level deep, so attachments nested inside `ExtraResponses[i].ExtraResponses` are never stringified",
-  "disposition": "demoted"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 1,
-  "subagent": "solo-reviewer",
-  "severity": "info",
-  "file": "server/public/model/command_response.go",
-  "line": 85,
-  "category": "magic-number",
-  "claim": "maxLength := 65535 is a local variable rather than a package constant, whereas the file's other magic values are already consts at lines 15-18 (tagged minor; the substantive part is reported as finding #3).",
-  "raw": "[minor] `maxLength := 65535` is a local variable rather than a package constant; the file's other magic values are already `const`s at lines 15-18",
-  "disposition": "demoted"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 1,
-  "subagent": "solo-reviewer",
-  "severity": "info",
-  "file": "server/public/model/command_response.go",
-  "line": 80,
-  "category": "documentation",
-  "claim": "The comment `// check response type` restates the immediately following condition and adds nothing; the non-obvious part (why the empty string is allowed) is what would merit a comment.",
-  "raw": "[minor] The comment `// check response type` restates the immediately following condition and adds nothing",
-  "disposition": "demoted"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 1,
-  "subagent": "solo-reviewer",
-  "severity": "info",
-  "file": "server/public/model/command_response_test.go",
-  "line": 173,
-  "category": "formatting",
-  "claim": "The new extra_responses test case (lines 173-179) is indented with spaces while every sibling case in the table uses tabs.",
-  "raw": "[minor] The new `extra_responses` case is indented with spaces while every sibling case in the table uses tabs",
-  "disposition": "demoted"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 2,
-  "subagent": "solo-reviewer",
-  "severity": "high",
-  "file": "server/public/model/command_response.go",
-  "line": 72,
-  "category": "api-design",
-  "claim": "Calling IsValid() inside CommandResponseFromJSON makes the previously lenient parser an all-or-nothing gate on two live integration ingress paths (app/command.go:595 outgoing slash commands and web/webhook.go:114 command webhooks): a payload with a valid parent and one bad extra_responses entry (or an over-long Text) used to deliver the parent post but now fails the whole parse and posts nothing, converting partial delivery into total failure with no config flag, deprecation window, or changelog.",
-  "raw": "#1 \ud83d\udfe0 High: Parse-time rejection discards responses that previously delivered posts, breaking existing integrations",
-  "disposition": "reported"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 2,
-  "subagent": "solo-reviewer",
-  "severity": "medium",
-  "file": "server/public/model/command_response.go",
-  "line": 82,
-  "category": "i18n",
-  "claim": "The new error IDs model.command_response.is_valid.response_type.app_error and model.command_response.is_valid.text.app_error are not registered in server/i18n/en.json, so NewAppError leaves the raw dotted ID as the Message surfaced in logs, AppError.Error() and the Go client; a fresh make i18n-extract would produce a dirty diff.",
-  "raw": "#2 \ud83d\udfe1 Medium: New error IDs are absent from `server/i18n/en.json`, so the raw ID string is surfaced as the message",
-  "disposition": "reported"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 2,
-  "subagent": "solo-reviewer",
-  "severity": "medium",
-  "file": "server/public/model/command_response.go",
-  "line": 85,
-  "category": "correctness",
-  "claim": "len(o.Text) > 65535 counts bytes while the limit that actually governs this text (Post.IsValid via utf8.RuneCountInString against configurable maxPostSize, reference PostMessageMaxRunesV2=16383) counts runes, so the check disagrees in unit and direction: 21845 CJK runes pass and are rejected downstream anyway; it adds no resource protection since both ingress paths already bound the payload (1 MiB LimitReader / MaxBytesReader), and 65535 is a bare literal despite PostMessageMaxBytesV2 existing.",
-  "raw": "#3 \ud83d\udfe1 Medium: The 65535 limit counts bytes while every limit that actually governs this text counts runes, so it neither matches nor protects the real constraint",
-  "disposition": "reported"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 2,
-  "subagent": "solo-reviewer",
-  "severity": "medium",
-  "file": "server/public/model/command_response.go",
-  "line": 35,
-  "category": "correctness",
-  "claim": "CommandResponseFromHTTPBody only routes application/json bodies through CommandResponseFromJSON; a text/plain body goes to CommandResponseFromPlainText which never validates, so an integration bypasses the new Text length limit (and validation entirely) by flipping the Content-Type header \u2014 a 100000-byte text/plain body parses with no error.",
-  "raw": "#4 \ud83d\udfe1 Medium: The length limit is bypassed entirely by sending `Content-Type: text/plain`",
-  "disposition": "reported"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 2,
-  "subagent": "solo-reviewer",
-  "severity": "medium",
-  "file": "server/public/model/command_response.go",
-  "line": 72,
-  "category": "api-design",
-  "claim": "CommandResponseFromJSON is also used by Client4.ExecuteCommand / ExecuteCommandWithTeam (client4.go:5961, :5982) to decode the server's own response, which is encoded verbatim from App.ExecuteCommand and can include unvalidated plugin-set response_type values; so a successful HTTP 200 the webapp renders fine now fails to decode in Client4, mmctl and every third-party Go consumer of server/public, with no opt-out; sibling IncomingWebhookRequestFromJSON deliberately does not validate.",
-  "raw": "#5 \ud83d\udfe1 Medium: The Go client now rejects valid 200 responses from the server, including plugin-produced ones",
-  "disposition": "reported"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 2,
-  "subagent": "solo-reviewer",
-  "severity": "low",
-  "file": "server/public/model/command_response.go",
-  "line": 95,
-  "category": "error-handling",
-  "claim": "The recursive IsValid call over ExtraResponses returns the child's *AppError verbatim with the same Where, Id and DetailedError, so a nested extra_responses validation failure is byte-identical to a top-level one and carries no index, path or nesting marker for the integration author debugging the rejection.",
-  "raw": "#6 \ud83d\udfe2 Low: A nested `extra_responses` failure is indistinguishable from a top-level one",
-  "disposition": "reported"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 2,
-  "subagent": "solo-reviewer",
-  "severity": "low",
-  "file": "server/public/model/command_response_test.go",
-  "line": 167,
-  "category": "test-coverage",
-  "claim": "The new length test uses strings.Repeat(\"a\", 65536) \u2014 pure ASCII where byte and rune counts coincide \u2014 so it passes whether the implementation uses len() or utf8.RuneCountInString and does not pin the unit; and all three new cases assert only assert.Error + assert.Nil without checking AppError.Id, so a case failing for an unrelated reason (e.g. a JSON typo in the hand-indented multi-line fixture) would still be green.",
-  "raw": "#7 \ud83d\udfe2 Low: The new length test cannot distinguish bytes from runes, leaving the ambiguity in #3 unguarded",
-  "disposition": "reported"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 2,
-  "subagent": "solo-reviewer",
-  "severity": "info",
-  "file": "server/public/model/command_response.go",
-  "line": 90,
-  "category": "resource-exhaustion",
-  "claim": "Unbounded recursion / stack exhaustion on deeply nested extra_responses \u2014 considered and refuted by execution: encoding/json's 10000-level max-depth limit rejects the payload before IsValid runs, so recursion is reachable only to a bounded safe depth. (tagged false)",
-  "raw": "[false] Unbounded recursion / stack exhaustion on deeply nested `extra_responses`",
-  "disposition": "demoted"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 2,
-  "subagent": "solo-reviewer",
-  "severity": "info",
-  "file": "server/public/model/command_response.go",
-  "line": 85,
-  "category": "code-style",
-  "claim": "maxLength is a function-local variable rather than a package-level const \u2014 cosmetic; the substantive unit/value problem is reported separately. (tagged minor)",
-  "raw": "[minor] `maxLength` is a function-local variable rather than a package-level `const`",
-  "disposition": "demoted"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 2,
-  "subagent": "solo-reviewer",
-  "severity": "info",
-  "file": "server/public/model/command_response.go",
-  "line": 80,
-  "category": "documentation",
-  "claim": "The comment `// check response type` restates the line below it and carries no rationale for why the whitelist is exactly these three values. (tagged minor)",
-  "raw": "[minor] The comment `// check response type` restates the line below it and carries no rationale",
-  "disposition": "demoted"
- },
- {
-  "tool": "ours-bugs-sp3",
-  "repeat": 2,
-  "subagent": "solo-reviewer",
-  "severity": "info",
-  "file": "server/public/model/command_response.go",
-  "line": 35,
-  "category": "null-semantics",
-  "claim": "CommandResponseFromHTTPBody returns (nil, nil) when io.ReadAll fails, forcing every caller into a separate response == nil check (see server/channels/app/command.go:597) \u2014 present before this change and not exposed by it. (tagged pre-existing)",
-  "raw": "[pre-existing] `CommandResponseFromHTTPBody` returns `(nil, nil)` when `io.ReadAll` fails",
-  "disposition": "demoted"
- },
- {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "quick-reviewer, adversarial-reviewer",
   "severity": "high",
@@ -264,7 +12,7 @@
   "disposition": "reported"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "broad-reviewer, adversarial-reviewer, go-reviewer",
   "severity": "high",
@@ -276,7 +24,7 @@
   "disposition": "reported"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "adversarial-reviewer",
   "severity": "medium",
@@ -288,7 +36,7 @@
   "disposition": "reported"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "broad-reviewer",
   "severity": "nit",
@@ -300,7 +48,7 @@
   "disposition": "reported"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "quick-reviewer, broad-reviewer",
   "severity": "info",
@@ -312,7 +60,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "quick-reviewer, broad-reviewer",
   "severity": "info",
@@ -324,7 +72,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "quick-reviewer",
   "severity": "info",
@@ -336,7 +84,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "broad-reviewer",
   "severity": "info",
@@ -348,7 +96,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "broad-reviewer",
   "severity": "info",
@@ -360,7 +108,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "adversarial-reviewer",
   "severity": "info",
@@ -372,7 +120,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "adversarial-reviewer",
   "severity": "info",
@@ -384,7 +132,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "adversarial-reviewer",
   "severity": "info",
@@ -396,7 +144,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "adversarial-reviewer",
   "severity": "info",
@@ -408,7 +156,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "go-reviewer",
   "severity": "info",
@@ -420,7 +168,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 1,
   "subagent": "go-reviewer",
   "severity": "info",
@@ -432,7 +180,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "adversarial-reviewer",
   "severity": "nit",
@@ -444,7 +192,7 @@
   "disposition": "reported"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "broad-reviewer",
   "severity": "nit",
@@ -456,7 +204,7 @@
   "disposition": "reported"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "adversarial-reviewer",
   "severity": "nit",
@@ -468,7 +216,7 @@
   "disposition": "reported"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "quick-reviewer, broad-reviewer",
   "severity": "nit",
@@ -480,7 +228,7 @@
   "disposition": "reported"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "adversarial-reviewer",
   "severity": "nit",
@@ -492,7 +240,7 @@
   "disposition": "reported"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "quick-reviewer",
   "severity": "nit",
@@ -504,7 +252,7 @@
   "disposition": "reported"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "quick-reviewer",
   "severity": "info",
@@ -516,7 +264,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "quick-reviewer",
   "severity": "info",
@@ -528,7 +276,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "broad-reviewer",
   "severity": "info",
@@ -540,7 +288,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "broad-reviewer",
   "severity": "info",
@@ -552,7 +300,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "broad-reviewer",
   "severity": "info",
@@ -564,7 +312,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "adversarial-reviewer",
   "severity": "info",
@@ -576,7 +324,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "test-reviewer",
   "severity": "info",
@@ -588,7 +336,7 @@
   "disposition": "demoted"
  },
  {
-  "tool": "ours-bugs",
+  "tool": "ours-bugs-wave",
   "repeat": 2,
   "subagent": "test-reviewer",
   "severity": "info",
@@ -597,6 +345,258 @@
   "category": "test-coverage",
   "claim": "No test case covers the ExtraResponses nil-element continue branch or the nested text-length branch of IsValid \u2014 a coverage absence, out of reach under narrow.",
   "raw": "No case covers the `ExtraResponses` nil-element `continue` branch or the nested text-length branch \u2014 a coverage absence, out of reach under `narrow`.",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "high",
+  "file": "server/public/model/command_response.go",
+  "line": 72,
+  "category": "api-design",
+  "claim": "Adding a hard IsValid() gate to the previously-lenient CommandResponseFromJSON parser turns tolerated integration payloads (e.g. an unrecognized response_type such as \"comment\") into hard failures: an outgoing slash-command response now surfaces to the user as a 500 via app/command.go:595-596, discarding text/attachments/goto_location/props that were previously delivered; /hooks/commands returns 400; and Client4.ExecuteCommand can no longer decode a server/plugin response with a non-standard response_type. The all-or-nothing recursion over ExtraResponses (lines 90-98) defeats HandleCommandResponse's per-entry partial-delivery design \u2014 one bad nested entry discards the whole valid main response.",
+  "raw": "#1 \ud83d\udfe0 High: Previously-tolerated slash-command responses now fail the whole execution, and one bad `extra_responses` entry discards the valid main response",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "medium",
+  "file": "server/public/model/command_response.go",
+  "line": 82,
+  "category": "i18n",
+  "claim": "The two new AppError i18n IDs model.command_response.is_valid.response_type.app_error (line 82) and model.command_response.is_valid.text.app_error (line 87) are missing from server/i18n/en.json, so NewAppError's Translate leaves Message as the raw dotted identifier, which reaches server logs, the API body under EnableDeveloper, and Go-client errors verbatim; no CI gate catches this.",
+  "raw": "#2 \ud83d\udfe1 Medium: Both new i18n string IDs are missing from `server/i18n/en.json`",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "medium",
+  "file": "server/public/model/command_response.go",
+  "line": 85,
+  "category": "correctness",
+  "claim": "maxLength := 65535 is a hardcoded byte count while the real downstream post limit is a runtime rune count from determineMaxPostSize that scales with an enlarged Posts.Message column, so installations with an enlarged column can have previously-postable responses rejected; in the default config the check is also too loose (16383-rune limit vs 65535 bytes) so it does not shield the caller from post-creation failure; and it duplicates the existing PostMessageMaxBytesV2 constant as an unnamed local.",
+  "raw": "#3 \ud83d\udfe1 Medium: Hardcoded 65535-*byte* text cap ignores the configurable post size and can reject responses that previously posted fine",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "low",
+  "file": "server/public/model/command_response.go",
+  "line": 72,
+  "category": "correctness",
+  "claim": "Validation was added to CommandResponseFromJSON rather than CommandResponseFromHTTPBody, so the text/plain branch (CommandResponseFromPlainText) bypasses IsValid entirely \u2014 the same oversized text is rejected as JSON but accepted as plain text on both ingress paths (web/webhook.go:114 and app/command.go:586,595), so the cap does not achieve its stated bound.",
+  "raw": "#4 \ud83d\udfe2 Low: The text cap is bypassed entirely for non-JSON content types",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/public/model/command_response.go",
+  "line": 90,
+  "category": "resource-exhaustion",
+  "claim": "Unbounded recursion over ExtraResponses in IsValid could cause stack exhaustion from a deeply nested payload (dismissed as false: encoding/json's maxNestingDepth of 10000 makes json.Unmarshal fail before IsValid recurses; ~5000 frames is within Go's growable stack).",
+  "raw": "[false] Unbounded recursion over `ExtraResponses` causing stack exhaustion from a deeply nested payload",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/public/model/command_response.go",
+  "line": 72,
+  "category": "null-semantics",
+  "claim": "Typed-nil *AppError from IsValid could escape as a non-nil error interface (dismissed as false: err is declared as the concrete *AppError in the if statement, so the nil test is a pointer comparison and conversion to error only occurs on the non-nil path).",
+  "raw": "[false] Typed-nil `*AppError` escaping as a non-nil `error` interface",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/public/model/command_response.go",
+  "line": 63,
+  "category": "consistency",
+  "claim": "StringifyMessageAttachmentFieldValue is applied only one level deep (lines 63-70), so attachments nested inside ExtraResponses[i].ExtraResponses are never stringified \u2014 now visibly asymmetric next to IsValid's full recursion (tagged pre-existing; the shallow loop predates the change).",
+  "raw": "[pre-existing] `StringifyMessageAttachmentFieldValue` is applied only one level deep, so attachments nested inside `ExtraResponses[i].ExtraResponses` are never stringified",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/public/model/command_response.go",
+  "line": 85,
+  "category": "magic-number",
+  "claim": "maxLength := 65535 is a local variable rather than a package constant, whereas the file's other magic values are already consts at lines 15-18 (tagged minor; the substantive part is reported as finding #3).",
+  "raw": "[minor] `maxLength := 65535` is a local variable rather than a package constant; the file's other magic values are already `const`s at lines 15-18",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/public/model/command_response.go",
+  "line": 80,
+  "category": "documentation",
+  "claim": "The comment `// check response type` restates the immediately following condition and adds nothing; the non-obvious part (why the empty string is allowed) is what would merit a comment.",
+  "raw": "[minor] The comment `// check response type` restates the immediately following condition and adds nothing",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 1,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/public/model/command_response_test.go",
+  "line": 173,
+  "category": "formatting",
+  "claim": "The new extra_responses test case (lines 173-179) is indented with spaces while every sibling case in the table uses tabs.",
+  "raw": "[minor] The new `extra_responses` case is indented with spaces while every sibling case in the table uses tabs",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "high",
+  "file": "server/public/model/command_response.go",
+  "line": 72,
+  "category": "api-design",
+  "claim": "Calling IsValid() inside CommandResponseFromJSON makes the previously lenient parser an all-or-nothing gate on two live integration ingress paths (app/command.go:595 outgoing slash commands and web/webhook.go:114 command webhooks): a payload with a valid parent and one bad extra_responses entry (or an over-long Text) used to deliver the parent post but now fails the whole parse and posts nothing, converting partial delivery into total failure with no config flag, deprecation window, or changelog.",
+  "raw": "#1 \ud83d\udfe0 High: Parse-time rejection discards responses that previously delivered posts, breaking existing integrations",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "medium",
+  "file": "server/public/model/command_response.go",
+  "line": 82,
+  "category": "i18n",
+  "claim": "The new error IDs model.command_response.is_valid.response_type.app_error and model.command_response.is_valid.text.app_error are not registered in server/i18n/en.json, so NewAppError leaves the raw dotted ID as the Message surfaced in logs, AppError.Error() and the Go client; a fresh make i18n-extract would produce a dirty diff.",
+  "raw": "#2 \ud83d\udfe1 Medium: New error IDs are absent from `server/i18n/en.json`, so the raw ID string is surfaced as the message",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "medium",
+  "file": "server/public/model/command_response.go",
+  "line": 85,
+  "category": "correctness",
+  "claim": "len(o.Text) > 65535 counts bytes while the limit that actually governs this text (Post.IsValid via utf8.RuneCountInString against configurable maxPostSize, reference PostMessageMaxRunesV2=16383) counts runes, so the check disagrees in unit and direction: 21845 CJK runes pass and are rejected downstream anyway; it adds no resource protection since both ingress paths already bound the payload (1 MiB LimitReader / MaxBytesReader), and 65535 is a bare literal despite PostMessageMaxBytesV2 existing.",
+  "raw": "#3 \ud83d\udfe1 Medium: The 65535 limit counts bytes while every limit that actually governs this text counts runes, so it neither matches nor protects the real constraint",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "medium",
+  "file": "server/public/model/command_response.go",
+  "line": 35,
+  "category": "correctness",
+  "claim": "CommandResponseFromHTTPBody only routes application/json bodies through CommandResponseFromJSON; a text/plain body goes to CommandResponseFromPlainText which never validates, so an integration bypasses the new Text length limit (and validation entirely) by flipping the Content-Type header \u2014 a 100000-byte text/plain body parses with no error.",
+  "raw": "#4 \ud83d\udfe1 Medium: The length limit is bypassed entirely by sending `Content-Type: text/plain`",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "medium",
+  "file": "server/public/model/command_response.go",
+  "line": 72,
+  "category": "api-design",
+  "claim": "CommandResponseFromJSON is also used by Client4.ExecuteCommand / ExecuteCommandWithTeam (client4.go:5961, :5982) to decode the server's own response, which is encoded verbatim from App.ExecuteCommand and can include unvalidated plugin-set response_type values; so a successful HTTP 200 the webapp renders fine now fails to decode in Client4, mmctl and every third-party Go consumer of server/public, with no opt-out; sibling IncomingWebhookRequestFromJSON deliberately does not validate.",
+  "raw": "#5 \ud83d\udfe1 Medium: The Go client now rejects valid 200 responses from the server, including plugin-produced ones",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "low",
+  "file": "server/public/model/command_response.go",
+  "line": 95,
+  "category": "error-handling",
+  "claim": "The recursive IsValid call over ExtraResponses returns the child's *AppError verbatim with the same Where, Id and DetailedError, so a nested extra_responses validation failure is byte-identical to a top-level one and carries no index, path or nesting marker for the integration author debugging the rejection.",
+  "raw": "#6 \ud83d\udfe2 Low: A nested `extra_responses` failure is indistinguishable from a top-level one",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "low",
+  "file": "server/public/model/command_response_test.go",
+  "line": 167,
+  "category": "test-coverage",
+  "claim": "The new length test uses strings.Repeat(\"a\", 65536) \u2014 pure ASCII where byte and rune counts coincide \u2014 so it passes whether the implementation uses len() or utf8.RuneCountInString and does not pin the unit; and all three new cases assert only assert.Error + assert.Nil without checking AppError.Id, so a case failing for an unrelated reason (e.g. a JSON typo in the hand-indented multi-line fixture) would still be green.",
+  "raw": "#7 \ud83d\udfe2 Low: The new length test cannot distinguish bytes from runes, leaving the ambiguity in #3 unguarded",
+  "disposition": "reported"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/public/model/command_response.go",
+  "line": 90,
+  "category": "resource-exhaustion",
+  "claim": "Unbounded recursion / stack exhaustion on deeply nested extra_responses \u2014 considered and refuted by execution: encoding/json's 10000-level max-depth limit rejects the payload before IsValid runs, so recursion is reachable only to a bounded safe depth. (tagged false)",
+  "raw": "[false] Unbounded recursion / stack exhaustion on deeply nested `extra_responses`",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/public/model/command_response.go",
+  "line": 85,
+  "category": "code-style",
+  "claim": "maxLength is a function-local variable rather than a package-level const \u2014 cosmetic; the substantive unit/value problem is reported separately. (tagged minor)",
+  "raw": "[minor] `maxLength` is a function-local variable rather than a package-level `const`",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/public/model/command_response.go",
+  "line": 80,
+  "category": "documentation",
+  "claim": "The comment `// check response type` restates the line below it and carries no rationale for why the whitelist is exactly these three values. (tagged minor)",
+  "raw": "[minor] The comment `// check response type` restates the line below it and carries no rationale",
+  "disposition": "demoted"
+ },
+ {
+  "tool": "ours-bugs",
+  "repeat": 2,
+  "subagent": "solo-reviewer",
+  "severity": "info",
+  "file": "server/public/model/command_response.go",
+  "line": 35,
+  "category": "null-semantics",
+  "claim": "CommandResponseFromHTTPBody returns (nil, nil) when io.ReadAll fails, forcing every caller into a separate response == nil check (see server/channels/app/command.go:597) \u2014 present before this change and not exposed by it. (tagged pre-existing)",
+  "raw": "[pre-existing] `CommandResponseFromHTTPBody` returns `(nil, nil)` when `io.ReadAll` fails",
   "disposition": "demoted"
  },
  {

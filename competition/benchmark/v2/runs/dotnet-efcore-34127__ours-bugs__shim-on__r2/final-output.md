@@ -1,23 +1,25 @@
-✅ Review complete: `.decaf/code-reviews/CODE_REVIEW_2026-08-12_13-32-28.md`
+✅ Review complete: `.decaf/code-reviews/CODE_REVIEW_2026-08-17_14-37-47.md`
 
-## Verdict: ❌ NEEDS_CHANGES — 1 Critical, 1 High
+**Verdict: ❌ NEEDS_CHANGES** — 1 Critical, 0 High/Medium/Low.
 
-Both are silent data-correctness defects in the new `VisitCase` optimization: the query returns a wrong non-null value where it must return `null`. No exception, no warning.
+## The finding
 
-**#1 🔴 Critical — `SqlNullabilityProcessor.cs:626`.** `NullPropagatedOperands` recurses into both operands of *every* `SqlBinaryExpression`. But `AndAlso`/`OrElse` don't propagate NULL in three-valued logic (`UNKNOWN AND FALSE` → `FALSE`), so an operand under a logical connective is wrongly treated as null-propagating and its `IS NOT NULL` guard is deleted. This shape is reached by EF's *own* null-semantics rewrite, which turns `A == B` into `A = B AND B IS NOT NULL` precisely because the test being dropped registered `A` as non-nullable.
+**`src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626`** — the new `NullPropagatedOperands` helper recurses into *every* `SqlBinaryExpression` operator, but `SqlBinaryExpression.IsValidOperator` also admits `AndAlso`, `OrElse`, and `Coalesce` — none of which propagate NULL over their operands. SQL's three-valued logic absorbs NULL (`FALSE AND NULL = FALSE`, `TRUE OR NULL = TRUE`).
 
-**#2 🟠 High — `SqlNullabilityProcessor.cs:578`.** Boolean-valued results propagate NULL at the SQL level but not through the pipeline: SQL Server's `SearchConditionConvertingExpressionVisitor.ConvertToValue` materializes a predicate as `CASE WHEN p THEN 1 ELSE 0 END`, where UNKNOWN becomes `false`, never NULL. The outer `CASE … ELSE NULL END` was the only thing carrying NULL out — the optimization deletes it and nothing restores it. Distinct from #1 and survives fixing it.
+So for `CASE WHEN a IS NOT NULL THEN (a AND b) ELSE NULL END`, `a` is wrongly recorded as null-propagated, `DropNotNullChecks` deletes the guard, and the CASE collapses to `a AND b` — yielding `FALSE` where the original yielded `NULL`.
 
-**Both confirmed by execution, not inference.** The test projects don't compile under the only installed SDK (pre-existing `global.json` pin vs. .NET 10 — unrelated to this change), so I built a standalone probe outside the repo against the compiled assemblies, and ran the identical probe against a separate `git worktree` at the base commit:
+This is reached by an ordinary shape, not an exotic one: EF's own null-semantics rewrite turns `a == b` into `a = b AND b IS NOT NULL`, so any `x.Nullable != null ? x.Nullable == x.Other : (bool?)null` is miscompiled. The rule being violated is already written in the same file at `:2314-2321`, where the mirror-image transform explicitly excludes `AndAlso`/`OrElse` with the comment *"for AndAlso, OrElse we can't do this optimization"*. The new helper is that traversal with the exclusion missing.
 
-| Query | base | this change |
-|---|---|---|
-| `A != null ? A + B : null` (control) | match | match |
-| `A != null ? (bool?)(A == B) : null` | match | **row `A=NULL,B=NULL`: expected `null`, got `False`** |
-| `NSA != null ? (bool?)(NSA != StringA) : null` | SQL has `ELSE NULL` | **SQL has no NULL branch at all** |
+**Evidence (executed):** a standalone SQLite probe built against the repo's own `EFCore.Sqlite.Core`, run at HEAD and at the merge base in a separate worktree — **17/17 match at the base commit, 10 mismatches at HEAD**. Both wrong projected values (`null` → `false`/`true`) and wrong row sets in predicate contexts (e.g. expected Ids `[2,3,4,6]`, actual `[2,3,4,6,9]`). Failures are silent; nothing throws.
 
-The value-typed control passing in both directions is what isolates the defect to the boolean/logical shapes rather than the optimization as a whole — and explains why the suite is green: all five new tests and every updated baseline use value-typed results (`~int`, `int + int`, string concat, `CAST(LEN(…) AS int)`).
+**Why CI is green:** the five new tests only cover `~int?`, `int? + int?`, and string concat — all genuinely null-propagating. No boolean or comparison result is tested anywhere in the new cases, so every added and updated baseline is consistent with the defect being present.
 
-Suggested fixes are in the report: an operator allow-list at line 626 (fail closed, not open), and a `clause.Result.Type.UnwrapNullableType() != typeof(bool)` guard at line 578.
+Suggested fix is an allow-list of genuinely null-propagating operators (which also closes the latent `Coalesce` case) rather than a two-operator deny-list. Note `And`/`Or` (bitwise) do propagate and stay in; `AndAlso`/`OrElse` (boolean) do not.
 
-Two things I'd flag about the run itself: `adversarial-reviewer` was the sole finder of #2 and the only agent to build concrete counterexamples — the two cheap-tier agents corroborated #1 but didn't reach #2. And I did not dispatch validator agents, because an executed counterexample is stronger evidence than an independent reader; that deviation from the skill's Critical-always-validated rule is recorded in the report. All probe artifacts were removed; `git status --porcelain` is empty at `afcfba2e9`.
+## Caveats on the evidence
+
+The repository's own test suites were **not** run — `test/EFCore.Specification.Tests` does not compile in this environment (9 errors under SDK 10.0.203 rolling forward from the pinned 9.0 preview), and SQL Server functional tests need a live server. The execution evidence is entirely from the standalone probe. The SQL Server analysis (`SearchConditionConvertingExpressionVisitor` producing the same `null → false` corruption) is reasoned, not executed.
+
+Working tree verified clean afterward: `git status --porcelain` empty, HEAD unchanged at `afcfba2e9`, no leftover worktrees. Nothing was posted anywhere and no code was modified.
+
+Two notes on the report itself: 8 parked items carry proper tags, 1 (a procedural remark) does not — recorded as a count per the `bugs-sp` rules, not promoted. And this is a single-agent path with no validation wave, so the result carries one agent's variance; the Critical is backed by executed before/after evidence, but the parked items had no second reader.
