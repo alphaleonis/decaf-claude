@@ -2,11 +2,11 @@
 # dcc-u10u
 version: 1
 title: 'Re-measure the wave presets post-dduy: review (and audit) on the five adjudicated subjects'
-status: in-progress
+status: completed
 type: task
 priority: high
 created_at: 2026-08-18T08:40:37Z
-updated_at: 2026-08-18T17:45:46Z
+updated_at: 2026-08-20T06:41:13Z
 parent: dcc-hyxw
 order: ary
 ---
@@ -41,3 +41,24 @@ confirmed/refuted/uncertain — the rubber-stamp risk dcc-c2uc named and never m
 - [x] Folded in as arm `ours-review-postdduy` (foldin.py refuses a tool already present; see tools.json). Calibration reported per subject: 53/75 vs pilot p1, 51/75 vs p2, all five PASS the pre-registered threshold. Existing figures were asserted and 12 movements found — NOT unchanged: 6 benign (`unique_real` lost to a second reporter) and 6 structural (the real-defect pool grew on immich 4→5 and grafana 4→6, deflating every tool's recall). See [[dcc-dirp]] — the criterion is wrong as written.
 - [x] Readout: `v2/analysis/REVIEW-POSTDDUY.md`, incl. the pre/post-dduy line on prom/efcore and the first measurement of the dcc-c2uc rubber-stamp question.
 - [x] Recommendation: ship (no regression found), but dduy's benefit to `review` is unmeasurable at two subjects — the two move in opposite directions with repeat variance exceeding the effect. Single-seat `review` worth exploring on a wider slice; not before [[dcc-n5h2]].
+
+## Summary
+
+**Completed 2026-08-20** — All four acceptance items met; see v2/analysis/REVIEW-POSTDDUY.md.
+
+10 ours-review cells across the five adjudicated subjects, folded in as `ours-review-postdduy`
+(foldin.py refuses a tool already present, and pooling pre- and post-dduy cells under one id is the
+mixing tools.json forbids). Calibration reported per subject: 53/75 vs pilot pass 1, 51/75 vs pass 2,
+all five clearing the pre-registered threshold.
+
+Headline: NO dduy effect is claimable. On the two subjects carrying both eras the arm moves in
+opposite directions on every axis, and the within-subject spread between post-dduy repeats exceeds
+the pre/post gap it would have to explain.
+
+Recommendation: `review` post-dduy was checked for regression and none was found — no cell approved a
+change with real defects, verification refutes rather than rubber-stamps, precision sits in a narrow
+band. That dduy IMPROVED it is not demonstrable at this scale and should not go in a merge note.
+
+Two findings beyond the brief: the dcc-c2uc rubber-stamp question got its first measurement
+(post-dduy verification refutes in 3 of 4 cells against 1 of 4 pre-dduy — directional only, filed as
+dcc-wuid), and the acceptance criterion itself was wrong as a gate, filed and fixed as dcc-dirp.

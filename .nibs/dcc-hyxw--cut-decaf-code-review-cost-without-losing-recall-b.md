@@ -9,7 +9,7 @@ tags:
     - benchmark
     - code-review
 created_at: 2026-07-28T20:40:25Z
-updated_at: 2026-08-18T07:37:42Z
+updated_at: 2026-08-20T06:41:14Z
 blocked_by:
     - dcc-9kkz
 order: zzzV
@@ -130,11 +130,31 @@ still comes first, but it changes what to expect from each.
 
 ## Current Focus
 
-Completed dcc-pjix: Done. `bugs` is the single-seat solo-reviewer path (brief v3); `bugs-sp` is an alias; the four-seat
-wave lives behind `bugs roster=N` (N≥2) with evidence=norm. SKILL, brief, CLAUDE.md, README, tools.json
-(ours-bugs = single seat from 2026-08-18; ours-bugs-wave added; sp arms historical), runner updated;
-dev copy synced; dcc-sk3k closed as superseded. Fresh-session probes confirmed both paths announce
-and dispatch as specified.
+Completed dcc-n5h2: The measurable half is answered; write-up in v2/analysis/SINGLE-SEAT-FINDINGS.md.
+
+Question 1 (what superpowers' agent does that ours does not) is answered NEGATIVELY, which is the
+useful result: it is not the brief, not the model, and not reach.
+
+- Not the brief. decaf's solo-reviewer brief is 1,916 words to superpowers' 552 and runs ~2:1 against
+  searching, but it NAMES the exact defect class it missed ("three-valued logic, coercions, operator
+  semantics where the language has traps" = efcore e02) while superpowers' brief never mentions null
+  semantics and its agent found it. Coverage is not the gap.
+- Not the model. Every cell's modelUsage: both are claude-opus-5 at 100% of cost, one agent each.
+- Not reach. dcc-tmz2 measured identical exploration breadth at both settings.
+
+What it IS: detection is stochastic. e02 is found by ~1 cell in 3 in EVERY arm. Repeats recover
+0.05-0.19 of the pool, so repeats are a lever with a known exchange rate where three brief revisions
+produced 3.0/3.0/3.0.
+
+Bonus measurement, from the wave cells: quick-reviewer is the quietest always-on agent (3.1
+clusters/cell) and the most accurate (45% real), and out-contributes its floor partner
+broad-reviewer on sole-real findings (0.79 vs 0.50) at lower cost. Of the 16 clusters it alone found,
+12 are defect-class. NOT actionable yet — 14% of wave findings carry no agent attribution, and
+sole-finder-within-a-cell bounds contribution above rather than measuring drop cost.
+
+Question 3 (a cheap second-pass "what did you not look at" turn) is untouched and remains the live
+idea, now better motivated: if detection is stochastic rather than systematic, a second pass is the
+mechanism that matches the diagnosis.
 
 ## ⚠️ Measured premise is VOID (2026-08-10)
 This epic's premise — `ours` at $21.33/run vs anthropic's $7.61, and 0.70 vs 0.90 severity
