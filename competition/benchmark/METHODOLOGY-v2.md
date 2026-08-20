@@ -724,8 +724,8 @@ Admission rules the script enforces, all from §2 and §5:
 
 - **merged on or after 2026-06-01** — provably past the cutoff of both the roster's newest model and
   the judge (both Opus 5). The bound is the day after the published month, not the first of it; §5
-  explains why. The twelve built subjects were screened under the earlier 2026-05-01 reading, so five
-  of them are `in-window` and not poolable — see §5 for the table.
+  explains why. Five subjects screened under the earlier 2026-05-01 reading were `in-window`; all five
+  were replaced on 2026-08-20 and every active cell now clears the bound — see §5 for the table.
 - **≥5 HUMAN review threads** — threads are the miss detector, so density is a selection criterion,
   and the criterion counts *human* threads (`dcc-2gu2`). The original screen counted raw threads,
   which is now substantially a measure of which review bots a repo has installed: one subject passed
@@ -1049,22 +1049,34 @@ Decided 2026-08-11 (`dcc-vvf0`). The rule lives in code at `v2/scoring/vintage.p
 the status for a (subject, model) pair at analysis time and refuses to let a headline pool the two
 classes silently. `v2/find_candidates.sh` screens at 2026-06-01.
 
-⚠️ **Five subjects predate that bound and are KEPT, FLAGGED, AND NOT POOLABLE.** They were screened
-under the earlier 2026-05-01 reading and merged inside May 2026:
+✅ **The five subjects that predated that bound were REPLACED on 2026-08-20** (`dcc-ryo4`). Every
+active cell now merges on or after 2026-06-01, so `vintage.check_pooling()` passes on the backend row
+and on the whole corpus:
 
-| Cell | Subject | merged |
-|---|---|---|
-| backend S | jellyfin#12834 | 2026-05-21 |
-| backend M | grafana#124181 | 2026-05-08 |
-| backend L | PostHog#52408 | 2026-05-06 |
-| contract L | PostHog#55149 | 2026-05-06 |
-| app-ui M | immich#24627 | 2026-05-11 |
+| Cell | was (in-window) | is now | merged |
+|---|---|---|---|
+| backend S | jellyfin#12834 (2026-05-21) | mattermost#37874 | 2026-08-14 |
+| backend M | grafana#124181 (2026-05-08) | grafana#125982 | 2026-06-18 |
+| backend L | PostHog#52408 (2026-05-06) | jellyfin#17044 | 2026-07-05 |
+| contract L | PostHog#55149 (2026-05-06) | PostHog#67924 | 2026-07-16 |
+| app-ui M | immich#24627 (2026-05-11) | immich#29965 | 2026-08-10 |
 
-Replacing them was considered and declined: the operator chose to keep the audited thread sets rather
-than rebuild five cells. The consequence is explicit and must be honored — **the entire `backend`
-row is in-window, so this corpus yields no clean backend number at all.** The seven out-of-window
-subjects (contract S/M, app-ui S/L, library S/M/L) are the reportable set. Do not quietly average
-across all twelve; `vintage.check_pooling()` exists to make that failure loud.
+The earlier decision — keep and flag, rather than rebuild five cells — was reversed by the thread
+census (`dcc-qwt3`): the five held **56 of the corpus's 86 human threads**, so most of the miss
+detector was locked behind the flag, not just the backend row. Details, including the two cells where
+the build disagreed with the screen, are in `v2/analysis/CANDIDATES.md`.
+
+**Retirement policy, applied.** The five are `role: retired-probe` in their `fixture.json`, not
+deleted: they keep their audited thread sets and any scoring they carry, and four of them form
+same-repo, same-cell **matched vintage pairs** with their replacements — the probe this section calls
+for, now runnable. backend S's replacement crosses repos and is therefore not a pair; jellyfin#12834
+↔ jellyfin#17044 is the partial substitute (same repo, S vs L).
+
+⚠️ **The rule is keyed on `merged_at`, and that key is under challenge** (`dcc-60qk`). Five of the
+twelve active subjects were created and reviewed inside the window although they merged outside it —
+efcore#34127's PR was opened 2024-06-30 and sat open for nearly two years. An open PR's diff and
+review conversation are public from creation, so `pr_created_at` is the conservative key and
+`merged_at` is the permissive one. Unresolved; do not read the ✅ above as stronger than it is.
 
 ⚠️ **The null arm is exempt, by the soak-vs-vintage rule in §2.** All three null subjects merged in
 early May 2026 and are in-window. That is accepted rather than fixed: a memorized null subject would

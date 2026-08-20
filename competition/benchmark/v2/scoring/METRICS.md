@@ -173,12 +173,37 @@ deflated every arm equally — which is exactly why neither surfaced as an anoma
 | `matchability_annotated` | every admitted thread carries a matchability verdict |
 | `thread_axis_publishable` | gate a synthesis must check; false when the denominator is unaudited |
 | `credited_to_unmatchable_thread` | contradictions between the grading and the annotation |
+| `matchability_readings` (on the thread) | both independent readings behind an exclusion, and how a disagreement resolved |
 
 **Unmatchable threads.** Admission is a line-position test and never asked whether the code a thread
 discusses exists at the checkpoint. A comment written three pushes later about code added two pushes
 later is admitted whenever its line falls in a changed hunk, and then counts against every arm. The
 test is PRESENCE, not date: a thread written weeks later about code that already existed is perfectly
 matchable, and anything keyed on `created_at` would wrongly exclude it.
+
+**An exclusion needs two readings (`dcc-fm8s`).** `matchable = true` is the safe default and the
+bulk of the annotation; an exclusion is the small dangerous set, because it removes a thread from
+every arm's denominator and on an axis of n=3 that is 33%. So every `matchable_at_checkpoint: false`
+carries two independent readings, the second blind to the first's reasoning, and `score_pooled.py`
+refuses a subject where it does not. Two rules are pre-registered rather than decided per case:
+
+- **the compound-thread rule** — a thread is matchable if ANY claim in it targets present code. All
+  three exclusion errors this corpus has made were the same shape: a quoted suggestion pointing at
+  code added after the checkpoint, alongside a sentence pointing at code that was already there;
+- **the tie-break** — disagreement resolves toward *matchable*. Including an unmatchable thread costs
+  every arm equally and visibly (it shows up as a thread nobody hit); excluding a matchable one
+  silently inflates every arm.
+
+Measured error rate on the first single-pass annotation: **3 of 20 exclusions were wrong.**
+
+**A thread match must quote what it matched (`dcc-on93`).** `matches-thread` requires a
+`matched_thread_quote` — the span of that thread's body the cluster corresponds to — and the scorer
+checks it actually occurs there. `credited_to_unmatchable_thread` below only fires when the thread is
+*unmatchable*; a loose match onto a **matchable** thread inflates `thread_recall` with nothing to
+detect it, and the quote is what makes it visible. The scorer also refuses a `matches-thread` naming
+a thread that was never admitted: the grader is shown admitted threads only, and four clusters on two
+scored subjects had one — silent in both directions, since recall ignored the credit while precision
+counted the cluster as REAL.
 
 **Duplicate threads.** A cluster carries one `matches_thread`. When a scanner and a human raise the
 same defect at the same line, one thread is credited and the other reads as missed — and since the
@@ -200,4 +225,6 @@ human threads are unmatchable, so `denominator_human` is 0.
 unmatchable thread is a contradiction — a tool cannot match a comment about code that is not there —
 so one of the two judgments is wrong. It reports rather than refuses because which one differs case by
 case: on first run it caught one real annotation error that had silently cost seven arms a legitimate
-hit, and three loose grading matches.
+hit, and three loose grading matches. Resolved 2026-08-20 — and two of those three "loose matches"
+turned out to be annotation errors of the same compound-thread kind, not grading errors
+(`analysis/GRADING-INTEGRITY-2026-08-20.md`).

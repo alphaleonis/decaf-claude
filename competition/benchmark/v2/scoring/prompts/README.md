@@ -8,7 +8,8 @@ authored it from the `/bench-analyze` rules and kept nothing. `<scratch>/` marks
 |---|---|---|
 | `foldin-extractor.md` | 1 — one agent per cell, both layers | `__CELL__`, `__TOOL__`, `__REP__` placeholders |
 | `foldin-clusterer.md` | 2 — assign new findings to existing clusters or new ones | `__INPUT__`, `__NEWIDS__`; a cleared note clusters with the claim it clears |
-| `foldin-blind-grader.md` | 3 — verdicts, blind, run twice independently | subject-specific bits (diff path, repo, threads file, PR title) are substituted per subject; the rules text is the `/bench-analyze` rubric verbatim |
+| `verdict-rubric.md` | the rules, canonical | the ONLY copy — `foldin-blind-grader.md` and `/bench-analyze` both hand it to the grader verbatim. It held two divergent copies until 2026-08-20 |
+| `foldin-blind-grader.md` | 3 — verdicts, blind, run twice independently | subject-specific bits (diff path, repo, threads file, PR title) are substituted per subject; the rules come from `verdict-rubric.md` |
 | `foldin-class-grader.md` | 3b — `finding_class`, blind to verdict and tool | `__CLUSTERS__`, `__PR__`, `__DIFF__` |
 | `../foldin.py` | deterministic merge | appends `reported_by`, new clusters with pass-1 verdicts + class, pass-2 verdicts, cells; rebuilds `findings.json` |
 

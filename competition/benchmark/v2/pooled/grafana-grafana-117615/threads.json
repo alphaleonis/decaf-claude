@@ -82,7 +82,21 @@
   "matchable_at_checkpoint": false,
   "matchable_reason": "The comment reviews a later change ('you hadn't done this ... the change here') wrapping the value in both helpers, but at the checkpoint sqlCompletionProvider.ts:27 calls only quoteIdentifierIfNecessary and unquoteIdentifier appears nowhere under public/app/features/expressions/.",
   "thread_group": "tg04",
-  "thread_group_defect": "Reviewer questions wrapping the completion value in both quoteIdentifierIfNecessary and unquoteIdentifier, and asks why the approach changed since the previous review round."
+  "thread_group_defect": "Reviewer questions wrapping the completion value in both quoteIdentifierIfNecessary and unquoteIdentifier, and asks why the approach changed since the previous review round.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "The comment reviews a later change ('you hadn't done this ... the change here') wrapping the value in both helpers, but at the checkpoint sqlCompletionProvider.ts:27 calls only quoteIdentifierIfNecessary and unquoteIdentifier appears nowhere under public/app/features/expressions/."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "Single claim about wrapping a value in BOTH quoteIdentifierIfNecessary and unquoteIdentifier. grep for `unquoteIdentifier` across public/app/features/expressions/ returns nothing at the checkpoint, and sqlCompletionProvider.ts:27 calls quoteIdentifierIfNecessary alone. The double-wrap the thread objects to does not exist."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "public/app/features/expressions/utils/metaSqlExpr.ts",
@@ -112,7 +126,21 @@
   "matchable_at_checkpoint": false,
   "matchable_reason": "There is no 'table' identifier or placeholder to rename at the checkpoint: SqlExpr.tsx:81 is `${quoteIdentifierIfNecessary(vars[0])}` with no fallback literal, and no 'table'/default_table literal exists anywhere under public/app/features/expressions/.",
   "thread_group": "tg05",
-  "thread_group_defect": "The placeholder/default table name is the reserved keyword 'table', which errors when the expression runs; reviewer asks for a different name such as default_table."
+  "thread_group_defect": "The placeholder/default table name is the reserved keyword 'table', which errors when the expression runs; reviewer asks for a different name such as default_table.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "There is no 'table' identifier or placeholder to rename at the checkpoint: SqlExpr.tsx:81 is `${quoteIdentifierIfNecessary(vars[0])}` with no fallback literal, and no 'table'/default_table literal exists anywhere under public/app/features/expressions/."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "Single claim: the literal `table` is a reserved keyword, use `default_table` instead. SqlExpr.tsx:81 at the checkpoint interpolates `${quoteIdentifierIfNecessary(vars[0])}` with no fallback literal, and grep finds no `table`/`default_table` string literal anywhere under public/app/features/expressions/. There is no identifier to rename."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "public/app/features/expressions/utils/metaSqlExpr.test.ts",

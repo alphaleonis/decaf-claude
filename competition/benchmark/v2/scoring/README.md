@@ -18,9 +18,21 @@ Every pooled number rests on one subjective call — `valid-other` versus `trivi
 verdict, kappa on the `real`/`not-real` collapse that precision actually depends on, agreement
 restricted to the `valid-other`/`trivia` boundary, and every disagreement by cluster.
 
-The **pre-registered** threshold — fixed before the first pass ran, so it cannot be drawn around the
-result — is `real_vs_not.kappa >= 0.60` and `exact_agreement >= 0.70`. Pass 2 must run in a separate
-process; a continuation of the session that produced pass 1 measures memory, not stability.
+There are **three** pre-registered floors, each fixed before the run it judges — `real_vs_not.kappa
+>= 0.60`, `exact_agreement >= 0.70`, and (`dcc-sfny`) `valid_other_vs_trivia.kappa >= 0.60` measured
+over at least 50 boundary clusters. The third exists because the first two are the ones the judge
+clears: measured 2026-08-20, the boundary was 0.403 at n=10 and 0.598 at n=62 while the coarse
+collapse sat at 0.907, and both runs reported `stable: true`.
+
+They are reported **per boundary**, and `stable` is split into two claims because the evidence
+splits: `stable_for_rankings` (the two coarse floors — which arm beats which) and
+`stable_for_precision_levels` (the boundary as well — what a precision *number* means). A boundary
+measured under n=50 comes back `null`, not `false`: unestablished is not the same as failed. A run
+that clears rankings and misses the boundary must publish precision as a **band across both passes**,
+not a point.
+
+Pass 2 must run in a separate process; a continuation of the session that produced pass 1 measures
+memory, not stability.
 
 ## Four axes, never merged
 
@@ -54,6 +66,12 @@ thread groups*, not raw admitted threads:
   between two axes that are reported separately;
 - `thread_axis_publishable` is false unless every admitted thread carries a verdict. Absent or partial
   annotation is **not** read as "all matchable" — that is the assumption being removed;
+- every **exclusion** carries two independent readings (`dcc-fm8s`,
+  `annotate_thread_matchability.py --second-pass`), because an exclusion is the dangerous direction:
+  it removes a thread from every arm's denominator, silently. The rule is stated in advance —
+  *matchable if ANY claim in the thread targets present code* — and so is the tie-break: disagreement
+  resolves toward matchable. Measured error rate on the first single-pass annotation: **3 of 20
+  exclusions were wrong**, all three the same compound-thread shape;
 - `denominator_human: 0` yields `thread_recall: null`, never `0.000`. See `METRICS.md`.
 
 ## Reported vs found
@@ -127,6 +145,17 @@ of the scoring-model decision:
   the miss detector
 - artifacts describing **different finding sets** (`check_artifacts.py`): 20 findings in one layer, 33
   in another, 1 in common, and the clustering run on the stale set
+
+It also refuses two things a thread match can get wrong (`dcc-on93`), both of which were silent
+before and both of which had live instances:
+
+- a `matches-thread` with no `matched_thread_quote`, or a quote that does not occur in the body of
+  the thread it names. An index alone cannot distinguish a substantive match from a same-line
+  coincidence, and `credited_to_unmatchable_thread` below only fires when the thread is
+  *unmatchable* — a loose match onto a matchable one was undetectable;
+- a `matches-thread` naming a thread that was never admitted. The grader is shown admitted threads
+  only, so the index cannot be legitimate. Four clusters on two scored subjects had this, and it was
+  silent in both directions: recall ignored the credit while precision counted the cluster as REAL.
 
 It **warns loudly without refusing** on one thing, because the right fix differs case by case:
 

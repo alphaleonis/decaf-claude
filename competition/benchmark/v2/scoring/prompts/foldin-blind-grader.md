@@ -5,17 +5,11 @@ INPUTS (read all three files fully):
 - The admitted human review threads: <scratch>/prom-threads-blind.json — each {index, path, line, body}.
 - The clusters to grade: <scratch>/prom-grade-clusters.json — each {cluster_id, summary, location}.
 
-For EVERY cluster return one verdict object:
-{"cluster_id":"", "verdict":"matches-thread|valid-other|valid-minor|trivia|false-positive",
- "matches_thread": <int index or null>, "judged_severity":"critical|high|medium|low|nit|info",
- "code_citation":"file:line-range", "confidence": <0..1>, "rationale":"one or two sentences"}
-
-RULES:
-- A `code_citation` is REQUIRED for every real verdict (`matches-thread`, `valid-other`) — point at the code that makes the claim true. A verdict that cannot point at code is not evidence. Verify against the actual code, not the summary's wording.
-- `matches-thread` requires the index of the admitted thread it matches. Judge SUBSTANCE, not wording — a cluster raising the same defect a human thread raised, in different words, matches it.
-- `valid-other`: a real, substantive issue not raised by any thread. `valid-minor`: correct and actionable but small (a nit that is nonetheless right). `trivia`: true but not worth a reviewer's attention, or purely stylistic/preferential, or a "considered and cleared" note that asserts no defect. `false-positive`: the claim is wrong.
-- The `trivia` vs `valid-other` boundary is the load-bearing call in this design. When genuinely uncertain, say so in `confidence` rather than splitting the difference.
-- Never reward volume; judge each cluster on its own merits.
-- `judged_severity` is YOUR assessment of impact if real (use `info` for trivia/false-positive).
+For EVERY cluster return one verdict object, in the shape and under the rules of
+`competition/benchmark/v2/scoring/prompts/verdict-rubric.md` — READ THAT FILE AND FOLLOW IT. It is
+the canonical rubric: the verdict shape, the `code_citation` and `matched_thread_quote`
+requirements, and the four-question walk for the `trivia`/`valid-other` boundary that decides
+precision. It carries worked examples from already-graded clusters; the boundary is the least
+reproducible call in the set, so do not grade it from memory of the categories.
 
 Return your final message as exactly one JSON array of verdict objects — one per cluster, all of them — no prose, no code fence.

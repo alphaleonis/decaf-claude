@@ -16,6 +16,7 @@ BASE = {
     "clusters": [
         {"cluster_id": "c1", "verdict": "matches-thread", "matches_thread": 0,
          "judged_severity": "high", "code_citation": "a.py:10",
+         "matched_thread_quote": "never backs off between attempts",
          "reported_by": [{"tool": "alpha", "repeat": 1, "severity": "high"}]},
         {"cluster_id": "c2", "verdict": "valid-other", "judged_severity": "medium",
          "code_citation": "a.py:20",
@@ -28,8 +29,10 @@ BASE = {
     ],
 }
 THREADS = [
-    {"path": "a.py", "line": 10, "admission": "admitted", "origin": "human"},
-    {"path": "b.py", "line": 5, "admission": "admitted", "origin": "human"},
+    {"path": "a.py", "line": 10, "admission": "admitted", "origin": "human",
+     "body": "The retry loop never backs off between attempts, so a flapping upstream gets hammered."},
+    {"path": "b.py", "line": 5, "admission": "admitted", "origin": "human",
+     "body": "This ignores the cancellation token once the batch has started."},
     {"path": "c.py", "line": 1, "admission": "rejected"},
 ]
 
@@ -140,6 +143,65 @@ def t_thread_verdict_without_index():
     expect_defect(a, THREADS, "no matches_thread index")
 
 
+def t_match_without_a_quote_is_refused():
+    """dcc-on93: `matches_thread: <index>` records nothing about WHY. Without a quote there is no
+    way to tell a substantive match from a same-line coincidence, and a loose match onto a
+    MATCHABLE thread inflates thread_recall with nothing to detect it."""
+    a = copy.deepcopy(BASE)
+    del a["clusters"][0]["matched_thread_quote"]
+    expect_defect(a, THREADS, "without matched_thread_quote")
+
+
+def t_fabricated_quote_is_refused():
+    """Presence alone would make the guard cosmetic — the quote has to occur in the body of the
+    thread the cluster claims to match."""
+    a = copy.deepcopy(BASE)
+    a["clusters"][0]["matched_thread_quote"] = "this text is nowhere in that thread"
+    expect_defect(a, THREADS, "does not appear in T0's body")
+
+
+def t_quote_from_the_wrong_thread_is_refused():
+    """The e15/ma11/c108 shape: a real quote, lifted from a DIFFERENT thread than the one credited."""
+    a = copy.deepcopy(BASE)
+    a["clusters"][0]["matched_thread_quote"] = "ignores the cancellation token"   # that is T1
+    expect_defect(a, THREADS, "does not appear in T0's body")
+
+
+def t_quote_tolerates_reflowed_whitespace_and_case():
+    """A grader quoting a span that wrapped across lines has still quoted it. Normalization must not
+    be so strict that it refuses valid evidence — only fabrication."""
+    a = copy.deepcopy(BASE)
+    a["clusters"][0]["matched_thread_quote"] = "Never   backs off\n  between attempts"
+    validate(a, THREADS, None)
+
+
+def t_token_length_quote_is_refused():
+    """A two-word quote matches almost any body, so it is not evidence of correspondence."""
+    a = copy.deepcopy(BASE)
+    a["clusters"][0]["matched_thread_quote"] = "retry"
+    expect_defect(a, THREADS, "under 12")
+
+
+def t_whole_body_satisfies_the_length_floor():
+    """Real threads in this corpus go down to five characters. A floor that cannot be met by quoting
+    the entire thread would refuse the shortest legitimate matches."""
+    ts = copy.deepcopy(THREADS)
+    ts[0]["body"] = "Bool?"
+    a = copy.deepcopy(BASE)
+    a["clusters"][0]["matched_thread_quote"] = "Bool?"
+    validate(a, ts, None)
+
+
+def t_match_to_a_non_admitted_thread_is_refused():
+    """dcc-on93: the grader only ever sees admitted threads, so an index naming a rejected one is a
+    stale or invented match. It was silent in both directions — recall ignores it, precision counts
+    it as REAL — and four clusters on two scored subjects had it."""
+    a = copy.deepcopy(BASE)
+    a["clusters"][0]["matches_thread"] = 2          # the rejected thread in THREADS
+    a["clusters"][0]["matched_thread_quote"] = "anything at all here"
+    expect_defect(a, THREADS, "not admitted")
+
+
 def t_thread_index_out_of_range():
     a = copy.deepcopy(BASE)
     a["clusters"][0]["matches_thread"] = 99
@@ -181,6 +243,7 @@ def t_demotion_gap():
         # Found, verified, and demoted below the reporting bar.
         {"cluster_id": "s1", "verdict": "matches-thread", "matches_thread": 0,
          "judged_severity": "critical", "code_citation": "a.py:10",
+         "matched_thread_quote": "never backs off between attempts",
          "reported_by": [{"tool": "suppressor", "repeat": 1, "severity": "high",
                           "disposition": "demoted"}]},
         # Actually reported.
@@ -267,6 +330,7 @@ def t_corpus_miss_detector_splits_by_disposition():
     a["clusters"] = [
         {"cluster_id": "x1", "verdict": "matches-thread", "matches_thread": 0,
          "judged_severity": "high", "code_citation": "a.py:10",
+         "matched_thread_quote": "never backs off between attempts",
          "reported_by": [{"tool": "one", "repeat": 1, "severity": "high",
                           "disposition": "demoted"}]},
     ]
@@ -303,10 +367,12 @@ def t_bot_threads_never_enter_thread_recall():
     axis — the figures are never merged.
     """
     ts = copy.deepcopy(THREADS)
-    ts.append({"path": "d.py", "line": 7, "admission": "admitted", "origin": "bot"})
+    ts.append({"path": "d.py", "line": 7, "admission": "admitted", "origin": "bot",
+               "body": "Consider extracting this into a helper for readability."})
     a = copy.deepcopy(BASE)
     a["clusters"].append({"cluster_id": "c5", "verdict": "matches-thread", "matches_thread": 3,
                           "judged_severity": "medium", "code_citation": "d.py:7",
+                          "matched_thread_quote": "extracting this into a helper",
                           "reported_by": [{"tool": "beta", "repeat": 1, "severity": "medium"}]})
     validate(a, ts, None)
     m = score(a, ts, None)

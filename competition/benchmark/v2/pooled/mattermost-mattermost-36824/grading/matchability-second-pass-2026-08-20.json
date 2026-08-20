@@ -1,0 +1,6 @@
+[
+ {"thread_index": 5, "matchable_at_checkpoint": false,
+  "reason": "Single claim: url.ParseRequestURI accepts path-only values, so IconURL/GotoLocation validation should reject them. command_response.go at the checkpoint is 100 lines with no `net/url` import and no URL check of any kind (grep: only the struct field declarations at :25 and :28). Nothing present to review."},
+ {"thread_index": 6, "matchable_at_checkpoint": true,
+  "reason": "COMPOUND thread. Sentence 1 asks for a request logger in place of the global one — no logging exists in command_response.go at the checkpoint, so that half has no target. Sentence 2 is a separate claim: \"Let's move this call into the two placed where CommandResponseFromHTTPBody is called (commandWebhook, DoCommandRequest)\". Every element of it is present: the `if err := o.IsValid(); err != nil` call sits inside CommandResponseFromJSON at command_response.go:72-74, and CommandResponseFromHTTPBody has exactly the two callers named — server/channels/web/webhook.go:114 (commandWebhook) and server/channels/app/command.go:595 (DoCommandRequest). Matchable under the compound-thread rule."}
+]

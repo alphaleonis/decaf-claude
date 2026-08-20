@@ -1,0 +1,68 @@
+[
+ {
+  "cluster_id": "gf01",
+  "thread": 0,
+  "cluster_summary": "quoteIdentifierIfNecessary(vars[0]) is called with undefined when the SQL expression has no sibling query, so isValidIdentifier's toUpperCase throws a TypeError and the editor crashes on render where it previously rendered 'FROM undefined'.",
+  "rationale": "With refIds empty vars[0] is undefined and isValidIdentifier calls identifier.toUpperCase() \u2192 TypeError during render, where it previously rendered 'FROM undefined'; exactly thread 0.",
+  "thread_path": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx",
+  "thread_line": 82,
+  "matchable": true,
+  "thread_body": "initialQuery now calls quoteIdentifierIfNecessary(vars[0]). If there are no non-expression queries, refIds can be empty (ExpressionQueryEditor filters out the current query), making vars[0] undefined and causing a runtime crash when quoteIdentifierIfNecessary runs. Add a guard for the empty refIds/vars case (e.g., don\u2019t generate an initial FROM clause / use a placeholder and skip auto-initialization) and add a regression test for mounting SqlExpr with an empty refIds array.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "gf07",
+  "thread": 2,
+  "cluster_summary": "metaSqlExpr.ts binds to a file-local regex-only quoteIdentifierIfNecessary with no reserved-word check while the other call sites use the mysql helper, so reserved-word refIds are quoted in the editor but left bare in the metadata query, which fails and silently empties column autocomplete.",
+  "rationale": "metaSqlExpr.ts binds to a file-local regex-only quoteIdentifierIfNecessary (no reserved-word check) while SqlExpr/completion use the mysql helper, so a reserved-word refId is quoted in the editor but bare in the metadata query \u2014 precisely thread 2.",
+  "thread_path": "public/app/features/expressions/utils/metaSqlExpr.ts",
+  "thread_line": 15,
+  "matchable": true,
+  "thread_body": "Table quoting logic is inconsistent across the SQL expressions feature: this file uses the local quoteIdentifierIfNecessary (regex-only) while SqlExpr/autocomplete use the MySQL sqlUtil version (which also quotes reserved words). This can lead to cases where the editor generates a quoted FROM clause but the schema/fields metadata query still uses an unquoted table name (e.g., refId like \"TABLE\"). Use a single shared quoting helper for all SQL-expressions table/field quoting (and ideally handle reserved words + already-quoted identifiers).",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "gf08",
+  "thread": 7,
+  "cluster_summary": "The read-back path never unquotes: Monaco tokenizes a backtick-quoted table name into separate tokens so getTableToken yields a lone backtick or quoted name, which fetchSQLFields re-quotes into broken SQL and whose refId filter matches nothing, so column autocomplete silently returns empty for the very refIds this change enables.",
+  "rationale": "Monaco's mysql grammar emits the backtick as its own identifier.quote token, getTableToken returns it, fetchSQLFields re-quotes it and its refId filter matches nothing so column completion returns []; this is the production read-back defect thread 7 describes (quoted query.table vs raw refId lookup).",
+  "thread_path": "public/app/features/expressions/utils/metaSqlExpr.test.ts",
+  "thread_line": 31,
+  "matchable": true,
+  "thread_body": "These tests only verify the quoted SQL text, not the production flow where query.table is backtick-quoted but the backing query still has the raw refId. Because ExpressionQueryEditor passes { value: q.refId, label: q.refId }, we need a regression test that keeps queries[].refId unquoted while query.table is quoted; otherwise the missing source-query lookup in fetchSQLFields goes unnoticed.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "gf14",
+  "thread": 7,
+  "cluster_summary": "The new tests leave the currently-broken paths uncovered: no case for empty refIds, a reserved-word refId, or an already-quoted table on the read-back path.",
+  "rationale": "Composite missing-tests note; its already-quoted-table read-back case is thread 7's requested regression test (and the empty-refIds case is thread 0's), so it restates gaps humans raised.",
+  "thread_path": "public/app/features/expressions/utils/metaSqlExpr.test.ts",
+  "thread_line": 31,
+  "matchable": true,
+  "thread_body": "These tests only verify the quoted SQL text, not the production flow where query.table is backtick-quoted but the backing query still has the raw refId. Because ExpressionQueryEditor passes { value: q.refId, label: q.refId }, we need a regression test that keeps queries[].refId unquoted while query.table is quoted; otherwise the missing source-query lookup in fetchSQLFields goes unnoticed.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "gf23",
+  "thread": 7,
+  "cluster_summary": "The metaSqlExpr test asserts the queries.filter argument with expect.anything(), which matches [] and so passes whether or not the refId lookup succeeded.",
+  "rationale": "The third argument is asserted with expect.anything(), which matches [] so a failed refId lookup goes unnoticed \u2014 the same gap thread 7 raises about the source-query lookup in fetchSQLFields being untested.",
+  "thread_path": "public/app/features/expressions/utils/metaSqlExpr.test.ts",
+  "thread_line": 31,
+  "matchable": true,
+  "thread_body": "These tests only verify the quoted SQL text, not the production flow where query.table is backtick-quoted but the backing query still has the raw refId. Because ExpressionQueryEditor passes { value: q.refId, label: q.refId }, we need a regression test that keeps queries[].refId unquoted while query.table is quoted; otherwise the missing source-query lookup in fetchSQLFields goes unnoticed.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "gf25",
+  "thread": 7,
+  "cluster_summary": "Recommends an integration-level test driving the real path (initial query text \u2192 editor token \u2192 fetchSQLFields) rather than unit tests that feed each stage idealized input.",
+  "rationale": "Its complaint that the unit tests feed each stage idealized input (queries[].refId equal to query.table) instead of the real editor\u2192fetchSQLFields path is thread 7's substance, phrased as a generic recommendation.",
+  "thread_path": "public/app/features/expressions/utils/metaSqlExpr.test.ts",
+  "thread_line": 31,
+  "matchable": true,
+  "thread_body": "These tests only verify the quoted SQL text, not the production flow where query.table is backtick-quoted but the backing query still has the raw refId. Because ExpressionQueryEditor passes { value: q.refId, label: q.refId }, we need a regression test that keeps queries[].refId unquoted while query.table is quoted; otherwise the missing source-query lookup in fetchSQLFields goes unnoticed.",
+  "matched_thread_quote": "FILL"
+ }
+]

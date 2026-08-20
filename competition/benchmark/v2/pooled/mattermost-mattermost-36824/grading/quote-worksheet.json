@@ -1,0 +1,68 @@
+[
+ {
+  "cluster_id": "ma01",
+  "thread": 4,
+  "cluster_summary": "Calling IsValid inside CommandResponseFromJSON turns the previously lenient integration decoder into a hard gate, so payloads that were tolerated before (unrecognized or differently-cased response_type, oversized ephemeral text) now fail the whole command with a 500/400 and lose all sibling content, an unannounced compatibility break with no config gate or deprecation.",
+  "rationale": "Calling IsValid inside the decoder turns previously tolerated payloads into hard failures at both ingest sites (500 in DoCommandRequest, 400 in commandWebhook) with no config gate \u2014 the same compatibility-break concern the human thread raised when asking for a logged warning instead of an error.",
+  "thread_path": "server/public/model/command_response.go",
+  "thread_line": 74,
+  "matchable": true,
+  "thread_body": "Let's not throw an hard error. This might break existing servers. Instead log a warning, similar to the caller of MessageAttachment.IsValid(). In general, we should use that method as a guideline.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "ma02",
+  "thread": 1,
+  "cluster_summary": "The two new AppError i18n IDs (model.command_response.is_valid.response_type.app_error and .text.app_error) are missing from server/i18n/en.json, so the raw dotted key becomes the error Message in logs, developer-mode responses and Go client errors.",
+  "rationale": "grep of server/i18n/en.json finds no model.command_response.is_valid.* entries, so the raw id becomes the translated message; this is the human thread's request to run i18n-extract for the new error ids.",
+  "thread_path": "server/public/model/command_response.go",
+  "thread_line": 83,
+  "matchable": true,
+  "thread_body": "These are new errors right? if so, please run make i18n-extract to add them to the i18n files.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "ma03",
+  "thread": 0,
+  "cluster_summary": "The text-length check compares len(o.Text) bytes against a hardcoded 65535 while the governing post limit is a configurable rune count (PostMessageMaxRunesV2 / determineMaxPostSize), so the two limits neither agree nor nest \u2014 CJK text is rejected that would fit, ASCII passes that fails downstream, and enlarged-column installs get a new fixed ceiling.",
+  "rationale": "len(o.Text) counts bytes against a hardcoded 65535 while Post.IsValid enforces a configurable rune count (PostMessageMaxRunesV2 / determineMaxPostSize), which is exactly the byte-vs-character concern the human thread raised.",
+  "thread_path": "server/public/model/command_response.go",
+  "thread_line": 88,
+  "matchable": true,
+  "thread_body": "\u26a0\ufe0f Potential issue | \ud83d\udfe1 Minor | \u26a1 Quick win\nText limit is enforced in bytes, not characters.\nThe issue specifies a 65,535 character limit, but len(o.Text) returns the byte count. Multibyte UTF-8 text under the character limit can be wrongly rejected. If the intent is a character cap, count runes instead.\n\n\ud83d\udc1b Proposed fix to count characters\n-\tmaxLength := 65535\n-\tif len(o.Text) > maxLength {\n+\tmaxLength := 65535\n+\tif utf8.RuneCountInString(o.Text) > maxLength {\n \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n \t}\nAdd the import:\n import (\n \t\"encoding/json\"\n \t\"io\"\n \t\"net/http\"\n \t\"strings\"\n+\t\"unicode/utf8\"\n\n \t\"github.com/mattermost/mattermost/server/public/utils\"\n )\n\nNote: if the 65,535 cap is actually a downstream byte-storage limit, the current len() check is correct\u2014please confirm which constraint applies.\n\n\n\ud83d\udcdd Committable suggestion\n\n\u203c\ufe0f IMPORTANT\nCarefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.\n\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n            \tmaxLength := 65535\n          \n          \n            \n            \tif len(o.Text) > maxLength {\n          \n          \n            \n            \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n          \n          \n            \n            \t}\n          \n          \n            \n            import (\n          \n          \n            \n            \t\"encoding/json\"\n          \n          \n            \n            \t\"io\"\n          \n          \n            \n            \t\"net/http\"\n          \n          \n            \n            \t\"strings\"\n          \n          \n            \n            \t\"unicode/utf8\"\n          \n          \n            \n            \n          \n          \n            \n            \t\"github.com/mattermost/mattermost/server/public/utils\"\n          \n          \n            \n            )\n          \n      \n    \n    \n  \n\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n            \tmaxLength := 65535\n          \n          \n            \n            \tif len(o.Text) > maxLength {\n          \n          \n            \n            \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n          \n          \n            \n            \t}\n          \n          \n            \n            \tmaxLength := 65535\n          \n          \n            \n            \tif utf8.RuneCountInString(o.Text) > maxLength {\n          \n          \n            \n            \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n          \n          \n            \n            \t}\n          \n      \n    \n    \n  \n\n\n\n\n\ud83e\udd16 Prompt for AI Agents\nVerify each finding against current code. Fix only still-valid issues, skip the\nrest with a brief reason, keep changes minimal, and validate.\n\nIn `@server/public/model/command_response.go` around lines 85 - 88, The length\ncheck currently uses len(o.Text) which counts bytes; change it to count\ncharacters by using utf8.RuneCountInString(o.Text) (or len([]rune(o.Text))) when\ncomparing to maxLength, update the import to include \"unicode/utf8\", and keep\nthe same error return (the check lives in CommandResponse.IsValid referencing\no.Text and maxLength); if the 65,535 constraint is actually a byte-storage\nlimit, leave the current byte-based len() check instead.\n\n\n\n\n\u2705 Addressed in commit fc34391",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "ma11",
+  "thread": 6,
+  "cluster_summary": "Validation lives in the shared bidirectional decoder CommandResponseFromJSON, which Client4.ExecuteCommand/ExecuteCommandWithTeam also use to decode server-emitted responses that are never validated server-side (plugin/built-in commands), so a response the webapp renders fine fails to decode in mmctl and every Go client; validation belongs at the ingest sites, not the decoder.",
+  "rationale": "CommandResponseFromJSON is also the decoder used by Client4.ExecuteCommand/ExecuteCommandWithTeam for server-emitted responses that are never run through IsValid server-side, so placing validation in the shared decoder is misplaced; the human thread asks for the same relocation of the call to commandWebhook/DoCommandRequest, albeit motivated by logger context rather than client breakage.",
+  "thread_path": "server/public/model/command_response.go",
+  "thread_line": 75,
+  "matchable": false,
+  "thread_body": "I would like to see a concrete logger instead of the global one getting used, as that carries context as well.\nLet's move this call into the two placed where CommandResponseFromHTTPBody is called (commandWebhook, DoCommandRequest) and use the request logger.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "ma15",
+  "thread": 4,
+  "cluster_summary": "IsValid recurses through all ExtraResponses and propagates any nested failure, so one bad extra entry (even at a depth no consumer ever reads) rejects the whole payload and discards the valid main message, contradicting HandleCommandResponse's per-entry tolerance.",
+  "rationale": "One invalid nested entry (even at depth 2, which HandleCommandResponse never reads) rejects the entire payload with a hard error, contrasting with HandleCommandResponse's per-entry continue-and-log; this is a facet of the human thread's objection to hard-erroring instead of logging a warning.",
+  "thread_path": "server/public/model/command_response.go",
+  "thread_line": 74,
+  "matchable": true,
+  "thread_body": "Let's not throw an hard error. This might break existing servers. Instead log a warning, similar to the caller of MessageAttachment.IsValid(). In general, we should use that method as a guideline.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "ma36",
+  "thread": 3,
+  "cluster_summary": "Validation is welded into the deserializer itself, unlike every other *FromJSON in the package (and unlike the structural sibling OutgoingWebhookResponse, which has no IsValid at all), so callers lose the ability to parse first and decide about validity separately.",
+  "rationale": "Same defect as the maintainer's \"let's not throw a hard error, this might break existing servers\" comment on that exact return: validation is welded into the decoder so callers cannot parse and then decide, and the fix (move it out of FromJSON) is what the thread asks for.",
+  "thread_path": "server/public/model/command_response.go",
+  "thread_line": 1,
+  "matchable": null,
+  "thread_body": "Are there other fields we want to check?\n\nIconURL must be an URL, right?\nType must be one of the known post types.`\nAttachments also has a IsValid method we should check\\\nI think GotoLocation must be an URL",
+  "matched_thread_quote": "FILL"
+ }
+]

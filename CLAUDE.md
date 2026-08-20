@@ -219,12 +219,13 @@ Ground rules that cost real money to learn:
   as correct and leaked post-checkpoint review verdicts through `--json latestReviews`; a URL target
   skipped the date check entirely. Both were found by running the shim, not by reading it.
 - **Empty is not the same as failed — and neither is PARTIAL.** The same silent-failure bug has now
-  surfaced nine times here (a zsh word-splitting no-op, "0 candidates" from a broken query, `grep`
+  surfaced ten times here (a zsh word-splitting no-op, "0 candidates" from a broken query, `grep`
   aborting under `set -e`, a wrong `detect_build` path recorded as a generic error, Wayback outages
   reported as "no snapshot", a null-arm check failing open, `.result` holding 5% of a tool's output,
-  a tool report deleted by the next cell's reset, and a 429-truncated cell that resume skipped
-  forever because its output was non-empty). Anything whose emptiness *or incompleteness* is
-  indistinguishable from success must say which it was.
+  a tool report deleted by the next cell's reset, a 429-truncated cell that resume skipped forever
+  because its output was non-empty, and a fixture written with a zero-file checkpoint diff and zero
+  admitted threads because the merge base resolved to the checkpoint itself). Anything whose
+  emptiness *or incompleteness* is indistinguishable from success must say which it was.
 - **A number over a small denominator is not a measurement.** The pilot's every unstable figure came
   from a tool reporting under 10 clusters; `precision 1.00` on n=3 moved to 0.60 on n=5. No precision
   figure over fewer than 10 reported clusters may be published (`analysis/PILOT-RESULTS.md`).

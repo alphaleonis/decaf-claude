@@ -245,8 +245,8 @@
    "cluster_id": "e01",
    "summary": "NullPropagatedOperands recurses into every SqlBinaryExpression with no operator filter, so AndAlso/OrElse operands are treated as null-propagating when they are not",
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
-   "verdict": "matches-thread",
-   "matches_thread": 10,
+   "verdict": "valid-other",
+   "matches_thread": null,
    "judged_severity": "critical",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
    "confidence": 0.6,
@@ -478,7 +478,10 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.9
+   "class_confidence": 0.9,
+   "verdict_previous": "matches-thread",
+   "matches_thread_previous": 10,
+   "thread_credit_note": "Was matches-thread -> T10, a REJECTED bot thread about FIXME-vs-TODO tag naming. Its recorded rationale names a reviewer who describes the unfiltered binary arm; the only thread that does is T14, but T14's defect claim is ExpressionType.Coalesce while e01's is AndAlso/OrElse \u2014 a different operator, and one whose null-propagation T7 disputes on the merits. No re-credit; thread credit removed, substance class preserved."
   },
   {
    "cluster_id": "e02",
@@ -1163,7 +1166,8 @@
     }
    ],
    "finding_class": "design",
-   "class_confidence": 0.45
+   "class_confidence": 0.45,
+   "matched_thread_quote": "and move nullPropagatedOperands below"
   },
   {
    "cluster_id": "e08",
@@ -1382,7 +1386,8 @@
     }
    ],
    "finding_class": "design",
-   "class_confidence": 0.5
+   "class_confidence": 0.5,
+   "matched_thread_quote": "maybe it would be cleaner to return a TRUE expression here."
   },
   {
    "cluster_id": "e10",
@@ -1446,7 +1451,8 @@
     }
    ],
    "finding_class": "style",
-   "class_confidence": 0.9
+   "class_confidence": 0.9,
+   "matched_thread_quote": "Naming-wise, maybe DetectNullPropagatingNodes?"
   },
   {
    "cluster_id": "e11",
@@ -1517,7 +1523,8 @@
     }
    ],
    "finding_class": "design",
-   "class_confidence": 0.8
+   "class_confidence": 0.8,
+   "matched_thread_quote": "there should be extensibility for provider-specific expression types"
   },
   {
    "cluster_id": "e12",
@@ -1560,14 +1567,15 @@
     }
    ],
    "finding_class": "design",
-   "class_confidence": 0.5
+   "class_confidence": 0.5,
+   "matched_thread_quote": "AtTimeZone, Collate (which are types of binary expressions)"
   },
   {
    "cluster_id": "e13",
    "summary": "ExpressionType.Coalesce is a legal SqlBinaryExpression operator that does not propagate NULL in its first argument, and the unfiltered recursion admits it",
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
    "verdict": "matches-thread",
-   "matches_thread": 10,
+   "matches_thread": 14,
    "judged_severity": "high",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
    "confidence": 0.85,
@@ -1736,7 +1744,10 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.85
+   "class_confidence": 0.85,
+   "matches_thread_previous": 10,
+   "thread_credit_note": "index corrected during the dcc-on93 quote backfill: the recorded index named a rejected thread, the quote verifies against this one",
+   "matched_thread_quote": "This includes ExpressionType.Coalesce, which is not null-propagating"
   },
   {
    "cluster_id": "e14",
@@ -1871,7 +1882,8 @@
     }
    ],
    "finding_class": "style",
-   "class_confidence": 0.9
+   "class_confidence": 0.9,
+   "matched_thread_quote": "I actually use is for any constant/literal check at this point"
   },
   {
    "cluster_id": "e16",
@@ -2656,7 +2668,8 @@
     }
    ],
    "finding_class": "style",
-   "class_confidence": 0.85
+   "class_confidence": 0.85,
+   "matched_thread_quote": "this can all be one nice switch statement with pattern matching"
   },
   {
    "cluster_id": "e31",
@@ -2754,8 +2767,8 @@
    "cluster_id": "e32",
    "summary": "An operator allowlist alone leaves the optimization unsound against future operators; only re-visit-and-compare validation closes it",
    "location": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626",
-   "verdict": "matches-thread",
-   "matches_thread": 10,
+   "verdict": "valid-other",
+   "matches_thread": null,
    "judged_severity": "high",
    "code_citation": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs:626-630",
    "confidence": 0.5,
@@ -2784,7 +2797,10 @@
     }
    ],
    "finding_class": "risk",
-   "class_confidence": 0.7
+   "class_confidence": 0.7,
+   "verdict_previous": "matches-thread",
+   "matches_thread_previous": 10,
+   "thread_credit_note": "Was matches-thread -> T10 (same rejected tag-naming thread). e32's claim \u2014 that an operator allowlist is insufficient and only re-visit-and-compare validation is sound \u2014 goes beyond T14's 'handle Coalesce explicitly'. No span corresponds; thread credit removed, substance class preserved."
   },
   {
    "cluster_id": "e34",
@@ -3477,7 +3493,8 @@
     }
    ],
    "finding_class": "design",
-   "class_confidence": 0.5
+   "class_confidence": 0.5,
+   "matched_thread_quote": "AtTimeZone, Collate (which are types of binary expressions)"
   },
   {
    "cluster_id": "e48",
@@ -4150,7 +4167,8 @@
     }
    ],
    "finding_class": "design",
-   "class_confidence": 0.6
+   "class_confidence": 0.6,
+   "matched_thread_quote": "this definitely feels like something more general than as a very local utility"
   },
   {
    "cluster_id": "e73",

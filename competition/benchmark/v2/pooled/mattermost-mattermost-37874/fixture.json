@@ -1,0 +1,33 @@
+{
+  "slug": "mattermost/mattermost#37874",
+  "repo": "mattermost/mattermost",
+  "pr": 37874,
+  "title": "Fix repeating 400s for post_persistent_notifications and delte_expired_posts jobs",
+  "app_type": "backend",
+  "size": "S",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "6b0104ca15fc9a487bd2b7a66cfd53801144642c",
+    "base": "dce666b02d8ec1864ed7b368157cc6d8ab96e5b4",
+    "base_ref": "master",
+    "date": "2026-08-10T14:16:49Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 3,
+      "additions": 30,
+      "deletions": 2
+    }
+  },
+  "merged_at": "2026-08-14T16:02:50Z",
+  "pr_created_at": "2026-08-07T00:32:11Z",
+  "vintage": {
+    "merged": "2026-08-14",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 5"
+  },
+  "threads": {
+    "total": 6,
+    "admitted": 6
+  },
+  "role": "active",
+  "replaces": "jellyfin/jellyfin#12834"
+}

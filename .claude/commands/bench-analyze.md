@@ -88,22 +88,13 @@ cannot grade a thread differently for being bot-authored), and the clusters **wi
 stripped** (send `cluster_id`, `summary`, `file:line` only; keep the tool map yourself). Per cluster
 it returns:
 
-```json
-{"cluster_id":"", "verdict":"matches-thread|matches-key|valid-other|valid-minor|trivia|false-positive",
- "matches_thread": 0, "judged_severity":"", "code_citation":"file:line-range", "confidence": 0,
- "rationale":""}
-```
-
-Rules the grader must follow:
-
-- **A `code_citation` is required for every real verdict** (`matches-*`, `valid-other`). The judge
-  shares a model family with the reviewers, so a verdict that cannot point at code is not evidence.
-- `matches-thread` requires the index of the admitted thread it matches. Judge the *substance*, not
-  the wording — a tool that raises the same defect in different words has matched it.
-- `trivia` versus `valid-other` is the load-bearing boundary in this design. v1 put 58 of 98 clusters
-  in that bucket and only 6 in `false-positive`, so this call **is** the metric. When genuinely
-  uncertain, say so in `confidence` rather than splitting the difference.
-- Never reward volume: judge each cluster on its own merits, blind to how many the tool produced.
+**The verdict shape and the rules the grader must follow are in
+`competition/benchmark/v2/scoring/prompts/verdict-rubric.md`. Hand that file to the grader
+verbatim** — it is the single canonical copy, and it carries what a summary of it loses: the
+`matched_thread_quote` requirement, the four-question walk for the `trivia`/`valid-other` call that
+decides precision, and worked examples of each answer taken from already-graded clusters. That one
+boundary measured kappa 0.598 while every other part of the judge sat above 0.90, so it is the part
+that must not be graded from a paraphrase.
 
 Merge the verdicts back onto the clusters (with the tool map) and write `<subject-dir>/analysis.json`
 with `subject`, `instrument`, `judge_model`, **`merged_at` copied verbatim from `fixture.json`**

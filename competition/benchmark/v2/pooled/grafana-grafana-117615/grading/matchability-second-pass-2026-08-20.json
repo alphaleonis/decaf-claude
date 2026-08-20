@@ -1,0 +1,6 @@
+[
+ {"thread_index": 4, "matchable_at_checkpoint": false,
+  "reason": "Single claim about wrapping a value in BOTH quoteIdentifierIfNecessary and unquoteIdentifier. grep for `unquoteIdentifier` across public/app/features/expressions/ returns nothing at the checkpoint, and sqlCompletionProvider.ts:27 calls quoteIdentifierIfNecessary alone. The double-wrap the thread objects to does not exist."},
+ {"thread_index": 6, "matchable_at_checkpoint": false,
+  "reason": "Single claim: the literal `table` is a reserved keyword, use `default_table` instead. SqlExpr.tsx:81 at the checkpoint interpolates `${quoteIdentifierIfNecessary(vars[0])}` with no fallback literal, and grep finds no `table`/`default_table` string literal anywhere under public/app/features/expressions/. There is no identifier to rename."}
+]

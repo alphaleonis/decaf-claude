@@ -1,0 +1,34 @@
+{
+  "slug": "grafana/grafana#125982",
+  "repo": "grafana/grafana",
+  "pr": 125982,
+  "title": "Folder scope apiextensions",
+  "app_type": "backend",
+  "size": "M",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "baeb161cab3f5b9198618ba61b1dbbf3ef9eeeb5",
+    "base": "7c228035eebb2c651c67e1e384f52e63d80bb1d8",
+    "base_ref": "main",
+    "date": "2026-06-08T20:22:29Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 12,
+      "additions": 281,
+      "deletions": 33
+    }
+  },
+  "merged_at": "2026-06-18T12:22:17Z",
+  "pr_created_at": "2026-06-08T14:06:33Z",
+  "vintage": {
+    "merged": "2026-06-18",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 5"
+  },
+  "threads": {
+    "total": 21,
+    "admitted": 20,
+    "rejected": 1
+  },
+  "role": "active",
+  "replaces": "grafana/grafana#124181"
+}

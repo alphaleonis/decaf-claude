@@ -142,7 +142,8 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.6
+   "class_confidence": 0.6,
+   "matched_thread_quote": "Let's not throw an hard error. This might break existing servers."
   },
   {
    "cluster_id": "ma02",
@@ -213,7 +214,8 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.8
+   "class_confidence": 0.8,
+   "matched_thread_quote": "please run make i18n-extract to add them to the i18n files"
   },
   {
    "cluster_id": "ma03",
@@ -291,7 +293,8 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.75
+   "class_confidence": 0.75,
+   "matched_thread_quote": "Text limit is enforced in bytes, not characters."
   },
   {
    "cluster_id": "ma04",
@@ -705,7 +708,8 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.6
+   "class_confidence": 0.6,
+   "matched_thread_quote": "Let's move this call into the two placed where CommandResponseFromHTTPBody is called (commandWebhook, DoCommandRequest)"
   },
   {
    "cluster_id": "ma12",
@@ -884,7 +888,8 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.55
+   "class_confidence": 0.55,
+   "matched_thread_quote": "Let's not throw an hard error. This might break existing servers."
   },
   {
    "cluster_id": "ma16",
@@ -1463,8 +1468,8 @@
    "cluster_id": "ma36",
    "summary": "Validation is welded into the deserializer itself, unlike every other *FromJSON in the package (and unlike the structural sibling OutgoingWebhookResponse, which has no IsValid at all), so callers lose the ability to parse first and decide about validity separately.",
    "location": "server/public/model/command_response.go:72",
-   "verdict": "matches-thread",
-   "matches_thread": 3,
+   "verdict": "valid-other",
+   "matches_thread": null,
    "judged_severity": "high",
    "code_citation": "server/public/model/command_response.go:72-74",
    "confidence": 0.65,
@@ -1479,7 +1484,10 @@
     }
    ],
    "finding_class": "design",
-   "class_confidence": 0.9
+   "class_confidence": 0.9,
+   "verdict_previous": "matches-thread",
+   "matches_thread_previous": 3,
+   "thread_credit_note": "Was matches-thread -> T3, a REJECTED thread (dcc-on93). T3 asks for MORE field validation (IconURL, GotoLocation, Attachments); ma36 objects to validation living in the deserializer at all. No span of T3 corresponds. Thread credit removed; the substance class it was graded at is preserved unchanged, because re-adjudicating substance is the blind grader's job and not this backfill's."
   },
   {
    "cluster_id": "ma37",
