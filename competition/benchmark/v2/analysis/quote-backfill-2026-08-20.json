@@ -1,0 +1,94 @@
+{
+ "prometheus-prometheus-18081": {
+  "quotes": {
+   "c01":  ["Shouldn't this be 1 sample read?", null],
+   "c101": ["Shouldn't this be 1 sample read?", null],
+   "c05":  ["why is there an inner step beyond the last one required for the outer query?", null],
+   "c66":  ["there isn't a 1:1 mapping between the child query steps and the parent query steps", null],
+   "c73":  ["This seems like it shouldn't be here.", null],
+   "c74":  ["A lot of these new tests seem very similar", null],
+   "c75":  ["Ideally this would be in a separate PR, as it is unrelated to this one.", null],
+   "c81":  ["If this was unknown to the callee would the value be zero?", null],
+   "c140": ["There's another \"phase 3\" comment three test cases earlier", null]
+  }
+ },
+ "grafana-grafana-117615": {
+  "quotes": {
+   "gf01": ["making vars[0] undefined and causing a runtime crash when quoteIdentifierIfNecessary runs", null],
+   "gf07": ["this file uses the local quoteIdentifierIfNecessary (regex-only)", null],
+   "gf08": ["the missing source-query lookup in fetchSQLFields goes unnoticed", null],
+   "gf14": ["These tests only verify the quoted SQL text, not the production flow", null],
+   "gf23": ["the missing source-query lookup in fetchSQLFields goes unnoticed", null],
+   "gf25": ["we need a regression test that keeps queries[].refId unquoted while query.table is quoted", null]
+  }
+ },
+ "immich-app-immich-28886": {
+  "quotes": {
+   "im05": ["This is wrong/misleading. Is there a way to opt out of these values", null]
+  }
+ },
+ "mattermost-mattermost-36824": {
+  "quotes": {
+   "ma01": ["Let's not throw an hard error. This might break existing servers.", null],
+   "ma15": ["Let's not throw an hard error. This might break existing servers.", null],
+   "ma02": ["please run make i18n-extract to add them to the i18n files", null],
+   "ma03": ["Text limit is enforced in bytes, not characters.", null],
+   "ma11": ["Let's move this call into the two placed where CommandResponseFromHTTPBody is called (commandWebhook, DoCommandRequest)", null]
+  },
+  "regrade": {
+   "ma36": {"verdict": "valid-other",
+            "note": "Was matches-thread -> T3, a REJECTED thread (dcc-on93). T3 asks for MORE field validation (IconURL, GotoLocation, Attachments); ma36 objects to validation living in the deserializer at all. No span of T3 corresponds. Thread credit removed; the substance class it was graded at is preserved unchanged, because re-adjudicating substance is the blind grader's job and not this backfill's."}
+  }
+ },
+ "dotnet-efcore-34127": {
+  "quotes": {
+   "e07": ["and move nullPropagatedOperands below", null],
+   "e09": ["maybe it would be cleaner to return a TRUE expression here.", null],
+   "e10": ["Naming-wise, maybe DetectNullPropagatingNodes?", null],
+   "e11": ["there should be extensibility for provider-specific expression types", null],
+   "e12": ["AtTimeZone, Collate (which are types of binary expressions)", null],
+   "e47": ["AtTimeZone, Collate (which are types of binary expressions)", null],
+   "e30": ["this can all be one nice switch statement with pattern matching", null],
+   "e71": ["this definitely feels like something more general than as a very local utility", null],
+   "e15": ["I actually use is for any constant/literal check at this point", null],
+   "e13": ["This includes ExpressionType.Coalesce, which is not null-propagating", 14]
+  },
+  "regrade": {
+   "e01": {"verdict": "valid-other",
+           "note": "Was matches-thread -> T10, a REJECTED bot thread about FIXME-vs-TODO tag naming. Its recorded rationale names a reviewer who describes the unfiltered binary arm; the only thread that does is T14, but T14's defect claim is ExpressionType.Coalesce while e01's is AndAlso/OrElse — a different operator, and one whose null-propagation T7 disputes on the merits. No re-credit; thread credit removed, substance class preserved."},
+   "e32": {"verdict": "valid-other",
+           "note": "Was matches-thread -> T10 (same rejected tag-naming thread). e32's claim — that an operator allowlist is insufficient and only re-visit-and-compare validation is sound — goes beyond T14's 'handle Coalesce explicitly'. No span corresponds; thread credit removed, substance class preserved."}
+  }
+ },
+ "PostHog-posthog-55149": {
+  "quotes": {
+   "c004": ["This endpoint still ships with zero tests", null],
+   "c049": ["Person exists but didn't exist at timestamp", null],
+   "c006": ["feature_flag:read might be a bit narrow for an endpoint that returns raw person_properties", null],
+   "c007": ["test_evaluation has no throttle_classes", null],
+   "c043": ["build_person_properties_at_time has no lower time bound and no row cap", null],
+   "c048": ["has no lower time bound and no row cap", null],
+   "c013": ["distinct_ids[0] isn't a stable selection when the caller passes person_id", null],
+   "c014": ["Inline import inside method inconsistent with top-level imports", null],
+   "c019": ["only copies name, active, deleted, version, filters from reconstructed_flag_data", null],
+   "c025": ["Root logger used instead of module logger", null],
+   "c026": ["override_definitions is set to None and evaluation continues with the CURRENT flag definition", null],
+   "c027": ["if the INTERNAL_REQUEST_TOKEN environment variable is not set", null],
+   "c030": ["The three fallback paths don't fire today", null],
+   "c031": ["These bool, str, and else branches can't fire", null],
+   "c036": ["hasattr(person, \"distinct_ids\") is always true", null],
+   "c038": ["wraps the main logic in try/except Exception: raise, which is a no-op", null],
+   "c077": ["rollout_excluded detection currently only flags exclusions when rollout_percentage == 0.0", null],
+   "c079": ["ConditionAnalysis.matched is populated with all_properties_matched", null],
+   "c082": ["Each flag override emits multiple info-level log lines including full filter Debug output", null],
+   "c083": ["the code replaces the entire FeatureFlag struct (*flag = override_flag) without validating", null],
+   "c084": ["override_flags_definitions is not gated by the internal token check", null],
+   "c095": ["none of them are covered by tests", null],
+   "c096": ["Byte-by-byte == short-circuits on the first mismatching byte, enabling a theoretical timing attack", null]
+  },
+  "regrade": {
+   "c108": {"verdict": "valid-other",
+            "note": "Was matches-thread -> T15. T15 asks for tests proving the public-request override gate DROPS the fields; that gate does not exist at the checkpoint (it is the defect c084 reports), and the second matchability reading confirmed the exclusion. c108 observes that the Rust test edits set the new fields to inert values — a different claim, with no corresponding span. Thread credit removed, substance class preserved."}
+  }
+ }
+}

@@ -95,7 +95,21 @@
   "matchable_at_checkpoint": false,
   "matchable_reason": "It reviews IconURL/GotoLocation validation built on url.ParseRequestURI, which does not exist at the checkpoint \u2014 server/public/model/command_response.go has no `net/url` import and no URL check anywhere in its 100 lines; the validation was added after the checkpoint (thread is against f71fda4).",
   "thread_group": "tg05",
-  "thread_group_defect": "IconURL/GotoLocation validation uses url.ParseRequestURI, which accepts path-only values such as /foo, so non-URLs pass validation."
+  "thread_group_defect": "IconURL/GotoLocation validation uses url.ParseRequestURI, which accepts path-only values such as /foo, so non-URLs pass validation.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "It reviews IconURL/GotoLocation validation built on url.ParseRequestURI, which does not exist at the checkpoint \u2014 server/public/model/command_response.go has no `net/url` import and no URL check anywhere in its 100 lines; the validation was added after the checkpoint (thread is against f71fda4)."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "Single claim: url.ParseRequestURI accepts path-only values, so IconURL/GotoLocation validation should reject them. command_response.go at the checkpoint is 100 lines with no `net/url` import and no URL check of any kind (grep: only the struct field declarations at :25 and :28). Nothing present to review."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "server/public/model/command_response.go",
@@ -109,10 +123,24 @@
   "admission": "admitted",
   "admission_reason": "line inside a changed hunk at the checkpoint",
   "origin": "human",
-  "matchable_at_checkpoint": false,
-  "matchable_reason": "It asks to replace a global-logger call with a request logger and move it into the two callers, but no logging exists in server/public/model/command_response.go at the checkpoint (no `mlog` reference); the log call is the later fix for thread 4, added before 9c48344.",
+  "matchable_at_checkpoint": true,
+  "matchable_reason": "COMPOUND thread. Sentence 1 asks for a request logger in place of the global one \u2014 no logging exists in command_response.go at the checkpoint, so that half has no target. Sentence 2 is a separate claim: \"Let's move this call into the two placed where CommandResponseFromHTTPBody is called (commandWebhook, DoCommandRequest)\". Every element of it is present: the `if err := o.IsValid(); err != nil` call sits inside CommandResponseFromJSON at command_response.go:72-74, and CommandResponseFromHTTPBody has exactly the two callers named \u2014 server/channels/web/webhook.go:114 (commandWebhook) and server/channels/app/command.go:595 (DoCommandRequest). Matchable under the compound-thread rule.",
   "thread_group": "tg06",
-  "thread_group_defect": "The validation warning is emitted through the global logger inside the model helper instead of the request-scoped logger at the two call sites (commandWebhook, DoCommandRequest)."
+  "thread_group_defect": "The validation warning is emitted through the global logger inside the model helper instead of the request-scoped logger at the two call sites (commandWebhook, DoCommandRequest).",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "It asks to replace a global-logger call with a request logger and move it into the two callers, but no logging exists in server/public/model/command_response.go at the checkpoint (no `mlog` reference); the log call is the later fix for thread 4, added before 9c48344."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": true,
+    "reason": "COMPOUND thread. Sentence 1 asks for a request logger in place of the global one \u2014 no logging exists in command_response.go at the checkpoint, so that half has no target. Sentence 2 is a separate claim: \"Let's move this call into the two placed where CommandResponseFromHTTPBody is called (commandWebhook, DoCommandRequest)\". Every element of it is present: the `if err := o.IsValid(); err != nil` call sits inside CommandResponseFromJSON at command_response.go:72-74, and CommandResponseFromHTTPBody has exactly the two callers named \u2014 server/channels/web/webhook.go:114 (commandWebhook) and server/channels/app/command.go:595 (DoCommandRequest). Matchable under the compound-thread rule."
+   }
+  ],
+  "matchability_resolution": "passes disagreed; resolved toward matchable (dcc-fm8s). Both readings above."
  },
  {
   "path": "server/channels/web/webhook.go",

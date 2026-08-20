@@ -210,18 +210,32 @@ Rules the pilot established, which govern every future number:
   fell below it, and every unstable figure in the pilot was one of them.
 - **Two grading passes per subject, always.** Judge variance exceeds tool variance at every
   denominator size, and passes cost no cells.
+- **A precision LEVEL needs the boundary floor, not just the coarse ones** (`dcc-sfny`).
+  `judge_stability.py` reports `stable_for_rankings` and `stable_for_precision_levels` separately;
+  a run that clears the first and misses the second may rank arms but must publish precision as a
+  band across both passes. Measured 2026-08-20: the `valid-other`/`trivia` boundary sits at 0.598
+  (n=62) against a floor of 0.60, while the coarse collapse is 0.907.
 - **`threads.missed_index` is not publishable from one pass** — the count reproduces, the identity
   does not.
 - **Precision measures whether a claim is defensible, not whether the bug was found.** It barely
   separates a defect-laden change from a defect-free one; only the thread axis answers that.
 
-## Vintage: 5 of 12 subjects are not poolable
+## Vintage: all 12 active subjects are out-of-window (since 2026-08-20)
 
 Anthropic publishes no day-level training cutoff, so Opus 5's "2026-05" is read as end-of-May: a
 subject is provably out-of-window only if it merged on **2026-06-01** or later (`dcc-vvf0`). Five
-subjects merged inside May 2026 and are kept but **flagged and excluded from cross-subject figures**
-— `backend` S/M/L, `contract` L, and `app-ui` M. **There is no reportable backend number in this
-corpus.** The citable seven are contract S/M, app-ui S/L, and library S/M/L.
+subjects merged inside May 2026 — `backend` S/M/L, `contract` L, `app-ui` M — and were **replaced**
+on 2026-08-20 (`dcc-ryo4`), reversing the earlier keep-and-flag decision once the census showed the
+five held 56 of the corpus's 86 human threads. `vintage.check_pooling()` now passes on the backend
+row and on the whole corpus.
+
+The five are retired to probe material (`role: retired-probe`), not deleted; four form same-repo,
+same-cell matched vintage pairs with their replacements. The replacement round and its two surprises
+are written up in `analysis/CANDIDATES.md`.
+
+⚠️ **This rests on `merged_at`, and that key is challenged by `dcc-60qk`:** five active subjects were
+created and reviewed inside the window despite merging outside it (efcore#34127's PR was open for
+nearly two years). Unresolved — do not read the headline above as stronger than its key.
 
 `v2/scoring/vintage.py` computes the status per (subject, model) pair at analysis time — never from
 a flag in the fixture, since the answer changes when a model ships — and `check_pooling()` makes a

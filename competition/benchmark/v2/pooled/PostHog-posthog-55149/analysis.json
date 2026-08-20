@@ -265,7 +265,8 @@
      "finding_index": 10,
      "subagent": ""
     }
-   ]
+   ],
+   "matched_thread_quote": "This endpoint still ships with zero tests"
   },
   {
    "cluster_id": "c005",
@@ -339,7 +340,8 @@
      "finding_index": 201,
      "subagent": "security-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "feature_flag:read might be a bit narrow for an endpoint that returns raw person_properties"
   },
   {
    "cluster_id": "c007",
@@ -368,7 +370,8 @@
      "finding_index": 202,
      "subagent": "security-reviewer, performance-reviewer, adversarial-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "test_evaluation has no throttle_classes"
   },
   {
    "cluster_id": "c008",
@@ -550,7 +553,8 @@
      "finding_index": 244,
      "subagent": "adversarial-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "distinct_ids[0] isn't a stable selection when the caller passes person_id"
   },
   {
    "cluster_id": "c014",
@@ -587,7 +591,8 @@
      "finding_index": 225,
      "subagent": "consistency-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "Inline import inside method inconsistent with top-level imports"
   },
   {
    "cluster_id": "c015",
@@ -748,7 +753,8 @@
      "finding_index": 287,
      "subagent": ""
     }
-   ]
+   ],
+   "matched_thread_quote": "only copies name, active, deleted, version, filters from reconstructed_flag_data"
   },
   {
    "cluster_id": "c020",
@@ -1010,7 +1016,8 @@
      "finding_index": 303,
      "subagent": ""
     }
-   ]
+   ],
+   "matched_thread_quote": "Root logger used instead of module logger"
   },
   {
    "cluster_id": "c026",
@@ -1031,7 +1038,8 @@
      "finding_index": 140,
      "subagent": "broad-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "override_definitions is set to None and evaluation continues with the CURRENT flag definition"
   },
   {
    "cluster_id": "c027",
@@ -1108,7 +1116,8 @@
      "finding_index": 75,
      "subagent": "consistency-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "if the INTERNAL_REQUEST_TOKEN environment variable is not set"
   },
   {
    "cluster_id": "c028",
@@ -1219,7 +1228,8 @@
      "finding_index": 299,
      "subagent": ""
     }
-   ]
+   ],
+   "matched_thread_quote": "The three fallback paths don't fire today"
   },
   {
    "cluster_id": "c031",
@@ -1240,7 +1250,8 @@
      "finding_index": 49,
      "subagent": "broad-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "These bool, str, and else branches can't fire"
   },
   {
    "cluster_id": "c032",
@@ -1393,7 +1404,8 @@
      "finding_index": 298,
      "subagent": ""
     }
-   ]
+   ],
+   "matched_thread_quote": "hasattr(person, \"distinct_ids\") is always true"
   },
   {
    "cluster_id": "c037",
@@ -1467,7 +1479,8 @@
      "finding_index": 297,
      "subagent": ""
     }
-   ]
+   ],
+   "matched_thread_quote": "wraps the main logic in try/except Exception: raise, which is a no-op"
   },
   {
    "cluster_id": "c039",
@@ -1636,7 +1649,8 @@
      "finding_index": 148,
      "subagent": "performance-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "build_person_properties_at_time has no lower time bound and no row cap"
   },
   {
    "cluster_id": "c044",
@@ -1821,7 +1835,8 @@
      "finding_index": 96,
      "subagent": "solo-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "has no lower time bound and no row cap"
   },
   {
    "cluster_id": "c049",
@@ -1850,7 +1865,8 @@
      "finding_index": 166,
      "subagent": "test-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "Person exists but didn't exist at timestamp"
   },
   {
    "cluster_id": "c050",
@@ -2838,7 +2854,8 @@
      "finding_index": 291,
      "subagent": ""
     }
-   ]
+   ],
+   "matched_thread_quote": "rollout_excluded detection currently only flags exclusions when rollout_percentage == 0.0"
   },
   {
    "cluster_id": "c078",
@@ -2920,7 +2937,8 @@
      "finding_index": 292,
      "subagent": ""
     }
-   ]
+   ],
+   "matched_thread_quote": "ConditionAnalysis.matched is populated with all_properties_matched"
   },
   {
    "cluster_id": "c080",
@@ -3039,7 +3057,8 @@
      "finding_index": 294,
      "subagent": ""
     }
-   ]
+   ],
+   "matched_thread_quote": "Each flag override emits multiple info-level log lines including full filter Debug output"
   },
   {
    "cluster_id": "c083",
@@ -3084,7 +3103,8 @@
      "finding_index": 242,
      "subagent": "adversarial-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "the code replaces the entire FeatureFlag struct (*flag = override_flag) without validating"
   },
   {
    "cluster_id": "c084",
@@ -3161,7 +3181,8 @@
      "finding_index": 190,
      "subagent": "broad-reviewer, security-reviewer, rust-reviewer, adversarial-reviewer, knowledge-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "override_flags_definitions is not gated by the internal token check"
   },
   {
    "cluster_id": "c085",
@@ -3544,7 +3565,8 @@
      "finding_index": 167,
      "subagent": "security-reviewer"
     }
-   ]
+   ],
+   "matched_thread_quote": "none of them are covered by tests"
   },
   {
    "cluster_id": "c096",
@@ -3605,7 +3627,8 @@
      "finding_index": 300,
      "subagent": ""
     }
-   ]
+   ],
+   "matched_thread_quote": "Byte-by-byte == short-circuits on the first mismatching byte, enabling a theoretical timing attack"
   },
   {
    "cluster_id": "c097",
@@ -3923,8 +3946,8 @@
    "summary": "every Rust test edit sets the new context fields to inert values and passes None for overrides",
    "file": "rust/feature-flags/src/handler/tests.rs",
    "line": 0,
-   "verdict": "matches-thread",
-   "matches_thread": 15,
+   "verdict": "valid-other",
+   "matches_thread": null,
    "judged_severity": "medium",
    "code_citation": "rust/feature-flags/src/handler/tests.rs:218-220",
    "confidence": 0.6,
@@ -3937,7 +3960,10 @@
      "finding_index": 219,
      "subagent": "test-reviewer, security-reviewer, broad-reviewer"
     }
-   ]
+   ],
+   "verdict_previous": "matches-thread",
+   "matches_thread_previous": 15,
+   "thread_credit_note": "Was matches-thread -> T15. T15 asks for tests proving the public-request override gate DROPS the fields; that gate does not exist at the checkpoint (it is the defect c084 reports), and the second matchability reading confirmed the exclusion. c108 observes that the Rust test edits set the new fields to inert values \u2014 a different claim, with no corresponding span. Thread credit removed, substance class preserved."
   }
  ]
 }

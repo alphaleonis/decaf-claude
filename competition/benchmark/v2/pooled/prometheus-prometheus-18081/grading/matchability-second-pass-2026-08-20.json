@@ -1,0 +1,4 @@
+[
+ {"thread_index": 7, "matchable_at_checkpoint": false,
+  "reason": "The thread disputes a specific numeric expectation: a subquery whose parent step at T=261s should read 3 samples (T=240s, 250s, 260s), i.e. a single-series case over a 30s range. Checked mechanically rather than by reconstructing the arithmetic: `261000` occurs exactly twice in promql/engine_test.go at the checkpoint, at :1891 and :1897, both inside the 3-series `sum by (b) (max_over_time(metricWith3SampleEvery10Seconds[20s:10s]))` case, with values 6 and 15. No single-series T=261s expectation exists to be disputed. This second reading replaces the first pass's inference-based note with an enumeration."}
+]

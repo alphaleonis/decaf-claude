@@ -7,7 +7,7 @@ worse than none, because it is the thing that licenses every other number in the
 """
 import copy
 from judge_stability import (validate, score, kappa, DataDefect, KAPPA_FLOOR,
-                             EXACT_FLOOR, calibration)
+                             EXACT_FLOOR, BOUNDARY_KAPPA_FLOOR, BOUNDARY_MIN_N, calibration)
 
 
 def P(label, verdicts, model="claude-opus-5"):
@@ -51,8 +51,14 @@ def t_perfect():
     assert m["exact_agreement"] == 1.0
     assert m["disagreement_rate"] == 0.0
     assert m["disagreements"] == []
-    assert m["stable"] is True
     assert m["n_clusters"] == 4
+    # Perfect self-agreement licenses the RANKING claim outright...
+    assert m["stable_for_rankings"] is True
+    # ...but the boundary here is n=2, far under BOUNDARY_MIN_N, so precision levels are not
+    # established and the overall flag must not claim they are (nib dcc-sfny).
+    assert m["stable_for_precision_levels"] is None, m["checks"]
+    assert m["stable"] is False
+    assert "not established" in m["stable_reason"]
 
 
 def t_boundary_isolated():
@@ -100,6 +106,10 @@ def t_kappa_value():
     m = score(p1, p2)
     assert m["real_vs_not"]["kappa"] == 0.5, m["real_vs_not"]
     assert m["stable"] is False, "kappa 0.5 is below the pre-registered floor"
+    assert m["stable_for_rankings"] is False
+    # A failed coarse collapse licenses NOTHING — not even a ranking — so the precision claim must
+    # not come back as merely "unestablished".
+    assert m["stable_for_precision_levels"] is None
 
 
 def t_thread_index_move_is_a_disagreement():
@@ -139,9 +149,52 @@ def t_empty_pass():
 
 
 def t_thresholds_are_the_documented_ones():
-    """The floors are pre-registered; a silent edit would let the pilot's verdict be tuned to its
+    """The floors are pre-registered; a silent edit would let a run's verdict be tuned to its
     result. Pin them so a change has to be deliberate."""
     assert (KAPPA_FLOOR, EXACT_FLOOR) == (0.60, 0.70)
+    assert (BOUNDARY_KAPPA_FLOOR, BOUNDARY_MIN_N) == (0.60, 50)
+
+
+def _boundary_sample(n_agree, n_flip, n_solid=60):
+    """A sample whose COARSE floors clear while the boundary itself is weak — the exact case the
+    boundary floor exists to catch, and the shape the real data has (PostHog 2026-08-20:
+    real_vs_not 0.907, boundary 0.598).
+
+    `n_solid` clusters both passes call matches-thread: real, agreed, and outside the boundary set.
+    `n_agree` both call trivia. `n_flip` move trivia -> valid-minor, which lands INSIDE the boundary
+    set (pass1 said trivia) while staying on the not-real side, so real_vs_not never sees them.
+    """
+    solid = [(f"s{i}", "matches-thread", {"matches_thread": i}) for i in range(n_solid)]
+    p1 = P("1", solid + [(f"a{i}", "trivia", {}) for i in range(n_agree)]
+                      + [(f"f{i}", "trivia", {}) for i in range(n_flip)])
+    p2 = P("2", solid + [(f"a{i}", "trivia", {}) for i in range(n_agree)]
+                      + [(f"f{i}", "valid-minor", {}) for i in range(n_flip)])
+    return p1, p2
+
+
+def t_boundary_floor_fails_a_weak_boundary_that_clears_the_coarse_floors():
+    """The whole point of dcc-sfny: a run can clear real_vs_not and exact_agreement and still be
+    unusable for a precision LEVEL. Before the boundary floor existed, this said stable: true."""
+    p1, p2 = _boundary_sample(30, 25)          # 55 boundary clusters, 25 of them flipped
+    m = score(p1, p2)
+    assert m["stable_for_rankings"] is True, m["checks"]
+    assert m["checks"]["valid_other_vs_trivia_kappa"]["n"] == 55
+    assert m["checks"]["valid_other_vs_trivia_kappa"]["passes"] is False, m["checks"]
+    assert m["stable_for_precision_levels"] is False
+    assert m["stable"] is False
+    assert "band" in m["stable_reason"], m["stable_reason"]
+
+
+def t_underpowered_boundary_is_none_not_false():
+    """An unestablished boundary is a missing measurement, not a failed one — the same distinction
+    score_pooled.py draws everywhere else. It must not read as "the judge was unstable"."""
+    p1, p2 = _boundary_sample(27, 22)          # n=49, one short of the floor's minimum
+    m = score(p1, p2)
+    assert m["stable_for_rankings"] is True, m["checks"]
+    c = m["checks"]["valid_other_vs_trivia_kappa"]
+    assert c["n"] == 49 and c["passes"] is None, c
+    assert "underpowered" in c["note"]
+    assert m["stable_for_precision_levels"] is None
 
 
 def t_cross_model_is_flagged_not_refused():

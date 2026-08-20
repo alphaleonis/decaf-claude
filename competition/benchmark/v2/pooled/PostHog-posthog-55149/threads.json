@@ -253,7 +253,21 @@
   "thread_group": "tg12",
   "thread_group_defect": "No integration test asserts that a public /flags request has override_flags_definitions, only_use_override_person_properties, and detailed_analysis dropped by the internal-token gate.",
   "matchable_at_checkpoint": false,
-  "matchable_reason": "The thread reviews a gate that drops override_flags_definitions and only_use_override_person_properties for public requests; at checkpoint neither is gated (handler/mod.rs:196 and mod.rs:223 pass both through unconditionally), so the behavior it asks a test for does not exist yet."
+  "matchable_reason": "The thread reviews a gate that drops override_flags_definitions and only_use_override_person_properties for public requests; at checkpoint neither is gated (handler/mod.rs:196 and mod.rs:223 pass both through unconditionally), so the behavior it asks a test for does not exist yet.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "The thread reviews a gate that drops override_flags_definitions and only_use_override_person_properties for public requests; at checkpoint neither is gated (handler/mod.rs:196 and mod.rs:223 pass both through unconditionally), so the behavior it asks a test for does not exist yet."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "The thread asks for integration tests proving a public request's override_flags_definitions and only_use_override_person_properties are DROPPED. That gate does not exist at the checkpoint \u2014 handler/mod.rs:196 and :223 pass both through unconditionally, which is itself the defect cluster c084 reports against T1. A test cannot be asked for behavior that has not been written. Single claim; exclusion confirmed."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "rust/feature-flags/src/handler/authentication.rs",
@@ -532,7 +546,21 @@
   "thread_group": "tg20",
   "thread_group_defect": "The missing-conditions warning is guarded by `not detailed_conditions`, so it also fires when the key is present with a legitimately empty list.",
   "matchable_at_checkpoint": false,
-  "matchable_reason": "The thread critiques an `if not detailed_conditions:` warning branch and the test test_test_evaluation_with_timestamp; neither exists at checkpoint (no \"not detailed_conditions\" or \"Missing 'conditions'\" in feature_flag.py, no test_test_evaluation_* in the tree)."
+  "matchable_reason": "The thread critiques an `if not detailed_conditions:` warning branch and the test test_test_evaluation_with_timestamp; neither exists at checkpoint (no \"not detailed_conditions\" or \"Missing 'conditions'\" in feature_flag.py, no test_test_evaluation_* in the tree).",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "The thread critiques an `if not detailed_conditions:` warning branch and the test test_test_evaluation_with_timestamp; neither exists at checkpoint (no \"not detailed_conditions\" or \"Missing 'conditions'\" in feature_flag.py, no test_test_evaluation_* in the tree)."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "Critiques an `if not detailed_conditions:` warning branch and the test test_test_evaluation_with_timestamp. grep at the checkpoint: 0 occurrences of `not detailed_conditions` in posthog/api/feature_flag.py, and no `def test_test_evaluation` anywhere under posthog/. Neither the branch nor the test exists. Exclusion confirmed."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "posthog/api/feature_flag.py",
@@ -811,7 +839,21 @@
   "thread_group": "tg25",
   "thread_group_defect": "The comment describing Person.distinct_ids says \"personhog-hydrated\", which reads as a typo for posthog and should be clarified.",
   "matchable_at_checkpoint": false,
-  "matchable_reason": "The nit rewrites the comment \"# Person.distinct_ids is an @property that returns the personhog-hydrated cache\", which does not exist at checkpoint; point_in_time_properties.py:64 reads \"# The personhog-routed functions already include distinct_ids\" \u2014 the critiqued comment was written later, evidently as the fix for thread 37."
+  "matchable_reason": "The nit rewrites the comment \"# Person.distinct_ids is an @property that returns the personhog-hydrated cache\", which does not exist at checkpoint; point_in_time_properties.py:64 reads \"# The personhog-routed functions already include distinct_ids\" \u2014 the critiqued comment was written later, evidently as the fix for thread 37.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "The nit rewrites the comment \"# Person.distinct_ids is an @property that returns the personhog-hydrated cache\", which does not exist at checkpoint; point_in_time_properties.py:64 reads \"# The personhog-routed functions already include distinct_ids\" \u2014 the critiqued comment was written later, evidently as the fix for thread 37."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "A wording nit on the comment \"# Person.distinct_ids is an @property that returns the personhog-hydrated cache\". point_in_time_properties.py:64 at the checkpoint reads \"# The personhog-routed functions already include distinct_ids\" \u2014 different text, and the critiqued phrasing appears nowhere. Exclusion confirmed."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "posthog/models/person/point_in_time_properties.py",
@@ -841,7 +883,21 @@
   "thread_group": "tg26",
   "thread_group_defect": "Two `except Exception as e:` handlers in test_evaluation put \"detail\": str(e) into their HTTP 500 bodies, exposing ClickHouse and Django ORM internals to any caller who can trigger those paths.",
   "matchable_at_checkpoint": false,
-  "matchable_reason": "At checkpoint neither 500 handler leaks the exception: feature_flag.py:3456-3461 and 3502-3507 are `except Exception:` returning only static messages, with no \"detail\": str(e) anywhere in test_evaluation."
+  "matchable_reason": "At checkpoint neither 500 handler leaks the exception: feature_flag.py:3456-3461 and 3502-3507 are `except Exception:` returning only static messages, with no \"detail\": str(e) anywhere in test_evaluation.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "At checkpoint neither 500 handler leaks the exception: feature_flag.py:3456-3461 and 3502-3507 are `except Exception:` returning only static messages, with no \"detail\": str(e) anywhere in test_evaluation."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "Names two `except Exception as e:` handlers in test_evaluation that put \"detail\": str(e) into a 500 response. The only two occurrences of `\"detail\": str(e)` in feature_flag.py at the checkpoint are at :2472 and :2477, roughly a thousand lines above test_evaluation; test_evaluation's own handlers return static messages. The sink is absent. Exclusion confirmed."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "posthog/api/feature_flag.py",
@@ -858,7 +914,21 @@
   "thread_group": "tg27",
   "thread_group_defect": "CodeQL: exception text flows into the response at the first Invalid-timestamp error path (f\"Invalid timestamp: {e}\").",
   "matchable_at_checkpoint": false,
-  "matchable_reason": "Same later re-introduction as thread 55 \u2014 the CodeQL sink is the \"detail\": str(e) in the build_person_properties handler, which at checkpoint (feature_flag.py:3456-3461) returns a static message only; checkpoint line 3543 is `detailed_analysis=True`, not an exposure."
+  "matchable_reason": "Same later re-introduction as thread 55 \u2014 the CodeQL sink is the \"detail\": str(e) in the build_person_properties handler, which at checkpoint (feature_flag.py:3456-3461) returns a static message only; checkpoint line 3543 is `detailed_analysis=True`, not an exposure.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "Same later re-introduction as thread 55 \u2014 the CodeQL sink is the \"detail\": str(e) in the build_person_properties handler, which at checkpoint (feature_flag.py:3456-3461) returns a static message only; checkpoint line 3543 is `detailed_analysis=True`, not an exposure."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "CodeQL notice on the same sink as T55 (the build_person_properties handler). Confirmed absent by the same enumeration: no `\"detail\": str(e)` inside test_evaluation at the checkpoint. Exclusion confirmed."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "posthog/api/feature_flag.py",
@@ -875,7 +945,21 @@
   "thread_group": "tg28",
   "thread_group_defect": "CodeQL: exception text flows into the response at the second Invalid-timestamp error path in the flag-reconstruction block.",
   "matchable_at_checkpoint": false,
-  "matchable_reason": "Same as thread 56 for the reconstruct_flag handler \u2014 feature_flag.py:3502-3507 returns a static message with no exception data; checkpoint line 3586 is `if variant is not None:`."
+  "matchable_reason": "Same as thread 56 for the reconstruct_flag handler \u2014 feature_flag.py:3502-3507 returns a static message with no exception data; checkpoint line 3586 is `if variant is not None:`.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "Same as thread 56 for the reconstruct_flag handler \u2014 feature_flag.py:3502-3507 returns a static message with no exception data; checkpoint line 3586 is `if variant is not None:`."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "CodeQL notice on the same sink as T55 for the reconstruct_flag handler. Same enumeration, same result. Exclusion confirmed."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "posthog/models/person/point_in_time_properties.py",
@@ -905,7 +989,21 @@
   "thread_group": "tg29",
   "thread_group_defect": "The lower_bound clamp at the build_person_properties_at_time call site lost its max(..., flag.created_at) component, so every historical evaluation scans a flat two years.",
   "matchable_at_checkpoint": false,
-  "matchable_reason": "The thread reviews a regression of a lower_bound clamp against a 2-year floor; at checkpoint no clamp exists at all \u2014 build_person_properties_at_time (point_in_time_properties.py:99-105) has no lower_bound kwarg and the call site at feature_flag.py:3453 passes none."
+  "matchable_reason": "The thread reviews a regression of a lower_bound clamp against a 2-year floor; at checkpoint no clamp exists at all \u2014 build_person_properties_at_time (point_in_time_properties.py:99-105) has no lower_bound kwarg and the call site at feature_flag.py:3453 passes none.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "The thread reviews a regression of a lower_bound clamp against a 2-year floor; at checkpoint no clamp exists at all \u2014 build_person_properties_at_time (point_in_time_properties.py:99-105) has no lower_bound kwarg and the call site at feature_flag.py:3453 passes none."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "Reviews a regression of a `lower_bound` clamp against a 2-year floor. grep for `lower_bound` across point_in_time_properties.py and feature_flag.py at the checkpoint returns zero hits \u2014 there is no clamp, regressed or otherwise. Exclusion confirmed."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "posthog/api/feature_flag.py",
@@ -974,7 +1072,21 @@
   "thread_group": "tg30",
   "thread_group_defect": "No test exercises either Invalid-timestamp branch, so the static messages introduced by the CodeQL fix could be replaced by interpolated ones without failing the suite.",
   "matchable_at_checkpoint": false,
-  "matchable_reason": "It reviews a CodeQL fix that replaced f\"Invalid timestamp: {e}\" with static messages and names test_test_evaluation_invalid_timestamp and _validate_aware_timestamp; none of the three exist at checkpoint (no \"Invalid timestamp\" string or inner except ValueError in the timestamp blocks)."
+  "matchable_reason": "It reviews a CodeQL fix that replaced f\"Invalid timestamp: {e}\" with static messages and names test_test_evaluation_invalid_timestamp and _validate_aware_timestamp; none of the three exist at checkpoint (no \"Invalid timestamp\" string or inner except ValueError in the timestamp blocks).",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "It reviews a CodeQL fix that replaced f\"Invalid timestamp: {e}\" with static messages and names test_test_evaluation_invalid_timestamp and _validate_aware_timestamp; none of the three exist at checkpoint (no \"Invalid timestamp\" string or inner except ValueError in the timestamp blocks)."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "Both halves target absent code: the CodeQL fix's replacement strings (grep `Invalid timestamp` -> 0 hits at the checkpoint) and the test test_test_evaluation_invalid_timestamp (no `def test_test_evaluation` in the tree). Checked as a compound thread; neither claim lands. Exclusion confirmed."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "rust/feature-flags/src/api/types.rs",
@@ -991,7 +1103,21 @@
   "thread_group": "tg31",
   "thread_group_defect": "No test asserts that properties_matched and matched can diverge, so collapsing properties_matched back onto condition_matched would pass the whole suite.",
   "matchable_at_checkpoint": false,
-  "matchable_reason": "ConditionAnalysis at api/types.rs:384-393 has no properties_matched field at checkpoint (grep for properties_matched finds only local variables), so the field whose test coverage the thread asks for was added later."
+  "matchable_reason": "ConditionAnalysis at api/types.rs:384-393 has no properties_matched field at checkpoint (grep for properties_matched finds only local variables), so the field whose test coverage the thread asks for was added later.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "ConditionAnalysis at api/types.rs:384-393 has no properties_matched field at checkpoint (grep for properties_matched finds only local variables), so the field whose test coverage the thread asks for was added later."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "Asks for a test that properties_matched and condition_matched can diverge. ConditionAnalysis in rust/feature-flags/src/api/types.rs has no properties_matched field at the checkpoint \u2014 the only hits are function-local bindings (all_properties_matched, properties_matched_but_rollout_failed) inside the builder. The field the test would assert on does not exist. Exclusion confirmed."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "posthog/api/feature_flag.py",
@@ -1047,7 +1173,21 @@
   "thread_group": "tg32",
   "thread_group_defect": "No test asserts that the call site passes flag.created_at as lower_bound, so removing the clamp would silently regress the scan window.",
   "matchable_at_checkpoint": false,
-  "matchable_reason": "\"The clamp is back\" reviews post-checkpoint code \u2014 there is no lower_bound kwarg on build_person_properties_at_time and no feature_flag.created_at clamp at the call site (feature_flag.py:3453)."
+  "matchable_reason": "\"The clamp is back\" reviews post-checkpoint code \u2014 there is no lower_bound kwarg on build_person_properties_at_time and no feature_flag.created_at clamp at the call site (feature_flag.py:3453).",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "\"The clamp is back\" reviews post-checkpoint code \u2014 there is no lower_bound kwarg on build_person_properties_at_time and no feature_flag.created_at clamp at the call site (feature_flag.py:3453)."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "\"The clamp is back, but no test asserts the call site actually uses flag.created_at\" \u2014 both halves depend on the lower_bound clamp, and grep for `lower_bound` across point_in_time_properties.py and feature_flag.py returns zero hits at the checkpoint. Same enumeration as T59. Exclusion confirmed."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "posthog/api/test/test_feature_flag.py",

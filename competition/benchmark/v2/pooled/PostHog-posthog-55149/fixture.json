@@ -28,5 +28,20 @@
     "total": 72,
     "admitted": 35,
     "rejected": 37
+  },
+  "role": "retired-probe",
+  "retired": {
+    "date": "2026-08-20",
+    "nib": "dcc-ryo4",
+    "cell_vacated": "contract L",
+    "replaced_by": "PostHog/posthog#67924",
+    "reason": "in-window for claude-opus-5 (merged inside May 2026), so no figure from it may be pooled into a headline. Retired, not deleted: METHODOLOGY-v2 section 5's retirement policy keeps it as probe material, and its audited thread set and any scoring it already carries stay with it."
+  },
+  "matched_vintage_pair": {
+    "in_window": "PostHog/posthog#55149",
+    "out_of_window": "PostHog/posthog#67924",
+    "same_repo": true,
+    "same_cell": true,
+    "measures": "memorization effect size (METHODOLOGY-v2 section 5)"
   }
 }

@@ -1,0 +1,35 @@
+{
+  "slug": "PostHog/posthog#59630",
+  "repo": "PostHog/posthog",
+  "pr": 59630,
+  "title": "feat(subscriptions): AI report pipeline primitive (planner, HogQL, synthesis) + sanitization",
+  "app_type": "backend",
+  "size": "L",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "f12926c534d1068815ee84ef9fae6e9001987824",
+    "base": "162439762a5c788b3d281d2c87d7e8f777e41fa0",
+    "base_ref": "master",
+    "date": "2026-05-26T10:07:37Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 30,
+      "additions": 2443,
+      "deletions": 202
+    }
+  },
+  "merged_at": "2026-06-04T07:37:02Z",
+  "pr_created_at": "2026-05-22T14:22:05Z",
+  "vintage": {
+    "merged": "2026-06-04",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 5"
+  },
+  "threads": {
+    "total": 65,
+    "admitted": 23,
+    "rejected": 42
+  },
+  "role": "probe-pair",
+  "app_type_at_checkpoint": "contract",
+  "role_note": "Built as the backend L replacement, then disqualified: its CHECKPOINT diff is contract-crossing (10 frontend files, 19 backend), and the contract L cell is held by PostHog#67924 with PostHog at its 2-subject cap. Kept as the out-of-window half of the matched vintage pair for the retired PostHog#52408, which is the only thing it is now used for."
+}

@@ -1,0 +1,6 @@
+[
+ {"thread_index": 1, "matchable_at_checkpoint": true,
+  "reason": "COMPOUND thread. The quoted suggestion (`elseResult == null` -> `elseResult is null`) has no target: the checkpoint condition at SqlNullabilityProcessor.cs:578 is `IsNull(elseResult)`. But the closing sentence states a general norm — \"(I actually use is for any constant/literal check at this point)\" — and that norm has two targets in the code the diff adds: `func.InstancePropagatesNullability == true` at :633, inside the new NullPropagatedOperands local function and one line below `is SqlFunctionExpression { IsNullable: true }` at :631, plus `elseResult == null` at :562. A reviewer at the checkpoint could raise the norm verbatim. Matchable under the compound-thread rule."},
+ {"thread_index": 7, "matchable_at_checkpoint": false,
+  "reason": "Single claim, and it argues AGAINST an AndAlso/OrElse exclusion that does not exist at the checkpoint: SqlNullabilityProcessor.cs:626-630 recurses into both operands of every SqlBinaryExpression with no operator filter of any kind. There is nothing at the checkpoint for the objection to attach to. Confirmed by reading the binary arm, not by line arithmetic."}
+]

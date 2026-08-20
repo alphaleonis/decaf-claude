@@ -17,15 +17,35 @@ Both passes must be graded blind to tool identity AND blind to each other — ru
 process, never as a continuation of the session that produced pass 1, or the number measures memory
 rather than stability.
 
-PRE-REGISTERED THRESHOLD (fixed before the pilot's first grading pass ran, so it cannot be tuned to
-the result). The instrument is called stable when BOTH hold:
+PRE-REGISTERED THRESHOLDS (each fixed before the grading run it judges, so none can be tuned to the
+result). There are THREE, and they are reported SEPARATELY because they license different claims:
 
-    real_vs_not.kappa >= 0.60     substantial agreement on the only collapse precision depends on
-    exact_agreement   >= 0.70     the 6-way verdict reproduces more often than not
+    real_vs_not.kappa                    >= 0.60   the coarse collapse: is this cluster real at all
+    exact_agreement                      >= 0.70   the 6-way verdict reproduces more often than not
+    valid_other_vs_trivia.kappa          >= 0.60   the boundary that decides `precision`
+      ... measured over at least BOUNDARY_MIN_N = 50 boundary clusters
 
 0.60 is the floor of Landis & Koch's "substantial" band. It is a convention, not a law of nature —
-it is written down here so the pilot reports against a line drawn in advance rather than one drawn
+it is written down here so a run reports against a line drawn in advance rather than one drawn
 around the number that came out.
+
+WHY THE BOUNDARY GETS ITS OWN FLOOR (nib dcc-sfny). The first two floors are the ones the judge
+clears; the boundary is the one the design says carries the metric, and until 2026-08-20 it was
+computed and held to nothing. Measured that day: prometheus calibration (n=10) kappa 0.403,
+PostHog over two full passes (n=62) kappa 0.598 — both runs reported `stable: true`, because the
+floors that existed were not the load-bearing one.
+
+So `stable` is no longer one flag. Two claims are separated, because the evidence separates:
+
+    stable_for_rankings          real_vs_not + exact_agreement. Which arm beats which survives a
+                                 judge that shifts the whole field in one direction.
+    stable_for_precision_levels  the boundary floor as well. A precision LEVEL — "this tool is 0.62
+                                 precise" — inherits the reproducibility of the one call that
+                                 decides it, and a run that fails here may still rank arms.
+
+Under BOUNDARY_MIN_N the boundary result is `None`, not `False`: an underpowered sample is a missing
+measurement, not a failed one (the same distinction score_pooled.py draws everywhere else). Overall
+`stable` requires both claims to be established, so a `None` leaves it False with a stated reason.
 
 Exits 3 on a data defect rather than emitting a number, on the same principle as score_pooled.py.
 """
@@ -38,6 +58,13 @@ from score_pooled import ALL_VERDICTS, REAL
 
 KAPPA_FLOOR = 0.60
 EXACT_FLOOR = 0.70
+# The load-bearing boundary (nib dcc-sfny). Same 0.60 convention as the coarse collapse; the extra
+# `MIN_N` exists because this figure is computed over a SUBSET (clusters either pass put at
+# valid-other or trivia) and that subset is routinely tiny. n=10 produced 0.403 and n=62 produced
+# 0.598 on the same judge in the same week — the small number is not a worse judge, it is no
+# measurement.
+BOUNDARY_KAPPA_FLOOR = 0.60
+BOUNDARY_MIN_N = 50
 
 
 class DataDefect(Exception):
@@ -138,7 +165,48 @@ def score(p1, p2):
                       "crosses_real_boundary": (v1[i]["verdict"] in REAL) != (v2[i]["verdict"] in REAL)}
                      for i in ids if v1[i]["verdict"] != v2[i]["verdict"]]
 
-    stable = (real_k is not None and real_k >= KAPPA_FLOOR and exact >= EXACT_FLOOR)
+    # Per-boundary verdicts (nib dcc-sfny). Each floor is reported with the value it judged and
+    # whether it passed, so a reader never has to reconstruct which check a single flag folded in.
+    #
+    # `passes: None` means NOT ESTABLISHED, and only the boundary can produce it: its n is a subset
+    # count that is routinely far below what a kappa needs. False means measured and failed.
+    def _check(value, floor, n=None, min_n=None):
+        c = {"value": value, "floor": floor, "passes": value is not None and value >= floor}
+        if min_n is not None:
+            c["n"] = n
+            c["min_n"] = min_n
+            if n < min_n:
+                c["passes"] = None
+                c["note"] = (f"n={n} < {min_n}: underpowered, not a measurement — an unestablished "
+                             f"boundary is not the same as a failed one")
+        return c
+
+    checks = {
+        "real_vs_not_kappa": _check(real_k, KAPPA_FLOOR),
+        "exact_agreement": _check(exact, EXACT_FLOOR),
+        "valid_other_vs_trivia_kappa": _check(b_k, BOUNDARY_KAPPA_FLOOR,
+                                              n=len(b_pairs), min_n=BOUNDARY_MIN_N),
+    }
+    rankings_ok = all(checks[k]["passes"] is True
+                      for k in ("real_vs_not_kappa", "exact_agreement"))
+    boundary = checks["valid_other_vs_trivia_kappa"]["passes"]
+    # None propagates: rankings can be established while precision levels are not measured at all.
+    precision_ok = None if boundary is None else (rankings_ok and boundary)
+    stable = rankings_ok and boundary is True
+
+    if stable:
+        reason = "all three pre-registered floors cleared"
+    elif not rankings_ok:
+        failed = [k for k in ("real_vs_not_kappa", "exact_agreement") if checks[k]["passes"] is not True]
+        reason = f"below the floor on {', '.join(failed)} — neither rankings nor levels are licensed"
+    elif boundary is None:
+        reason = (f"rankings are licensed; the valid-other/trivia boundary was measured over "
+                  f"n={len(b_pairs)} < {BOUNDARY_MIN_N}, so precision LEVELS are not established. "
+                  f"Publish precision as a band across both passes, not as a point.")
+    else:
+        reason = (f"rankings are licensed; the valid-other/trivia boundary is "
+                  f"{b_k:.3f} < {BOUNDARY_KAPPA_FLOOR}, so precision LEVELS are not licensed. "
+                  f"Publish precision as a band across both passes, not as a point.")
 
     return {
         "n_clusters": n,
@@ -163,8 +231,16 @@ def score(p1, p2):
         "confusion": dict(sorted(confusion.items())),
         "disagreements": disagreements,
         "threshold": {"kappa_floor": KAPPA_FLOOR, "exact_floor": EXACT_FLOOR,
+                      "boundary_kappa_floor": BOUNDARY_KAPPA_FLOOR,
+                      "boundary_min_n": BOUNDARY_MIN_N,
                       "pre_registered": True},
+        # Per-boundary, never one flag: a weak boundary used to pass because the two floors that
+        # existed were the coarse ones.
+        "checks": checks,
+        "stable_for_rankings": rankings_ok,
+        "stable_for_precision_levels": precision_ok,
         "stable": stable,
+        "stable_reason": reason,
     }
 
 
@@ -255,6 +331,10 @@ def main():
         sys.exit(3)
     m = score(p1, p2)
     s = json.dumps(m, indent=2)
+    # The precision caveat has to reach a caller who only reads the exit line. A run whose boundary
+    # is unestablished still writes its file and exits 0 — the figure is real, the LEVEL is not.
+    if m["stable_for_precision_levels"] is not True:
+        print(f"NOTE: {m['stable_reason']}", file=sys.stderr)
     if a.out:
         open(a.out, "w").write(s + "\n"); print(f"wrote {a.out}")
     else:

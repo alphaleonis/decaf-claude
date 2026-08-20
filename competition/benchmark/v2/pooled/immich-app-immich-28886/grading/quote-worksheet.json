@@ -1,0 +1,13 @@
+[
+ {
+  "cluster_id": "im05",
+  "thread": 1,
+  "cluster_summary": "Moving the rating bounds from .min()/.max() into a .refine() hides them from the JSON-Schema emitter, so UpdateAssetDto/AssetBulkUpdateDto.rating publish minimum/maximum \u00b19007199254740991 in the OpenAPI spec and generated Dart client instead of a bounded range.",
+  "rationale": "Moving the bounds into .refine() leaves z.int()'s safe-integer bag min/max as the only emitted bounds, so the spec and generated clients publish minimum -9007199254740991 / maximum 9007199254740991 for the rating field; this is exactly thread 1's 'wrong/misleading' comment on that spec line.",
+  "thread_path": "open-api/immich-openapi-specs.json",
+  "thread_line": 16607,
+  "matchable": true,
+  "thread_body": "This is wrong/misleading. Is there a way to opt out of these values while still using int validation?",
+  "matched_thread_quote": "FILL"
+ }
+]

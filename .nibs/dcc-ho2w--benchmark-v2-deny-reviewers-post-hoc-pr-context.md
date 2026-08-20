@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-20T18:35:40Z
+updated_at: 2026-08-20T19:26:10Z
 order: zzzzV
 ---
 
@@ -267,51 +267,21 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-fm7x: **Completed 2026-08-20.** All five acceptance items met. The subject was scored; it is NOT the third
-subject, and could not have been.
+Completed dcc-fm8s: All 17 exclusions across the six scored subjects second-read, blind to the first pass's reasoning,
+under two rules stated in advance: matchable if ANY claim targets present code, and disagreement
+resolves toward matchable.
 
-**The headline goal failed on a false prerequisite.** This nib listed "the subject is out-of-window"
-as satisfied. It is **in-window** — merged 2026-05-06 against a month-granular 2026-05 cutoff, so
-provably clean only from 2026-06-01. It is the only in-window subject among the six scored. Per
-METHODOLOGY-v2 section 5 its numbers are disclosable per-subject and may not be pooled, so
-`reach=norm` and `review`-vs-`bugs` still rest on two poolable subjects. $203.54 bought a valid
-per-subject readout and four bug fixes, not the cross-subject unlock. The vintage check runs at
-analysis time, after the money is spent — filed as a follow-up.
+2 of 17 flipped — efcore T1 and mattermost T6 — both the compound-thread shape, both having silently
+cost arms a legitimate hit. With the previously-found efcore T2 that is three such errors out of the
+twenty exclusion verdicts this corpus has ever made, confirming the nib's argument and slightly
+worsening its measured rate.
 
-**7 cells, all CLEAN**, $178.38 valid spend plus a $25.16 cell lost to an API 529 (archived as a
-failure record, re-run). 309 findings extracted from `cell-report.md` + `tool-artifacts/` across 7
-cells, clustered into 108, blind-graded twice.
+The fifteen that stand were re-confirmed by enumeration rather than argument (grep counts for the
+construct each thread discusses). Prometheus T7, flagged in the nib as resting on inference, now
+rests on an observation.
 
-Per-subject figures (all four arms clear the n>=10 reported-cluster floor): `ours-review` precision
-0.902 at $50.51/cell, `ours-audit` 0.800 at $44.43/cell with 8 unique real findings, `ours-bugs` 0.800
-at $10.06/cell, `superpowers` 0.667 at $6.40/cell. Thread recall over n=13: `ours-review` and
-`ours-audit` 0.846, `superpowers` 0.615, `ours-bugs` 0.385 with the largest demotion gap (0.154).
-
-**Four defects found, all filed, two of them fixed here:**
-
-- [[dcc-hw48]] (high) — thread admission tests line position only, never whether the thread's subject
-  exists at the checkpoint. Corpus-wide. 7 of 20 human threads excluded here; the loss scales with
-  post-checkpoint review activity, so it penalized exactly the subjects chosen for rich review
-  histories. FIXED: denominators are audited, six subjects annotated.
-- [[dcc-qfr5]] — duplicate threads split credit between the human and incumbent axes, biased toward
-  bots because scanners comment earlier than humans. FIXED: recall computed over thread groups.
-- [[dcc-9vta]] — `detect_build.sh` misses nested Rust workspaces and never validates `build_possible`;
-  no arm executed a single probe on this subject, so its Rust half is static reasoning only.
-- [[dcc-8dtt]] — `cost_per_real_finding` divides a total by a deduplicated pool, penalizing repeats.
-  Surfaced only because a reader asked why one arm cost twice another.
-- [[dcc-hsy8]] — the `/tmp` sweep eats driver logs; the last cell's `.decaf/` report survived into the
-  blind graders' checkout (blind held, verified by transcript grep); the blind-work forbidden list was
-  hand-written and incomplete.
-
-**Corrected en route:** the thread axis moved for every subject, not one-directionally — prometheus up,
-mattermost down, efcore both ways until a compound-thread verdict was fixed. grafana-117615's human
-axis is now `null` (n=0) rather than 0.00 on four arms, and for a verified reason different from the
-one on record. A new permanent cross-check (`credited_to_unmatchable_thread`) caught the one annotation
-error that had silently cost seven arms a legitimate hit.
-
-**Not done, carried forward:** the per-subject readout prose; three loose grading matches the new
-cross-check reports; six of twelve subjects still unannotated and therefore
-`thread_axis_publishable: false`.
+`annotate_thread_matchability.py --second-pass` records both readings on the thread, and
+`score_pooled.py` refuses a subject whose exclusions carry only one.
 
 ## Key Decisions
 

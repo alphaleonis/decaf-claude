@@ -457,7 +457,8 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.9
+   "class_confidence": 0.9,
+   "matched_thread_quote": "Shouldn't this be 1 sample read?"
   },
   {
    "cluster_id": "c02",
@@ -1155,7 +1156,8 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.85
+   "class_confidence": 0.85,
+   "matched_thread_quote": "why is there an inner step beyond the last one required for the outer query?"
   },
   {
    "cluster_id": "c06",
@@ -3603,7 +3605,8 @@
     }
    ],
    "finding_class": "risk",
-   "class_confidence": 0.75
+   "class_confidence": 0.75,
+   "matched_thread_quote": "there isn't a 1:1 mapping between the child query steps and the parent query steps"
   },
   {
    "cluster_id": "c67",
@@ -3981,7 +3984,8 @@
     }
    ],
    "finding_class": "test-gap",
-   "class_confidence": 0.8
+   "class_confidence": 0.8,
+   "matched_thread_quote": "This seems like it shouldn't be here."
   },
   {
    "cluster_id": "c74",
@@ -4101,7 +4105,8 @@
     }
    ],
    "finding_class": "design",
-   "class_confidence": 0.5
+   "class_confidence": 0.5,
+   "matched_thread_quote": "A lot of these new tests seem very similar"
   },
   {
    "cluster_id": "c75",
@@ -4193,7 +4198,8 @@
     }
    ],
    "finding_class": "design",
-   "class_confidence": 0.45
+   "class_confidence": 0.45,
+   "matched_thread_quote": "Ideally this would be in a separate PR, as it is unrelated to this one."
   },
   {
    "cluster_id": "c76",
@@ -4611,7 +4617,8 @@
     }
    ],
    "finding_class": "test-gap",
-   "class_confidence": 0.95
+   "class_confidence": 0.95,
+   "matched_thread_quote": "If this was unknown to the callee would the value be zero?"
   },
   {
    "cluster_id": "c91",
@@ -5534,7 +5541,8 @@
     }
    ],
    "finding_class": "test-gap",
-   "class_confidence": 0.95
+   "class_confidence": 0.95,
+   "matched_thread_quote": "Shouldn't this be 1 sample read?"
   },
   {
    "cluster_id": "c102",
@@ -6581,7 +6589,8 @@
     }
    ],
    "finding_class": "docs",
-   "class_confidence": 0.65
+   "class_confidence": 0.65,
+   "matched_thread_quote": "There's another \"phase 3\" comment three test cases earlier"
   },
   {
    "cluster_id": "c141",

@@ -1,0 +1,52 @@
+[
+ {
+  "thread_index": 15,
+  "matchable_at_checkpoint": false,
+  "reason": "The thread asks for integration tests proving a public request's override_flags_definitions and only_use_override_person_properties are DROPPED. That gate does not exist at the checkpoint \u2014 handler/mod.rs:196 and :223 pass both through unconditionally, which is itself the defect cluster c084 reports against T1. A test cannot be asked for behavior that has not been written. Single claim; exclusion confirmed."
+ },
+ {
+  "thread_index": 34,
+  "matchable_at_checkpoint": false,
+  "reason": "Critiques an `if not detailed_conditions:` warning branch and the test test_test_evaluation_with_timestamp. grep at the checkpoint: 0 occurrences of `not detailed_conditions` in posthog/api/feature_flag.py, and no `def test_test_evaluation` anywhere under posthog/. Neither the branch nor the test exists. Exclusion confirmed."
+ },
+ {
+  "thread_index": 53,
+  "matchable_at_checkpoint": false,
+  "reason": "A wording nit on the comment \"# Person.distinct_ids is an @property that returns the personhog-hydrated cache\". point_in_time_properties.py:64 at the checkpoint reads \"# The personhog-routed functions already include distinct_ids\" \u2014 different text, and the critiqued phrasing appears nowhere. Exclusion confirmed."
+ },
+ {
+  "thread_index": 55,
+  "matchable_at_checkpoint": false,
+  "reason": "Names two `except Exception as e:` handlers in test_evaluation that put \"detail\": str(e) into a 500 response. The only two occurrences of `\"detail\": str(e)` in feature_flag.py at the checkpoint are at :2472 and :2477, roughly a thousand lines above test_evaluation; test_evaluation's own handlers return static messages. The sink is absent. Exclusion confirmed."
+ },
+ {
+  "thread_index": 56,
+  "matchable_at_checkpoint": false,
+  "reason": "CodeQL notice on the same sink as T55 (the build_person_properties handler). Confirmed absent by the same enumeration: no `\"detail\": str(e)` inside test_evaluation at the checkpoint. Exclusion confirmed."
+ },
+ {
+  "thread_index": 57,
+  "matchable_at_checkpoint": false,
+  "reason": "CodeQL notice on the same sink as T55 for the reconstruct_flag handler. Same enumeration, same result. Exclusion confirmed."
+ },
+ {
+  "thread_index": 59,
+  "matchable_at_checkpoint": false,
+  "reason": "Reviews a regression of a `lower_bound` clamp against a 2-year floor. grep for `lower_bound` across point_in_time_properties.py and feature_flag.py at the checkpoint returns zero hits \u2014 there is no clamp, regressed or otherwise. Exclusion confirmed."
+ },
+ {
+  "thread_index": 64,
+  "matchable_at_checkpoint": false,
+  "reason": "Both halves target absent code: the CodeQL fix's replacement strings (grep `Invalid timestamp` -> 0 hits at the checkpoint) and the test test_test_evaluation_invalid_timestamp (no `def test_test_evaluation` in the tree). Checked as a compound thread; neither claim lands. Exclusion confirmed."
+ },
+ {
+  "thread_index": 65,
+  "matchable_at_checkpoint": false,
+  "reason": "Asks for a test that properties_matched and condition_matched can diverge. ConditionAnalysis in rust/feature-flags/src/api/types.rs has no properties_matched field at the checkpoint \u2014 the only hits are function-local bindings (all_properties_matched, properties_matched_but_rollout_failed) inside the builder. The field the test would assert on does not exist. Exclusion confirmed."
+ },
+ {
+  "thread_index": 69,
+  "matchable_at_checkpoint": false,
+  "reason": "\"The clamp is back, but no test asserts the call site actually uses flag.created_at\" \u2014 both halves depend on the lower_bound clamp, and grep for `lower_bound` across point_in_time_properties.py and feature_flag.py returns zero hits at the checkpoint. Same enumeration as T59. Exclusion confirmed."
+ }
+]

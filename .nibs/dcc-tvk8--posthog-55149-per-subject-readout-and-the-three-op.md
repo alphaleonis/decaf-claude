@@ -5,7 +5,7 @@ title: PostHog-55149 per-subject readout, and the three open grading contradicti
 status: todo
 type: task
 created_at: 2026-08-20T18:35:49Z
-updated_at: 2026-08-20T18:36:20Z
+updated_at: 2026-08-20T19:24:57Z
 parent: dcc-ho2w
 order: zzzk
 ---
@@ -51,8 +51,45 @@ mattermost's numbers.
 `thread_axis_publishable: false`. They are unscored today, so nothing is wrong — but they must be
 annotated before their cells are scored, or the same inflated denominator returns.
 
+## Item 2 done 2026-08-20 — and two of the three were annotation errors, not grading errors
+
+`credited_to_unmatchable_thread` is empty on all six scored subjects.
+
+| contradiction | resolution |
+|---|---|
+| `ma11` -> mattermost T6 | **thread revised to matchable.** Not a loose match: T6's second sentence asks for exactly what ma11 reports — move the `IsValid()` call out of `CommandResponseFromJSON` into commandWebhook and DoCommandRequest, both of which exist at the checkpoint. The exclusion was the error. |
+| `e15` -> efcore T1 | **thread revised to matchable.** Same shape: the norm in T1's closing parenthetical has a target at `:633`. |
+| `c108` -> PostHog T15 | **cluster's thread credit removed.** T15 asks for tests proving a gate DROPS the override fields; that gate does not exist at the checkpoint — its absence is what `c084` reports. The exclusion is correct and the match is not. |
+
+Both revisions came out of [[dcc-fm8s]]'s second pass under the compound-thread rule, run in the same
+session.
+
+### What moved
+
+- **mattermost:** `thread_recall` 0.667 -> **0.750** on all four arms, `hit_by_any_tool` 2 -> 3. The
+  nib predicted ma11 would move four arms; it did, **upward** — they regained a legitimate hit.
+- **efcore:** `hit_by_any_tool` 6 -> 7; `ours-audit` 0.500 -> 0.556 (it reported e15); the six arms
+  that did not gain a hit fell on the larger denominator, 0.125/0.250/0.375 -> 0.111/0.222/0.333.
+  Separately, `incumbent_agreement` 0.000 -> 1.000 on seven arms, from an index correction found by
+  [[dcc-on93]]'s quote backfill.
+- **PostHog, prometheus, grafana, immich:** no per-tool movement. c108 lost a credit to a thread
+  already outside the denominator.
+
+Every movement is explained by a named correction.
+
+Write-up: `v2/analysis/GRADING-INTEGRITY-2026-08-20.md` §4.
+
+## Still open
+
+Items 1 and 3. Note that PostHog-55149 is now `role: retired-probe` ([[dcc-ryo4]]) — still worth the
+readout as the in-window half of a matched vintage pair, but it is no longer an active cell, and it
+has no calibration record (it scores only with `--no-calibration`). Of the six unannotated subjects,
+three were retired by [[dcc-ryo4]] (grafana#124181, immich#24627, jellyfin#12834, PostHog#52408) and
+the list needs rewriting against the active grid before anyone works it.
+
 ## Acceptance
 
 - [ ] `analysis/POSTHOG-55149-RESULTS.md` written, leading with the in-window status
-- [ ] All three `credited_to_unmatchable_thread` entries resolved and the affected subjects re-scored
+- [x] All three `credited_to_unmatchable_thread` entries resolved and the affected subjects re-scored
 - [ ] The six unannotated subjects either annotated or explicitly deferred with the reason recorded
+      (rewrite the list first — four of the six are now retired)

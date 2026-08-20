@@ -1,0 +1,134 @@
+[
+ {
+  "cluster_id": "e01",
+  "thread": 10,
+  "cluster_summary": "NullPropagatedOperands recurses into every SqlBinaryExpression with no operator filter, so AndAlso/OrElse operands are treated as null-propagating when they are not",
+  "rationale": "Same defect the reviewer names: the unfiltered binary arm harvests operands of non-propagating operators, so a load-bearing IS NOT NULL is dropped.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 453,
+  "matchable": null,
+  "thread_body": "Avoid introducing a new \"FIXME\" tag here; this file (and the repo generally) uses \"TODO\" for follow-ups. Keeping comment tags consistent makes it easier to grep and track outstanding work.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "e07",
+  "thread": 2,
+  "cluster_summary": "The whole result subtree is walked into a HashSet before DropNotNullChecks establishes the test contains any IS NOT NULL, so the work is wasted on most qualifying CASEs",
+  "rationale": "Converges on the reviewer's 'move nullPropagatedOperands below': defer/gate the operand collection. Different rationale, same code motion.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 596,
+  "matchable": true,
+  "thread_body": "nit:\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                        SqlExpression test, expr;\n          \n          \n            \n            \n          \n          \n            \n                        if (elseResult == null)\n          \n          \n            \n                        {\n          \n          \n            \n                            expr = clause.Result;\n          \n          \n            \n                            test = clause.Test;\n          \n          \n            \n                        }\n          \n          \n            \n                        else\n          \n          \n            \n                        {\n          \n          \n            \n                            expr = elseResult;\n          \n          \n            \n                            test = _sqlExpressionFactory.Not(clause.Test);\n          \n          \n            \n                        }\n          \n          \n            \n                        var (test, expr) = elseResult is null \n          \n          \n            \n                            ? (clause.Result, clause.Test)\n          \n          \n            \n                            : (_sqlExpressionFactory.Not(clause.Test), elseResult);\n          \n      \n    \n    \n  \n\n... and move nullPropagatedOperands below.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "e09",
+  "thread": 0,
+  "cluster_summary": "DropNotNullChecks returns null to mean \"statically true\", the opposite polarity to the usual absent/failed reading, signalled only by a trailing comment",
+  "rationale": "Same point as 'cleaner to return a TRUE expression here': null-as-true is the wrong polarity, documented only by the // true comment.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 600,
+  "matchable": true,
+  "thread_body": "maybe it would be cleaner to return a TRUE expression here.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "e10",
+  "thread": 4,
+  "cluster_summary": "NullPropagatedOperands is a noun phrase naming a void side-effecting accumulator, against the verb-led convention of its siblings",
+  "rationale": "Same substance as the reviewer's 'maybe DetectNullPropagatingNodes?': the noun-phrase name misreads for a void accumulator.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 635,
+  "matchable": true,
+  "thread_body": "Naming-wise, maybe DetectNullPropagatingNodes?",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "e11",
+  "thread": 5,
+  "cluster_summary": "The null-propagation helpers are static local functions, so providers with custom null-propagating node types have no extension seam",
+  "rationale": "The reviewer asks for exactly this: extensibility for provider-specific expression types, which static local functions cannot offer.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 634,
+  "matchable": true,
+  "thread_body": "Yeah, this definitely feels like something more general than as a very local utility to case, plus there should be extensibility for provider-specific expression types. We could even compute this information and bubble it up as part of the normal visitation of SqlNullabilityProcessor - assuming it's useful enough for other parts of the visitor.\nBut of course this can all be done later.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "e12",
+  "thread": 6,
+  "cluster_summary": "Base-class expression types the processor already visits (AtTimeZone, Collate, Distinct, JsonScalar) are absent from the null-propagation model",
+  "rationale": "Names AtTimeZone and Collate among the omitted propagating node types \u2014 the reviewer's comment verbatim in substance.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 650,
+  "matchable": true,
+  "thread_body": "AtTimeZone, Collate (which are types of binary expressions)",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "e13",
+  "thread": 10,
+  "cluster_summary": "ExpressionType.Coalesce is a legal SqlBinaryExpression operator that does not propagate NULL in its first argument, and the unfiltered recursion admits it",
+  "rationale": "Exactly the reviewer's point: SqlBinaryExpression admits Coalesce (IsValidOperator:102), which is not null-propagating, and the unfiltered recursion harvests it.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 453,
+  "matchable": null,
+  "thread_body": "Avoid introducing a new \"FIXME\" tag here; this file (and the repo generally) uses \"TODO\" for follow-ups. Keeping comment tags consistent makes it easier to grep and track outstanding work.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "e15",
+  "thread": 1,
+  "cluster_summary": "== true is used where the file elsewhere uses an is { ... : true } pattern",
+  "rationale": "Reviewer's stated rule is 'is for any constant check'; this flags == true where :1506/:2394 use the is-pattern. Same norm, different line.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 582,
+  "matchable": false,
+  "thread_body": "I'm personally moving to is null pretty systematically (here and below):\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                    if (testIsCondition && whenClauses is [var clause] && (elseResult == null || IsNull(clause.Result)))\n          \n          \n            \n                    if (testIsCondition && whenClauses is [var clause] && (elseResult is null || IsNull(clause.Result)))\n          \n      \n    \n    \n  \n\n(I actually use is for any constant/literal check at this point).",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "e30",
+  "thread": 3,
+  "cluster_summary": "The new local functions dispatch with if/else-if type-pattern chains where the file prevailing style is a switch",
+  "rationale": "Same as the reviewer's 'this can all be one nice switch statement with pattern matching' on the type-dispatch chain.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 639,
+  "matchable": true,
+  "thread_body": "nit: this can all be one nice switch statement with pattern matching ;)",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "e32",
+  "thread": 10,
+  "cluster_summary": "An operator allowlist alone leaves the optimization unsound against future operators; only re-visit-and-compare validation closes it",
+  "rationale": "Same remedy the reviewer asks for \u2014 make the binary arm operator-driven and audit non-propagating operators so new ones fail closed.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 453,
+  "matchable": null,
+  "thread_body": "Avoid introducing a new \"FIXME\" tag here; this file (and the repo generally) uses \"TODO\" for follow-ups. Keeping comment tags consistent makes it easier to grep and track outstanding work.",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "e47",
+  "thread": 6,
+  "cluster_summary": "Whether LikeExpression should be handled by NullPropagatedOperands",
+  "rationale": "Same substance as the reviewer naming AtTimeZone/Collate: null-propagating node types omitted from the collector. Different exemplar node.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 650,
+  "matchable": true,
+  "thread_body": "AtTimeZone, Collate (which are types of binary expressions)",
+  "matched_thread_quote": "FILL"
+ },
+ {
+  "cluster_id": "e71",
+  "thread": 5,
+  "cluster_summary": "The new function arm re-implements the null-propagation traversal already in ProcessNullNotNull and has diverged from it",
+  "rationale": "Verified duplication with ProcessNullNotNull (:2242, :2392); same substance as the reviewer asking for something more general than a local utility.",
+  "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "thread_line": 634,
+  "matchable": true,
+  "thread_body": "Yeah, this definitely feels like something more general than as a very local utility to case, plus there should be extensibility for provider-specific expression types. We could even compute this information and bubble it up as part of the normal visitation of SqlNullabilityProcessor - assuming it's useful enough for other parts of the visitor.\nBut of course this can all be done later.",
+  "matched_thread_quote": "FILL"
+ }
+]

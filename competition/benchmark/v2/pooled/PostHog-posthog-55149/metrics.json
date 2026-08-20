@@ -69,16 +69,7 @@
       16
     ],
     "judge_dismissed_reported_threads": [],
-    "credited_to_unmatchable_thread": [
-      {
-        "cluster_id": "c108",
-        "thread": 15,
-        "thread_path": "rust/feature-flags/src/handler/mod.rs",
-        "arms": [
-          "ours-review"
-        ]
-      }
-    ],
+    "credited_to_unmatchable_thread": [],
     "incumbent": {
       "hit_by_any_tool": 10,
       "hit_by_any_tool_found": 10
@@ -238,10 +229,10 @@
   "verdict_distribution": {
     "false-positive": 7,
     "matches-key": 0,
-    "matches-thread": 24,
+    "matches-thread": 23,
     "trivia": 23,
     "valid-minor": 24,
-    "valid-other": 30
+    "valid-other": 31
   },
   "class_distribution": null
 }

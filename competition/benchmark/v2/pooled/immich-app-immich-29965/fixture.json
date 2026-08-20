@@ -1,0 +1,33 @@
+{
+  "slug": "immich-app/immich#29965",
+  "repo": "immich-app/immich",
+  "pr": 29965,
+  "title": "fix(mobile): decode remote thumbnails at displayed size",
+  "app_type": "app-ui",
+  "size": "M",
+  "instrument": "pooled-adjudication",
+  "checkpoint": {
+    "sha": "de0da62e17e87da15624cc3ea9283d12850cec06",
+    "base": "d8ed7d7bb9d5a816ba55abda0123cfb543b04050",
+    "base_ref": "main",
+    "date": "2026-07-15T22:35:59Z",
+    "selection": "commit the earliest review comment was written against",
+    "diff_stat": {
+      "files": 21,
+      "additions": 513,
+      "deletions": 70
+    }
+  },
+  "merged_at": "2026-08-10T15:14:24Z",
+  "pr_created_at": "2026-07-15T21:58:41Z",
+  "vintage": {
+    "merged": "2026-08-10",
+    "note": "status is computed per model at analysis time; see METHODOLOGY-v2 section 5"
+  },
+  "threads": {
+    "total": 19,
+    "admitted": 19
+  },
+  "role": "active",
+  "replaces": "immich-app/immich#24627"
+}

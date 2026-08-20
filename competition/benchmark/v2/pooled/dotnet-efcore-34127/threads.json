@@ -28,10 +28,24 @@
   "admission": "admitted",
   "admission_reason": "line inside a changed hunk at the checkpoint",
   "origin": "human",
-  "matchable_at_checkpoint": false,
-  "matchable_reason": "The suggestion quotes `(elseResult == null || IsNull(clause.Result))`, but the checkpoint condition is `IsNull(elseResult)` (SqlNullabilityProcessor.cs:578) and the added code contains no `== null` at all, so the `is null` nit has no target at the checkpoint.",
+  "matchable_at_checkpoint": true,
+  "matchable_reason": "COMPOUND thread. The quoted suggestion (`elseResult == null` -> `elseResult is null`) has no target: the checkpoint condition at SqlNullabilityProcessor.cs:578 is `IsNull(elseResult)`. But the closing sentence states a general norm \u2014 \"(I actually use is for any constant/literal check at this point)\" \u2014 and that norm has two targets in the code the diff adds: `func.InstancePropagatesNullability == true` at :633, inside the new NullPropagatedOperands local function and one line below `is SqlFunctionExpression { IsNullable: true }` at :631, plus `elseResult == null` at :562. A reviewer at the checkpoint could raise the norm verbatim. Matchable under the compound-thread rule.",
   "thread_group": "tg02",
-  "thread_group_defect": "Style: `== null` used instead of `is null` in the CASE optimization condition."
+  "thread_group_defect": "Style: `== null` used instead of `is null` in the CASE optimization condition.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "The suggestion quotes `(elseResult == null || IsNull(clause.Result))`, but the checkpoint condition is `IsNull(elseResult)` (SqlNullabilityProcessor.cs:578) and the added code contains no `== null` at all, so the `is null` nit has no target at the checkpoint."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": true,
+    "reason": "COMPOUND thread. The quoted suggestion (`elseResult == null` -> `elseResult is null`) has no target: the checkpoint condition at SqlNullabilityProcessor.cs:578 is `IsNull(elseResult)`. But the closing sentence states a general norm \u2014 \"(I actually use is for any constant/literal check at this point)\" \u2014 and that norm has two targets in the code the diff adds: `func.InstancePropagatesNullability == true` at :633, inside the new NullPropagatedOperands local function and one line below `is SqlFunctionExpression { IsNullable: true }` at :631, plus `elseResult == null` at :562. A reviewer at the checkpoint could raise the norm verbatim. Matchable under the compound-thread rule."
+   }
+  ],
+  "matchability_resolution": "passes disagreed; resolved toward matchable (dcc-fm8s). Both readings above."
  },
  {
   "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
@@ -133,7 +147,21 @@
   "matchable_at_checkpoint": false,
   "matchable_reason": "The comment argues against an AndAlso/OrElse exclusion, but the checkpoint has no such exclusion: SqlNullabilityProcessor.cs:626 treats every SqlBinaryExpression as null-propagating, and the comment's anchor (line 645 in the later file, one line past the binary-branch condition at checkpoint line 626 under the +18 shift pinned by threads 3/4/8) lands on a filter line added after the checkpoint.",
   "thread_group": "tg08",
-  "thread_group_defect": "Whether AndAlso/OrElse should count as null-propagating operands."
+  "thread_group_defect": "Whether AndAlso/OrElse should count as null-propagating operands.",
+  "matchability_readings": [
+   {
+    "pass": 1,
+    "verdict": false,
+    "reason": "The comment argues against an AndAlso/OrElse exclusion, but the checkpoint has no such exclusion: SqlNullabilityProcessor.cs:626 treats every SqlBinaryExpression as null-propagating, and the comment's anchor (line 645 in the later file, one line past the binary-branch condition at checkpoint line 626 under the +18 shift pinned by threads 3/4/8) lands on a filter line added after the checkpoint."
+   },
+   {
+    "pass": 2,
+    "date": "2026-08-20",
+    "verdict": false,
+    "reason": "Single claim, and it argues AGAINST an AndAlso/OrElse exclusion that does not exist at the checkpoint: SqlNullabilityProcessor.cs:626-630 recurses into both operands of every SqlBinaryExpression with no operator filter of any kind. There is nothing at the checkpoint for the objection to attach to. Confirmed by reading the binary arm, not by line arithmetic."
+   }
+  ],
+  "matchability_resolution": "both passes agree: unmatchable"
  },
  {
   "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",

@@ -142,7 +142,8 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.95
+   "class_confidence": 0.95,
+   "matched_thread_quote": "making vars[0] undefined and causing a runtime crash when quoteIdentifierIfNecessary runs"
   },
   {
    "cluster_id": "gf02",
@@ -533,7 +534,8 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.85
+   "class_confidence": 0.85,
+   "matched_thread_quote": "this file uses the local quoteIdentifierIfNecessary (regex-only)"
   },
   {
    "cluster_id": "gf08",
@@ -611,7 +613,8 @@
     }
    ],
    "finding_class": "defect",
-   "class_confidence": 0.9
+   "class_confidence": 0.9,
+   "matched_thread_quote": "the missing source-query lookup in fetchSQLFields goes unnoticed"
   },
   {
    "cluster_id": "gf09",
@@ -918,7 +921,8 @@
     }
    ],
    "finding_class": "test-gap",
-   "class_confidence": 0.95
+   "class_confidence": 0.95,
+   "matched_thread_quote": "These tests only verify the quoted SQL text, not the production flow"
   },
   {
    "cluster_id": "gf15",
@@ -1151,7 +1155,8 @@
     }
    ],
    "finding_class": "test-gap",
-   "class_confidence": 0.95
+   "class_confidence": 0.95,
+   "matched_thread_quote": "the missing source-query lookup in fetchSQLFields goes unnoticed"
   },
   {
    "cluster_id": "gf24",
@@ -1195,7 +1200,8 @@
     }
    ],
    "finding_class": "test-gap",
-   "class_confidence": 0.9
+   "class_confidence": 0.9,
+   "matched_thread_quote": "we need a regression test that keeps queries[].refId unquoted while query.table is quoted"
   },
   {
    "cluster_id": "gf26",

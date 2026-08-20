@@ -28,5 +28,20 @@
     "total": 15,
     "admitted": 8,
     "rejected": 7
+  },
+  "role": "retired-probe",
+  "retired": {
+    "date": "2026-08-20",
+    "nib": "dcc-ryo4",
+    "cell_vacated": "app-ui M",
+    "replaced_by": "immich-app/immich#29965",
+    "reason": "in-window for claude-opus-5 (merged inside May 2026), so no figure from it may be pooled into a headline. Retired, not deleted: METHODOLOGY-v2 section 5's retirement policy keeps it as probe material, and its audited thread set and any scoring it already carries stay with it."
+  },
+  "matched_vintage_pair": {
+    "in_window": "immich-app/immich#24627",
+    "out_of_window": "immich-app/immich#29965",
+    "same_repo": true,
+    "same_cell": true,
+    "measures": "memorization effect size (METHODOLOGY-v2 section 5)"
   }
 }

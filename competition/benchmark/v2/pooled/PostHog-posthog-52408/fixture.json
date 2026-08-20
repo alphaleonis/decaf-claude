@@ -28,5 +28,21 @@
     "total": 27,
     "admitted": 19,
     "rejected": 8
+  },
+  "role": "retired-probe",
+  "retired": {
+    "date": "2026-08-20",
+    "nib": "dcc-ryo4",
+    "cell_vacated": "backend L",
+    "replaced_by": "PostHog/posthog#59630",
+    "reason": "in-window for claude-opus-5 (merged inside May 2026), so no figure from it may be pooled into a headline. Retired, not deleted: METHODOLOGY-v2 section 5's retirement policy keeps it as probe material, and its audited thread set and any scoring it already carries stay with it."
+  },
+  "matched_vintage_pair": {
+    "in_window": "PostHog/posthog#52408",
+    "out_of_window": "PostHog/posthog#59630",
+    "same_repo": true,
+    "same_cell": true,
+    "measures": "memorization effect size (METHODOLOGY-v2 section 5)",
+    "caveat": "both halves are probe material: #59630 is not an active cell (it is contract-crossing at its checkpoint, and the contract L cell is taken), so this pair measures memorization only"
   }
 }

@@ -15,12 +15,18 @@ Every candidate satisfies the hard admission rules: **merged after 2026-05** (ou
 `BENCH_MODEL` and the judge, per METHODOLOGY-v2 section 5), **carries real human review threads**
 (now a scored target, not decoration), non-bot author, and >=20 changed lines.
 
-> ⚠️ **The screen ran at 2026-05-01; the defensible bound is 2026-06-01** (`dcc-vvf0`). Anthropic
-> publishes no day-level training cutoff, so Opus 5's "2026-05" must be read as end-of-May. Five of
-> the twelve built subjects merged inside May 2026 and are therefore **in-window and not poolable** —
-> the whole `backend` row, plus contract L and app-ui M. They are kept and flagged rather than
-> replaced; `v2/find_candidates.sh` now defaults to 2026-06-01 so the flagged set cannot grow.
-> METHODOLOGY-v2 section 5 has the table and the reasoning.
+> ⚠️ **Superseded 2026-08-20 — the in-window five were REPLACED, not kept** (`dcc-ryo4`). The
+> keep-and-flag decision was made before the thread census, which showed the five held 56 of the
+> corpus's 86 human threads. All five are now `role: retired-probe` and the twelve active cells are
+> out-of-window end to end. See "The replacement round" at the bottom of this file — and note the
+> separate open question of whether `merged_at` is the right vintage key at all (`dcc-60qk`).
+>
+> The original note, kept for provenance: *the screen ran at 2026-05-01; the defensible bound is
+> 2026-06-01 (`dcc-vvf0`). Anthropic publishes no day-level training cutoff, so Opus 5's "2026-05"
+> must be read as end-of-May. Five of the twelve built subjects merged inside May 2026 and are
+> therefore in-window and not poolable — the whole backend row, plus contract L and app-ui M. They
+> are kept and flagged rather than replaced; `v2/find_candidates.sh` now defaults to 2026-06-01 so
+> the flagged set cannot grow.*
 
 Pool: 547 candidates found across 10 repos; 69 classified by application type.
 
@@ -156,3 +162,76 @@ threads, 1 reviewer** each. Small backend PRs with ≥5 human threads post-cutof
 exist in this pool; the nearest misses are recorded here in case `dcc-ryo4` prefers a relaxed bar to
 a permanently unreportable cell. Re-screen before deciding — the window shifts (the same PostHog
 query returned 0 rows on 2026-08-10 and 65 on 2026-08-11).
+
+---
+
+## The replacement round (nib dcc-ryo4, 2026-08-20)
+
+All five in-window subjects replaced. **Every active cell is now out-of-window**, so
+`vintage.check_pooling()` passes on the backend row and on the whole corpus — the thing the round
+existed to buy.
+
+### The active grid
+
+| Type | S | M | L |
+|---|---|---|---|
+| contract | immich#28886 | mattermost#36824 | **PostHog#67924** |
+| app-ui | grafana#117615 | **immich#29965** | element-web#32964 |
+| backend | **mattermost#37874** | **grafana#125982** | **jellyfin#17044** |
+| library | sveltejs/kit#15685 | efcore#34127 | prometheus#18081 |
+
+Twelve subjects, nine distinct repos, at most two per repo — the diversity the first build had, kept.
+Admitted **human** threads on the five new subjects: 6, 20, 8, 62, 19. Every one clears the ≥5 bar at
+admission, which the screen warned was the hard part (it filters hard: element-web#32964 went from 13
+raw human threads to 1 admitted).
+
+### Where the build disagreed with the screen
+
+Three of the five went in as recommended. Two did not, and both were caught by checks the screen
+cannot run, because they need a built fixture:
+
+- **backend L: PostHog#59630 was disqualified.** Its checkpoint diff is contract-crossing — 10
+  frontend files against 19 backend — although the merged PR is backend-only: the modules moved from
+  `ee/tasks/subscriptions/` to `products/exports/backend/` during review. Contract L was already
+  taken and PostHog was at its 2-subject cap, so it has no cell. Kept as probe material. The general
+  problem is `dcc-acw2`.
+- **backend S: "no viable candidate" was wrong.** A fresh complete sweep of jellyfin still found
+  nothing above 4 human threads, but a complete window-sliced sweep of mattermost found
+  **mattermost#37874** — 6 human threads, 2 reviewers, 0% bot, 3 files, merged 2026-08-14. It appears
+  only in the `2026-08-11..2026-08-20` window: it did not exist when the screen ran nine days
+  earlier. The window shifts; re-screen before concluding a cell is impossible.
+
+**backend L came out of a bug, not a candidate list.** Every jellyfin build produced a checkpoint
+diff of **zero files** and a fixture with zero admitted threads, written to disk without complaint.
+`build_pooled_fixture.py` took the merge base against the live tip of `baseRefName`, and jellyfin
+merges without squashing — so after merge a PR's own commits are ancestors of `master` and the
+compare is empty. Fixed to use the PR's own base commit: verified byte-identical on all 16
+pre-existing fixtures, and it turned jellyfin#17044 from 0 files into 19. An empty checkpoint diff is
+now a hard failure (`require_nonempty_diff`), the tenth instance of the standing rule that empty and
+failed must be distinguishable.
+
+### One caveat on the new set
+
+**PostHog#67924 has a single distinct human reviewer at admission** — `vdekrijger`, 62 of 62. The
+screen recorded two, which was true of the raw thread set; admission collapsed it to one. That misses
+the ≥2-reviewer preference `dcc-2gu2` introduced against exactly this failure mode, and it makes one
+person the author of 62 of the corpus's human threads. Kept anyway, because the alternates were
+mattermost#36338 (114 files, +15205/−1322 at the checkpoint — a review-cost outlier) or an immich
+subject that would break the 2-per-repo cap. Weigh any contract-L result accordingly.
+
+### Retired, not deleted — and the matched vintage pairs
+
+The five keep their audited thread sets and whatever scoring they already carry
+(`role: retired-probe` in `fixture.json`, with `retired.replaced_by`). Four same-repo, same-cell
+matched pairs are now runnable for the memorization probe METHODOLOGY-v2 section 5 asks for:
+
+| in-window | out-of-window | same repo | same cell |
+|---|---|---|---|
+| grafana#124181 | grafana#125982 | yes | yes |
+| immich#24627 | immich#29965 | yes | yes |
+| PostHog#55149 | PostHog#67924 | yes | yes |
+| PostHog#52408 | PostHog#59630 | yes | yes (both probe-only) |
+| jellyfin#12834 | jellyfin#17044 | yes | **no** — S vs L, so it bounds the effect rather than measuring it |
+
+backend S's replacement crosses repos (jellyfin -> mattermost) and is therefore **not** a matched
+pair; the jellyfin row above is the partial substitute.

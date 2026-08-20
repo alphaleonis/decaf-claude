@@ -63,9 +63,73 @@ DISPOSITIONS = {"reported", "demoted"}
 # shown, never poolable. Four of the seven citable subjects sit at or under this (dcc-qwt3).
 THIN_HUMAN_AXIS_MAX = 2
 
+# A `matches-thread` verdict must quote the span of the thread it matched (dcc-on93). Same principle
+# as `code_citation` on a real verdict: a claim that cannot point at its evidence is not evidence.
+#
+# The check this enables is the one `credited_to_unmatchable_thread` cannot make. That cross-check
+# only fires when the thread is UNMATCHABLE; a loose match onto a perfectly matchable thread inflates
+# thread_recall with nothing to detect it. Three of the four contradictions found on its first run
+# (e15, ma11, c108) were that shape and were visible only by the accident of the thread also being
+# unmatchable.
+#
+# 12 characters, or the whole body when the body is shorter — real threads in this corpus go down to
+# "Bool?" (5 chars), and a floor that cannot be met by quoting everything is a floor that refuses
+# valid evidence.
+MIN_QUOTE_CHARS = 12
+
+
+def normalize_quote(text):
+    """Whitespace-collapsed, case-folded. A grader re-typing a span across a line wrap has still
+    quoted it; a grader inventing one has not, and no amount of normalization rescues that."""
+    return " ".join((text or "").split()).casefold()
+
 
 class DataDefect(Exception):
     """A pipeline defect, not a result. Never degrade to a null metric."""
+
+
+def quote_errors(cid, cluster, threads):
+    """Errors for a `matches-thread` cluster's `matched_thread_quote` (dcc-on93).
+
+    Presence is checked here, but so is CORRESPONDENCE: the quote has to actually occur in the body
+    of the thread the cluster claims to match. A fabricated or misattributed quote is exactly the
+    failure mode the field exists to expose, so accepting any string would leave the guard cosmetic.
+    """
+    q = cluster.get("matched_thread_quote")
+    if not (isinstance(q, str) and q.strip()):
+        return [f"{cid}: verdict matches-thread without matched_thread_quote — a match that cannot "
+                f"quote the thread it matched is not auditable"]
+    mt = cluster.get("matches_thread")
+    if mt is None or threads is None or not (0 <= mt < len(threads)):
+        return []          # index problems are reported by their own checks; don't double-report
+    body = normalize_quote((threads[mt] or {}).get("body"))
+    nq = normalize_quote(q)
+    if nq not in body:
+        return [f"{cid}: matched_thread_quote does not appear in T{mt}'s body: {q[:60]!r}"]
+    if len(nq) < MIN_QUOTE_CHARS and nq != body:
+        return [f"{cid}: matched_thread_quote is {len(nq)} chars — under {MIN_QUOTE_CHARS}, and not "
+                f"the whole of T{mt}'s body. Quote the span the cluster corresponds to."]
+    return []
+
+
+def admission_errors(cid, cluster, threads):
+    """A `matches-thread` credited to a thread that was never admitted (dcc-on93).
+
+    The grader is shown ADMITTED threads only, so this index cannot be a legitimate match — it is a
+    stale absolute index, a hallucinated one, or a thread the assembler leaked into the input. It was
+    silent until now in both directions: recall groups only admitted threads, so the credit buys the
+    tool nothing there, while `precision` still counts the cluster as REAL on the strength of a match
+    that does not exist. Found on four clusters across two already-scored subjects the first time it
+    ran (efcore e01/e13/e32 -> T10, mattermost ma36 -> T3).
+    """
+    mt = cluster.get("matches_thread")
+    if mt is None or threads is None or not (0 <= mt < len(threads)):
+        return []
+    adm = (threads[mt] or {}).get("admission")
+    if adm == "admitted":
+        return []
+    return [f"{cid}: matches-thread credited to T{mt}, which is {adm!r}, not admitted — the grader "
+            f"is shown admitted threads only, so this index cannot name a legitimate match"]
 
 
 def validate(A, threads, key, allow_silent_cells=False):
@@ -110,6 +174,9 @@ def validate(A, threads, key, allow_silent_cells=False):
                 errs.append(f"{cid}: disposition {d!r} not in {sorted(DISPOSITIONS)}")
         if v == "matches-thread" and c.get("matches_thread") is None:
             errs.append(f"{cid}: verdict matches-thread but no matches_thread index")
+        if v == "matches-thread":
+            errs.extend(quote_errors(cid, c, threads))
+            errs.extend(admission_errors(cid, c, threads))
         if c.get("matches_thread") is not None and threads is None:
             errs.append(f"{cid}: matches_thread set but no threads.json supplied")
         # Symmetric with matches-thread. Without this a `matches-key` cluster carrying no
@@ -196,6 +263,20 @@ def validate(A, threads, key, allow_silent_cells=False):
         bad = {i for i in idxs if not isinstance(i, int) or i < 0 or i >= len(threads)}
         if bad:
             errs.append(f"matches_thread indexes out of range: {sorted(bad)}")
+        # An EXCLUSION needs two independent readings (dcc-fm8s). `matchable = true` is the safe
+        # default direction and the bulk of the annotation; the exclusions are the small dangerous
+        # set, because each one removes a thread from the denominator and on an axis of n=3 that is
+        # 33%. Measured error rate on the first single-pass annotation: 3 of 20 exclusions were
+        # wrong, all three the same compound-thread shape (a thread whose quoted suggestion targets
+        # absent code while another sentence targets code that is present).
+        unreviewed = [i for i, t in enumerate(threads)
+                      if t.get("admission") == "admitted"
+                      and t.get("matchable_at_checkpoint") is False
+                      and len(t.get("matchability_readings") or []) < 2]
+        if unreviewed:
+            errs.append(f"admitted thread(s) {unreviewed} are excluded as unmatchable on a SINGLE "
+                        f"reading — an exclusion removes a thread from every arm's denominator, so "
+                        f"it needs two (annotate_thread_matchability.py --second-pass)")
 
     if key:
         ids = {e.get("id") for e in (key.get("entries") or [])}

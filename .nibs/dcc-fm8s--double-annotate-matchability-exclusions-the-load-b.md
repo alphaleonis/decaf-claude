@@ -2,10 +2,10 @@
 # dcc-fm8s
 version: 1
 title: Double-annotate matchability exclusions — the load-bearing calls have no second opinion
-status: todo
+status: completed
 type: task
 created_at: 2026-08-20T18:42:58Z
-updated_at: 2026-08-20T18:43:55Z
+updated_at: 2026-08-20T19:26:10Z
 parent: dcc-ho2w
 order: zzzy
 ---
@@ -45,9 +45,64 @@ work; the exclusions are the small, dangerous set (13 across six subjects).
 - Compound threads get the rule stated explicitly: **matchable if ANY claim targets present code.**
   That is what the efcore error was.
 
+## Done 2026-08-20
+
+17 exclusions across the six scored subjects (not 13 — the count in this nib predated efcore's and
+PostHog's later annotation). All 17 second-read, blind to the first pass's reasoning.
+
+**2 of 17 flipped, both the compound-thread shape, both having cost arms a legitimate hit:**
+
+- **efcore T1.** Its quoted suggestion (`elseResult == null` -> `is null`) has no target — the
+  checkpoint condition is `IsNull(elseResult)`. Its closing parenthetical is a separate general
+  claim, *"I actually use `is` for any constant/literal check at this point"*, and that has two
+  targets in the added code, including `func.InstancePropagatesNullability == true` at :633, one
+  line below an `is`-pattern doing the same job.
+- **mattermost T6.** Sentence 1 asks for a request logger and no logging exists at the checkpoint.
+  Sentence 2 is a different claim: *"Let's move this call into the two placed where
+  `CommandResponseFromHTTPBody` is called (commandWebhook, DoCommandRequest)."* Every element is
+  present — the `o.IsValid()` call inside `CommandResponseFromJSON` at :72-74, and exactly those two
+  callers at `web/webhook.go:114` and `app/command.go:595`.
+
+With the previously-found efcore T2, that is **three compound-thread errors out of the twenty
+exclusion verdicts this corpus has ever made** — the measured error rate this nib argued from,
+confirmed and slightly worse than the 1-of-3 figure it opened with.
+
+The fifteen that stand were re-confirmed by **enumeration rather than argument**: grep counts for the
+construct each thread discusses (`unquoteIdentifier` 0, `lower_bound` 0, `Invalid timestamp` 0,
+`not detailed_conditions` 0, `properties_matched` as a field 0, `net/url` absent from a 100-line
+file). Prometheus T7 — flagged here as resting on inference — now rests on the observation that
+`261000` occurs exactly twice in the checkpoint test file, both inside a case the thread is not
+describing.
+
+Machinery: `annotate_thread_matchability.py --second-pass-worksheet` / `--second-pass` (worksheet is
+blind to pass 1's reasoning by construction), `matchability_readings` on the thread records both
+verdicts plus `matchability_resolution`, and `score_pooled.py` refuses a subject whose exclusions
+carry only one reading. Verdict files committed as
+`grading/matchability-second-pass-2026-08-20.json` per subject.
+
+Write-up: `v2/analysis/GRADING-INTEGRITY-2026-08-20.md` §3.
+
 ## Acceptance
 
-- [ ] Every `matchable_at_checkpoint: false` verdict on a scored subject carries two independent readings
-- [ ] Disagreements are recorded, not silently resolved, and default toward matchable
-- [ ] The compound-thread rule is in the annotator prompt and in `METRICS.md`
-- [ ] `credited_to_unmatchable_thread` is empty on every scored subject
+- [x] Every `matchable_at_checkpoint: false` verdict on a scored subject carries two independent readings
+- [x] Disagreements are recorded, not silently resolved, and default toward matchable
+- [x] The compound-thread rule is in the annotator prompt and in `METRICS.md`
+- [x] `credited_to_unmatchable_thread` is empty on every scored subject
+
+## Summary
+
+**Completed 2026-08-20** — All 17 exclusions across the six scored subjects second-read, blind to the first pass's reasoning,
+under two rules stated in advance: matchable if ANY claim targets present code, and disagreement
+resolves toward matchable.
+
+2 of 17 flipped — efcore T1 and mattermost T6 — both the compound-thread shape, both having silently
+cost arms a legitimate hit. With the previously-found efcore T2 that is three such errors out of the
+twenty exclusion verdicts this corpus has ever made, confirming the nib's argument and slightly
+worsening its measured rate.
+
+The fifteen that stand were re-confirmed by enumeration rather than argument (grep counts for the
+construct each thread discusses). Prometheus T7, flagged in the nib as resting on inference, now
+rests on an observation.
+
+`annotate_thread_matchability.py --second-pass` records both readings on the thread, and
+`score_pooled.py` refuses a subject whose exclusions carry only one.

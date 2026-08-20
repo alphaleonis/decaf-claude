@@ -42,6 +42,22 @@ def changed_line_ranges(patch):
     return ranges
 
 
+def require_nonempty_diff(files, slug, base, checkpoint):
+    """Refuse to write a fixture whose checkpoint diff has no files.
+
+    Empty is not the same as failed, and here it is neither: a real PR whose checkpoint diff has no
+    files is a pipeline defect, not a subject with nothing in it. Unguarded it writes a fixture with
+    0 admitted threads that reads exactly like a subject nobody reviewed — observed twice on jellyfin
+    before the base was corrected to the PR's own base commit.
+    """
+    if files:
+        return
+    raise SystemExit(
+        f"{slug}: checkpoint diff is EMPTY ({base[:9]}...{checkpoint[:9]}). The checkpoint commit is "
+        f"an ancestor of its own base, so there is nothing to review. Do not write a fixture for "
+        f"this — pick another subject, or work out why the base resolved here.")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("owner"); ap.add_argument("repo"); ap.add_argument("pr", type=int)
@@ -58,7 +74,7 @@ def main():
 
     q = f"""
     {{ repository(owner:"{a.owner}", name:"{a.repo}") {{ pullRequest(number:{a.pr}) {{
-      title createdAt mergedAt baseRefName additions deletions changedFiles
+      title createdAt mergedAt baseRefName baseRefOid additions deletions changedFiles
       reviewThreads(first:100) {{ nodes {{
         path line originalLine isResolved isOutdated
         comments(first:3) {{ nodes {{ createdAt author{{login __typename}} originalCommit{{oid}} bodyText }} }}
@@ -119,11 +135,18 @@ def main():
             raise SystemExit(f"{slug}#{a.pr}: merge commit has no parents")
         base = parents[0]["sha"]
     else:
-        cmp_ = json.loads(gh("api", f"repos/{slug}/compare/{pr['baseRefName']}...{checkpoint}"))
+        # Compare against the PR's OWN base commit, not the live tip of the base branch. A repo that
+        # merges without squashing puts the PR's commits onto the branch, so once the PR is merged
+        # `compare <branch>...<pr commit>` reports the commit as an ancestor and the merge base as
+        # the commit itself — an EMPTY diff, silently, for a subject that is otherwise fine.
+        # Measured: identical merge base on all 16 subjects built before this, and the two jellyfin
+        # candidates it rescues went from 0 files to 19.
+        cmp_ = json.loads(gh("api", f"repos/{slug}/compare/{pr['baseRefOid']}...{checkpoint}"))
         base = cmp_["merge_base_commit"]["sha"]
 
     diff = json.loads(gh("api", f"repos/{slug}/compare/{base}...{checkpoint}"))
     files = {f["filename"]: changed_line_ranges(f.get("patch", "")) for f in diff.get("files", [])}
+    require_nonempty_diff(files, f"{slug}#{a.pr}", base, checkpoint)
     add = sum(f.get("additions", 0) for f in diff.get("files", []))
     dele = sum(f.get("deletions", 0) for f in diff.get("files", []))
 
