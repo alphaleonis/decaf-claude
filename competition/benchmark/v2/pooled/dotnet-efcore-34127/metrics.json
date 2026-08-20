@@ -16,24 +16,45 @@
     "admitted": 11,
     "admitted_human": 10,
     "admitted_bot": 1,
+    "denominator_human": 8,
+    "denominator_bot": 1,
+    "excluded_unmatchable": [
+      1,
+      7
+    ],
+    "excluded_unmatchable_human": [
+      1,
+      7
+    ],
+    "duplicate_groups": [],
+    "matchability_annotated": true,
+    "thread_axis_publishable": true,
     "human_axis_thin": false,
     "human_axis_empty": false,
-    "hit_by_any_tool": 7,
-    "hit_by_any_tool_found": 7,
-    "missed_by_every_tool": 3,
-    "missed_by_every_tool_found": 3,
+    "hit_by_any_tool": 6,
+    "hit_by_any_tool_found": 6,
+    "missed_by_every_tool": 2,
+    "missed_by_every_tool_found": 2,
     "missed_index": [
-      7,
       8,
       9
     ],
     "missed_index_found": [
-      7,
       8,
       9
     ],
     "demoted_by_every_tool_that_found_it": [],
     "judge_dismissed_reported_threads": [],
+    "credited_to_unmatchable_thread": [
+      {
+        "cluster_id": "e15",
+        "thread": 1,
+        "thread_path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+        "arms": [
+          "ours-audit"
+        ]
+      }
+    ],
     "incumbent": {
       "hit_by_any_tool": 0,
       "hit_by_any_tool_found": 0
@@ -58,9 +79,9 @@
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.1,
-      "thread_recall_found": 0.2,
-      "demotion_gap": 0.1,
+      "thread_recall": 0.125,
+      "thread_recall_found": 0.25,
+      "demotion_gap": 0.125,
       "threads_hit": 1,
       "incumbent_agreement": 0.0,
       "incumbent_agreement_found": 0.0,
@@ -116,8 +137,8 @@
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.5,
-      "thread_recall_found": 0.5,
+      "thread_recall": 0.625,
+      "thread_recall_found": 0.625,
       "demotion_gap": 0.0,
       "threads_hit": 5,
       "incumbent_agreement": 0.0,
@@ -175,9 +196,9 @@
         "trivia": 2.0
       },
       "thread_recall": 0.5,
-      "thread_recall_found": 0.6,
-      "demotion_gap": 0.1,
-      "threads_hit": 5,
+      "thread_recall_found": 0.625,
+      "demotion_gap": 0.125,
+      "threads_hit": 4,
       "incumbent_agreement": 0.0,
       "incumbent_agreement_found": 0.0,
       "real_found": 15,
@@ -231,8 +252,8 @@
         "trivia": 0.0
       },
       "thread_recall": 0.0,
-      "thread_recall_found": 0.1,
-      "demotion_gap": 0.1,
+      "thread_recall_found": 0.125,
+      "demotion_gap": 0.125,
       "threads_hit": 0,
       "incumbent_agreement": 0.0,
       "incumbent_agreement_found": 0.0,
@@ -287,8 +308,8 @@
         "trivia": 0.0
       },
       "thread_recall": 0.0,
-      "thread_recall_found": 0.1,
-      "demotion_gap": 0.1,
+      "thread_recall_found": 0.125,
+      "demotion_gap": 0.125,
       "threads_hit": 0,
       "incumbent_agreement": 0.0,
       "incumbent_agreement_found": 0.0,
@@ -342,8 +363,8 @@
         "false_positive": 0.0,
         "trivia": 0.33
       },
-      "thread_recall": 0.2,
-      "thread_recall_found": 0.2,
+      "thread_recall": 0.25,
+      "thread_recall_found": 0.25,
       "demotion_gap": 0.0,
       "threads_hit": 2,
       "incumbent_agreement": 0.0,
@@ -398,8 +419,8 @@
         "false_positive": 0.0,
         "trivia": 0.5
       },
-      "thread_recall": 0.1,
-      "thread_recall_found": 0.1,
+      "thread_recall": 0.125,
+      "thread_recall_found": 0.125,
       "demotion_gap": 0.0,
       "threads_hit": 1,
       "incumbent_agreement": 0.0,
@@ -566,9 +587,9 @@
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.2,
-      "thread_recall_found": 0.3,
-      "demotion_gap": 0.1,
+      "thread_recall": 0.25,
+      "thread_recall_found": 0.375,
+      "demotion_gap": 0.125,
       "threads_hit": 2,
       "incumbent_agreement": 0.0,
       "incumbent_agreement_found": 0.0,
@@ -622,9 +643,9 @@
         "false_positive": 0.0,
         "trivia": 0.5
       },
-      "thread_recall": 0.3,
-      "thread_recall_found": 0.5,
-      "demotion_gap": 0.2,
+      "thread_recall": 0.375,
+      "thread_recall_found": 0.625,
+      "demotion_gap": 0.25,
       "threads_hit": 3,
       "incumbent_agreement": 0.0,
       "incumbent_agreement_found": 0.0,
@@ -680,8 +701,8 @@
         "false_positive": 0.0,
         "trivia": 1.0
       },
-      "thread_recall": 0.3,
-      "thread_recall_found": 0.3,
+      "thread_recall": 0.375,
+      "thread_recall_found": 0.375,
       "demotion_gap": 0.0,
       "threads_hit": 3,
       "incumbent_agreement": 0.0,
@@ -738,8 +759,8 @@
         "false_positive": 0.0,
         "trivia": 1.5
       },
-      "thread_recall": 0.2,
-      "thread_recall_found": 0.2,
+      "thread_recall": 0.25,
+      "thread_recall_found": 0.25,
       "demotion_gap": 0.0,
       "threads_hit": 2,
       "incumbent_agreement": 0.0,

@@ -1,0 +1,12 @@
+[
+ {
+  "thread_index": 1,
+  "matchable_at_checkpoint": true,
+  "reason": "open-api/immich-openapi-specs.json:16607 at the checkpoint is `\"maximum\": 9007199254740991,` (with `\"minimum\": -9007199254740991,` on 16608) — the misleading safe-integer bounds the comment objects to were introduced by this very diff when .min(1).max(5) was replaced by .refine() in server/src/dtos/asset.dto.ts:19-21, and appear twice in the spec (also at 26430)."
+ },
+ {
+  "thread_index": 2,
+  "matchable_at_checkpoint": true,
+  "reason": "The missing serial comma the suggestion fixes is present at the checkpoint in server/src/dtos/asset.dto.ts:23, `.describe('Rating in range [1-5], -1 (rejected) or null (unrated)')` — a line added by this diff (base read 'Rating in range [1-5], or null for unrated'), and mirrored in packages/sdk/src/fetch-client.ts:675,922; only the later '(starred)' insertion quoted in the thread body postdates the checkpoint, not the defect."
+ }
+]

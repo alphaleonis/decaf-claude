@@ -226,6 +226,29 @@ def score(A, threads, key):
     bot_idx = {i for i, t in enumerate(threads or [])
                if t.get("admission") == "admitted" and t.get("origin") == "bot"}
 
+    # A thread discussing code the checkpoint predates cannot be raised by a reviewer looking at the
+    # checkpoint, so counting it as a miss deflates every arm equally and invisibly (nib dcc-hw48).
+    # Absent annotation is NOT treated as matchable-by-default; it makes the axis unpublishable, which
+    # travels in the metrics rather than being assumed away.
+    unmatchable = {i for i, t in enumerate(threads or [])
+                   if t.get("admission") == "admitted" and t.get("matchable_at_checkpoint") is False}
+    annotated = {i for i, t in enumerate(threads or [])
+                 if t.get("admission") == "admitted" and t.get("matchable_at_checkpoint") is not None}
+    matchability_annotated = bool(threads) and annotated == (human_idx | bot_idx)
+
+    # Two threads asserting ONE defect are one ground-truth item. Crediting a single index makes the
+    # other read as missed, and because the axes are split by origin, a bot/human duplicate pair moves
+    # credit from the human axis to the incumbent axis (nib dcc-qfr5). Recall is therefore computed
+    # over GROUPS, not raw indices. An unstamped thread is its own group, so a corpus without grouping
+    # behaves exactly as before.
+    grp = {i: (t.get("thread_group") or f"t{i}") for i, t in enumerate(threads or [])}
+    live = (human_idx | bot_idx) - unmatchable
+    _bygroup = defaultdict(list)
+    for i in live:
+        _bygroup[grp[i]].append(i)
+    human_groups = {grp[i] for i in live if threads[i].get("origin") == "human"}
+    bot_groups = {grp[i] for i in live if threads[i].get("origin") == "bot"}
+
     # Which clusters a tool REPORTED versus merely FOUND (reported + demoted below its own bar).
     tool_reported = defaultdict(set)
     for c in clusters:
@@ -263,13 +286,13 @@ def score(A, threads, key):
         # Thread recall — its own axis, never folded into pooled precision, and split by disposition.
         # Computed over HUMAN threads only; hits on bot threads land in incumbent_agreement below.
         def hits(pool):
-            return {c["matches_thread"] for c in pool
+            return {grp[c["matches_thread"]] for c in pool
                     if c["verdict"] == "matches-thread" and c.get("matches_thread") is not None}
         hit, hit_found = hits(cs), hits(cs_found)
-        thread_recall = (len(hit & human_idx) / len(human_idx)) if human_idx else None
-        thread_recall_found = (len(hit_found & human_idx) / len(human_idx)) if human_idx else None
-        incumbent = (len(hit & bot_idx) / len(bot_idx)) if bot_idx else None
-        incumbent_found = (len(hit_found & bot_idx) / len(bot_idx)) if bot_idx else None
+        thread_recall = (len(hit & human_groups) / len(human_groups)) if human_groups else None
+        thread_recall_found = (len(hit_found & human_groups) / len(human_groups)) if human_groups else None
+        incumbent = (len(hit & bot_groups) / len(bot_groups)) if bot_groups else None
+        incumbent_found = (len(hit_found & bot_groups) / len(bot_groups)) if bot_groups else None
 
         # Anchor recall gets the same reported/found split: a tool can find a key entry and demote it.
         anchor_recall = anchor_recall_found = None
@@ -303,7 +326,7 @@ def score(A, threads, key):
             "thread_recall_found": round(thread_recall_found, 3) if thread_recall_found is not None else None,
             "demotion_gap": (round(thread_recall_found - thread_recall, 3)
                              if thread_recall is not None and thread_recall_found is not None else None),
-            "threads_hit": len(hit & human_idx) if human_idx else None,
+            "threads_hit": len(hit & human_groups) if human_groups else None,
             "incumbent_agreement": round(incumbent, 3) if incumbent is not None else None,
             "incumbent_agreement_found": round(incumbent_found, 3) if incumbent_found is not None else None,
             "real_found": len([c for c in cs_found if c["verdict"] in REAL]),
@@ -348,6 +371,24 @@ def score(A, threads, key):
             dismissed.append({"cluster_id": c["cluster_id"], "thread": mt, "verdict": c["verdict"],
                               "thread_path": (threads[mt] or {}).get("path")})
 
+    # A cluster credited to a thread judged unmatchable is a CONTRADICTION: a tool cannot legitimately
+    # match a comment about code that does not exist at the checkpoint. It means one of the two
+    # judgments is wrong, and which one differs case by case, so this reports rather than refuses.
+    #
+    # Found four on first run (dcc-hw48). Two were loose grading matches — a `== true` style cluster
+    # credited to a thread asking for `is null` on a line with no `== null`, and a logger-context
+    # request credited to a cluster about decoder placement. One was a real annotation error: an
+    # efcore thread whose quoted suggestion targeted an absent block, while its closing sentence
+    # ("move nullPropagatedOperands below") described the exact ordering seven arms reported. Without
+    # this check that thread's exclusion silently cost seven arms a legitimate hit.
+    contradictions = []
+    for c in clusters:
+        mt = c.get("matches_thread")
+        if mt is not None and (threads[mt] or {}).get("matchable_at_checkpoint") is False:
+            contradictions.append({"cluster_id": c["cluster_id"], "thread": mt,
+                                   "thread_path": (threads[mt] or {}).get("path"),
+                                   "arms": sorted({r["tool"] for r in c["reported_by"]})})
+
     # Threads no tool reported at all — the miss detector's actual output.
     #
     # Split by disposition for the same reason every per-tool recall is (dcc-c92m): computed over all
@@ -355,13 +396,16 @@ def score(A, threads, key):
     # that answers "what did the whole field miss" was silently giving the `found` reading. Both are
     # true of different questions; neither may stand alone.
     def hit_any_over(pred):
-        return {c["matches_thread"] for c in clusters
+        return {grp[c["matches_thread"]] for c in clusters
                 if c["verdict"] == "matches-thread" and c.get("matches_thread") is not None
                 and any(pred(r) for r in c["reported_by"])}
     hit_any_found = hit_any_over(lambda r: True)
     hit_any = hit_any_over(lambda r: r.get("disposition", "reported") == "reported")
-    missed = sorted(i for i in human_idx if i not in hit_any)
-    missed_found = sorted(i for i in human_idx if i not in hit_any_found)
+    # Reported as thread indices, since that is what a reader looks up, but decided per GROUP: a
+    # duplicate pair is missed only if NEITHER of its threads was credited.
+    missed = sorted(i for i in live if threads[i].get("origin") == "human" and grp[i] not in hit_any)
+    missed_found = sorted(i for i in live if threads[i].get("origin") == "human"
+                          and grp[i] not in hit_any_found)
 
     # Vintage travels with the metrics so a downstream synthesis cannot pool an in-window subject
     # into a headline without seeing it (dcc-vvf0). Computed here, never read from the fixture:
@@ -381,10 +425,24 @@ def score(A, threads, key):
             "admitted": len(human_idx) + len(bot_idx),
             "admitted_human": len(human_idx),
             "admitted_bot": len(bot_idx),
+            # The denominators actually used. `admitted_*` counts what the corpus holds; these count
+            # what a reviewer at the checkpoint could have raised, after removing threads about code
+            # that did not exist (dcc-hw48) and collapsing duplicate threads into one defect
+            # (dcc-qfr5). A reader comparing the two sees exactly what was excluded and why.
+            "denominator_human": len(human_groups),
+            "denominator_bot": len(bot_groups),
+            "excluded_unmatchable": sorted(unmatchable),
+            "excluded_unmatchable_human": sorted(i for i in unmatchable if i in human_idx),
+            "duplicate_groups": sorted([sorted(v) for k, v in _bygroup.items() if len(v) > 1]),
+            # False when any admitted thread lacks a matchability verdict. The axis is then computed
+            # over an unaudited denominator and MUST NOT be published — the flag exists so a
+            # synthesis gates on it instead of assuming the annotation happened.
+            "matchability_annotated": matchability_annotated,
+            "thread_axis_publishable": matchability_annotated,
             # Four of the seven citable subjects hold <=2 human threads (THREAD-AXIS.md); a recall
             # there is 0/0.5/1.0 quantization, not a measurement. The flag travels with the metrics
             # so a synthesis must show n and may not pool or headline a thin cell's recall.
-            "human_axis_thin": 0 < len(human_idx) <= THIN_HUMAN_AXIS_MAX,
+            "human_axis_thin": 0 < len(human_groups) <= THIN_HUMAN_AXIS_MAX,
             # THIN and EMPTY are different failures and must not read the same (nib dcc-7zyf).
             # Empty = no tool matched ANY human thread, so every arm scores 0.00 and the axis cannot
             # discriminate between them — yet pooled naively it still drags every average down by
@@ -394,11 +452,11 @@ def score(A, threads, key):
             # fixture data), so 0.00 is the right answer to a question that cannot separate tools.
             # A view must render this as n/a WITH THE REASON, never as a score of zero, and exclude
             # it from any pooled thread figure.
-            "human_axis_empty": len(human_idx) > 0 and len(hit_any_found & human_idx) == 0,
+            "human_axis_empty": len(human_groups) > 0 and len(hit_any_found & human_groups) == 0,
             # Everything below is the HUMAN axis — the miss detector.
             # "reported": what a user would have been shown. "found": what the field is capable of.
-            "hit_by_any_tool": len(hit_any & human_idx),
-            "hit_by_any_tool_found": len(hit_any_found & human_idx),
+            "hit_by_any_tool": len(hit_any & human_groups),
+            "hit_by_any_tool_found": len(hit_any_found & human_groups),
             "missed_by_every_tool": len(missed),
             "missed_by_every_tool_found": len(missed_found),
             "missed_index": missed,
@@ -406,12 +464,15 @@ def score(A, threads, key):
             # Reported by nobody, though somebody found it — a threshold problem, not a blind spot.
             "demoted_by_every_tool_that_found_it": sorted(set(missed) - set(missed_found)),
             "judge_dismissed_reported_threads": dismissed,
+            # Clusters credited to a thread judged unmatchable — see the comment above. Non-empty
+            # means the grading and the matchability annotation disagree and one of them is wrong.
+            "credited_to_unmatchable_thread": contradictions,
             # Agreement with incumbent automated review — a real measurement, but not a miss
             # detector, and never pooled with the human axis. "missed" framing is deliberately
             # absent: a bot thread nobody repeated is not evidence anything was missed.
             "incumbent": {
-                "hit_by_any_tool": len(hit_any & bot_idx) if bot_idx else None,
-                "hit_by_any_tool_found": len(hit_any_found & bot_idx) if bot_idx else None,
+                "hit_by_any_tool": len(hit_any & bot_groups) if bot_groups else None,
+                "hit_by_any_tool_found": len(hit_any_found & bot_groups) if bot_groups else None,
             },
         },
         "tools": out_tools,
@@ -462,6 +523,15 @@ def main():
         sys.exit(3)
     m = score(A, threads, key)
     s = json.dumps(m, indent=2)
+    ctr = (m.get("threads") or {}).get("credited_to_unmatchable_thread") or []
+    if ctr:
+        print(f"WARNING: {len(ctr)} cluster(s) credited to a thread judged unmatchable at the "
+              f"checkpoint — the grading and the matchability annotation disagree:", file=sys.stderr)
+        for x in ctr:
+            print(f"  {x['cluster_id']} -> T{x['thread']} ({x['thread_path']}) arms={x['arms']}",
+                  file=sys.stderr)
+        print("  Resolve each: re-grade the cluster, or revise the thread's matchability verdict.",
+              file=sys.stderr)
     if a.out:
         open(a.out, "w").write(s + "\n"); print(f"wrote {a.out}")
     else:

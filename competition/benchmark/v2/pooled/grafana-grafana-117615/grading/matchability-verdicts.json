@@ -1,0 +1,37 @@
+[
+ {
+  "thread_index": 0,
+  "matchable_at_checkpoint": true,
+  "reason": "SqlExpr.tsx:81 calls quoteIdentifierIfNecessary(vars[0]) at the checkpoint and ExpressionQueryEditor.tsx:118 filters the current query out of refIds, so the empty-refIds/undefined-vars[0] path the comment describes exists in the checkpoint code."
+ },
+ {
+  "thread_index": 1,
+  "matchable_at_checkpoint": true,
+  "reason": "The non-idempotent helper is present and reachable at the checkpoint: SqlExpr.tsx:81 calls the sqlUtil version imported at SqlExpr.tsx:13, and app/plugins/datasource/mysql/sqlUtil.ts:44-56 re-wraps an already-backticked value because isValidIdentifier's regex rejects it."
+ },
+ {
+  "thread_index": 2,
+  "matchable_at_checkpoint": true,
+  "reason": "Both implementations coexist at the checkpoint exactly as described: metaSqlExpr.ts:114 defines a local regex-only quoteIdentifierIfNecessary used at metaSqlExpr.ts:15, while SqlExpr.tsx:13 and sqlCompletionProvider.ts:9 import the reserved-word-aware sqlUtil version."
+ },
+ {
+  "thread_index": 3,
+  "matchable_at_checkpoint": true,
+  "reason": "sqlCompletionProvider.ts:27 already routes every table completion through quoteIdentifierIfNecessary (import added at line 9 by this diff), so the double-wrapping of already-quoted refIds is present at the checkpoint."
+ },
+ {
+  "thread_index": 4,
+  "matchable_at_checkpoint": false,
+  "reason": "The comment reviews a later change ('you hadn't done this ... the change here') wrapping the value in both helpers, but at the checkpoint sqlCompletionProvider.ts:27 calls only quoteIdentifierIfNecessary and unquoteIdentifier appears nowhere under public/app/features/expressions/."
+ },
+ {
+  "thread_index": 6,
+  "matchable_at_checkpoint": false,
+  "reason": "There is no 'table' identifier or placeholder to rename at the checkpoint: SqlExpr.tsx:81 is `${quoteIdentifierIfNecessary(vars[0])}` with no fallback literal, and no 'table'/default_table literal exists anywhere under public/app/features/expressions/."
+ },
+ {
+  "thread_index": 7,
+  "matchable_at_checkpoint": true,
+  "reason": "metaSqlExpr.test.ts was added by the checkpoint commit itself and its fixture at lines 28-29 keeps queries[].refId equal to the unquoted table, while the production lookup it fails to exercise is present at metaSqlExpr.ts:20 (`queries.filter((q) => q.refId === query.table)`)."
+ }
+]

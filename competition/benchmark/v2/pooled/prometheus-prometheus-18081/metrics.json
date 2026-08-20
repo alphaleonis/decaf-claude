@@ -16,22 +16,32 @@
     "admitted": 10,
     "admitted_human": 10,
     "admitted_bot": 0,
+    "denominator_human": 9,
+    "denominator_bot": 0,
+    "excluded_unmatchable": [
+      7
+    ],
+    "excluded_unmatchable_human": [
+      7
+    ],
+    "duplicate_groups": [],
+    "matchability_annotated": true,
+    "thread_axis_publishable": true,
     "human_axis_thin": false,
     "human_axis_empty": false,
     "hit_by_any_tool": 8,
     "hit_by_any_tool_found": 8,
-    "missed_by_every_tool": 2,
-    "missed_by_every_tool_found": 2,
+    "missed_by_every_tool": 1,
+    "missed_by_every_tool_found": 1,
     "missed_index": [
-      1,
-      7
+      1
     ],
     "missed_index_found": [
-      1,
-      7
+      1
     ],
     "demoted_by_every_tool_that_found_it": [],
     "judge_dismissed_reported_threads": [],
+    "credited_to_unmatchable_thread": [],
     "incumbent": {
       "hit_by_any_tool": null,
       "hit_by_any_tool_found": null
@@ -56,9 +66,9 @@
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.2,
-      "thread_recall_found": 0.3,
-      "demotion_gap": 0.1,
+      "thread_recall": 0.222,
+      "thread_recall_found": 0.333,
+      "demotion_gap": 0.111,
       "threads_hit": 2,
       "incumbent_agreement": null,
       "incumbent_agreement_found": null,
@@ -114,8 +124,8 @@
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.7,
-      "thread_recall_found": 0.7,
+      "thread_recall": 0.778,
+      "thread_recall_found": 0.778,
       "demotion_gap": 0.0,
       "threads_hit": 7,
       "incumbent_agreement": null,
@@ -175,8 +185,8 @@
         "false_positive": 0.5,
         "trivia": 2.5
       },
-      "thread_recall": 0.6,
-      "thread_recall_found": 0.6,
+      "thread_recall": 0.667,
+      "thread_recall_found": 0.667,
       "demotion_gap": 0.0,
       "threads_hit": 6,
       "incumbent_agreement": null,
@@ -231,9 +241,9 @@
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.3,
-      "thread_recall_found": 0.7,
-      "demotion_gap": 0.4,
+      "thread_recall": 0.333,
+      "thread_recall_found": 0.778,
+      "demotion_gap": 0.444,
       "threads_hit": 3,
       "incumbent_agreement": null,
       "incumbent_agreement_found": null,
@@ -287,9 +297,9 @@
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.4,
-      "thread_recall_found": 0.6,
-      "demotion_gap": 0.2,
+      "thread_recall": 0.444,
+      "thread_recall_found": 0.667,
+      "demotion_gap": 0.222,
       "threads_hit": 4,
       "incumbent_agreement": null,
       "incumbent_agreement_found": null,
@@ -343,8 +353,8 @@
         "false_positive": 0.33,
         "trivia": 0.33
       },
-      "thread_recall": 0.5,
-      "thread_recall_found": 0.5,
+      "thread_recall": 0.556,
+      "thread_recall_found": 0.556,
       "demotion_gap": 0.0,
       "threads_hit": 5,
       "incumbent_agreement": null,
@@ -399,9 +409,9 @@
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.3,
-      "thread_recall_found": 0.4,
-      "demotion_gap": 0.1,
+      "thread_recall": 0.333,
+      "thread_recall_found": 0.444,
+      "demotion_gap": 0.111,
       "threads_hit": 3,
       "incumbent_agreement": null,
       "incumbent_agreement_found": null,
@@ -455,8 +465,8 @@
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.3,
-      "thread_recall_found": 0.3,
+      "thread_recall": 0.333,
+      "thread_recall_found": 0.333,
       "demotion_gap": 0.0,
       "threads_hit": 3,
       "incumbent_agreement": null,
@@ -511,9 +521,9 @@
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.1,
-      "thread_recall_found": 0.4,
-      "demotion_gap": 0.3,
+      "thread_recall": 0.111,
+      "thread_recall_found": 0.444,
+      "demotion_gap": 0.333,
       "threads_hit": 1,
       "incumbent_agreement": null,
       "incumbent_agreement_found": null,
@@ -567,8 +577,8 @@
         "false_positive": 0.0,
         "trivia": 0.5
       },
-      "thread_recall": 0.6,
-      "thread_recall_found": 0.6,
+      "thread_recall": 0.667,
+      "thread_recall_found": 0.667,
       "demotion_gap": 0.0,
       "threads_hit": 6,
       "incumbent_agreement": null,
@@ -625,9 +635,9 @@
         "false_positive": 0.0,
         "trivia": 0.0
       },
-      "thread_recall": 0.6,
-      "thread_recall_found": 0.8,
-      "demotion_gap": 0.2,
+      "thread_recall": 0.667,
+      "thread_recall_found": 0.889,
+      "demotion_gap": 0.222,
       "threads_hit": 6,
       "incumbent_agreement": null,
       "incumbent_agreement_found": null,
@@ -681,8 +691,8 @@
         "false_positive": 0.0,
         "trivia": 0.5
       },
-      "thread_recall": 0.6,
-      "thread_recall_found": 0.6,
+      "thread_recall": 0.667,
+      "thread_recall_found": 0.667,
       "demotion_gap": 0.0,
       "threads_hit": 6,
       "incumbent_agreement": null,
@@ -741,8 +751,8 @@
         "false_positive": 0.0,
         "trivia": 1.0
       },
-      "thread_recall": 0.7,
-      "thread_recall_found": 0.7,
+      "thread_recall": 0.778,
+      "thread_recall_found": 0.778,
       "demotion_gap": 0.0,
       "threads_hit": 7,
       "incumbent_agreement": null,

@@ -1,10 +1,12 @@
-# Human thread axis: EMPTY (nib dcc-7zyf)
+# Human thread axis: EMPTY (nibs dcc-7zyf, dcc-hw48)
 
-REASON: both admitted human threads are non-defect comments, so no review tool could match either — 0.00 is the correct answer to a question that cannot separate tools.
+REASON: both admitted human threads target code that does not exist at the checkpoint, so the human
+denominator is **0** — there was never a question for a review tool to answer.
 
 7 admitted threads, of which **2 are human** (the other 5 are Copilot, scoring the separate
-`incumbent_agreement` axis). **Corpus coverage is 0 of 2** — no tool matched either thread, in any
-cell, under either grading pass.
+`incumbent_agreement` axis). Both human threads are now stamped
+`matchable_at_checkpoint: false`, so `score_pooled.py` emits `denominator_human: 0` and
+`thread_recall: null`.
 
 Both human threads, verbatim:
 
@@ -15,13 +17,35 @@ Both human threads, verbatim:
 - `SqlExpr.tsx:81` — "`table` is a reserved keyword, let's use something else (`default_table`? or
   similar?) to avoid an error when the expression runs."
 
-The first is a reviewer thinking out loud and saying so; the second is a naming request about
-fixture data. Neither states a defect, so there is nothing in them for a review tool to have missed.
+## Why the reason changed on 2026-08-20
 
-**Consequence for any figure.** Every arm scores 0.00 here, so the axis carries no information about
-any tool — but pooled naively it still lowers every average by the same amount, making the corpus
-look worse at matching human review than the evidence supports. `score_pooled.py` emits
-`threads.human_axis_empty: true`; views must render n/a with this reason and exclude the subject
-from pooled thread figures.
+This note previously said the axis is empty because neither thread states a defect — one is a
+reviewer thinking out loud and saying so, the other a naming request. Both descriptions are still
+accurate, but they are not the operative reason, and the difference matters.
 
-This subject remains fully valid on the pooled and defect axes. Only its human thread axis is empty.
+Verified against the checkpoint checkout:
+
+- `unquoteIdentifier` occurs **0 times** under `public/app/features/expressions/`. The double-wrapping
+  the first thread objects to does not exist; the line reads
+  `completion: quoteIdentifierIfNecessary(refId.label || refId.value || '')`.
+- `default_table` occurs **0 times** there, and `SqlExpr.tsx:81` is a bare
+  `${quoteIdentifierIfNecessary(vars[0])}` with no fallback literal to rename.
+
+Both threads were written against `913e505e`, after the checkpoint. The reviewer is reviewing changes
+made *since* the snapshot the tools were shown — the first thread says so outright ("I thought when I
+reviewed this before that you hadn't done this").
+
+**So the old framing put the emptiness in the numerator and the new one puts it in the denominator.**
+Under the old reading, four arms each scored 0.00 on a real question; a naive pool therefore dragged
+every average down as though four arms had failed. Under the corrected reading there is no question:
+`n = 0`, recall is `null`, and the subject contributes nothing to the axis in either direction.
+
+## Consequence for any figure
+
+`score_pooled.py` emits `threads.human_axis_empty: true` and `denominator_human: 0`; every arm's
+`thread_recall` on this subject is `null`, not `0.000`. A view must render n/a with this reason.
+Never substitute 0 for null here — that is the error this note exists to prevent, and it is the
+second time the same subject has produced it.
+
+This subject remains fully valid on the pooled and defect axes, and its **bot** axis is intact: all
+5 Copilot threads are matchable, so `incumbent_agreement` is a real measurement here.

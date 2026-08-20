@@ -1,0 +1,68 @@
+[
+ {
+  "thread_index": 0,
+  "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 600,
+  "body": "maybe it would be cleaner to return a TRUE expression here."
+ },
+ {
+  "thread_index": 1,
+  "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 582,
+  "body": "I'm personally moving to is null pretty systematically (here and below):\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                    if (testIsCondition && whenClauses is [var clause] && (elseResult == null || IsNull(clause.Result)))\n          \n          \n            \n                    if (testIsCondition && whenClauses is [var clause] && (elseResult is null || IsNull(clause.Result)))\n          \n      \n    \n    \n  \n\n(I actually use is for any constant/literal check at this point)."
+ },
+ {
+  "thread_index": 2,
+  "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 596,
+  "body": "nit:\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                        SqlExpression test, expr;\n          \n          \n            \n            \n          \n          \n            \n                        if (elseResult == null)\n          \n          \n            \n                        {\n          \n          \n            \n                            expr = clause.Result;\n          \n          \n            \n                            test = clause.Test;\n          \n          \n            \n                        }\n          \n          \n            \n                        else\n          \n          \n            \n                        {\n          \n          \n            \n                            expr = elseResult;\n          \n          \n            \n                            test = _sqlExpressionFactory.Not(clause.Test);\n          \n          \n            \n                        }\n          \n          \n            \n                        var (test, expr) = elseResult is null \n          \n          \n            \n                            ? (clause.Result, clause.Test)\n          \n          \n            \n                            : (_sqlExpressionFactory.Not(clause.Test), elseResult);\n          \n      \n    \n    \n  \n\n... and move nullPropagatedOperands below."
+ },
+ {
+  "thread_index": 3,
+  "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 639,
+  "body": "nit: this can all be one nice switch statement with pattern matching ;)"
+ },
+ {
+  "thread_index": 4,
+  "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 635,
+  "body": "Naming-wise, maybe DetectNullPropagatingNodes?"
+ },
+ {
+  "thread_index": 5,
+  "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 634,
+  "body": "Yeah, this definitely feels like something more general than as a very local utility to case, plus there should be extensibility for provider-specific expression types. We could even compute this information and bubble it up as part of the normal visitation of SqlNullabilityProcessor - assuming it's useful enough for other parts of the visitor.\nBut of course this can all be done later."
+ },
+ {
+  "thread_index": 6,
+  "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 650,
+  "body": "AtTimeZone, Collate (which are types of binary expressions)"
+ },
+ {
+  "thread_index": 7,
+  "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 645,
+  "body": "AndAlso/OrElse do propagate nulls normally too, no? Like if you do c.a AND c.b, the expression returns NULL if one of the operands is null?"
+ },
+ {
+  "thread_index": 8,
+  "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 640,
+  "body": "Are there other unary operators that propagate? Maybe better to exclude those that you don't want, rather than specifying those that you do?"
+ },
+ {
+  "thread_index": 9,
+  "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 650,
+  "body": "Interestingly, if the node isn't nullable, then the checks can also be elided - though that elision sould take place elsewhere. This makes me think that we can introduce some basic simplifications in SqlExpressionFactory.IsNull/IsNotNull, recognizing the basic non-nullable node types..."
+ },
+ {
+  "thread_index": 14,
+  "path": "src/EFCore.Relational/Query/SqlNullabilityProcessor.cs",
+  "line": 590,
+  "body": "DetectNullPropagatingNodes currently treats all binary operators except AndAlso/OrElse as null-propagating. This includes ExpressionType.Coalesce, which is not null-propagating (e.g., COALESCE(a, '') can be non-null even when a is null). That can cause DropNotNullChecks to incorrectly remove a IS NOT NULL predicates and change query semantics. Handle ExpressionType.Coalesce explicitly (do not treat its left operand as null-propagating), and consider auditing any other non-null-propagating binary operators represented as SqlBinaryExpression."
+ }
+]

@@ -1,0 +1,14 @@
+[
+ {
+  "thread_index": 1,
+  "path": "open-api/immich-openapi-specs.json",
+  "line": 16607,
+  "body": "This is wrong/misleading. Is there a way to opt out of these values while still using int validation?"
+ },
+ {
+  "thread_index": 2,
+  "path": "server/src/dtos/asset.dto.ts",
+  "line": 24,
+  "body": "Suggested change\n      \n    \n    \n      \n          \n            \n                  .describe('Rating in range [1-5] (starred), -1 (rejected) or null (unrated)')\n          \n          \n            \n                  .describe('Rating in range [1-5] (starred), -1 (rejected), or null (unrated)')"
+ }
+]

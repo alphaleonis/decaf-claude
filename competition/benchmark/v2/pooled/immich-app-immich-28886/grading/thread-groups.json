@@ -1,0 +1,14 @@
+[
+ {
+  "group_id": "tg01",
+  "thread_indices": [1],
+  "defect": "Dropping .min(1)/.max(5) in favor of a .refine() makes the generated OpenAPI schema advertise maximum/minimum of +/-9007199254740991 for `rating`, so the published contract no longer states the real allowed range.",
+  "same_fix": ""
+ },
+ {
+  "group_id": "tg02",
+  "thread_indices": [2],
+  "defect": "The new `rating` description string omits the serial comma before 'or null (unrated)'.",
+  "same_fix": ""
+ }
+]
