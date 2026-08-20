@@ -1,0 +1,974 @@
+[
+ {
+  "cluster_id": "g001",
+  "verdict": "matches-thread",
+  "matches_thread": 11,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:3588-3596",
+  "confidence": 0.85,
+  "rationale": "The /flags call is made with v=2 (flags_service.py params v='2'), which returns a dict per flag, so the bool/str/else branches cannot fire. Same defect as the thread on the unreachable non-dict branches."
+ },
+ {
+  "cluster_id": "g002",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:1935-1937",
+  "confidence": 0.5,
+  "rationale": "person_id really is an unvalidated CharField, so a malformed UUID reaches the ORM and raises Django ValidationError; but it does not escape - the broad `except Exception` at 3412-3414 turns it into a generic 500. Real gap (should be a 400), mechanism misstated."
+ },
+ {
+  "cluster_id": "g003",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:3492-3501",
+  "confidence": 0.75,
+  "rationale": "The sibling `versions` action maps VersionNotFound to 404 and VersionHistoryIncomplete to 422 (feature_flag.py:2470-2478); the new path collapses both to 400. Real contract inconsistency."
+ },
+ {
+  "cluster_id": "g004",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/api/types.rs:652",
+  "confidence": 0.6,
+  "rationale": "Self-dismissed non-finding: rollout_percentage arrives as an exact JSON number, so `== 0.0` is fine. Nothing for a reviewer to act on."
+ },
+ {
+  "cluster_id": "g005",
+  "verdict": "matches-thread",
+  "matches_thread": 35,
+  "judged_severity": "medium",
+  "code_citation": "posthog/api/feature_flag.py:3430",
+  "confidence": 0.9,
+  "rationale": "`distinct_ids[0]` with no ordering guarantee; bucketing is distinct-id-sensitive. Identical to the thread on unstable distinct_id selection."
+ },
+ {
+  "cluster_id": "g006",
+  "verdict": "matches-thread",
+  "matches_thread": 43,
+  "judged_severity": "high",
+  "code_citation": "posthog/api/feature_flag.py:3478-3490",
+  "confidence": 0.9,
+  "rationale": "The in-memory FeatureFlag copies only name/active/deleted/version/filters, so bucketing_identifier, evaluation_runtime, ensure_experience_continuity fall back to model defaults and are shipped as the override. Same defect as the thread."
+ },
+ {
+  "cluster_id": "g007",
+  "verdict": "matches-thread",
+  "matches_thread": 25,
+  "judged_severity": "medium",
+  "code_citation": "rust/feature-flags/src/api/types.rs:652,675-687",
+  "confidence": 0.9,
+  "rationale": "rollout_excluded is gated on is_zero_rollout in every branch, so exclusion by any 0<pct<100 rollout is never reported. Same as the thread."
+ },
+ {
+  "cluster_id": "g008",
+  "verdict": "matches-thread",
+  "matches_thread": 24,
+  "judged_severity": "medium",
+  "code_citation": "rust/feature-flags/src/api/types.rs:713",
+  "confidence": 0.9,
+  "rationale": "`matched: all_properties_matched` contradicts the serializer help_text 'Whether this condition was the one that matched' (feature_flag.py:1970). Same defect as the thread."
+ },
+ {
+  "cluster_id": "g009",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:3527-3528",
+  "confidence": 0.8,
+  "rationale": "updated_at is auto_now=True, which Django forces to editable=False, and model_to_dict skips non-editable fields, so the key can never be present. Dead branch (created_at, default=timezone.now, is editable and does fire)."
+ },
+ {
+  "cluster_id": "g010",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "rust/feature-flags/src/api/types.rs:571-574",
+  "confidence": 0.8,
+  "rationale": "OperatorType is serde(rename_all='snake_case') (property_models.rs:4-6) but the analysis emits format!('{:?}').to_lowercase(), producing 'noticontains'/'isdateafter' instead of 'not_icontains'/'is_date_after' on the wire."
+ },
+ {
+  "cluster_id": "g011",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "posthog/api/feature_flag.py:1961",
+  "confidence": 0.75,
+  "rationale": "PropertyAnalysis.value is a JSONField without allow_null while Rust emits Value::Null for is_set/is_not_set filters (types.rs:640, property_models.rs comment). Outbound is_valid(raise_exception=True) then fails and the blanket except returns 500."
+ },
+ {
+  "cluster_id": "g012",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:99-105",
+  "confidence": 0.85,
+  "rationale": "return_debug_info was deleted from the signature but posthog/api/person.py:1443-1449 still passes return_debug_info=True, so that (debug-only) branch now raises TypeError."
+ },
+ {
+  "cluster_id": "g013",
+  "verdict": "matches-thread",
+  "matches_thread": 23,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:80-81",
+  "confidence": 0.9,
+  "rationale": "`except Exception: raise` is a no-op left behind after the contextual wrapping was removed. Same as the thread."
+ },
+ {
+  "cluster_id": "g014",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "posthog/api/feature_flag.py:3521-3523",
+  "confidence": 0.7,
+  "rationale": "analytics_dashboards is not in the exclude list; ManyToManyField.value_from_object returns Dashboard instances when pk is set (Django related.py:2035), so any flag with an analytics dashboard makes the override payload unserializable and the request 500s."
+ },
+ {
+  "cluster_id": "g015",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/api/feature_flag.py:3446-3448",
+  "confidence": 0.7,
+  "rationale": "The f-prefixes are indeed placeholder-free, but F541 is explicitly ignored repo-wide (pyproject.toml:310, '~1139 existing'), so there is no lint or behavior consequence."
+ },
+ {
+  "cluster_id": "g016",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/feature_flag/test/test_version_history.py:287-294",
+  "confidence": 0.6,
+  "rationale": "The new tests mix datetime.now(UTC) with created_at-relative offsets and retro-fitted ActivityLog timestamps; a wall-clock dependency in version-boundary tests is a real if minor flake risk."
+ },
+ {
+  "cluster_id": "g017",
+  "verdict": "matches-thread",
+  "matches_thread": 5,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:3437",
+  "confidence": 0.9,
+  "rationale": "person_existed_at_timestamp is imported inside the method while its two module siblings are imported at feature_flag.py:88-91. Same as the thread."
+ },
+ {
+  "cluster_id": "g018",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "posthog/api/feature_flag.py:3552-3567",
+  "confidence": 0.75,
+  "rationale": "FlagsResponse carries errorsWhileComputingFlags and quotaLimited and FlagDetails carries `failed` (types.rs:198-212, 395-407); the endpoint reads only `enabled`, so an errored or quota-limited evaluation is returned to the caller as result=false."
+ },
+ {
+  "cluster_id": "g019",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "posthog/api/feature_flag.py:3456-3461",
+  "confidence": 0.7,
+  "rationale": "Every other 500 path in this file calls capture_exception (560, 2354, 2399, 3154, 3413); the three new failure paths (3456-3461, 3502-3507, 3612-3614) only log, so these errors never reach the exception tracker."
+ },
+ {
+  "cluster_id": "g020",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:3521-3523",
+  "confidence": 0.7,
+  "rationale": "AutoField does not set editable=False (django/db/models/fields/__init__.py AutoFieldMixin sets only blank=True), so model_to_dict does include `id`. The asserted 'every override fails to parse' does not hold."
+ },
+ {
+  "cluster_id": "g021",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/properties/property_matching.rs:54-58",
+  "confidence": 0.5,
+  "rationale": "Self-ruled-out non-finding about ReDoS from caller-supplied regex; no action for a reviewer."
+ },
+ {
+  "cluster_id": "g022",
+  "verdict": "matches-thread",
+  "matches_thread": 36,
+  "judged_severity": "low",
+  "code_citation": "rust/feature-flags/src/handler/authentication.rs:45",
+  "confidence": 0.85,
+  "rationale": "`auth_token == *internal_token` is a byte-by-byte String comparison of a shared secret. Same point as the thread's constant-time suggestion."
+ },
+ {
+  "cluster_id": "g023",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "rust/feature-flags/src/api/types.rs:552",
+  "confidence": 0.75,
+  "rationale": "build_condition_analysis iterates only filters.groups; super_groups, feature_enrollment and holdout (flag_models.rs FlagFilters) also decide the outcome, so the analysis can show every condition matching while the flag is off with no explanation."
+ },
+ {
+  "cluster_id": "g024",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/feature_flag/version_history.py:215-226",
+  "confidence": 0.55,
+  "rationale": "The only matching index is ['team_id','scope','item_id'] (activity_log.py:136-137); the new query adds created_at__lte plus ORDER BY -created_at, so rows must be sorted. Accurate, modest, and the index shape is pre-existing."
+ },
+ {
+  "cluster_id": "g025",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "rust/feature-flags/src/flags/flag_matching.rs:827-830",
+  "confidence": 0.8,
+  "rationale": "The new `|| self.only_use_override_person_properties` short-circuit skips prepare_flag_evaluation_state entirely, which is what loads cohorts, static cohort ids and group type mappings (flag_matching.rs:1997-2045) - so cohort/group conditions mis-evaluate on the historical path."
+ },
+ {
+  "cluster_id": "g026",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/models/feature_flag/test/test_version_history.py:279-345",
+  "confidence": 0.5,
+  "rationale": "Self-downgraded observation that the tests mirror internals; no actionable defect stated."
+ },
+ {
+  "cluster_id": "g027",
+  "verdict": "matches-thread",
+  "matches_thread": 13,
+  "judged_severity": "high",
+  "code_citation": "posthog/api/feature_flag.py:3389",
+  "confidence": 0.9,
+  "rationale": "No test file references test_evaluation anywhere in the tree. Same as the thread demanding tests before merge."
+ },
+ {
+  "cluster_id": "g028",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/api/types.rs:576-582",
+  "confidence": 0.85,
+  "rationale": "PropertyType is written as crate::properties::property_models::PropertyType four times while OperatorType from the same module is imported at types.rs:6. Cosmetic but correct."
+ },
+ {
+  "cluster_id": "g029",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:3388-3389",
+  "confidence": 0.7,
+  "rationale": "A production DRF action named test_evaluation becomes the public route /test_evaluation; a naming concern only, no functional effect."
+ },
+ {
+  "cluster_id": "g030",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "rust/feature-flags/src/api/types.rs:603-609",
+  "confidence": 0.7,
+  "rationale": "match_property is called with the person-property map for every filter regardless of prop_type, so cohort, group and flag-dependency filters are looked up in person properties and reported as unmatched with a fabricated explanation."
+ },
+ {
+  "cluster_id": "g031",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:3399",
+  "confidence": 0.85,
+  "rationale": "The comment says 'prioritize person_id over distinct_id' while 3430 prefers the caller-supplied distinct_id (and the serializer forbids both). Comment contradicts code."
+ },
+ {
+  "cluster_id": "g032",
+  "verdict": "matches-thread",
+  "matches_thread": 13,
+  "judged_severity": "medium",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:228-277",
+  "confidence": 0.55,
+  "rationale": "person_existed_at_timestamp has no test anywhere and gates a user-visible 400; the thread's minimum-coverage list names exactly that case ('Person exists but didn't exist at timestamp -> 400')."
+ },
+ {
+  "cluster_id": "g033",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/feature_flag/test/test_version_history.py:341",
+  "confidence": 0.8,
+  "rationale": "`assert first_update_time < between_updates_time < second_update_time` compares created_at+10m, +15m and +20m, so it can never fail. A no-op assertion."
+ },
+ {
+  "cluster_id": "g034",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:270",
+  "confidence": 0.6,
+  "rationale": "version_history.py:18-21 validates timezone-awareness while point_in_time_properties silently calls timestamp.astimezone(UTC) (which assumes local time for a naive value) and lost its isinstance guard. Real inconsistency, low practical impact via DRF."
+ },
+ {
+  "cluster_id": "g035",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "rust/feature-flags/src/api/types.rs:605",
+  "confidence": 0.7,
+  "rationale": "match_property returns Err for In/NotIn and FlagEvaluatesTo (property_matching.rs:425-432); unwrap_or(false) turns those into matched=false with a wrong explanation instead of surfacing 'inconclusive'."
+ },
+ {
+  "cluster_id": "g036",
+  "verdict": "matches-thread",
+  "matches_thread": 12,
+  "judged_severity": "medium",
+  "code_citation": "posthog/api/feature_flag.py:3388",
+  "confidence": 0.9,
+  "rationale": "required_scopes=['feature_flag:read'] on an action that returns the full person_properties blob. Same as the thread proposing person:read or filtering."
+ },
+ {
+  "cluster_id": "g037",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:410-414",
+  "confidence": 0.8,
+  "rationale": "The siblings use LocalEvaluationThrottle and RemoteConfigThrottle, both subclasses of BurstRateThrottle (feature_flag.py:410-414, 432-435); ClickHouseBurstRateThrottle is not used here."
+ },
+ {
+  "cluster_id": "g038",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:274",
+  "confidence": 0.8,
+  "rationale": "person_existed_at_timestamp hardcodes max_execution_time=10 while build_person_properties_at_time threads the caller's timeout (PIT:182). Correct, minor."
+ },
+ {
+  "cluster_id": "g039",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/models/feature_flag/version_history.py:224",
+  "confidence": 0.85,
+  "rationale": "flat=False is values_list's default and the sibling query at VH:121 omits it. Redundant argument."
+ },
+ {
+  "cluster_id": "g040",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/services/flags_service.py:63",
+  "confidence": 0.5,
+  "rationale": "FEATURE_FLAGS_SERVICE_URL defaults to http://localhost:3001 (settings/data_stores.py:535) and nothing requires TLS, so the new bearer secret can cross a plaintext hop. Accurate, but this is the established in-cluster pattern."
+ },
+ {
+  "cluster_id": "g041",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:258-271",
+  "confidence": 0.6,
+  "rationale": "Self-ruled-out: the existence query uses %(name)s parameter binding, so there is no injection. Non-finding."
+ },
+ {
+  "cluster_id": "g042",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/handler/authentication.rs:38-46",
+  "confidence": 0.5,
+  "rationale": "Self-dismissed: /flags takes the team token in the body, so the Authorization header is not otherwise occupied. Non-finding."
+ },
+ {
+  "cluster_id": "g043",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "rust/feature-flags/src/handler/authentication.rs:26-49",
+  "confidence": 0.6,
+  "rationale": "One global INTERNAL_REQUEST_TOKEN (config.rs:609-611) now gates arbitrary flag-definition override, detailed analysis and the billing skip, with no per-team binding, expiry or rotation path. A design point a reviewer should see."
+ },
+ {
+  "cluster_id": "g044",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "rust/feature-flags/src/flags/flag_matching.rs:1004-1006",
+  "confidence": 0.65,
+  "rationale": "get_person_properties (flag_matching.rs:1692-1717) has no fallible path - it returns Ok unconditionally - so .ok() discards nothing, and the None fallback reports condition-level match, not 'every property unmatched'."
+ },
+ {
+  "cluster_id": "g045",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:140-179",
+  "confidence": 0.6,
+  "rationale": "Self-ruled-out: all reconstruction queries use bound parameters. Non-finding."
+ },
+ {
+  "cluster_id": "g046",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "posthog/models/feature_flag/version_history.py:260-266",
+  "confidence": 0.6,
+  "rationale": "When no versioned entry is found and timestamp < updated_at the function returns 1 unconditionally; if the activity log was trimmed or the flag never had a v1 entry, reconstruct_flag_at_version(1) then treats current state as the creation state and returns silently wrong history."
+ },
+ {
+  "cluster_id": "g047",
+  "verdict": "matches-thread",
+  "matches_thread": 15,
+  "judged_severity": "medium",
+  "code_citation": "rust/feature-flags/src/handler/tests.rs:218-220",
+  "confidence": 0.6,
+  "rationale": "Every Rust test touched by the diff just sets detailed_analysis/only_use_override_person_properties to false and passes None for the override arg, so no test exercises the new behavior or the internal gate - the thread's point about the gate being untested."
+ },
+ {
+  "cluster_id": "g048",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/feature_flag/version_history.py:212-235",
+  "confidence": 0.85,
+  "rationale": "The comment claims .iterator() avoids loading all entries into memory, but `entries_list = list(entries)` at VH:235 materializes up to MAX_HISTORY_ENTRIES (10k) rows anyway. Code contradicts its own comment."
+ },
+ {
+  "cluster_id": "g049",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "posthog/models/feature_flag/test/test_version_history.py:398-406",
+  "confidence": 0.85,
+  "rationale": "log_activity returns None without saving when activity=='updated' and changes is empty (activity_log.py:818-826), so the 'entry without version info' the test claims to create never exists and the test asserts nothing."
+ },
+ {
+  "cluster_id": "g050",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:126-134",
+  "confidence": 0.85,
+  "rationale": "The isinstance(timestamp, datetime) guard was removed, but test_point_in_time_properties.py:38-41 asserts ValueError('timestamp must be a datetime object'); that existing test now fails (a str would raise AttributeError later instead)."
+ },
+ {
+  "cluster_id": "g051",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/feature_flag/test/test_version_history.py:280-289",
+  "confidence": 0.8,
+  "rationale": "The parameterized case 'current_version' supplies timedelta(hours=1) but the body branches on _name and substitutes datetime.now(UTC), discarding the parameter. Test smell."
+ },
+ {
+  "cluster_id": "g052",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/handler/flags.rs:165-173",
+  "confidence": 0.5,
+  "rationale": "Self-ruled-out: `flags` is the request-local Vec taken from flag_result, so the mutation cannot poison the shared cache. Non-finding."
+ },
+ {
+  "cluster_id": "g053",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "rust/feature-flags/src/handler/flags.rs:336-338",
+  "confidence": 0.7,
+  "rationale": "detailed_analysis is gated in mod.rs:218-222 but only_use_override_person_properties is forwarded raw from the query string, and skip_writes ORs both - so any public caller can suppress experience-continuity writes with ?only_use_override_person_properties=true."
+ },
+ {
+  "cluster_id": "g054",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "rust/feature-flags/src/handler/flags.rs:175-186",
+  "confidence": 0.75,
+  "rationale": "A parse failure or a key that matches no flag only logs a warning and evaluation proceeds against the live definition, so a historical request silently gets present-day results instead of an error."
+ },
+ {
+  "cluster_id": "g055",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/flags/flag_matching.rs:1601-1604",
+  "confidence": 0.8,
+  "rationale": "The diff deletes an unrelated blank line before check_rollout; pure noise in an otherwise scoped change."
+ },
+ {
+  "cluster_id": "g056",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/api/feature_flag.py:3521-3523",
+  "confidence": 0.5,
+  "rationale": "An explicit 'could not verify' note about deprecate_field inside model_to_dict; no claim a reviewer can act on (django_deprecate_fields is not vendored here either)."
+ },
+ {
+  "cluster_id": "g057",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/api/types.rs:106-121",
+  "confidence": 0.5,
+  "rationale": "Self-dismissed as correct: both new params reuse deserialize_optional_bool like their siblings. Non-finding."
+ },
+ {
+  "cluster_id": "g058",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "posthog/api/feature_flag.py:3510-3614",
+  "confidence": 0.8,
+  "rationale": "One `except Exception` wraps ~100 lines including the outbound is_valid(raise_exception=True) at 3608-3609, so response-shape bugs and HTTP errors from the flags service are all flattened into 'Failed to evaluate flag'."
+ },
+ {
+  "cluster_id": "g059",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "rust/feature-flags/src/flags/flag_matching.rs:1002-1012",
+  "confidence": 0.7,
+  "rationale": "get_person_properties clones and re-merges the property map for every flag when detailed_analysis is on. Real, but the detailed path is a single-flag internal debug call, so the cost is negligible."
+ },
+ {
+  "cluster_id": "g060",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/feature_flag/version_history.py:223-244",
+  "confidence": 0.45,
+  "rationale": "The slice is applied to a newest-first ordering and the loop keeps the last versioned entry in chronological order, so truncating older rows cannot change the version returned; the asserted corruption mechanism does not hold."
+ },
+ {
+  "cluster_id": "g061",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/api/types.rs:603-606",
+  "confidence": 0.5,
+  "rationale": "Self-dismissed as bounded; no action."
+ },
+ {
+  "cluster_id": "g062",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:1102-1117",
+  "confidence": 0.75,
+  "rationale": "The block is documented as unreachable (comment at 1094-1095) and the new isinstance check raises ValueError into an except (ValueError, TypeError) that float() already triggered, so the added lines change no outcome."
+ },
+ {
+  "cluster_id": "g063",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/api/feature_flag.py:3379-3388",
+  "confidence": 0.6,
+  "rationale": "Self-dismissed: the same decorator order is used by the sibling actions at 3343-3353. Non-finding."
+ },
+ {
+  "cluster_id": "g064",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/api/feature_flag.py:3389",
+  "confidence": 0.5,
+  "rationale": "Accurate that the read is not audited, but no read path in this viewset (or the equivalent person point-in-time endpoint) writes an activity entry; this is an org-wide policy question, not something this PR changed."
+ },
+ {
+  "cluster_id": "g065",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "posthog/api/feature_flag.py:3453-3455",
+  "confidence": 0.6,
+  "rationale": "The distinct_ids used for the historical property replay are the person's current (post-merge) set, so ids merged in after `timestamp` contribute $set events that did not belong to this person at that time."
+ },
+ {
+  "cluster_id": "g066",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/api/services/flags_service.py:85-87",
+  "confidence": 0.8,
+  "rationale": "`headers = {}` is untyped while the adjacent `params: dict[str, str]` carries an annotation. Cosmetic."
+ },
+ {
+  "cluster_id": "g067",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:140-155",
+  "confidence": 0.7,
+  "rationale": "The replay matches event='$set'/'$set_once' or JSONHas(properties,'$set') - it never checks JSONHas(properties,'$set_once'), so $set_once carried on an $identify event is dropped, and non-event property sources (API/import updates) are invisible."
+ },
+ {
+  "cluster_id": "g068",
+  "verdict": "matches-thread",
+  "matches_thread": 2,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:3536",
+  "confidence": 0.95,
+  "rationale": "logging.exception(f'...{e}') uses the root logger and an f-string interpolated exception while the module logger is used everywhere else. Same as the thread."
+ },
+ {
+  "cluster_id": "g069",
+  "verdict": "matches-thread",
+  "matches_thread": 4,
+  "judged_severity": "medium",
+  "code_citation": "rust/feature-flags/src/handler/flags.rs:154-171",
+  "confidence": 0.9,
+  "rationale": "Up to four tracing::info! lines per override entry, two dumping full FlagFilters Debug output. Same as the thread asking for debug/trace."
+ },
+ {
+  "cluster_id": "g070",
+  "verdict": "matches-thread",
+  "matches_thread": 16,
+  "judged_severity": "medium",
+  "code_citation": "rust/feature-flags/src/handler/authentication.rs:26-49",
+  "confidence": 0.85,
+  "rationale": "is_internal_request has six branches and no #[cfg(test)] module, and the billing skip and override loop are equally untested. Same as the thread."
+ },
+ {
+  "cluster_id": "g071",
+  "verdict": "matches-thread",
+  "matches_thread": 8,
+  "judged_severity": "medium",
+  "code_citation": "posthog/api/feature_flag.py:3547",
+  "confidence": 0.5,
+  "rationale": "internal_request_token=os.getenv('INTERNAL_REQUEST_TOKEN') with no settings entry and no validation is the same dependency the thread flags: if it is unset the Rust side silently drops detailed_analysis and returns empty analysis."
+ },
+ {
+  "cluster_id": "g072",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "rust/feature-flags/src/properties/property_matching.rs:425-430",
+  "confidence": 0.8,
+  "rationale": "In/NotIn return Err(ValidationError) from match_property, and the caller's unwrap_or(false) makes that false - the operator cannot 'flip to match' on an absent property."
+ },
+ {
+  "cluster_id": "g073",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/api/types.rs:709",
+  "confidence": 0.6,
+  "rationale": "Self-dismissed as unreachable scale; condition counts cannot approach i32 overflow."
+ },
+ {
+  "cluster_id": "g074",
+  "verdict": "matches-thread",
+  "matches_thread": 27,
+  "judged_severity": "high",
+  "code_citation": "rust/feature-flags/src/handler/flags.rs:165-173",
+  "confidence": 0.9,
+  "rationale": "`*flag = override_flag` replaces key, id and team_id with caller-supplied values and nothing validates identity. Same defect as the thread (and its duplicate)."
+ },
+ {
+  "cluster_id": "g075",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/models/feature_flag/test/test_version_history.py:379-381",
+  "confidence": 0.85,
+  "rationale": "AGENTS.md:134 states 'Python tests: do not add doc comments'; several new tests carry docstrings. Correct convention violation, cosmetic."
+ },
+ {
+  "cluster_id": "g076",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/api/feature_flag.py:3470",
+  "confidence": 0.8,
+  "rationale": "The comment calls it 'the efficient single-pass method' while reconstruct_flag_at_timestamp runs find_version_at_timestamp then reconstruct_flag_at_version - two activity-log queries (version_history.py:280-287)."
+ },
+ {
+  "cluster_id": "g077",
+  "verdict": "matches-thread",
+  "matches_thread": 32,
+  "judged_severity": "high",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:140-155",
+  "confidence": 0.9,
+  "rationale": "No lower time bound, no LIMIT, full properties blob via toJSONString and a double json.loads. Exactly the thread's blocking finding."
+ },
+ {
+  "cluster_id": "g078",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "rust/feature-flags/src/handler/flags.rs:165-173",
+  "confidence": 0.5,
+  "rationale": "Cross-tenant reach was correctly ruled out: the flag list is fetched for the authenticated team and the matcher uses self.team_id for cohorts, groups and person lookups, so a forged team_id in the override does not read another tenant's data."
+ },
+ {
+  "cluster_id": "g079",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:3608-3609",
+  "confidence": 0.6,
+  "rationale": "The only sibling that returns a reconstructed dict does it with Serializer(instance=result).data (feature_flag.py:2481); validating an outbound payload with data=+is_valid is unique here and is what turns a shape mismatch into a 500."
+ },
+ {
+  "cluster_id": "g080",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/models/feature_flag/version_history.py:195-198",
+  "confidence": 0.6,
+  "rationale": "The new docstrings use a Google-style 'Raises:' block while the pre-existing function in the same module documents exceptions in prose (VH:88-89). Cosmetic inconsistency."
+ },
+ {
+  "cluster_id": "g081",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:258-265",
+  "confidence": 0.65,
+  "rationale": "Existence is 'any event at or before the timestamp' while properties come only from $set-bearing events, so a person with events but no property events passes the gate and then evaluates against an empty property dict - a silently wrong historical answer rather than the 400."
+ },
+ {
+  "cluster_id": "g082",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/api/types.rs:404-406",
+  "confidence": 0.6,
+  "rationale": "Self-dismissed: skip_serializing_if keeps the field absent for existing clients. Non-finding."
+ },
+ {
+  "cluster_id": "g083",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/api/types.rs:198,395",
+  "confidence": 0.6,
+  "rationale": "Accurate but inert: Eq had to go because ConditionAnalysis holds an f64, PartialEq remains, and nothing uses these types as map keys. Restates the diff."
+ },
+ {
+  "cluster_id": "g084",
+  "verdict": "matches-thread",
+  "matches_thread": 32,
+  "judged_severity": "medium",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:258-265",
+  "confidence": 0.7,
+  "rationale": "A second unbounded events scan with no event filter, run before the property query. The thread makes the same point ('person_existed_at_timestamp a few lines up is a redundant round trip')."
+ },
+ {
+  "cluster_id": "g085",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/api/types.rs:434-440",
+  "confidence": 0.7,
+  "rationale": "Self-dismissed and correct: FlagEvaluationReason has no rename_all, so condition_index and conditions are exactly the keys Python reads. Non-finding."
+ },
+ {
+  "cluster_id": "g086",
+  "verdict": "matches-thread",
+  "matches_thread": 9,
+  "judged_severity": "high",
+  "code_citation": "posthog/api/feature_flag.py:3534-3537",
+  "confidence": 0.8,
+  "rationale": "Serialization failure sets override_definitions=None and the historical request proceeds against the current definition. Same defect as the thread."
+ },
+ {
+  "cluster_id": "g087",
+  "verdict": "matches-thread",
+  "matches_thread": 32,
+  "judged_severity": "medium",
+  "code_citation": "posthog/api/feature_flag.py:3388",
+  "confidence": 0.7,
+  "rationale": "The new POST declares no throttle_classes while local_evaluation (3049) and remote_config (3624) both do. The thread names this explicitly as the DoS half of its finding."
+ },
+ {
+  "cluster_id": "g088",
+  "verdict": "matches-thread",
+  "matches_thread": 10,
+  "judged_severity": "low",
+  "code_citation": "posthog/api/feature_flag.py:3576-3583",
+  "confidence": 0.9,
+  "rationale": "Only flag_result['conditions'] matches the Rust FlagDetails contract; the other three or-branches cannot fire and would mask a future shape change. Same as the thread."
+ },
+ {
+  "cluster_id": "g089",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:154",
+  "confidence": 0.65,
+  "rationale": "ORDER BY timestamp ASC with no tiebreaker over a last-write-wins fold: events sharing a timestamp can be applied in either order, so the same query can return different properties across calls."
+ },
+ {
+  "cluster_id": "g090",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/models/feature_flag/version_history.py:24-30",
+  "confidence": 0.6,
+  "rationale": "Self-dismissed and pre-existing (module-level RECONSTRUCTABLE_FIELDS is untouched by this diff)."
+ },
+ {
+  "cluster_id": "g091",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:84-96",
+  "confidence": 0.8,
+  "rationale": "get_distinct_ids_for_person_identifier has no callers left anywhere in the tree yet keeps its signature updated by this diff. Dead but harmless."
+ },
+ {
+  "cluster_id": "g092",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:147",
+  "confidence": 0.55,
+  "rationale": "distinct_ids is passed straight into two `distinct_id IN %(distinct_ids)s` clauses (PIT:147, 262) with no cap; a person with a pathological merge history produces a very large IN list. Real but secondary to the missing row cap."
+ },
+ {
+  "cluster_id": "g093",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/feature_flag/test/test_version_history.py:279",
+  "confidence": 0.8,
+  "rationale": "TestTimestampBasedReconstruction subclasses the concrete TestReconstructFlagAtVersion, so that class's whole suite runs a second time; the intent was clearly to reuse _create_flag/_simulate_update."
+ },
+ {
+  "cluster_id": "g094",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "rust/feature-flags/src/handler/mod.rs:218",
+  "confidence": 0.6,
+  "rationale": "mod.rs:218 is 117 characters and there is no rustfmt.toml in rust/, so default max_width=100 applies and cargo fmt --check fails (billing.rs also gains a double blank line)."
+ },
+ {
+  "cluster_id": "g095",
+  "verdict": "valid-minor",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "rust/feature-flags/src/handler/billing.rs:54-57",
+  "confidence": 0.6,
+  "rationale": "The internal-request early return emits no counter or log, so requests that skip billing are invisible. Accurate, but it mirrors the adjacent skip_writes guard, so the gap is pre-existing in shape."
+ },
+ {
+  "cluster_id": "g096",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "products/feature_flags/frontend/generated/api.schemas.ts:776",
+  "confidence": 0.8,
+  "rationale": "AGENTS.md:101 makes serializers the source of truth for generated TS; the sibling version-history endpoint regenerated api.schemas.ts in its own commit (9dff1db7), and this PR's four serializers appear nowhere in the generated files."
+ },
+ {
+  "cluster_id": "g097",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "posthog/api/feature_flag.py:3403",
+  "confidence": 0.8,
+  "rationale": "GroupsJSONField sets default='{}' (1840-1845) and DRF returns a field default without running to_internal_value, so an omitted `groups` yields the string '{}', which `or {}` keeps; both sibling call sites defend with `if isinstance(groups, str)` (2523-2528, 3259-3262) and this one does not."
+ },
+ {
+  "cluster_id": "g098",
+  "verdict": "false-positive",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "rust/feature-flags/src/handler/flags.rs:152-195",
+  "confidence": 0.45,
+  "rationale": "Correctly withdrawn: evaluation_contexts is not a model field so the override never carries tags, but fetch_and_filter only filters on tags when the request supplies evaluation_contexts, which test_evaluation never does."
+ },
+ {
+  "cluster_id": "g099",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "high",
+  "code_citation": "posthog/api/feature_flag.py:3539-3549",
+  "confidence": 0.7,
+  "rationale": "geoip_disable is never sent, and get_person_property_overrides extends the supplied props with geoip values (properties.rs:50-55), so $geoip_* keys reconstructed for the timestamp are overwritten using the Django server's IP."
+ },
+ {
+  "cluster_id": "g100",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "low",
+  "code_citation": "rust/feature-flags/src/api/types.rs:585-601",
+  "confidence": 0.75,
+  "rationale": "The catch-all arm is reached by IcontainsMulti, all Semver* variants, IsDateExact/After/Before and FlagEvaluatesTo, yielding explanations like \"Property 'x' isdateafter <v>\" and a bare 'does not match' for the negative case."
+ },
+ {
+  "cluster_id": "g101",
+  "verdict": "matches-thread",
+  "matches_thread": 37,
+  "judged_severity": "low",
+  "code_citation": "posthog/models/person/point_in_time_properties.py:64-76",
+  "confidence": 0.9,
+  "rationale": "Person.distinct_ids is an @property, so hasattr is always true and the PersonDistinctId fallback is unreachable. Same as the thread."
+ },
+ {
+  "cluster_id": "g102",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/handler/mod.rs:210",
+  "confidence": 0.5,
+  "rationale": "Self-downgraded and largely wrong: filtered_flags.clone() is pre-existing context, and axum applies a 2MB DefaultBodyLimit unless disabled, which this router does not do."
+ },
+ {
+  "cluster_id": "g103",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/handler/flags.rs:336-338",
+  "confidence": 0.5,
+  "rationale": "Self-dismissed and correct: skip_writes is forced true whenever detailed_analysis or the override-props flag is set, so an override cannot drive continuity writes."
+ },
+ {
+  "cluster_id": "g104",
+  "verdict": "matches-thread",
+  "matches_thread": 1,
+  "judged_severity": "high",
+  "code_citation": "rust/feature-flags/src/handler/mod.rs:193-196",
+  "confidence": 0.9,
+  "rationale": "override_flags_definitions is forwarded unconditionally while detailed_analysis is gated at 218-222, and only_use_override_person_properties is likewise ungated. This is the thread's finding."
+ },
+ {
+  "cluster_id": "g105",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/properties/property_matching.rs:137",
+  "confidence": 0.8,
+  "rationale": "Self-dismissed and pre-existing: the unreachable!() sits behind the early IsSet/IsNotSet returns at PM:74-88 and is untouched by this diff."
+ },
+ {
+  "cluster_id": "g106",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "posthog/api/feature_flag.py:3397",
+  "confidence": 0.6,
+  "rationale": "Self-dismissed: self.get_object() and self.team_id already scope the action to the team. Non-finding."
+ },
+ {
+  "cluster_id": "g107",
+  "verdict": "trivia",
+  "matches_thread": null,
+  "judged_severity": "nit",
+  "code_citation": "rust/feature-flags/src/api/types.rs:443-450",
+  "confidence": 0.6,
+  "rationale": "Technically true but inert: FlagDetails is the only implementor and the crate has no external consumers, so adding a required trait method breaks nothing."
+ },
+ {
+  "cluster_id": "g108",
+  "verdict": "valid-other",
+  "matches_thread": null,
+  "judged_severity": "medium",
+  "code_citation": "posthog/models/feature_flag/version_history.py:236-254",
+  "confidence": 0.75,
+  "rationale": "flag_was_deleted is only updated inside the `if version_after is not None` guard, so a soft-delete entry logged without a version change leaves the flag looking alive and the endpoint evaluates a deleted flag."
+ }
+]

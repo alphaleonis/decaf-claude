@@ -1,0 +1,141 @@
+{
+ "judge_model": "claude-opus-5",
+ "pass": "1",
+ "verdicts": [
+  {
+   "cluster_id": "c60",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "util/stats/query_stats.go:320-368",
+   "confidence": 0.6,
+   "rationale": "Verified: the new helpers say \"Use this when you know...\" and name the param n, while IncrementSamplesAtStep/AtTimestamp say \"Use this if you know...\" with samples. Accurate but a pure doc-comment wording difference with no consequence for a reader of the change."
+  },
+  {
+   "cluster_id": "c76",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "promql/engine_test.go:2428-2432",
+   "confidence": 0.65,
+   "rationale": "The assertion block only compares per-case literals; no invariant check exists. An assertion that SamplesRead <= TotalSamples would fail today (e.g. engine_test.go:1529-1535 expects TotalSamples 2 with SamplesRead 4), so the missing invariant is exactly what let the subquery double-count through."
+  },
+  {
+   "cluster_id": "c101",
+   "verdict": "matches-thread",
+   "matches_thread": 5,
+   "judged_severity": "high",
+   "code_citation": "promql/engine_test.go:1533-1535, 1548-1551; promql/engine.go:1869-1875 vs 2157-2184",
+   "confidence": 0.7,
+   "rationale": "Confirmed double count: evalSubquery merges the child's SamplesRead into the parent and the range-vector loop then counts the same window again, so the table bakes in doubled values (one entry's own comment reads \"// subquery + outer\"). Thread 5 raises the same defect at that expected value (\"Shouldn't this be 1 sample read?\")."
+  },
+  {
+   "cluster_id": "c41",
+   "verdict": "false-positive",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:2439-2442; promql/engine_test.go:1414-1433",
+   "confidence": 0.85,
+   "rationale": "The clamp is exercised: for Start=201s/End=220s/Interval=5s numOuterSteps=4, and the subquery's last inner step at t=220000 maps to ceil(19/5)=4, which the clamp folds into step 3 - the value the table records as \"216000: 9, // steps after last outer -> last step\". Without the branch those cases would index out of range, so it is not dead under the suite."
+  },
+  {
+   "cluster_id": "c25",
+   "verdict": "false-positive",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:459-467",
+   "confidence": 0.9,
+   "rationale": "metrics.querySamplesRead appears exactly once in the MustRegister list and nowhere else in the tree (grep over the whole revision finds one construction site, one registration, one Add). There is no double registration."
+  },
+  {
+   "cluster_id": "c07",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "promql/engine.go:1815-1818, 1838-1841; util/stats/query_stats.go:278-284",
+   "confidence": 0.6,
+   "rationale": "evalSeries drives a MemoizedEmptyIterator and calls IncrementSamplesReadAtStep once per step per series, so a single stored sample re-served across lookback steps is counted repeatedly - contradicting the \"samples read (I/O)\" framing in the field doc, the metric help and docs. Real coherence problem at the center of the feature."
+  },
+  {
+   "cluster_id": "c97",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "promql/value.go:192-207; promql/engine.go:2160-2166",
+   "confidence": 0.6,
+   "rationale": "The differing return types are real (countSamplesAfter int64, totalHPointSize int), but the int64() cast at the call site is not caused by that: the pre-change code already wrote int64(len(floats)+totalHPointSize(histograms)) because the stats API takes int64. No consequence."
+  },
+  {
+   "cluster_id": "c138",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:2425-2444",
+   "confidence": 0.55,
+   "rationale": "The loop ships one line of rationale; the non-obvious parts are undocumented, and I confirmed the clamp is load-bearing against an out-of-range write into SamplesReadPerStep (outerStep reaches len for unaligned ranges, e.g. 201s-220s/5s). Recording that is worth a reviewer's attention."
+  },
+  {
+   "cluster_id": "c92",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "web/ui/mantine-ui/src/api/responseTypes/query.ts:26-29",
+   "confidence": 0.7,
+   "rationale": "QueryStats types samples as Record<string, number> and QueryStatsDisplay renders Object.entries generically, so the new fields need no UI type change. The question resolves to \"no\" against the code and surfaces no issue."
+  },
+  {
+   "cluster_id": "c124",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "promql/engine.go:2155-2166",
+   "confidence": 0.5,
+   "rationale": "countSamplesAfter reads floats/histograms immediately after matrixIterSlice repopulates them within the same step iteration and only reads T fields, so the reused-buffer aliasing raised as a question is benign; the claim establishes no defect."
+  },
+  {
+   "cluster_id": "c73",
+   "verdict": "matches-thread",
+   "matches_thread": 0,
+   "judged_severity": "medium",
+   "code_citation": "promql/engine_test.go:1776-1784",
+   "confidence": 0.85,
+   "rationale": "The IMPLEMENTATION NOTES banner is present and literally says \"Some sample count calculations may need refinement based on actual query execution\"; thread 0 sits on line 1785 saying it shouldn't be here. Same issue."
+  },
+  {
+   "cluster_id": "c13",
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:683-688",
+   "confidence": 0.6,
+   "rationale": "The Add does run in the defer on failure, but it is placed on the line after the pre-existing querySamples.Add, which behaves identically by design - a cumulative counter of work actually performed. Accurate observation, not something a reviewer needs raised."
+  },
+  {
+   "cluster_id": "c140",
+   "verdict": "matches-thread",
+   "matches_thread": 2,
+   "judged_severity": "low",
+   "code_citation": "promql/engine_test.go:2066, 2135",
+   "confidence": 0.85,
+   "rationale": "Verified: identical \"PHASE 3: RANGE QUERY + SUBQUERY COMBINATIONS\" banners at 2066 and 2135, and banners run 2,3,3,4,5 with no PHASE 1. Thread 2 raises the duplicate banner at 2135."
+  },
+  {
+   "cluster_id": "c91",
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "util/stats/stats_test.go:54-55, 66-68; util/stats/query_stats.go:313, 347, 411, 423",
+   "confidence": 0.6,
+   "rationale": "Only IncrementSamplesReadAtTimestamp gains a direct exercise; StepTrackingEnabled, IncrementSamplesReadAtStep, NewChildWithStepTracking and MergeSamplesReadFromSubquery have no util/stats test. Real gap, but all four are heavily covered indirectly by the promql engine table, so consequence is small."
+  },
+  {
+   "cluster_id": "c03",
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "promql/engine.go:2389-2397; util/stats/query_stats.go:298-312, 406-417",
+   "confidence": 0.5,
+   "rationale": "Confirmed: the SubqueryExpr path builds step tracking from the subquery's own start/end/step, so InitStepTracking allocates two []int64 of (subqEnd-subqStart)/subqStep+1 before evaluation, unbounded by the 11,000-point API cap (web/api/v1/api.go:632) and not covered by maxSamples; the old NewChild allocated nothing. Gated on per-step stats, hence low."
+  }
+ ]
+}

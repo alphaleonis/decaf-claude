@@ -1,0 +1,134 @@
+[
+ {
+  "thread_index": 0,
+  "path": "promql/engine_test.go",
+  "line": 1785,
+  "body": "This seems like it shouldn't be here.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 1,
+  "path": "promql/engine_test.go",
+  "line": 1605,
+  "body": "Another case that would be good to test: subquery where the range is longer than the query step (eg. this test case, but with Interval set to a minute)",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 2,
+  "path": "promql/engine_test.go",
+  "line": 2135,
+  "body": "There's another \"phase 3\" comment three test cases earlier - do we need both groups of tests?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 3,
+  "path": "promql/engine_test.go",
+  "line": 1521,
+  "body": "A lot of these new tests seem very similar, or it's not clear what they're exercising in contrast to other tests.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 4,
+  "path": "util/stats/query_stats.go",
+  "line": 432,
+  "body": "This isn't correct: there isn't a 1:1 mapping between the child query steps and the parent query steps.\nFor example, if we're evaluating an instant query at T=25m with the expression sum_over_time(foo[10m:1m]), then the single parent query step should include all the samples read for 10 inner steps, from T=16m to T=25m. (The left boundary is not inclusive.)\nFurthermore, if we're evaluating a range query containing a subquery, then the value of SamplesReadPerStep for each parent step should only include samples read in the child query that haven't been included in a previous parent step. This would keep the behaviour consistent with range vector selectors.\nFor example, if the expression is sum_over_time(foo[10m:1m]), evaluated from T=25m to T=29m with a 2m step, then the first parent step (T=25m) should include all the samples read for 10 inner steps, then T=27m and T=29m should only include the new samples read (2 inner steps each).",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [
+    "t correct: there isn"
+   ],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 5,
+  "path": "promql/engine_test.go",
+  "line": 1551,
+  "body": "Shouldn't this be 1 sample read?\nThis is an instant query evaluated at T=90s, and the subquery has a 30s range with a 30s step.\nThe left boundary of a subquery is not included, so the only step returned by the subquery is at T=90s. metricWith1SampleEvery10Seconds has one series, and there is a sample within the lookback window, so the instant vector selector returns a single sample and so this counts as one sample read.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 6,
+  "path": "promql/engine_test.go",
+  "line": 1432,
+  "body": "I think this might have uncovered a separate bug: why is there an inner step beyond the last one required for the outer query?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 7,
+  "path": "promql/engine_test.go",
+  "line": 1630,
+  "body": "Shouldn't this be 3? At T=261s, the subquery will read a sample at T=240s, T=250s and T=260s.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 8,
+  "path": "web/api/v1/api_test.go",
+  "line": 984,
+  "body": "If this was unknown to the callee would the value be zero?\nIf so, there much value in checking?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 9,
+  "path": "promql/engine_test.go",
+  "line": 51,
+  "body": "Ideally this would be in a separate PR, as it is unrelated to this one.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ }
+]

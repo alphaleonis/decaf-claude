@@ -1,0 +1,12 @@
+[
+  {"group_id": "tg01", "thread_indices": [0], "defect": "A stray \"IMPLEMENTATION NOTES\" scratch comment block was left in the test table (promql/engine_test.go:1776-1784).", "same_fix": ""},
+  {"group_id": "tg02", "thread_indices": [1], "defect": "Missing test coverage for a subquery whose range is longer than the query step.", "same_fix": ""},
+  {"group_id": "tg03", "thread_indices": [2], "defect": "Two identical \"PHASE 3: RANGE QUERY + SUBQUERY COMBINATIONS\" test groups exist (promql/engine_test.go:2066 and 2135).", "same_fix": ""},
+  {"group_id": "tg04", "thread_indices": [3], "defect": "The new tests in the \"ENHANCED SUBQUERY TESTING\" section are near-duplicates of each other with no stated distinct purpose.", "same_fix": ""},
+  {"group_id": "tg05", "thread_indices": [4], "defect": "MergeSamplesReadFromSubquery merges per-step counts index-by-index, wrongly assuming a 1:1 child-step to parent-step mapping, and does not do incremental attribution across parent steps (util/stats/query_stats.go:423-433).", "same_fix": ""},
+  {"group_id": "tg06", "thread_indices": [5], "defect": "Wrong expected sample count for sum_over_time(metricWith1SampleEvery10Seconds[30s:30s]) at T=90s: 2 instead of 1, because the subquery's read is double-counted with the outer read (promql/engine_test.go:1548-1551).", "same_fix": ""},
+  {"group_id": "tg07", "thread_indices": [6], "defect": "The subquery evaluation produces an inner step beyond the last one required by the outer query, inflating the last parent step's count (promql/engine_test.go:1432).", "same_fix": ""},
+  {"group_id": "tg08", "thread_indices": [7], "defect": "Wrong expected sample count for the parent step at T=261s (should be 3).", "same_fix": ""},
+  {"group_id": "tg09", "thread_indices": [8], "defect": "require.GreaterOrEqual(qs.Samples.SamplesRead, int64(0)) is a vacuous assertion that passes on an unset zero value (web/api/v1/api_test.go:983, 999).", "same_fix": ""},
+  {"group_id": "tg10", "thread_indices": [9], "defect": "An unrelated cleanup, the deletion of the unused defaultEpsilon constant in promql/engine_test.go, is bundled into this PR.", "same_fix": ""}
+]

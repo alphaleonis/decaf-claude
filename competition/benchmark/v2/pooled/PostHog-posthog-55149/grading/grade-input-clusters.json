@@ -1,0 +1,542 @@
+[
+ {
+  "id": "g001",
+  "summary": "the isinstance(flag_result, bool)/str response branches are unreachable",
+  "location": "posthog/api/feature_flag.py:3588"
+ },
+ {
+  "id": "g002",
+  "summary": "person_id is an unvalidated CharField, so a malformed UUID escapes as an unhandled ValidationError",
+  "location": "posthog/api/feature_flag.py:1932"
+ },
+ {
+  "id": "g003",
+  "summary": "VersionNotFound and VersionHistoryIncomplete map to 400 where the sibling path returns 404",
+  "location": "posthog/api/feature_flag.py:3492"
+ },
+ {
+  "id": "g004",
+  "summary": "rollout_percentage == 0.0 float equality versus an epsilon comparison (dismissed)",
+  "location": "rust/feature-flags/src/api/types.rs:652"
+ },
+ {
+  "id": "g005",
+  "summary": "evaluation_distinct_id takes distinct_ids[0] from a list with unspecified order",
+  "location": "posthog/api/feature_flag.py:3430"
+ },
+ {
+  "id": "g006",
+  "summary": "the reconstructed FeatureFlag copies only five fields, dropping the rest of the reconstruction",
+  "location": "posthog/api/feature_flag.py:3478"
+ },
+ {
+  "id": "g007",
+  "summary": "rollout_excluded is gated on rollout_percentage == 0.0, so partial-rollout exclusion never reports",
+  "location": "rust/feature-flags/src/api/types.rs:652"
+ },
+ {
+  "id": "g008",
+  "summary": "Rust sets ConditionAnalysis.matched to all_properties_matched while the serializer documents otherwise",
+  "location": "rust/feature-flags/src/api/types.rs:713"
+ },
+ {
+  "id": "g009",
+  "summary": "the updated_at conversion branch is unreachable because auto_now forces editable=False",
+  "location": "posthog/api/feature_flag.py:3529"
+ },
+ {
+  "id": "g010",
+  "summary": "operator wire strings come from format!(\"{:?}\").to_lowercase(), bypassing serde's snake_case rename",
+  "location": "rust/feature-flags/src/api/types.rs:572"
+ },
+ {
+  "id": "g011",
+  "summary": "PropertyAnalysis.value lacks allow_null while Rust emits JSON null for is_set/is_not_set filters",
+  "location": "posthog/api/feature_flag.py:1961"
+ },
+ {
+  "id": "g012",
+  "summary": "return_debug_info was removed while an existing caller in person.py still passes it",
+  "location": "posthog/models/person/point_in_time_properties.py:105"
+ },
+ {
+  "id": "g013",
+  "summary": "a vestigial `except Exception: raise` remains after the contextual wrapping was removed",
+  "location": "posthog/models/person/point_in_time_properties.py:80"
+ },
+ {
+  "id": "g014",
+  "summary": "model_to_dict emits the analytics_dashboards M2M as Dashboard instances, which are not JSON-serializable",
+  "location": "posthog/api/feature_flag.py:3521"
+ },
+ {
+  "id": "g015",
+  "summary": "f-prefixed string literals contain no placeholders (ruff F541)",
+  "location": "posthog/api/feature_flag.py:3446"
+ },
+ {
+  "id": "g016",
+  "summary": "the new tests mix real now(UTC) with retro-fitted created_at instead of freeze_time",
+  "location": "posthog/models/feature_flag/test/test_version_history.py:287"
+ },
+ {
+  "id": "g017",
+  "summary": "imports are function-local while siblings from the same module are imported at top level",
+  "location": "posthog/api/feature_flag.py:3437"
+ },
+ {
+  "id": "g018",
+  "summary": "only flags[key]['enabled'] is read, ignoring failed, errorsWhileComputingFlags and quotaLimited",
+  "location": "posthog/api/feature_flag.py:3552"
+ },
+ {
+  "id": "g019",
+  "summary": "new 500-returning paths call only logger.exception, diverging from the established handler",
+  "location": "posthog/api/feature_flag.py:3457"
+ },
+ {
+  "id": "g020",
+  "summary": "claim that model_to_dict omits the id AutoField so every override fails to parse (refuted on reproduction)",
+  "location": "posthog/api/feature_flag.py:3521"
+ },
+ {
+  "id": "g021",
+  "summary": "ReDoS via caller-supplied regex operators (ruled out)",
+  "location": "rust/feature-flags/src/properties/property_matching.rs:0"
+ },
+ {
+  "id": "g022",
+  "summary": "the internal secret is compared with non-constant-time String equality",
+  "location": "rust/feature-flags/src/handler/authentication.rs:45"
+ },
+ {
+  "id": "g023",
+  "summary": "build_condition_analysis iterates only filters.groups, missing super conditions and holdouts",
+  "location": "rust/feature-flags/src/api/types.rs:552"
+ },
+ {
+  "id": "g024",
+  "summary": "ActivityLog lacks a covering index including created_at (pre-existing)",
+  "location": "posthog/models/activity_logging/activity_log.py:0"
+ },
+ {
+  "id": "g025",
+  "summary": "only_use_override_person_properties short-circuits prepare_flag_evaluation_state, skipping cohort/group prep",
+  "location": "rust/feature-flags/src/flags/flag_matching.rs:827"
+ },
+ {
+  "id": "g026",
+  "summary": "the new tests mirror implementation internals (tiered down)",
+  "location": "posthog/models/feature_flag/test/test_version_history.py:0"
+ },
+ {
+  "id": "g027",
+  "summary": "the ~240-600 line new endpoint and its Rust counterpart have no tests anywhere",
+  "location": "posthog/api/feature_flag.py:3379"
+ },
+ {
+  "id": "g028",
+  "summary": "PropertyType is fully qualified repeatedly instead of imported like its sibling",
+  "location": "rust/feature-flags/src/api/types.rs:577"
+ },
+ {
+  "id": "g029",
+  "summary": "a production action named test_evaluation reads as a test",
+  "location": "posthog/api/feature_flag.py:3379"
+ },
+ {
+  "id": "g030",
+  "summary": "build_condition_analysis matches every filter as a person property regardless of prop_type",
+  "location": "rust/feature-flags/src/api/types.rs:603"
+ },
+ {
+  "id": "g031",
+  "summary": "the comment 'prioritize person_id over distinct_id' states the opposite of the code",
+  "location": "posthog/api/feature_flag.py:3399"
+ },
+ {
+  "id": "g032",
+  "summary": "person_existed_at_timestamp has no test coverage despite gating a user-visible 400",
+  "location": "posthog/models/person/point_in_time_properties.py:228"
+ },
+ {
+  "id": "g033",
+  "summary": "an assertion comparing three values derived from one base is tautological",
+  "location": "posthog/models/feature_flag/test/test_version_history.py:341"
+ },
+ {
+  "id": "g034",
+  "summary": "timestamp-awareness validation is inconsistent across the new functions",
+  "location": "posthog/models/person/point_in_time_properties.py:107"
+ },
+ {
+  "id": "g035",
+  "summary": "match_property(...).unwrap_or(false) discards Err, conflating failure with no-match",
+  "location": "rust/feature-flags/src/api/types.rs:602"
+ },
+ {
+  "id": "g036",
+  "summary": "required_scopes=['feature_flag:read'] gates an action returning full person property blobs (PII)",
+  "location": "posthog/api/feature_flag.py:3388"
+ },
+ {
+  "id": "g037",
+  "summary": "claim that local_evaluation/remote_config use ClickHouseBurstRateThrottle (refuted)",
+  "location": "posthog/models/person/point_in_time_properties.py:139"
+ },
+ {
+  "id": "g038",
+  "summary": "max_execution_time is hardcoded to 10 while the sibling takes a caller-supplied value",
+  "location": "posthog/models/person/point_in_time_properties.py:228"
+ },
+ {
+  "id": "g039",
+  "summary": "values_list passes the redundant default flat=False",
+  "location": "posthog/models/feature_flag/version_history.py:225"
+ },
+ {
+  "id": "g040",
+  "summary": "the internal bearer secret is sent to a service URL that neither pins nor requires TLS",
+  "location": "posthog/api/services/flags_service.py:84"
+ },
+ {
+  "id": "g041",
+  "summary": "SQL injection in the existence query (considered, ruled out)",
+  "location": "posthog/models/person/point_in_time_properties.py:247"
+ },
+ {
+  "id": "g042",
+  "summary": "the internal bearer token shares the Authorization slot with team auth (dismissed)",
+  "location": "rust/feature-flags/src/handler/flags.rs:0"
+ },
+ {
+  "id": "g043",
+  "summary": "the internal token is a single global unscoped secret with no per-team binding, expiry or rotation",
+  "location": "rust/feature-flags/src/handler/authentication.rs:26"
+ },
+ {
+  "id": "g044",
+  "summary": ".ok() discards the get_person_properties error, so every property reports unmatched",
+  "location": "rust/feature-flags/src/flags/flag_matching.rs:1006"
+ },
+ {
+  "id": "g045",
+  "summary": "SQL/ClickHouse injection in the reconstruction queries (considered, ruled out)",
+  "location": "posthog/models/person/point_in_time_properties.py:0"
+ },
+ {
+  "id": "g046",
+  "summary": "find_version_at_timestamp falls through to `return 1` when no versioned entry exists",
+  "location": "posthog/models/feature_flag/version_history.py:262"
+ },
+ {
+  "id": "g047",
+  "summary": "every Rust test edit sets the new context fields to inert values and passes None for overrides",
+  "location": "rust/feature-flags/src/handler/tests.rs:0"
+ },
+ {
+  "id": "g048",
+  "summary": ".iterator() streaming is defeated by list(entries) eleven lines later, and the comment claims otherwise",
+  "location": "posthog/models/feature_flag/version_history.py:212"
+ },
+ {
+  "id": "g049",
+  "summary": "test_find_version_at_timestamp_skips_entries_without_version never creates the version-less entry",
+  "location": "posthog/models/feature_flag/test/test_version_history.py:378"
+ },
+ {
+  "id": "g050",
+  "summary": "removing the isinstance(timestamp, datetime) guard breaks an existing test asserting its message",
+  "location": "posthog/models/person/point_in_time_properties.py:127"
+ },
+ {
+  "id": "g051",
+  "summary": "test_find_version_at_timestamp_boundary branches on the case name and discards its offset",
+  "location": "posthog/models/feature_flag/test/test_version_history.py:280"
+ },
+ {
+  "id": "g052",
+  "summary": "cross-request cache poisoning via *flag = override_flag (ruled out)",
+  "location": "rust/feature-flags/src/handler/flags.rs:172"
+ },
+ {
+  "id": "g053",
+  "summary": "skip_writes is computed from raw ungated query params rather than post-gate values",
+  "location": "rust/feature-flags/src/handler/flags.rs:336"
+ },
+ {
+  "id": "g054",
+  "summary": "the override path fails open: parse failure or missing key only warns and evaluation continues",
+  "location": "rust/feature-flags/src/handler/flags.rs:172"
+ },
+ {
+  "id": "g055",
+  "summary": "an unrelated blank-line deletion is stray noise in the diff",
+  "location": "rust/feature-flags/src/flags/flag_matching.rs:1604"
+ },
+ {
+  "id": "g056",
+  "summary": "deprecate_field(rollout_percentage) behavior inside model_to_dict could not be verified",
+  "location": "posthog/api/feature_flag.py:3521"
+ },
+ {
+  "id": "g057",
+  "summary": "deserialize_with on the two new query params (dismissed as correct)",
+  "location": "(no location given)"
+ },
+ {
+  "id": "g058",
+  "summary": "a blanket except Exception spans ~100 lines including is_valid(raise_exception=True)",
+  "location": "posthog/api/feature_flag.py:3609"
+ },
+ {
+  "id": "g059",
+  "summary": "the person-property map is cloned per flag under detailed_analysis",
+  "location": "rust/feature-flags/src/flags/flag_matching.rs:1004"
+ },
+ {
+  "id": "g060",
+  "summary": "MAX_HISTORY_ENTRIES truncation keeps the newest entries and can corrupt the returned version",
+  "location": "posthog/models/feature_flag/version_history.py:220"
+ },
+ {
+  "id": "g061",
+  "summary": "match_property is called per property per group (dismissed as bounded)",
+  "location": "rust/feature-flags/src/api/types.rs:0"
+ },
+ {
+  "id": "g062",
+  "summary": "isinstance guard added inside an already-unreachable BETWEEN block is a behavioral no-op",
+  "location": "posthog/api/feature_flag.py:1100"
+ },
+ {
+  "id": "g063",
+  "summary": "decorator ordering of @validated_request above @action (considered, dismissed)",
+  "location": "posthog/api/feature_flag.py:3388"
+ },
+ {
+  "id": "g064",
+  "summary": "person-property reads leave no audit-log entry",
+  "location": "posthog/api/feature_flag.py:3389"
+ },
+ {
+  "id": "g065",
+  "summary": "historical reconstruction uses the person's current distinct_id set against a past window",
+  "location": "posthog/api/feature_flag.py:3453"
+ },
+ {
+  "id": "g066",
+  "summary": "headers = {} lacks the type annotation its neighboring declaration carries",
+  "location": "posthog/api/services/flags_service.py:88"
+ },
+ {
+  "id": "g067",
+  "summary": "the property replay captures only $set/$set_once events, missing other property sources",
+  "location": "posthog/models/person/point_in_time_properties.py:154"
+ },
+ {
+  "id": "g068",
+  "summary": "logging.exception is called on the root logger with an f-string while siblings use the module logger",
+  "location": "posthog/api/feature_flag.py:3536"
+ },
+ {
+  "id": "g069",
+  "summary": "the override loop emits up to four log lines per entry, two dumping full FlagFilters with PII",
+  "location": "rust/feature-flags/src/handler/flags.rs:154"
+ },
+ {
+  "id": "g070",
+  "summary": "is_internal_request, the billing skip and the override loop have no tests",
+  "location": "rust/feature-flags/src/handler/authentication.rs:26"
+ },
+ {
+  "id": "g071",
+  "summary": "INTERNAL_REQUEST_TOKEN is read via raw os.getenv and declared in no setting, env file, or doc",
+  "location": "posthog/api/feature_flag.py:3547"
+ },
+ {
+  "id": "g072",
+  "summary": "claim that not_in flips to match on an absent property (refuted)",
+  "location": "rust/feature-flags/src/properties/property_matching.rs:425"
+ },
+ {
+  "id": "g073",
+  "summary": "the condition index is cast to i32 (dismissed as unreachable scale)",
+  "location": "rust/feature-flags/src/api/types.rs:0"
+ },
+ {
+  "id": "g074",
+  "summary": "*flag = override_flag replaces identity fields, so a colliding id can shadow another flag",
+  "location": "rust/feature-flags/src/handler/flags.rs:172"
+ },
+ {
+  "id": "g075",
+  "summary": "Python tests carry docstrings against AGENTS.md",
+  "location": "posthog/models/feature_flag/test/test_version_history.py:290"
+ },
+ {
+  "id": "g076",
+  "summary": "the comment calls reconstruct_flag_at_timestamp single-pass while it issues two queries",
+  "location": "posthog/api/feature_flag.py:3470"
+ },
+ {
+  "id": "g077",
+  "summary": "build_person_properties_at_time runs an unbounded ClickHouse scan with no lower bound, LIMIT or cap",
+  "location": "posthog/models/person/point_in_time_properties.py:139"
+ },
+ {
+  "id": "g078",
+  "summary": "a caller-supplied team_id in an override crossing a tenant boundary (refuted)",
+  "location": "rust/feature-flags/src/handler/flags.rs:172"
+ },
+ {
+  "id": "g079",
+  "summary": "the outbound response is validated via Serializer(data=)+is_valid, a pattern no sibling uses",
+  "location": "posthog/api/feature_flag.py:3608"
+ },
+ {
+  "id": "g080",
+  "summary": "the new docstrings use a Google-style Raises: block against local convention",
+  "location": "posthog/models/feature_flag/version_history.py:177"
+ },
+ {
+  "id": "g081",
+  "summary": "person_existed_at_timestamp defines existence as any event, diverging from the property replay",
+  "location": "posthog/models/person/point_in_time_properties.py:228"
+ },
+ {
+  "id": "g082",
+  "summary": "skip_serializing_if on the new conditions field and its wire compatibility (dismissed)",
+  "location": "rust/feature-flags/src/api/types.rs:0"
+ },
+ {
+  "id": "g083",
+  "summary": "Eq was removed from ServiceResponse/FlagsResponse/FlagDetails, forced by an f64",
+  "location": "rust/feature-flags/src/api/types.rs:0"
+ },
+ {
+  "id": "g084",
+  "summary": "person_existed_at_timestamp adds a second unbounded events scan with no event constraint",
+  "location": "posthog/models/person/point_in_time_properties.py:228"
+ },
+ {
+  "id": "g085",
+  "summary": "condition_index / conditions key-name drift across the Rust-Python boundary (dismissed)",
+  "location": "rust/feature-flags/src/api/types.rs:0"
+ },
+ {
+  "id": "g086",
+  "summary": "two paths silently discard the reconstructed override",
+  "location": "posthog/api/feature_flag.py:3534"
+ },
+ {
+  "id": "g087",
+  "summary": "the new expensive POST action declares no throttle_classes unlike its siblings",
+  "location": "posthog/api/feature_flag.py:3388"
+ },
+ {
+  "id": "g088",
+  "summary": "a four-way or-chain probes response shapes the Rust producer cannot emit",
+  "location": "posthog/api/feature_flag.py:3576"
+ },
+ {
+  "id": "g089",
+  "summary": "ORDER BY timestamp has no secondary key, so same-timestamp events order nondeterministically",
+  "location": "posthog/models/person/point_in_time_properties.py:154"
+ },
+ {
+  "id": "g090",
+  "summary": "_get_reconstructable_fields is computed at import rather than per call (dismissed)",
+  "location": "posthog/api/feature_flag.py:0"
+ },
+ {
+  "id": "g091",
+  "summary": "get_distinct_ids_for_person_identifier has no callers left but stays exported",
+  "location": "posthog/models/person/point_in_time_properties.py:93"
+ },
+ {
+  "id": "g092",
+  "summary": "an uncapped distinct_ids list is inlined into two ClickHouse IN clauses",
+  "location": "posthog/models/person/point_in_time_properties.py:66"
+ },
+ {
+  "id": "g093",
+  "summary": "TestTimestampBasedReconstruction subclasses a concrete TestCase, re-running its whole suite",
+  "location": "posthog/models/feature_flag/test/test_version_history.py:279"
+ },
+ {
+  "id": "g094",
+  "summary": "new hunks violate default rustfmt, so cargo fmt --check fails CI",
+  "location": "rust/feature-flags/src/handler/mod.rs:218"
+ },
+ {
+  "id": "g095",
+  "summary": "record_usage returns before any counter, metric or log fires for internal requests",
+  "location": "rust/feature-flags/src/handler/billing.rs:55"
+ },
+ {
+  "id": "g096",
+  "summary": "four new serializers were added without regenerating the OpenAPI/TypeScript artifacts",
+  "location": "frontend/src/generated/:0"
+ },
+ {
+  "id": "g097",
+  "summary": "GroupsJSONField default is the string '{}' and DRF returns defaults untouched by to_internal_value",
+  "location": "posthog/api/feature_flag.py:3403"
+ },
+ {
+  "id": "g098",
+  "summary": "the override dropping evaluation_contexts (refuted)",
+  "location": "rust/feature-flags/src/handler/flags.rs:258"
+ },
+ {
+  "id": "g099",
+  "summary": "geoip_disable is never set, so $geoip_* properties override supplied person properties",
+  "location": "posthog/api/feature_flag.py:3556"
+ },
+ {
+  "id": "g100",
+  "summary": "the catch-all operator-explanation arm is reachable for many real operators",
+  "location": "rust/feature-flags/src/api/types.rs:598"
+ },
+ {
+  "id": "g101",
+  "summary": "hasattr(person,'distinct_ids') is always true, so the fallback branch is dead code",
+  "location": "posthog/models/person/point_in_time_properties.py:64"
+ },
+ {
+  "id": "g102",
+  "summary": "filtered_flags.clone(), a missing DefaultBodyLimit and unbounded router intake (tiered down)",
+  "location": "rust/feature-flags/src/handler/mod.rs:0"
+ },
+ {
+  "id": "g103",
+  "summary": "an override setting ensure_experience_continuity cannot drive unbounded writes (dismissed)",
+  "location": "rust/feature-flags/src/handler/flags.rs:0"
+ },
+ {
+  "id": "g104",
+  "summary": "override_flags_definitions and only_use_override_person_properties are accepted ungated on public /flags",
+  "location": "rust/feature-flags/src/handler/flags.rs:152"
+ },
+ {
+  "id": "g105",
+  "summary": "the unreachable!() in match_property for IsSet/IsNotSet is pre-existing (dismissed)",
+  "location": "(no location given)"
+ },
+ {
+  "id": "g106",
+  "summary": "team scoping on the new action (considered, dismissed)",
+  "location": "posthog/api/feature_flag.py:3389"
+ },
+ {
+  "id": "g107",
+  "summary": "create_with_analysis is a new required method on the public FromFeatureAndMatch trait",
+  "location": "rust/feature-flags/src/api/types.rs:0"
+ },
+ {
+  "id": "g108",
+  "summary": "flag_was_deleted is tracked only inside the version_after guard, missing version-less delete entries",
+  "location": "posthog/models/feature_flag/version_history.py:243"
+ }
+]

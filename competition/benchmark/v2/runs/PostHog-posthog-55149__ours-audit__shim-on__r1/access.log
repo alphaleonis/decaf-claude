@@ -1,0 +1,517 @@
+2026-08-20T12:48:11Z	fs	ALLOW	Bash (no path)
+2026-08-20T12:48:12Z	fs	ALLOW	Bash (no path)
+2026-08-20T12:48:16Z	fs	ALLOW	Bash /tmp/review_diff.txt /tmp/review_diff.txt /tmp/review_diff.txt
+2026-08-20T12:48:18Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:48:20Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:48:23Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:48:39Z	fs	ALLOW	Bash docs/plans docs/specs docs/prd
+2026-08-20T12:48:40Z	fs	ALLOW	Bash posthog/api/feature_flag.py posthog/api/services/flags_service.py posthog/models/feature_flag/version_history.py posthog/models/person/point_in_time_properties.py posthog/models/feature_flag/test/test_version_history.py
+2026-08-20T12:48:44Z	fs	ALLOW	Bash ~/.cargo/bin /dev/null .venv/bin /dev/null
+2026-08-20T12:48:50Z	fs	ALLOW	Bash ~/.rustup
+2026-08-20T12:49:32Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:49:35Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:49:37Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:49:39Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:49:41Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:49:43Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:49:46Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:49:46Z	fs	ALLOW	Bash /tmp/review_diff.txt /tmp/review_diff.txt
+2026-08-20T12:49:48Z	fs	ALLOW	Bash (no path)
+2026-08-20T12:49:51Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:49:58Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:49:58Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs
+2026-08-20T12:50:01Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:01Z	fs	ALLOW	Bash /tmp/review_diff.txt .agents/ /dev/null
+2026-08-20T12:50:01Z	fs	ALLOW	Read /tmp/review_diff.txt
+2026-08-20T12:50:04Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:18Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:21Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:23Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:24Z	fs	ALLOW	Bash rust/feature-flags/src /tests.rs
+2026-08-20T12:50:25Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:27Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:28Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src /dev/null /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src /dev/null /tests
+2026-08-20T12:50:29Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:32Z	fs	ALLOW	Bash /tmp/review_diff.txt /tmp/review_diff.txt
+2026-08-20T12:50:32Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:34Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:35Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:38Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:41Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:43Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:43Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:50:48Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:50:49Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T12:50:50Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py posthog/models/feature_flag/version_history.py
+2026-08-20T12:50:50Z	fs	ALLOW	Bash /tmp/review_diff.txt .agents/
+2026-08-20T12:50:50Z	fs	ALLOW	Read /tmp/review_diff.txt
+2026-08-20T12:50:53Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T12:50:53Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py
+2026-08-20T12:50:54Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:50:56Z	fs	ALLOW	Bash posthog/api/feature_flag.py posthog/settings/*.py posthog/api/feature_flag.py /dev/null
+2026-08-20T12:51:00Z	fs	ALLOW	Bash posthog/api/*.py
+2026-08-20T12:51:05Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:51:06Z	fs	ALLOW	Bash posthog/api/feature_flag.py posthog/api/mixins.py
+2026-08-20T12:51:06Z	fs	ALLOW	Bash /dev/null /repo/rust/feature-flags/src
+2026-08-20T12:51:10Z	fs	ALLOW	Bash posthog/api/feature_flag.py posthog/api/feature_flag.py
+2026-08-20T12:51:10Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:51:10Z	fs	ALLOW	Bash posthog/api/services/flags_service.py
+2026-08-20T12:51:10Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:51:11Z	fs	ALLOW	Bash posthog/models/person/util.py posthog/models/person/util.py
+2026-08-20T12:51:11Z	fs	ALLOW	Bash rust/feature-flags/src/api/auth.rs rust/feature-flags/src/handler/mod.rs
+2026-08-20T12:51:11Z	fs	ALLOW	Bash posthog/models/feature_flag/test/test_version_history.py
+2026-08-20T12:51:13Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:51:14Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T12:51:14Z	fs	ALLOW	Bash posthog/models/feature_flag/feature_flag.py
+2026-08-20T12:51:15Z	fs	ALLOW	Bash posthog/models/feature_flag/test/test_version_history.py
+2026-08-20T12:51:16Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py
+2026-08-20T12:51:16Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs
+2026-08-20T12:51:17Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T12:51:17Z	fs	ALLOW	Bash posthog/models/person/util.py posthog/models/person/util.py
+2026-08-20T12:51:18Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog/models/feature_flag/version_history.py
+2026-08-20T12:51:19Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog/models/feature_flag/version_history.py
+2026-08-20T12:51:20Z	fs	ALLOW	Bash rust/feature-flags/src/handler/authentication.rs rust/feature-flags/src/api/auth.rs /dev/null rust/feature-flags/src/handler/billing.rs
+2026-08-20T12:51:21Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs
+2026-08-20T12:51:21Z	fs	ALLOW	Bash posthog/models/person/person.py
+2026-08-20T12:51:21Z	fs	ALLOW	Bash rust/feature-flags/src ^rust/feature-flags/src/handler/tests.rs
+2026-08-20T12:51:26Z	fs	ALLOW	Bash /tmp/review_diff.txt /tmp/review_diff.txt
+2026-08-20T12:51:26Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T12:51:27Z	fs	ALLOW	Bash rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:51:28Z	fs	ALLOW	Bash posthog/models/person/person.py
+2026-08-20T12:51:28Z	fs	ALLOW	Bash rust/feature-flags/src handler/tests.rs
+2026-08-20T12:51:29Z	fs	ALLOW	Bash (no path)
+2026-08-20T12:51:33Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:51:33Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:51:33Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:51:35Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:51:35Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:51:35Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog/api/feature_flag.py
+2026-08-20T12:51:35Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog/api/services/flags_service.py
+2026-08-20T12:51:37Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:51:37Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:51:38Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog/api/feature_flag.py
+2026-08-20T12:51:45Z	fs	ALLOW	Bash /tmp/review_diff.txt /tmp/review_diff.txt
+2026-08-20T12:51:45Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:51:45Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog/models/person/point_in_time_properties.py
+2026-08-20T12:51:48Z	fs	ALLOW	Bash /home/decaf/**/django/db/models/fields/__init__.py',recursive=True / *django/db/models/fields* /dev/null
+2026-08-20T12:51:49Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:51:51Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:51:52Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:51:52Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py posthog/models/feature_flag/version_history.py
+2026-08-20T12:51:54Z	fs	ALLOW	Bash /tmp/review_diff.txt
+2026-08-20T12:51:55Z	fs	ALLOW	Bash posthog/api posthog/api/*.py
+2026-08-20T12:51:55Z	fs	ALLOW	Bash rust/feature-flags/src/handler/billing.rs
+2026-08-20T12:51:56Z	fs	ALLOW	Bash posthog/api/feature_flag.py logger/logging posthog/api/feature_flag.py
+2026-08-20T12:51:57Z	fs	ALLOW	Read /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog/models/person/point_in_time_properties.py
+2026-08-20T12:52:00Z	fs	ALLOW	Bash posthog/api
+2026-08-20T12:52:03Z	fs	ALLOW	Bash /tmp/review_diff.txt /tmp/review_diff.txt
+2026-08-20T12:52:03Z	fs	ALLOW	Bash rust/feature-flags/src/flags
+2026-08-20T12:52:04Z	fs	ALLOW	Bash posthog/api/services/flags_service.py posthog/settings/*.py
+2026-08-20T12:52:04Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T12:52:04Z	fs	ALLOW	Bash posthog/ products/ /dev/null posthog/models/person/test/ /dev/null
+2026-08-20T12:52:05Z	fs	ALLOW	Bash rust/feature-flags/src/handler/tests.rs rust/feature-flags/tests /dev/null
+2026-08-20T12:52:05Z	fs	ALLOW	Bash rust/feature-flags/src/flags
+2026-08-20T12:52:06Z	fs	ALLOW	Bash rust/
+2026-08-20T12:52:08Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src/handler/flags.rs
+2026-08-20T12:52:09Z	fs	ALLOW	Bash posthog/ products/ /dev/null posthog/models/person/test/test_point_in_time_properties*.py
+2026-08-20T12:52:10Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src/handler/flags.rs
+2026-08-20T12:52:11Z	fs	ALLOW	Bash rust/ /tmp/rust_diff.txt /tmp/rust_diff.txt /tmp/rust_diff.txt
+2026-08-20T12:52:13Z	fs	ALLOW	Bash posthog/models/person/test/test_point_in_time_properties.py
+2026-08-20T12:52:13Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:52:13Z	fs	ALLOW	Bash /tmp/rust_diff.txt
+2026-08-20T12:52:14Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src/handler/flags.rs
+2026-08-20T12:52:15Z	fs	ALLOW	Bash posthog/settings/ posthog/security/outbound_proxy.py /dev/null
+2026-08-20T12:52:15Z	fs	ALLOW	Bash /tmp/rust_diff.txt
+2026-08-20T12:52:16Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:52:17Z	fs	ALLOW	Bash posthog/models/person/test/test_point_in_time_properties.py
+2026-08-20T12:52:17Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:52:19Z	fs	ALLOW	Bash rust/feature-flags/src/handler/tests.rs rust/feature-flags/src/api/endpoint.rs rust/feature-flags/src/api/types.rs
+2026-08-20T12:52:19Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:52:20Z	fs	ALLOW	Bash posthog/models/feature_flag/feature_flag.py posthog/models/activity_logging/activity_log.py
+2026-08-20T12:52:22Z	fs	ALLOW	Bash / *django/forms* /dev/null
+2026-08-20T12:52:23Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:52:24Z	fs	ALLOW	Bash /dev/null ^./.git
+2026-08-20T12:52:25Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src/handler/authentication.rs
+2026-08-20T12:52:26Z	fs	ALLOW	Bash posthog/models/activity_logging/model_activity.py
+2026-08-20T12:52:27Z	fs	ALLOW	Bash /dev/null charts/helm/docker-compose /dev/null
+2026-08-20T12:52:28Z	fs	DENY	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/common
+2026-08-20T12:52:29Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py
+2026-08-20T12:52:29Z	fs	ALLOW	Bash posthog/ products/
+2026-08-20T12:52:30Z	fs	ALLOW	Bash (no path)
+2026-08-20T12:52:31Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src/handler/*.rs /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src/flags/*.rs /dev/null
+2026-08-20T12:52:31Z	fs	ALLOW	Bash posthog/api/test/ /dev/null posthog/api/feature_flag.py posthog/api/test
+2026-08-20T12:52:31Z	fs	ALLOW	Bash rust/feature-flags src/
+2026-08-20T12:52:32Z	fs	ALLOW	Bash rust/feature-flags src/
+2026-08-20T12:52:33Z	fs	ALLOW	Bash /dev/null
+2026-08-20T12:52:33Z	fs	ALLOW	Bash (no path)
+2026-08-20T12:52:34Z	fs	ALLOW	Bash posthog/models/person/person.py
+2026-08-20T12:52:35Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py posthog/api/feature_flag.py
+2026-08-20T12:52:36Z	fs	ALLOW	Bash /dev/null
+2026-08-20T12:52:37Z	fs	ALLOW	Bash (no path)
+2026-08-20T12:52:37Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:52:38Z	fs	ALLOW	Bash posthog/models/person/person.py posthog/models/person/person.py
+2026-08-20T12:52:38Z	fs	ALLOW	Bash posthog/api/person.py
+2026-08-20T12:52:39Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:52:39Z	fs	ALLOW	Bash rust/feature-flags src/flags/flag_matching.rs src/flags/flag_matching.rs
+2026-08-20T12:52:39Z	fs	ALLOW	Bash rust/feature-flags src/handler/properties.rs
+2026-08-20T12:52:40Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T12:52:43Z	fs	ALLOW	Bash posthog/models/person/test/*.py posthog/models/person/test/test_point_in_time_properties.py posthog/models/person/test/test_point_in_time_properties_integration.py
+2026-08-20T12:52:43Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog
+2026-08-20T12:52:46Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog /dev/null
+2026-08-20T12:52:46Z	fs	ALLOW	Bash posthog/models/person/test/test_point_in_time_properties.py
+2026-08-20T12:52:48Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog/api/user.py
+2026-08-20T12:52:48Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/properties/property_models.rs
+2026-08-20T12:52:49Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/api/auth.rs
+2026-08-20T12:52:49Z	fs	ALLOW	Bash posthog/models/person/test/test_point_in_time_properties.py
+2026-08-20T12:52:53Z	fs	ALLOW	Bash posthog/api/test/test_feature_flag.py
+2026-08-20T12:52:54Z	fs	ALLOW	Bash rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:52:55Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py
+2026-08-20T12:52:58Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/properties/property_models.rs src/properties/property_matching.rs
+2026-08-20T12:52:59Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src/api/types.rs
+2026-08-20T12:53:02Z	fs	ALLOW	Bash rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:53:03Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs
+2026-08-20T12:53:04Z	fs	ALLOW	Bash rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:53:04Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py posthog/models/activity_logging/activity_log.py
+2026-08-20T12:53:04Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags ^./src/api/types.rs
+2026-08-20T12:53:06Z	fs	ALLOW	Bash api/feature_flag.py
+2026-08-20T12:53:07Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py
+2026-08-20T12:53:07Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs
+2026-08-20T12:53:08Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/api/types.rs
+2026-08-20T12:53:08Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py posthog/models/person/point_in_time_properties.py rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/api/types.rs
+2026-08-20T12:53:10Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src/api/types.rs
+2026-08-20T12:53:13Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py posthog/models/person/point_in_time_properties.py posthog/models/person/point_in_time_properties.py rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/api/types.rs rust/feature-flags/src/api/types.rs rust/feature-flags/src/api/types.rs rust/feature-flags/src/api/types.rs
+2026-08-20T12:53:14Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs rust/feature-flags/src/handler/mod.rs
+2026-08-20T12:53:16Z	fs	ALLOW	Bash rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/flags/flag_service.rs
+2026-08-20T12:53:17Z	fs	ALLOW	Bash rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/api/types.rs rust/feature-flags/src/handler/authentication.rs rust/feature-flags/src/handler/mod.rs
+2026-08-20T12:53:18Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py posthog/api/feature_flag.py
+2026-08-20T12:53:19Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src/api/types.rs
+2026-08-20T12:53:21Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T12:53:22Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py
+2026-08-20T12:53:22Z	fs	ALLOW	Bash rust/feature-flags/src/handler/flags.rs posthog/api/feature_flag.py
+2026-08-20T12:53:25Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog/api/feature_flag.py
+2026-08-20T12:53:25Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:53:26Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py posthog/models/feature_flag/version_history.py
+2026-08-20T12:53:28Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/api/types.rs src/api/types.rs
+2026-08-20T12:53:29Z	fs	ALLOW	Bash posthog/models/event/sql.py /dev/null posthog/models/activity_logging/activity_log.py
+2026-08-20T12:53:29Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs rust/feature-flags/src/handler/*.rs
+2026-08-20T12:53:32Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:53:34Z	fs	ALLOW	Bash posthog/models/feature_flag/feature_flag.py
+2026-08-20T12:53:37Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs src/flags/flag_matching.rs
+2026-08-20T12:53:38Z	fs	ALLOW	Bash posthog/models/feature_flag/feature_flag.py posthog/models/feature_flag/version_history.py posthog/models/activity_logging/activity_log.py
+2026-08-20T12:53:40Z	fs	ALLOW	Bash posthog/models/event/sql.py
+2026-08-20T12:53:43Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T12:53:44Z	fs	ALLOW	Bash posthog/models/feature_flag/feature_flag.py
+2026-08-20T12:53:46Z	fs	ALLOW	Bash /home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508/django/db/models/fields/__init__.py
+2026-08-20T12:53:48Z	fs	ALLOW	Bash posthog/scopes.py /dev/null posthog/scopes.py /dev/null posthog/scopes.py /dev/null
+2026-08-20T12:53:48Z	fs	ALLOW	Bash posthog/security/outbound_proxy.py /dev/null ./.git/*
+2026-08-20T12:53:49Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py
+2026-08-20T12:53:49Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src/handler/mod.rs
+2026-08-20T12:53:49Z	fs	ALLOW	Bash /home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508/django/db/models/fields/__init__.py /home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508/django/forms/models.py
+2026-08-20T12:53:49Z	fs	ALLOW	Bash posthog/models/feature_flag/*.py
+2026-08-20T12:53:50Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:53:50Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:53:51Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:53:51Z	fs	ALLOW	Bash /dev/null .agents/security.md
+2026-08-20T12:53:53Z	fs	ALLOW	Bash posthog/api/test/test_feature_flag.py
+2026-08-20T12:53:54Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:53:58Z	fs	ALLOW	Bash /home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508/django/db/models/fields/__init__.py /home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508/django/db/models/fields/__init__.py
+2026-08-20T12:53:58Z	fs	ALLOW	Bash posthog/api/feature_flag.py rust/feature-flags/src/handler/mod.rs rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/handler/authentication.rs rust/feature-flags/src/handler/billing.rs posthog/api/feature_flag.py posthog/models/person/point_in_time_properties.py
+2026-08-20T12:53:59Z	fs	ALLOW	Bash posthog/api/feature_flag.py posthog/api/feature_flag.py
+2026-08-20T12:54:01Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/posthog/api/feature_flag.py
+2026-08-20T12:54:02Z	fs	ALLOW	Bash /home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508/django/db/models/fields/__init__.py
+2026-08-20T12:54:03Z	fs	ALLOW	Bash posthog/api/feature_flag.py posthog/models/person/point_in_time_properties.py posthog/models/feature_flag/version_history.py
+2026-08-20T12:54:05Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:54:07Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs rust/feature-flags/src/ /dev/null
+2026-08-20T12:54:08Z	fs	ALLOW	Bash / *django/forms* /dev/null
+2026-08-20T12:54:09Z	fs	ALLOW	Bash /tmp /home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508/
+2026-08-20T12:54:09Z	fs	ALLOW	Bash rust/feature-flags/src/handler/authentication.rs posthog/api/feature_flag.py
+2026-08-20T12:54:12Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py
+2026-08-20T12:54:13Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags/src/properties/*.rs /dev/null
+2026-08-20T12:54:15Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py
+2026-08-20T12:54:15Z	fs	ALLOW	Bash /tmp PYTHONPATH=/home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508
+2026-08-20T12:54:17Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py
+2026-08-20T12:54:17Z	fs	ALLOW	Bash /home/decaf/.cache/uv/archive-v0 /dev/null
+2026-08-20T12:54:20Z	fs	ALLOW	Bash /^def model_to_dict/,/^def /p /home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508/django/forms/models.py
+2026-08-20T12:54:23Z	fs	ALLOW	Bash /tmp PYTHONPATH=/home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508:/home/decaf/.cache/uv/archive-v0/PB9ktxN5Mo8Nrdtd
+2026-08-20T12:54:23Z	fs	ALLOW	Bash ~/.cargo/registry/src/*/ /dev/null / /dev/null
+2026-08-20T12:54:24Z	fs	ALLOW	Bash posthog/models/feature_flag
+2026-08-20T12:54:28Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo posthog/api/feature_flag.py posthog/api/feature_flag.py posthog/api/feature_flag.py posthog/api/feature_flag.py posthog/api/feature_flag.py posthog/api/feature_flag.py
+2026-08-20T12:54:29Z	fs	ALLOW	Bash /tmp/dj/testapp /tmp/dj/testapp/__init__.py /tmp/dj/testapp/models.py /tmp/dj PYTHONPATH=/tmp/dj:/home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508:/home/decaf/.cache/uv/archive-v0/PB9ktxN5Mo8Nrdtd
+2026-08-20T12:54:29Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:54:31Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo rust/feature-flags/src/handler/billing.rs
+2026-08-20T12:54:33Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs rust/feature-flags/src/handler/authentication.rs rust/feature-flags/src/handler/flags.rs
+2026-08-20T12:54:36Z	fs	ALLOW	Bash /tmp/dj PYTHONPATH=/tmp/dj:/home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508:/home/decaf/.cache/uv/archive-v0/PB9ktxN5Mo8Nrdtd
+2026-08-20T12:54:36Z	fs	ALLOW	Bash posthog/api/services/flags_service.py posthog/api/feature_flag.py
+2026-08-20T12:54:36Z	fs	ALLOW	Bash rust/feature-flags src/ ^src/api/types.rs:5[4-9]\ ^src/api/types.rs:6[0-9]\ ^src/api/types.rs:7[0-2]
+2026-08-20T12:54:42Z	fs	ALLOW	Bash rust/feature-flags/src flags/flag_matching.rs
+2026-08-20T12:54:42Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust feature-flags/src/properties/property_models.rs feature-flags/src/properties/property_models.rs
+2026-08-20T12:54:44Z	fs	ALLOW	Bash /home/decaf/.cache/uv/archive-v0 /dev/null /tmp/dj PYTHONPATH=/tmp/dj:/home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508:/home/decaf/.cache/uv/archive-v0/PB9ktxN5Mo8Nrdtd:$
+2026-08-20T12:54:44Z	fs	ALLOW	Bash rust/feature-flags /is_internal_request/,+30p src/handler/authentication.rs src/ ^src/handler/authentication.rs
+2026-08-20T12:54:45Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py
+2026-08-20T12:54:47Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust feature-flags/src/properties/property_models.rs
+2026-08-20T12:54:49Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust feature-flags/src/api/types.rs feature-flags/src/api/types.rs
+2026-08-20T12:54:51Z	fs	ALLOW	Bash posthog/models/person/test/ /dev/null
+2026-08-20T12:54:53Z	fs	ALLOW	Bash rust/feature-flags/src/handler
+2026-08-20T12:54:53Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust feature-flags/src/api/types.rs feature-flags/src/api/types.rs
+2026-08-20T12:54:58Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T12:54:58Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:54:59Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/properties/property_matching.rs
+2026-08-20T12:55:03Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:55:03Z	fs	ALLOW	Bash posthog/models/person/test/test_point_in_time_properties.py posthog/models/person/test/test_point_in_time_properties_integration.py
+2026-08-20T12:55:04Z	fs	ALLOW	Bash rust/feature-flags/src api/auth.rs /dev/null
+2026-08-20T12:55:05Z	fs	ALLOW	Bash posthog/models/person/test/test_point_in_time_properties.py
+2026-08-20T12:55:07Z	fs	ALLOW	Bash /tmp/dj PYTHONPATH=/tmp/dj:/home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508:/home/decaf/.cache/uv/archive-v0/PB9ktxN5Mo8Nrdtd:/home/decaf/.cache/uv/archive-v0/UdNqNa1xbdhpUwLb
+2026-08-20T12:55:08Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:55:10Z	fs	ALLOW	Bash rust/feature-flags/src handler/authentication.rs / api/auth.rs
+2026-08-20T12:55:13Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T12:55:14Z	fs	ALLOW	Bash rust/feature-flags/src flags/flag_request.rs
+2026-08-20T12:55:14Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs src/flags/flag_matching.rs
+2026-08-20T12:55:18Z	fs	ALLOW	Bash posthog/ products/
+2026-08-20T12:55:18Z	fs	ALLOW	Bash posthog/api/services/flags_service.py
+2026-08-20T12:55:19Z	fs	ALLOW	Bash / test_/ posthog/models/feature_flag/test/test_version_history.py posthog/models/feature_flag/test/test_version_history.py
+2026-08-20T12:55:20Z	fs	ALLOW	Bash /dev/null /test
+2026-08-20T12:55:22Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/handler/mod.rs src/handler/flags.rs src/api/types.rs src/flags/flag_matching.rs src/handler/authentication.rs src/handler/billing.rs src/handler/billing.rs
+2026-08-20T12:55:23Z	fs	ALLOW	Bash rust/feature-flags/src/api
+2026-08-20T12:55:26Z	fs	ALLOW	Bash posthog/models/feature_flag/feature_flag.py
+2026-08-20T12:55:32Z	fs	ALLOW	Bash posthog/api
+2026-08-20T12:55:34Z	fs	ALLOW	Bash posthog/api
+2026-08-20T12:55:35Z	fs	ALLOW	Bash rust/rustfmt.toml rust/.rustfmt.toml .github/workflows/*.yml
+2026-08-20T12:55:36Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/handler/mod.rs
+2026-08-20T12:55:39Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py
+2026-08-20T12:55:41Z	fs	ALLOW	Bash posthog/models/feature_flag/test/test_version_history.py /274/,$p posthog/models/feature_flag/test/test_version_history.py
+2026-08-20T12:55:42Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py
+2026-08-20T12:55:50Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs
+2026-08-20T12:55:50Z	fs	ALLOW	Bash .github/workflows/ci-rust.yml .github/workflows/ci-rust.yml
+2026-08-20T12:55:52Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust
+2026-08-20T12:55:53Z	fs	ALLOW	Bash (no path)
+2026-08-20T12:55:56Z	fs	ALLOW	Bash /point_in_time_properties.py:
+2026-08-20T12:56:01Z	fs	ALLOW	Bash posthog/api
+2026-08-20T12:56:02Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/handler/flags.rs src/handler/flags.rs src/handler/flags.rs
+2026-08-20T12:56:04Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py
+2026-08-20T12:56:05Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/handler/flags.rs
+2026-08-20T12:56:07Z	fs	ALLOW	Bash posthog/models/person/test
+2026-08-20T12:56:13Z	fs	ALLOW	Bash posthog/models/person
+2026-08-20T12:56:15Z	fs	ALLOW	Bash posthog/models/person
+2026-08-20T12:56:15Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_models.rs
+2026-08-20T12:56:15Z	fs	ALLOW	Bash /home /usr/lib/python3* /opt *django/forms/models.py /dev/null
+2026-08-20T12:56:16Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs
+2026-08-20T12:56:16Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:56:18Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_service.rs /dev/null rust/feature-flags/src/flags/
+2026-08-20T12:56:20Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:56:22Z	fs	ALLOW	Bash /^def model_to_dict/,/^def /p /home/decaf/.cache/uv/archive-v0/nozu2sj24mc-0gPF/django/forms/models.py
+2026-08-20T12:56:23Z	fs	ALLOW	Bash posthog/models/person/person.py
+2026-08-20T12:56:26Z	fs	ALLOW	Bash /flags_service.py/,/^diff --git/p /tmp/review_diff.txt
+2026-08-20T12:56:27Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:56:27Z	fs	ALLOW	Bash posthog/models/person
+2026-08-20T12:56:32Z	fs	ALLOW	Bash posthog/models/person/util.py
+2026-08-20T12:56:33Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:56:34Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/handler/authentication.rs
+2026-08-20T12:56:37Z	fs	ALLOW	Bash rust/feature-flags/src/flags
+2026-08-20T12:56:40Z	fs	ALLOW	Bash rust/feature-flags/src/flags/*.rs rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:56:43Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:56:43Z	fs	ALLOW	Bash rust/feature-flags/src/flags
+2026-08-20T12:56:46Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs rust/feature-flags/src/flags/property_filter.rs /dev/null
+2026-08-20T12:56:48Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:56:48Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T12:56:49Z	fs	ALLOW	Bash posthog/models/person/util.py
+2026-08-20T12:56:55Z	fs	ALLOW	Bash /home/decaf/.cache/uv/archive-v0 *rest_framework/fields.py
+2026-08-20T12:56:59Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:57:02Z	fs	ALLOW	Bash rust/feature-flags/src/properties
+2026-08-20T12:57:08Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs src/flags/flag_matching.rs
+2026-08-20T12:57:08Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs
+2026-08-20T12:57:11Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:57:14Z	fs	ALLOW	Bash rust/feature-flags/src/handler
+2026-08-20T12:57:18Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:57:21Z	fs	ALLOW	Bash rust/feature-flags/src/api/auth.rs
+2026-08-20T12:57:21Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:57:22Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs rust/feature-flags/src/flags/*.rs
+2026-08-20T12:57:22Z	fs	ALLOW	Bash /dev/null ^./.git
+2026-08-20T12:57:22Z	fs	ALLOW	Bash rust/feature-flags/src/properties/property_matching.rs
+2026-08-20T12:57:25Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:57:26Z	fs	ALLOW	Bash /dev/null
+2026-08-20T12:57:26Z	fs	ALLOW	Bash rust/feature-flags/src/flags
+2026-08-20T12:57:27Z	fs	ALLOW	Bash rust/feature-flags/src/handler/authentication.rs rust/feature-flags/src/flags/flag_request.rs rust/feature-flags/src/handler/authentication.rs
+2026-08-20T12:57:29Z	fs	ALLOW	Bash rust/feature-flags/src/handler/authentication.rs
+2026-08-20T12:57:31Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:57:31Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:57:32Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs
+2026-08-20T12:57:37Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_request.rs rust/feature-flags/src/
+2026-08-20T12:57:42Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/api/types.rs src/flags/flag_matching.rs src/flags/flag_matching.rs src/handler/flags.rs src/handler/mod.rs
+2026-08-20T12:57:43Z	fs	ALLOW	Bash models/activity_logging/activity_log.py / models/activity_logging/model_activity.py
+2026-08-20T12:57:45Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching_utils.rs
+2026-08-20T12:57:46Z	fs	ALLOW	Bash models/activity_logging/model_activity.py
+2026-08-20T12:57:46Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs src/handler/flags.rs src/handler/mod.rs src/api/types.rs src/flags/flag_matching.rs src/handler/flags.rs
+2026-08-20T12:57:46Z	fs	ALLOW	Bash rust/feature-flags/src/handler/properties.rs rust/feature-flags/src/handler/properties.rs
+2026-08-20T12:57:49Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/handler/flags.rs src/flags/flag_matching.rs
+2026-08-20T12:57:53Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/flags/flag_matching.rs
+2026-08-20T12:57:55Z	fs	ALLOW	Bash api/feature_flag.py models/feature_flag/*.py models/activity_logging/activity_log.py
+2026-08-20T12:57:57Z	fs	ALLOW	Bash api/feature_flag.py
+2026-08-20T12:58:01Z	fs	ALLOW	Bash rust/feature-flags/src/handler/properties.rs
+2026-08-20T12:58:08Z	fs	ALLOW	Bash rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/handler/flags.rs
+2026-08-20T12:58:13Z	fs	ALLOW	Bash posthog/api/services/flags_service.py
+2026-08-20T12:58:19Z	fs	ALLOW	Bash posthog/api
+2026-08-20T12:58:21Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T12:58:23Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust feature-flags/src/handler/tests.rs feature-flags/src/api/types.rs\ feature-flags/src/handler/tests.rs handler/tests.rs
+2026-08-20T12:58:26Z	fs	ALLOW	Bash posthog/api/feature_flag.py posthog/models/scopes.py posthog/models/scopes.py /dev/null
+2026-08-20T12:58:27Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust src/api/types.rs
+2026-08-20T12:58:29Z	fs	ALLOW	Bash rust/feature-flags/src/properties
+2026-08-20T12:58:30Z	fs	ALLOW	Bash posthog/scopes.py /dev/null posthog/
+2026-08-20T12:58:33Z	fs	ALLOW	Bash posthog/scopes.py
+2026-08-20T12:58:36Z	fs	ALLOW	Bash /dev/null
+2026-08-20T12:58:36Z	fs	ALLOW	Bash posthog/models/person/test/ /dev/null
+2026-08-20T12:58:37Z	fs	ALLOW	Bash https://docs.rs/serde/latest/serde/de/fn.missing_field.html
+2026-08-20T12:58:38Z	curl	ALLOW	wayback -sS --max-time 30 -w \n__H__%{http_code} https://web.archive.org/cdx/search/cdx?url=docs.rs/serde/latest/serde/de/fn.missing_field.html&to=20260417&limit=-1&output=json&fl=timestamp
+2026-08-20T12:58:41Z	fs	ALLOW	Bash posthog/api/person.py
+2026-08-20T12:58:41Z	docs-at	MISS	https://docs.rs/serde/latest/serde/de/fn.missing_field.html (no capture at or before 2026-04-17)
+2026-08-20T12:58:44Z	fs	ALLOW	Bash posthog/api/feature_flag.py posthog/api/mixins.py
+2026-08-20T12:58:46Z	fs	ALLOW	Bash posthog/models/person/test/test_point_in_time_properties.py posthog/models/person/test/test_point_in_time_properties_integration.py posthog/api/test/*person* /dev/null
+2026-08-20T12:58:47Z	fs	ALLOW	Bash (no path)
+2026-08-20T12:58:49Z	fs	ALLOW	Bash posthog/models/person/test/test_point_in_time_properties.py
+2026-08-20T12:58:54Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T12:58:58Z	fs	ALLOW	Bash (no path)
+2026-08-20T12:59:02Z	fs	ALLOW	Bash posthog/api/test
+2026-08-20T12:59:03Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T12:59:06Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/api/types.rs /dev/null src/api/types.rs
+2026-08-20T12:59:10Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/rust/feature-flags src/api/types.rs src/handler/flags.rs
+2026-08-20T12:59:19Z	fs	ALLOW	Bash rust/feature-flags/src/properties/property_models.rs
+2026-08-20T12:59:22Z	fs	ALLOW	Bash rust/feature-flags/src/properties/property_models.rs
+2026-08-20T12:59:28Z	fs	ALLOW	Bash posthog/models/feature_flag
+2026-08-20T12:59:30Z	fs	ALLOW	Bash rust/feature-flags/src/properties/property_matching.rs
+2026-08-20T12:59:31Z	fs	ALLOW	Bash posthog/models/feature_flag
+2026-08-20T12:59:39Z	fs	ALLOW	Bash posthog/models/feature_flag/feature_flag.py posthog/ /dev/null /dev/null
+2026-08-20T12:59:42Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/api/types.rs rust/feature-flags/src/handler/authentication.rs rust/feature-flags/src/handler/billing.rs
+2026-08-20T12:59:42Z	fs	ALLOW	Bash posthog/api
+2026-08-20T12:59:48Z	fs	DENY	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/posthog/models/person/point_in_time_properties.py
+2026-08-20T12:59:48Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs rust/feature-flags/src/handler/mod.rs rust/feature-flags/src/api/types.rs rust/feature-flags/src/handler/mod.rs
+2026-08-20T12:59:52Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs rust/feature-flags/src/flags/flag_matching.rs rust/feature-flags/src/handler/mod.rs rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/handler/mod.rs posthog/models/person/point_in_time_properties.py
+2026-08-20T12:59:56Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py rust/feature-flags/src/flags/flag_request.rs posthog/api/person.py
+2026-08-20T12:59:58Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:00:00Z	fs	ALLOW	Bash D=/home/decaf/.cache/uv/archive-v0/nozu2sj24mc-0gPF/django $D/db/models/fields/related.py $D/db/models/fields/__init__.py
+2026-08-20T13:00:03Z	fs	ALLOW	Bash posthog/api/services/flags_service.py
+2026-08-20T13:00:04Z	fs	ALLOW	Bash D=/home/decaf/.cache/uv/archive-v0/nozu2sj24mc-0gPF/django $D/db/models/fields/__init__.py
+2026-08-20T13:00:08Z	fs	ALLOW	Bash D=/home/decaf/.cache/uv/archive-v0/nozu2sj24mc-0gPF/django /editable/ $D/db/models/fields/__init__.py
+2026-08-20T13:00:11Z	fs	ALLOW	Bash posthog/api/test/ /dev/null rust/feature-flags/src
+2026-08-20T13:00:11Z	fs	ALLOW	Bash D=/home/decaf/.cache/uv/archive-v0/nozu2sj24mc-0gPF/django $D/db/models/fields/__init__.py
+2026-08-20T13:00:14Z	fs	ALLOW	Bash posthog/api/test/test_feature_flag.py
+2026-08-20T13:00:16Z	fs	ALLOW	Bash D=/home/decaf/.cache/uv/archive-v0/nozu2sj24mc-0gPF/django $D/db/models/fields/__init__.py $D/db/models/fields/__init__.py
+2026-08-20T13:00:19Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:00:25Z	fs	ALLOW	Bash D=/home/decaf/.cache/uv/archive-v0/nozu2sj24mc-0gPF/django $D/db/models/fields/__init__.py
+2026-08-20T13:00:27Z	fs	ALLOW	Bash posthog/models/person/util.py posthog/models/person/person.py
+2026-08-20T13:00:29Z	fs	ALLOW	Bash posthog/models/person/person.py
+2026-08-20T13:00:36Z	fs	ALLOW	Bash /tmp /home/decaf/.cache/uv/archive-v0/nozu2sj24mc-0gPF
+2026-08-20T13:00:39Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs
+2026-08-20T13:00:40Z	fs	ALLOW	Bash /home/decaf/.cache/uv/archive-v0/*/asgiref /dev/null
+2026-08-20T13:00:41Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs rust/feature-flags/src/handler/flags.rs posthog/models/feature_flag/version_history.py
+2026-08-20T13:00:46Z	fs	ALLOW	Bash /tmp /home/decaf/.cache/uv/archive-v0/nozu2sj24mc-0gPF /home/decaf/.cache/uv/archive-v0/PB9ktxN5Mo8Nrdtd
+2026-08-20T13:00:50Z	fs	ALLOW	Bash /home/decaf/.cache/uv/archive-v0/*/sqlparse /dev/null
+2026-08-20T13:00:52Z	fs	ALLOW	Bash posthog/models/feature_flag/test/test_version_history.py
+2026-08-20T13:00:56Z	fs	ALLOW	Bash /tmp ["/home/decaf/.cache/uv/archive-v0/nozu2sj24mc-0gPF","/home/decaf/.cache/uv/archive-v0/PB9ktxN5Mo8Nrdtd","/home/decaf/.cache/uv/archive-v0/UdNqNa1xbdhpUwLb"]:
+2026-08-20T13:01:09Z	fs	ALLOW	Bash /tmp ["/home/decaf/.cache/uv/archive-v0/nozu2sj24mc-0gPF","/home/decaf/.cache/uv/archive-v0/PB9ktxN5Mo8Nrdtd","/home/decaf/.cache/uv/archive-v0/UdNqNa1xbdhpUwLb"]:
+2026-08-20T13:01:13Z	fs	ALLOW	Bash frontend/src/generated/core/ /dev/null frontend/src/generated/core/api.schemas.ts /dev/null
+2026-08-20T13:01:16Z	fs	ALLOW	Bash frontend/src/generated/core/api.schemas.ts /dev/null frontend/src/generated/core/api.schemas.ts
+2026-08-20T13:01:20Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:01:58Z	fs	ALLOW	Bash /home/decaf/.cache/uv/archive-v0 $D/fields.py
+2026-08-20T13:02:14Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:02:19Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:02:29Z	fs	ALLOW	Bash posthog/api/test/ /dev/null posthog/ rust/feature-flags/src/
+2026-08-20T13:02:32Z	fs	ALLOW	Bash posthog/api/test/test_feature_flag.py posthog/ products/ /dev/null
+2026-08-20T13:02:37Z	fs	ALLOW	Bash posthog/api/person.py
+2026-08-20T13:02:46Z	fs	ALLOW	Bash /dev/null
+2026-08-20T13:02:49Z	fs	ALLOW	Bash posthog/ products/ /dev/null
+2026-08-20T13:02:55Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:02:56Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py posthog/models/person/point_in_time_properties.py
+2026-08-20T13:03:26Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs rust/feature-flags/src/api/types.rs rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/handler/mod.rs rust/feature-flags/src/handler/billing.rs rust/feature-flags/src/handler/billing.rs
+2026-08-20T13:03:41Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T13:05:40Z	fs	ALLOW	Bash /tmp / *django/forms* /dev/null / *django/db/models* /dev/null
+2026-08-20T13:07:44Z	fs	ALLOW	Bash ~/.cache/uv ~/.local/share/uv ~/.venv /usr/lib/python3/dist-packages ~/.local/lib /dev/null
+2026-08-20T13:07:47Z	fs	ALLOW	Bash ~/.cache/uv/archive-v0/*/django /dev/null ~/.cache/uv/archive-v0 /dev/null
+2026-08-20T13:07:51Z	fs	ALLOW	Bash D=/home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508/django $D/__init__.py /^def model_to_dict/,/^def /p $D/forms/models.py $D/db/models/fields/__init__.py
+2026-08-20T13:08:00Z	fs	ALLOW	Bash posthog/models/feature_flag/feature_flag.py
+2026-08-20T13:08:01Z	fs	ALLOW	Bash /home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508/django/db/models/fields/related.py
+2026-08-20T13:08:26Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo posthog/api/person.py posthog/models/person/test/test_point_in_time_properties.py posthog/models/activity_logging/activity_log.py posthog/models/person/person.py
+2026-08-20T13:08:33Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo rust/feature-flags/src/flags/flag_matching.rs rust/feature-flags/src/flags/flag_matching.rs rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:08:44Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo /home/decaf/.cache/uv/archive-v0 /dev/null $D/fields.py $D/fields.py
+2026-08-20T13:08:56Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo /home/decaf/.cache/uv/archive-v0/CSQo7PYLZeVOR508/django/db/models/query.py rust/feature-flags/src/properties/property_models.rs rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T13:09:09Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo posthog/models/feature_flag/feature_flag.py posthog/models/feature_flag/version_history.py posthog/models/activity_logging/activity_log.py
+2026-08-20T13:09:20Z	fs	ALLOW	Bash /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo posthog/scopes.py posthog/api/feature_flag.py posthog/api/feature_flag.py
+2026-08-20T13:10:40Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py
+2026-08-20T13:10:53Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T13:10:54Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:11:02Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T13:11:04Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:11:05Z	fs	ALLOW	Bash rust/feature-flags/src/handler/flags.rs
+2026-08-20T13:11:12Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:11:14Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs
+2026-08-20T13:11:15Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T13:11:15Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:11:15Z	fs	ALLOW	Bash posthog/models/activity_logging/*.py
+2026-08-20T13:11:17Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:11:20Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:11:20Z	fs	ALLOW	Bash posthog/models/activity_logging/model_activity.py
+2026-08-20T13:11:20Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs
+2026-08-20T13:11:21Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T13:11:26Z	fs	ALLOW	Bash rust/feature-flags/src/
+2026-08-20T13:11:26Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T13:11:28Z	fs	ALLOW	Bash posthog/models/feature_flag/feature_flag.py
+2026-08-20T13:11:29Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:11:31Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:11:31Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs
+2026-08-20T13:11:32Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:11:33Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:11:38Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py 66cae648:posthog/models/person/point_in_time_properties.py
+2026-08-20T13:11:38Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs rust/feature-flags/src/flags/flag_matching_utils.rs /dev/null
+2026-08-20T13:11:38Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:11:41Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:11:42Z	fs	ALLOW	Bash posthog/models/feature_flag/*.py posthog/api/feature_flag.py
+2026-08-20T13:11:42Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs rust/feature-flags/src/handler/mod.rs rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/handler/evaluation.rs
+2026-08-20T13:11:45Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:11:45Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:11:47Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:11:48Z	fs	ALLOW	Bash posthog/
+2026-08-20T13:11:51Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:11:51Z	fs	ALLOW	Bash rust/feature-flags/src/flags/*.rs
+2026-08-20T13:11:52Z	fs	ALLOW	Bash posthog/models/feature_flag/flags_cache.py
+2026-08-20T13:11:53Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T13:11:53Z	fs	ALLOW	Bash rust/feature-flags/src/handler/flags.rs
+2026-08-20T13:11:54Z	fs	ALLOW	Bash /dev/null
+2026-08-20T13:12:00Z	fs	ALLOW	Bash rust/feature-flags/src/handler/flags.rs
+2026-08-20T13:12:00Z	fs	ALLOW	Bash rust/feature-flags/src
+2026-08-20T13:12:00Z	fs	ALLOW	Bash rust/personhog-leader/src/person_update.rs
+2026-08-20T13:12:01Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:12:05Z	fs	ALLOW	Bash rust/feature-flags/src/handler/flags.rs
+2026-08-20T13:12:06Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py
+2026-08-20T13:12:08Z	fs	ALLOW	Bash rust/personhog-leader/src/person_update.rs rust/personhog-leader/src/*.rs
+2026-08-20T13:12:09Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:12:10Z	fs	ALLOW	Bash posthog/plugins/ /dev/null posthog/*.py posthog/**/*.py /dev/null posthog-js/src/posthog-core.ts /dev/null
+2026-08-20T13:12:11Z	fs	ALLOW	Bash posthog/models/activity_logging/activity_log.py
+2026-08-20T13:12:14Z	fs	ALLOW	Bash rust/feature-flags/src/
+2026-08-20T13:12:15Z	fs	ALLOW	Bash /dev/null
+2026-08-20T13:12:16Z	fs	ALLOW	Bash posthog/
+2026-08-20T13:12:16Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs
+2026-08-20T13:12:19Z	fs	ALLOW	Bash rust/feature-flags/src/utils/graph_utils.rs
+2026-08-20T13:12:20Z	fs	ALLOW	Bash /dev/null /dev/null
+2026-08-20T13:12:22Z	fs	ALLOW	Bash plugin-server/src/ /dev/null
+2026-08-20T13:12:25Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs rust/feature-flags/src/api/*.rs /dev/null
+2026-08-20T13:12:25Z	fs	ALLOW	Bash posthog/api/services/flags_service.py
+2026-08-20T13:12:26Z	fs	ALLOW	Bash rust/feature-flags/src/api/types.rs
+2026-08-20T13:12:28Z	fs	ALLOW	Bash nodejs/src/worker/ingestion/persons/person-update.ts
+2026-08-20T13:12:32Z	fs	ALLOW	Bash rust/feature-flags/src/handler/mod.rs
+2026-08-20T13:12:34Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_models.rs
+2026-08-20T13:12:37Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T13:12:41Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs rust/feature-flags/src/handler/*.rs rust/feature-flags/src/flags/flag_matching_utils.rs /dev/null
+2026-08-20T13:12:45Z	fs	ALLOW	Bash posthog/models/person/point_in_time_properties.py
+2026-08-20T13:12:48Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_matching.rs
+2026-08-20T13:12:49Z	fs	ALLOW	Bash posthog/api/services/flags_service.py
+2026-08-20T13:12:50Z	fs	ALLOW	Bash posthog/models/feature_flag/test/test_version_history.py
+2026-08-20T13:12:50Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_request.rs
+2026-08-20T13:12:56Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_request.rs
+2026-08-20T13:12:58Z	fs	ALLOW	Bash rust/feature-flags/src/
+2026-08-20T13:13:03Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_request.rs
+2026-08-20T13:13:10Z	fs	ALLOW	Bash posthog/api/feature_flag.py
+2026-08-20T13:13:11Z	fs	ALLOW	Bash rust/feature-flags/src/flags/flag_request.rs
+2026-08-20T13:13:19Z	fs	ALLOW	Bash posthog/models/feature_flag/version_history.py posthog/models/feature_flag/version_history.py
+2026-08-20T13:13:28Z	fs	ALLOW	Bash rust/feature-flags/src/handler/flags.rs
+2026-08-20T13:13:51Z	fs	ALLOW	Bash rust/feature-flags/src/handler/flags.rs rust/feature-flags/src/handler/flags.rs
+2026-08-20T13:14:47Z	fs	ALLOW	Bash .decaf/code-reviews .decaf/code-reviews/CODE_REVIEW_$
+2026-08-20T13:20:42Z	fs	ALLOW	Write /home/decaf/code/decaf-claude/competition/benchmark/v2/pooled/PostHog-posthog-55149/repo/.decaf/code-reviews/CODE_REVIEW_2026-08-20_15-14-47.md
+2026-08-20T13:20:48Z	fs	ALLOW	Bash .decaf/code-reviews/

@@ -1,0 +1,5 @@
+action	path	size_kb	note
+removed	/var/tmp/bench-v2/PostHog-posthog-55149__ours-audit__r1	172	own TMPDIR
+removed	/tmp/dj	20	created during the group (absent from quiescent baseline)
+removed	/tmp/review_diff.txt	84	created during the group (absent from quiescent baseline)
+removed	/tmp/rust_diff.txt	40	created during the group (absent from quiescent baseline)
