@@ -2,11 +2,11 @@
 # dcc-tmz2
 version: 1
 title: Does reach=narrow shorten exploration? Single-seat bugs at reach=norm, 3 repeats, found-per-cell
-status: in-progress
+status: completed
 type: task
 priority: high
 created_at: 2026-08-18T19:14:54Z
-updated_at: 2026-08-18T19:24:35Z
+updated_at: 2026-08-20T06:41:14Z
 parent: dcc-hyxw
 order: arz
 ---
@@ -89,3 +89,25 @@ Either outcome is publishable and closes a question three brief revisions could 
 - [ ] Per-cluster: was e02/e03/c03/c07 examined, in either arm
 - [ ] Transcript comparison of exploration (files read, probes run) written up
 - [ ] Verdict stated: is `narrow` the cause, or is it seat variance — and what follows
+
+## Summary
+
+**Completed 2026-08-20** — Answered. Write-up: v2/analysis/SINGLE-SEAT-FINDINGS.md.
+
+`reach` moves DISPOSITION, not exploration. Files touched per cell is identical between the arms —
+20 and 20, measured from the seat's own shell calls, independently of the judge — while within-arm
+variance is 4.7x. So reach=norm does not make the seat examine more code; it makes it report more of
+what it already examined, worth +22% on real defects found per cell (0.375 -> 0.458) and +38% on
+reported (0.271 -> 0.375), with the demotion gap falling 0.72 -> 0.41.
+
+NOT ADOPTED. Two subjects, and narrow's apparent 1.000 precision was never a measurement — it reports
+2 clusters on efcore, far below the n>=10 floor. Revisit with a third subject.
+
+Design notes worth keeping: the arms differed by exactly one token (the control stated reach=narrow
+explicitly rather than inheriting it), and the arms alternated pair by pair so drift over a
+multi-hour run could not be confounded with the arm. Probes ran first and proved the override was not
+a no-op — had it been, the matrix would have produced a flat result indistinguishable from the real
+null.
+
+Both arms are now retired (dcc-tmz2 was an experiment, not a shipping configuration) and their cells
+remain citable.
