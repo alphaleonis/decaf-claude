@@ -1,0 +1,38 @@
+[
+ {
+  "group_id": "tg01",
+  "thread_indices": [0],
+  "defect": "initialQuery dereferences vars[0] unguarded, so an empty refIds array (ExpressionQueryEditor filters out the current query) crashes SqlExpr on mount.",
+  "same_fix": ""
+ },
+ {
+  "group_id": "tg02",
+  "thread_indices": [1, 3],
+  "defect": "quoteIdentifierIfNecessary from mysql/sqlUtil is not idempotent, so an already-backticked query name is wrapped a second time and yields invalid SQL - raised once for the initialQuery FROM clause (SqlExpr.tsx:81) and once for autocomplete table completions (sqlCompletionProvider.ts:27).",
+  "same_fix": "Both threads name the same remedy - unquote-then-quote, or skip quoting when the identifier is already quoted - and both call sites go through the same helper, so making that quoting idempotent (in sqlUtil.ts:44 or in one shared wrapper the feature calls) resolves both with no second edit."
+ },
+ {
+  "group_id": "tg03",
+  "thread_indices": [2],
+  "defect": "Two different quoting implementations are used inside the SQL-expressions feature - the local regex-only helper at metaSqlExpr.ts:114 versus the reserved-word-aware sqlUtil version used by SqlExpr and the completion provider - so the FROM clause and the schema/fields metadata query can disagree on whether a table name is quoted.",
+  "same_fix": ""
+ },
+ {
+  "group_id": "tg04",
+  "thread_indices": [4],
+  "defect": "Reviewer questions wrapping the completion value in both quoteIdentifierIfNecessary and unquoteIdentifier, and asks why the approach changed since the previous review round.",
+  "same_fix": ""
+ },
+ {
+  "group_id": "tg05",
+  "thread_indices": [6],
+  "defect": "The placeholder/default table name is the reserved keyword 'table', which errors when the expression runs; reviewer asks for a different name such as default_table.",
+  "same_fix": ""
+ },
+ {
+  "group_id": "tg06",
+  "thread_indices": [7],
+  "defect": "The new metaSqlExpr tests assert only on the rendered SQL string and keep queries[].refId equal to the unquoted table, so they never exercise the production shape where query.table is backtick-quoted and the source-query lookup at metaSqlExpr.ts:20 silently matches nothing.",
+  "same_fix": ""
+ }
+]

@@ -43,6 +43,19 @@ process; a continuation of the session that produced pass 1 measures memory, not
 (four of the seven citable subjects do). A recall there is 0/0.5/1.0 quantization, not a
 measurement — report it per subject with n shown; never pool it, never headline it.
 
+**The denominator is audited, not assumed** (`dcc-hw48`, `dcc-qfr5`). Both axes divide by *matchable
+thread groups*, not raw admitted threads:
+
+- a thread whose subject does not exist at the checkpoint is excluded (`excluded_unmatchable`) — it
+  could not be raised by any reviewer looking at the snapshot the tools were shown. The test is
+  presence, not date: a comment written weeks later about pre-existing code stays in;
+- threads asserting one defect form one item (`duplicate_groups`), crediting the human axis if any
+  member is human and the incumbent axis if any is bot. Without this a bot/human pair moved credit
+  between two axes that are reported separately;
+- `thread_axis_publishable` is false unless every admitted thread carries a verdict. Absent or partial
+  annotation is **not** read as "all matchable" — that is the assumption being removed;
+- `denominator_human: 0` yields `thread_recall: null`, never `0.000`. See `METRICS.md`.
+
 ## Reported vs found
 
 A tool can find a defect, verify it, and then suppress it below its own reporting bar. Every
@@ -114,6 +127,13 @@ of the scoring-model decision:
   the miss detector
 - artifacts describing **different finding sets** (`check_artifacts.py`): 20 findings in one layer, 33
   in another, 1 in common, and the clustering run on the stale set
+
+It **warns loudly without refusing** on one thing, because the right fix differs case by case:
+
+- `credited_to_unmatchable_thread` — a cluster credited to a thread judged unmatchable. A tool cannot
+  match a comment about code that is not there, so either the grading or the annotation is wrong. On
+  its first run it caught one annotation error that had silently cost seven arms a legitimate hit, and
+  three loose grading matches. Resolve every entry before citing a thread figure.
 
 Run `python3 test_score_pooled.py` after any change. A guard without a passing test is a guard that
 has not been shown to fire.

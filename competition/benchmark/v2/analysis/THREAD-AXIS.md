@@ -1,5 +1,12 @@
 # The thread axis — what the 120 admitted threads actually are
 
+> **UPDATED 2026-08-20.** Findings 1-4 below stand as written. Two further defects were found in how
+> the axis is *counted*, not in what the threads are, and they change the arithmetic in
+> "What survives": admission never checked that a thread's subject exists at the checkpoint
+> ([[dcc-hw48]]), and duplicate threads split credit between the two origin axes ([[dcc-qfr5]]).
+> See **The counting was wrong too** at the end. Finding 4 turns out to have been the second defect
+> in plain sight, recorded as an independence problem and never followed through to the scoring.
+
 Census run 2026-08-11. Full classification in `thread-classification.tsv` (one row per thread,
 auditable and greppable). Prompted by subject 12's anchor key, where **all 12** review threads failed
 the `must_flag` test — which raised the question of whether the pooled corpus's thread axis measures
@@ -117,6 +124,12 @@ makes unpoolable (§5):
 grafana#117615 2, immich#28886 2). So the reportable thread axis is ~30 items, unevenly spread, with
 four cells too thin to carry a per-cell recall number.
 
+> **The 30 is a pre-correction count.** It counts admitted human threads without asking whether any
+> could be matched at the checkpoint. On the six subjects since annotated, matchability removes 13 of
+> 48 human threads (27%), and grafana#117615 loses both of its two. The corrected figure for the full
+> 12-subject corpus is not yet known — six subjects remain unannotated — so **30 is an upper bound,
+> not a count.** See "The counting was wrong too" below.
+
 ## Recommended disposition
 
 1. **Filter thread authors against a real bot list, not a regex on the name.** The nine logins here
@@ -146,3 +159,102 @@ one more login no name regex would have caught.
 - **Authorship is a proxy for provenance.** It reliably identifies tool output posted under a bot
   account; it cannot identify tool output posted under a human account.
 - Every row is in `thread-classification.tsv` so any disputed call can be found and re-argued.
+
+## The counting was wrong too (added 2026-08-20)
+
+The census above asked what the threads *are*. It did not ask whether a tool could have matched them,
+or whether two threads were the same item. Both turned out to be wrong, and both deflated every arm
+equally — which is why neither showed up as an anomaly in any comparison.
+
+### Defect A — admission never tested whether the thread's subject exists ([[dcc-hw48]])
+
+`admission` is a line-position test: "line inside a changed hunk at the checkpoint". A thread written
+three pushes later, about code introduced two pushes later, is admitted whenever its line lands in a
+changed hunk. Those threads cannot be raised by a reviewer looking at the checkpoint, so they enter
+the denominator and count against every arm.
+
+Every admitted thread in the corpus now carries `matchable_at_checkpoint`, decided by a judgment pass
+that reads the checkpoint code and is blind to the pool:
+
+| subject | human admitted | matchable | excluded | share lost |
+|---|---|---|---|---|
+| `PostHog/posthog#55149` | 20 | **13** | 7 | 35% |
+| `dotnet/efcore#34127` | 10 | **8** | 2 | 20% |
+| `prometheus#18081` | 10 | **9** | 1 | 10% |
+| `mattermost#36824` | 4 | **3** | 1 | 25% |
+| `immich#28886` | 2 | **2** | 0 | 0% |
+| `grafana#117615` | 2 | **0** | 2 | 100% |
+
+**The loss scales with post-checkpoint review activity.** PostHog#55149 was reviewed across 12
+commits over three weeks and loses 35%; prometheus was reviewed largely at its checkpoint commit and
+loses 10%. So this penalized precisely the subjects selected for having rich review histories — the
+population the corpus deliberately seeks. The checkpoint rule makes it worse by construction: it is
+"the commit the earliest review comment was written against", which maximizes the number of later
+pushes.
+
+The obvious mechanical fix does not work, and was measured not to. Looking up the code tokens a thread
+quotes in the thread's own file at the checkpoint would have **wrongly excluded 4 threads whose
+defects the pool credited** on PostHog#55149 while catching only 2 of the 10 real cases: threads quote
+error strings from earlier drafts, name symbols living in other files, and often describe behavior
+without quoting anything. `annotate_thread_matchability.py` therefore emits a worksheet with that
+lexical evidence as a *hint* and refuses to invent verdicts.
+
+Compound threads need care. One efcore thread's quoted suggestion restructures a block absent at the
+checkpoint, while its closing sentence — "move `nullPropagatedOperands` below" — describes an ordering
+that **seven arms** reported and that is present at `SqlNullabilityProcessor.cs:580-583`. The rule is
+**matchable if ANY claim targets present code**; the first pass got it wrong and the cross-check below
+caught it.
+
+### Defect B — duplicate threads split credit across the two axes ([[dcc-qfr5]])
+
+**This is Finding 4, followed through.** The census found "9 human threads restate a bot thread" and
+recorded it as a threat to population independence. It is also a scoring defect, and the larger one:
+a cluster carries one `matches_thread`, so when a bot and a human raise the same defect at the same
+line, one thread is credited and the other reads as missed. Because `thread_recall` counts human
+threads and `incumbent_agreement` counts bot threads, the tie-break moves credit **between two axes
+that are reported separately and must never be merged**.
+
+The grader broke ties by earliest index. On a review-disciplined repo the scanners comment within days
+and the humans arrive later, so "earliest" is a systematically bot-biased rule.
+
+Measured on PostHog#55149 — three human threads read as missed while their defects had been found:
+
+| human thread | credited instead | shared defect | arms that found it |
+|---|---|---|---|
+| T38 `point_in_time_properties.py:80` | T23 (bot) | `except Exception: raise` is a no-op | 4 |
+| T44 `api/types.rs:713` | T24 (bot) | `matched` set from `all_properties_matched` | 4 |
+| T45 `handler/flags.rs:172` | T27 (bot) | `*flag = override_flag` replaces identity fields | 2 |
+
+All three pairs are on the census's own co-location list. Threads now carry `thread_group`; recall is
+computed over groups, and a group credits the human axis if any member is human and the incumbent axis
+if any is bot — independently, since the axes are separate anyway. Grouping also collapses same-axis
+duplicates: grafana#117615 has a bot/bot pair (the same non-idempotent `quoteIdentifierIfNecessary`
+raised at two call sites), which inflated a denominator without shifting it.
+
+### What the correction did to the numbers
+
+Not one-directionally, which is the evidence it is unbiased. On PostHog#55149 every arm roughly
+doubled (`ours-review` 0.450 → 0.846, `ours-bugs` 0.200 → 0.385) — about a third of that from
+grouping and two thirds from matchability. prometheus rose slightly; **mattermost fell** on every arm
+(0.750 → 0.667, losing a hit and a denominator slot); efcore split until the compound-thread verdict
+was fixed. grafana#117615 went from `0.000` on four arms to `null`, which stops it dragging pooled
+averages as though four arms had failed.
+
+### A permanent cross-check
+
+A cluster credited to a thread judged unmatchable is a contradiction — a tool cannot match a comment
+about code that does not exist. `score_pooled.py` now reports `credited_to_unmatchable_thread` and
+warns on stderr. It found four on the first run: one real annotation error (the efcore compound
+thread, which had silently cost seven arms a hit) and three loose *grading* matches that remain open —
+a `== true` style cluster credited to a thread asking for `is null` on a line with no `== null`; a
+decoder-placement cluster credited to a logger-context request; an inert-test-values cluster credited
+to a missing-integration-test request. It reports rather than refuses, because which of the two
+judgments is wrong differs case by case.
+
+### Consequence for §2 and for any published figure
+
+Every thread-recall figure computed before 2026-08-20 rests on an inflated denominator and, where the
+subject has duplicate threads, on credit assigned to the wrong axis. `thread_axis_publishable` now
+travels in each subject's metrics and is false unless every admitted thread carries a matchability
+verdict — absent annotation is **not** read as "all matchable", because that is the assumption this
+correction removes.

@@ -1,0 +1,38 @@
+[
+ {
+  "thread_index": 0,
+  "path": "server/public/model/command_response.go",
+  "line": 88,
+  "body": "\u26a0\ufe0f Potential issue | \ud83d\udfe1 Minor | \u26a1 Quick win\nText limit is enforced in bytes, not characters.\nThe issue specifies a 65,535 character limit, but len(o.Text) returns the byte count. Multibyte UTF-8 text under the character limit can be wrongly rejected. If the intent is a character cap, count runes instead.\n\n\ud83d\udc1b Proposed fix to count characters\n-\tmaxLength := 65535\n-\tif len(o.Text) > maxLength {\n+\tmaxLength := 65535\n+\tif utf8.RuneCountInString(o.Text) > maxLength {\n \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n \t}\nAdd the import:\n import (\n \t\"encoding/json\"\n \t\"io\"\n \t\"net/http\"\n \t\"strings\"\n+\t\"unicode/utf8\"\n\n \t\"github.com/mattermost/mattermost/server/public/utils\"\n )\n\nNote: if the 65,535 cap is actually a downstream byte-storage limit, the current len() check is correct\u2014please confirm which constraint applies.\n\n\n\ud83d\udcdd Committable suggestion\n\n\u203c\ufe0f IMPORTANT\nCarefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.\n\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n            \tmaxLength := 65535\n          \n          \n            \n            \tif len(o.Text) > maxLength {\n          \n          \n            \n            \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n          \n          \n            \n            \t}\n          \n          \n            \n            import (\n          \n          \n            \n            \t\"encoding/json\"\n          \n          \n            \n            \t\"io\"\n          \n          \n            \n            \t\"net/http\"\n          \n          \n            \n            \t\"strings\"\n          \n          \n            \n            \t\"unicode/utf8\"\n          \n          \n            \n            \n          \n          \n            \n            \t\"github.com/mattermost/mattermost/server/public/utils\"\n          \n          \n            \n            )\n          \n      \n    \n    \n  \n\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n            \tmaxLength := 65535\n          \n          \n            \n            \tif len(o.Text) > maxLength {\n          \n          \n            \n            \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n          \n          \n            \n            \t}\n          \n          \n            \n            \tmaxLength := 65535\n          \n          \n            \n            \tif utf8.RuneCountInString(o.Text) > maxLength {\n          \n          \n            \n            \t\treturn NewAppError(\"CommandResponse.IsValid\", \"model.command_response.is_valid.text.app_error\", nil, \"text is too long\", http.StatusBadRequest)\n          \n          \n            \n            \t}\n          \n      \n    \n    \n  \n\n\n\n\n\ud83e\udd16 Prompt for AI Agents\nVerify each finding against current code. Fix only still-valid issues, skip the\nrest with a brief reason, keep changes minimal, and validate.\n\nIn `@server/public/model/command_response.go` around lines 85 - 88, The length\ncheck currently uses len(o.Text) which counts bytes; change it to count\ncharacters by using utf8.RuneCountInString(o.Text) (or len([]rune(o.Text))) when\ncomparing to maxLength, update the import to include \"unicode/utf8\", and keep\nthe same error return (the check lives in CommandResponse.IsValid referencing\no.Text and maxLength); if the 65,535 constraint is actually a byte-storage\nlimit, leave the current byte-based len() check instead.\n\n\n\n\n\u2705 Addressed in commit fc34391"
+ },
+ {
+  "thread_index": 1,
+  "path": "server/public/model/command_response.go",
+  "line": 83,
+  "body": "These are new errors right? if so, please run make i18n-extract to add them to the i18n files."
+ },
+ {
+  "thread_index": 2,
+  "path": "server/public/model/command_response.go",
+  "line": 89,
+  "body": "this gets checked later during post creation. I don't think we should already do that here."
+ },
+ {
+  "thread_index": 4,
+  "path": "server/public/model/command_response.go",
+  "line": 74,
+  "body": "Let's not throw an hard error. This might break existing servers. Instead log a warning, similar to the caller of MessageAttachment.IsValid(). In general, we should use that method as a guideline."
+ },
+ {
+  "thread_index": 5,
+  "path": "server/public/model/command_response.go",
+  "line": 99,
+  "body": "\ud83c\udfaf Functional Correctness | \ud83d\udfe0 Major | \u26a1 Quick win\n\n\ud83e\udde9 Analysis chain\n\ud83c\udf10 Web query:\nIn Go's net/url package, does ParseRequestURI accept absolute-path values like \"/foo\" without a scheme/host?\n\ud83d\udca1 Result:\nYes, Go's net/url.ParseRequestURI accepts absolute-path values, such as \"/foo\", without a scheme or host [1][2][3]. The function is specifically designed to parse URLs as they might be received in an HTTP request line [1][2]. According to the official documentation, ParseRequestURI interprets the input string as either an absolute URI or an absolute path [1][2]. Because absolute paths are valid request-targets in HTTP, they are accepted by this function [4][3]. It is important to note that ParseRequestURI assumes the input string does not contain a fragment suffix (#fragment), as web browsers typically strip fragments before sending the URL to a server [1][4].\nCitations:\n\n1: https://pkg.go.dev/net/url\n2: https://pkg.go.dev/net/url@go1.26.4\n3: https://stackoverflow.com/questions/51069484/url-validation-seems-broken\n4: https://github.com/golang/go/blob/go1.26.4/src/net/url/url.go\n\n\n\nReject path-only values here\nurl.ParseRequestURI accepts inputs like /foo, so these fields can still pass validation without being actual URLs. If IconURL and GotoLocation must be full URLs, require a scheme/host or switch to a stricter URL check.\n\n\ud83e\udd16 Prompt for AI Agents\nVerify each finding against current code. Fix only still-valid issues, skip the\nrest with a brief reason, keep changes minimal, and validate.\n\nIn `@server/public/model/command_response.go` around lines 87 - 99, The IconURL\nand GotoLocation validation in command_response.go still allows path-only values\nbecause url.ParseRequestURI is too permissive. Update the validation in\nCommandResponse.IsValid to require a full URL with a scheme and host, or replace\nthe current parsing with a stricter check that rejects inputs like /foo. Keep\nthe existing error handling and messages, but make sure both IconURL and\nGotoLocation are validated against full URL requirements."
+ },
+ {
+  "thread_index": 6,
+  "path": "server/public/model/command_response.go",
+  "line": 75,
+  "body": "I would like to see a concrete logger instead of the global one getting used, as that carries context as well.\nLet's move this call into the two placed where CommandResponseFromHTTPBody is called (commandWebhook, DoCommandRequest) and use the request logger."
+ }
+]

@@ -1,5 +1,15 @@
 # Benchmark v2 pilot — results and full-run recommendation (nib `dcc-vkeh`)
 
+> ⚠️ **Thread-axis figures in this document predate the 2026-08-20 correction** ([[dcc-hw48]],
+> [[dcc-qfr5]]). Every `thread_recall` / `incumbent_agreement` number below was computed over a
+> denominator that included threads no tool could match at the checkpoint, and — on subjects with
+> duplicate threads — with credit assigned to the wrong origin axis. The direction of the error is
+> known (recall understated, incumbent agreement overstated) but its size varies by subject, from 10%
+> to 100% of the human axis. **Re-derive from the current `metrics.json` before citing any thread
+> figure here.** The pooled and defect axes in this document are unaffected. See
+> `analysis/THREAD-AXIS.md`, "The counting was wrong too".
+
+
 Ran 2026-08-11 to 2026-08-13. **35 of 35 cells completed, every cell isolation-CLEAN, zero runner
 errors.** Roughly $820 all-in: $539 in matrix cells, $99 in probes, $35 wasted on two failed cells,
 the rest in scoring.

@@ -1,0 +1,44 @@
+[
+ {
+  "thread_index": 0,
+  "path": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx",
+  "line": 82,
+  "body": "initialQuery now calls quoteIdentifierIfNecessary(vars[0]). If there are no non-expression queries, refIds can be empty (ExpressionQueryEditor filters out the current query), making vars[0] undefined and causing a runtime crash when quoteIdentifierIfNecessary runs. Add a guard for the empty refIds/vars case (e.g., don\u2019t generate an initial FROM clause / use a placeholder and skip auto-initialization) and add a regression test for mounting SqlExpr with an empty refIds array."
+ },
+ {
+  "thread_index": 1,
+  "path": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx",
+  "line": 82,
+  "body": "quoteIdentifierIfNecessary (from MySQL sqlUtil) is not idempotent: if a query name/refId is already wrapped in backticks (a plausible workaround users may already have saved), it will get wrapped again and produce invalid SQL. Consider unquoting first (e.g., via unquoteIdentifier) or adding an explicit \u201calready quoted\u201d check before re-quoting."
+ },
+ {
+  "thread_index": 2,
+  "path": "public/app/features/expressions/utils/metaSqlExpr.ts",
+  "line": 15,
+  "body": "Table quoting logic is inconsistent across the SQL expressions feature: this file uses the local quoteIdentifierIfNecessary (regex-only) while SqlExpr/autocomplete use the MySQL sqlUtil version (which also quotes reserved words). This can lead to cases where the editor generates a quoted FROM clause but the schema/fields metadata query still uses an unquoted table name (e.g., refId like \"TABLE\"). Use a single shared quoting helper for all SQL-expressions table/field quoting (and ideally handle reserved words + already-quoted identifiers)."
+ },
+ {
+  "thread_index": 3,
+  "path": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts",
+  "line": 28,
+  "body": "Autocomplete table completions now always run through quoteIdentifierIfNecessary, which will double-wrap already-quoted query names (e.g., a saved refId like foo bar) and insert invalid SQL. Make quoting idempotent (unquote-then-quote, or skip quoting when the identifier is already quoted) so autocomplete doesn\u2019t regress existing dashboards."
+ },
+ {
+  "thread_index": 4,
+  "path": "public/app/features/expressions/components/SqlExpressions/CompletionProvider/sqlCompletionProvider.ts",
+  "line": 27,
+  "body": "I don't think wrapping this in both quoteIdentifierIfNecessary and unquoteIdentifier is the right way to go here but I'm not super familiar with this area of the code. I thought when I reviewed this before that you hadn't done this so I'm wondering about the change here."
+ },
+ {
+  "thread_index": 6,
+  "path": "public/app/features/expressions/components/SqlExpressions/SqlExpr.tsx",
+  "line": 81,
+  "body": "table is a reserved keyword, let's use something else (default_table? or similar?) to avoid an error when the expression runs."
+ },
+ {
+  "thread_index": 7,
+  "path": "public/app/features/expressions/utils/metaSqlExpr.test.ts",
+  "line": 31,
+  "body": "These tests only verify the quoted SQL text, not the production flow where query.table is backtick-quoted but the backing query still has the raw refId. Because ExpressionQueryEditor passes { value: q.refId, label: q.refId }, we need a regression test that keeps queries[].refId unquoted while query.table is quoted; otherwise the missing source-query lookup in fetchSQLFields goes unnoticed."
+ }
+]

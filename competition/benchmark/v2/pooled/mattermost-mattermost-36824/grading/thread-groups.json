@@ -1,0 +1,38 @@
+[
+  {
+    "group_id": "tg01",
+    "thread_indices": [0],
+    "defect": "The 65,535 text limit is enforced with len(o.Text) (bytes) although the requirement is a character cap, so multibyte text under the cap is rejected.",
+    "same_fix": ""
+  },
+  {
+    "group_id": "tg02",
+    "thread_indices": [1],
+    "defect": "The two newly introduced AppError ids (response_type.app_error, text.app_error) have no entries in server/i18n/en.json — make i18n-extract was not run.",
+    "same_fix": ""
+  },
+  {
+    "group_id": "tg03",
+    "thread_indices": [2],
+    "defect": "Text-length validation is performed in CommandResponse.IsValid even though the same constraint is already enforced later during post creation, so the check belongs elsewhere.",
+    "same_fix": ""
+  },
+  {
+    "group_id": "tg04",
+    "thread_indices": [4],
+    "defect": "CommandResponseFromJSON turns a validation failure into a hard error, which can break existing servers; it should log a warning like the caller of MessageAttachment.IsValid does.",
+    "same_fix": ""
+  },
+  {
+    "group_id": "tg05",
+    "thread_indices": [5],
+    "defect": "IconURL/GotoLocation validation uses url.ParseRequestURI, which accepts path-only values such as /foo, so non-URLs pass validation.",
+    "same_fix": ""
+  },
+  {
+    "group_id": "tg06",
+    "thread_indices": [6],
+    "defect": "The validation warning is emitted through the global logger inside the model helper instead of the request-scoped logger at the two call sites (commandWebhook, DoCommandRequest).",
+    "same_fix": ""
+  }
+]

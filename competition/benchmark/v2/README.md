@@ -29,6 +29,10 @@ v2/
 │   ├── fixture.json                 checkpoint sha, base, date, diff stat, vintage, thread counts
 │   ├── threads.json                 218 raw / 120 admitted review threads — THE ANSWERS; each
 │   │                                carries origin human|bot (86 human, 34 bot — two axes, dcc-qwt3)
+│   │                                and, once annotated, matchable_at_checkpoint + thread_group
+│   │                                (dcc-hw48, dcc-qfr5 — the audited denominator; see METRICS.md)
+│   ├── grading/                     verdicts, calibration records, and the matchability /
+│   │                                duplicate-grouping worksheets and verdicts
 │   └── repo/                        airtight checkout at the checkpoint (gitignored)
 ├── pooled/bot-authors.json          committed thread-author bot list, derived per corpus
 ├── null/<repo>-<pr>/                3 null subjects — the noise floor; same shape, no scored threads

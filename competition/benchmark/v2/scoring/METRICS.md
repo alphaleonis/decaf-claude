@@ -157,3 +157,47 @@ Measured, the second effect is large. prometheus has **13 contributing arms and 
 no arm exceeds **6/11** even across all its repeats. The three subjects with **4 contributors** see
 arms reach 100%. Those denominators are not the same difficulty, and a figure that averages across
 them is not one number.
+
+## The thread axis has an audited denominator (nibs dcc-hw48, dcc-qfr5)
+
+`thread_recall` and `incumbent_agreement` are computed over **matchable thread groups**, not over raw
+admitted threads. Two corrections sit behind that phrase, and both were denominator errors that
+deflated every arm equally — which is exactly why neither surfaced as an anomaly in any comparison.
+
+| field | meaning |
+|---|---|
+| `admitted_human` / `admitted_bot` | what the corpus holds |
+| `denominator_human` / `denominator_bot` | what the axis is actually divided by |
+| `excluded_unmatchable` / `_human` | thread indices removed because their subject does not exist at the checkpoint |
+| `duplicate_groups` | groups of threads asserting one defect, collapsed to one ground-truth item |
+| `matchability_annotated` | every admitted thread carries a matchability verdict |
+| `thread_axis_publishable` | gate a synthesis must check; false when the denominator is unaudited |
+| `credited_to_unmatchable_thread` | contradictions between the grading and the annotation |
+
+**Unmatchable threads.** Admission is a line-position test and never asked whether the code a thread
+discusses exists at the checkpoint. A comment written three pushes later about code added two pushes
+later is admitted whenever its line falls in a changed hunk, and then counts against every arm. The
+test is PRESENCE, not date: a thread written weeks later about code that already existed is perfectly
+matchable, and anything keyed on `created_at` would wrongly exclude it.
+
+**Duplicate threads.** A cluster carries one `matches_thread`. When a scanner and a human raise the
+same defect at the same line, one thread is credited and the other reads as missed — and since the
+axes split by origin, the tie-break moves credit *between* two axes that are reported separately.
+Recall is therefore computed per group, and a group credits the human axis if any member is human and
+the incumbent axis if any is bot, independently.
+
+**Absent annotation is not "all matchable".** `matchability_annotated: false` sets
+`thread_axis_publishable: false`. Partial annotation — some threads verdicted, others not — also
+reports false, because that is the dangerous middle. The number is still computed rather than nulled,
+since a null is what gets quietly replaced by an assumption.
+
+**`null` is not `0.000`.** A subject whose matchable human threads number zero reports
+`thread_recall: null` with `human_axis_empty: true`. Substituting 0 makes it look as though every arm
+failed a real question and drags every pooled average down. grafana#117615 is that case: both its
+human threads are unmatchable, so `denominator_human` is 0.
+
+**`credited_to_unmatchable_thread` must be empty before a figure is cited.** A cluster credited to an
+unmatchable thread is a contradiction — a tool cannot match a comment about code that is not there —
+so one of the two judgments is wrong. It reports rather than refuses because which one differs case by
+case: on first run it caught one real annotation error that had silently cost seven arms a legitimate
+hit, and three loose grading matches.

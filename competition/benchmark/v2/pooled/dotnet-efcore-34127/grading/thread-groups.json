@@ -1,0 +1,13 @@
+[
+ {"group_id": "tg01", "thread_indices": [0], "defect": "DropNotNullChecks signals 'no check left' by returning null instead of an explicit TRUE expression.", "same_fix": ""},
+ {"group_id": "tg02", "thread_indices": [1], "defect": "Style: `== null` used instead of `is null` in the CASE optimization condition.", "same_fix": ""},
+ {"group_id": "tg03", "thread_indices": [2], "defect": "Style: mutable `test`/`expr` if/else assignment should be a tuple deconstruction, and the operand set declared after it.", "same_fix": ""},
+ {"group_id": "tg04", "thread_indices": [3], "defect": "The node-type dispatch chain in the null-propagation collector should be a single pattern-matching switch.", "same_fix": ""},
+ {"group_id": "tg05", "thread_indices": [4], "defect": "The collector's name (`NullPropagatedOperands`) does not read as an action; `DetectNullPropagatingNodes` is proposed.", "same_fix": ""},
+ {"group_id": "tg06", "thread_indices": [5], "defect": "Null-propagation detection is a local utility inside VisitCase with no extensibility point for provider-specific expression types.", "same_fix": ""},
+ {"group_id": "tg07", "thread_indices": [6], "defect": "AtTimeZone and Collate expressions propagate nullability but are not handled by the collector.", "same_fix": ""},
+ {"group_id": "tg08", "thread_indices": [7], "defect": "Whether AndAlso/OrElse should count as null-propagating operands.", "same_fix": ""},
+ {"group_id": "tg09", "thread_indices": [8], "defect": "The unary branch uses an allowlist (Not/Negate/Convert) that may omit other propagating unary operators; a denylist is proposed.", "same_fix": ""},
+ {"group_id": "tg10", "thread_indices": [9], "defect": "Null checks on non-nullable nodes could be elided by simplifying SqlExpressionFactory.IsNull/IsNotNull.", "same_fix": ""},
+ {"group_id": "tg11", "thread_indices": [14], "defect": "ExpressionType.Coalesce is treated as null-propagating by the binary branch, so DropNotNullChecks can remove a semantically required IS NOT NULL.", "same_fix": ""}
+]

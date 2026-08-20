@@ -1,0 +1,31 @@
+[
+ {
+  "thread_index": 1,
+  "path": "open-api/immich-openapi-specs.json",
+  "line": 16607,
+  "body": "This is wrong/misleading. Is there a way to opt out of these values while still using int validation?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 2,
+  "path": "server/src/dtos/asset.dto.ts",
+  "line": 24,
+  "body": "Suggested change\n      \n    \n    \n      \n          \n            \n                  .describe('Rating in range [1-5] (starred), -1 (rejected) or null (unrated)')\n          \n          \n            \n                  .describe('Rating in range [1-5] (starred), -1 (rejected), or null (unrated)')",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [
+    "Rating in range [1-5] (starred), -1 (rejected) or null (unrated)",
+    "Rating in range [1-5] (starred), -1 (rejected), or null (unrated)"
+   ],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ }
+]

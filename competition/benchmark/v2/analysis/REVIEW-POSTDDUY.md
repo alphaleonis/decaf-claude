@@ -1,5 +1,15 @@
 # `review` post-dduy — results (2026-08-18, nib dcc-u10u)
 
+> ⚠️ **Thread-axis figures in this document predate the 2026-08-20 correction** ([[dcc-hw48]],
+> [[dcc-qfr5]]). Every `thread_recall` / `incumbent_agreement` number below was computed over a
+> denominator that included threads no tool could match at the checkpoint, and — on subjects with
+> duplicate threads — with credit assigned to the wrong origin axis. The direction of the error is
+> known (recall understated, incumbent agreement overstated) but its size varies by subject, from 10%
+> to 100% of the human axis. **Re-derive from the current `metrics.json` before citing any thread
+> figure here.** The pooled and defect axes in this document are unaffected. See
+> `analysis/THREAD-AXIS.md`, "The counting was wrong too".
+
+
 `ours-review` re-measured after [[dcc-dduy]] moved volume and verification agents off the cheap tier
 (under `models=low`/`norm` they now run Sonnet). `review` is `models=norm`, so dduy applies to it.
 Ten cells: prometheus-18081 r4/r5, dotnet-efcore-34127 r3/r4, and mattermost-36824 / immich-28886 /

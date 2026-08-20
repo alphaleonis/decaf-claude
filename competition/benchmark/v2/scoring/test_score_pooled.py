@@ -509,6 +509,94 @@ def t_empty_human_axis_is_distinct_from_thin():
     # thin and empty are independent: BASE is thin (2 human threads) but not empty
     assert m2["threads"]["human_axis_thin"] is True, m2["threads"]
 
+
+def t_unmatchable_threads_leave_the_denominator():
+    """dcc-hw48: a thread about code the checkpoint predates is not a miss anybody could avoid.
+
+    Measured on PostHog-posthog-55149: 6 of 20 admitted human threads discussed code introduced by
+    later commits, deflating every arm's recall by 30% with nothing in the output to show it.
+    """
+    th = copy.deepcopy(THREADS)
+    for t in th:
+        if t["admission"] == "admitted":
+            t["matchable_at_checkpoint"] = True
+    m = score(BASE, th, None)
+    assert m["threads"]["denominator_human"] == 2, m["threads"]
+    assert m["threads"]["matchability_annotated"] is True
+    assert m["threads"]["thread_axis_publishable"] is True
+    assert m["tools"]["alpha"]["thread_recall"] == 0.5, m["tools"]["alpha"]
+
+    # Mark the unhit thread unmatchable: the denominator drops and recall rises to 1.00 without any
+    # tool behaving differently.
+    th[1]["matchable_at_checkpoint"] = False
+    m2 = score(BASE, th, None)
+    assert m2["threads"]["denominator_human"] == 1, m2["threads"]
+    assert m2["threads"]["excluded_unmatchable_human"] == [1], m2["threads"]
+    assert m2["tools"]["alpha"]["thread_recall"] == 1.0, m2["tools"]["alpha"]
+    assert m2["threads"]["missed_by_every_tool"] == 0, m2["threads"]
+
+
+def t_unannotated_matchability_is_not_publishable():
+    """Absent annotation must not read as 'all matchable'. It makes the axis unpublishable."""
+    m = score(BASE, THREADS, None)          # THREADS carries no matchable_at_checkpoint
+    assert m["threads"]["matchability_annotated"] is False, m["threads"]
+    assert m["threads"]["thread_axis_publishable"] is False, m["threads"]
+    # The number is still computed — a synthesis gates on the flag rather than on a null.
+    assert m["threads"]["denominator_human"] == 2, m["threads"]
+
+
+def t_partial_annotation_is_not_publishable():
+    """One annotated thread and one not is the dangerous middle, and must not pass as annotated."""
+    th = copy.deepcopy(THREADS)
+    th[0]["matchable_at_checkpoint"] = True
+    m = score(BASE, th, None)
+    assert m["threads"]["matchability_annotated"] is False, m["threads"]
+
+
+def t_duplicate_threads_are_one_ground_truth_item():
+    """dcc-qfr5: two threads asserting one defect are one item, and credit BOTH origin axes.
+
+    Measured on PostHog-posthog-55149: three human threads read as missed because a bot duplicate of
+    the same defect absorbed the credit, understating thread_recall and overstating
+    incumbent_agreement from the same three clusters.
+    """
+    th = copy.deepcopy(THREADS)
+    # A bot thread duplicating human thread 0, as a scanner and a reviewer both raising one defect.
+    th.append({"path": "a.py", "line": 10, "admission": "admitted", "origin": "bot",
+               "matchable_at_checkpoint": True, "thread_group": "tg1"})
+    th[0]["thread_group"] = "tg1"
+    for t in th:
+        if t["admission"] == "admitted":
+            t.setdefault("matchable_at_checkpoint", True)
+    m = score(BASE, th, None)
+    # One defect, not two: the human denominator stays at 2 and the bot denominator is 1.
+    assert m["threads"]["denominator_human"] == 2, m["threads"]
+    assert m["threads"]["denominator_bot"] == 1, m["threads"]
+    assert m["threads"]["duplicate_groups"] == [[0, 3]], m["threads"]
+    # c1 credits index 0, and the SAME credit lands on the bot axis, because the group holds both.
+    assert m["tools"]["alpha"]["thread_recall"] == 0.5, m["tools"]["alpha"]
+    assert m["tools"]["alpha"]["incumbent_agreement"] == 1.0, m["tools"]["alpha"]
+
+
+def t_crediting_either_duplicate_gives_the_same_answer():
+    """The whole point: which index the judge happens to name must not change the result."""
+    th = copy.deepcopy(THREADS)
+    th.append({"path": "a.py", "line": 10, "admission": "admitted", "origin": "bot",
+               "matchable_at_checkpoint": True, "thread_group": "tg1"})
+    th[0]["thread_group"] = "tg1"
+    for t in th:
+        if t["admission"] == "admitted":
+            t.setdefault("matchable_at_checkpoint", True)
+    a = copy.deepcopy(BASE)
+    m_human = score(a, th, None)
+    a2 = copy.deepcopy(BASE)
+    a2["clusters"][0]["matches_thread"] = 3          # credit the bot duplicate instead
+    m_bot = score(a2, th, None)
+    for axis in ("thread_recall", "incumbent_agreement"):
+        assert m_human["tools"]["alpha"][axis] == m_bot["tools"]["alpha"][axis], \
+            f"{axis}: {m_human['tools']['alpha'][axis]} vs {m_bot['tools']['alpha'][axis]}"
+
+
 for name, fn in list(globals().items()):
     if name.startswith("t_"):
         check(name[2:], fn)

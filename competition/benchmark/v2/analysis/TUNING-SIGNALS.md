@@ -1,5 +1,15 @@
 # What the pilot says about tuning decaf's review presets
 
+> ⚠️ **Thread-axis figures in this document predate the 2026-08-20 correction** ([[dcc-hw48]],
+> [[dcc-qfr5]]). Every `thread_recall` / `incumbent_agreement` number below was computed over a
+> denominator that included threads no tool could match at the checkpoint, and — on subjects with
+> duplicate threads — with credit assigned to the wrong origin axis. The direction of the error is
+> known (recall understated, incumbent agreement overstated) but its size varies by subject, from 10%
+> to 100% of the human axis. **Re-derive from the current `metrics.json` before citing any thread
+> figure here.** The pooled and defect axes in this document are unaffected. See
+> `analysis/THREAD-AXIS.md`, "The counting was wrong too".
+
+
 Derived from the v2 pilot ([`PILOT-RESULTS.md`](PILOT-RESULTS.md)) — two subjects, both `library`,
 seven tools × two repeats, blind-adjudicated twice. Every figure carries the pilot's caveats: two
 subjects, one application type, and no precision ratio where a tool reported under ten clusters.

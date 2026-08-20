@@ -1,0 +1,32 @@
+[
+  {
+    "thread_index": 0,
+    "matchable_at_checkpoint": true,
+    "reason": "The byte-vs-character length check it criticizes is present verbatim at the checkpoint in server/public/model/command_response.go:85-88 (`maxLength := 65535` / `if len(o.Text) > maxLength`), with no `unicode/utf8` import in the file."
+  },
+  {
+    "thread_index": 1,
+    "matchable_at_checkpoint": true,
+    "reason": "Both new AppError ids it asks to i18n-extract are introduced by the checkpoint diff (server/public/model/command_response.go:82 and :87) and `grep -n 'model.command_response' server/i18n/en.json` returns nothing at the checkpoint, so the missing i18n entries are an omission already present."
+  },
+  {
+    "thread_index": 2,
+    "matchable_at_checkpoint": true,
+    "reason": "It objects to validating text length here rather than at post creation; that check exists at the checkpoint at server/public/model/command_response.go:85-88 (its cited line 89 in commit fc34391 maps to the check's closing brace after the one-line utf8 import shift)."
+  },
+  {
+    "thread_index": 4,
+    "matchable_at_checkpoint": true,
+    "reason": "The hard error it asks to downgrade to a warning is the checkpoint code at server/public/model/command_response.go:72-74 (`if err := o.IsValid(); err != nil { return nil, err }` inside CommandResponseFromJSON)."
+  },
+  {
+    "thread_index": 5,
+    "matchable_at_checkpoint": false,
+    "reason": "It reviews IconURL/GotoLocation validation built on url.ParseRequestURI, which does not exist at the checkpoint — server/public/model/command_response.go has no `net/url` import and no URL check anywhere in its 100 lines; the validation was added after the checkpoint (thread is against f71fda4)."
+  },
+  {
+    "thread_index": 6,
+    "matchable_at_checkpoint": false,
+    "reason": "It asks to replace a global-logger call with a request logger and move it into the two callers, but no logging exists in server/public/model/command_response.go at the checkpoint (no `mlog` reference); the log call is the later fix for thread 4, added before 9c48344."
+  }
+]
