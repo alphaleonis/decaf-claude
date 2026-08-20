@@ -2,10 +2,10 @@
 # dcc-856n
 version: 1
 title: 'Vintage is checked after the money is spent: refuse an in-window subject at selection time'
-status: todo
+status: completed
 type: bug
 created_at: 2026-08-20T18:35:48Z
-updated_at: 2026-08-20T18:36:20Z
+updated_at: 2026-08-20T19:47:54Z
 parent: dcc-ho2w
 order: zzzV
 ---
@@ -46,3 +46,16 @@ for is not obtainable from this subject, and never was.
 - [ ] `bench-status` shows which scored subjects may not be pooled
 - [ ] `fixture.json`'s `vintage` block carries a computed status per known model, not just `merged`
 - [ ] The five in-window pooled subjects are listed somewhere a person planning a run will see
+
+## Summary
+
+**Completed 2026-08-20** — `run_cell_v2.sh` computes vintage from the fixture before the cell runs and exits 82 on an in-window
+subject unless `BENCH_ALLOW_IN_WINDOW=1` — the memorization-probe case being the legitimate one. It
+also prints the `pr_created_at` note when a subject clears the merge gate but its PR was open inside
+the window (dcc-60qk). `status.sh` gained a vintage block listing the active count, the not-poolable
+set, the exposed set, and the non-active fixtures with their roles.
+
+Declined one acceptance item: "fixture.json's vintage block carries a computed status per known
+model". That is the staleness `vintage.py` exists to prevent — a status baked into a fixture is wrong
+the day a model ships. The fixture keeps the dates as the source of truth; the status is computed at
+every point of use, which is now three of them instead of one.

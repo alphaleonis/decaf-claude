@@ -42,6 +42,59 @@ def changed_line_ranges(patch):
     return ranges
 
 
+# Repos whose entire content is library/framework internals — no client/server split to detect.
+# Kept in step with classify_candidate.sh, which types a CANDIDATE before a fixture exists.
+LIBRARY_REPOS = {"dotnet/aspnetcore", "dotnet/efcore", "prometheus/prometheus", "sveltejs/kit",
+                 "rust-lang/rust", "tokio-rs/tokio"}
+GENERATED = re.compile(r"(^|/)(node_modules|vendor|dist|build)/|\.(lock|snap|min\.js)$"
+                       r"|package-lock\.json|yarn\.lock|go\.sum")
+FRONTEND = re.compile(r"(^|/)(webapp|frontend|web|client|ui|public/app|src/components|mobile)/"
+                      r"|\.(tsx|jsx|svelte|vue|scss|css)$")
+BACKEND = re.compile(r"(^|/)(server|backend|api|pkg|cmd|internal|posthog|ee)/"
+                     r"|\.(go|py|cs|rb|java)$")
+
+
+def classify_at_checkpoint(slug, filenames):
+    """App type of the CHECKPOINT diff — the artifact a tool actually reviews (dcc-acw2).
+
+    `classify_candidate.sh` types a subject from the MERGED pull request, which is all a screen can
+    see before a fixture exists. The two differ, and on three subjects they differed by enough to
+    change the cell: PostHog#55149 and mattermost#36824 are declared contract and are backend-only
+    at their checkpoint, while PostHog#59630 is the reverse. Both of the first two were already
+    scored, in the row whose stated purpose is exercising multi-specialist dispatch.
+    """
+    sig = [f for f in filenames if not GENERATED.search(f)] or list(filenames)
+    fe = sum(1 for f in sig if FRONTEND.search(f))
+    be = sum(1 for f in sig if BACKEND.search(f))
+    if slug in LIBRARY_REPOS:
+        t = "library"
+    elif fe and be:
+        t = "contract"
+    elif fe:
+        t = "app-ui"
+    elif be:
+        t = "backend"
+    else:
+        t = "unclear"
+    return {"app_type_at_checkpoint": t, "frontend_files": fe, "backend_files": be}
+
+
+def require_matching_app_type(declared, observed, slug, allow_mismatch):
+    """A cell must hold what its label says it holds.
+
+    Fails rather than warns, because the mislabels this catches survived being scored: nothing
+    downstream re-reads the file list, so the declared type is the only thing any analysis sees.
+    """
+    got = observed["app_type_at_checkpoint"]
+    if got == declared or allow_mismatch:
+        return
+    raise SystemExit(
+        f"{slug}: requested app_type {declared!r}, but the CHECKPOINT diff is {got!r} "
+        f"({observed['frontend_files']} frontend / {observed['backend_files']} backend files). "
+        f"A tool reviews the checkpoint, not the merged PR, so the cell would not hold what its "
+        f"label says. Pick a different cell, or pass --allow-app-type-mismatch and record why.")
+
+
 def require_nonempty_diff(files, slug, base, checkpoint):
     """Refuse to write a fixture whose checkpoint diff has no files.
 
@@ -63,6 +116,9 @@ def main():
     ap.add_argument("owner"); ap.add_argument("repo"); ap.add_argument("pr", type=int)
     ap.add_argument("type"); ap.add_argument("size")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--allow-app-type-mismatch", action="store_true",
+                    help="accept a checkpoint whose app type differs from the requested cell "
+                         "(dcc-acw2). Record the reason wherever the subject is described.")
     ap.add_argument("--null", action="store_true",
                     help="Build a NULL subject: checkpoint at the MERGE commit, not the first-review "
                          "commit. A scored subject is checkpointed pre-review so the thread-flagged "
@@ -147,6 +203,9 @@ def main():
     diff = json.loads(gh("api", f"repos/{slug}/compare/{base}...{checkpoint}"))
     files = {f["filename"]: changed_line_ranges(f.get("patch", "")) for f in diff.get("files", [])}
     require_nonempty_diff(files, f"{slug}#{a.pr}", base, checkpoint)
+    observed = classify_at_checkpoint(slug, files)
+    if not a.null:
+        require_matching_app_type(a.type, observed, f"{slug}#{a.pr}", a.allow_app_type_mismatch)
     add = sum(f.get("additions", 0) for f in diff.get("files", []))
     dele = sum(f.get("deletions", 0) for f in diff.get("files", []))
 
@@ -170,6 +229,9 @@ def main():
     fixture = {
         "slug": f"{slug}#{a.pr}", "repo": slug, "pr": a.pr,
         "title": pr["title"], "app_type": a.type, "size": a.size,
+        # What the CHECKPOINT holds, beside what the cell claims (dcc-acw2). Stored even when they
+        # agree: "agrees" and "was never checked" must not read the same.
+        **observed,
         "instrument": "null-arm" if a.null else "pooled-adjudication",
         "checkpoint": {
             "sha": checkpoint, "base": base, "base_ref": pr["baseRefName"],

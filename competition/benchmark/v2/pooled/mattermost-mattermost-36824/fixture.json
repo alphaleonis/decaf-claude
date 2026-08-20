@@ -29,5 +29,9 @@
     "admitted": 6,
     "rejected": 4
   },
-  "role": "active"
+  "role": "active",
+  "app_type_at_checkpoint": "backend",
+  "frontend_files": 0,
+  "backend_files": 2,
+  "cell_label_caveat": "Occupies the contract M cell but its CHECKPOINT diff is backend-only (2 Go files, 0 frontend) \u2014 dcc-acw2. It was typed from the merged PR, which is all the screen can see. Kept in the cell rather than replaced, because it is already scored and a replacement round is a separate piece of work (dcc-scc3); the contract row's multi-specialist rationale is withdrawn for this cell, not repaired. Any claim about how the contract row behaves must say the row is 2 of 3 genuine."
 }

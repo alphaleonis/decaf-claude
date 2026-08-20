@@ -2,10 +2,10 @@
 # dcc-hsy8
 version: 1
 title: cell_tmp.sh sweep deletes the operator's own driver logs in /tmp
-status: todo
+status: completed
 type: bug
 created_at: 2026-08-20T12:48:55Z
-updated_at: 2026-08-20T18:03:48Z
+updated_at: 2026-08-20T19:48:36Z
 parent: dcc-ho2w
 order: zzk
 ---
@@ -97,3 +97,27 @@ Additional acceptance:
       subject's `repo/`, the named worksheets, and `fixture.json`
 - [ ] Any `*.md` under `pooled/` or `analysis/` is off-limits to graders and annotators
 - [ ] The grader-transcript isolation check greps for those paths too, not only the JSON artifacts
+
+## Summary
+
+**Completed 2026-08-20** — Three fixes, one per failure the nib describes.
+
+**The driver log.** `cell_tmp.sh`'s PROTECT pattern now covers `bench-*`, the documented invocation
+in the `bench-run` skill writes to `v2/runs/driver-<ts>.log` instead of `/tmp`, and the sweep's
+manifest distinguishes three reasons for keeping a path — protected pattern, present before the group
+started, not owned by this user — from "removed". A sweep that only logs what it deleted cannot be
+audited for what it should not have deleted. Tested: a driver log survives while cell junk beside it
+is still swept.
+
+**The last cell's report.** `run_cell_v2.sh` now resets the checkout AFTER the cell as well as before,
+placed after artifact capture, report extraction and the isolation check so nothing needed is
+discarded, and warns if anything survives. Found FIVE subjects in the reported state, not one:
+grafana#117615, immich#28886, mattermost#36824 and prometheus#18081 each still held a
+`.decaf/code-reviews/CODE_REVIEW_*.md` of 20-38 KB alongside the PostHog case. All cleaned.
+
+**The grading blind had no control.** New `verify_grading_isolation.sh`, the mirror of
+`verify_cell_isolation.sh` pointed the other way: `--precheck` refuses to grade in a dirty checkout,
+and the transcript mode flags a pass that touched tool output, the pending result, or any PROSE
+write-up quoting either — the class the hand-enumerated forbidden list kept missing, which is how an
+annotator came to read a note saying no tool matched the threads it was judging. Both modes are wired
+into `/bench-analyze` as a new step 2b.

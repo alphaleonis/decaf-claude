@@ -2,10 +2,10 @@
 # dcc-acw2
 version: 1
 title: app_type is classified from the merged PR, but a tool reviews the checkpoint — two scored subjects are mislabeled
-status: todo
+status: completed
 type: bug
 created_at: 2026-08-20T19:18:01Z
-updated_at: 2026-08-20T19:18:20Z
+updated_at: 2026-08-20T19:48:15Z
 parent: dcc-ho2w
 order: zzzz
 ---
@@ -53,3 +53,21 @@ replacement, disqualified on this check, and kept only as probe material.
 - [ ] The contract row is re-decided, or the two backend-at-checkpoint subjects are relabeled and
       the row's multi-specialist claim is withdrawn where it is cited
 - [ ] `CANDIDATES.md`'s contract-row rationale matches what the subjects actually are
+
+## Summary
+
+**Completed 2026-08-20** — `build_pooled_fixture.py` now classifies from the CHECKPOINT diff, stores
+`app_type_at_checkpoint` / `frontend_files` / `backend_files` on every fixture (stored even when it
+agrees, so "agrees" and "was never checked" do not read the same), and FAILS a build whose checkpoint
+type disagrees with the requested cell unless `--allow-app-type-mismatch` is passed.
+
+Backfilled across all 18 fixtures. Only ONE active subject is mislabeled: mattermost#36824 sits in
+contract M with a backend-only checkpoint (2 Go files, 0 frontend). PostHog#55149 has the same shape
+but is retired probe material, and PostHog#59630 was caught by this check during dcc-ryo4 before it
+cost anything.
+
+Took the acceptance criterion's second branch rather than re-deciding the row: the subject is already
+scored, and replacement is dcc-scc3's work. A `cell_label_caveat` is stamped on the fixture and the
+contract row's multi-specialist rationale is withdrawn in CANDIDATES.md — the row is 2 of 3 genuine
+(immich#28886 at 2fe/3be and PostHog#67924 at 5fe/28be are real contract changes), and any claim
+about how it behaves must say so.

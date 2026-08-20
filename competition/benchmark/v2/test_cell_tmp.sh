@@ -52,4 +52,17 @@ clean "$Dd" "$W/repoD"; kill "$pd" "$pe" 2>/dev/null; unset BENCH_CELL_TMPDIR
 [ ! -e "$W/wtD" ]     && pass "own worktree removed while a sibling is live"              || fail "own worktree kept"
 clean "$E" "$W/repoE"
 
+echo "== the operator's own driver log survives the sweep (dcc-hsy8)"
+# The observed failure: a finishing cell removed a concurrently queued driver's /tmp/bench-audit.log,
+# so the log vanished while its run continued and `cat` reported it missing for a healthy cell.
+Fd="$W/cellF"; mkdir -p "$Fd"; mkrepo "$W/repoF"
+pf=$(live); pre "$Fd" "$pf" "$W/repoF"
+echo "driver output" > "$BENCH_TMP_ROOT/bench-audit.log"; touch "$BENCH_TMP_ROOT/junkF"
+clean "$Fd" "$W/repoF"; kill "$pf" 2>/dev/null
+[ -s "$BENCH_TMP_ROOT/bench-audit.log" ] && pass "driver log survives a sweep"            || fail "driver log deleted"
+[ ! -e "$BENCH_TMP_ROOT/junkF" ]         && pass "cell junk still swept alongside it"     || fail "sweep stopped working"
+grep -q 'not ours: protected pattern' "$Fd/tmp-cleanup.tsv" \
+  && pass "manifest records WHY it was kept"                                              || fail "kept reason not recorded"
+rm -f "$BENCH_TMP_ROOT/bench-audit.log"
+
 echo; [ "$fails" -eq 0 ] && echo "all cell_tmp checks pass" || { echo "$fails FAILED"; exit 1; }

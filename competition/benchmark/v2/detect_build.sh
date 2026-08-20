@@ -41,10 +41,21 @@ pm_cmd() {
 langs=(); managers=(); locks=(); restores=(); missing=()
 
 # --- JavaScript / TypeScript -------------------------------------------------------------------
+# Root first, then nested — a monorepo puts the lockfile beside the app, not at the top (dcc-9vta).
+# Root wins when both exist: a root lockfile governs the workspace.
 js_lock=""; js_pm=""
 if   [ -f "$R/pnpm-lock.yaml" ];    then js_lock="pnpm-lock.yaml";    js_pm="pnpm"
 elif [ -f "$R/yarn.lock" ];         then js_lock="yarn.lock";         js_pm="yarn"
 elif [ -f "$R/package-lock.json" ]; then js_lock="package-lock.json"; js_pm="npm"
+else
+  for n in pnpm-lock.yaml yarn.lock package-lock.json; do
+    found="$(find "$R" -maxdepth 3 -name "$n" 2>/dev/null | head -1)"
+    if [ -n "$found" ]; then
+      js_lock="${found#$R/}"
+      case "$n" in pnpm-lock.yaml) js_pm="pnpm" ;; yarn.lock) js_pm="yarn" ;; *) js_pm="npm" ;; esac
+      break
+    fi
+  done
 fi
 if [ -n "$js_pm" ]; then
   langs+=("js"); managers+=("$js_pm"); locks+=("$js_lock")
@@ -104,17 +115,26 @@ fi
 py_lock=""
 [ -f "$R/uv.lock" ] && py_lock="uv.lock"
 [ -z "$py_lock" ] && [ -f "$R/poetry.lock" ] && py_lock="poetry.lock"
+# Nested, same reasoning as Rust and js above (dcc-9vta).
+[ -z "$py_lock" ] && py_lock="$(find "$R" -maxdepth 3 \( -name uv.lock -o -name poetry.lock \) 2>/dev/null | head -1)"
+py_lock="${py_lock#$R/}"
 if [ -n "$py_lock" ]; then
-  langs+=("python"); managers+=("${py_lock%%.*}"); locks+=("$py_lock")
-  case "$py_lock" in
+  langs+=("python"); managers+=("$(basename "${py_lock%%.*}")"); locks+=("$py_lock")
+  case "$(basename "$py_lock")" in
     uv.lock)     restores+=("uv sync --frozen");        have uv     || missing+=("uv") ;;
     poetry.lock) restores+=("poetry install --sync");   have poetry || missing+=("poetry") ;;
   esac
 fi
 
 # --- Rust --------------------------------------------------------------------------------------
-if [ -f "$R/Cargo.lock" ]; then
-  langs+=("rust"); managers+=("cargo"); locks+=("Cargo.lock")
+# Nested-aware, matching the Go idiom above (dcc-9vta). Root-only detection reported
+# `languages:[js,go,python]`, `missing_toolchains:[]` and `build_possible:true` for a subject whose
+# Rust lives under `rust/` and is 13 of its 18 changed files — with cargo not installed. The cell
+# prompt then told every reviewer a build toolchain was available for the majority language, and two
+# cells independently recorded working around its absence.
+cargolock="$(find "$R" -maxdepth 3 -name Cargo.lock 2>/dev/null | head -1)"
+if [ -n "$cargolock" ]; then
+  langs+=("rust"); managers+=("cargo"); locks+=("${cargolock#$R/}")
   restores+=("cargo fetch --locked")
   have cargo || missing+=("cargo")
 fi

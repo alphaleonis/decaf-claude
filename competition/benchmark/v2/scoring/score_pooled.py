@@ -152,6 +152,13 @@ def validate(A, threads, key, allow_silent_cells=False):
     elif A.get("judge_model") and vintage.classify(A["merged_at"], A["judge_model"]) == vintage.UNKNOWN:
         errs.append(f"no published training cutoff for judge_model {A['judge_model']!r}: add it to "
                     f"scoring/vintage.py MODEL_CUTOFFS before scoring against this judge")
+    # Required on the same footing as merged_at (dcc-60qk). Absent, the conservative key reports
+    # "unknown", and a reader cannot tell that from "the two keys agree" — which is the whole
+    # difference between a disclosed assumption and a hidden one.
+    if not A.get("pr_created_at"):
+        errs.append("pr_created_at absent: the conservative vintage key cannot be evaluated, so the "
+                    "figure cannot say whether it rests on the permissive reading — copy it from "
+                    "the subject's fixture.json")
 
     declared = {(c["tool"], c["repeat"]) for c in cells}
     seen = set()
@@ -416,8 +423,34 @@ def score(A, threads, key):
             "anchor_recall_found": round(anchor_recall_found, 3) if anchor_recall_found is not None else None,
             "cost_usd": round(sum(cells[(t, r)].get("cost_usd", 0) for (t, r) in cells if t == tool), 4),
         }
+        # Cost, three ways, because the obvious one is repeat-dependent (dcc-8dtt).
+        #
+        # `cost_per_real_finding` divides an arm's TOTAL cost by its DEDUPLICATED real pool, so an
+        # arm that ran twice pays twice for a pool that barely grows. Measured on PostHog-55149:
+        # `ours-review` reads 2.5x worse than `ours-audit` on this field and 23% worse per cell, and
+        # almost the whole gap is that one ran twice and the other once — a scheduling decision.
+        #
+        # It is kept, because it answers "what did this arm cost me in total", and paired with the
+        # two fields that make it readable: `n_cells`, so it can never be read without its divisor,
+        # and `cost_per_real_finding_per_cell`, the mean over cells of (cell cost / real clusters
+        # that cell contributed), which is what one RUN costs per real finding and does not move
+        # when repeats are added.
+        arm_cells = [(t, r) for (t, r) in cells if t == tool]
         cu = out_tools[tool]["cost_usd"]
+        out_tools[tool]["n_cells"] = len(arm_cells)
         out_tools[tool]["cost_per_real_finding"] = round(cu / len(real), 4) if real else None
+        out_tools[tool]["cost_per_real_finding_repeat_dependent"] = True
+        per_cell = []
+        for (t, r) in arm_cells:
+            cell_real = {c["cluster_id"] for c in clusters if c["verdict"] in REAL
+                         and any(rb["tool"] == t and rb["repeat"] == r
+                                 and rb.get("disposition", "reported") == "reported"
+                                 for rb in c["reported_by"])}
+            if cell_real:
+                per_cell.append(cells[(t, r)].get("cost_usd", 0) / len(cell_real))
+        out_tools[tool]["cost_per_real_finding_per_cell"] = (
+            round(sum(per_cell) / len(per_cell), 4) if per_cell else None)
+        out_tools[tool]["cost_per_cell"] = round(cu / len(arm_cells), 4) if arm_cells else None
 
         # Per-tool class mix and defect recall (dcc-opdr, dcc-1sbc). The class axis is graded blind
         # to verdict and tool, so this is the one per-tool composition figure that does not depend on
@@ -491,9 +524,12 @@ def score(A, threads, key):
     # Vintage travels with the metrics so a downstream synthesis cannot pool an in-window subject
     # into a headline without seeing it (dcc-vvf0). Computed here, never read from the fixture:
     # status is a property of the (subject, model) pair and changes when a model ships.
+    # Both keys, always (dcc-60qk): `merged_at` gates, `pr_created_at` is reported beside it so a
+    # figure states which reading licenses it. A missing pr_created_at reports "unknown", not
+    # "agrees" — copy it from fixture.json into analysis.json.
     vin = None
     if A.get("merged_at") and A.get("judge_model"):
-        vin = vintage.describe(A["merged_at"], A["judge_model"])
+        vin = vintage.describe(A["merged_at"], A["judge_model"], A.get("pr_created_at"))
 
     return {
         "subject": A.get("subject"),

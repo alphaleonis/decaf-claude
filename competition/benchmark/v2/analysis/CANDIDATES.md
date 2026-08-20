@@ -43,6 +43,14 @@ Contract-crossing — the row the corpus has never had — is thinnest but real 
 the only row that exercises multi-specialist dispatch (`typescript-reviewer` + `dotnet-reviewer`
 together), because the defect lives in the mismatch between two files in two languages.
 
+> ⚠️ **That last claim is 2 of 3, not 3 of 3** (`dcc-acw2`, 2026-08-20). The row was typed from the
+> MERGED pull requests; a tool reviews the checkpoint. Re-typed from the checkpoint diff,
+> `mattermost#36824` (contract M) is backend-only — 2 Go files, 0 frontend — so it exercises no
+> multi-specialist dispatch at all, and it was already scored in that row. `immich#28886` (2 fe / 3
+> be) and `PostHog#67924` (5 fe / 28 be) are genuine. The retired `PostHog#55149` was backend-only
+> too. Every fixture now records `app_type_at_checkpoint`, and a build whose checkpoint type
+> disagrees with its cell fails; replacing contract M belongs to `dcc-scc3`.
+
 ## BUILT — the full 12-cell grid (2026-08-10)
 
 All twelve cells built, no deferral. Fixtures and thread sets in `v2/pooled/<owner>-<repo>-<pr>/`;

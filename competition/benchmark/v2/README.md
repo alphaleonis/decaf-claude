@@ -233,9 +233,17 @@ The five are retired to probe material (`role: retired-probe`), not deleted; fou
 same-cell matched vintage pairs with their replacements. The replacement round and its two surprises
 are written up in `analysis/CANDIDATES.md`.
 
-⚠️ **This rests on `merged_at`, and that key is challenged by `dcc-60qk`:** five active subjects were
-created and reviewed inside the window despite merging outside it (efcore#34127's PR was open for
-nearly two years). Unresolved — do not read the headline above as stronger than its key.
+⚠️ **This rests on `merged_at`, and five active subjects were created and reviewed inside the window
+despite merging outside it** (efcore#34127's PR was open for nearly two years). Resolved 2026-08-20
+(`dcc-60qk`) as **key on `merged_at`, report both**: every vintage block carries
+`status_by_pr_created_at` and an `exposure_note`, `status.sh` lists the exposed subjects, and
+`run_cell_v2.sh` prints the note before a cell spends. The gate did not move; the assumption is now
+disclosed rather than hidden. The exposed five are element-web#32964, sveltejs/kit#15685,
+grafana#117615, prometheus#18081 and efcore#34127.
+
+**Vintage is checked before the money is spent** (`dcc-856n`): `run_cell_v2.sh` refuses an in-window
+subject (exit 82) unless `BENCH_ALLOW_IN_WINDOW=1`, which is the memorization-probe case, and
+`status.sh` shows the poolable set where a person planning a run will see it.
 
 `v2/scoring/vintage.py` computes the status per (subject, model) pair at analysis time — never from
 a flag in the fixture, since the answer changes when a model ships — and `check_pooling()` makes a

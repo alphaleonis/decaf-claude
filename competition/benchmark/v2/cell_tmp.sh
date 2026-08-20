@@ -65,7 +65,15 @@ MIN_TMP_FREE_MB="${BENCH_MIN_TMP_FREE_MB:-4096}"
 
 # Never remove these even if they appear during the cell: they belong to the system or to the
 # harness driving the run.
-PROTECT='^(systemd-private-|snap-private-tmp$|\.X11-unix$|\.ICE-unix$|\.font-unix$|\.XIM-unix$|\.Test-unix$|claude-)'
+#
+# `bench-*` is here for the operator's own driver log (dcc-hsy8). `run_pilot.sh` was documented as
+# `... > /tmp/bench-run.log`, and a concurrently queued driver's `/tmp/bench-audit.log` was deleted
+# mid-run by a finishing cell's sweep — the log vanished while the run continued, so `cat` said "No
+# such file or directory" for a cell that was running perfectly, while a `tail -f` started earlier
+# kept streaming the deleted inode. A missing log is not evidence of a missing run, and that is the
+# reading the evidence invited. The driver's default log has since moved out of $TMPROOT entirely;
+# this pattern covers the operator who still passes one by hand.
+PROTECT='^(systemd-private-|snap-private-tmp$|\.X11-unix$|\.ICE-unix$|\.font-unix$|\.XIM-unix$|\.Test-unix$|claude-|bench-)'
 
 tmp_free_mb() { df -Pm "$TMPROOT" | awk 'NR==2{print $4}'; }
 
@@ -173,10 +181,19 @@ do_cleanup() {
   elif [ -f "$BASELINE" ]; then
     while IFS= read -r name; do
       [ -z "$name" ] && continue
-      printf '%s\n' "$name" | grep -qE "$PROTECT" && continue
-      grep -qxF "$name" "$BASELINE" && continue
+      # "protected" and "in the baseline" are different reasons to keep a path, and neither is
+      # "cell junk we removed". The manifest records which (dcc-hsy8): a sweep that only logs what
+      # it deleted cannot be audited for what it should not have deleted.
+      if printf '%s\n' "$name" | grep -qE "$PROTECT"; then
+        printf 'kept\t%s\t\tnot ours: protected pattern (system or harness path)\n' \
+          "$TMPROOT/$name" >> "$MANIFEST"; continue
+      fi
+      if grep -qxF "$name" "$BASELINE"; then
+        printf 'kept\t%s\t\tnot ours: present before the group started\n' \
+          "$TMPROOT/$name" >> "$MANIFEST"; continue
+      fi
       p="$TMPROOT/$name"
-      [ -O "$p" ] || { printf 'kept\t%s\t\tnot owned by this user\n' "$p" >> "$MANIFEST"; continue; }
+      [ -O "$p" ] || { printf 'kept\t%s\t\tnot ours: not owned by this user\n' "$p" >> "$MANIFEST"; continue; }
       sz=$(du -sk "$p" 2>/dev/null | cut -f1)
       rm -rf "$p" && printf 'removed\t%s\t%s\tcreated during the group (absent from quiescent baseline)\n' "$p" "${sz:-?}" >> "$MANIFEST"
     done < <(ls -A "$TMPROOT" 2>/dev/null)

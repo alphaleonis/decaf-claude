@@ -81,6 +81,28 @@ have been shown the finding. Write one JSON array per cell to
 ~same line, same claim) into clusters. Be careful that "the same bug described differently" collapses
 to one cluster — this is the engine that makes cross-tool comparison possible.
 
+**2b. Prove the blind before grading — do not skip.**
+
+```
+bash competition/benchmark/v2/verify_grading_isolation.sh <subject-dir> --precheck
+```
+
+Exits 1 on a dirty checkout. `reset_repo()` cleans BEFORE a cell, so the report written by the LAST
+cell of a matrix is never followed by a clean and sits in the working tree. Found on five subjects:
+a 90,902-byte report — one arm's complete finding set — was in the PostHog-posthog-55149 checkout
+while both blind graders worked there. The blind held by luck and one grader's discretion.
+
+After grading, check the transcripts the same way:
+
+```
+bash competition/benchmark/v2/verify_grading_isolation.sh <subject-dir> --session <p1> --session <p2>
+```
+
+It flags a pass that touched tool output, the pending result, or **any prose write-up quoting
+either** — the class a hand-enumerated forbidden list kept missing (an annotator read a
+`THREAD-AXIS-NOTE.md` saying no tool matched the very threads it was judging). A mention in a tool
+RESULT is a read; a mention in the prompt, or a pass saying it declined to open something, is not.
+
 **3. Blind grade.** Dispatch a grader with the checkpoint diff, the **admitted** threads from
 `threads.json` (all of them, both origins — bot threads are matched too, they just score a different
 axis; send each thread's `path`, `line`, `body` only, **never `author` or `origin`**, so the judge

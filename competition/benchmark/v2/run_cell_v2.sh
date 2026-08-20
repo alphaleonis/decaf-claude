@@ -119,6 +119,13 @@ if jq -e '.error' "$BC" >/dev/null 2>&1; then
   echo "[$SUBJ_ID/$TOOL] WARNING: build capability unknown — $(jq -r '.error' "$BC")" >&2
 fi
 
+# The cell prompt's toolchain sentence is DERIVED from what was just detected, never asserted
+# (dcc-9vta). It used to read "a build toolchain IS available (node, go, dotnet, python, cargo as
+# the project requires)" on every cell. On PostHog-55149 that was false for the majority language —
+# cargo absent, 13 of 18 changed files Rust — and two cells independently recorded working around
+# it. A reviewer told it can build, that then cannot, spends the difference discovering that.
+BUILD_NOTE="$(python3 "$V2/build_note.py" "$BC")"
+
 
 # No tool's prompt names the PR or tells it to fetch one. The v1-faithful wording pointed
 # `anthropic-code-review` at "pull request #N of <repo>" and told it to "fetch the PR with gh" —
@@ -127,6 +134,32 @@ fi
 # one tool at the answer while the others got the local diff. It also made that tool's result depend
 # on the shim's field filter, which turned out to be leaking anyway (dcc-3cm6). Every tool now
 # reviews the same thing by the same route: the checked-out diff.
+# VINTAGE, CHECKED BEFORE THE MONEY IS SPENT (dcc-856n). Vintage used to be discovered at analysis
+# time, after a cell had cost real dollars — and the pilot then spent on five in-window subjects whose
+# figures could never be pooled. The status is a property of the (subject, model) pair, so it is
+# computed here from the fixture rather than read off a stale boolean.
+#
+# BOTH keys are shown (dcc-60qk). `merged_at` gates; `pr_created_at` is disclosure — an open PR's
+# diff and review threads were public from the day it opened, so a subject can clear the gate and
+# still have been visible to the model. That one warns and continues, deliberately: keying on it is
+# an open question, not a settled rule.
+if command -v jq >/dev/null && [ -f "$FIX" ]; then
+  vin="$(python3 "$V2/scoring/vintage.py" "$BENCH_MODEL" \
+           "$(jq -r '.merged_at // empty' "$FIX")" "$(jq -r '.pr_created_at // empty' "$FIX")")"
+  gate="${vin%%|*}"; rest="${vin#*|}"; exposure="${rest%%|*}"; note="${rest#*|}"
+  if [ "$gate" = "in-window" ] && [ -z "${BENCH_ALLOW_IN_WINDOW:-}" ]; then
+    echo "[$SUBJ_ID/$TOOL] REFUSING: this subject is IN-WINDOW for $BENCH_MODEL." >&2
+    echo "  Its figures cannot be pooled into any headline, so a cell on it buys a per-subject" >&2
+    echo "  number and nothing more. Set BENCH_ALLOW_IN_WINDOW=1 if that is what you want —" >&2
+    echo "  a memorization probe against a retired fixture is the legitimate case." >&2
+    exit 82
+  fi
+  if [ "$exposure" = "in-window" ] && [ "$gate" != "in-window" ]; then
+    echo "[$SUBJ_ID/$TOOL] NOTE: clears the merge-date gate but its PR was open inside the window." >&2
+    echo "  $note" >&2
+  fi
+fi
+
 # A tool flagged `retired` in tools.json must not produce new cells. Flagging without enforcing is
 # how a frozen baseline gets polluted: `ours-bugs-sp` and `-sp2` both invoke `bugs-sp --report`, and
 # `bugs-sp` is now an ALIAS for `bugs` — so a cell run today under either id would measure today's
@@ -186,12 +219,7 @@ Environment notes:
 - The repository is checked out locally at the change under review. Full git history is available — use \`git log\`, \`git blame\`, and \`git show\` freely to understand prior work.
 - Network documentation lookup is available through \`docs-at <url>\`, which returns the page as it existed at the time of this change. Use it for library and framework API reference. WebFetch and WebSearch are unavailable.
 - \`gh\` is restricted to information that existed at the time of this change.
-- A build toolchain IS available (node, go, dotnet, python, cargo as the project requires). You may
-  build the project and run its tests to confirm or refute a finding. Restore dependencies with the
-  project's frozen/locked command (\`pnpm install --frozen-lockfile\`, \`go mod download\` under
-  \`GOFLAGS=-mod=readonly\`, \`dotnet restore\`, \`uv sync --frozen\`) so no dependency resolves to a
-  version published after this change. Note that full test suites can take many minutes; prefer the
-  tests covering the changed code.
+$BUILD_NOTE
 
 Report every finding with a file:line reference and a clear statement of what is wrong."
 
@@ -276,3 +304,19 @@ case $iso in
   1) echo "[$SUBJ_ID/$TOOL] isolation: CONTAMINATED — see $OUT/isolation.txt. DO NOT SCORE THIS CELL." >&2 ;;
   *) echo "[$SUBJ_ID/$TOOL] isolation: UNVERIFIED (no transcript) — see $OUT/isolation.txt" >&2 ;;
 esac
+
+# Reset AFTER the cell as well as before it (dcc-hsy8). `reset_repo()` runs pre-cell, so the report
+# written by the LAST cell of a matrix was never cleaned and sat in the working tree indefinitely.
+# Observed on PostHog-posthog-55149: an `ours-audit` report of 90,902 bytes — one arm's complete
+# finding set — was still in the checkout when both blind graders ran there. The blind held by luck
+# and one grader's discretion, not by a control.
+#
+# Ordering matters: everything that reads the checkout (artifact capture) or the transcript (report
+# extraction, isolation) has already run. This only discards what the tool left behind.
+git -C "$REPO" reset -q --hard "$CP" 2>/dev/null || true
+git -C "$REPO" clean -qxfd 2>/dev/null || true
+left="$(git -C "$REPO" status --porcelain | wc -l | tr -d ' ')"
+if [ "$left" != "0" ]; then
+  echo "[$SUBJ_ID/$TOOL] WARNING: $left path(s) still in the checkout after the post-cell reset —" >&2
+  echo "  a grader working in this tree could read them. Clean before grading." >&2
+fi

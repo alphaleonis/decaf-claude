@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-20T19:26:10Z
+updated_at: 2026-08-20T19:49:02Z
 order: zzzzV
 ---
 
@@ -267,21 +267,18 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-fm8s: All 17 exclusions across the six scored subjects second-read, blind to the first pass's reasoning,
-under two rules stated in advance: matchable if ANY claim targets present code, and disagreement
-resolves toward matchable.
+Completed dcc-qfr5: Reconciled — implemented, and verified rather than assumed.
 
-2 of 17 flipped — efcore T1 and mattermost T6 — both the compound-thread shape, both having silently
-cost arms a legitimate hit. With the previously-found efcore T2 that is three such errors out of the
-twenty exclusion verdicts this corpus has ever made, confirming the nib's argument and slightly
-worsening its measured rate.
+`score_pooled.py` groups duplicate threads and computes `human_groups` and `bot_groups`
+independently over the same group ids, so a mixed pair is in BOTH sets and crediting either member
+credits both axes. Covered by a passing test,
+`t_crediting_either_duplicate_gives_the_same_answer`.
 
-The fifteen that stand were re-confirmed by enumeration rather than argument (grep counts for the
-construct each thread discusses). Prometheus T7, flagged in the nib as resting on inference, now
-rests on an observation.
-
-`annotate_thread_matchability.py --second-pass` records both readings on the thread, and
-`score_pooled.py` refuses a subject whose exclusions carry only one.
+Measured across the six scored subjects: PostHog-55149 has three duplicate groups and all three are
+bot+human pairs ([23,38], [24,44], [27,45]) — exactly the shifted-hit pattern this nib was opened
+for, now landing on both axes. grafana#117615 has one group and it is bot+bot, so no axis moves.
+The other four subjects have none. The "check the other five for the same pattern" item is therefore
+answered: the pattern exists on one subject, and it is the one that reported it.
 
 ## Key Decisions
 
