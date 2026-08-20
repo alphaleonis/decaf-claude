@@ -1,0 +1,25 @@
+{
+  "languages": [
+    "js",
+    "go",
+    "python"
+  ],
+  "package_managers": [
+    "pnpm",
+    "go",
+    "uv"
+  ],
+  "lockfiles": [
+    "pnpm-lock.yaml",
+    "tools/phrocs/go.sum",
+    "uv.lock"
+  ],
+  "restore_commands": [
+    "pnpm install --frozen-lockfile",
+    "GOFLAGS=-mod=readonly go mod download",
+    "uv sync --frozen"
+  ],
+  "missing_toolchains": [],
+  "date_neutral": true,
+  "build_possible": true
+}

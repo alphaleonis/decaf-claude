@@ -1,0 +1,52 @@
+[
+  {
+    "thread_index": 0,
+    "matchable_at_checkpoint": true,
+    "reason": "The stray \"IMPLEMENTATION NOTES\" scratch comment block the thread objects to is present at promql/engine_test.go:1776-1784, immediately before the anchored blank line 1785."
+  },
+  {
+    "thread_index": 1,
+    "matchable_at_checkpoint": true,
+    "reason": "The anchored test case, the range query max_over_time(metricWith1SampleEvery10Seconds[20s:10s]) with Interval 30s, exists at promql/engine_test.go:1604-1619, so the \"range longer than the step\" gap it points out applies at the checkpoint."
+  },
+  {
+    "thread_index": 2,
+    "matchable_at_checkpoint": true,
+    "reason": "Both duplicate \"PHASE 3: RANGE QUERY + SUBQUERY COMBINATIONS\" headers are present at promql/engine_test.go:2066 and promql/engine_test.go:2135."
+  },
+  {
+    "thread_index": 3,
+    "matchable_at_checkpoint": true,
+    "reason": "The \"ENHANCED SUBQUERY TESTING\" block the thread anchors on begins at promql/engine_test.go:1520-1522 and its near-duplicate cases are present (e.g. the identical sum_over_time(metricWith1SampleEvery10Seconds[30s:30s]) at T=90s repeated at lines 1540, 1589 and 1638)."
+  },
+  {
+    "thread_index": 4,
+    "matchable_at_checkpoint": true,
+    "reason": "The index-wise child-to-parent step merge the thread calls incorrect is present at util/stats/query_stats.go:423-433 (the loop at lines 429-431 assumes a 1:1 step mapping)."
+  },
+  {
+    "thread_index": 5,
+    "matchable_at_checkpoint": true,
+    "reason": "The disputed expectation is present verbatim: promql/engine_test.go:1540-1552, sum_over_time(metricWith1SampleEvery10Seconds[30s:30s]) at Start T=90s with SamplesRead 2 and SamplesReadPerStep{90000: 2} on the anchored line 1551."
+  },
+  {
+    "thread_index": 6,
+    "matchable_at_checkpoint": true,
+    "reason": "The behavior questioned (an inner step beyond the last one the outer query needs) is present at the anchored line promql/engine_test.go:1432, \"216000: 9, // steps after last outer -> last step\" (9 vs 6 for the other steps = one extra inner step x 3 series), and repeats at lines 1495 and 1516."
+  },
+  {
+    "thread_index": 7,
+    "matchable_at_checkpoint": false,
+    "reason": "No checkpoint test case matches the one discussed: the thread describes a single-series subquery whose parent step T=261s reads at T=240s/250s/260s (a 30s range), but the only T=261s case at the checkpoint is the 3-series sum by (b) (max_over_time(metricWith3SampleEvery10Seconds[20s:10s])) at promql/engine_test.go:1881-1899 whose 261000 entries are 6 and 15, and the anchored line 1630 holds an unrelated instant-query expectation (201000: 6) for sum(max_over_time(metricWith3SampleEvery10Seconds[20s:10s]))."
+  },
+  {
+    "thread_index": 8,
+    "matchable_at_checkpoint": true,
+    "reason": "The vacuous assertion the thread questions is present at web/api/v1/api_test.go:983 (and again at line 999), require.GreaterOrEqual(t, qs.Samples.SamplesRead, int64(0)), directly above the anchored closing brace at line 984."
+  },
+  {
+    "thread_index": 9,
+    "matchable_at_checkpoint": true,
+    "reason": "The unrelated change is in the checkpoint diff at exactly that spot: the hunk @@ -48,7 +48,6 @@ of promql/engine_test.go deletes base line 51, defaultEpsilon = 0.000001, a constant unused in this file (the live one is promql/promqltest/test.go:59) and unrelated to the samples-read feature."
+  }
+]
