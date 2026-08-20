@@ -2,10 +2,10 @@
 # dcc-8dtt
 version: 1
 title: 'cost_per_real_finding penalizes repeats: total cost over a deduplicated pooled denominator'
-status: todo
+status: completed
 type: bug
 created_at: 2026-08-20T17:14:06Z
-updated_at: 2026-08-20T17:14:26Z
+updated_at: 2026-08-20T19:47:54Z
 parent: dcc-ho2w
 order: zzz
 ---
@@ -54,3 +54,16 @@ not self-evidently wrong on its face, which is what makes it dangerous.
       everywhere it is rendered
 - [ ] `analysis/` write-ups and the interactive report ([[dcc-p3wg]]) show cost per cell, not only totals
 - [ ] Any existing cross-arm cost claim re-checked against unequal cell counts
+
+## Summary
+
+**Completed 2026-08-20** — Each arm's block now carries `n_cells`, `cost_per_cell`, a repeat-invariant
+`cost_per_real_finding_per_cell` (mean over cells of cell cost / real clusters that cell
+contributed), and `cost_per_real_finding_repeat_dependent: true` beside the original field, which is
+kept because it answers a real question — total spend — and only misleads when read without its
+divisor.
+
+Reproduces the nib's table: on PostHog-55149 `ours-review` is 2.73 against `ours-audit`'s 1.11 on the
+repeat-dependent form and 1.77 against 1.11 on the invariant one, so most of the 2.5x gap was the
+extra repeat. Documented in METRICS.md with the rule that the field is never rendered without
+`n_cells` in the same table.

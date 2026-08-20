@@ -2,10 +2,10 @@
 # dcc-qfr5
 version: 1
 title: 'Duplicate threads: crediting one index moves human-axis hits onto the incumbent axis'
-status: todo
+status: completed
 type: bug
 created_at: 2026-08-20T16:52:49Z
-updated_at: 2026-08-20T16:53:11Z
+updated_at: 2026-08-20T19:49:02Z
 parent: dcc-ho2w
 order: zzy
 ---
@@ -61,3 +61,18 @@ Of 20 admitted human threads, `metrics.json` reports 10 hit / 10 missed. Composi
 - [ ] A cluster matching a human+bot duplicate pair credits both axes
 - [ ] PostHog-posthog-55149's human axis re-derived; the three shifted hits land on the human axis
 - [ ] The five previously scored subjects checked for the same pattern and re-derived if present
+
+## Summary
+
+**Completed 2026-08-20** — Reconciled — implemented, and verified rather than assumed.
+
+`score_pooled.py` groups duplicate threads and computes `human_groups` and `bot_groups`
+independently over the same group ids, so a mixed pair is in BOTH sets and crediting either member
+credits both axes. Covered by a passing test,
+`t_crediting_either_duplicate_gives_the_same_answer`.
+
+Measured across the six scored subjects: PostHog-55149 has three duplicate groups and all three are
+bot+human pairs ([23,38], [24,44], [27,45]) — exactly the shifted-hit pattern this nib was opened
+for, now landing on both axes. grafana#117615 has one group and it is bot+bot, so no axis moves.
+The other four subjects have none. The "check the other five for the same pattern" item is therefore
+answered: the pattern exists on one subject, and it is the one that reported it.

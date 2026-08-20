@@ -51,7 +51,11 @@ delete what you get wrong.
 **Reach governs scope, not depth.** Under `narrow`, report only defects introduced by the changed
 lines; do not hunt for absences (missing tests, missing docs, residual-risk surveys), and record
 pre-existing defects you notice under Considered But Not Flagged tagged `[pre-existing]` —
-a defect the change *exposes or makes reachable* is introduced, not pre-existing. **Under `narrow`
+a defect the change *exposes or makes reachable* is introduced, not pre-existing. **Changed lines
+are added AND deleted lines**: read the `-` side and ask what the old code did that the new code no
+longer does — a removed guard, a dropped fallback, a backoff that is gone. A regression-by-omission
+is introduced by this change and is in scope at every reach, including `narrow`; "no absences" means
+do not survey the *surrounding* code, not ignore what the diff took away. **Under `narrow`
 the Minor Findings section is omitted entirely**: the deliverable is a defect list short enough to
 read completely, so a nit-level observation (a comment that overloads a return value, a missing
 issue reference on a TODO, a missed micro-optimization) goes under Considered But Not Flagged

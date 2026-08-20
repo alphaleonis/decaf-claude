@@ -15,8 +15,22 @@ later. Reading it the other way (2026-05-01) would claim a cleanliness the publi
 support.
 
 Operator decision, 2026-08-11: the five subjects that merged inside May 2026 are KEPT and flagged
-rather than replaced. They are `in-window` here, and a headline that pools them with out-of-window
-cells without showing the split is invalid — see check_pooling() and METHODOLOGY-v2 section 5.
+rather than replaced. Superseded 2026-08-20 (`dcc-ryo4`) — all five were replaced, and every active
+subject is now out-of-window on this key.
+
+TWO KEYS, ONE OF THEM LOAD-BEARING (`dcc-60qk`). `merged_at` is the permissive key and the one that
+gates. It is defensible for a specific thing: the *merged* PR — squashed commit, final state,
+resolved conversation, the outcome — only exists after merge. But the artifact this instrument
+actually shows a reviewer is the CHECKPOINT diff and the review threads written against it, and an
+open PR carries both, publicly, from the day it is created. Measured on the corpus: five active
+subjects were created and reviewed inside the window although they merged outside it, and
+efcore#34127's PR was open for nearly two years.
+
+So `pr_created_at` is the conservative key. Operator decision, 2026-08-20: **key on `merged_at`,
+report both.** Every classification carries `status_by_pr_created_at` alongside `status`, and
+`check_pooling()` gates on the merged key while `exposure_warnings()` names the subjects the
+conservative key would have excluded. The assumption travels with the figure instead of hiding
+underneath it; switching keys later is a one-line change plus a replacement round.
 """
 from datetime import date
 
@@ -29,9 +43,14 @@ MODEL_CUTOFFS = {
     "claude-haiku-4-5":    "2025-07",   # anthropic-code-review's helpers
 }
 
-IN_WINDOW = "in-window"          # merged at or before the cutoff — memorization possible
-OUT_OF_WINDOW = "out-of-window"  # merged after the cutoff — provably unmemorized
+IN_WINDOW = "in-window"          # dated at or before the cutoff — memorization possible
+OUT_OF_WINDOW = "out-of-window"  # dated after the cutoff — provably unmemorized
 UNKNOWN = "unknown"              # no published cutoff for this model
+
+# The key `classify()` and `check_pooling()` gate on. `pr_created_at` is computed and reported
+# beside it, never instead of it — see the module docstring.
+GATING_KEY = "merged_at"
+EXPOSURE_KEY = "pr_created_at"
 
 
 def _first_day_after(cutoff_month):
@@ -49,20 +68,42 @@ def classify(merged_at, model):
     return OUT_OF_WINDOW if merged >= _first_day_after(cutoff) else IN_WINDOW
 
 
-def describe(merged_at, model):
-    """Status plus the reasoning, so a result carries its own justification."""
+def describe(merged_at, model, pr_created_at=None):
+    """Status plus the reasoning, so a result carries its own justification.
+
+    `pr_created_at` is optional only because callers predating dcc-60qk do not pass it. Pass it
+    whenever the fixture has it: without it the block cannot say whether the conservative key
+    agrees, and a reader has no way to tell "agrees" from "was never checked".
+    """
     status = classify(merged_at, model)
     cutoff = MODEL_CUTOFFS.get(model)
     if status == UNKNOWN:
-        return {"status": status, "model": model, "merged_at": str(merged_at)[:10],
+        return {"status": status, "key": GATING_KEY, "model": model,
+                "merged_at": str(merged_at)[:10],
                 "why": f"no published training cutoff for {model!r}"}
     bound = _first_day_after(cutoff)
-    return {
-        "status": status, "model": model, "merged_at": str(merged_at)[:10],
+    out = {
+        "status": status, "key": GATING_KEY, "model": model, "merged_at": str(merged_at)[:10],
         "model_cutoff": cutoff, "provably_clean_from": bound.isoformat(),
         "why": (f"{model} publishes a month-granular cutoff of {cutoff}; a subject is provably "
                 f"out-of-window only if it merged on or after {bound.isoformat()}"),
     }
+    # The conservative key, always reported, never gating (dcc-60qk).
+    if pr_created_at:
+        exposure = classify(pr_created_at, model)
+        out["pr_created_at"] = str(pr_created_at)[:10]
+        out["status_by_pr_created_at"] = exposure
+        if exposure == IN_WINDOW and status == OUT_OF_WINDOW:
+            out["exposure_note"] = (
+                f"the PR was opened {str(pr_created_at)[:10]}, inside the window, and its diff and "
+                f"review threads were public from then. This figure is licensed by the merge date; "
+                f"under the conservative key it would not be.")
+    else:
+        out["pr_created_at"] = None
+        out["status_by_pr_created_at"] = UNKNOWN
+        out["exposure_note"] = ("pr_created_at not supplied, so the conservative key was not "
+                                "evaluated — this is 'unchecked', not 'agrees'")
+    return out
 
 
 def check_pooling(subjects):
@@ -79,3 +120,44 @@ def check_pooling(subjects):
                 f"out-of-window subjects into one figure without showing the split "
                 f"(in-window: {sorted(seen[IN_WINDOW])}) — METHODOLOGY-v2 section 5")
     return None
+
+
+def exposure_warnings(subjects):
+    """Subjects the CONSERVATIVE key would have excluded, for a figure the merge key licensed.
+
+    Not an error and deliberately not wired into check_pooling: the operator chose `merged_at` as
+    the gate on 2026-08-20 (`dcc-60qk`). This is the disclosure that goes with that choice, so a
+    pooled figure states how much of itself rests on the permissive reading instead of leaving a
+    reader to discover it. Returns [] when nothing is exposed.
+
+    `subjects` is an iterable of {subject, status_by_pr_created_at}.
+    """
+    return sorted(s.get("subject", "?") for s in subjects
+                  if s.get("status_by_pr_created_at") == IN_WINDOW)
+
+
+def _main(argv):
+    """CLI so a shell can gate on vintage without embedding Python in a heredoc.
+
+        vintage.py <model> <merged_at> [pr_created_at]
+
+    Prints `status|status_by_pr_created_at|exposure_note` on one line. One line and one separator
+    because the caller is `run_cell_v2.sh` doing parameter expansion, and anything richer would put
+    a JSON parser on the refusal path of the script whose job is to refuse cheaply.
+    """
+    if not 2 <= len(argv) <= 3:
+        print("unknown|unknown|usage: vintage.py <model> <merged_at> [pr_created_at]")
+        return 2
+    model, merged = argv[0], argv[1]
+    created = argv[2] if len(argv) == 3 and argv[2] else None
+    if not merged:
+        print("unknown|unknown|no merged_at supplied")
+        return 2
+    d = describe(merged, model, created)
+    print(f"{d['status']}|{d.get('status_by_pr_created_at', UNKNOWN)}|{d.get('exposure_note', '')}")
+    return 0
+
+
+if __name__ == "__main__":
+    import sys as _sys
+    _sys.exit(_main(_sys.argv[1:]))

@@ -10,7 +10,7 @@ from score_pooled import validate, score, DataDefect
 
 BASE = {
     "subject": "acme/widget#1", "instrument": "pooled-adjudication", "judge_model": "claude-opus-5",
-    "merged_at": "2026-07-02T00:08:13Z",
+    "merged_at": "2026-07-02T00:08:13Z", "pr_created_at": "2026-06-20T00:00:00Z",
     "cells": [{"tool": "alpha", "repeat": 1, "cost_usd": 1.0},
               {"tool": "beta", "repeat": 1, "cost_usd": 2.0}],
     "clusters": [
@@ -454,6 +454,37 @@ def t_vintage_refuses_silent_pooling():
     assert vintage.check_pooling([{"subject": "b", "status": vintage.OUT_OF_WINDOW}]) is None
 
 
+def t_missing_pr_created_at_is_a_defect():
+    """dcc-60qk: without it the conservative key reports "unknown", and a reader cannot tell that
+    from "the two keys agree" — the difference between a disclosed assumption and a hidden one."""
+    a = copy.deepcopy(BASE); del a["pr_created_at"]
+    expect_defect(a, THREADS, "pr_created_at absent")
+
+
+def t_both_vintage_keys_reach_the_metrics():
+    """The gate stays on merged_at; the conservative key rides along on every figure."""
+    a = copy.deepcopy(BASE)
+    a["merged_at"] = "2026-06-15T00:00:00Z"       # out-of-window on the merge key
+    a["pr_created_at"] = "2024-06-30T00:00:00Z"   # efcore's shape: open for nearly two years
+    m = score(a, THREADS, None)
+    v = m["vintage"]
+    assert v["status"] == "out-of-window", v
+    assert v["key"] == "merged_at", v
+    assert v["status_by_pr_created_at"] == "in-window", v
+    assert "public from then" in v["exposure_note"], v
+
+
+def t_exposure_warnings_do_not_gate():
+    """A deliberate asymmetry: the operator keyed on merged_at (2026-08-20), so exposure is a
+    disclosure, not a refusal. check_pooling must stay silent on it while exposure_warnings names
+    every subject the conservative key would have dropped."""
+    import vintage
+    rows = [{"subject": "clean", "status": "out-of-window", "status_by_pr_created_at": "out-of-window"},
+            {"subject": "exposed", "status": "out-of-window", "status_by_pr_created_at": "in-window"}]
+    assert vintage.check_pooling(rows) is None
+    assert vintage.exposure_warnings(rows) == ["exposed"]
+
+
 def t_missing_merged_at_is_a_defect():
     """Without merged_at the result cannot be shown safe to pool, so it must not be emitted."""
     a = copy.deepcopy(BASE); del a["merged_at"]
@@ -522,6 +553,34 @@ def t_per_tool_class_and_defect_recall():
     # beta reported c2 (real defect) and c4 (false-positive: not real, excluded); found c1 demoted.
     assert be["defect_recall"] == {"pool": 2, "reported": 1, "found": 2, "recall_reported": 0.5, "recall_found": 1.0}, be["defect_recall"]
 
+
+
+def t_cost_per_real_finding_is_repeat_invariant_per_cell():
+    """dcc-8dtt: an arm that ran twice pays twice for a deduplicated pool that barely grows. The
+    per-cell form must not move when a second identical repeat is added; the total form must."""
+    a = copy.deepcopy(BASE)
+    a["cells"] = [{"tool": "solo", "repeat": 1, "cost_usd": 10.0}]
+    a["clusters"] = [
+        {"cluster_id": "k1", "verdict": "valid-other", "judged_severity": "high",
+         "code_citation": "a.py:1", "reported_by": [{"tool": "solo", "repeat": 1, "severity": "high"}]},
+        {"cluster_id": "k2", "verdict": "valid-other", "judged_severity": "high",
+         "code_citation": "a.py:2", "reported_by": [{"tool": "solo", "repeat": 1, "severity": "high"}]},
+    ]
+    one = score(a, None, None)["tools"]["solo"]
+    assert one["n_cells"] == 1
+    assert one["cost_per_real_finding"] == 5.0 and one["cost_per_real_finding_per_cell"] == 5.0
+
+    # A second repeat finding exactly the same two clusters at the same price.
+    b = copy.deepcopy(a)
+    b["cells"].append({"tool": "solo", "repeat": 2, "cost_usd": 10.0})
+    for c in b["clusters"]:
+        c["reported_by"].append({"tool": "solo", "repeat": 2, "severity": "high"})
+    two = score(b, None, None)["tools"]["solo"]
+    assert two["n_cells"] == 2
+    assert two["cost_per_real_finding"] == 10.0, "the total form doubles — that is the defect"
+    assert two["cost_per_real_finding_per_cell"] == 5.0, "the per-cell form must not move"
+    assert two["cost_per_cell"] == 10.0
+    assert two["cost_per_real_finding_repeat_dependent"] is True
 
 
 def t_precision_note_travels_with_the_number():

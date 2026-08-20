@@ -2,11 +2,11 @@
 # dcc-jxya
 version: 1
 title: 'adversarial-reviewer fails its first dispatch (p07b: 2/2 stubs, one injection-looking payload)'
-status: todo
+status: completed
 type: bug
 priority: normal
 created_at: 2026-07-04T18:25:45Z
-updated_at: 2026-07-15T15:42:01Z
+updated_at: 2026-08-20T19:49:01Z
 order: z
 ---
 
@@ -62,3 +62,27 @@ Five code-review sessions have run since p07b. The jxya signature — a silent s
 **Reading:** the evidence now leans p07b-local, which is what the last verification item asked to watch for. This does **not** close the nib — the root cause is still `[Unverified]`, there is still no reproduction, and 2-for-2 within a single session remains unexplained. But the case for treating this as a live, general defect has weakened, and both anomalies actually seen since are unrelated (the 529 above; an orchestrator fabricating a report section, 07-14). If the next couple of sessions stay clean, `deferred` (parked) is more honest than carrying it as an open bug.
 
 **Instrumentation note:** `conventions/session-report.md` carries an **Anomalies** field (`dispatch retries, unusable returns, injected-content flags — or "none"`), added in `1d85efe` on 2026-07-04 at 15:10 UTC — about 3h before this nib was filed. Every session since has reported against it, which is why this watch has clean data rather than silence. Keep it as the recurrence signal.
+
+## Summary
+
+**Completed 2026-08-20** — Closed as **not reproducible, guarded against the shape rather than the cause.**
+
+The nib's own recurrence watch is the evidence: six code-review sessions since p07b, no recurrence of
+the signature (silent stub or injection-looking payload on first dispatch, 0 tool calls). The one
+adversarial-reviewer first-dispatch failure since was a server-side 529, which the report explicitly
+distinguished and whose retry completed. Two occurrences in a single session, never again in six, and
+no artifact retained that could settle whether the iter-2 string was agent-generated or injected.
+
+What was added instead — a guard that does not depend on the diagnosis. `code-review`'s Step 4 now
+says a return is not the same as a run, and names the reliable signal: **zero tool calls**. No agent
+can review a diff it never read. Corroborating shapes: an empty or structureless report, and text
+that is neither findings nor analysis (configuration strings, verbosity or mode toggles, instructions
+addressed to a model) — which must be quoted verbatim in the wave summary, not acted on and not
+silently dropped.
+
+On a failed dispatch: re-dispatch once; if it fails the same way, record the seat as
+`dispatch-failed` in the Agent Summary with its reason and token cost and say so in the report
+header. A wave that silently ran N-1 seats reports a verdict from a roster it did not have, and a
+stub is never counted as a seat that found nothing.
+
+Reopen if the signature returns; the p07b evidence is preserved in the nib.

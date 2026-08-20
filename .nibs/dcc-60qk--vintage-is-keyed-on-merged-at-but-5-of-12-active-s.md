@@ -2,11 +2,11 @@
 # dcc-60qk
 version: 1
 title: Vintage is keyed on merged_at, but 5 of 12 active subjects were public and reviewed inside the window
-status: todo
+status: completed
 type: bug
 priority: high
 created_at: 2026-08-20T19:17:22Z
-updated_at: 2026-08-20T19:17:53Z
+updated_at: 2026-08-20T19:47:53Z
 parent: dcc-ho2w
 order: zzzu
 ---
@@ -65,3 +65,20 @@ feasible but not cheap, and the screen has never filtered on creation date.
 - [ ] `vintage.classify()` names the field it keyed on in its output
 - [ ] `find_candidates.sh` screens on the chosen key
 - [ ] METHODOLOGY-v2 section 5 states the open-PR exposure argument and the decision
+
+## Summary
+
+**Completed 2026-08-20** — Operator decision 2026-08-20: **key on `merged_at`, report both.**
+
+`vintage.describe()` now takes `pr_created_at` and emits `key`, `status`, `pr_created_at`,
+`status_by_pr_created_at`, and an `exposure_note` when the two disagree. `check_pooling()` still
+gates on the merge key alone; a new `exposure_warnings()` names the subjects the conservative key
+would have dropped, so a pooled figure can state how much of itself rests on the permissive reading.
+
+A missing `pr_created_at` reports `unknown` and `score_pooled.py` refuses it — "unchecked" must not
+read as "the two keys agree". Backfilled onto all six scored analyses. `vintage.py` grew a CLI so the
+shell can gate without embedding Python, and `run_cell_v2.sh` and `status.sh` both surface the second
+key.
+
+Exposed and disclosed, not retired: element-web#32964, sveltejs/kit#15685, grafana#117615,
+prometheus#18081, efcore#34127. Switching keys later is a one-line change plus a replacement round.

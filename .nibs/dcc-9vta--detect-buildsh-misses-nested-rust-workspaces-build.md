@@ -2,10 +2,10 @@
 # dcc-9vta
 version: 1
 title: detect_build.sh misses nested Rust workspaces — build_possible:true for a subject whose majority language has no toolchain
-status: todo
+status: completed
 type: bug
 created_at: 2026-08-20T13:40:48Z
-updated_at: 2026-08-20T13:42:30Z
+updated_at: 2026-08-20T19:48:15Z
 parent: dcc-ho2w
 order: zzs
 ---
@@ -99,3 +99,23 @@ Additional acceptance:
 - [ ] `build_possible` reflects a restore that was actually ATTEMPTED once at fixture-build time
       (per language), with the failure recorded, not inferred from file presence
 - [ ] A subject whose restore fails is either fixed or labeled static-reasoning-only before cells run
+
+## Summary
+
+**Completed 2026-08-20** — Rust detection is nested-aware (`find -maxdepth 3 -name Cargo.lock`, matching the Go idiom), and js
+and python got the same treatment — the nib asked whether they needed it and they did; all three were
+root-only in a corpus full of monorepos. Root still wins when both exist, since a root lockfile
+governs the workspace.
+
+PostHog-55149 now reports `languages:[js,go,python,rust]`, `missing_toolchains:["cargo"]`,
+`build_possible:false` — where it previously reported a clean build for a subject whose majority
+language had no toolchain.
+
+The cell prompt's toolchain paragraph is now generated from `build-capability.json` by a new
+`build_note.py`, with three distinct states: complete, partial (naming the missing languages and
+telling the reviewer to mark those findings as static), and detection-failed. The partial text also
+warns not to trust a command's exit status without reading its output — a cell recorded a
+backgrounded `cargo check` as exit 0 while cargo did not exist. Tested in `test_build_note.py`.
+
+Not done: re-deriving PostHog-55149's `build-capability.json` inside its recorded cells. Those cells
+are already run; the caveat belongs in the write-up dcc-tvk8 still owes.

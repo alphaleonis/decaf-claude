@@ -158,6 +158,40 @@ no arm exceeds **6/11** even across all its repeats. The three subjects with **4
 arms reach 100%. Those denominators are not the same difficulty, and a figure that averages across
 them is not one number.
 
+## Cost is reported three ways, and the obvious one is repeat-dependent (nib dcc-8dtt)
+
+| field | what it answers | moves with repeats? |
+|---|---|---|
+| `cost_usd` | what this arm cost in total | yes |
+| `n_cells` | how many cells that total covers — printed so the total can never be read without its divisor | — |
+| `cost_per_cell` | what one run of this arm costs | no |
+| `cost_per_real_finding` | total cost over the arm's DEDUPLICATED real pool | **yes** |
+| `cost_per_real_finding_per_cell` | mean over cells of (cell cost / real clusters that cell contributed) | no |
+
+`cost_per_real_finding` divides a total by a pool that barely grows on a second run, so an arm that
+ran twice pays twice for it. Measured on PostHog-posthog-55149: `ours-review` reads **2.73** against
+`ours-audit`'s **1.11** — 2.5x worse — while the repeat-invariant form is **1.77** against **1.11**,
+and almost the whole difference is that one arm ran twice and the other once. Repeat counts are
+uneven across the corpus by design and by accident, so any cross-arm cost ranking built on the total
+form silently rewards whichever arms happened to run fewest times. The field carries
+`cost_per_real_finding_repeat_dependent: true` beside it, and is never to be rendered without
+`n_cells` in the same table.
+
+## Vintage is reported on two keys (nib dcc-60qk)
+
+`merged_at` gates; `pr_created_at` is disclosure. The merge key is defensible for the merged artifact
+— squashed commit, final state, resolved conversation — but what this instrument shows a reviewer is
+the CHECKPOINT diff and the threads written against it, and an open PR carries both publicly from the
+day it opens. Five active subjects were created and reviewed inside the window although they merged
+outside it; efcore#34127's PR was open for nearly two years.
+
+Operator decision, 2026-08-20: **key on `merged_at`, report both.** Every `vintage` block carries
+`key`, `status`, `pr_created_at`, `status_by_pr_created_at`, and — when the two disagree — an
+`exposure_note`. `check_pooling()` refuses on the gating key only; `exposure_warnings()` names the
+subjects the conservative key would have dropped, so a pooled figure can state how much of itself
+rests on the permissive reading. A missing `pr_created_at` reports `unknown`, and `score_pooled.py`
+refuses it: "unchecked" must not read as "the two keys agree".
+
 ## The thread axis has an audited denominator (nibs dcc-hw48, dcc-qfr5)
 
 `thread_recall` and `incumbent_agreement` are computed over **matchable thread groups**, not over raw

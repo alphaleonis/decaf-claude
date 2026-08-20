@@ -107,4 +107,42 @@ if scored:
     for s, passes in sorted(scored):
         warn = "" if passes >= 2 else "   <- single pass; per-tool figures not publishable"
         print(f"  {s:<34} {passes} grading pass(es){warn}")
+
+# Which subjects may be POOLED, shown where a person planning a run will see it (dcc-856n). Vintage
+# used to surface only at analysis time, after the money was gone. Both keys are shown (dcc-60qk):
+# `merged_at` gates, `pr_created_at` is disclosure — an open PR's diff and threads were public from
+# the day it opened, so a subject can clear the gate and still have been visible to the model.
+sys.path.insert(0, os.path.join(v2, "scoring"))
+try:
+    import vintage
+except Exception:
+    vintage = None
+if vintage:
+    MODEL = os.environ.get("BENCH_MODEL", "claude-opus-5")
+    fx = []
+    for f in sorted(glob.glob(os.path.join(v2, "pooled", "*", "fixture.json"))):
+        try:
+            j = json.load(open(f))
+        except Exception:
+            continue
+        if not j.get("merged_at"):
+            continue
+        d = vintage.describe(j["merged_at"], MODEL, j.get("pr_created_at"))
+        fx.append((j.get("slug", os.path.basename(os.path.dirname(f))), j.get("role", "active"),
+                   d["status"], d.get("status_by_pr_created_at", "unknown")))
+    active = [x for x in fx if x[1] == "active"]
+    blocked = [x for x in active if x[2] == "in-window"]
+    exposed = [x for x in active if x[2] != "in-window" and x[3] == "in-window"]
+    print(f"\nvintage vs {MODEL}  (gate: merged_at; disclosure: pr_created_at)")
+    print(f"  active subjects:        {len(active)}")
+    print(f"  NOT POOLABLE (in-window by merge date): "
+          f"{', '.join(x[0] for x in blocked) if blocked else 'none'}")
+    if exposed:
+        print(f"  clears the gate but its PR was OPEN inside the window — dcc-60qk, disclosure only:")
+        for x in exposed:
+            print(f"      {x[0]}")
+    non_active = [x for x in fx if x[1] != "active"]
+    if non_active:
+        print(f"  not in the grid ({len(non_active)}): "
+              f"{', '.join(f'{x[0]} [{x[1]}]' for x in non_active)}")
 PY

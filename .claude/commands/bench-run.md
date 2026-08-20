@@ -41,8 +41,15 @@ this has already killed a cell twenty minutes in:
 
 ```
 setsid nohup bash -c 'cd competition/benchmark && bash v2/run_pilot.sh …' \
-  > /tmp/bench-run.log 2>&1 < /dev/null & disown
+  > competition/benchmark/v2/runs/driver-$(date -u +%Y%m%dT%H%M%SZ).log 2>&1 < /dev/null & disown
 ```
+
+**Not `/tmp`.** The documented invocation used to be `> /tmp/bench-run.log`, and a finishing cell's
+`/tmp` sweep deleted a concurrently queued driver's log mid-run (`dcc-hsy8`) — so `cat` reported the
+log missing for a cell that was running perfectly, while a `tail -f` started earlier kept streaming
+the deleted inode. `v2/runs/` is gitignored and outside the sweep's reach. `cell_tmp.sh` now also
+protects `bench-*` under `/tmp` for anyone who still passes one by hand, but the log does not belong
+there.
 
 Then watch the log with a Monitor whose filter matches **failure as well as success** — `rc=`,
 `isolation:`, `REFUSING`, `EMPTY`, `api-error`, and a `/tmp` free-space check. A filter that greps

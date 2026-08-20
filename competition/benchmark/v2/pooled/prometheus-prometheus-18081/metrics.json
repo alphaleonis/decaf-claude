@@ -4,11 +4,15 @@
   "judge_model": "claude-opus-5",
   "vintage": {
     "status": "out-of-window",
+    "key": "merged_at",
     "model": "claude-opus-5",
     "merged_at": "2026-06-15",
     "model_cutoff": "2026-05",
     "provably_clean_from": "2026-06-01",
-    "why": "claude-opus-5 publishes a month-granular cutoff of 2026-05; a subject is provably out-of-window only if it merged on or after 2026-06-01"
+    "why": "claude-opus-5 publishes a month-granular cutoff of 2026-05; a subject is provably out-of-window only if it merged on or after 2026-06-01",
+    "pr_created_at": "2026-02-13",
+    "status_by_pr_created_at": "in-window",
+    "exposure_note": "the PR was opened 2026-02-13, inside the window, and its diff and review threads were public from then. This figure is licensed by the merge date; under the conservative key it would not be."
   },
   "n_clusters": 149,
   "n_cells": 29,
@@ -77,7 +81,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 25.5015,
+      "n_cells": 2,
       "cost_per_real_finding": 3.6431,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 2.7261,
+      "cost_per_cell": 12.7508,
       "class_distribution": {
         "reported": {
           "defect": 4,
@@ -135,7 +143,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 47.4932,
+      "n_cells": 2,
       "cost_per_real_finding": 2.7937,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 1.6962,
+      "cost_per_cell": 23.7466,
       "class_distribution": {
         "reported": {
           "defect": 6,
@@ -196,7 +208,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 59.8524,
+      "n_cells": 2,
       "cost_per_real_finding": 2.3941,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 1.6626,
+      "cost_per_cell": 29.9262,
       "class_distribution": {
         "reported": {
           "defect": 15,
@@ -252,7 +268,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 17.1504,
+      "n_cells": 3,
       "cost_per_real_finding": 2.8584,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 1.3378,
+      "cost_per_cell": 5.7168,
       "class_distribution": {
         "reported": {
           "defect": 4,
@@ -308,7 +328,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 14.9862,
+      "n_cells": 3,
       "cost_per_real_finding": 1.4986,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 0.945,
+      "cost_per_cell": 4.9954,
       "class_distribution": {
         "reported": {
           "defect": 4,
@@ -364,7 +388,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 17.4875,
+      "n_cells": 3,
       "cost_per_real_finding": 1.4573,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 0.9736,
+      "cost_per_cell": 5.8292,
       "class_distribution": {
         "reported": {
           "defect": 6,
@@ -420,7 +448,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 10.613,
+      "n_cells": 2,
       "cost_per_real_finding": 1.3266,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 0.9889,
+      "cost_per_cell": 5.3065,
       "class_distribution": {
         "reported": {
           "defect": 5,
@@ -476,7 +508,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 14.2383,
+      "n_cells": 2,
       "cost_per_real_finding": 2.8477,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 1.7798,
+      "cost_per_cell": 7.1192,
       "class_distribution": {
         "reported": {
           "defect": 3,
@@ -532,7 +568,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 18.011,
+      "n_cells": 2,
       "cost_per_real_finding": 6.0037,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 3.0018,
+      "cost_per_cell": 9.0055,
       "class_distribution": {
         "reported": {
           "defect": 4,
@@ -588,7 +628,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 38.0864,
+      "n_cells": 2,
       "cost_per_real_finding": 3.1739,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 2.2718,
+      "cost_per_cell": 19.0432,
       "class_distribution": {
         "reported": {
           "defect": 8,
@@ -646,7 +690,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 52.5069,
+      "n_cells": 2,
       "cost_per_real_finding": 3.7505,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 2.27,
+      "cost_per_cell": 26.2535,
       "class_distribution": {
         "reported": {
           "defect": 6,
@@ -702,7 +750,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 42.9703,
+      "n_cells": 2,
       "cost_per_real_finding": 2.5277,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 1.4883,
+      "cost_per_cell": 21.4852,
       "class_distribution": {
         "reported": {
           "defect": 8,
@@ -762,7 +814,11 @@
       "anchor_recall": null,
       "anchor_recall_found": null,
       "cost_usd": 9.1782,
+      "n_cells": 2,
       "cost_per_real_finding": 0.4172,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 0.2932,
+      "cost_per_cell": 4.5891,
       "class_distribution": {
         "reported": {
           "defect": 8,

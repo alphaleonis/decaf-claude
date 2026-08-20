@@ -2,11 +2,11 @@
 # dcc-hv1y
 version: 1
 title: reach=narrow should treat deleted lines as in-scope changes
-status: todo
+status: completed
 type: bug
 priority: high
 created_at: 2026-08-10T12:15:14Z
-updated_at: 2026-08-10T17:55:47Z
+updated_at: 2026-08-20T19:48:36Z
 order: zzzz
 ---
 
@@ -35,3 +35,22 @@ work in this region.
 - [ ] Re-check `ours-bugs` on a v2 subject once [[dcc-vkeh]] lands, and record the result either way —
       a continued miss points at the model tier instead. (Was: re-run on subject 9 under v1. Subject
       9's v1 cells are invalidated, and its v2 checkpoint at push #2 carries only 2 key entries.)
+
+## Summary
+
+**Completed 2026-08-20** — "Introduced by the changed lines" now says added AND deleted lines, in all three places that carry
+the rule: the `reach` axis table, the reviewer-brief blocks for `narrow` and `norm`, and
+`solo-reviewer`'s scope rule (the `bugs` preset's only seat, and the only `reach=narrow` preset).
+
+The distinction the nib asked for is stated explicitly: behavior the diff DELETED is in scope at
+every reach level, because the change is what put the code in its current state; a pre-existing
+defect the diff did not touch is out of scope at `narrow`, correctly. "No absences" means do not
+survey the surrounding code — not ignore what the diff took away. The briefs now direct reviewers to
+read the `-` side and ask what the old code did that the new code no longer does.
+
+The kubernetes#130837 shape is recorded as the motivating case, with its caveat intact: it is
+[Unverified] that narrow reach caused that miss, since the finding never appeared even under
+Considered But Not Flagged and the model tier is a competing explanation.
+
+Not done: the re-check acceptance item. `ours-bugs` on a v2 subject under the corrected wording needs
+a cell run, which belongs with the full run (dcc-plsq), and the result must be recorded either way.

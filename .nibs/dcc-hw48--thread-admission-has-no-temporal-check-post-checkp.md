@@ -2,11 +2,11 @@
 # dcc-hw48
 version: 1
 title: 'Thread admission has no temporal check: post-checkpoint threads inflate every subject''s recall denominator'
-status: todo
+status: completed
 type: bug
 priority: high
 created_at: 2026-08-20T16:45:21Z
-updated_at: 2026-08-20T16:45:47Z
+updated_at: 2026-08-20T19:49:01Z
 parent: dcc-ho2w
 order: zzw
 ---
@@ -72,3 +72,22 @@ from a tool that missed more, and it silently penalizes every arm equally, so no
 - [ ] PostHog-posthog-55149 reported with n=14 human, and the 6 exclusions named
 - [ ] The five previously scored subjects re-derived; any moved figure restated in its write-up
 - [ ] [[dcc-fm7x]]'s "20 human threads" claim corrected to the effective denominator
+
+## Summary
+
+**Completed 2026-08-20** — Reconciled — the machinery had landed and the nib's figures were the stale part.
+
+Verified against the code and today's re-score:
+- `threads.json` carries `matchable_at_checkpoint` per admitted thread, plus `matchable_reason` and
+  (since dcc-fm8s) `matchability_readings` with both independent readings on every exclusion.
+- `score_pooled.py` excludes them from the denominator and reports `excluded_unmatchable`,
+  `excluded_unmatchable_human`, `denominator_human` and `denominator_bot`.
+- PostHog-55149: the nib predicted n=14 with 6 exclusions. The completed annotation gives **n=13
+  with 10 exclusions, 7 of them human** — of 20 admitted human threads. dcc-fm7x's write-up already
+  carries "n=13" and "7 of 20 human threads excluded", so its claim is current, not stale.
+- All six scored subjects re-derived today; every movement is named in
+  `analysis/GRADING-INTEGRITY-2026-08-20.md`.
+
+The cross-check this nib added, `credited_to_unmatchable_thread`, is empty on all six — and two of
+the three contradictions it found turned out to be annotation errors of the compound-thread kind
+rather than loose grading, which is the strongest evidence the check was worth building.
