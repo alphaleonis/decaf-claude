@@ -8,7 +8,7 @@ Personal Claude Code configuration — the **`decaf`** marketplace, five plugins
 - **`decaf-memory`** — store/recall knowledge (erinra MCP server)
 - **`decaf-protection`** — PreToolUse safety hooks
 
-All five ship from the repo root and are listed in `marketplace.json`. The old `decaf` (core) plugin is **dissolved** — its skills/agents were absorbed into build/quality/plan and a few dropped (see [The dissolved core](#the-dissolved-core)). The superseded originals (`decaf-dev`/`decaf-review`/`decaf-planning`) and the old core have been removed; they remain in git history if ever needed. Not yet merged to `main`.
+All five ship from the repo root and are listed in `marketplace.json`. The old `decaf` (core) plugin is **dissolved** — its skills/agents were absorbed into build/quality/plan and a few dropped (see [The dissolved core](#the-dissolved-core)). The superseded originals (`decaf-dev`/`decaf-review`/`decaf-planning`) and the old core have been removed; they remain in git history if ever needed.
 
 ## Plugins
 
@@ -20,7 +20,7 @@ Improve existing code without adding behavior: multi-agent code review, coverage
 
 | Skill | Purpose |
 |-------|---------|
-| `code-review` | Run parallel review agents and consolidate into a deduplicated report |
+| `code-review` | `bugs` = one deep `solo-reviewer` seat; `review`/`audit` = parallel review agents consolidated into a deduplicated report |
 | `auto-code-review` | Automated review → triage → fix (subagent) → re-review loop until stable |
 | `resolve-code-review` | Walk findings one at a time — fix / skip / dismiss / defer (`auto` for autonomous TDD) |
 | `resolve-pr-feedback` | Walk unresolved PR threads (Azure DevOps / GitHub) — fix / reply / decline / escalate |
@@ -35,7 +35,7 @@ Improve existing code without adding behavior: multi-agent code review, coverage
 
 - **Review roster** (spawned by `code-review`): `broad-reviewer`, `quick-reviewer`, `adversarial-reviewer`, `consistency-reviewer`, `knowledge-reviewer`, `design-reviewer`, `security-reviewer`, `performance-reviewer`, `spec-compliance-reviewer`, `prior-feedback-reviewer`, `test-reviewer`, `data-migration-reviewer`
 - **Language stack reviewers** (hard-gated by file type): `cpp-reviewer`, `dotnet-reviewer`, `go-reviewer`, `rust-reviewer`, `typescript-reviewer`
-- **Validators & skill specialists**: `finding-validator` (re-verifies a consolidated finding), `pr-thread-resolver` (resolves one PR thread), `coverage-reviewer`, `structural-analyst`, `coherence-analyst`, `debugger` (delegated root-cause deep dive for `diagnose`)
+- **Validators & skill specialists**: `finding-validator` (re-verifies a consolidated finding), `pr-thread-resolver` (resolves one PR thread), `coverage-reviewer`, `structural-analyst`, `coherence-analyst`, `debugger` (delegated root-cause deep dive for `diagnose`), `solo-reviewer` (the single seat of the `bugs` preset — never part of a wave)
 
 ### `decaf-build` — Build
 

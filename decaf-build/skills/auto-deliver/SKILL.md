@@ -1,7 +1,7 @@
 ---
 name: auto-deliver
 description: Autonomously drive a whole plan to completion — loop SELECT → BREAKDOWN → EXECUTE → VERIFY → RECONCILE → LEARN → REPLAN → MERGE, one phase at a time, WITHOUT stopping at phase boundaries. Use when you have a phased plan (work items in a tracker) and want it built end-to-end unattended. Stops only when the plan is complete (or it genuinely cannot proceed).
-argument-hint: "<plan reference or root work-item id> [--base-branch <name>] [--review quick|std|max] [--report] [--tracker nibs|ado|github|markdown]"
+argument-hint: "<plan reference or root work-item id> [--base-branch <name>] [--review <preset> [axis=value ...]] [--report] [--tracker nibs|ado|github|markdown]"
 ---
 
 # Auto-Deliver
@@ -84,7 +84,8 @@ of the phase. JIT: the breakdown is planned against the code earlier phases actu
 ### 3. EXECUTE
 
 `/decaf-build:batch-dev --unattended` scoped to **this phase's feature children only** (pass
-their ids / a phase-scoped filter), forwarding `--review`, `--base-branch <integration branch>`,
+their ids / a phase-scoped filter), forwarding `--review` **verbatim** (preset plus any axis
+overrides — this loop never rewrites it), `--base-branch <integration branch>`,
 and `--report` (if set). batch-dev selects mechanisms, executes, reviews, and merges its clusters
 per its own protocol. You do not micromanage it. With `--report`, each **series** nib emits a
 comparison-grade session report to `.decaf/session-reports/` (batch-dev's fan-out/workflow/team
