@@ -18,7 +18,7 @@ Automated loop: **review → triage → fix → re-review** until stable.
 Parse `$ARGUMENTS`:
 
 1. **Review spec**: a `/code-review` preset — `bugs`, `review` (default) or `audit` — optionally followed by any of its axis overrides (`roster=N`, `models=`, `evidence=`, `reach=`). Collect the preset and every axis token into one `reviewSpec` string and forward it **verbatim** to `/code-review` for the first iteration; this skill does not interpret the axes, so a new one works here the day it ships.
-   **Always pass a resolved preset explicitly** — the review runs in a subagent, where `/code-review`'s interactive preset selection cannot reach the user. Re-reviews (Step 5) do NOT inherit `reviewSpec` — they narrow, per Step 5.4 — and do not forward `--spec` either: compliance was judged on the first pass, and the re-review question is what the fixes broke.
+   **Always pass a resolved preset explicitly** — the review runs in a subagent, where `/code-review`'s interactive preset selection cannot reach the user. Re-reviews (Step 5) do NOT inherit `reviewSpec` verbatim — they narrow within the caller's preset family and never exceed its roster, per Step 5.4 — and do not forward `--spec` either: compliance was judged on the first pass, and the re-review question is what the fixes broke.
 2. **Max iterations**: `--max-iterations N` (default: 3) — hard cap on review-fix cycles
 3. **Spec**: `--spec <path | work-item-ID>` — passed through to `/code-review`
 4. **`--report`**: produce a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). Forward `--report` to **every** `/code-review` invocation (first pass and re-reviews), keep the session ledger through the loop (Steps 1–5), and write the report folder in Step 6.5. Callers (`auto-tdd`/`auto-dev`) may pass an implementation-phase record to include.
@@ -39,7 +39,7 @@ Parse `$ARGUMENTS`:
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
 6. **Detect work item tracking system** from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.) — store as `deferSystem`
-7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5.4 delta classification + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
+7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5.4 delta classification, any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
 8. Inform the user:
 
 ```
@@ -73,7 +73,7 @@ Launch a **general-purpose subagent** using the Agent tool:
 > 2. The verdict (APPROVED or NEEDS_CHANGES)
 > 3. The count of findings by severity
 
-Re-reviews keep the screen and validation wave, never dropping to the two-agent floor: an autonomous fixer must not consume unscreened, unvalidated findings. But they narrow per Step 5.4 — `review roster=4`, `review roster=6`, or uncapped on the first re-review by delta size, then `bugs roster=3` from the third pass: session evidence shows verdict-driving regressions in fix deltas are caught by the floor plus the best-fitting judgment specialists, while the rest of an uncapped roster re-verifies known-clean territory at full price.
+Wave re-reviews keep the screen and validation wave: wave findings are not self-calibrated, and an autonomous fixer must not consume unscreened, unvalidated wave claims. The solo seat is exempt by construction — it calibrates at generation, which is why iteration 1 under `bugs` already feeds the fixer directly and why a `bugs`-family re-review needs no funnel either. Re-reviews narrow within the caller's preset family and the roster is monotone — never above the first pass's, escalation only on a named trigger (Step 5.4): session evidence shows verdict-driving regressions in fix deltas are caught by the floor plus the best-fitting judgment specialists, while extra seats re-verify known-clean territory at full price.
 
 Wait for the subagent to complete.
 
@@ -259,14 +259,24 @@ If re-review is **not** warranted → go to **Step 6**.
 
 Otherwise:
 
-4. **Set `reReviewPreset` — conservative by default.** A re-review asks a different question from the first pass: *what did the fixes break?* — not *what else is wrong with this code?* So it narrows rather than repeating. Classify the fix delta first: count changed **executable production lines** (exclude docs, comments, test files, generated files) and note **complexity signals** (concurrency, API/contract surface, parsing or validation logic, security-adjacent code, data mutations).
-   - **First re-review** (this will be iteration 2):
-     - `review roster=4 reach=narrow` — the delta is docs/comments/tests-only, or small behavioral (< ~25 executable production lines) with no complexity signals
-     - `review roster=6 reach=narrow` — moderate behavioral delta (≥ ~25 executable production lines) **or** any complexity signal present
-     - `review reach=narrow` (uncapped roster) — only for a large delta (≥ ~150 executable production lines) or a high-risk domain (auth, payments/financial, external API integration)
-   - **Later re-reviews** (this will be iteration ≥ 3): always `bugs roster=3`, scoped to the newest fix round's delta only. By the third pass the changeset's character is known; a minimal wave is regression insurance on the latest fixes, not fresh discovery. (`roster` counts the floor, so `roster=3` = floor + the single best-fitting specialist — and gated dispatch picks that specialist to fit the delta.)
+4. **Set `reReviewPreset` — conservative by default, within the caller's preset family.** A re-review asks a different question from the first pass: *what did the fixes break?* — not *what else is wrong with this code?* So it narrows rather than repeating, and it never spends more than the original ask did. Two rules bound every choice below:
+
+   - **Roster monotonicity.** A re-review's roster never exceeds `max(3, first-pass resolved roster)` — read the first pass's resolved roster from the first review file's header (the `**Preset**` line, or count the `**Reviewers**` list). Fix-delta *size* never raises the roster: the response to a risky delta is *which* specialists fill the capped slots (gated dispatch and the ranking pick seats to fit the delta), not more of them.
+   - **Escalation needs a named trigger.** Moving above the default rung requires one of: the fix delta touches concurrency/locking, a trust boundary (auth, parsing of external input, secrets), or data mutations; a previous re-review in this loop found a regression; or a fix failed verification and was re-applied. Name the trigger in the report (and, under `--report`, in the ledger). No trigger, no escalation — regardless of how many lines the fixes changed.
+
+   Classify the fix delta (count changed **executable production lines**, excluding docs, comments, test files, generated files; note which triggers, if any, are present), then:
+
+   - **Caller ran `bugs`** (the single seat):
+     - default — `bugs` scoped to the modified files: the seat again, on a smaller diff. Its self-calibration already drove iteration 1; the re-review is the same mechanism pointed at less code.
+     - a named trigger stands — `bugs roster=3`: the cheap wave (floor + best-fitting specialist, `models=low`, `evidence=norm`, `reach=narrow`), adding corroboration and the screen/validation funnel exactly where the fixer introduced risk. (A caller who explicitly ran the `bugs roster=N` wave re-reviews as `bugs roster=3`, default and triggered alike — the ceiling rule caps it.)
+   - **Caller ran `review` or `audit`** (a wave):
+     - default — `review roster=4 reach=narrow`
+     - a named trigger stands — `review roster=min(6, first-pass resolved roster) reach=narrow`. There is no uncapped rung: a large or high-risk delta gets at most what the original change got.
+   - **Later re-reviews** (iteration ≥ 3): `bugs` callers keep the rule above; wave callers drop to `bugs roster=3`, scoped to the newest fix round's delta only. By the third pass the changeset's character is known; a minimal pass is regression insurance on the latest fixes, not fresh discovery. (`roster` counts the floor, so `roster=3` = floor + the single best-fitting specialist.)
 
    **`reach=narrow` on every re-review, and it matters more than the roster.** The first pass already reported what the surrounding code is missing; a later pass re-reporting the same absences is noise the triage step has to reject again each round. Narrowing to defects introduced by the fixes is what stops the loop re-litigating its own backlog.
+
+   **`evidence` stays `norm` in re-review waves.** At three or four seats corroboration is scarce; `strong` demands a lone reviewer score ≥80 alone, which is exactly how small waves binned consensus defects (dcc-sk3k).
 
    **Never inherit `audit` into a re-review.** If the first pass ran `audit` — the case where pre-existing defects are promoted to primary and get fixed — later passes still narrow. Otherwise every iteration re-surfaces the whole backlog and the loop cannot converge.
 
@@ -324,7 +334,7 @@ The report records; cross-session comparison and tuning decisions stay with the 
 ## Notes
 
 - Always use literal Unicode emoji characters (🔴🟠🟡🟢), never `:shortcode:` syntax
-- The first code review uses the user's specified preset (default `review`); all re-reviews narrow — a capped `roster` **and** `reach=narrow` per Step 5.4's fix-delta classification, dropping to `bugs roster=3` from the third pass scoped to modified files — the validation wave still runs
+- The first code review uses the user's specified preset (default `review`); all re-reviews narrow **within that preset's family** — `reach=narrow` always, roster never above the first pass's, escalation only on a named trigger per Step 5.4. `bugs` callers re-review with the seat itself; wave callers default to `review roster=4` and drop to `bugs roster=3` from the third pass. Wave re-reviews keep the screen and validation wave
 - Re-reviews scope to only modified files to catch regressions, not re-review unchanged code
 - Subagents get fresh context windows — this enables multiple iterations without context exhaustion
 - The main context stays lean: it only reads review files and builds plans
