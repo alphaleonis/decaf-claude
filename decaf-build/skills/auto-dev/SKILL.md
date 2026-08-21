@@ -1,7 +1,7 @@
 ---
 name: auto-dev
 description: Direct development with automated review. Plans implementation, executes via subagent, then auto-reviews. Use for work that isn't test-driven (UI, config, styling, infrastructure, scaffolding).
-argument-hint: "<feature description> [--review quick|std|max] [--max-iterations N] [--spec <path>] [--report]"
+argument-hint: "<feature description> [--review <preset> [axis=value ...]] [--max-iterations N] [--spec <path>] [--report]"
 ---
 
 # Auto Dev
@@ -19,7 +19,11 @@ Same structure as `auto-tdd` but without the TDD workflow — for work where tes
 Parse `$ARGUMENTS`:
 
 1. **Feature description** (required): Everything that isn't a flag — describes what to build
-2. **Review mode**: `--review quick|std|max` (default: `std`) — passed to auto-review
+2. **Review spec**: `--review <preset> [axis=value ...]` (default: `review`) — a `/code-review`
+   preset optionally followed by any of its axis overrides (`roster=N`, `models=`, `evidence=`,
+   `reach=`), forwarded **verbatim** to `/decaf-quality:auto-code-review`. Quote it when the shell
+   would split it: `--review "audit roster=8 reach=wide"`. This skill does not interpret the axes,
+   so a new one works here the day `/code-review` ships it.
 3. **Max review iterations**: `--max-iterations N` (default: 3) — passed to auto-review
 4. **Spec path**: `--spec <path>` — passed to auto-review for spec compliance checking
 5. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). When set, this skill contributes the implementation-phase record: the implementation subagent's harness-reported usage (tokens / tool calls / duration, verbatim from the Agent tool result), changeset stats (files changed, +/− lines, new files), and a one-line scope description.
@@ -74,7 +78,7 @@ Based on the feature description and codebase exploration:
 
 {Existing conventions and patterns identified in the codebase, or "None — new area"}
 
-After implementation, `/auto-review` will run in **{reviewMode}** mode (max {maxIterations} iterations).
+After implementation, `/auto-review` will run as **{reviewSpec}** (max {maxIterations} iterations).
 ```
 
 Ask via `AskUserQuestion`:
@@ -142,7 +146,7 @@ If the subagent reports that it could not complete any steps (total failure), as
 Run `/decaf-quality:auto-code-review` using the Skill tool, passing through the review arguments:
 
 ```
-/decaf-quality:auto-code-review {reviewMode} --max-iterations {maxIterations} {--spec specPath if provided} {--report if set}
+/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} {--spec specPath if provided} {--report if set}
 ```
 
 Auto-review will automatically detect the scope from uncommitted changes (which includes everything the implementation subagent produced). With `--report`, the implementation-phase record from Step 2 is in this context — auto-review's session report picks it up for its agent inventory and token accounting.
@@ -173,7 +177,7 @@ After auto-review completes, present a combined summary:
 - The implementation subagent gets a fresh context window — this allows complex features without exhausting the main context
 - The planning step stays in the main context so the user can interact naturally
 - Auto-review runs in the main context because it manages its own subagent lifecycle
-- If the user didn't specify `--review`, default to `std` mode
+- If the user didn't specify `--review`, default to `review`
 - This skill does not require TDD — use `/auto-tdd` when test-first development is appropriate
 - Tests are welcome if the code is testable, but not mandatory — no red-green-refactor cycle is enforced
 - The review phase runs on **uncommitted** changes and may briefly mutate the working tree (a reviewer's non-destructive revert-probe, or a fix that fails verification). `auto-code-review` takes a recoverable snapshot (`git stash create`) before its fix/probe phase so nothing is lost; for a stronger guarantee, commit the implementation before review.

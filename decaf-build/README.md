@@ -21,6 +21,20 @@ Build **new** functionality with Claude Code: test-driven development, automated
 /decaf-build:auto-deliver <plan-id>     # drive a whole plan to completion, unattended
 ```
 
+Every skill that ends in a review takes `--review`, which carries a `/decaf-quality:code-review`
+preset plus any of its axis overrides, forwarded verbatim:
+
+```
+/decaf-build:auto-dev "<feature>" --review bugs
+/decaf-build:auto-tdd "<feature>" --review "review roster=6 reach=narrow"
+/decaf-build:batch-dev --ready --review "audit reach=wide"
+/decaf-build:auto-deliver <plan-id> --review "review models=high"
+```
+
+Default is `review`. The axes are `roster=N`, `models=low|norm|high`, `evidence=strong|norm|any`
+and `reach=narrow|norm|wide`; none of the build skills interpret them, so a new axis works here the
+day `/code-review` ships it.
+
 ## Agents
 
 Referenced via the Task tool as `decaf-build:<agent-name>`. The build skills dispatch general-purpose subagents; `technical-writer` is available for documentation work (and is used by `decaf-quality:coherence-audit`).
