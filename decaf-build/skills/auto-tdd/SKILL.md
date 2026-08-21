@@ -1,7 +1,7 @@
 ---
 name: auto-tdd
 description: TDD-first development with automated review. Runs a TDD session (plan → red-green-refactor) then auto-review on the result. Use when building features test-first with quality gates.
-argument-hint: "<feature description> [--review bugs|review|audit] [--max-iterations N] [--spec <path>] [--report]"
+argument-hint: "<feature description> [--review <preset> [axis=value ...]] [--max-iterations N] [--spec <path>] [--report]"
 ---
 
 # Auto TDD
@@ -17,7 +17,11 @@ Build a feature with TDD, then auto-review the result: **plan → TDD → review
 Parse `$ARGUMENTS`:
 
 1. **Feature description** (required): Everything that isn't a flag — describes what to build
-2. **Review preset**: `--review bugs|review|audit` (default: `review`) — passed to auto-review
+2. **Review spec**: `--review <preset> [axis=value ...]` (default: `review`) — a `/code-review`
+   preset optionally followed by any of its axis overrides (`roster=N`, `models=`, `evidence=`,
+   `reach=`), forwarded **verbatim** to `/decaf-quality:auto-code-review`. Quote it when the shell
+   would split it: `--review "audit roster=8 reach=wide"`. This skill does not interpret the axes,
+   so a new one works here the day `/code-review` ships it.
 3. **Max review iterations**: `--max-iterations N` (default: 3) — passed to auto-review
 4. **Spec path**: `--spec <path>` — passed to auto-review for spec compliance checking
 5. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). When set, this skill contributes the implementation-phase record: the TDD subagent's harness-reported usage (tokens / tool calls / duration, verbatim from the Agent tool result), changeset stats (files changed, +/− lines, new files), and a one-line scope description.
@@ -77,7 +81,7 @@ Based on the feature description and codebase exploration:
 
 {Any identified opportunities, or "None identified"}
 
-After TDD completes, `/auto-review` will run in **{reviewMode}** mode (max {maxIterations} iterations).
+After TDD completes, `/auto-review` will run as **{reviewSpec}** (max {maxIterations} iterations).
 ```
 
 Ask via `AskUserQuestion`:
@@ -136,7 +140,7 @@ If the TDD subagent reports that it could not implement any behaviors (total fai
 Run `/decaf-quality:auto-code-review` using the Skill tool, passing through the review arguments:
 
 ```
-/decaf-quality:auto-code-review {reviewMode} --max-iterations {maxIterations} {--spec specPath if provided} {--report if set}
+/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} {--spec specPath if provided} {--report if set}
 ```
 
 Auto-review will automatically detect the scope from uncommitted changes (which includes everything the TDD subagent produced). With `--report`, the implementation-phase record from Step 2 is in this context — auto-review's session report picks it up for its agent inventory and token accounting.
@@ -167,6 +171,6 @@ After auto-review completes, present a combined summary:
 - The TDD subagent gets a fresh context window — this allows complex features without exhausting the main context
 - The planning step stays in the main context so the user can interact naturally
 - Auto-review runs in the main context because it manages its own subagent lifecycle
-- If the user didn't specify `--review`, default to `std` mode — TDD-produced code benefits from a standard review pass
+- If the user didn't specify `--review`, default to `review` — TDD-produced code benefits from the standard deliverable
 - The subagent should follow all TDD conventions from the `/tdd` skill (vertical slices, behavior-focused tests, no horizontal slicing)
 - The review phase runs on **uncommitted** changes and may briefly mutate the working tree (a reviewer's non-destructive revert-probe, or a fix that fails verification). `auto-code-review` takes a recoverable snapshot (`git stash create`) before its fix/probe phase so nothing is lost; for a stronger guarantee, commit the TDD work before review.
