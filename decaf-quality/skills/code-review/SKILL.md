@@ -119,8 +119,9 @@ benchmark prices. Feel for off-preset combinations comes from use, not from the 
 
 `bugs` produces its deliverable — high-confidence defects introduced by the changed lines — from
 **one whole-surface reviewer**, `decaf-quality:solo-reviewer`, instead of a wave and a funnel. The
-v2 benchmark measured this across five subjects and three application types (`competition/benchmark/
-v2/analysis/BUGS-SP-RESULTS.md`): the single seat matches the four-seat wave's detection at ~40% of
+v2 benchmark measured this across five subjects and three application types (BUGS-SP-RESULTS.md,
+on the `tuning` branch under `competition/benchmark/v2/analysis/`): the single seat matches the
+four-seat wave's detection at ~40% of
 its cost, and never buries a found defect below an approval — the wave's `evidence=strong` gate at a
 four-seat roster tiered real defects into the Minor bucket on three of five subjects and once
 approved a change with five real defects found. Filtering happens at generation — the `reach` block
@@ -355,7 +356,7 @@ The cap bounds the **review-wave roster** — the agents launched in Step 3 — 
 4. **`N` ≤ 2** → clamp to the floor only; record `roster cap N below floor size — clamped to the 2-agent floor`. The preset's tiering and validation wave still apply: a small roster is not a lighter pipeline, only fewer seats in it.
 5. **Otherwise** → keep the floor (and any pins), fill the remaining `N − kept` slots with the highest-ranked gate-matched specialists, and **drop the rest** — recording each dropped agent under the roster-cap exclusion wording (Step 2c).
 
-**Rank the gate-matched specialists, then keep the top slots.** The order below is *measured*, not intuited — from per-persona drop cost over the 18 archived benchmark runs (`analysis/scripts/roster_yield.py`; method and limits in the roster-axis work item). Refresh it from that data rather than re-deriving it by judgement, which is how the previous ordering went wrong.
+**Rank the gate-matched specialists, then keep the top slots.** The order below is *measured*, not intuited — from per-persona drop cost over the 18 archived benchmark runs (`roster_yield.py`, on the `tuning` branch under `competition/benchmark/analysis/scripts/`; method and limits in the roster-axis work item). Refresh it from that data rather than re-deriving it by judgement, which is how the previous ordering went wrong.
 
 **Drop cost** = substantive clusters only this persona found (weighted double — those are lost outright) plus substantive clusters that would fall below the two-finder corroboration threshold. Corroboration is what consolidation ranks on, so demoting a finding to single-finder is a real cost, not a neutral one.
 
