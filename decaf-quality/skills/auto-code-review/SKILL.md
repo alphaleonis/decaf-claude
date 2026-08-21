@@ -18,7 +18,7 @@ Automated loop: **review → triage → fix → re-review** until stable.
 Parse `$ARGUMENTS`:
 
 1. **Review spec**: a `/code-review` preset — `bugs`, `review` (default) or `audit` — optionally followed by any of its axis overrides (`roster=N`, `models=`, `evidence=`, `reach=`). Collect the preset and every axis token into one `reviewSpec` string and forward it **verbatim** to `/code-review` for the first iteration; this skill does not interpret the axes, so a new one works here the day it ships.
-   **Always pass a resolved preset explicitly** — the review runs in a subagent, where `/code-review`'s interactive preset selection cannot reach the user. Re-reviews (Step 5) do NOT inherit `reviewSpec`: they narrow, per Step 5.4.
+   **Always pass a resolved preset explicitly** — the review runs in a subagent, where `/code-review`'s interactive preset selection cannot reach the user. Re-reviews (Step 5) do NOT inherit `reviewSpec` — they narrow, per Step 5.4 — and do not forward `--spec` either: compliance was judged on the first pass, and the re-review question is what the fixes broke.
 2. **Max iterations**: `--max-iterations N` (default: 3) — hard cap on review-fix cycles
 3. **Spec**: `--spec <path | work-item-ID>` — passed through to `/code-review`
 4. **`--report`**: produce a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). Forward `--report` to **every** `/code-review` invocation (first pass and re-reviews), keep the session ledger through the loop (Steps 1–5), and write the report folder in Step 6.5. Callers (`auto-tdd`/`auto-dev`) may pass an implementation-phase record to include.
@@ -73,7 +73,7 @@ Launch a **general-purpose subagent** using the Agent tool:
 > 2. The verdict (APPROVED or NEEDS_CHANGES)
 > 3. The count of findings by severity
 
-Re-reviews keep the screen and validation wave, never dropping to the two-agent floor: an autonomous fixer must not consume unscreened, unvalidated findings. But they run **capped** (`review roster=3`–`roster=6`, per Step 5.4): session evidence shows verdict-driving regressions in fix deltas are caught by the floor plus the best-fitting judgment specialists, while the rest of an uncapped roster re-verifies known-clean territory at full price.
+Re-reviews keep the screen and validation wave, never dropping to the two-agent floor: an autonomous fixer must not consume unscreened, unvalidated findings. But they narrow per Step 5.4 — `review roster=4`, `review roster=6`, or uncapped on the first re-review by delta size, then `bugs roster=3` from the third pass: session evidence shows verdict-driving regressions in fix deltas are caught by the floor plus the best-fitting judgment specialists, while the rest of an uncapped roster re-verifies known-clean territory at full price.
 
 Wait for the subagent to complete.
 
@@ -122,6 +122,8 @@ Pre-existing Issues, **Testing Gaps**, and **Residual Risks** are **not** auto-t
 | Security finding at anchor 75+ | `fix` |
 | Multiple findings share same pattern + fix applies uniformly | `fixBatch` |
 | **Critical at anchor 50** — never auto-fix unverified criticals | `defer` |
+| **High at anchor 50** — uncertain existence or impact; occurs only via the `bugs` path, which applies no confidence gate | `defer` |
+| **Medium/Low at anchor 50** (`bugs` path only, same reason) | `skip` (awareness) |
 | Requires design decisions, spans subsystems, multiple conflicting options | `defer` |
 | Low severity (unless trivially fixable like unused imports) | `skip` |
 | **Minor — Consistency**, single mechanical edit (correct a comment/doc, add a sibling-matching attribute, rename for convention, add a null guard a finding pinpoints) | `fix` |
@@ -136,8 +138,10 @@ Summary by severity and anchor:
 | 🔴 Critical | 75–100 | Always fix |
 | 🔴 Critical | 50 | Defer — a human decides on unverified criticals |
 | 🟠 High | 75–100 | Always fix |
+| 🟠 High | 50 | Defer — uncertain; a human decides (`bugs` path only) |
 | 🟡 Medium | 100 | Fix |
 | 🟡 Medium | 75 | Fix if clear single fix; skip if cosmetic/subjective |
+| 🟡 Medium | 50 | Skip to awareness (`bugs` path only) |
 | 🟢 Low | any | Skip unless trivial |
 | 🔵 Minor (Consistency) | — | Fix if a single mechanical edit; defer/skip if it needs a choice |
 
@@ -282,10 +286,10 @@ Then:
 
 ### Per-Iteration Summary
 
-| Iter | Mode | Findings | Fixed | Skipped | Deferred | Dismissed |
-|------|------|----------|-------|---------|----------|-----------|
-| 1 | {mode} | {n} | {n} | {n} | {n} | {n} |
-| 2 | mid (modified files) | {n} | {n} | {n} | {n} | {n} |
+| Iter | Review | Findings | Fixed | Skipped | Deferred | Dismissed |
+|------|--------|----------|-------|---------|----------|-----------|
+| 1 | {reviewSpec} | {n} | {n} | {n} | {n} | {n} |
+| 2 | {reReviewPreset} (modified files) | {n} | {n} | {n} | {n} | {n} |
 
 ### Totals
 

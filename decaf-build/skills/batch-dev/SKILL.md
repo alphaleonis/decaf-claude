@@ -40,7 +40,7 @@ Parse `$ARGUMENTS`:
    followed by any of its axis overrides (`roster=N`, `models=`, `evidence=`, `reach=`), forwarded
    **verbatim** to each nib's review. Quote it when the shell would split it:
    `--review "review roster=6 reach=narrow"`. Not interpreted here, so a new axis works the day
-   `/code-review` ships it. Parallel-cluster workers self-review inline and cannot honour it —
+   `/code-review` ships it. Parallel-cluster workers self-review inline and cannot honor it —
    say so in the Phase 8 report rather than implying the spec covered every nib.
 3. `--max-iterations N` (default `3`) — review iteration cap.
 4. `--base-branch <name>` — override the batch branch name (default derived in Phase 6).
