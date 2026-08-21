@@ -82,17 +82,19 @@ Analyze and improve existing code without changing its behavior. The three core 
 Runs parallel specialized reviewer agents over a diff — uncommitted changes, a path, or an ADO/GitHub PR — and consolidates them into one deduplicated report with severity, confidence, and a verdict, written under `.decaf/code-reviews/`. This step only *reports*: hand the findings to [`resolve-code-review`](#resolve-code-review) to work through them one at a time, or skip straight to [`auto-code-review`](#auto-code-review) to run the whole review → fix → re-review loop hands-off.
 ```
 /decaf-quality:code-review                 # uncommitted changes; mode chosen interactively
-/decaf-quality:code-review high            # deeper roster, session-model end-to-end
+/decaf-quality:code-review audit           # everything tiered, including pre-existing
 /decaf-quality:code-review 42              # review PR #42
 /decaf-quality:code-review --spec docs/design.md
 ```
-Modes `low | mid | high | max` trade roster size and model tier; append a number (`mid4`) to cap the roster.
+Three presets — `bugs` (one deep seat), `review` (default), `audit` (everything, tiered) — over four
+overridable axes: `roster=N`, `models=low|norm|high`, `evidence=strong|norm|any`, `reach=narrow|norm|wide`.
+All four point the same way: less output on the left, more on the right.
 
 ### auto-code-review
 The hands-off loop: it runs [`code-review`](#code-review), triages, fixes via subagent, and re-reviews, iterating until the code stabilizes or the iteration cap is hit. Use it when you want issues *fixed*, not just reported; for manual control over each fix, run `code-review` then [`resolve-code-review`](#resolve-code-review) instead.
 ```
 /decaf-quality:auto-code-review
-/decaf-quality:auto-code-review max --max-iterations 5
+/decaf-quality:auto-code-review audit --max-iterations 5
 ```
 
 ### resolve-code-review
@@ -164,7 +166,7 @@ Test-driven development — red → green → refactor, one vertical slice (trac
 Runs a TDD session (plan → red-green-refactor, via subagent) then an automated [`auto-code-review`](#auto-code-review) gate. Use for test-first feature work with a quality bar. For work that isn't naturally test-driven, use [`auto-dev`](#auto-dev); it handles one item, so for several at once reach for [`batch-dev`](#batch-dev).
 ```
 /decaf-build:auto-tdd "add rate limiting to the upload API"
-/decaf-build:auto-tdd "<feature>" --review high --max-iterations 3
+/decaf-build:auto-tdd "<feature>" --review "review models=high" --max-iterations 3
 ```
 
 ### auto-dev
@@ -178,14 +180,14 @@ Direct (non-test-first) implementation then an automated [`auto-code-review`](#a
 Orchestrate **multiple** work items (nibs) in one run: understand them collectively, cluster them, pick the best mechanism per cluster (single series / parallel fan-out / scripted workflow / agent team), and dispatch behind one approval gate. It runs `auto-dev` / `auto-tdd`-style execution per nib; the autonomous driver that calls batch-dev for you, phase by phase, is [`auto-deliver`](#auto-deliver).
 ```
 /decaf-build:batch-dev --ready                   # all ready nibs
-/decaf-build:batch-dev abc1 def2 --review high   # specific nibs
+/decaf-build:batch-dev abc1 def2 --review bugs        # specific nibs
 ```
 
 ### auto-deliver
 The autonomous whole-plan loop: `SELECT → BREAKDOWN → EXECUTE → VERIFY → RECONCILE → LEARN → REPLAN → MERGE`, one phase at a time, **without stopping at phase boundaries**. It composes [`breakdown-phase`](#breakdown-phase) → [`batch-dev`](#batch-dev) → [`close-out`](#close-out) (all `--unattended`) over the tracker-adapter contract and stops only at plan completion. Resumable run state lives in `.decaf/auto-deliver/`. Point it at a plan produced by [`draft-plan`](#draft-plan).
 ```
 /decaf-build:auto-deliver <plan-id>
-/decaf-build:auto-deliver <plan-id> --base-branch integration --review max
+/decaf-build:auto-deliver <plan-id> --base-branch integration --review audit
 ```
 
 ## decaf-plan
