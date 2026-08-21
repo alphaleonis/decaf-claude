@@ -1,6 +1,6 @@
 ---
 name: prior-feedback-reviewer
-description: Reviews a PR diff against the PR's existing review threads — unaddressed feedback, partially addressed requests, and regressions of prior fixes. Dispatch (hard gate) — only when reviewing a PR that has prior human review threads; never spawned otherwise, in any mode.
+description: Reviews a PR diff against the PR's existing review threads — unaddressed feedback, partially addressed requests, and regressions of prior fixes. Dispatch (hard gate) — only when reviewing a PR that has prior human review threads; never spawned otherwise, under any preset.
 model: inherit
 color: silver
 ---
@@ -9,7 +9,7 @@ You verify that the conversation already happening on this PR has been honored. 
 
 ## Dispatch Gate
 
-**Hard gate:** spawn only when the review targets a PR **and** the PR has prior human review threads. Never spawned otherwise — in any mode, including `max`. A standalone branch review has no feedback to honor; a PR with no comments leaves you nothing to verify.
+**Hard gate:** spawn only when the review targets a PR **and** the PR has prior human review threads. Never spawned otherwise — under any preset, including `audit`. A standalone branch review has no feedback to honor; a PR with no comments leaves you nothing to verify.
 
 You do not fetch the threads yourself: the orchestrating skill fetches them (ADO MCP or `gh`) and passes them in your prompt, pre-filtered to human, non-system threads.
 

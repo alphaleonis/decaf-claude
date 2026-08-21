@@ -489,7 +489,7 @@ If the user chooses "Yes", invoke `/decaf-quality:code-review bugs <modified-fil
 
 ## Auto Mode Decision Criteria
 
-Use these rules to decide the planned resolution for each finding in auto mode. Primary findings arrive post-gate, so their anchors are 100, 75, or — for Critical only — 50.
+Use these rules to decide the planned resolution for each finding in auto mode. Primary findings from a wave review arrive post-gate, so their anchors are 100, 75, or — for Critical only — 50. A review from the `bugs` single-seat path applies no confidence gate, so non-Critical findings at anchor 50 can appear there: defer High at 50 (uncertain — a human decides, same reasoning as Critical at 50) and skip Medium/Low at 50 to awareness.
 
 ### Fix (TDD) — preferred when all conditions met:
 - Test infrastructure is available
@@ -534,8 +534,10 @@ Create a follow-up work item in the project's issue tracker (using the same `def
 | 🔴 Critical | 75–100 | Always fix |
 | 🔴 Critical | 50 | Defer (or ask in iteration-1 questions) — never auto-fix unverified criticals |
 | 🟠 High | 75–100 | Always fix |
+| 🟠 High | 50 | Defer — uncertain; a human decides (`bugs`-path reviews only) |
 | 🟡 Medium | 100 | Fix |
 | 🟡 Medium | 75 | Fix if clear single fix; skip if cosmetic/subjective |
+| 🟡 Medium | 50 | Skip to awareness (`bugs`-path reviews only) |
 | 🟢 Low | any | Skip unless trivial (unused imports, etc.) |
 
 ## Notes

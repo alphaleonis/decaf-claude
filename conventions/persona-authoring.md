@@ -17,14 +17,14 @@ color: <color not used by another agent>
 
 Frontmatter rules:
 
-- **`description` carries the dispatch gate** as a trailing `Dispatch — ...` clause. The orchestrator selects agents from descriptions without reading files; the gate must be visible there. Mark hard gates explicitly: `Dispatch (hard gate) — only when <domain> is present in the changeset; never spawned otherwise, in any mode.`
+- **`description` carries the dispatch gate** as a trailing `Dispatch — ...` clause. The orchestrator selects agents from descriptions without reading files; the gate must be visible there. Mark hard gates explicitly: `Dispatch (hard gate) — only when <domain> is present in the changeset; never spawned otherwise, under any preset.`
 - **`model` is always `inherit`.** Models are chosen at dispatch time by the skill's model policy (Step 2d). Never pin a model version in an agent — model-landscape changes must be a one-place edit in the skill.
 
 ## Required sections, in order
 
 1. **Identity paragraph(s)** — who the persona is and its mental model, 1–2 paragraphs. State the attack strategy ("you trace inputs through branches", "you think like an attacker"), not just the topic.
 
-2. **`## Dispatch Gate`** — `**Spawn when:**` and `**Do not spawn when:**`. Negative gates matter as much as positive ones: tell the orchestrator not to spawn just because a file extension or filename matched ("judge from diff content"). For domain-absent-means-useless personas, write `**Hard gate:**` — these are enforced in *all* modes, including `max` (no test-reviewer without tests, no stack persona for another language). State the persona's lean for borderline cases (e.g., security: "when unsure, lean toward spawning").
+2. **`## Dispatch Gate`** — `**Spawn when:**` and `**Do not spawn when:**`. Negative gates matter as much as positive ones: tell the orchestrator not to spawn just because a file extension or filename matched ("judge from diff content"). For domain-absent-means-useless personas, write `**Hard gate:**` — these are enforced under *every* preset, including `audit` (no test-reviewer without tests, no stack persona for another language). State the persona's lean for borderline cases (e.g., security: "when unsure, lean toward spawning").
 
 3. **`## Scope Boundary`** — `**Your scope**:` one line, then `**Out of scope**:` as a list where **every entry names the owning persona** (see the Domain Ownership Matrix below). End with a one-line boundary rule when the line is subtle (e.g., security's "single code pattern → quick-reviewer; missing architectural control → you").
 

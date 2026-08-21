@@ -13,7 +13,7 @@ This command orchestrates code review agents and consolidates their findings int
 Parse `$ARGUMENTS` to determine:
 1. **Preset**: `bugs`, `review`, or `audit` — a named point in the axis space defined under [Review axes](#review-axes) below. `bugs` is a **single-seat** path (one `solo-reviewer`, no wave, no funnel — see [The `bugs` path](#the-bugs-path-single-seat)); `review` and `audit` are waves. When none is given, the preset is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `review`.
    - **Per-axis override (optional)**: `roster=<N>`, `models=<low|norm|high>`, `evidence=<strong|norm|any>` and `reach=<narrow|norm|wide>` set an axis directly, overriding whatever the preset implies. Later arguments win, so `review roster=6 roster=4` resolves to 4.
-   - **Anything else is not a preset.** An unrecognised leading word is scope or instructions, not a mode — say so rather than guessing. There is exactly one vocabulary: three presets and four axes.
+   - **Anything else is not a preset.** An unrecognized leading word is scope or instructions, not a preset — say so rather than guessing. There is exactly one vocabulary: three presets and four axes.
 2. **Spec**: `--spec <path | work-item-ID>` — a specification/plan document, or an ADO work item ID whose Description and Acceptance Criteria serve as the spec. When omitted, spec discovery (Step 1.5) may find one automatically.
 3. **`--report`**: collect session metrics for skill-tuning comparisons — record per-agent usage from every reviewer/validator tool result and append a **Session Metrics** section to the consolidated review file (Step 6). See `@../../conventions/session-report.md` for the exact section format and the truth discipline. Orchestrating skills (`auto-code-review`) pass this through; standalone, the enriched consolidated file is the deliverable.
 4. **PR number**: A pull request number (e.g., `123`, `PR#123`, `#123`) — review that PR instead of local changes
@@ -22,8 +22,8 @@ Parse `$ARGUMENTS` to determine:
 
 ## Review axes
 
-A review is configured along four axes. A mode keyword is shorthand for a point in that space, not
-a thing in its own right — so read the axes first and the modes as presets over them.
+A review is configured along four axes. A preset is shorthand for a point in that space, not a
+thing in its own right — so read the axes first and the presets as named points over them.
 
 | axis | values | controls | where it is applied |
 |------|--------|----------|---------------------|
@@ -125,8 +125,9 @@ its cost, and never buries a found defect below an approval — the wave's `evid
 four-seat roster tiered real defects into the Minor bucket on three of five subjects and once
 approved a change with five real defects found. Filtering happens at generation — the `reach` block
 and the seat's own calibration and closed-set parking reasons — not in machinery afterwards. `bugs`
-was decided as the default mechanism on 2026-08-18 (nib `dcc-pjix`); the path was developed as the
-experimental `bugs-sp` preset, which remains an alias.
+was decided as the default mechanism on 2026-08-18 (nib `dcc-pjix`); the path was developed under
+the experimental name `bugs-sp`, which is retired — there is exactly one vocabulary (see Argument
+Parsing).
 
 **Rules:**
 
@@ -196,9 +197,10 @@ experimental `bugs-sp` preset, which remains an alias.
    Considered But Not Flagged entry must carry exactly one of `[unverified]` `[false]`
    `[pre-existing]` `[minor]`. Count entries that carry none, or whose stated reason is one of the
    non-reasons the seat's brief names ("intended", "documented", "commented", "tested as such",
-   "unreachable today"), and record the count in the report header (below). Do **not** promote,
+   "unreachable today"), and record the count in the report header (below) — but a probe-decision
+   process note tagged `[probe]` is not a parked claim and is excluded from the count. Do **not** promote,
    re-tag, or re-tier them — the count is the signal; the seat's report is otherwise final.
-7. **Step 6 runs normally.** Header: `**Mode**: bugs (single seat) · roster=1`,
+7. **Step 6 runs normally.** Header: `**Preset**: bugs (single seat) · roster=1`,
    `**Reviewers**: solo-reviewer`, `**Validation**: none (single-seat path) · parked N
    (K without a closed-set reason)`. The Agent Summary table has one row. Step 7 (review history)
    runs as usual.
@@ -262,7 +264,7 @@ Determine whether a specification is available for compliance checking, and how 
 
 ### Step 2: Select Agents (Conditional Dispatch)
 
-Selection is **conditional dispatch**: the changeset determines the roster; the mode only sets how aggressively gates are applied. Every agent declares its own dispatch gate (a `Dispatch —` clause in its description, with the full rule in its `## Dispatch Gate` section).
+Selection is **conditional dispatch**: the changeset determines the roster; the preset only sets how aggressively gates are applied. Every agent declares its own dispatch gate (a `Dispatch —` clause in its description, with the full rule in its `## Dispatch Gate` section).
 
 #### Step 2a: Classify the changeset
 
@@ -331,7 +333,7 @@ Determine `N`, then resolve the roster against it. Under `bugs` without an expli
 
 **Determining `N`:**
 
-1. An **explicit** `roster=<N>` or `mode<N>` suffix always wins.
+1. An **explicit** `roster=<N>` always wins.
 2. Otherwise, under `review`, derive a default from the Step 2a executable-line count:
 
    | changed executable lines | default `N` | why |
@@ -406,7 +408,7 @@ Agents declare `model: inherit` and stay model-agnostic; the orchestrator decide
 
 Apply the split by the **`models` axis** (mid-tier = the platform's mid-tier model, `sonnet`). This is the only place in the skill where model names appear — everywhere else names the axis value. **No agent that reasons about code runs on the cheap tier (`haiku`)** — not reviewers, not screeners, not validators; the cheap tier is reserved for genuinely non-reasoning work such as the Step 1 trivial-PR classifier. (This retires the cheap verification tier of 2026-07-29, which rested on the belief that the reference implementation runs its analogous job on Haiku; the benchmark's model-cutoff table records that it runs its review agents on Sonnet and uses Haiku for helpers only, and the pilot's three wrongly-binned real defects died in the Haiku screen lane.)
 
-- **`models=low`:** judgment agents inherit the session model; volume **and** verification agents run mid-tier. As of 2026-08-17 this is the same model policy as `norm` — `low` and `norm` differ only through the presets that select them (`bugs` pairs `low` with `evidence=strong` and `reach=narrow`). Accepted for now; the axis gets rearranged if a genuinely cheaper reasoning tier appears.
+- **`models=low`:** judgment agents inherit the session model; volume **and** verification agents run mid-tier. As of 2026-08-17 this is the same model policy as `norm` — `low` and `norm` differ only through what selects them (only the wave behind `bugs roster=N` selects `low`, pairing it with `evidence=norm` and `reach=narrow`). Accepted for now; the axis gets rearranged if a genuinely cheaper reasoning tier appears.
 - **`models=norm` (the default):** judgment agents inherit the session model; volume agents run mid-tier; verification agents run mid-tier. The pattern-match and consistency findings the volume agents surface are well within the mid-tier's reach, while deep behavioral, design, and security findings stay on the top-tier judgment agents. The trade: a deep cross-file catch that only a volume agent (especially `broad`) would make may be lost to the down-tier.
 - **`models=high` (strict quality):** every agent inherits the session model **except** `quick-reviewer` and `consistency-reviewer` (mid-tier — their lanes are cheap pattern matches and quotable facts) and the verification agents (mid-tier — measurably the right tier for clustering, where the mid tier matches the top tier's accuracy, and adequate for verification).
 - **At the two-agent floor, `broad-reviewer` always inherits the session model** whatever `models` says. With only two seats, broad is the only deep net; down-tiering it leaves the wave with no deep finder at all. `quick-reviewer` stays mid-tier — its lane is pattern matching.
@@ -429,7 +431,7 @@ Based on selection, launch agents using the **Agent tool with parallel calls in 
 
 **CRITICAL — synchronous parallel dispatch:**
 
-- All agents for the selected mode MUST be launched in a single message with multiple Agent tool calls. This ensures true parallel execution.
+- All agents in the resolved roster MUST be launched in a single message with multiple Agent tool calls. This ensures true parallel execution.
 - Every call MUST set `run_in_background: false`. The Agent tool backgrounds subagents by default, and a backgrounded wave invites the orchestrator to end its turn to "wait" — but when this skill runs inside a subagent, its final message is its return value, so ending the turn returns a useless result while the reviewers' reports broadcast to the main conversation instead of coming back. Synchronous dispatch returns every report directly as a tool result. Never arm a timer/watcher or end the turn to wait for reviewers.
 - Reviewers return their report as their **final message** — that final message IS the tool result you consolidate from. Never instruct a reviewer to send its report via SendMessage or to write it to a file.
 - **When `--report` is set**: note the dispatch timestamp, and as each tool result returns, record the agent's harness-reported usage (tokens, tool calls, duration — verbatim; "not reported" if absent) plus its findings count and approximate report size. This data exists only in these tool results — it cannot be recovered later. It feeds the Session Metrics section in Step 6 (`@../../conventions/session-report.md`).
@@ -599,8 +601,12 @@ Score each cluster once, cheaply, before the orchestrator does any deep reasonin
 is spent on findings that will survive rather than on ones about to be tiered down.
 
 1. **Skip this step** under `bugs` at roster=1 (no screen exists on the single-seat path — the
-   seat's anchors are final), and when `evidence=any` *and* no cluster is below score 25 — there is
-   nothing for it to decide.
+   seat's anchors are final), and when `evidence=any` *and* every cluster's finders all anchor at
+   50 or above. At a bar of 25 the screen's only decision is whether a cluster is speculative, and
+   the finders' own anchors already answer that (anchor 25 and screen 25 name the same state:
+   could not be verified) — so there is nothing for it to decide. Record
+   `screen: skipped (evidence=any)`; the clusters then carry no screen scores, and Step 5.6's
+   no-score rule applies to them.
 2. **Dispatch one screening agent per cluster, in parallel** (single message, multiple Agent calls,
    `run_in_background: false`), on the **mid tier** (Step 2d — verification agents). Each receives: the cluster's merged claim,
    its finder count and finders' anchors, the diff hunk for the cited location, and the rubric below.
@@ -675,8 +681,9 @@ Independent re-verification of the few primary findings the Step 4.95 screen cou
 
 1. **Select findings — validate only what the screen left open.** From the surviving primary findings, validate:
    - **every Critical** — high stakes; always worth an independent check, even when corroborated and even when the screen scored it high;
-   - **every primary whose screen score sits within 15 points of the `evidence` bar** — the screen's own uncertainty band, where a small scoring error changes the outcome;
-   - **any finding carrying dissenting severities** among its finders — the disagreement is the signal to resolve, and a single score cannot resolve it.
+   - **every primary whose screen score sits within 15 points of the `evidence` bar** (the bar that admitted it: the corroborated threshold for a cluster with 2+ independent finders, the raw threshold otherwise) — the screen's own uncertainty band, where a small scoring error changes the outcome;
+   - **any finding carrying dissenting severities** among its finders — the disagreement is the signal to resolve, and a single score cannot resolve it;
+   - **every primary with no screen score** — a finding promoted from a dismissed item in Step 5.5 (promotion bypasses the screen), or any cluster from a run where the screen was skipped under `evidence=any`. With no score there is nothing to waive against, so these are always validated (the budget cap still applies).
 
    **No longer selected on single-finder alone.** Corroboration is already an input to the screen (see the `evidence` bar), so a confidently-scored single-finder finding has been checked once and does not need checking twice. A single-finder finding near the bar is caught by the second rule above.
 
@@ -719,16 +726,16 @@ FILENAME=".decaf/code-reviews/CODE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 ```markdown
 # Code Review
 
-**Mode**: <mode> (<explicit | asked | default (non-interactive)>)[ · roster N=<N> (<explicit | derived: L executable lines>) — M gate-matched agents dropped] | **Reviewers**: <agent list> | **Date**: <YYYY-MM-DD>
+**Preset**: <preset> (<explicit | asked | default (non-interactive)>)[ · roster N=<N> (<explicit | derived: L executable lines>) — M gate-matched agents dropped] | **Reviewers**: <agent list> | **Date**: <YYYY-MM-DD>
 **Source**: <PR #N — title (platform) [source → target]> | <local changes> | <last commit>
 **Scope**: N files changed, +X/-Y lines
 **Spec**: <path or work item #N (explicit | linked | inferred)> | <none found>
-**Validation**: <N confirmed, M refuted, K uncertain[, W waived (corroborated)][, J unvalidated (over budget)]> | <none (single-seat path)>
+**Validation**: <N confirmed, M refuted, K uncertain[, W waived (corroborated)][, J unvalidated (over budget)]> | <none (single-seat path)> | <skipped (no primary findings)>
 
 ## Agent Selection Rationale
 
 <The review-team list from Step 2c: each gated agent with its one-line inclusion
-or exclusion reason. Note how the mode was chosen (explicit / asked with the
+or exclusion reason. Note how the preset was chosen (explicit / asked with the
 recommendation / default non-interactive) and the resolved `models` policy Step 2d applied
 (which agents ran on which tier). If a `roster` cap (Step 2b.5) was in effect, state
 the cap value, the specialists kept, and each gate-matched agent dropped to the
@@ -908,8 +915,7 @@ Keep this lightweight — match on file path + category only. Skip this step if 
 ## Example Usage
 
 ```
-/decaf-quality:code-review                              # mode chosen interactively (default mid), uncommitted changes
-/decaf-quality:code-review                              # preset chosen interactively (default review)
+/decaf-quality:code-review                              # preset chosen interactively (default review), uncommitted changes
 /decaf-quality:code-review bugs                         # high-confidence defects in the changed lines only — one deep seat
 /decaf-quality:code-review review                       # default — defects plus actionable minor findings
 /decaf-quality:code-review audit                        # everything tiered, including pre-existing

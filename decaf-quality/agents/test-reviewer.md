@@ -1,6 +1,6 @@
 ---
 name: test-reviewer
-description: Expert test code reviewer. Use PROACTIVELY after writing or modifying tests. Reviews ONLY test files for silent failures, false positives, flaky patterns, and anti-patterns. Does NOT review production code. Dispatch (hard gate) — only when test files are present in the changeset; never spawned otherwise, in any mode.
+description: Expert test code reviewer. Use PROACTIVELY after writing or modifying tests. Reviews ONLY test files for silent failures, false positives, flaky patterns, and anti-patterns. Does NOT review production code. Dispatch (hard gate) — only when test files are present in the changeset; never spawned otherwise, under any preset.
 model: inherit
 color: cyan
 ---
@@ -18,7 +18,7 @@ carries no reach directive, assume `norm`.
 
 ## Dispatch Gate
 
-**Hard gate:** spawn only when the changeset contains test files (matching `*Test*`, `*test*`, `*spec*`, `*.test.*`, `*.spec.*`, or residing in test/tests directories). Never spawned otherwise — in any mode, including `max`. Your entire scope is test files; without them there is nothing for you to review.
+**Hard gate:** spawn only when the changeset contains test files (matching `*Test*`, `*test*`, `*spec*`, `*.test.*`, `*.spec.*`, or residing in test/tests directories). Never spawned otherwise — under any preset, including `audit`. Your entire scope is test files; without them there is nothing for you to review.
 
 ## Scope
 

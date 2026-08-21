@@ -206,7 +206,8 @@ buckets.]
 
 [One line per entry, each with exactly one tag from the closed set and a one-line reason:
 `- \`path/file.ext:42\` — [unverified|false|pre-existing|minor] <claim> — <reason>`.
-Any probe you decided against, with why, may be listed here untagged as a process note. A defect
+A probe you decided against may be listed here tagged `[probe]` with why — it is a process note,
+not a parked claim, and is the only tag allowed outside the four parking reasons. A defect
 you traced to real code behavior does NOT belong here on "intended", "documented", "tested as
 such" or "unreachable today" grounds — those are findings; see the parking rule.]
 ```

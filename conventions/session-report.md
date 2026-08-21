@@ -67,9 +67,9 @@ duration). If the harness reports no usage for a call, write "not reported" in t
 
 Track through the loop (in-context notes are fine; no state file required):
 
-- **Per iteration**: mode (+ roster cap and which gate-matched agents the cap dropped), scope,
+- **Per iteration**: the resolved review spec (preset + axis overrides, and which gate-matched agents the roster cap dropped), scope,
   verdict, finding counts (by severity + minor), validation stats, the fix-delta classification
-  and chosen `reReviewMode` (Step 5.4), review-file path, orchestrator-subagent usage.
+  and chosen `reReviewPreset` (Step 5.4), review-file path, orchestrator-subagent usage.
 - **Per fix round**: subagent usage, counts (fixed / TDD / differently / not-addressing /
   declined / skipped), files modified.
 - **Triage decisions** in main context: per finding — fix / skip / dismiss / defer (+ work item).
@@ -94,7 +94,7 @@ files), and a one-line scope/plan description.
 logic-heavy, languages, size). Skill chain with the exact invocation arguments.>
 
 ## 1. Iteration overview
-| Iter | Mode | Scope | Verdict | Primary findings | Minor | Validation wave | Fixes applied after |
+| Iter | Review | Scope | Verdict | Primary findings | Minor | Validation wave | Fixes applied after |
 <one row per iteration; totals line: fixed / deferred / skipped / dismissed / refuted; final state>
 <1-3 bullets: the quality signals that justified (or didn't) the loop's cost>
 

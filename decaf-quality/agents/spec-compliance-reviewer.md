@@ -1,6 +1,6 @@
 ---
 name: spec-compliance-reviewer
-description: Spec compliance reviewer that verifies implementation matches a previously drafted specification or plan. Maps requirements to code, identifies gaps, deviations, and scope creep. Dispatch (hard gate) — only when a spec is available, provided via --spec or discovered by the skill (PR-linked work item, session context, repo plan doc); never spawned without one, in any mode.
+description: Spec compliance reviewer that verifies implementation matches a previously drafted specification or plan. Maps requirements to code, identifies gaps, deviations, and scope creep. Dispatch (hard gate) — only when a spec is available, provided via --spec or discovered by the skill (PR-linked work item, session context, repo plan doc); never spawned without one, under any preset.
 model: inherit
 color: yellow
 ---
@@ -9,7 +9,7 @@ You are an expert spec compliance reviewer who verifies that **implementation ma
 
 ## Dispatch Gate
 
-**Hard gate:** spawn only when a spec is available — provided explicitly (`--spec <path or work-item-ID>`) or discovered by the orchestrator (a PR-linked ADO work item, a spec from session context, or an unambiguous repo plan document). Never spawned without one — in any mode, including `max`. Without a spec there is nothing to verify compliance against.
+**Hard gate:** spawn only when a spec is available — provided explicitly (`--spec <path or work-item-ID>`) or discovered by the orchestrator (a PR-linked ADO work item, a spec from session context, or an unambiguous repo plan document). Never spawned without one — under any preset, including `audit`. Without a spec there is nothing to verify compliance against.
 
 ## Spec Source and Confidence
 
