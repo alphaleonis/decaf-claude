@@ -1,0 +1,849 @@
+[
+ {
+  "thread_index": 0,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 190,
+  "body": "sync_connect() is called before the try/except block, so any exception it raises (e.g., Temporal unreachable at the time of the request) propagates without entering either exception handler. The ProductBrief row has already been written in GENERATING status and will remain stranded there \u2014 the except Exception cleanup path that marks it FAILED is never reached.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                    brief = ProductBrief.objects.for_team(self.team_id).create(\n          \n          \n            \n                        team_id=self.team_id,\n          \n          \n            \n                        config=config,\n          \n          \n            \n                        created_by=cast(User, request.user),\n          \n          \n            \n                        status=ProductBrief.Status.GENERATING,\n          \n          \n            \n                        trigger=ProductBrief.Trigger.ON_DEMAND,\n          \n          \n            \n                        period_days=period_days,\n          \n          \n            \n                    )\n          \n          \n            \n            \n          \n          \n            \n                    temporal = sync_connect()\n          \n          \n            \n                    try:\n          \n          \n            \n                        asyncio.run(\n          \n          \n            \n                    brief = ProductBrief.objects.for_team(self.team_id).create(\n          \n          \n            \n                        team_id=self.team_id,\n          \n          \n            \n                        config=config,\n          \n          \n            \n                        created_by=cast(User, request.user),\n          \n          \n            \n                        status=ProductBrief.Status.GENERATING,\n          \n          \n            \n                        trigger=ProductBrief.Trigger.ON_DEMAND,\n          \n          \n            \n                        period_days=period_days,\n          \n          \n            \n                    )\n          \n          \n            \n            \n          \n          \n            \n                    try:\n          \n          \n            \n                        temporal = sync_connect()\n          \n          \n            \n                        asyncio.run(",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 1,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 168,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 github-user's review style\nThe generate action does not import or call report_user_action, so on-demand brief generation events are invisible to product analytics. Without it the Pulse team cannot measure feature adoption or engagement for triggered briefs, which is a key adoption signal. Suggest adding from posthog.event_usage import report_user_action and calling report_user_action(request.user, \"pulse brief generated\", {...}) with relevant properties like config_id and period_days.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 2,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 185,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 Resiliency & SRE Reviewer\nstart_workflow is called without execution_timeout; if a Temporal server restart re-executes the workflow from a checkpoint between activities, it could run past the implied ~11-minute bound. Add execution_timeout=dt.timedelta(minutes=15) to cap total workflow duration.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 3,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 193,
+  "body": "As a sanity check, do we also have SLOs for this workflow?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 4,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 196,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 Resiliency & SRE Reviewer\nIn the generate endpoint, the except Exception block stores the error in the DB but does not log it \u2014 if sync_connect() or start_workflow fails at 3am, ops have no structured logs (team_id, brief_id) to diagnose the spike in 500s and must wait for user reports. Add logger.exception(\"pulse_brief_dispatch_failed\", team_id=self.team_id, brief_id=brief.id) before the bare raise.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [
+    "pulse_brief_dispatch_failed"
+   ],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 5,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 24,
+  "body": "Shall we move this to some config level locatio nin the products/pulse folder? MIght be moot and only worthwhile if we are expecting more configuration options in the future to live there so feel free to ignore otherwise",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 6,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 42,
+  "body": "Honestly I feel like anchors are neat, they provide some context, but it would be sick if pulse could auto detect anchors or at least scrape more things, but use these anchors as additional information on what it found by itself? I feel like things like generic events without insights and such or scout reports could all be valuable too?n",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 7,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 68,
+  "body": "It might be nice to have some sort of referneces here so we can actuallly load the insights and / or allow quicklinking to the resources if we can!\nI envision some sort of overlay / graphs where we can plot all the different inputs, detailing how pulse came to the conclusion",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 8,
+  "path": "products/pulse/backend/generation/synthesize.py",
+  "line": 51,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 Security Reviewer (OWASP-minded)\nfocus_prompt from BriefConfig (user-controlled via API) is directly interpolated into the LLM system prompt via SYNTHESIZE_PROMPT.format(focus_prompt=...) \u2014 a user with config-write access can inject instructions that override the hard rules guiding the LLM, causing it to fabricate numbers, ignore citation requirements, or generate harmful content that is stored and served to team members as a product brief.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 9,
+  "path": "products/pulse/backend/models.py",
+  "line": 14,
+  "body": "Why would the pulse model need to access all teams? E.g. what is the reason for this, and isn't there a way to just have it reference the current teamonly?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 10,
+  "path": "products/pulse/backend/models.py",
+  "line": 30,
+  "body": "Lets add some sane limits (2k chars?) here as well",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 11,
+  "path": "products/pulse/backend/models.py",
+  "line": 40,
+  "body": "What does the quiet mode do?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 12,
+  "path": "products/pulse/backend/models.py",
+  "line": 47,
+  "body": "Are we sure that we want it like this? Maybe this is fine, but maybe we can instead make a soft delete system for the configs and such so that users can easily recover it. Thinking more about this, I feel like that is a better / more sustainable approach. That way w e can revemo the set null and instead use soft deletes everywhere",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 13,
+  "path": "products/pulse/backend/models.py",
+  "line": 51,
+  "body": "Is this the interval? or the amount of days to look back when the pulse runs?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 14,
+  "path": "products/pulse/backend/models.py",
+  "line": 52,
+  "body": "Can we make the underlying data types more apaprent by for exampling clearly correlatign with serialisers or such? That way we dont risk outdating comments, the same with the anchors in the conifg and the other josn fields below!",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 15,
+  "path": "products/pulse/backend/generation/synthesize.py",
+  "line": 17,
+  "body": "These are retries right?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 16,
+  "path": "products/pulse/backend/generation/synthesize.py",
+  "line": 16,
+  "body": "I wonder if we should make these constants part of the (staff only) configuration options to allow quick tweaking once pulse is live. We can then even work with presets for different orgs or in the future allow orgs to self tweak?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 17,
+  "path": "products/pulse/backend/generation/persist.py",
+  "line": 25,
+  "body": "This does a ton of string magic, would it make sense to make these references more explicit? Where are they also being used for?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 18,
+  "path": "products/pulse/backend/sources/base.py",
+  "line": 12,
+  "body": "I saw we did some string magic here, would it make sense to just add util functions to this class instead?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 19,
+  "path": "products/pulse/backend/sources/anchored_insights.py",
+  "line": 18,
+  "body": "Same here, lets make these configs configurable per request so we can easily tweak things",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 20,
+  "path": "products/pulse/backend/sources/anchored_insights.py",
+  "line": 45,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 PostHog Observability Reviewer\nThe except Exception in gather catches per-insight calculation failures and logs with structlog but never calls posthog.captureException() \u2014 a persistently failing insight silently stops contributing to briefs without being visible in PostHog error tracking, making it hard to diagnose broken insights.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 21,
+  "path": "products/pulse/backend/sources/anchored_insights.py",
+  "line": 60,
+  "body": "What does this anchoring do? It only looks at the provided details? I would love it if it also does some magic and tries to understand and proactively link items / events /insights /signals / scouts etc to this so it's not all user filled\nAre those new sources that will be added in the future?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 22,
+  "path": "products/pulse/backend/temporal/workflow.py",
+  "line": 45,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 PostHog Observability Reviewer\nThe workflow's except Exception as exc block calls mark_brief_failed_activity (which logs with structlog) but never calls posthog.captureException() \u2014 workflow-level failures (e.g. a malformed LLM output or a broken insight calculation) strand the brief in GENERATING and then FAILED without feeding PostHog error tracking, hiding error volume from the team.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 23,
+  "path": "products/pulse/backend/temporal/workflow.py",
+  "line": 36,
+  "body": "Would be great if we can also introduce SLO here! and wire upp the pulse stuff in the existing slo-monitoring dashboard!",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 24,
+  "path": "frontend/src/scenes/experiments/experimentMetricsLogic.ts",
+  "line": 159,
+  "body": "Why is this rename needed?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 25,
+  "path": "posthog/settings/web.py",
+  "line": 513,
+  "body": "Cant we just leave the experiment one alone and callt he pulse one PulseTrigger or something? or maybe we can come up with better names?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 26,
+  "path": "products/pulse/backend/models.py",
+  "line": 51,
+  "body": "If we do a hard delete, I think it's defendable that we also delete these briefs? WDYT",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 27,
+  "path": "products/pulse/backend/models.py",
+  "line": 55,
+  "body": "Is this flexible enough? What if we want things to be since the last run? Or over the last n days?\nIf we need more things here, maybe we need a json field to support those and allow future expansions? Starting with the last n days?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 28,
+  "path": "products/pulse/backend/models.py",
+  "line": 87,
+  "body": "Same here, I am of the opinion that on hard deletes we want things to cascade?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 31,
+  "path": "products/pulse/backend/generation/schemas.py",
+  "line": 23,
+  "body": "Should we make this a map? E.g. have a display name and the url that links to the resource? That way it sounds more generic and we can actually do things visually with it in the UI without having to do weird string magic there?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 32,
+  "path": "products/pulse/backend/generation/schemas.py",
+  "line": 31,
+  "body": "Same comment about the action here vs in the data model here.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 33,
+  "path": "products/pulse/backend/generation/schemas.py",
+  "line": 32,
+  "body": "Should these instead be referencing sources? or  rather they are things fetched from sources, but I would expect some sort of connection,so maybe a map as well?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 34,
+  "path": "products/pulse/backend/generation/prompts.py",
+  "line": 1,
+  "body": "I feel like we should also fetch the prompt from the skill store, with a fallback to this one if not set. This to allow faster iterations in our internal testing",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 35,
+  "path": "products/pulse/backend/generation/synthesize.py",
+  "line": 16,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 Architecture & Design Reviewer\nTop-level import from ee.hogai.llm import MaxChatOpenAI creates a dependency chain: start_temporal_worker.py \u2192 registry.py \u2192 activities.py \u2192 synthesize.py \u2192 ee, all resolved at module-import time. On community edition where ee is not available, importing PULSE_ACTIVITIES/PULSE_WORKFLOWS at worker startup (start_temporal_worker.py lines 202-206) crashes the entire Temporal worker process with ImportError. Invert the coupling: define a BriefSynthesizer protocol in pulse and let an EE module provide the MaxChatOpenAI implementation through a registry or dependency-injection seam.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 36,
+  "path": "products/pulse/backend/generation/synthesize.py",
+  "line": 49,
+  "body": "User-controlled focus_prompt (up to 2000 chars, stored via BriefConfig create/update at products/pulse/backend/api/brief.py:184) is interpolated into an LLM system prompt with only </team_focus> stripped and a <team_focus> fence \u2014 the \"Ignore that part entirely\" instruction is advisory, not enforced (OWASP LLM01 \u2014 Prompt Injection). A team member with config write access could craft a focus_prompt that manipulates the LLM into generating fabricated metrics, disregarding the hard rules, or producing policy-violating content in the brief. Sanitize or treat focus_prompt as untrusted data by passing it as a separate non-instruction parameter (e.g., via the LLM provider's structured-context interface) rather than interpolating it into the system prompt.\nWe alreayd have sanitisation logic that we're using in th eprompt subscriptions which we can probably reuse here/",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 37,
+  "path": "products/pulse/backend/generation/synthesize.py",
+  "line": 55,
+  "body": "Generally the prompt subs thought me that relative dates are not a great experience. Instead it's better if we do date calculations outside the LLM and then pass the respective range to the prompt to query within. Could we do the same here? That way it can use those queries for the hogql stuff as well",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 38,
+  "path": "products/pulse/backend/generation/synthesize.py",
+  "line": 70,
+  "body": "This comment is moot imo",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 39,
+  "path": "products/pulse/backend/generation/persist.py",
+  "line": 16,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 github-user's review style\nIn persist.py line 16, _fingerprint truncates to _FINGERPRINT_MAX_LENGTH (512 chars) via simple string slicing. Two different fingerprint hints that share the same 512-character prefix would collide, causing distinct opportunities to be silently deduplicated. A hash-based dedup key would eliminate collision risk.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 40,
+  "path": "products/pulse/backend/generation/persist.py",
+  "line": 25,
+  "body": "So I feel like this very much hardcodced the referencese to insights, can we make this more dynamic? As I presume we can have n / multiple opportunities from different sources like insights, events, dashboards, experiments, signals etc....\nThat way we could also get rid of the str based matching and maybe replace it with some more linked / fk based approaches that are more DB freidnly",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 41,
+  "path": "products/pulse/backend/sources/base.py",
+  "line": 10,
+  "body": "Should we make this an Enum instead to have better self doucmenting code and get rid of the constant?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 42,
+  "path": "products/pulse/backend/sources/base.py",
+  "line": 17,
+  "body": "As noted earlier, I would prefer a more structural linking instead of string magic, so please consider this as wellw ehn doing the overhaul",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 43,
+  "path": "products/pulse/backend/sources/base.py",
+  "line": 29,
+  "body": "Same here, enum?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 44,
+  "path": "products/pulse/backend/sources/base.py",
+  "line": 22,
+  "body": "Here as well, I would love it if we had more hard references based on a DB level so that we don't have to do string magic, thus far I don't see a reason why we can't?  could you please look into that and consider updating this as well then?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 47,
+  "path": "products/pulse/backend/sources/registry.py",
+  "line": 4,
+  "body": "get_sources() returns [AnchoredInsightsSource()] \u2014 a hardcoded factory, not a registry. Adding a second source requires modifying this file, and tests cannot inject alternative sources without patching the module. Define a mutable _sources: list[BriefSource] list with a register_source() function so new sources can be added without touching registry.py and tests can push stub sources.\nOr alternatively make a source factory that can be passed? The latter is more DI friendly, but I'm not sure what the Pythonic preferred way is?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 48,
+  "path": "products/pulse/backend/sources/anchored_insights.py",
+  "line": 22,
+  "body": "Can we make these configs as part of the brief model as a json field with these being the defaults? That way we centralise all the configs in a DB field, and we can easily tweak / adjust it in thefuture once we are ready for it without overhauling a bunch of the code we're introducing here?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 49,
+  "path": "products/pulse/backend/sources/anchored_insights.py",
+  "line": 49,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 Test Quality & Coverage Reviewer\n_anchor_insights at line 49 applies Q(dashboards__id__in=dashboard_ids) when a config provides dashboard anchors, but every test in test_anchored_insights.py that passes a config uses only insights anchors (e.g., anchors={\"insights\": [...]}). Harm: a future change to the dashboard filter (e.g., switching to dashboards__in=) could silently break the dashboard-anchored path without any test catching the regression; add a test with anchors={\"dashboards\": [dashboard.id]}.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 50,
+  "path": "products/pulse/backend/sources/anchored_insights.py",
+  "line": 65,
+  "body": "Instead of hijacking the anchored_insights, should we make a different anchored_dashboard source as well?\nAlso I expect that a follow up PR in the stack will add auto discovery right? So that even sources that the user did not specify will be automatically added if the registry / source fetch deemed it interesting?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 51,
+  "path": "products/pulse/backend/sources/anchored_insights.py",
+  "line": 76,
+  "body": "I feel lik ethis should be a seaprate source and that we're mixing them all to build the complete picture?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 52,
+  "path": "products/pulse/backend/sources/anchored_insights.py",
+  "line": 99,
+  "body": "Is there a world where these \"item retrieval logics\" would be different for the same source? E.g. should we make a strategy pattern integration where you can link / add the strategy that you want to use for comparison so that we can try different appraoches in the future to find relevant items?\nCould even pass multiple strategies and hten loo pover them here to avoid surpluss db queries\nI feel like that will also help with testing, and reduces code duplication if we extract thuis source to several smaller sub sources",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 53,
+  "path": "products/pulse/backend/temporal/inputs.py",
+  "line": 13,
+  "body": "We should probably have SLOs on thyis alreayd, e.g. start emitting them for successfully completed temporal runs. It's maybe not fully covering but it's a good starting point so that we have some data internally, we can tweak it going forward.\nAlso the same point regarding the period days that I made earlier",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 54,
+  "path": "products/pulse/backend/temporal/activities.py",
+  "line": 69,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 Test Quality & Coverage Reviewer\nsynthesize_brief_activity at line 69-70 raises ApplicationError(\"brief has no creating user for LLM attribution\", non_retryable=True) when brief.created_by is None, but no test creates a brief without a user and asserts this behavior \u2014 the test_synthesize_activity_marks_ready test always passes a user. Harm: the field is nullable (models.py line 25), so if data ever has null created_by the activity fails mid-workflow with a confusing error that CI would not catch; add a test that creates a brief without created_by and verifies the ApplicationError.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 55,
+  "path": "products/pulse/backend/temporal/workflow.py",
+  "line": 39,
+  "body": "SHould we centralise these retry / timeout values into a config.py here that has constants holding allv alues for this?\nThe same with the activity below",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 56,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 34,
+  "body": "Should we refer to this constant in a central place so that the reapers can also use it? Feels sensible if it's all localised so changes aren't missed and dpeendencdies are caught",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 57,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 43,
+  "body": "What if you want to anchor the goal against an experiment or something else like a plain event? E.g. how would you describe anchors? Are these the main metrics it tries to optimise against? I feel like the anchor term is quite broad and wonder if we can / should make it more generic and / or have it cleaere in the ui?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 58,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 137,
+  "body": "Same comment as made before around the idea of the period days setup",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 59,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 180,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 PostHog Observability Reviewer\nBriefConfigViewSet.perform_create (line 180) and perform_destroy (line 187) create and soft-delete configs without any analytics event. While configs are internal setup objects, tracking config creation/adoption helps the team understand feature uptake before users generate their first brief. Add a report_user_action call in both overrides.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 60,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 215,
+  "body": "\ud83e\udd16 AI-suggested \u00b7 github-user's review style\nIn api/brief.py line 215, the ProductBrief row is created with status=GENERATING before the try block that connects to Temporal and starts the workflow. If the process crashes between the create and the try (a small window), the brief is stranded in GENERATING with no workflow running. The reaper at 60-minute STALE_AFTER handles this eventually, but the gap between the 20-minute workflow execution timeout and the 60-minute reaper sweep is 40 minutes of a dead brief appearing as 'generating' to the user.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 63,
+  "path": "products/pulse/backend/generation/persist.py",
+  "line": 44,
+  "body": "Can we move this logic to the EvidenceRef object? This so that all these kind of \"type\" checks are isolated and not something littered through the codebase for all callees?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 64,
+  "path": "products/pulse/backend/sources/base.py",
+  "line": 23,
+  "body": "We cant use enum here?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 67,
+  "path": "products/pulse/backend/generation/synthesize.py",
+  "line": 33,
+  "body": "If we add the key func we can use it here as well and same with cases below!",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 68,
+  "path": "products/pulse/backend/sources/anchored_insights.py",
+  "line": 89,
+  "body": "There is no util url builder thing that we can reuse here?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 70,
+  "path": "products/pulse/backend/temporal/activities.py",
+  "line": 45,
+  "body": "THis comment is too verbose imo and we can simplify it!",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 74,
+  "path": "products/pulse/backend/generation/persist.py",
+  "line": 63,
+  "body": "Should this just be a method on the evidenceref object instead?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 81,
+  "path": "products/pulse/backend/api/brief.py",
+  "line": 215,
+  "body": "Medium: Pulse writes bypass project RBAC\nINTERNAL makes AccessControlPermission skip access-level checks. A read-only project member can therefore create, edit, restore, or delete brief configurations; the same setting on ProductBriefViewSet also lets them trigger billable generation. Use a scope that enforces project write access for mutating actions, or add an explicit permission that distinguishes reads from writes.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 84,
+  "path": "products/pulse/backend/generation/synthesize.py",
+  "line": 40,
+  "body": "Medium: Prompt injection through insight content\nitem.title and item.description contain user-editable insight names or series labels and are interpolated directly into the system prompt. A project member can add instruction-shaped text to an insight used by an administrator, causing fabricated sections or opportunities to be persisted in the administrator's brief. Sanitize and explicitly frame every user-controlled item field as untrusted data, and validate that generated citations and fingerprint hints refer to the supplied items before persisting the output.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ }
+]

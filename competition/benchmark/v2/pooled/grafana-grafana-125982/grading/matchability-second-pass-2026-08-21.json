@@ -1,0 +1,8 @@
+[
+ {"thread_index": 18, "matchable_at_checkpoint": false,
+  "reason": "Re-derived by enumeration rather than by re-reading the first pass's argument. Every comment line inside `checkPermissionDualCheck` (service.go:975-1040) was listed: the six blocks present are \"Capabilities probe\", \"No stack-role toggle at all\", \"Cluster-scoped resource or one that simply does not live in a folder\", \"The stack-role grant lives under the resource-type action\", \"Wildcard folder grant\", and the `dualCheckFolderAuthz` doc. None is the comment this thread quotes. Widening the search from one file to the WHOLE repo: `A specific object was named` -> 0 hits, `parent folder is unknown` -> 0 hits. The thread's entire question is about a branch and comment that do not exist anywhere at the checkpoint. Exclusion confirmed. NOTE ON INDEPENDENCE: both readings of this exclusion were authored in the same session by the same agent, so this is a second DERIVATION, not a second reader — see the deferral note in dcc-tvk8.",
+  "independence": "same-author; re-derived by a different method, not by an independent reader"},
+ {"thread_index": 20, "matchable_at_checkpoint": false,
+  "reason": "Same enumeration, same result. This thread's suggested change quotes the identical absent comment as its BEFORE side, and a suggestion cannot rewrite text that is not in the tree: 0 hits repo-wide for `A specific object was named`. Its anchor, service.go:980, holds the unrelated \"Capabilities probe\" comment, which the thread does not mention. Exclusion confirmed. Same independence caveat as T18.",
+  "independence": "same-author; re-derived by a different method, not by an independent reader"}
+]

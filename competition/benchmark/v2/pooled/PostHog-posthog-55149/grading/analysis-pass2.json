@@ -1,0 +1,4079 @@
+{
+ "subject": "PostHog-posthog-55149",
+ "instrument": "pooled-adjudication",
+ "judge_model": "claude-opus-5",
+ "merged_at": "2026-05-06T19:44:38Z",
+ "checkpoint": "9b0f84471e9d56e5457d132d8228c40c51d03848",
+ "cells": [
+  {
+   "tool": "ours-audit",
+   "repeat": 1,
+   "cost_usd": 44.429157849999996,
+   "wall_s": 1980,
+   "access_total": 517,
+   "access_denied": 2
+  },
+  {
+   "tool": "ours-bugs",
+   "repeat": 1,
+   "cost_usd": 11.006704999999997,
+   "wall_s": 1334,
+   "access_total": 91,
+   "access_denied": 2
+  },
+  {
+   "tool": "ours-bugs",
+   "repeat": 2,
+   "cost_usd": 9.108941250000003,
+   "wall_s": 1267,
+   "access_total": 80,
+   "access_denied": 0
+  },
+  {
+   "tool": "ours-review",
+   "repeat": 1,
+   "cost_usd": 46.42709904999993,
+   "wall_s": 2465,
+   "access_total": 561,
+   "access_denied": 1
+  },
+  {
+   "tool": "ours-review",
+   "repeat": 2,
+   "cost_usd": 54.601846900000005,
+   "wall_s": 2944,
+   "access_total": 676,
+   "access_denied": 1
+  },
+  {
+   "tool": "superpowers",
+   "repeat": 1,
+   "cost_usd": 5.342477500000001,
+   "wall_s": 772,
+   "access_total": 51,
+   "access_denied": 0
+  },
+  {
+   "tool": "superpowers",
+   "repeat": 2,
+   "cost_usd": 7.4612595000000015,
+   "wall_s": 938,
+   "access_total": 84,
+   "access_denied": 0
+  }
+ ],
+ "clusters": [
+  {
+   "cluster_id": "c001",
+   "summary": "isinstance guard added inside an already-unreachable BETWEEN block is a behavioral no-op",
+   "file": "posthog/api/feature_flag.py",
+   "line": 1100,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/api/feature_flag.py:1094-1117",
+   "confidence": 0.75,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 45,
+     "subagent": "broad-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 125,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 175,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 274,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 227,
+     "subagent": "knowledge-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 305,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 99,
+     "subagent": "solo-reviewer"
+    }
+   ],
+   "rationale": "The block is documented as currently unreachable, and the added isinstance check raises ValueError into the existing except (ValueError, TypeError), which float() would already have produced \u2014 a no-op guard."
+  },
+  {
+   "cluster_id": "c002",
+   "summary": "person_id is an unvalidated CharField, so a malformed UUID escapes as an unhandled ValidationError",
+   "file": "posthog/api/feature_flag.py",
+   "line": 1932,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/api/feature_flag.py:1935-1937 and posthog/models/person/point_in_time_properties.py:59",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 97,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 122,
+     "subagent": "solo-reviewer"
+    }
+   ],
+   "rationale": "person_id is an unvalidated CharField; a malformed UUID reaches Person.objects.filter(uuid=...) and raises django ValidationError, which is not a ValueError, so it falls to the broad except and returns 500 instead of 400. 'Unhandled' overstates it but the actionable core holds."
+  },
+  {
+   "cluster_id": "c003",
+   "summary": "PropertyAnalysis.value lacks allow_null while Rust emits JSON null for is_set/is_not_set filters",
+   "file": "posthog/api/feature_flag.py",
+   "line": 1961,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "high",
+   "code_citation": "posthog/api/feature_flag.py:1961 with rust/feature-flags/src/api/types.rs:614",
+   "confidence": 0.75,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 143,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 17,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 109,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 198,
+     "subagent": "design-reviewer, adversarial-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 255,
+     "subagent": ""
+    }
+   ],
+   "rationale": "Rust emits value: Value::Null for is_set/is_not_set filters (property.value is None per property_models.rs:75-76); the response JSONField has no allow_null, so is_valid(raise_exception=True) turns any such flag into a 500."
+  },
+  {
+   "cluster_id": "c004",
+   "summary": "the ~240-600 line new endpoint and its Rust counterpart have no tests anywhere",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3379,
+   "verdict": "matches-thread",
+   "matches_thread": 13,
+   "judged_severity": "high",
+   "code_citation": "posthog/api/feature_flag.py:3379-3614",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 217,
+     "subagent": "test-reviewer, broad-reviewer, quick-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 290,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 151,
+     "subagent": "test-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 265,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 10,
+     "subagent": ""
+    }
+   ],
+   "rationale": "No test references the test_evaluation action (grep over posthog/api/test/test_feature_flag.py finds only unrelated test_evaluation_contexts_* names) \u2014 thread 13 is the same complaint.",
+   "matched_thread_quote": "This endpoint still ships with zero tests"
+  },
+  {
+   "cluster_id": "c005",
+   "summary": "a production action named test_evaluation reads as a test",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3379,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/api/feature_flag.py:3389",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 307,
+     "subagent": ""
+    }
+   ],
+   "rationale": "A production action named test_evaluation reads as a test helper; naming only, no behavioral consequence."
+  },
+  {
+   "cluster_id": "c006",
+   "summary": "required_scopes=['feature_flag:read'] gates an action returning full person property blobs (PII)",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3388,
+   "verdict": "matches-thread",
+   "matches_thread": 12,
+   "judged_severity": "high",
+   "code_citation": "posthog/api/feature_flag.py:3388 and posthog/api/feature_flag.py:3604",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 9,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 88,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 111,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 141,
+     "subagent": "security-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 201,
+     "subagent": "security-reviewer"
+    }
+   ],
+   "rationale": "The action returns the full person_properties blob under feature_flag:read only \u2014 thread 12 raises the same scope concern.",
+   "matched_thread_quote": "feature_flag:read might be a bit narrow for an endpoint that returns raw person_properties"
+  },
+  {
+   "cluster_id": "c007",
+   "summary": "the new expensive POST action declares no throttle_classes unlike its siblings",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3388,
+   "verdict": "matches-thread",
+   "matches_thread": 32,
+   "judged_severity": "high",
+   "code_citation": "posthog/api/feature_flag.py:3388 vs posthog/api/feature_flag.py:3049, 3624",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 14,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 202,
+     "subagent": "security-reviewer, performance-reviewer, adversarial-reviewer"
+    }
+   ],
+   "rationale": "No throttle_classes on the new POST while local_evaluation and remote_config each declare one; thread 32 names the missing throttle as the reason the unbounded query is reachable as a DoS.",
+   "matched_thread_quote": "test_evaluation has no throttle_classes"
+  },
+  {
+   "cluster_id": "c008",
+   "summary": "decorator ordering of @validated_request above @action (considered, dismissed)",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3388,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/api/feature_flag.py:3379-3388",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 76,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 249,
+     "subagent": "design-reviewer"
+    }
+   ],
+   "rationale": "Considered and dismissed; the ordering matches the other validated_request actions in this file. No action."
+  },
+  {
+   "cluster_id": "c009",
+   "summary": "person-property reads leave no audit-log entry",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3389,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/api/feature_flag.py:3389, 3604",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 234,
+     "subagent": "security-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 35,
+     "subagent": "security-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 169,
+     "subagent": "security-reviewer"
+    }
+   ],
+   "rationale": "A new PII-returning read leaves no activity-log trace. Defensible ask, but no sibling read endpoint in this file logs either, so it is a policy question rather than a diff defect."
+  },
+  {
+   "cluster_id": "c010",
+   "summary": "team scoping on the new action (considered, dismissed)",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3389,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/api/feature_flag.py:3397",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 70,
+     "subagent": "security-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 248,
+     "subagent": "design-reviewer"
+    }
+   ],
+   "rationale": "Considered and dismissed; get_object is team-scoped by the viewset. No action."
+  },
+  {
+   "cluster_id": "c011",
+   "summary": "the comment 'prioritize person_id over distinct_id' states the opposite of the code",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3399,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/api/feature_flag.py:3399 vs posthog/api/feature_flag.py:3430",
+   "confidence": 0.85,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 41,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 160,
+     "subagent": "knowledge-reviewer"
+    }
+   ],
+   "rationale": "The comment says 'prioritize person_id over distinct_id' while the code prefers the caller-supplied distinct_id when it resolves to the person."
+  },
+  {
+   "cluster_id": "c012",
+   "summary": "GroupsJSONField default is the string '{}' and DRF returns defaults untouched by to_internal_value",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3403,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "critical",
+   "code_citation": "posthog/api/feature_flag.py:1943, 1842 and posthog/api/feature_flag.py:3403",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 132,
+     "subagent": "design-reviewer"
+    }
+   ],
+   "rationale": "GroupsJSONField sets default='{}' (a string) and DRF returns a field's default without running to_internal_value, so an omitted groups yields the string '{}', which is truthy at 3403 and is forwarded as the groups payload to a service expecting an object."
+  },
+  {
+   "cluster_id": "c013",
+   "summary": "evaluation_distinct_id takes distinct_ids[0] from a list with unspecified order",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3430,
+   "verdict": "matches-thread",
+   "matches_thread": 35,
+   "judged_severity": "medium",
+   "code_citation": "posthog/api/feature_flag.py:3430",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 47,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 205,
+     "subagent": "broad-reviewer, design-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 244,
+     "subagent": "adversarial-reviewer"
+    }
+   ],
+   "rationale": "distinct_ids[0] on an unordered list makes rollout/variant bucketing nondeterministic for person_id callers; thread 35 makes the same point.",
+   "matched_thread_quote": "distinct_ids[0] isn't a stable selection when the caller passes person_id"
+  },
+  {
+   "cluster_id": "c014",
+   "summary": "imports are function-local while siblings from the same module are imported at top level",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3437,
+   "verdict": "matches-thread",
+   "matches_thread": 5,
+   "judged_severity": "low",
+   "code_citation": "posthog/api/feature_flag.py:3437",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 44,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 159,
+     "subagent": "consistency-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 225,
+     "subagent": "consistency-reviewer"
+    }
+   ],
+   "rationale": "person_existed_at_timestamp is imported inside the method while its two siblings from the same module are imported at feature_flag.py:88-91 \u2014 thread 5 exactly.",
+   "matched_thread_quote": "Inline import inside method inconsistent with top-level imports"
+  },
+  {
+   "cluster_id": "c015",
+   "summary": "f-prefixed string literals contain no placeholders (ruff F541)",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3446,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/api/feature_flag.py:3446-3448",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 48,
+     "subagent": "broad-reviewer"
+    }
+   ],
+   "rationale": "Three f-prefixed literals in the 400 body contain no placeholders \u2014 ruff F541."
+  },
+  {
+   "cluster_id": "c016",
+   "summary": "historical reconstruction uses the person's current distinct_id set against a past window",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3453,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "posthog/api/feature_flag.py:3439-3455 and posthog/models/person/point_in_time_properties.py:147",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 29,
+     "subagent": ""
+    }
+   ],
+   "rationale": "distinct_ids is the person's current identity set but the ClickHouse window is historical, so identities merged into the person after the timestamp contribute their properties to the reconstructed state."
+  },
+  {
+   "cluster_id": "c017",
+   "summary": "new 500-returning paths call only logger.exception, diverging from the established handler",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3457,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/api/feature_flag.py:3457, 3503, 3613 vs 3413",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 33,
+     "subagent": "consistency-reviewer"
+    }
+   ],
+   "rationale": "The first error path calls capture_exception; the three new 500 paths only log, so those failures never reach Sentry \u2014 inconsistent within the same handler."
+  },
+  {
+   "cluster_id": "c018",
+   "summary": "the comment calls reconstruct_flag_at_timestamp single-pass while it issues two queries",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3470,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/api/feature_flag.py:3470 and posthog/models/feature_flag/version_history.py:281-287",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 161,
+     "subagent": "knowledge-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 301,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 233,
+     "subagent": "performance-reviewer"
+    }
+   ],
+   "rationale": "The comment calls it 'the efficient single-pass method' while reconstruct_flag_at_timestamp runs find_version_at_timestamp and then reconstruct_flag_at_version, each with its own activity-log query."
+  },
+  {
+   "cluster_id": "c019",
+   "summary": "the reconstructed FeatureFlag copies only five fields, dropping the rest of the reconstruction",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3478,
+   "verdict": "matches-thread",
+   "matches_thread": 43,
+   "judged_severity": "high",
+   "code_citation": "posthog/api/feature_flag.py:3478-3490",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 2,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 113,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 137,
+     "subagent": "quick-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 197,
+     "subagent": "quick-reviewer, design-reviewer, adversarial-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 256,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 287,
+     "subagent": ""
+    }
+   ],
+   "rationale": "The in-memory FeatureFlag copies only name/active/deleted/version/filters, so bucketing_identifier, evaluation_runtime and continuity fall back to model defaults in the override payload \u2014 thread 43's blocking finding.",
+   "matched_thread_quote": "only copies name, active, deleted, version, filters from reconstructed_flag_data"
+  },
+  {
+   "cluster_id": "c020",
+   "summary": "VersionNotFound and VersionHistoryIncomplete map to 400 where the sibling path returns 404",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3492,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "posthog/api/feature_flag.py:3492-3501 vs posthog/api/feature_flag.py:2470-2479",
+   "confidence": 0.75,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 156,
+     "subagent": "consistency-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 220,
+     "subagent": "consistency-reviewer"
+    }
+   ],
+   "rationale": "The sibling reconstruction action maps VersionNotFound to 404 and VersionHistoryIncomplete to 422; the new action maps both to 400 (and uses 'error' instead of 'detail')."
+  },
+  {
+   "cluster_id": "c021",
+   "summary": "model_to_dict emits the analytics_dashboards M2M as Dashboard instances, which are not JSON-serializable",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3521,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "high",
+   "code_citation": "posthog/api/feature_flag.py:3521-3523",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 133,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 3,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 196,
+     "subagent": "broad-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 257,
+     "subagent": ""
+    }
+   ],
+   "rationale": "model_to_dict includes m2m fields and ManyToManyField.value_from_object returns model instances (django/db/models/fields/related.py:1952); analytics_dashboards (feature_flag.py:73) is not excluded, so any flag with a linked dashboard produces a non-JSON-serializable payload and the request 500s."
+  },
+  {
+   "cluster_id": "c022",
+   "summary": "claim that model_to_dict omits the id AutoField so every override fails to parse (refuted on reproduction)",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3521,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/api/feature_flag.py:3521",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "demoted",
+     "finding_index": 170,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 57,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 87,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 123,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "demoted",
+     "finding_index": 232,
+     "subagent": "knowledge-reviewer, design-reviewer, adversarial-reviewer"
+    }
+   ],
+   "rationale": "The claim's own refutation is right: AutoField keeps editable=True, so model_to_dict does emit id (verified against django/forms/models.py:108-115). Nothing actionable remains."
+  },
+  {
+   "cluster_id": "c023",
+   "summary": "deprecate_field(rollout_percentage) behavior inside model_to_dict could not be verified",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3521,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/api/feature_flag.py:3521",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 251,
+     "subagent": ""
+    }
+   ],
+   "rationale": "An explicit statement that the behavior could not be verified; it names no defect and gives a reviewer nothing to act on."
+  },
+  {
+   "cluster_id": "c024",
+   "summary": "the updated_at conversion branch is unreachable because auto_now forces editable=False",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3529,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/api/feature_flag.py:3527-3528",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 124,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 42,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 273,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 224,
+     "subagent": "design-reviewer, broad-reviewer"
+    }
+   ],
+   "rationale": "updated_at is DateTimeField(auto_now=True) (feature_flag.py:55), and Django forces editable=False for auto_now, so model_to_dict never emits it \u2014 the conversion branch is dead. Verified against django/db/models/fields/__init__.py:1368."
+  },
+  {
+   "cluster_id": "c025",
+   "summary": "logging.exception is called on the root logger with an f-string while siblings use the module logger",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3536,
+   "verdict": "matches-thread",
+   "matches_thread": 2,
+   "judged_severity": "low",
+   "code_citation": "posthog/api/feature_flag.py:3536",
+   "confidence": 0.95,
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 127,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 40,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 102,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 158,
+     "subagent": "broad-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 223,
+     "subagent": "consistency-reviewer, broad-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 271,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 303,
+     "subagent": ""
+    }
+   ],
+   "rationale": "logging.exception on the root logger with a redundant f-string interpolation of the exception, in a file that defines a module logger \u2014 thread 2 exactly.",
+   "matched_thread_quote": "Root logger used instead of module logger"
+  },
+  {
+   "cluster_id": "c026",
+   "summary": "two paths silently discard the reconstructed override",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3534,
+   "verdict": "matches-thread",
+   "matches_thread": 9,
+   "judged_severity": "high",
+   "code_citation": "posthog/api/feature_flag.py:3534-3537",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 140,
+     "subagent": "broad-reviewer"
+    }
+   ],
+   "rationale": "The except sets override_definitions = None and evaluation continues against the live flag, so a historical request silently returns current-definition results \u2014 thread 9's critical logic bug.",
+   "matched_thread_quote": "override_definitions is set to None and evaluation continues with the CURRENT flag definition"
+  },
+  {
+   "cluster_id": "c027",
+   "summary": "INTERNAL_REQUEST_TOKEN is read via raw os.getenv and declared in no setting, env file, or doc",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3547,
+   "verdict": "matches-thread",
+   "matches_thread": 8,
+   "judged_severity": "medium",
+   "code_citation": "posthog/api/feature_flag.py:3547 and rust/feature-flags/src/config.rs:609-610",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 90,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 8,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 112,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 146,
+     "subagent": "quick-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 200,
+     "subagent": "knowledge-reviewer, quick-reviewer, broad-reviewer, adversarial-reviewer, consistency-reviewer, design-reviewer, security-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 262,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 286,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 75,
+     "subagent": "consistency-reviewer"
+    }
+   ],
+   "rationale": "os.getenv(\"INTERNAL_REQUEST_TOKEN\") with no settings entry and no validation is the same deployment dependency thread 8 raises: unset or mismatched, the endpoint degrades silently.",
+   "matched_thread_quote": "if the INTERNAL_REQUEST_TOKEN environment variable is not set"
+  },
+  {
+   "cluster_id": "c028",
+   "summary": "only flags[key]['enabled'] is read, ignoring failed, errorsWhileComputingFlags and quotaLimited",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3552,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "posthog/api/feature_flag.py:3552-3567",
+   "confidence": 0.75,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 144,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 207,
+     "subagent": "adversarial-reviewer"
+    }
+   ],
+   "rationale": "Only flags[key]['enabled'] is consumed; FlagDetails.failed and the response-level errorsWhileComputingFlags/quotaLimited are ignored, so a failed or quota-limited evaluation is reported to the caller as result=False."
+  },
+  {
+   "cluster_id": "c029",
+   "summary": "geoip_disable is never set, so $geoip_* properties override supplied person properties",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3556,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "high",
+   "code_citation": "posthog/api/feature_flag.py:3539-3548 and rust/feature-flags/src/handler/properties.rs:50-56",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 230,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 82,
+     "subagent": "adversarial-reviewer"
+    }
+   ],
+   "rationale": "The caller never sets geoip_disable, and get_person_property_overrides does props.extend(geoip_props), so live geoip values for the Django server's IP overwrite the reconstructed historical $geoip_* properties."
+  },
+  {
+   "cluster_id": "c030",
+   "summary": "a four-way or-chain probes response shapes the Rust producer cannot emit",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3576,
+   "verdict": "matches-thread",
+   "matches_thread": 10,
+   "judged_severity": "medium",
+   "code_citation": "posthog/api/feature_flag.py:3577-3583",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 39,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 154,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 211,
+     "subagent": "knowledge-reviewer, design-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 272,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 299,
+     "subagent": ""
+    }
+   ],
+   "rationale": "Only flag_result['conditions'] can be produced by FlagDetails; the other three or-arms are unreachable and silently yield [] \u2014 thread 10.",
+   "matched_thread_quote": "The three fallback paths don't fire today"
+  },
+  {
+   "cluster_id": "c031",
+   "summary": "the isinstance(flag_result, bool)/str response branches are unreachable",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3588,
+   "verdict": "matches-thread",
+   "matches_thread": 11,
+   "judged_severity": "medium",
+   "code_citation": "posthog/api/feature_flag.py:3588-3596",
+   "confidence": 0.85,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 49,
+     "subagent": "broad-reviewer"
+    }
+   ],
+   "rationale": "params always carry v=2 so /flags returns the dict shape; the bool/str/else arms cannot fire. Thread 11 raises exactly this.",
+   "matched_thread_quote": "These bool, str, and else branches can't fire"
+  },
+  {
+   "cluster_id": "c032",
+   "summary": "the outbound response is validated via Serializer(data=)+is_valid, a pattern no sibling uses",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3608,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "posthog/api/feature_flag.py:3608-3609",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 226,
+     "subagent": "consistency-reviewer"
+    }
+   ],
+   "rationale": "Outbound data is round-tripped through an input serializer with raise_exception=True, so a schema mismatch aborts a successful evaluation; no sibling action in this file validates its own response this way."
+  },
+  {
+   "cluster_id": "c033",
+   "summary": "a blanket except Exception spans ~100 lines including is_valid(raise_exception=True)",
+   "file": "posthog/api/feature_flag.py",
+   "line": 3609,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "high",
+   "code_citation": "posthog/api/feature_flag.py:3510-3614",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 28,
+     "subagent": ""
+    }
+   ],
+   "rationale": "The single try spans about 100 lines and swallows the DRF ValidationError from is_valid(raise_exception=True) at 3609, converting a response-schema mismatch into an opaque 500 'Failed to evaluate flag'."
+  },
+  {
+   "cluster_id": "c034",
+   "summary": "_get_reconstructable_fields is computed at import rather than per call (dismissed)",
+   "file": "posthog/api/feature_flag.py",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/models/feature_flag/version_history.py:24-30",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 81,
+     "subagent": "performance-reviewer"
+    }
+   ],
+   "rationale": "Self-dismissed; module-level computation of the field set is the existing design and nothing is proposed."
+  },
+  {
+   "cluster_id": "c035",
+   "summary": "SQL/ClickHouse injection in the reconstruction queries (considered, ruled out)",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:140-179",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 69,
+     "subagent": "security-reviewer"
+    }
+   ],
+   "rationale": "Correctly ruled out; the queries are parameterized. No action."
+  },
+  {
+   "cluster_id": "c036",
+   "summary": "hasattr(person,'distinct_ids') is always true, so the fallback branch is dead code",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 64,
+   "verdict": "matches-thread",
+   "matches_thread": 37,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:64-76",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 26,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 153,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 215,
+     "subagent": "knowledge-reviewer, design-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 100,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 119,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 267,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 298,
+     "subagent": ""
+    }
+   ],
+   "rationale": "Person.distinct_ids is an @property, so hasattr is always true and the PersonDistinctId fallback is dead \u2014 thread 37.",
+   "matched_thread_quote": "hasattr(person, \"distinct_ids\") is always true"
+  },
+  {
+   "cluster_id": "c037",
+   "summary": "an uncapped distinct_ids list is inlined into two ClickHouse IN clauses",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 66,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:175-179, 253-258",
+   "confidence": 0.55,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 24,
+     "subagent": "performance-reviewer"
+    }
+   ],
+   "rationale": "distinct_ids is passed unbounded into two IN clauses; parameterized so not an injection, but a person with a large identity set makes both queries wide."
+  },
+  {
+   "cluster_id": "c038",
+   "summary": "a vestigial `except Exception: raise` remains after the contextual wrapping was removed",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 80,
+   "verdict": "matches-thread",
+   "matches_thread": 23,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:80-81",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 52,
+     "subagent": "consistency-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 101,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 221,
+     "subagent": "quick-reviewer, broad-reviewer, knowledge-reviewer, consistency-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 268,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 297,
+     "subagent": ""
+    }
+   ],
+   "rationale": "try/except Exception: raise is a no-op left behind after the wrapping was removed; threads 23 and 38 both say so.",
+   "matched_thread_quote": "wraps the main logic in try/except Exception: raise, which is a no-op"
+  },
+  {
+   "cluster_id": "c039",
+   "summary": "get_distinct_ids_for_person_identifier has no callers left but stays exported",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 93,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:84-96",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 46,
+     "subagent": "adversarial-reviewer"
+    }
+   ],
+   "rationale": "grep over the tree finds no caller of get_distinct_ids_for_person_identifier outside its own definition; the diff keeps and re-signatures dead code."
+  },
+  {
+   "cluster_id": "c040",
+   "summary": "return_debug_info was removed while an existing caller in person.py still passes it",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 105,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "critical",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:99-105 and posthog/api/person.py:1443-1448",
+   "confidence": 0.85,
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 91,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 199,
+     "subagent": "knowledge-reviewer, design-reviewer, adversarial-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 114,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 12,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 142,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 281,
+     "subagent": ""
+    }
+   ],
+   "rationale": "return_debug_info was deleted from the signature but posthog/api/person.py:1448 still passes return_debug_info=True, so that debug path raises TypeError."
+  },
+  {
+   "cluster_id": "c041",
+   "summary": "removing the isinstance(timestamp, datetime) guard breaks an existing test asserting its message",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 127,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "high",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:127-131 and posthog/models/person/test/test_point_in_time_properties.py:39-41",
+   "confidence": 0.85,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 13,
+     "subagent": ""
+    }
+   ],
+   "rationale": "The removed isinstance(timestamp, datetime) guard is asserted on by an existing test that expects ValueError('timestamp must be a datetime object'); that test now fails."
+  },
+  {
+   "cluster_id": "c042",
+   "summary": "timestamp-awareness validation is inconsistent across the new functions",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 107,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:127-134 vs posthog/models/feature_flag/version_history.py:18-21",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 212,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 306,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 179,
+     "subagent": ""
+    }
+   ],
+   "rationale": "find_version_at_timestamp validates tz-awareness while the two ClickHouse helpers validate nothing and call timestamp.astimezone(UTC), which silently reinterprets a naive value as local time. DRF hands over aware datetimes today, which limits the impact."
+  },
+  {
+   "cluster_id": "c043",
+   "summary": "build_person_properties_at_time runs an unbounded ClickHouse scan with no lower bound, LIMIT or cap",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 139,
+   "verdict": "matches-thread",
+   "matches_thread": 32,
+   "judged_severity": "critical",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:140-155, 175-182",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 15,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 148,
+     "subagent": "performance-reviewer"
+    }
+   ],
+   "rationale": "No lower time bound, no LIMIT, toJSONString of the whole properties blob and a double json.loads \u2014 thread 32's blocking finding, same query.",
+   "matched_thread_quote": "build_person_properties_at_time has no lower time bound and no row cap"
+  },
+  {
+   "cluster_id": "c044",
+   "summary": "claim that local_evaluation/remote_config use ClickHouseBurstRateThrottle (refuted)",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 139,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/api/feature_flag.py:3049, 3624",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "demoted",
+     "finding_index": 173,
+     "subagent": "adversarial-reviewer"
+    }
+   ],
+   "rationale": "The refutation is correct: the sibling endpoints use LocalEvaluationThrottle/RemoteConfigThrottle (BurstRateThrottle subclasses at feature_flag.py:410,432), not ClickHouseBurstRateThrottle. Nothing actionable."
+  },
+  {
+   "cluster_id": "c045",
+   "summary": "the property replay captures only $set/$set_once events, missing other property sources",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 154,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:140-155, 199-221",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 83,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 106,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 145,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 16,
+     "subagent": "adversarial-reviewer"
+    }
+   ],
+   "rationale": "The replay only applies $set/$set_once from events carrying them; $unset, person-merge property transfers and API/console property edits are invisible, so the 'properties as they existed' claim is overstated."
+  },
+  {
+   "cluster_id": "c046",
+   "summary": "ORDER BY timestamp has no secondary key, so same-timestamp events order nondeterministically",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 154,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:154, 189-221",
+   "confidence": 0.65,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 36,
+     "subagent": "adversarial-reviewer"
+    }
+   ],
+   "rationale": "ORDER BY timestamp alone leaves same-timestamp $set events in arbitrary order, so last-write-wins replay is nondeterministic across runs for identically stamped events."
+  },
+  {
+   "cluster_id": "c047",
+   "summary": "person_existed_at_timestamp defines existence as any event, diverging from the property replay",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 228,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:243-256 vs posthog/models/person/point_in_time_properties.py:149-153",
+   "confidence": 0.65,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 7,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 84,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 204,
+     "subagent": "design-reviewer, adversarial-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 240,
+     "subagent": "performance-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 180,
+     "subagent": ""
+    }
+   ],
+   "rationale": "Existence is 'any event at or before timestamp' while the replay only reads $set/$set_once events, so a person with only pageviews passes the gate and then evaluates against an empty property dict with no signal to the caller."
+  },
+  {
+   "cluster_id": "c048",
+   "summary": "person_existed_at_timestamp adds a second unbounded events scan with no event constraint",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 228,
+   "verdict": "matches-thread",
+   "matches_thread": 32,
+   "judged_severity": "medium",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:243-256",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 120,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 264,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 23,
+     "subagent": "performance-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 96,
+     "subagent": "solo-reviewer"
+    }
+   ],
+   "rationale": "A second events scan with no lower bound and no event predicate, immediately before the property query; thread 32 closes by calling this existence check a redundant round trip implied by the property query.",
+   "matched_thread_quote": "has no lower time bound and no row cap"
+  },
+  {
+   "cluster_id": "c049",
+   "summary": "person_existed_at_timestamp has no test coverage despite gating a user-visible 400",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 228,
+   "verdict": "matches-thread",
+   "matches_thread": 13,
+   "judged_severity": "medium",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:228-277 and posthog/api/feature_flag.py:3439-3451",
+   "confidence": 0.55,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 218,
+     "subagent": "test-reviewer, broad-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 166,
+     "subagent": "test-reviewer"
+    }
+   ],
+   "rationale": "person_existed_at_timestamp gates a user-visible 400 and is untested; thread 13's required-coverage list names exactly the 'person exists but not at timestamp -> 400' case.",
+   "matched_thread_quote": "Person exists but didn't exist at timestamp"
+  },
+  {
+   "cluster_id": "c050",
+   "summary": "max_execution_time is hardcoded to 10 while the sibling takes a caller-supplied value",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 228,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:271 vs posthog/models/person/point_in_time_properties.py:104",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 250,
+     "subagent": "broad-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 181,
+     "subagent": ""
+    }
+   ],
+   "rationale": "build_person_properties_at_time takes a timeout parameter; person_existed_at_timestamp hardcodes max_execution_time=10 with no way to tune it."
+  },
+  {
+   "cluster_id": "c051",
+   "summary": "SQL injection in the existence query (considered, ruled out)",
+   "file": "posthog/models/person/point_in_time_properties.py",
+   "line": 247,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/models/person/point_in_time_properties.py:247-258",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 187,
+     "subagent": "security-reviewer"
+    }
+   ],
+   "rationale": "Correctly ruled out \u2014 distinct_ids and timestamp are bound through sync_execute parameters, so there is nothing to report."
+  },
+  {
+   "cluster_id": "c052",
+   "summary": "MAX_HISTORY_ENTRIES truncation keeps the newest entries and can corrupt the returned version",
+   "file": "posthog/models/feature_flag/version_history.py",
+   "line": 220,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/feature_flag/version_history.py:223-224, 235-250",
+   "confidence": 0.45,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 72,
+     "subagent": "broad-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 243,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 95,
+     "subagent": "solo-reviewer"
+    }
+   ],
+   "rationale": "The slice does keep the newest 10k entries, which is right for most_recent_version, so 'corrupt the returned version' is not demonstrated; the real exposure is a dropped old delete leaving flag_was_deleted false."
+  },
+  {
+   "cluster_id": "c053",
+   "summary": "the new docstrings use a Google-style Raises: block against local convention",
+   "file": "posthog/models/feature_flag/version_history.py",
+   "line": 177,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/models/feature_flag/version_history.py:195-197 vs posthog/models/feature_flag/version_history.py:87-89",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 53,
+     "subagent": "consistency-reviewer"
+    }
+   ],
+   "rationale": "The new function uses a Google-style 'Raises:' block while the pre-existing function in the same module uses prose 'Raises X if ...'."
+  },
+  {
+   "cluster_id": "c054",
+   "summary": ".iterator() streaming is defeated by list(entries) eleven lines later, and the comment claims otherwise",
+   "file": "posthog/models/feature_flag/version_history.py",
+   "line": 212,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/feature_flag/version_history.py:212-226, 235",
+   "confidence": 0.85,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 21,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 71,
+     "subagent": "broad-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 126,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 162,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 222,
+     "subagent": "quick-reviewer, knowledge-reviewer, design-reviewer, performance-reviewer, adversarial-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 289,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 263,
+     "subagent": ""
+    }
+   ],
+   "rationale": "The comment claims .iterator() avoids loading all entries, then list(entries) materializes the whole (up to 10k) result set eleven lines later."
+  },
+  {
+   "cluster_id": "c055",
+   "summary": "values_list passes the redundant default flat=False",
+   "file": "posthog/models/feature_flag/version_history.py",
+   "line": 225,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/models/feature_flag/version_history.py:224",
+   "confidence": 0.85,
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 278,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 51,
+     "subagent": "consistency-reviewer"
+    }
+   ],
+   "rationale": "values_list(..., flat=False) restates the default."
+  },
+  {
+   "cluster_id": "c056",
+   "summary": "flag_was_deleted is tracked only inside the version_after guard, missing version-less delete entries",
+   "file": "posthog/models/feature_flag/version_history.py",
+   "line": 243,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "posthog/models/feature_flag/version_history.py:243-250",
+   "confidence": 0.75,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 147,
+     "subagent": "knowledge-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 94,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 27,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 58,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 203,
+     "subagent": "design-reviewer, adversarial-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 252,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 282,
+     "subagent": ""
+    }
+   ],
+   "rationale": "flag_was_deleted is only updated inside the version_after is not None branch, so a delete entry that carries no version change leaves the flag looking alive and a version is returned for a deleted flag."
+  },
+  {
+   "cluster_id": "c057",
+   "summary": "find_version_at_timestamp falls through to `return 1` when no versioned entry exists",
+   "file": "posthog/models/feature_flag/version_history.py",
+   "line": 262,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "posthog/models/feature_flag/version_history.py:260-266",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 288,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 93,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 34,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 168,
+     "subagent": "knowledge-reviewer"
+    }
+   ],
+   "rationale": "With no versioned entry at or before the timestamp and timestamp < updated_at the function silently returns 1, so a flag whose activity log lacks early version changes reconstructs as version 1 instead of raising VersionHistoryIncomplete like the sibling path does."
+  },
+  {
+   "cluster_id": "c058",
+   "summary": "the new tests mirror implementation internals (tiered down)",
+   "file": "posthog/models/feature_flag/test/test_version_history.py",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/models/feature_flag/test/test_version_history.py:279-290",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 238,
+     "subagent": "test-reviewer"
+    }
+   ],
+   "rationale": "A generic 'tests mirror internals' remark with no specific defect named; the concrete instances are covered by other claims."
+  },
+  {
+   "cluster_id": "c059",
+   "summary": "TestTimestampBasedReconstruction subclasses a concrete TestCase, re-running its whole suite",
+   "file": "posthog/models/feature_flag/test/test_version_history.py",
+   "line": 279,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/feature_flag/test/test_version_history.py:279",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 98,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 163,
+     "subagent": "test-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 172,
+     "subagent": "test-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 266,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 32,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 121,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 216,
+     "subagent": "test-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 302,
+     "subagent": ""
+    }
+   ],
+   "rationale": "TestTimestampBasedReconstruction subclasses the concrete TestReconstructFlagAtVersion (TVH:38), so every parent test method re-runs under the subclass; a mixin or explicit helper class is the fix."
+  },
+  {
+   "cluster_id": "c060",
+   "summary": "test_find_version_at_timestamp_boundary branches on the case name and discards its offset",
+   "file": "posthog/models/feature_flag/test/test_version_history.py",
+   "line": 280,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/feature_flag/test/test_version_history.py:287-290",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 277,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 164,
+     "subagent": "test-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 54,
+     "subagent": "test-reviewer"
+    }
+   ],
+   "rationale": "The parameterized case supplies timedelta(hours=1) for 'current_version' and then the body branches on _name and substitutes datetime.now(UTC), discarding the offset."
+  },
+  {
+   "cluster_id": "c061",
+   "summary": "the new tests mix real now(UTC) with retro-fitted created_at instead of freeze_time",
+   "file": "posthog/models/feature_flag/test/test_version_history.py",
+   "line": 287,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/feature_flag/test/test_version_history.py:289, posthog/models/feature_flag/test/test_version_history.py:315-321",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 56,
+     "subagent": "test-reviewer"
+    }
+   ],
+   "rationale": "The new timestamp tests mix datetime.now(UTC) with created_at plus offsets and retro-patch ActivityLog.created_at rather than freezing time; workable but fragile and hard to read."
+  },
+  {
+   "cluster_id": "c062",
+   "summary": "Python tests carry docstrings against AGENTS.md",
+   "file": "posthog/models/feature_flag/test/test_version_history.py",
+   "line": 290,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/models/feature_flag/test/test_version_history.py:307, 379, 438 and AGENTS.md:134",
+   "confidence": 0.85,
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 275,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 50,
+     "subagent": "knowledge-reviewer"
+    }
+   ],
+   "rationale": "AGENTS.md:134 says 'Python tests: do not add doc comments'; the new tests add docstrings."
+  },
+  {
+   "cluster_id": "c063",
+   "summary": "an assertion comparing three values derived from one base is tautological",
+   "file": "posthog/models/feature_flag/test/test_version_history.py",
+   "line": 341,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/models/feature_flag/test/test_version_history.py:341",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 55,
+     "subagent": "test-reviewer"
+    }
+   ],
+   "rationale": "first_update_time, between_updates_time and second_update_time are all created_at plus fixed 10/15/20-minute offsets, so the ordering assertion can never fail."
+  },
+  {
+   "cluster_id": "c064",
+   "summary": "test_find_version_at_timestamp_skips_entries_without_version never creates the version-less entry",
+   "file": "posthog/models/feature_flag/test/test_version_history.py",
+   "line": 378,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "high",
+   "code_citation": "posthog/models/feature_flag/test/test_version_history.py:398-411 and posthog/models/activity_logging/activity_log.py:818-826",
+   "confidence": 0.85,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 11,
+     "subagent": "test-reviewer"
+    }
+   ],
+   "rationale": "log_activity returns None without writing when activity=='updated' and changes is empty and force_save is false, so the version-less entry the test is named for is never created and the assertion passes vacuously."
+  },
+  {
+   "cluster_id": "c065",
+   "summary": "skip_serializing_if on the new conditions field and its wire compatibility (dismissed)",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/api/types.rs:404-406",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 61,
+     "subagent": "rust-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 247,
+     "subagent": "design-reviewer"
+    }
+   ],
+   "rationale": "Dismissed and correct \u2014 skip_serializing_if keeps the field absent for existing clients. No action."
+  },
+  {
+   "cluster_id": "c066",
+   "summary": "Eq was removed from ServiceResponse/FlagsResponse/FlagDetails, forced by an f64",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 0,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "rust/feature-flags/src/api/types.rs:194-198, 380-388",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 62,
+     "subagent": "rust-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 176,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 245,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 131,
+     "subagent": "solo-reviewer"
+    }
+   ],
+   "rationale": "ConditionAnalysis carries an f64, so Eq had to be dropped from FlagDetails, FlagsResponse and ServiceResponse; that removes a trait from public response types and any Eq-dependent comparison downstream."
+  },
+  {
+   "cluster_id": "c067",
+   "summary": "the condition index is cast to i32 (dismissed as unreachable scale)",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/api/types.rs:722",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 63,
+     "subagent": "rust-reviewer"
+    }
+   ],
+   "rationale": "index as i32 over a flag's own condition groups cannot overflow; dismissed by the claim itself."
+  },
+  {
+   "cluster_id": "c068",
+   "summary": "condition_index / conditions key-name drift across the Rust-Python boundary (dismissed)",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/api/types.rs:722 and posthog/api/feature_flag.py:1969",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 77,
+     "subagent": "adversarial-reviewer"
+    }
+   ],
+   "rationale": "Self-dismissed key-name comparison; index/conditions line up across the boundary as written."
+  },
+  {
+   "cluster_id": "c069",
+   "summary": "match_property is called per property per group (dismissed as bounded)",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/api/types.rs:600-605",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 80,
+     "subagent": "performance-reviewer"
+    }
+   ],
+   "rationale": "Self-dismissed as bounded, and it is: per-property work over a flag's own condition groups. Nothing to act on."
+  },
+  {
+   "cluster_id": "c070",
+   "summary": "create_with_analysis is a new required method on the public FromFeatureAndMatch trait",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 0,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "rust/feature-flags/src/api/types.rs:442-450",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 177,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 246,
+     "subagent": "design-reviewer"
+    }
+   ],
+   "rationale": "create_with_analysis is added as a required method on the public FromFeatureAndMatch trait rather than a defaulted one, so any external implementor breaks."
+  },
+  {
+   "cluster_id": "c071",
+   "summary": "build_condition_analysis iterates only filters.groups, missing super conditions and holdouts",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 552,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "rust/feature-flags/src/api/types.rs:552-556 and rust/feature-flags/src/flags/flag_models.rs:187-195",
+   "confidence": 0.75,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 20,
+     "subagent": "broad-reviewer"
+    }
+   ],
+   "rationale": "build_condition_analysis iterates only filters.groups; super_groups and holdout are never analyzed, so a flag gated by an early-access super condition or a holdout gets an analysis that cannot explain the result."
+  },
+  {
+   "cluster_id": "c072",
+   "summary": "operator wire strings come from format!(\"{:?}\").to_lowercase(), bypassing serde's snake_case rename",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 572,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "rust/feature-flags/src/api/types.rs:572-575",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 22,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 150,
+     "subagent": "knowledge-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 208,
+     "subagent": "rust-reviewer, design-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 128,
+     "subagent": "solo-reviewer"
+    }
+   ],
+   "rationale": "operator is emitted as format!(\"{:?}\").to_lowercase(), producing 'noticontains'/'semvergt'/'isdateexact' instead of the serde snake_case wire names declared in property_models.rs:4-34."
+  },
+  {
+   "cluster_id": "c073",
+   "summary": "PropertyType is fully qualified repeatedly instead of imported like its sibling",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 577,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/api/types.rs:577-582",
+   "confidence": 0.85,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 228,
+     "subagent": "consistency-reviewer"
+    }
+   ],
+   "rationale": "PropertyType is written as crate::properties::property_models::PropertyType four times while OperatorType is imported at types.rs:7."
+  },
+  {
+   "cluster_id": "c074",
+   "summary": "the catch-all operator-explanation arm is reachable for many real operators",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 598,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "rust/feature-flags/src/api/types.rs:598 and rust/feature-flags/src/properties/property_models.rs:6-34",
+   "confidence": 0.75,
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 104,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 229,
+     "subagent": "rust-reviewer"
+    }
+   ],
+   "rationale": "The explanation table covers 14 operators; IcontainsMulti, NotIcontainsMulti, the nine Semver variants, the three date operators and FlagEvaluatesTo all fall into the catch-all and render as e.g. \"Property 'x' semvergt ...\"."
+  },
+  {
+   "cluster_id": "c075",
+   "summary": "build_condition_analysis matches every filter as a person property regardless of prop_type",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 603,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "rust/feature-flags/src/api/types.rs:603-605",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 260,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 293,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 138,
+     "subagent": "broad-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 5,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 92,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 115,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 194,
+     "subagent": "rust-reviewer, knowledge-reviewer, design-reviewer, adversarial-reviewer"
+    }
+   ],
+   "rationale": "match_property is called with the person-property map for every filter regardless of prop_type; cohort and group filters are keyed on ids/group props and produce meaningless analysis while type is still reported as cohort/group."
+  },
+  {
+   "cluster_id": "c076",
+   "summary": "match_property(...).unwrap_or(false) discards Err, conflating failure with no-match",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 602,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "rust/feature-flags/src/api/types.rs:602 and rust/feature-flags/src/properties/property_matching.rs:429-434",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 155,
+     "subagent": "rust-reviewer"
+    }
+   ],
+   "rationale": "match_property returns Err for In/NotIn and FlagEvaluatesTo; unwrap_or(false) turns those into matched=false with a 'does not match' explanation, so cohort and flag-dependency filters are misreported as failing."
+  },
+  {
+   "cluster_id": "c077",
+   "summary": "rollout_excluded is gated on rollout_percentage == 0.0, so partial-rollout exclusion never reports",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 652,
+   "verdict": "matches-thread",
+   "matches_thread": 25,
+   "judged_severity": "high",
+   "code_citation": "rust/feature-flags/src/api/types.rs:652-676",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 6,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 89,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 110,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 139,
+     "subagent": "broad-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 193,
+     "subagent": "broad-reviewer, design-reviewer, adversarial-reviewer, knowledge-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 258,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 291,
+     "subagent": ""
+    }
+   ],
+   "rationale": "this_condition_rollout_excluded is gated on is_zero_rollout in every branch, so exclusion by any rollout below 100 is never reported. Thread 25 is the same finding.",
+   "matched_thread_quote": "rollout_excluded detection currently only flags exclusions when rollout_percentage == 0.0"
+  },
+  {
+   "cluster_id": "c078",
+   "summary": "rollout_percentage == 0.0 float equality versus an epsilon comparison (dismissed)",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 652,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/api/types.rs:652",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 129,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 64,
+     "subagent": "rust-reviewer"
+    }
+   ],
+   "rationale": "rollout_percentage == 0.0 compares against an exactly representable literal fed from JSON; an epsilon adds nothing. The claim is self-dismissed and carries no action."
+  },
+  {
+   "cluster_id": "c079",
+   "summary": "Rust sets ConditionAnalysis.matched to all_properties_matched while the serializer documents otherwise",
+   "file": "rust/feature-flags/src/api/types.rs",
+   "line": 713,
+   "verdict": "matches-thread",
+   "matches_thread": 24,
+   "judged_severity": "high",
+   "code_citation": "rust/feature-flags/src/api/types.rs:713-721 vs posthog/api/feature_flag.py:1970",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 18,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 116,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 195,
+     "subagent": "quick-reviewer, design-reviewer, knowledge-reviewer, adversarial-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 259,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 292,
+     "subagent": ""
+    }
+   ],
+   "rationale": "ConditionAnalysis.matched is set to all_properties_matched while the serializer help_text says 'whether this condition was the one that matched'. Threads 24 and 44 raise this; 24 is the earlier.",
+   "matched_thread_quote": "ConditionAnalysis.matched is populated with all_properties_matched"
+  },
+  {
+   "cluster_id": "c080",
+   "summary": "an override setting ensure_experience_continuity cannot drive unbounded writes (dismissed)",
+   "file": "rust/feature-flags/src/handler/flags.rs",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/handler/flags.rs:167-181",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 67,
+     "subagent": "adversarial-reviewer"
+    }
+   ],
+   "rationale": "Self-dismissed, and correctly: skip_writes is forced on for override/detailed paths at flags.rs:336."
+  },
+  {
+   "cluster_id": "c081",
+   "summary": "the internal bearer token shares the Authorization slot with team auth (dismissed)",
+   "file": "rust/feature-flags/src/handler/flags.rs",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/handler/authentication.rs:41-45 and rust/feature-flags/src/api/auth.rs:71-74",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 241,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 68,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 235,
+     "subagent": "design-reviewer"
+    }
+   ],
+   "rationale": "The slot really is shared (any non-phs_ bearer is treated as a personal API key) but the claim dismisses it and no failure mode on /flags is shown."
+  },
+  {
+   "cluster_id": "c082",
+   "summary": "the override loop emits up to four log lines per entry, two dumping full FlagFilters with PII",
+   "file": "rust/feature-flags/src/handler/flags.rs",
+   "line": 154,
+   "verdict": "matches-thread",
+   "matches_thread": 4,
+   "judged_severity": "medium",
+   "code_citation": "rust/feature-flags/src/handler/flags.rs:150-170",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 149,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 25,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 117,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 210,
+     "subagent": "consistency-reviewer, security-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 279,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 294,
+     "subagent": ""
+    }
+   ],
+   "rationale": "Four info-level lines per override entry, two of which Debug-dump FlagFilters; thread 4 asks for the same downgrade.",
+   "matched_thread_quote": "Each flag override emits multiple info-level log lines including full filter Debug output"
+  },
+  {
+   "cluster_id": "c083",
+   "summary": "*flag = override_flag replaces identity fields, so a colliding id can shadow another flag",
+   "file": "rust/feature-flags/src/handler/flags.rs",
+   "line": 172,
+   "verdict": "matches-thread",
+   "matches_thread": 27,
+   "judged_severity": "high",
+   "code_citation": "rust/feature-flags/src/handler/flags.rs:172",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 178,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 19,
+     "subagent": "rust-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 191,
+     "subagent": "security-reviewer, design-reviewer, adversarial-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 242,
+     "subagent": "adversarial-reviewer"
+    }
+   ],
+   "rationale": "*flag = override_flag replaces key/id/team_id with caller-supplied values and nothing validates them; threads 27 and 45 both demand the identity check, 27 being the earlier.",
+   "matched_thread_quote": "the code replaces the entire FeatureFlag struct (*flag = override_flag) without validating"
+  },
+  {
+   "cluster_id": "c084",
+   "summary": "override_flags_definitions and only_use_override_person_properties are accepted ungated on public /flags",
+   "file": "rust/feature-flags/src/handler/flags.rs",
+   "line": 152,
+   "verdict": "matches-thread",
+   "matches_thread": 1,
+   "judged_severity": "critical",
+   "code_citation": "rust/feature-flags/src/handler/mod.rs:193-199, 222",
+   "confidence": 0.9,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 189,
+     "subagent": "broad-reviewer, security-reviewer, rust-reviewer, knowledge-reviewer, quick-reviewer, design-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 254,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 284,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 0,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 86,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 107,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 134,
+     "subagent": "quick-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 190,
+     "subagent": "broad-reviewer, security-reviewer, rust-reviewer, adversarial-reviewer, knowledge-reviewer"
+    }
+   ],
+   "rationale": "override_flags_definitions and only_use_override_person_properties are forwarded from the request with no is_internal_request gate, while detailed_analysis is gated at 218 \u2014 thread 1.",
+   "matched_thread_quote": "override_flags_definitions is not gated by the internal token check"
+  },
+  {
+   "cluster_id": "c085",
+   "summary": "a caller-supplied team_id in an override crossing a tenant boundary (refuted)",
+   "file": "rust/feature-flags/src/handler/flags.rs",
+   "line": 172,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/handler/flags.rs:172",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 239,
+     "subagent": "security-reviewer, design-reviewer, adversarial-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 60,
+     "subagent": ""
+    }
+   ],
+   "rationale": "The dismissal is defensible: only flags already fetched for the authenticated team can be swapped, so no cross-tenant read occurs; the actionable half is the identity check covered elsewhere."
+  },
+  {
+   "cluster_id": "c086",
+   "summary": "the override path fails open: parse failure or missing key only warns and evaluation continues",
+   "file": "rust/feature-flags/src/handler/flags.rs",
+   "line": 172,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "high",
+   "code_citation": "rust/feature-flags/src/handler/flags.rs:167-181",
+   "confidence": 0.75,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 206,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 285,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 4,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 280,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "demoted",
+     "finding_index": 174,
+     "subagent": "knowledge-reviewer"
+    }
+   ],
+   "rationale": "A parse failure or a key that matches no flag only logs a warning and evaluation proceeds against the live definition, so a historical request silently returns current-definition results. Distinct code path from the Python-side fallback in thread 9."
+  },
+  {
+   "cluster_id": "c087",
+   "summary": "cross-request cache poisoning via *flag = override_flag (ruled out)",
+   "file": "rust/feature-flags/src/handler/flags.rs",
+   "line": 172,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/handler/flags.rs:172",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 66,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 188,
+     "subagent": "security-reviewer"
+    }
+   ],
+   "rationale": "Self-ruled-out: the flag vector is owned per request (flags.rs:143), so the mutation cannot outlive it."
+  },
+  {
+   "cluster_id": "c088",
+   "summary": "the override dropping evaluation_contexts (refuted)",
+   "file": "rust/feature-flags/src/handler/flags.rs",
+   "line": 258,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/handler/flags.rs:258",
+   "confidence": 0.45,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 59,
+     "subagent": ""
+    }
+   ],
+   "rationale": "Refuted by the claim itself; evaluation_contexts is threaded separately into fetch_and_filter. No action."
+  },
+  {
+   "cluster_id": "c089",
+   "summary": "skip_writes is computed from raw ungated query params rather than post-gate values",
+   "file": "rust/feature-flags/src/handler/flags.rs",
+   "line": 336,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "rust/feature-flags/src/handler/flags.rs:336-338 and rust/feature-flags/src/handler/mod.rs:215-222",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 74,
+     "subagent": "knowledge-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 136,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 213,
+     "subagent": "knowledge-reviewer"
+    }
+   ],
+   "rationale": "skip_writes is ORed from only_use_override_person_properties, which mod.rs forwards straight from the query string with no internal-token gate, so an unauthenticated caller can suppress experience-continuity writes."
+  },
+  {
+   "cluster_id": "c090",
+   "summary": "only_use_override_person_properties short-circuits prepare_flag_evaluation_state, skipping cohort/group prep",
+   "file": "rust/feature-flags/src/flags/flag_matching.rs",
+   "line": 827,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "high",
+   "code_citation": "rust/feature-flags/src/flags/flag_matching.rs:827 and rust/feature-flags/src/flags/flag_matching.rs:1997-2045",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 1,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 108,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 135,
+     "subagent": "adversarial-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 192,
+     "subagent": "design-reviewer, adversarial-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 253,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "critical",
+     "disposition": "reported",
+     "finding_index": 283,
+     "subagent": ""
+    }
+   ],
+   "rationale": "only_use_override_person_properties short-circuits prepare_evaluation_state_if_needed, so prepare_flag_evaluation_state \u2014 which loads cohorts, static cohort ids, group type mappings and group properties \u2014 is skipped entirely for historical evaluations, not just person properties."
+  },
+  {
+   "cluster_id": "c091",
+   "summary": "the person-property map is cloned per flag under detailed_analysis",
+   "file": "rust/feature-flags/src/flags/flag_matching.rs",
+   "line": 1004,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "rust/feature-flags/src/flags/flag_matching.rs:1004-1012",
+   "confidence": 0.7,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 237,
+     "subagent": "performance-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 182,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 79,
+     "subagent": "performance-reviewer"
+    }
+   ],
+   "rationale": "get_person_properties clones the DB map and re-merges overrides once per flag inside the per-flag insert; bounded (detailed analysis is used with flag_keys) but avoidable by hoisting."
+  },
+  {
+   "cluster_id": "c092",
+   "summary": ".ok() discards the get_person_properties error, so every property reports unmatched",
+   "file": "rust/feature-flags/src/flags/flag_matching.rs",
+   "line": 1006,
+   "verdict": "false-positive",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "rust/feature-flags/src/flags/flag_matching.rs:1691-1716",
+   "confidence": 0.65,
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "reported",
+     "finding_index": 261,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 43,
+     "subagent": "rust-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 183,
+     "subagent": ""
+    }
+   ],
+   "rationale": "get_person_properties has no error path (it ends in Ok(merged_properties)), so .ok() discards nothing; and if it were None, build_condition_analysis falls back to condition_matched, not to 'unmatched'. The asserted consequence does not hold."
+  },
+  {
+   "cluster_id": "c093",
+   "summary": "an unrelated blank-line deletion is stray noise in the diff",
+   "file": "rust/feature-flags/src/flags/flag_matching.rs",
+   "line": 1604,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/flags/flag_matching.rs:1604",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 130,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 296,
+     "subagent": ""
+    }
+   ],
+   "rationale": "The diff deletes a blank line before check_rollout with no other change in that function."
+  },
+  {
+   "cluster_id": "c094",
+   "summary": "the internal token is a single global unscoped secret with no per-team binding, expiry or rotation",
+   "file": "rust/feature-flags/src/handler/authentication.rs",
+   "line": 26,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "rust/feature-flags/src/handler/authentication.rs:26-49 and rust/feature-flags/src/config.rs:609-610",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 152,
+     "subagent": "security-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 30,
+     "subagent": "security-reviewer"
+    }
+   ],
+   "rationale": "One global INTERNAL_REQUEST_TOKEN with no team binding, expiry or rotation now gates flag-definition overrides, property overrides, detailed analysis and the billing skip \u2014 worth raising while the surface is new."
+  },
+  {
+   "cluster_id": "c095",
+   "summary": "is_internal_request, the billing skip and the override loop have no tests",
+   "file": "rust/feature-flags/src/handler/authentication.rs",
+   "line": 26,
+   "verdict": "matches-thread",
+   "matches_thread": 16,
+   "judged_severity": "medium",
+   "code_citation": "rust/feature-flags/src/handler/authentication.rs:26-49 and rust/feature-flags/src/handler/billing.rs:54-57",
+   "confidence": 0.85,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 167,
+     "subagent": "security-reviewer"
+    }
+   ],
+   "rationale": "is_internal_request has no #[cfg(test)] coverage for any of its branches, and the billing skip and override loop are equally untested \u2014 thread 16.",
+   "matched_thread_quote": "none of them are covered by tests"
+  },
+  {
+   "cluster_id": "c096",
+   "summary": "the internal secret is compared with non-constant-time String equality",
+   "file": "rust/feature-flags/src/handler/authentication.rs",
+   "line": 45,
+   "verdict": "matches-thread",
+   "matches_thread": 36,
+   "judged_severity": "low",
+   "code_citation": "rust/feature-flags/src/handler/authentication.rs:45",
+   "confidence": 0.85,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 214,
+     "subagent": "security-reviewer, rust-reviewer, quick-reviewer, broad-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 157,
+     "subagent": "security-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 31,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 105,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 270,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 300,
+     "subagent": ""
+    }
+   ],
+   "rationale": "auth_token == *internal_token is a short-circuiting byte compare; thread 36's second point is the same, and it also names the subtle crate.",
+   "matched_thread_quote": "Byte-by-byte == short-circuits on the first mismatching byte, enabling a theoretical timing attack"
+  },
+  {
+   "cluster_id": "c097",
+   "summary": "filtered_flags.clone(), a missing DefaultBodyLimit and unbounded router intake (tiered down)",
+   "file": "rust/feature-flags/src/handler/mod.rs",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/handler/mod.rs:193-200",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 184,
+     "subagent": ""
+    }
+   ],
+   "rationale": "A bundle of pre-existing router/body-limit concerns the claim itself tiers down; none is introduced or altered by this diff."
+  },
+  {
+   "cluster_id": "c098",
+   "summary": "new hunks violate default rustfmt, so cargo fmt --check fails CI",
+   "file": "rust/feature-flags/src/handler/mod.rs",
+   "line": 218,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "rust/feature-flags/src/handler/mod.rs:218 and rust/feature-flags/src/handler/billing.rs:96-97",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 37,
+     "subagent": ""
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 118,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 165,
+     "subagent": "design-reviewer"
+    },
+    {
+     "tool": "ours-bugs",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 103,
+     "subagent": "solo-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "nit",
+     "disposition": "demoted",
+     "finding_index": 231,
+     "subagent": "consistency-reviewer, knowledge-reviewer"
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 269,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 295,
+     "subagent": ""
+    }
+   ],
+   "rationale": "mod.rs:218 is 117 characters against rustfmt's default max_width of 100, and billing.rs gains a second consecutive blank line; cargo fmt --check fails on both."
+  },
+  {
+   "cluster_id": "c099",
+   "summary": "record_usage returns before any counter, metric or log fires for internal requests",
+   "file": "rust/feature-flags/src/handler/billing.rs",
+   "line": 55,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "rust/feature-flags/src/handler/billing.rs:54-57",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 73,
+     "subagent": "broad-reviewer"
+    },
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 209,
+     "subagent": "security-reviewer"
+    }
+   ],
+   "rationale": "The internal-request early return precedes has_billable_flags and every counter, so internal traffic is invisible in usage metrics rather than merely unbilled."
+  },
+  {
+   "cluster_id": "c100",
+   "summary": "the internal bearer secret is sent to a service URL that neither pins nor requires TLS",
+   "file": "posthog/api/services/flags_service.py",
+   "line": 84,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/api/services/flags_service.py:84-89 with posthog/api/services/flags_service.py:63",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 236,
+     "subagent": "security-reviewer"
+    },
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 38,
+     "subagent": "security-reviewer"
+    }
+   ],
+   "rationale": "The bearer goes to FEATURE_FLAGS_SERVICE_URL, defaulting to http://localhost:3001, over the internal-requests session; demanding TLS pinning for an in-cluster hop is not something a reviewer of this diff would act on."
+  },
+  {
+   "cluster_id": "c101",
+   "summary": "headers = {} lacks the type annotation its neighboring declaration carries",
+   "file": "posthog/api/services/flags_service.py",
+   "line": 88,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "posthog/api/services/flags_service.py:88",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "superpowers",
+     "repeat": 1,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 276,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 304,
+     "subagent": ""
+    }
+   ],
+   "rationale": "headers = {} has no annotation while the adjacent params: dict[str, str] and payload: dict[str, Any] do."
+  },
+  {
+   "cluster_id": "c102",
+   "summary": "deserialize_with on the two new query params (dismissed as correct)",
+   "file": "",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/api/types.rs:109-119",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 65,
+     "subagent": "rust-reviewer"
+    }
+   ],
+   "rationale": "Considered and found correct \u2014 deserialize_optional_bool matches the existing config/version params. No action."
+  },
+  {
+   "cluster_id": "c103",
+   "summary": "the unreachable!() in match_property for IsSet/IsNotSet is pre-existing (dismissed)",
+   "file": "",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/properties/property_matching.rs:137",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 78,
+     "subagent": "rust-reviewer"
+    }
+   ],
+   "rationale": "Pre-existing and genuinely unreachable (IsSet/IsNotSet return at property_matching.rs:75-86); dismissed by the claim."
+  },
+  {
+   "cluster_id": "c104",
+   "summary": "four new serializers were added without regenerating the OpenAPI/TypeScript artifacts",
+   "file": "frontend/src/generated/",
+   "line": 0,
+   "verdict": "false-positive",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "frontend/src/generated/core/api.schemas.ts:474-802",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-audit",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 85,
+     "subagent": ""
+    },
+    {
+     "tool": "superpowers",
+     "repeat": 2,
+     "severity": "low",
+     "disposition": "reported",
+     "finding_index": 308,
+     "subagent": ""
+    }
+   ],
+   "rationale": "The generated client covers none of the feature-flag API serializers (no FeatureFlagVersionResponse, no DependentFlag), so no regeneration is expected from adding these four."
+  },
+  {
+   "cluster_id": "c105",
+   "summary": "ReDoS via caller-supplied regex operators (ruled out)",
+   "file": "rust/feature-flags/src/properties/property_matching.rs",
+   "line": 0,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/properties/property_matching.rs:54-58",
+   "confidence": 0.5,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 186,
+     "subagent": "security-reviewer"
+    }
+   ],
+   "rationale": "Self-ruled-out ReDoS speculation; regex patterns come from flag definitions, not from the request, and no action is proposed."
+  },
+  {
+   "cluster_id": "c106",
+   "summary": "claim that not_in flips to match on an absent property (refuted)",
+   "file": "rust/feature-flags/src/properties/property_matching.rs",
+   "line": 425,
+   "verdict": "trivia",
+   "matches_thread": null,
+   "judged_severity": "nit",
+   "code_citation": "rust/feature-flags/src/properties/property_matching.rs:429-431",
+   "confidence": 0.8,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "high",
+     "disposition": "demoted",
+     "finding_index": 171,
+     "subagent": "security-reviewer"
+    }
+   ],
+   "rationale": "Correctly refuted \u2014 NotIn returns Err, which unwrap_or(false) turns into no-match, not a match. Self-cancelling."
+  },
+  {
+   "cluster_id": "c107",
+   "summary": "ActivityLog lacks a covering index including created_at (pre-existing)",
+   "file": "posthog/models/activity_logging/activity_log.py",
+   "line": 0,
+   "verdict": "valid-minor",
+   "matches_thread": null,
+   "judged_severity": "low",
+   "code_citation": "posthog/models/activity_logging/activity_log.py:136-137",
+   "confidence": 0.55,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 1,
+     "severity": "info",
+     "disposition": "demoted",
+     "finding_index": 185,
+     "subagent": ""
+    }
+   ],
+   "rationale": "The only matching index is (team_id, scope, item_id); created_at is not covered, so the new ordered/limited scan sorts in Postgres. Pre-existing, and the claim says so, but the new query is what exercises it."
+  },
+  {
+   "cluster_id": "c108",
+   "summary": "every Rust test edit sets the new context fields to inert values and passes None for overrides",
+   "file": "rust/feature-flags/src/handler/tests.rs",
+   "line": 0,
+   "verdict": "valid-other",
+   "matches_thread": null,
+   "judged_severity": "medium",
+   "code_citation": "rust/feature-flags/src/handler/tests.rs:218-224, 1194-1198",
+   "confidence": 0.6,
+   "reported_by": [
+    {
+     "tool": "ours-review",
+     "repeat": 2,
+     "severity": "medium",
+     "disposition": "reported",
+     "finding_index": 219,
+     "subagent": "test-reviewer, security-reviewer, broad-reviewer"
+    }
+   ],
+   "verdict_previous": "matches-thread",
+   "matches_thread_previous": 15,
+   "thread_credit_note": "Both passes independently credited c108 to T15, and the identical correction is applied to both: T15's exclusion was confirmed by two independent matchability readings, and no span of it corresponds. Thread credit removed, substance class preserved.",
+   "rationale": "Every touched test sets detailed_analysis/only_use_override to false and passes None for the override argument, so no test exercises the new behavior \u2014 thread 15 asks for exactly the missing case."
+  }
+ ],
+ "pr_created_at": "2026-04-17T19:54:46Z",
+ "grading_pass": 2
+}

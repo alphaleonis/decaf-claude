@@ -1,0 +1,102 @@
+[
+ {
+  "thread_index": 0,
+  "matchable_at_checkpoint": true,
+  "reason": "store.go:83-84 are `// Only meaningful when EnableFolderSupport=true.` and `RequireFolder bool` \u2014 the folder-support flag the FYI is about."
+ },
+ {
+  "thread_index": 1,
+  "matchable_at_checkpoint": true,
+  "reason": "server.go:162 is `if opts.AccessClient != nil {` guarding the allow-list shortcut \u2014 the condition the question asks when it triggers."
+ },
+ {
+  "thread_index": 2,
+  "matchable_at_checkpoint": true,
+  "reason": "Both functions the rename proposes exist: `checkPermissionLegacy` at pkg/services/authz/rbac/service.go:919 and `checkPermissionDualCheck` at pkg/services/authz/rbac/service.go:975, and the doc comment listing them is at :879."
+ },
+ {
+  "thread_index": 3,
+  "matchable_at_checkpoint": true,
+  "reason": "The capabilities path it calls confusing is at pkg/services/authz/rbac/service.go:983-985 \u2014 `if req.Name == \"\" && req.Verb != utils.VerbCreate { return hasStackRole, nil }` under the \"Capabilities probe\" comment."
+ },
+ {
+  "thread_index": 4,
+  "matchable_at_checkpoint": true,
+  "reason": "The mapper-miss debug branch is at pkg/services/authz/rbac/service.go:907 (`ctxLogger.Debug(\"checkPermission: mapper miss and no dual-check path\", ...)`) \u2014 the part the comment asks to remove."
+ },
+ {
+  "thread_index": 5,
+  "matchable_at_checkpoint": true,
+  "reason": "The feature-toggle condition is at pkg/services/authz/rbac/service.go:899: `if s.settings.FolderScopedAuthzForCRDs && strings.HasSuffix(req.Group, \".ext.grafana.app\")`."
+ },
+ {
+  "thread_index": 6,
+  "matchable_at_checkpoint": true,
+  "reason": "The cluster-scoped branch the question is about is at pkg/services/authz/rbac/service.go:993-995 \u2014 `if req.ParentFolder == \"\" { return true, nil }` under the RequireFolder=false comment."
+ },
+ {
+  "thread_index": 7,
+  "matchable_at_checkpoint": true,
+  "reason": "The suggestion's before-side is verbatim at pkg/services/authz/rbac/service.go:978: `hasStackRole := scopeMap[\"*\"] || scopeMap[\"\"]`."
+ },
+ {
+  "thread_index": 8,
+  "matchable_at_checkpoint": true,
+  "reason": "`dualCheckFolderAuthz` and its `switch verb` over Get/List/Watch are at pkg/services/authz/rbac/service.go:1044-1051, and the capabilities check it refers to \"above\" is at :983. Both present."
+ },
+ {
+  "thread_index": 9,
+  "matchable_at_checkpoint": true,
+  "reason": "registry.go:1231 declares the `folderScopedAuthzForCRDs` feature toggle the comment questions."
+ },
+ {
+  "thread_index": 10,
+  "matchable_at_checkpoint": true,
+  "reason": "The name-empty flow-through it proposes changing is at pkg/services/authz/rbac/service.go:983-985. Present, and the WIP marker does not change that."
+ },
+ {
+  "thread_index": 11,
+  "matchable_at_checkpoint": true,
+  "reason": "The suggested change rewrites `dualCheckFolderAuthz`, declared at pkg/services/authz/rbac/service.go:1044 and closing at :1051."
+ },
+ {
+  "thread_index": 12,
+  "matchable_at_checkpoint": true,
+  "reason": "The subresource-inheritance consequence is a property of `dualCheckFolderAuthz` at pkg/services/authz/rbac/service.go:1044-1051, which is present."
+ },
+ {
+  "thread_index": 13,
+  "matchable_at_checkpoint": true,
+  "reason": "Same function at pkg/services/authz/rbac/service.go:1044; the GlobalRole removal it proposes acts on the action/action-set mapping there."
+ },
+ {
+  "thread_index": 14,
+  "matchable_at_checkpoint": true,
+  "reason": "The suggestion's before-side is at pkg/services/authz/rbac/service.go:1015: `if folderScopeMap[\"*\"] || folderScopeMap[\"\"] { return true, nil }`, under the wildcard-folder-grant comment."
+ },
+ {
+  "thread_index": 15,
+  "matchable_at_checkpoint": true,
+  "reason": "The function whose tests it asks for, `checkPermissionDualCheck`, is at pkg/services/authz/rbac/service.go:975."
+ },
+ {
+  "thread_index": 16,
+  "matchable_at_checkpoint": true,
+  "reason": "access.go:205-206 are `if c.disableAllowList && strings.HasSuffix(group, \".ext.grafana.app\")` \u2014 both the flag and the suffix check the question contrasts."
+ },
+ {
+  "thread_index": 17,
+  "matchable_at_checkpoint": true,
+  "reason": "The call it says does not use the cache is at pkg/services/authz/rbac/service.go:1007 (`s.getIdentityPermissions(...)`), and the cached variant it names, `getCachedIdentityPermissions`, exists at :645. Both present."
+ },
+ {
+  "thread_index": 18,
+  "matchable_at_checkpoint": false,
+  "reason": "The whole question is about a comment reading \"A specific object was named but its parent folder is unknown. Without a folder the only thing that can authorize the request is a wildcard folder grant\". grep for \"A specific object was named\" across pkg/services/authz/rbac/service.go returns ZERO hits at the checkpoint. The checkpoint handles an empty ParentFolder differently \u2014 :993-995 returns true outright \u2014 so neither the comment nor the behavior it describes exists to have a use case questioned."
+ },
+ {
+  "thread_index": 20,
+  "matchable_at_checkpoint": false,
+  "reason": "\"The comment is not true anymore\" reviews the same absent comment as T18, and quotes it as the before-side of its suggested change. A suggestion cannot rewrite text that is not there: 0 hits for \"A specific object was named\" at the checkpoint. Line 980 holds an unrelated \"Capabilities probe\" comment."
+ }
+]

@@ -1,0 +1,285 @@
+[
+ {
+  "thread_index": 0,
+  "path": "pkg/storage/unified/apistore/store.go",
+  "line": 84,
+  "body": "FYI..  we have a LONG running attempt to make everything that has folder support use it: #124623\nSo this really means it can not create in the \"general\"/\"root\" folder.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 1,
+  "path": "pkg/storage/unified/sql/server.go",
+  "line": 162,
+  "body": "when is this condition triggered?  Is this the normal starup in OSS?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 2,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 879,
+  "body": "Naming is hard.\nHow about:\n\ncheckPermissionLegacy -> checkPermissionScoped or  checkPermissionWithMapping\ncheckPermissionDualCheck -> checkPermissionStackRoleAndFolder or checkPermissionWithFolderAuthz",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 3,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 984,
+  "body": "Do we need to support the capabilites path, I find this path confusing ?  My understanding is that this is useful for List or Watch from the authorizer, maybe subresources ?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 4,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 907,
+  "body": "From @gamab :\nRemove this part, make checkPermissionDualCheck default fallthrough for mapper-miss.\nIn that case add alerting to legacy mapper",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 5,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 899,
+  "body": "From @gamab :\nRemove feature toggle setting, make it a default",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 6,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 994,
+  "body": "Shall we also ensure that the Namespace field is empty for Cluster-scoped resources ?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 7,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 978,
+  "body": "@gamab (if we need to support resources outside folders, we will need to re-intro the wildcard\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n            \thasStackRole := scopeMap[\"*\"] || scopeMap[\"\"]\n          \n          \n            \n            \thasStackRole := scopeMap[\"\"]",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [
+    "] || scopeMap["
+   ],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 8,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 1046,
+  "body": "2 things:\n\nSome of the actions won't have the Name field set and be caught on the capabilities check above (list/watch/deletecollection). I am not sure the logic is correct here.\nDo we need to support VerbGetPermissions / VerbSetPermissions ? -> requiring admin",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 9,
+  "path": "pkg/services/featuremgmt/registry.go",
+  "line": 1231,
+  "body": "Not sure we need to FT ?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 10,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 985,
+  "body": "WIP From @gamab :\nCan name be empty, but folder set, if we want to test capabilities for a specific folder?\nSo in this case(we also need to check that folder is empty), else let it flow-through",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 11,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 1051,
+  "body": "Suggested change\n      \n    \n    \n      \n          \n            \n            func dualCheckFolderAuthz(verb string) (string, []string) {\n          \n          \n            \n            \tswitch verb {\n          \n          \n            \n            \tcase utils.VerbGet, utils.VerbList, utils.VerbWatch:\n          \n          \n            \n            \t\treturn \"folders:read\", []string{\"folders:view\", \"folders:edit\", \"folders:admin\"}\n          \n          \n            \n            \tdefault:\n          \n          \n            \n            \t\treturn \"folders:write\", []string{\"folders:edit\", \"folders:admin\"}\n          \n          \n            \n            \t}\n          \n          \n            \n            }\n          \n          \n            \n            func dualCheckFolderAuthz(verb string) (string, []string) {\n          \n          \n            \n            \tswitch verb {\n          \n          \n            \n            \tcase utils.VerbGet, utils.VerbList, utils.VerbWatch:\n          \n          \n            \n            \t\treturn \"folders:read\", []string{\"folders:view\", \"folders:edit\", \"folders:admin\"}\n          \n          \n            \n            \tcase utils.VerbCreate, utils.VerbUpdate, utils.VerbPatch, utils.VerbDelete\n          \n          \n            \n            \t\treturn \"folders:write\", []string{\"folders:edit\", \"folders:admin\"}\n          \n          \n            \n            \tdefault:\n          \n          \n            \n            \t\treturn \"folders.permissions:write\", []string{\"folders:admin\"}\n          \n          \n            \n            \t}\n          \n          \n            \n            }",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [
+    "folders:read",
+    "folders:view",
+    "folders:edit",
+    "folders:admin",
+    "folders:write"
+   ],
+   "quoted_tokens_absent": [
+    "folders.permissions:write"
+   ],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 12,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 1044,
+  "body": "Comment: This will also mean that subresource will also inherit folders permissions the same way.\nex: workflow.grafana.app/workflows/execute:create ->  \"folders:write\", \"folders:edit\", \"folders:admin\"",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [
+    "folders:write",
+    "folders:edit",
+    "folders:admin"
+   ],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 13,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 1044,
+  "body": "From @gamab ,  we can also remove the GlobalRole (essentially making Admin == Edit in custom roles)\n{\n        \"action\": \"customcrdtest.ext.grafana.app/widgets:get_permissions\",\n        \"scope\": \"customcrdtest.ext.grafana.app/widgets:*\"\n      },\n      {\n        \"action\": \"customcrdtest.ext.grafana.app/widgets:set_permissions\",\n        \"scope\": \"customcrdtest.ext.grafana.app/widgets:*\"\n      },",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [
+    "customcrdtest.ext.grafana.app/widgets:get_permissions",
+    "customcrdtest.ext.grafana.app/widgets:*",
+    "customcrdtest.ext.grafana.app/widgets:set_permissions"
+   ],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 14,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 1017,
+  "body": "Empty scope map, means the user has the action, unscoped. In the case at hand, we want to know if the user has the action on the folder or its parents\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n            \tif folderScopeMap[\"*\"] || folderScopeMap[\"\"] {\n          \n          \n            \n            \t\treturn true, nil\n          \n          \n            \n            \t}\n          \n          \n            \n            \tif folderScopeMap[\"*\"] {\n          \n          \n            \n            \t\treturn true, nil\n          \n          \n            \n            \t}",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [
+    "] || folderScopeMap["
+   ],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 15,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 975,
+  "body": "Let's add tests to check resource and subresource, no name, no folder, etc...",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 16,
+  "path": "pkg/storage/unified/resource/access.go",
+  "line": 206,
+  "body": "Is this actually needed disableAllowList as we do a suffix check?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 17,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 1007,
+  "body": "I don't think that one uses the cache to get users permissions.\ngetCachedIdentityPermissions",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 18,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 976,
+  "body": "Do we have a use case for this?\n\t// A specific object was named but its parent folder is unknown. Without a\n\t// folder the only thing that can authorize the request is a wildcard folder\n\t// grant (handled above).\n\nIf we don't I'd check the name up front, it feels safer and saves a round trip to the DB.\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n            \tif req.ParentFolder == \"\" && req.Name == \"\" {\n          \n          \n            \n            \t\tctxLogger.Debug(\"folderAuthz: no parent folder provided, capabilities check\")\n          \n          \n            \n            \t\treturn true, nil\n          \n          \n            \n            \t}\n          \n          \n            \n            \tif req.ParentFolder == \"\" {\n          \n          \n            \n            \t\treq.Name != \"\" {\n          \n          \n            \n            \t\t\treturn false, fmt.Errorf(\"k8s authorizer supports folder level not resource level authorization\")\n          \n          \n            \n            \t\t}\n          \n          \n            \n            \t\tctxLogger.Debug(\"folderAuthz: no parent folder provided, capabilities check\")\n          \n          \n            \n            \t\treturn true, nil\n          \n          \n            \n            \t}",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [
+    "&& req.Name ==",
+    "folderAuthz: no parent folder provided, capabilities check"
+   ],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 20,
+  "path": "pkg/services/authz/rbac/service.go",
+  "line": 980,
+  "body": "The comment is not true anymore. But the error is self documented\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n            \t// A specific object was named but its parent folder is unknown. Without a\n          \n          \n            \n            \t// folder the only thing that can authorize the request is a wildcard folder\n          \n          \n            \n            \t// grant (handled above).",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ }
+]

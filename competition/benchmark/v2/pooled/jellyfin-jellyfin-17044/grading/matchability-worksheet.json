@@ -1,0 +1,112 @@
+[
+ {
+  "thread_index": 0,
+  "path": "Jellyfin.Server.Implementations/Item/BaseItemRepository.TranslateQuery.cs",
+  "line": 549,
+  "body": "typo?\n  \n    \n      \n        Suggested change\n      \n    \n    \n      \n          \n            \n                            var resumableMovieIds = context.BaseItems\n          \n          \n            \n                            var resumableSeriesIds = context.BaseItems",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 1,
+  "path": "Emby.Server.Implementations/Session/SessionManager.cs",
+  "line": 1183,
+  "body": "Finishing one version wipes the resume point of the others \u2014 contradicting the comment above.\nPropagatePlayedState(user, true) relies on the default resetPosition: true, which sets PlaybackPositionTicks = 0 on every sibling version. But the comment on line 1180 says \"positions stay per-version.\"\nScenario: user is 30 min into version B, then watches version A to completion \u2192 OnPlaybackStopped fires for A, PropagatePlayedState zeroes B's PlaybackPositionTicks, destroying B's in-progress resume point. (The same call in OnPlaybackProgress at line 985 has the same effect.)\nEither pass resetPosition: false here, or fix the comment \u2014 but wiping a sibling's distinct resume point looks unintended given the PR's per-version-resume goal.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [
+    "positions stay per-version."
+   ],
+   "quoted_tokens_absent": [
+    "s PlaybackPositionTicks, destroying B"
+   ],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 2,
+  "path": "Emby.Server.Implementations/Session/SessionManager.cs",
+  "line": 989,
+  "body": "This block is dead code \u2014 the intended cross-version stream-selection cleanup never runs.\nUpdatePlaybackSettings(user, info, data) is called unconditionally earlier in OnPlaybackProgress and already nulls data.AudioStreamIndex / data.SubtitleStreamIndex in memory when !RememberAudioSelections / !RememberSubtitleSelections. So by the time this guard evaluates (!user.RememberAudioSelections && data.AudioStreamIndex.HasValue) || \u2026, both HasValue checks are already false for exactly the users the condition targets.\nResult: ResetPlaybackStreamSelections never fires. If the goal is to clear stored selections across all versions/keys, this needs to key off something other than the already-nulled in-memory data (e.g. the incoming info values, or the persisted rows).",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 4,
+  "path": "Jellyfin.Server.Implementations/Item/OrderMapper.cs",
+  "line": 37,
+  "body": "Narrowing this arm to not null makes DatePlayed silently sort by name for a null user.\nThe arm changed from (ItemSortBy.DatePlayed, _) to (ItemSortBy.DatePlayed, not null), and there is no (ItemSortBy.DatePlayed, null) arm \u2014 so a null-user query falls through to the default _ => e => e.SortName and returns results in alphabetical order instead of by play date, with no error. Note SeriesDatePlayed has both a not null and a null arm, so this is inconsistent.\nReachable via MoviesController.GetMovieRecommendations, which builds an InternalItemsQuery(user) with a possibly-null user and OrderBy = DatePlayed. Consider adding an explicit null-user arm mirroring SeriesDatePlayed.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 5,
+  "path": "MediaBrowser.Controller/Library/VersionResumeData.cs",
+  "line": 22,
+  "body": "(plausible) An item can end up marked Played=true while still carrying a partial progress bar.\nApplyTo sets dto.Played and bumps dto.LastPlayedDate, but never clears dto.PlaybackPositionTicks / dto.PlayedPercentage, which come from the primary's own user data. If the primary was partially watched and an alternate version is later finished, the DTO carries Played=true alongside a non-zero position/percentage \u2014 a \"watched and resumable\" state.\nVersionResumeDataTests.ApplyTo_PropagatesCompletionButNotPosition actually asserts exactly this (Played=true with PlaybackPositionTicks=1, PlayedPercentage=1.0), so the inconsistent DTO is enshrined as intended. Whether the client then renders both a checkmark and a resume bar is UI-dependent \u2014 worth confirming that's acceptable, and if not, clearing the position/percentage when completion is propagated.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 6,
+  "path": "Jellyfin.Server.Implementations/Item/BaseItemRepository.TranslateQuery.cs",
+  "line": 562,
+  "body": "(plausible) Duplicate resume entries when two versions share an identical LastPlayedDate.\nThe version-dedup uses a strict >: a row e is dropped only if a sibling has a strictly greater Max(LastPlayedDate). If two in-progress versions of the same item have the exact same LastPlayedDate, neither is strictly greater, so both survive \u2014 and since presentation-key grouping is disabled for resume queries, nothing collapses them, so the item shows up twice in Continue Watching (and inflates TotalRecordCount).\nNormal playback stamps distinct DateTime.UtcNow ticks so this is uncommon, but it's reachable via the UpdateUserItemData API (arbitrary LastPlayedDate, no reset/propagation) or an import/migration. A tie-break on Id (e.g. > || (== && s.Id < e.Id)) would make the selection deterministic.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 7,
+  "path": "Emby.Server.Implementations/Dto/DtoService.cs",
+  "line": 1276,
+  "body": "(efficiency) This turns MediaSourceCount from a cached property read into per-item DB/library work on every list render.\nFor every video DTO with a non-null user, video.GetAllVersions() \u2192 GetAllItemsForMediaSources() issues uncached GetLinkedAlternateVersions / GetLocalAlternateVersionIds / GetItemById queries, and IsVisibleStandalone(user) walks parents + collection folders per version. On a 100-item library page that's hundreds of round-trips where the old video.MediaSourceCount was a single cached value.\nSince the overwhelming majority of items have no alternate versions, short-circuit first \u2014 e.g. keep video.MediaSourceCount and only do the per-user visibility filtering when the item actually has more than one version (LinkedAlternateVersions.Length > 0 || HasLocalAlternateVersions).",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 8,
+  "path": "Emby.Server.Implementations/Library/MediaSourceManager.cs",
+  "line": 460,
+  "body": "(duplication / altitude) The \"pick the most-recently-played version by LastPlayedDate\" scan is re-implemented four times in this PR, with divergent predicates:\n\nUserDataManager.GetResumeUserDataBatch \u2014 PlaybackPositionTicks > 0 || Played\nhere (SetAlternateVersionResumeStates) \u2014 PlaybackPositionTicks > 0 only (line 460)\nTVSeriesManager.GetMostRecentlyPlayedVersion \u2014 per-version GetUserData (an N+1)\nthe SQL Max(LastPlayedDate) subquery in BaseItemRepository.TranslateQuery\n\nBecause the predicates already differ, the resume tile, the media-source default, and Next Up can disagree about which version is \"current,\" and any future change has to be made in all four spots. Consider making IUserDataManager.GetResumeUserData the single owner (extended to return the winning version id) and having the other C# call sites delegate to it; the SQL form is the only one that legitimately needs its own implementation.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [
+    "pick the most-recently-played version by LastPlayedDate"
+   ],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ }
+]

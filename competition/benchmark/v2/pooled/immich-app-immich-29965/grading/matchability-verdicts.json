@@ -1,0 +1,97 @@
+[
+ {
+  "thread_index": 0,
+  "matchable_at_checkpoint": true,
+  "reason": "LocalImagesImpl.kt:37 is `inline fun ImageDecoder.Source.decodeBitmap(target: Size = Size(0, 0), exactSize: Boolean = false)` \u2014 the `exactSize` parameter the question is about."
+ },
+ {
+  "thread_index": 1,
+  "matchable_at_checkpoint": true,
+  "reason": "RemoteImagesImpl.swift:133 is `private static func targetMaxPixelSize(imageSource: CGImageSource, width: Int64, height: Int64) -> Int?` \u2014 the function that receives the width and height the comment says to take the max of."
+ },
+ {
+  "thread_index": 2,
+  "matchable_at_checkpoint": true,
+  "reason": "remote_image_provider.dart:79 is `this.thumbnailSize,` in the constructor; the hashCode/== overrides the comment proposes changing are in the same class at the checkpoint."
+ },
+ {
+  "thread_index": 3,
+  "matchable_at_checkpoint": true,
+  "reason": "image_provider.dart:191-192 are `Size size = kThumbnailResolution,` and `Size? remoteSize,` side by side \u2014 exactly the pair the question asks about."
+ },
+ {
+  "thread_index": 4,
+  "matchable_at_checkpoint": true,
+  "reason": "RemoteImagesImpl.swift:143 is `let sourceWidth = (5...8).contains(orientation) ? pixelHeight...` \u2014 the literal `5...8` range the nit names."
+ },
+ {
+  "thread_index": 5,
+  "matchable_at_checkpoint": true,
+  "reason": "The rename target, `targetMaxPixelSize`, is declared at RemoteImagesImpl.swift:133."
+ },
+ {
+  "thread_index": 6,
+  "matchable_at_checkpoint": true,
+  "reason": "image_request.dart:104-106 are `(int, int)? _targetSize(int width, int height, ui.Size size) {` and its `if (size.width <= 0 || size.height <= 0) return null;` guard \u2014 the block the comment does not understand."
+ },
+ {
+  "thread_index": 7,
+  "matchable_at_checkpoint": true,
+  "reason": "remote_image_request.dart:38 passes `width: 0, height: 0` to `remoteImageApi.requestImage` \u2014 the gating-on-0 the comment objects to, verbatim."
+ },
+ {
+  "thread_index": 8,
+  "matchable_at_checkpoint": true,
+  "reason": "asset_viewer.page.dart:78 declares `static void _setAsset(...)` and line 79 calls the public `setAsset(...)` on the notifier \u2014 the same-name public/private pair the nit describes."
+ },
+ {
+  "thread_index": 9,
+  "matchable_at_checkpoint": true,
+  "reason": "constants.dart:15 is `Size getThumbnailResolution(Size size, double pixelRatio) {` \u2014 the helper the comment calls unnecessary."
+ },
+ {
+  "thread_index": 10,
+  "matchable_at_checkpoint": true,
+  "reason": "asset_viewer.provider.dart:109 is `initialThumbnail: thumbnailSize == null ? null : (tag: asset.heroTag, size: thumbnailSize),` \u2014 the `asset.heroTag` store the question names, verbatim."
+ },
+ {
+  "thread_index": 11,
+  "matchable_at_checkpoint": true,
+  "reason": "segment.model.dart:266 is `final remoteSize = resolution == Size.zero ? null : resolution;` after a `getThumbnailResolution(...)` call \u2014 the Size.zero-instead-of-null shape the comment objects to."
+ },
+ {
+  "thread_index": 12,
+  "matchable_at_checkpoint": true,
+  "reason": "LocalImagesImpl.kt:48-49 are the `max(1, ceil(info.size.width * scale).toInt())` calls the comment proposes replacing with a non-zero check."
+ },
+ {
+  "thread_index": 13,
+  "matchable_at_checkpoint": true,
+  "reason": "RemoteImagesImpl.swift:31 is `kCGImageSourceShouldCache: false,` inside `decodeOptions` \u2014 the boolean literal the one-word comment queries."
+ },
+ {
+  "thread_index": 14,
+  "matchable_at_checkpoint": true,
+  "reason": "image_request.dart:106 is `if (size.width <= 0 || size.height <= 0) {` \u2014 the guard the question is about, present verbatim."
+ },
+ {
+  "thread_index": 15,
+  "matchable_at_checkpoint": true,
+  "reason": "image_request.dart:111-112 are `final scale = math.min(1.0, fillScale);` then `if (scale >= 1) { return null; }` \u2014 exactly the redundant min-then-compare the comment describes."
+ },
+ {
+  "thread_index": 16,
+  "matchable_at_checkpoint": true,
+  "reason": "remote_image_provider.dart:18 declares `this.size = Size.zero` in `RemoteImageProvider({...})` \u2014 the parameter the one-word rename suggestion targets."
+ },
+ {
+  "thread_index": 17,
+  "matchable_at_checkpoint": true,
+  "reason": "thumbnail.widget.dart:30 passes `size: size` into `RemoteImageProvider.thumbnail(...)` \u2014 same rename, same parameter."
+ },
+ {
+  "thread_index": 18,
+  "matchable_at_checkpoint": true,
+  "reason": "remote_image_request.dart:7 declares `this.size = ui.Size.zero` in `RemoteImageRequest({...})` \u2014 same rename, same parameter."
+ }
+]

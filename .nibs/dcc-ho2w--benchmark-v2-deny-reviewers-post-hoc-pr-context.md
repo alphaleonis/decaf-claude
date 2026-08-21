@@ -6,7 +6,7 @@ status: in-progress
 type: milestone
 priority: critical
 created_at: 2026-08-10T12:32:37Z
-updated_at: 2026-08-20T19:49:02Z
+updated_at: 2026-08-21T06:52:12Z
 order: zzzzV
 ---
 
@@ -267,18 +267,33 @@ produce a sensible verdict.
 
 ## Current Focus
 
-Completed dcc-qfr5: Reconciled — implemented, and verified rather than assumed.
+Completed dcc-tvk8: All three items done.
 
-`score_pooled.py` groups duplicate threads and computes `human_groups` and `bot_groups`
-independently over the same group ids, so a mixed pair is in BOTH sets and crediting either member
-credits both axes. Covered by a passing test,
-`t_crediting_either_duplicate_gives_the_same_answer`.
+**The readout** (`analysis/POSTHOG-55149-RESULTS.md`) leads with the in-window status on both vintage
+keys and the per-subject-only restriction, and carries everything the nib specified. Precision is
+published as a band rather than a point, per dcc-sfny — which required building and scoring the
+second-pass metrics the subject never had. The band is narrow for three arms and 0.80-0.90 for
+`ours-bugs`, and it exposed a ranking that does not survive the two passes: bugs ties audit in one
+and beats it in the other, so that ordering is not reportable. Recall is identical across both
+passes for every arm. Two incidental findings: pass 2 independently made the same c108 -> T15 loose
+match pass 1 did, and nothing was actually missed on this subject — T16 was found and demoted by
+every arm that found it.
 
-Measured across the six scored subjects: PostHog-55149 has three duplicate groups and all three are
-bot+human pairs ([23,38], [24,44], [27,45]) — exactly the shifted-hit pattern this nib was opened
-for, now landing on both axes. grafana#117615 has one group and it is bot+bot, so no axis moves.
-The other four subjects have none. The "check the other five for the same pattern" item is therefore
-answered: the pattern exists on one subject, and it is the one that reported it.
+**The annotation** covered 7 active subjects and 126 threads, not the 6 the nib listed — four of
+those had been retired by dcc-ryo4 and five new subjects had arrived. Every active cell is now
+annotated, with just 2 exclusions corpus-wide from this pass, both reviewing the same comment that
+does not exist anywhere in the repo at the checkpoint. The active grid holds 139 matchable human
+threads against the 30 the census counted. Seven of the twelve were annotated before any cell has
+run on them, which is the only point at which the blind is structurally guaranteed rather than
+trusted.
+
+**The five non-active fixtures are deferred, not skipped** — reason recorded in a
+`matchability_deferred` block on each, with the condition that they be annotated before the
+memorization probe runs.
+
+Carried forward: both readings of grafana#125982's two exclusions share an author, so dcc-fm8s's
+independence guarantee is not fully met for those two. Stamped as such in the data and flagged in
+the write-up rather than papered over.
 
 ## Key Decisions
 
