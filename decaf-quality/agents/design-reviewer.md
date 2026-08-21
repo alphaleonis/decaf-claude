@@ -40,6 +40,16 @@ You review what **is built**, not what **should be built**.
 
 ---
 
+
+## Review reach
+
+Absence findings — *"there is no test for this"*, *"this decision is undocumented"*, *"this risk is
+unmitigated"* — are governed by the run's `reach` axis, which the orchestrator states in your
+prompt. Under `narrow` do not hunt for them at all; under `norm` report only absences the change
+itself creates; under `wide` survey the touched surface. Defects in code that exists are unaffected
+— reach governs what you go looking for, not how hard you look at what is there. If your prompt
+carries no reach directive, assume `norm`.
+
 ## Review Method
 
 ### PHASE 1: CONTEXT DISCOVERY

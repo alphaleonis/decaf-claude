@@ -76,7 +76,7 @@ Agreement between independent reviewers is evidence that a finding is real. When
 
 ## Confidence Gate
 
-Applied **after** deduplication and agreement promotion (so anchor-50 findings get their chance to be promoted first):
+Applied **after** deduplication and agreement promotion (so anchor-50 findings get their chance to be promoted first). In the skill's pipeline the Step 4.95 evidence screen tiers most clusters before this gate ever runs; the gate applies only to clusters the screen did not score — a skipped screen, or a finding promoted in Step 5.5 — and the screen and this gate never both demote the same cluster (the screen's decision stands):
 
 - **Suppress** findings below anchor 75.
 - **Critical exception:** Critical findings at anchor 50 survive the gate — critical-but-uncertain issues must not be silently dropped. Mark them clearly as anchor 50 in the report.
@@ -143,21 +143,27 @@ Standardize categories across agents:
    d. pre_existing: true only if ALL finders marked it pre-existing
 5. Apply the confidence gate (suppress < 75; Critical at 50 survives; the
    deterministic-claim safety net re-anchors quotable-fact findings to 100
-   so they are kept, not suppressed)
+   so they are kept, not suppressed) — only to clusters the Step 4.95
+   screen did not already tier; the screen's decision stands
 6. Separate pre-existing findings into the Pre-existing Issues section
    (informational; excluded from verdict and Summary counts)
 7. Route minor findings to their buckets (Consistency / Testing Gaps /
    Residual Risks; Low/Medium, reported and counted in the Summary Minor
    row but not verdict-driving). A false-positive test is a defect, not a
    Testing Gap — Medium+ stays primary, Low goes to Consistency
-8. Run the validation wave (skill Step 5.6, skipped in low mode). Validate
-   where marginal value is highest — every Critical, every single-finder
-   primary, and any finding carrying dissenting severities — but **skip** a
-   dedicated validator for a non-Critical primary already corroborated by 2+
-   independent finders (≥1 specialist) at anchor 100; its corroboration is
-   the verification. Budget-capped at 15; minor and pre-existing findings are
-   not validated. Refuted findings drop to Considered But Not Flagged with the
-   validator's reason; confirmed corrections (line/file/pre_existing) are applied
+8. Run the validation wave (skill Step 5.6; skipped on the single-seat `bugs`
+   path and when zero primary findings survived). Validate only what the
+   Step 4.95 screen left open — every Critical, every primary whose screen
+   score sits within 15 points of the `evidence` bar that admitted it, any
+   finding carrying dissenting severities, and every primary with no screen
+   score (a Step 5.5 promotion, or a run whose screen was skipped under
+   `evidence=any`) — but **waive** a non-Critical primary the screen scored
+   clear of the bar by more than 15 points, or one already corroborated by 2+
+   independent finders (≥1 specialist) at anchor 100; a clear score or
+   independent agreement is the verification. Budget-capped at 15; minor and
+   pre-existing findings are not validated. Refuted findings drop to
+   Considered But Not Flagged with the validator's reason; confirmed
+   corrections (line/file/pre_existing) are applied
 9. Sort the remaining (primary) findings:
    a. Primary: Severity (Critical > High > Medium > Low)
    b. Secondary: Confidence anchor (descending)

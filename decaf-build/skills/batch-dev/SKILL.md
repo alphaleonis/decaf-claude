@@ -1,7 +1,7 @@
 ---
 name: batch-dev
 description: Orchestrate execution of MULTIPLE nibs in one run. Selects a queue, understands the nibs collectively (including how they fit together), then chooses the best execution mechanism per cluster — single series agent, parallel fan-out, scripted workflow, or agent team — and dispatches with ONE approval gate. Use when the user wants to work several nibs together (in parallel or series) rather than one at a time. Complements /decaf-build:auto-dev and /decaf-build:auto-tdd (which handle a single nib).
-argument-hint: "<nib-id...> | --filter <expr> | --ready  [--review quick|std|max] [--max-iterations N] [--base-branch <name>] [--report] [--unattended]"
+argument-hint: "<nib-id...> | --filter <expr> | --ready  [--review <preset> [axis=value ...]] [--max-iterations N] [--base-branch <name>] [--report] [--unattended]"
 ---
 
 # Batch Dev
@@ -36,7 +36,12 @@ Parse `$ARGUMENTS`:
    - `--filter <expr>` — a nibs search/filter expression resolved via `nibs list`/`nibs query`.
    - `--ready` — all ready/unblocked nibs (`nibs list --json --ready`).
    - If none given, ask the user which nibs to batch.
-2. `--review quick|std|max` (default `std`) — passed to per-nib review.
+2. `--review <preset> [axis=value ...]` (default: `review`) — a `/code-review` preset optionally
+   followed by any of its axis overrides (`roster=N`, `models=`, `evidence=`, `reach=`), forwarded
+   **verbatim** to each nib's review. Quote it when the shell would split it:
+   `--review "review roster=6 reach=narrow"`. Not interpreted here, so a new axis works the day
+   `/code-review` ships it. Parallel-cluster workers self-review inline and cannot honor it —
+   say so in the Phase 8 report rather than implying the spec covered every nib.
 3. `--max-iterations N` (default `3`) — review iteration cap.
 4. `--base-branch <name>` — override the batch branch name (default derived in Phase 6).
 5. `--report` — produce a comparison-grade session report for skill tuning. Forwarded to each
@@ -138,7 +143,7 @@ Cluster 3  [workflow]                      — runs after Cluster 2 merges
 Batch branch: batch/{slug}
 Order:        C1 -> C2 -> (merge) -> C3
 Check-ins:    after C1 | before C2 launch | after C2 merge | before C3 | final
-Review:       {reviewMode}, max {maxIterations} iterations
+Review:       {reviewSpec}, max {maxIterations} iterations
 ```
 
 Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
@@ -170,7 +175,7 @@ For each nib in the cluster, in order. The batch-level plan already covers the p
 
 1. Set the nib `in-progress`.
 2. Launch a **general-purpose `Agent`** with the pre-approved-plan prompt pattern (as in `/decaf-build:auto-dev` Step 2 / `/decaf-build:auto-tdd` Step 2 — *"the plan is already approved, do NOT ask for confirmation"*). For `tdd` nibs, instruct a full red-green-refactor loop following the project's test conventions; for `dev` nibs, implement step-by-step verifying the build after each step. **With `--report`**, record this implementation Agent's harness-reported usage from its tool result (tokens / tool calls / duration, verbatim) plus changeset stats (files changed, +/− lines, new files) — this is the nib's implementation-phase record, exactly as `/decaf-build:auto-dev` Step 2 captures.
-3. After it reports, run `/decaf-quality:auto-code-review {reviewMode} --max-iterations {maxIterations} {--report if set}` (it auto-detects scope from uncommitted changes and manages its own subagent lifecycle). **With `--report`**, the Step-2 implementation-phase record is in this context — hand it to auto-review so its session report has full build-side accounting (same contract as auto-dev/auto-tdd). If a running-app build lock or a trivial change makes the full auto-review impractical, a focused manual review of the diff is an acceptable substitute — note the substitution (and, under `--report`, that no session report was produced for this nib).
+3. After it reports, run `/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} {--report if set}` (it auto-detects scope from uncommitted changes and manages its own subagent lifecycle). **With `--report`**, the Step-2 implementation-phase record is in this context — hand it to auto-review so its session report has full build-side accounting (same contract as auto-dev/auto-tdd). If a running-app build lock or a trivial change makes the full auto-review impractical, a focused manual review of the diff is an acceptable substitute — note the substitution (and, under `--report`, that no session report was produced for this nib).
 4. Commit code + nib; set the nib `completed`.
 
 > **`--report` covers series clusters only.** Phases 6b/6c/6d self-review inline in their worktrees (`/decaf-quality:auto-code-review` runs from the main context and cannot be invoked from a worktree), so they emit no standard session report even when `--report` is set. Note the uncovered clusters in the Phase 8 report rather than implying full coverage.

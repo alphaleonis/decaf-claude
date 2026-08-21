@@ -252,10 +252,10 @@ Delete `.decaf/refactoring-plans/.resolve-refactor-state.json` when complete.
 
 If any refactorings were applied during the session, offer to verify the modified files via `AskUserQuestion`:
 ```
-- Yes — run /decaf-quality:code-review low on the modified files to verify refactorings
+- Yes — run /decaf-quality:code-review bugs on the modified files to verify refactorings
 - No — done for now
 ```
-If Yes, invoke `/decaf-quality:code-review low <modified-files>`.
+If Yes, invoke `/decaf-quality:code-review bugs <modified-files>`.
 
 ### Step 8: Clean Up Plan File
 
