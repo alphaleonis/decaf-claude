@@ -1,0 +1,75 @@
+[
+ {
+  "thread_index": 0,
+  "path": "apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts",
+  "line": 18,
+  "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nTo fix the problem, we should eliminate the unused variable binding while keeping the construction side effect. The simplest way is to instantiate CollapseOnWindowResizeBehaviour without assigning it to behaviour in the first test. That way, the constructor still runs (keeping any event subscriptions active), but there is no unused local variable.\nConcretely, in apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts, in the first it(\"Should collapse/expand the panel when the window is resized\", ...) block, replace const behaviour = new CollapseOnWindowResizeBehaviour(collapseHandler); with a bare call new CollapseOnWindowResizeBehaviour(collapseHandler);. No imports, methods, or additional definitions are required, since we are simply removing an unused identifier.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [
+    "Should collapse/expand the panel when the window is resized"
+   ],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 1,
+  "path": "apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts",
+  "line": 55,
+  "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nIn general, unused variables in tests should be removed unless their instantiation side effects are required. If only the constructor side effect is needed, the variable name can be dropped and the constructor can be called without assignment; if even that is unnecessary, the entire line can be removed.\nFor this specific case in apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts, the \"should return correct shouldStartCollapsed\" test only checks the static shouldStartCollapsed() method, which does not depend on any particular instance created in that test. Therefore, we should remove the behaviour declaration entirely. The simplest and safest fix is to delete line 55:\nconst behaviour = new CollapseOnWindowResizeBehaviour(collapseHandler as unknown as CollapseHandler);\n\nNo new imports or other definitions are needed. The rest of the test remains unchanged and continues to validate the intended behavior.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [
+    "should return correct shouldStartCollapsed"
+   ],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 2,
+  "path": "apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts",
+  "line": 19,
+  "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nTo fix the unused variable, we should remove the unused binding behaviour and the corresponding ESLint disable comment, while still constructing CollapseOnWindowResizeBehaviour so its side effects run. The best minimal-change fix is to turn the declaration into a bare constructor call.\nSpecifically, in apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts, in the first it(\"Should collapse/expand the panel when the window is resized\", ...) block, replace lines 17\u201319 so that we (a) keep creating collapseHandler as before, and (b) call new CollapseOnWindowResizeBehaviour(collapseHandler) without assigning it to a variable and without the eslint-disable comment. No imports or other definitions are needed.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [
+    "Should collapse/expand the panel when the window is resized"
+   ],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 3,
+  "path": "apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts",
+  "line": 57,
+  "body": "Unused variable, import, function or class\nUnused variable behaviour.\n\nIn general, unused variables in tests should be removed unless they are clearly needed for side effects. Here, the test is only verifying the behavior of the static method CollapseOnWindowResizeBehaviour.shouldStartCollapsed() based on UIStore.instance.windowWidth, so the behaviour variable and its instantiation are unnecessary.\nThe best fix is to delete the unused behaviour variable declaration on line 57 and also remove the now-unneeded ESLint suppression comment on line 56. This keeps the test focused on what it is actually exercising and eliminates the unused-variable warning. No changes to imports, other tests, or functionality are needed, and no additional methods or definitions are required.\nConcretely, in apps/web/test/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour-test.ts, inside the it(\"should return correct shouldStartCollapsed\", ...) block, remove the two lines that create collapseHandler and behaviour, and leave the rest of the test intact.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [
+    "should return correct shouldStartCollapsed"
+   ],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 9,
+  "path": "apps/web/src/viewmodels/structures/auto-collapse/behaviours/CollapseOnWindowResizeBehaviour.ts",
+  "line": 47,
+  "body": "A second seems quite long? I suppose there's no callback to know when the library has done its resizing? I worry slightly about then clashing with something else like the user resizing the window again.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ }
+]

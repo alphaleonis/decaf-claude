@@ -1,0 +1,82 @@
+[
+ {
+  "thread_index": 0,
+  "path": "server/channels/api4/job_test.go",
+  "line": 276,
+  "body": "Propose deleting this comment: it's hyper specific to the issue at hand, but not the code in question.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 1,
+  "path": "server/channels/api4/job_test.go",
+  "line": 281,
+  "body": "This adds coverage for two of the types: should we exhaustively test all the job types? Is there any existing test coverage that does this that should be extended? How can we avoid \"missing\" job types in the future?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 2,
+  "path": "server/channels/app/job.go",
+  "line": 384,
+  "body": "I note that some job types have their own custom permissions, I'm guessing because the author wanted to grant system admins the ability to delegate more granular control. Can we confirm these two jobs fall under that \"blanket bucket\" and don't have / shouldn't have their own granular permissions?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [
+    "t have / shouldn"
+   ],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 3,
+  "path": "server/channels/app/job_test.go",
+  "line": 733,
+  "body": "Not specific to your changes, but this test construction is weird: indexing on a jobs slice, which appears to never be used elsewhere. Would we consider inlining this into the testCases struct to the expected permission sets right next to the job type? (I think the Id and Type are never used?)",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 4,
+  "path": "server/channels/app/job_test.go",
+  "line": 782,
+  "body": "Pedantically, the permissions only grant the ability to read the \"global jobs\" (not sure what the right name is) as well as the compliance export job. I suspect this whole test deserves some rework given the existing confusion, but no objection to the text change here.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 5,
+  "path": "server/channels/app/job_test.go",
+  "line": 787,
+  "body": "Note: this just looks like a copypasta error which I encountered while reading and updating this test.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ }
+]

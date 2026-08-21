@@ -1,0 +1,8 @@
+[
+ {"thread_index": 0, "matchable_at_checkpoint": true,
+  "reason": "The quoted regex is verbatim at index.js:603 — `const server_only_pattern = /\\.server\\.[^/]+$|\\/server\\/;/;` — stray semicolon included. Present."},
+ {"thread_index": 1, "matchable_at_checkpoint": true,
+  "reason": "The guard the claim is about is at index.js:665-672: `normalized.startsWith('$lib/server/')` OR `is_internal && server_only_pattern.test(id)`. A reviewer at the checkpoint can read the coverage gap for /server/ dirs outside $lib straight off those lines."},
+ {"thread_index": 4, "matchable_at_checkpoint": true,
+  "reason": "Anchors at index.js:606, the doc comment on `plugin_guard` inside the changed hunk. The line the question asks about is present and its change is visible in the checkpoint diff."}
+]

@@ -47,5 +47,11 @@
   },
   "app_type_at_checkpoint": "backend",
   "frontend_files": 0,
-  "backend_files": 20
+  "backend_files": 20,
+  "matchability_deferred": {
+    "date": "2026-08-21",
+    "nib": "dcc-tvk8",
+    "reason": "Thread matchability is NOT annotated, deliberately. This fixture is retired-probe: it holds no cell in the grid, so no thread recall will be computed over it, and `score_pooled.py` already refuses an unannotated subject rather than assuming everything is matchable. Annotating it now would spend judgment on a denominator nothing divides by.",
+    "annotate_before": "any scoring of this fixture \u2014 which for a matched vintage pair means before the memorization probe runs, since the probe compares recall across the pair and both halves need the same denominator discipline"
+  }
 }

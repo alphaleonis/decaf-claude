@@ -1,0 +1,41 @@
+[
+ {
+  "thread_index": 0,
+  "path": "packages/kit/src/exports/vite/index.js",
+  "line": 603,
+  "body": "Suggested change\n      \n    \n    \n      \n          \n            \n            \tconst server_only_pattern = /\\.server\\.[^/]+$|\\/server\\/;/;\n          \n          \n            \n            \tconst server_only_pattern = /\\.server\\.[^/]+$|\\/server\\//;\n          \n      \n    \n    \n  \n\nTypo in regex pattern causes /server/ path matching to fail completely - a stray semicolon is being matched as a literal character.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 1,
+  "path": "packages/kit/src/exports/vite/index.js",
+  "line": 671,
+  "body": "Local /server/ directories outside of $lib/ are not blocked from client-side imports, contrary to the PR's intent",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 4,
+  "path": "packages/kit/src/exports/vite/index.js",
+  "line": 606,
+  "body": "did we change this from what it was before on purpose?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ }
+]

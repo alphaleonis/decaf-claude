@@ -1,0 +1,14 @@
+[
+ {"thread_index": 0, "matchable_at_checkpoint": true,
+  "reason": "The comment it proposes deleting is verbatim at api4/job_test.go:275-276 (\"These types are broadcast to admins via job_updated and refetched by the webapp, so a missing read-permission mapping turns into a recurring 400.\")."},
+ {"thread_index": 1, "matchable_at_checkpoint": true,
+  "reason": "\"This adds coverage for two of the types\" — the checkpoint adds exactly two GetJobsByType assertions at :277-281, for JobTypePostPersistentNotifications and JobTypeDeleteExpiredPosts. Present."},
+ {"thread_index": 2, "matchable_at_checkpoint": true,
+  "reason": "Both job types are in the blanket PermissionReadJobs case at app/job.go:383-386, and the custom-permission cases the question contrasts them with (JobTypeAccessControlSync -> ManageSystem, JobTypeAccessControlTeamSync) are immediately below at :387-393. Present."},
+ {"thread_index": 3, "matchable_at_checkpoint": true,
+  "reason": "The construction it describes is at app/job_test.go:724-740: testCases entries built as `Job: jobs[0]` through `jobs[3]` off a jobs slice. Present."},
+ {"thread_index": 4, "matchable_at_checkpoint": true,
+  "reason": "The permission grant it is pedantic about is at app/job_test.go:782 — append of PermissionReadComplianceExportJob and PermissionReadJobs — and the text change it does not object to is the comment at :787. Both present."},
+ {"thread_index": 5, "matchable_at_checkpoint": true,
+  "reason": "Anchors at app/job_test.go:787, the comment \"Now system read only admin should have ability to read all jobs\", which overstates the two permissions granted one line above. Present."}
+]

@@ -1,0 +1,249 @@
+[
+ {
+  "thread_index": 0,
+  "path": "mobile/android/app/src/main/kotlin/app/alextran/immich/images/LocalImagesImpl.kt",
+  "line": 37,
+  "body": "Is there a reason we need exact size? The existing code looks fine.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 1,
+  "path": "mobile/ios/Runner/Images/RemoteImagesImpl.swift",
+  "line": 133,
+  "body": "The image request has the desired width and height, right? Can't you just take the max of those two as the target?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 2,
+  "path": "mobile/lib/presentation/widgets/images/remote_image_provider.dart",
+  "line": 79,
+  "body": "The remote thumbnail size seems to need a lot of threading. Excluding size from RemoteImageProvider's hashCode / == overrides would be one solution (i.e. new thumbnails load at the target resolution, but existing ones of any resolution are reused).\nAt the same time, it is probably desirable for a change in tile size to reload thumbnails at the right size (showing the old resolution until the new one loads). I'm not sure if there's a better solution.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 3,
+  "path": "mobile/lib/presentation/widgets/images/image_provider.dart",
+  "line": 192,
+  "body": "Why do you need a separate remoteSize rather than just size? In general, this is all similar to what local image loading does, so it doesn't seem like they need to be all that different.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 4,
+  "path": "mobile/ios/Runner/Images/RemoteImagesImpl.swift",
+  "line": 143,
+  "body": "nit: I'd prefer to see actual enum mappings rather than 5...8",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 5,
+  "path": "mobile/ios/Runner/Images/RemoteImagesImpl.swift",
+  "line": 133,
+  "body": "nit: targetThumbnailRenderSize",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 6,
+  "path": "mobile/lib/infrastructure/loaders/image_request.dart",
+  "line": 105,
+  "body": "I don't understand what this is accomplishing",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 7,
+  "path": "mobile/lib/infrastructure/loaders/remote_image_request.dart",
+  "line": 38,
+  "body": "I don't like relying on gating on 0 here. Use optionals if necessary",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 8,
+  "path": "mobile/lib/presentation/widgets/asset_viewer/asset_viewer.page.dart",
+  "line": 78,
+  "body": "nit: This has nothing to do with the PR, but we should not have public and private constructs of the same name.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 9,
+  "path": "mobile/lib/presentation/widgets/timeline/constants.dart",
+  "line": 15,
+  "body": "I don't really think this is necessary. This looks like LLM having to write helper functions with crazy tests for everything",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 10,
+  "path": "mobile/lib/providers/asset_viewer/asset_viewer.provider.dart",
+  "line": 109,
+  "body": "Why are you storing asset.heroTag? You already have it stored in currentAsset?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 11,
+  "path": "mobile/lib/presentation/widgets/timeline/fixed/segment.model.dart",
+  "line": 266,
+  "body": "More weird LLM guarding. If you want getThumbnailResolution to be null, make it null, not Size.zero.",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 12,
+  "path": "mobile/android/app/src/main/kotlin/app/alextran/immich/images/LocalImagesImpl.kt",
+  "line": 49,
+  "body": "Check size to be non-zero instead of the max calls?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 13,
+  "path": "mobile/ios/Runner/Images/RemoteImagesImpl.swift",
+  "line": 31,
+  "body": "Bool?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 14,
+  "path": "mobile/lib/infrastructure/loaders/image_request.dart",
+  "line": 106,
+  "body": "Don't care about width/height being <= 0?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 15,
+  "path": "mobile/lib/infrastructure/loaders/image_request.dart",
+  "line": 112,
+  "body": "This is redundant. You just checked if the value is bigger than 1 in the min. Drop the min and just use the if",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 16,
+  "path": "mobile/lib/presentation/widgets/images/remote_image_provider.dart",
+  "line": 18,
+  "body": "decodeSize?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 17,
+  "path": "mobile/lib/presentation/widgets/images/thumbnail.widget.dart",
+  "line": 30,
+  "body": "decodeSize?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ },
+ {
+  "thread_index": 18,
+  "path": "mobile/lib/infrastructure/loaders/remote_image_request.dart",
+  "line": 7,
+  "body": "decodeSize?",
+  "lexical_evidence": {
+   "file_readable_at_checkpoint": true,
+   "quoted_tokens_present": [],
+   "quoted_tokens_absent": [],
+   "cites_other_commit": []
+  },
+  "matchable_at_checkpoint": "review"
+ }
+]

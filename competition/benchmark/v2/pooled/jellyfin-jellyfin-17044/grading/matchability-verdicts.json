@@ -1,0 +1,18 @@
+[
+ {"thread_index": 0, "matchable_at_checkpoint": true,
+  "reason": "BaseItemRepository.TranslateQuery.cs:549 declares `var resumableMovieIds = context.BaseItems` inside the series branch, with `resumableSeriesIds` at :542 — the exact naming the suggestion corrects. Present."},
+ {"thread_index": 1, "matchable_at_checkpoint": true,
+  "reason": "SessionManager.cs:1180 carries the comment \"positions stay per-version\" and :1183 calls `playedVideo.PropagatePlayedState(user, true)` on its default resetPosition. Both halves of the contradiction are present."},
+ {"thread_index": 2, "matchable_at_checkpoint": true,
+  "reason": "`UpdatePlaybackSettings(user, info, data)` is called unconditionally at SessionManager.cs:973 and the guard the thread calls dead is at :989 (`!user.RememberAudioSelections && data.AudioStreamIndex.HasValue`). The ordering that makes the claim is present."},
+ {"thread_index": 4, "matchable_at_checkpoint": true,
+  "reason": "OrderMapper.cs:37 is `(ItemSortBy.DatePlayed, not null) =>` and the switch has no `(ItemSortBy.DatePlayed, null)` arm, so a null user falls to the default `_ => e => e.SortName`. Exactly as described, present."},
+ {"thread_index": 5, "matchable_at_checkpoint": true,
+  "reason": "PARTIAL and matchable on the surviving half. `VersionResumeData.ApplyTo` at :18-28 DOES assign `dto.PlaybackPositionTicks`, so that half of the claim does not hold. But `dto.PlayedPercentage` is set only under `if (RunTimeTicks > 0 && UserData.PlaybackPositionTicks > 0)` — so a Played alternate version with position 0 leaves the primary's PlayedPercentage untouched alongside `dto.Played = true`, which is the defect described. Matchable under the compound-thread rule."},
+ {"thread_index": 6, "matchable_at_checkpoint": true,
+  "reason": "The strict-`>` dedup is at BaseItemRepository.TranslateQuery.cs:574-575 — `.Max(su => su.LastPlayedDate) > ... .Max(eu => eu.LastPlayedDate)` — so two versions sharing a LastPlayedDate both survive. The anchored line 562 is a later-revision offset; the construct is present."},
+ {"thread_index": 7, "matchable_at_checkpoint": true,
+  "reason": "DtoService.cs:1274-1276 computes MediaSourceCount as `video.GetAllVersions().Count(v => v.Id.Equals(video.Id) || v.IsVisibleStandalone(user))` under the `ItemFields.MediaSourceCount` guard. The per-item work the thread objects to is present."},
+ {"thread_index": 8, "matchable_at_checkpoint": true,
+  "reason": "All four sites it names exist at the checkpoint: `UserDataManager.GetResumeUserDataBatch` (UserDataManager.cs:257), `SetAlternateVersionResumeStates` (MediaSourceManager.cs:430), the `PlaybackPositionTicks <= 0` scan at MediaSourceManager.cs:460, and `TVSeriesManager.GetMostRecentlyPlayedVersion` (TVSeriesManager.cs:258). The duplication it describes is present and countable."}
+]

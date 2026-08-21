@@ -1,0 +1,258 @@
+{
+  "subject": "PostHog-posthog-55149",
+  "instrument": "pooled-adjudication",
+  "judge_model": "claude-opus-5",
+  "vintage": {
+    "status": "in-window",
+    "key": "merged_at",
+    "model": "claude-opus-5",
+    "merged_at": "2026-05-06",
+    "model_cutoff": "2026-05",
+    "provably_clean_from": "2026-06-01",
+    "why": "claude-opus-5 publishes a month-granular cutoff of 2026-05; a subject is provably out-of-window only if it merged on or after 2026-06-01",
+    "pr_created_at": "2026-04-17",
+    "status_by_pr_created_at": "in-window"
+  },
+  "n_clusters": 108,
+  "n_cells": 7,
+  "threads": {
+    "admitted": 35,
+    "admitted_human": 20,
+    "admitted_bot": 15,
+    "denominator_human": 13,
+    "denominator_bot": 12,
+    "excluded_unmatchable": [
+      15,
+      34,
+      53,
+      55,
+      56,
+      57,
+      59,
+      64,
+      65,
+      69
+    ],
+    "excluded_unmatchable_human": [
+      15,
+      34,
+      53,
+      59,
+      64,
+      65,
+      69
+    ],
+    "duplicate_groups": [
+      [
+        23,
+        38
+      ],
+      [
+        24,
+        44
+      ],
+      [
+        27,
+        45
+      ]
+    ],
+    "matchability_annotated": true,
+    "thread_axis_publishable": true,
+    "human_axis_thin": false,
+    "human_axis_empty": false,
+    "hit_by_any_tool": 12,
+    "hit_by_any_tool_found": 13,
+    "missed_by_every_tool": 1,
+    "missed_by_every_tool_found": 0,
+    "missed_index": [
+      16
+    ],
+    "missed_index_found": [],
+    "demoted_by_every_tool_that_found_it": [
+      16
+    ],
+    "judge_dismissed_reported_threads": [],
+    "credited_to_unmatchable_thread": [],
+    "incumbent": {
+      "hit_by_any_tool": 10,
+      "hit_by_any_tool_found": 10
+    }
+  },
+  "tools": {
+    "ours-audit": {
+      "clusters_reported": 50,
+      "clusters_found": 81,
+      "real": 40,
+      "valid_minor": 8,
+      "trivia": 1,
+      "false_positive": 1,
+      "precision": 0.8,
+      "precision_note": "excludes valid_minor (correct but small); see scoring/METRICS.md",
+      "precision_severity_weighted": 0.928,
+      "trivia_ratio": 0.02,
+      "unique_real": 7,
+      "unique_real_ids": [
+        "c016",
+        "c031",
+        "c033",
+        "c041",
+        "c046",
+        "c064",
+        "c071"
+      ],
+      "per_cell": {
+        "findings": 50.0,
+        "false_positive": 1.0,
+        "trivia": 1.0
+      },
+      "thread_recall": 0.846,
+      "thread_recall_found": 0.923,
+      "demotion_gap": 0.077,
+      "threads_hit": 11,
+      "incumbent_agreement": 0.667,
+      "incumbent_agreement_found": 0.75,
+      "real_found": 44,
+      "demoted_real": 4,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 44.4292,
+      "n_cells": 1,
+      "cost_per_real_finding": 1.1107,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 1.1107,
+      "cost_per_cell": 44.4292,
+      "class_distribution": null,
+      "defect_recall": null
+    },
+    "ours-bugs": {
+      "clusters_reported": 20,
+      "clusters_found": 32,
+      "real": 18,
+      "valid_minor": 1,
+      "trivia": 1,
+      "false_positive": 0,
+      "precision": 0.9,
+      "precision_note": "excludes valid_minor (correct but small); see scoring/METRICS.md",
+      "precision_severity_weighted": 0.971,
+      "trivia_ratio": 0.05,
+      "unique_real": 1,
+      "unique_real_ids": [
+        "c002"
+      ],
+      "per_cell": {
+        "findings": 10.0,
+        "false_positive": 0.0,
+        "trivia": 0.5
+      },
+      "thread_recall": 0.385,
+      "thread_recall_found": 0.538,
+      "demotion_gap": 0.154,
+      "threads_hit": 5,
+      "incumbent_agreement": 0.417,
+      "incumbent_agreement_found": 0.583,
+      "real_found": 25,
+      "demoted_real": 7,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 20.1156,
+      "n_cells": 2,
+      "cost_per_real_finding": 1.1175,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 0.785,
+      "cost_per_cell": 10.0578,
+      "class_distribution": null,
+      "defect_recall": null
+    },
+    "ours-review": {
+      "clusters_reported": 41,
+      "clusters_found": 76,
+      "real": 39,
+      "valid_minor": 2,
+      "trivia": 0,
+      "false_positive": 0,
+      "precision": 0.951,
+      "precision_note": "excludes valid_minor (correct but small); see scoring/METRICS.md",
+      "precision_severity_weighted": 0.982,
+      "trivia_ratio": 0.0,
+      "unique_real": 7,
+      "unique_real_ids": [
+        "c012",
+        "c020",
+        "c026",
+        "c028",
+        "c049",
+        "c076",
+        "c108"
+      ],
+      "per_cell": {
+        "findings": 20.5,
+        "false_positive": 0.0,
+        "trivia": 0.0
+      },
+      "thread_recall": 0.846,
+      "thread_recall_found": 0.923,
+      "demotion_gap": 0.077,
+      "threads_hit": 11,
+      "incumbent_agreement": 0.75,
+      "incumbent_agreement_found": 0.833,
+      "real_found": 46,
+      "demoted_real": 7,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 101.0289,
+      "n_cells": 2,
+      "cost_per_real_finding": 2.5905,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 1.7201,
+      "cost_per_cell": 50.5144,
+      "class_distribution": null,
+      "defect_recall": null
+    },
+    "superpowers": {
+      "clusters_reported": 36,
+      "clusters_found": 36,
+      "real": 24,
+      "valid_minor": 10,
+      "trivia": 0,
+      "false_positive": 2,
+      "precision": 0.667,
+      "precision_note": "excludes valid_minor (correct but small); see scoring/METRICS.md",
+      "precision_severity_weighted": 0.877,
+      "trivia_ratio": 0.0,
+      "unique_real": 0,
+      "unique_real_ids": [],
+      "per_cell": {
+        "findings": 18.0,
+        "false_positive": 1.0,
+        "trivia": 0.0
+      },
+      "thread_recall": 0.615,
+      "thread_recall_found": 0.615,
+      "demotion_gap": 0.0,
+      "threads_hit": 8,
+      "incumbent_agreement": 0.583,
+      "incumbent_agreement_found": 0.583,
+      "real_found": 24,
+      "demoted_real": 0,
+      "anchor_recall": null,
+      "anchor_recall_found": null,
+      "cost_usd": 12.8037,
+      "n_cells": 2,
+      "cost_per_real_finding": 0.5335,
+      "cost_per_real_finding_repeat_dependent": true,
+      "cost_per_real_finding_per_cell": 0.2991,
+      "cost_per_cell": 6.4018,
+      "class_distribution": null,
+      "defect_recall": null
+    }
+  },
+  "verdict_distribution": {
+    "false-positive": 2,
+    "matches-key": 0,
+    "matches-thread": 23,
+    "trivia": 25,
+    "valid-minor": 26,
+    "valid-other": 32
+  },
+  "class_distribution": null
+}

@@ -1,0 +1,327 @@
+[
+ {
+  "thread_index": 0,
+  "matchable_at_checkpoint": true,
+  "reason": "`temporal = sync_connect()` is at products/pulse/backend/api/brief.py:188, immediately BEFORE the `try:` at :189 \u2014 the ordering the claim rests on, present verbatim."
+ },
+ {
+  "thread_index": 1,
+  "matchable_at_checkpoint": true,
+  "reason": "The claim is an ABSENCE and the absence is present: grep for `report_user_action` across products/pulse/backend/api/brief.py returns zero hits, and the `generate` action it should be added to exists."
+ },
+ {
+  "thread_index": 2,
+  "matchable_at_checkpoint": true,
+  "reason": "`temporal.start_workflow(` is at products/pulse/backend/api/brief.py:191 with no `execution_timeout` argument anywhere in the file. The omission the thread reports is present."
+ },
+ {
+  "thread_index": 3,
+  "matchable_at_checkpoint": true,
+  "reason": "Asks for SLOs on the workflow started at products/pulse/backend/api/brief.py:191-196. The workflow dispatch it is about is present."
+ },
+ {
+  "thread_index": 4,
+  "matchable_at_checkpoint": true,
+  "reason": "The `except Exception as exc:` block at products/pulse/backend/api/brief.py:208-211 sets `status=FAILED, error=str(exc)` and calls no logger. Both halves of \"stores it but does not log it\" are present."
+ },
+ {
+  "thread_index": 5,
+  "matchable_at_checkpoint": true,
+  "reason": "`PULSE_FEATURE_FLAG = \"pulse\"` is at products/pulse/backend/api/brief.py:24 \u2014 the constant the relocation question is about."
+ },
+ {
+  "thread_index": 6,
+  "matchable_at_checkpoint": true,
+  "reason": "The `anchors` serializer field is at products/pulse/backend/api/brief.py:42, which is what the anchors suggestion is about."
+ },
+ {
+  "thread_index": 7,
+  "matchable_at_checkpoint": true,
+  "reason": "`sources_used = serializers.ListField(child=serializers.CharField(), read_only=True, ...)` is at products/pulse/backend/api/brief.py:68 \u2014 the plain string list the comment wants references on."
+ },
+ {
+  "thread_index": 8,
+  "matchable_at_checkpoint": true,
+  "reason": "Verbatim at products/pulse/backend/generation/synthesize.py:51: `focus_prompt=(config.focus_prompt if config else \"\") or \"the whole product\"` inside `SYNTHESIZE_PROMPT.format(...)`, with no sanitization. The interpolation the claim names is present."
+ },
+ {
+  "thread_index": 9,
+  "matchable_at_checkpoint": true,
+  "reason": "`all_teams = models.Manager()` is at products/pulse/backend/models.py:14 with the `default_manager_name` comment above it \u2014 exactly what the question asks about."
+ },
+ {
+  "thread_index": 10,
+  "matchable_at_checkpoint": true,
+  "reason": "`focus_prompt = models.TextField(blank=True, default=\"\")` is at products/pulse/backend/models.py:30 with NO max length, which is precisely why the comment asks for one."
+ },
+ {
+  "thread_index": 11,
+  "matchable_at_checkpoint": true,
+  "reason": "`QUIET = \"quiet\"` is at products/pulse/backend/models.py:40 among the Status choices \u2014 the value the question asks about."
+ },
+ {
+  "thread_index": 12,
+  "matchable_at_checkpoint": true,
+  "reason": "`config = models.ForeignKey(..., SET_NULL ...)` with its explanatory comment is at products/pulse/backend/models.py:46-47 \u2014 the deletion behavior the comment proposes changing."
+ },
+ {
+  "thread_index": 13,
+  "matchable_at_checkpoint": true,
+  "reason": "`period_days = models.IntegerField(default=7)` is at products/pulse/backend/models.py:52, immediately below `trigger` at :51. The field whose meaning is being asked is present."
+ },
+ {
+  "thread_index": 14,
+  "matchable_at_checkpoint": true,
+  "reason": "The untyped JSON comment (`# list[{\"kind\": str, ...}]`) sits at products/pulse/backend/models.py:53 beside `period_days` \u2014 the implicit-shape documentation the comment wants tied to serializers."
+ },
+ {
+  "thread_index": 15,
+  "matchable_at_checkpoint": true,
+  "reason": "`CONFIDENCE_THRESHOLD = 0.6` and `MAX_OPPORTUNITIES = 3` are at products/pulse/backend/generation/synthesize.py:16-17 \u2014 the constants the question is about."
+ },
+ {
+  "thread_index": 16,
+  "matchable_at_checkpoint": true,
+  "reason": "Same constants at products/pulse/backend/generation/synthesize.py:16-17; the suggestion to make them staff-configurable acts on them."
+ },
+ {
+  "thread_index": 17,
+  "matchable_at_checkpoint": true,
+  "reason": "`_build_opportunity(brief, opp, item)` is at products/pulse/backend/generation/persist.py:25 and does the ref/type string handling the comment objects to."
+ },
+ {
+  "thread_index": 18,
+  "matchable_at_checkpoint": true,
+  "reason": "`EvidenceRef` with `ref: str` / `label: str` is at products/pulse/backend/sources/base.py:12 \u2014 the string-typed structure the comment wants utilities on."
+ },
+ {
+  "thread_index": 19,
+  "matchable_at_checkpoint": true,
+  "reason": "`MIN_ABS_CHANGE_PCT = 20.0` and `MIN_BASELINE_VALUE = 10.0` are at products/pulse/backend/sources/anchored_insights.py:18-19."
+ },
+ {
+  "thread_index": 20,
+  "matchable_at_checkpoint": true,
+  "reason": "`class AnchoredInsightsSource` is at products/pulse/backend/sources/anchored_insights.py:20 and its `gather` carries the per-insight `except Exception` the claim is about."
+ },
+ {
+  "thread_index": 21,
+  "matchable_at_checkpoint": true,
+  "reason": "`_anchor_insights(self, team, config)` reading `config.anchors` is at products/pulse/backend/sources/anchored_insights.py:60-61 \u2014 the anchoring the question asks about."
+ },
+ {
+  "thread_index": 22,
+  "matchable_at_checkpoint": true,
+  "reason": "The workflow's `except Exception as exc` path and its `mark_brief_failed_activity` call are in products/pulse/backend/temporal/workflow.py around :45; the activity itself is at products/pulse/backend/temporal/activities.py:45."
+ },
+ {
+  "thread_index": 23,
+  "matchable_at_checkpoint": true,
+  "reason": "The `execute_activity(gather_brief_inputs_activity, ...)` block is at products/pulse/backend/temporal/workflow.py:36-38 \u2014 the workflow the SLO request is about."
+ },
+ {
+  "thread_index": 24,
+  "matchable_at_checkpoint": true,
+  "reason": "`triggerRecalculation: (trigger: ExperimentRecalculationTriggerEnumApi = 'manual')` is at frontend experimentMetricsLogic.ts:159 \u2014 the rename the question is about."
+ },
+ {
+  "thread_index": 25,
+  "matchable_at_checkpoint": true,
+  "reason": "web.py:512-513 carry the comment naming the two colliding `trigger` choice sets (experiment metric recalculations and pulse product briefs) \u2014 the collision the naming suggestion addresses."
+ },
+ {
+  "thread_index": 26,
+  "matchable_at_checkpoint": true,
+  "reason": "`trigger` and the brief-retention behavior are at products/pulse/backend/models.py:51-52, and the SET_NULL relation the hard-delete question responds to is at :46-47."
+ },
+ {
+  "thread_index": 27,
+  "matchable_at_checkpoint": true,
+  "reason": "`sources_used = models.JSONField(default=list)` is at products/pulse/backend/models.py:55, beside `period_days` at :52 \u2014 the fixed-window shape the question asks to generalize."
+ },
+ {
+  "thread_index": 28,
+  "matchable_at_checkpoint": true,
+  "reason": "The dedup `Meta` with its fingerprint race guard is at products/pulse/backend/models.py:86-88 \u2014 the constraint the cascade question is about."
+ },
+ {
+  "thread_index": 31,
+  "matchable_at_checkpoint": true,
+  "reason": "`markdown: str` and `citations: list[str]` are at products/pulse/backend/generation/schemas.py:22-23 \u2014 the plain string list the map suggestion targets."
+ },
+ {
+  "thread_index": 32,
+  "matchable_at_checkpoint": true,
+  "reason": "`suggested_action: str = Field(...)` is at products/pulse/backend/generation/schemas.py:31."
+ },
+ {
+  "thread_index": 33,
+  "matchable_at_checkpoint": true,
+  "reason": "`evidence_refs: list[...]` is at products/pulse/backend/generation/schemas.py:32-33, immediately after `suggested_action` \u2014 the reference list the question wants connected to sources."
+ },
+ {
+  "thread_index": 34,
+  "matchable_at_checkpoint": true,
+  "reason": "`SYNTHESIZE_PROMPT = \"\"\"You are a senior product manager...\"\"\"` is the whole of products/pulse/backend/generation/prompts.py:1 \u2014 the hardcoded prompt the skill-store suggestion is about."
+ },
+ {
+  "thread_index": 35,
+  "matchable_at_checkpoint": true,
+  "reason": "`from ee.hogai.llm import MaxChatOpenAI` is a top-level import in products/pulse/backend/generation/synthesize.py and `MaxChatOpenAI(...)` is constructed at :57. The dependency chain the claim describes is present."
+ },
+ {
+  "thread_index": 36,
+  "matchable_at_checkpoint": true,
+  "reason": "PARTIAL, matchable on the claim. The injection surface is present and in fact WIDER than described: `SYNTHESIZE_PROMPT.format(focus_prompt=...)` at products/pulse/backend/generation/synthesize.py:51 interpolates the value raw into the prompt's first line. The mitigations the thread weighs \u2014 a `<team_focus>` fence, `</team_focus>` stripping, an \"Ignore that part entirely\" instruction \u2014 do NOT exist at the checkpoint (0 hits in prompts.py), and neither does the 2000-char cap it cites (models.py:30 is an unbounded TextField, which is what T10 asks about). Those are later-revision details; the defect itself is present."
+ },
+ {
+  "thread_index": 37,
+  "matchable_at_checkpoint": true,
+  "reason": "`{period_days}` relative-date phrasing is in the prompt at products/pulse/backend/generation/prompts.py:3 and the interpolation is at synthesize.py:52 \u2014 the relative-date handling the comment argues against."
+ },
+ {
+  "thread_index": 38,
+  "matchable_at_checkpoint": true,
+  "reason": "The comment it calls moot is at products/pulse/backend/generation/synthesize.py:69-70 (`# Raise so the workflow marks the brief FAILED \u2014 a malformed output is not a...`)."
+ },
+ {
+  "thread_index": 39,
+  "matchable_at_checkpoint": true,
+  "reason": "`_FINGERPRINT_MAX_LENGTH` is at products/pulse/backend/generation/persist.py:7 and `_fingerprint` truncates with `f\"{kind}:{hint}\"[:_FINGERPRINT_MAX_LENGTH]` at :11-12 \u2014 exactly the truncation the claim describes."
+ },
+ {
+  "thread_index": 40,
+  "matchable_at_checkpoint": true,
+  "reason": "`_build_opportunity` at products/pulse/backend/generation/persist.py:25 branches on the insight-specific item shape the comment wants generalized."
+ },
+ {
+  "thread_index": 41,
+  "matchable_at_checkpoint": true,
+  "reason": "`class EvidenceRef(TypedDict)` with `type: str  # \"insight\" | \"dashboard\" | ...` is at products/pulse/backend/sources/base.py:9-11 \u2014 the stringly-typed field the enum suggestion targets."
+ },
+ {
+  "thread_index": 42,
+  "matchable_at_checkpoint": true,
+  "reason": "`class SourceItem` with `source: str` / `kind: str  # \"movement\" | \"health\"` is at products/pulse/backend/sources/base.py:15-17."
+ },
+ {
+  "thread_index": 43,
+  "matchable_at_checkpoint": true,
+  "reason": "`def gather(self, team, config, period_days) -> list[SourceItem]: ...` is at products/pulse/backend/sources/base.py:29; the enum suggestion refers back to the string fields above it."
+ },
+ {
+  "thread_index": 44,
+  "matchable_at_checkpoint": true,
+  "reason": "`numbers: dict[str, float | int | str]` and `evidence: list[EvidenceRef]` are at products/pulse/backend/sources/base.py:21-22 \u2014 the loosely-referenced structures the comment wants DB-level links for."
+ },
+ {
+  "thread_index": 47,
+  "matchable_at_checkpoint": true,
+  "reason": "Verbatim: products/pulse/backend/sources/registry.py is four lines and `get_sources()` returns `[AnchoredInsightsSource()]`. The hardcoded factory the claim describes is present in full."
+ },
+ {
+  "thread_index": 48,
+  "matchable_at_checkpoint": true,
+  "reason": "`FALLBACK_DASHBOARD_COUNT = 3` is at products/pulse/backend/sources/anchored_insights.py:22, alongside the other module constants the comment wants moved into the model."
+ },
+ {
+  "thread_index": 49,
+  "matchable_at_checkpoint": true,
+  "reason": "`Q(dashboards__id__in=dashboard_ids)` is at products/pulse/backend/sources/anchored_insights.py:69 inside `_anchor_insights` (:60). The anchored line 49 is a later-revision offset; the filter is present."
+ },
+ {
+  "thread_index": 50,
+  "matchable_at_checkpoint": true,
+  "reason": "The anchor branch (`if insight_short_ids or dashboard_ids:` at products/pulse/backend/sources/anchored_insights.py:65-69) is where dashboards are folded into the insights source \u2014 the mixing the comment proposes splitting."
+ },
+ {
+  "thread_index": 51,
+  "matchable_at_checkpoint": true,
+  "reason": "The fallback-dashboard query returning Insights is at products/pulse/backend/sources/anchored_insights.py:74-76 \u2014 the second concern inside one source the comment objects to."
+ },
+ {
+  "thread_index": 52,
+  "matchable_at_checkpoint": true,
+  "reason": "The per-item movement logic (`if not movement.significant: continue`, direction derivation) is at products/pulse/backend/sources/anchored_insights.py:97-99."
+ },
+ {
+  "thread_index": 53,
+  "matchable_at_checkpoint": true,
+  "reason": "`brief_config_id` / `period_days` on the workflow inputs are at products/pulse/backend/temporal/inputs.py:12-13 \u2014 the run the SLO request is about."
+ },
+ {
+  "thread_index": 54,
+  "matchable_at_checkpoint": true,
+  "reason": "`raise ApplicationError(\"brief has no creating user for LLM attribution\", non_retryable=True)` is at products/pulse/backend/temporal/activities.py:66, and the `synthesize_brief(...)` call it guards is at :69. The anchored line is a small offset; the raise is present verbatim."
+ },
+ {
+  "thread_index": 55,
+  "matchable_at_checkpoint": true,
+  "reason": "`start_to_close_timeout=dt.timedelta(minutes=5)` and the inline `RetryPolicy(maximum_attempts=...)` are at products/pulse/backend/temporal/workflow.py:38-40 \u2014 the scattered values the comment wants centralized."
+ },
+ {
+  "thread_index": 56,
+  "matchable_at_checkpoint": true,
+  "reason": "The `insights` ListField of CharField is at products/pulse/backend/api/brief.py:33-36 \u2014 the anchor id list whose constant the comment wants shared with the reapers."
+ },
+ {
+  "thread_index": 57,
+  "matchable_at_checkpoint": true,
+  "reason": "`anchors = BriefAnchorsSerializer(required=False, help_text=\"Anchor resources the brief gathers movements from.\")` is at products/pulse/backend/api/brief.py:43."
+ },
+ {
+  "thread_index": 58,
+  "matchable_at_checkpoint": true,
+  "reason": "`serializer.save(team=self.team, created_by=...)` in `perform_create` is at products/pulse/backend/api/brief.py:137, inside the config create path the period-days comment refers back to."
+ },
+ {
+  "thread_index": 59,
+  "matchable_at_checkpoint": true,
+  "reason": "PARTIAL, matchable on the surviving half. `perform_create` exists at products/pulse/backend/api/brief.py:135 and contains no `report_user_action` \u2014 grep returns zero hits in the file \u2014 so \"creates configs without any analytics event\" holds. `perform_destroy` does NOT exist at the checkpoint (no destroy override, no soft delete), so that half of the pair has no target. Matchable under the compound-thread rule."
+ },
+ {
+  "thread_index": 60,
+  "matchable_at_checkpoint": true,
+  "reason": "`ProductBrief.objects.for_team(...).create(status=ProductBrief.Status.GENERATING, ...)` is at products/pulse/backend/api/brief.py:183 and the `try:` is at :189 \u2014 the create-before-try ordering the claim rests on."
+ },
+ {
+  "thread_index": 63,
+  "matchable_at_checkpoint": true,
+  "reason": "The `evidence=evidence` assembly and its type checks are at products/pulse/backend/generation/persist.py:42-44 \u2014 the logic the comment wants moved onto EvidenceRef."
+ },
+ {
+  "thread_index": 64,
+  "matchable_at_checkpoint": true,
+  "reason": "`evidence: list[EvidenceRef]` and `fingerprint_hint: str = \"\"` are at products/pulse/backend/sources/base.py:22-23 \u2014 the string-typed fields the enum question targets."
+ },
+ {
+  "thread_index": 67,
+  "matchable_at_checkpoint": true,
+  "reason": "The `\", \".join(f\"{k}={v}\" ...)` numbers rendering is at products/pulse/backend/generation/synthesize.py:33 inside `_render_items` \u2014 the repeated key formatting the comment wants factored out."
+ },
+ {
+  "thread_index": 68,
+  "matchable_at_checkpoint": true,
+  "reason": "The per-series URL assembly loop is at products/pulse/backend/sources/anchored_insights.py:87-89 \u2014 the hand-built links the comment asks about."
+ },
+ {
+  "thread_index": 70,
+  "matchable_at_checkpoint": true,
+  "reason": "The verbose comment sits above `_mark_brief_failed(team_id, brief_id, error)` at products/pulse/backend/temporal/activities.py:44-45."
+ },
+ {
+  "thread_index": 74,
+  "matchable_at_checkpoint": true,
+  "reason": "`fingerprint__in=[_fingerprint(o.kind, o.fingerprint_hint) for o in out.opportunities]` is at products/pulse/backend/generation/persist.py:63 \u2014 the inline fingerprint construction the comment wants on the object."
+ },
+ {
+  "thread_index": 81,
+  "matchable_at_checkpoint": true,
+  "reason": "`scope_object = \"INTERNAL\"` is at products/pulse/backend/api/brief.py:124 and :140, and the brief-create response the finding anchors on is at :215. The RBAC bypass the claim describes rests on code that is present."
+ },
+ {
+  "thread_index": 84,
+  "matchable_at_checkpoint": true,
+  "reason": "`f\"  {item.description}\"` and the title rendering are at products/pulse/backend/generation/synthesize.py:38-40 inside `_render_items`, feeding the prompt unescaped. The injection path the claim describes is present."
+ }
+]

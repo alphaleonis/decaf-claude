@@ -1,0 +1,12 @@
+[
+ {"thread_index": 0, "matchable_at_checkpoint": true,
+  "reason": "`const behaviour = new CollapseOnWindowResizeBehaviour(collapseHandler);` is at CollapseOnWindowResizeBehaviour-test.ts:18 and is never read in that test. The unused binding is present."},
+ {"thread_index": 1, "matchable_at_checkpoint": true,
+  "reason": "Same unused binding in the second test, at :55 — `const behaviour = new CollapseOnWindowResizeBehaviour(collapseHandler as unknown as CollapseHandler);` — with the test only asserting the static `shouldStartCollapsed()`. Present."},
+ {"thread_index": 2, "matchable_at_checkpoint": true,
+  "reason": "COMPOUND. Its secondary claim names an ESLint disable comment to remove, and grep finds no `eslint-disable` anywhere in the file at the checkpoint. Its primary claim — the unused `behaviour` binding at :18 — is present. Matchable under the compound-thread rule."},
+ {"thread_index": 3, "matchable_at_checkpoint": true,
+  "reason": "The claim is that `behaviour` is unnecessary because the test only exercises the static `CollapseOnWindowResizeBehaviour.shouldStartCollapsed()` against `UIStore.instance.windowWidth`. Both the binding (:55) and that test body (:56-60) are present."},
+ {"thread_index": 9, "matchable_at_checkpoint": true,
+  "reason": "\"A second seems quite long?\" targets CollapseOnWindowResizeBehaviour.ts:69-72 — `window.setTimeout(() => { this.collapseHandler.expand(); }, 1000)` under the comment \"We'll expand the panel after a second to avoid racing with the library logic.\" The anchored line 47 is a later-revision offset; the code is present, and the test is presence rather than position."}
+]

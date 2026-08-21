@@ -33,5 +33,11 @@
   "app_type_at_checkpoint": "contract",
   "role_note": "Built as the backend L replacement, then disqualified: its CHECKPOINT diff is contract-crossing (10 frontend files, 19 backend), and the contract L cell is held by PostHog#67924 with PostHog at its 2-subject cap. Kept as the out-of-window half of the matched vintage pair for the retired PostHog#52408, which is the only thing it is now used for.",
   "frontend_files": 10,
-  "backend_files": 19
+  "backend_files": 19,
+  "matchability_deferred": {
+    "date": "2026-08-21",
+    "nib": "dcc-tvk8",
+    "reason": "Thread matchability is NOT annotated, deliberately. This fixture is probe-pair: it holds no cell in the grid, so no thread recall will be computed over it, and `score_pooled.py` already refuses an unannotated subject rather than assuming everything is matchable. Annotating it now would spend judgment on a denominator nothing divides by.",
+    "annotate_before": "any scoring of this fixture \u2014 which for a matched vintage pair means before the memorization probe runs, since the probe compares recall across the pair and both halves need the same denominator discipline"
+  }
 }
