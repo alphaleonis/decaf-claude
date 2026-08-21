@@ -1,7 +1,7 @@
 ---
 name: auto-code-review
 description: Automated review-fix-recheck loop. Runs code review, triages findings, fixes autonomously via subagent, and re-reviews if substantial changes were made. Iterates until code stabilizes.
-argument-hint: "[low|mid|high|max][N] [--max-iterations N] [--spec <path|work-item-ID>] [--report] [path] [instructions]"
+argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--max-iterations N] [--spec <path|work-item-ID>] [--report] [path] [instructions]"
 ---
 
 # Auto Code Review
@@ -17,7 +17,8 @@ Automated loop: **review → triage → fix → re-review** until stable.
 
 Parse `$ARGUMENTS`:
 
-1. **Review preset**: `bugs`, `review` (default), or `audit` — passed to `/code-review` for the first iteration. The legacy mode keywords `low`/`mid`/`high`/`max` and their aliases `quick` and `std` are accepted as aliases for `low` and `mid`. A roster-cap suffix on the mode (`mid4`, `high6`) is accepted and forwarded verbatim to `/code-review` for the first iteration. Always pass the resolved mode explicitly to `/code-review` — the review runs in a subagent, where `/code-review`'s interactive mode selection cannot reach the user. Re-reviews (Step 5) run **capped** `mid` scoped to modified files — the cap scales with the fix delta's size and complexity, and third-and-later reviews are minimal (see Step 5.4).
+1. **Review spec**: a `/code-review` preset — `bugs`, `review` (default) or `audit` — optionally followed by any of its axis overrides (`roster=N`, `models=`, `evidence=`, `reach=`). Collect the preset and every axis token into one `reviewSpec` string and forward it **verbatim** to `/code-review` for the first iteration; this skill does not interpret the axes, so a new one works here the day it ships.
+   **Always pass a resolved preset explicitly** — the review runs in a subagent, where `/code-review`'s interactive preset selection cannot reach the user. Re-reviews (Step 5) do NOT inherit `reviewSpec`: they narrow, per Step 5.4.
 2. **Max iterations**: `--max-iterations N` (default: 3) — hard cap on review-fix cycles
 3. **Spec**: `--spec <path | work-item-ID>` — passed through to `/code-review`
 4. **`--report`**: produce a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). Forward `--report` to **every** `/code-review` invocation (first pass and re-reviews), keep the session ledger through the loop (Steps 1–5), and write the report folder in Step 6.5. Callers (`auto-tdd`/`auto-dev`) may pass an implementation-phase record to include.
@@ -29,8 +30,8 @@ Parse `$ARGUMENTS`:
 ### Step 1: Initialize
 
 1. Set `iteration = 1`, `maxIterations` from args (default 3)
-2. Set `reviewPreset` from args (default `review`)
-3. Build `codeReviewArgs` — the full argument string to pass to `/code-review` (mode + spec + `--report` if set + scope + instructions); the mode is always present, even when defaulted
+2. Set `reviewSpec` from args (default `review`) — the preset plus any axis overrides, as one verbatim string
+3. Build `codeReviewArgs` — the full argument string to pass to `/code-review` (`reviewSpec` + `--spec` if set + `--report` if set + scope + instructions). The preset is always present, even when defaulted; axis overrides appear only if the caller gave them
 4. Record the initial commit/diff baseline for measuring change magnitude later. **Also establish a recoverable snapshot** before any fix/probe phase mutates the uncommitted tree: `SNAPSHOT=$(git stash create)` — this records a commit object of the current uncommitted state *without* touching the working tree or the stash stack (empty output = tree already clean, so `HEAD` is the restore point). Keep `SNAPSHOT` for the loop; if work is ever lost to a bad revert or probe, restore it with `git checkout <SNAPSHOT> -- <path>` (or `git stash apply <SNAPSHOT>`). Prefer this over auto-committing WIP, so the user keeps control of their commit history.
 5. **Detect test infrastructure:**
    - Search for test files: `*.test.*`, `*.spec.*`, `*_test.*`, `*Tests.*`, directories `tests`, `__tests__`, `test`
@@ -38,13 +39,13 @@ Parse `$ARGUMENTS`:
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
 6. **Detect work item tracking system** from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.) — store as `deferSystem`
-7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (mode + cap + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5.4 delta classification + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
+7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5.4 delta classification + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
 8. Inform the user:
 
 ```
 ## Auto Code Review Starting
 
-**Mode**: {reviewPreset} | **Max iterations**: {maxIterations} | **Test infra**: {Yes (framework) | No}
+**Review**: {reviewSpec} | **Max iterations**: {maxIterations} | **Test infra**: {Yes (framework) | No}
 **Scope**: {scope description}
 
 Starting review-fix loop...
@@ -54,7 +55,7 @@ Starting review-fix loop...
 
 Launch a **general-purpose subagent** using the Agent tool:
 
-**First iteration** — use the user's specified mode and scope:
+**First iteration** — use the caller's `reviewSpec` and scope:
 
 > Run the `/decaf-quality:code-review {codeReviewArgs}` skill using the Skill tool.
 > When complete, report:
@@ -72,7 +73,7 @@ Launch a **general-purpose subagent** using the Agent tool:
 > 2. The verdict (APPROVED or NEEDS_CHANGES)
 > 3. The count of findings by severity
 
-Re-reviews keep the screen and validation wave, never dropping to the two-agent floor: an autonomous fixer must not consume unscreened, unvalidated findings. But they run **capped** (`mid3`–`mid6`, per Step 5.4): session evidence shows verdict-driving regressions in fix deltas are caught by the floor plus the best-fitting judgment specialists, while the rest of an uncapped roster re-verifies known-clean territory at full price.
+Re-reviews keep the screen and validation wave, never dropping to the two-agent floor: an autonomous fixer must not consume unscreened, unvalidated findings. But they run **capped** (`review roster=3`–`roster=6`, per Step 5.4): session evidence shows verdict-driving regressions in fix deltas are caught by the floor plus the best-fitting judgment specialists, while the rest of an uncapped roster re-verifies known-clean territory at full price.
 
 Wait for the subagent to complete.
 

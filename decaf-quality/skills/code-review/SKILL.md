@@ -11,9 +11,9 @@ This command orchestrates code review agents and consolidates their findings int
 ## Argument Parsing
 
 Parse `$ARGUMENTS` to determine:
-1. **Preset**: `bugs`, `review`, or `audit` — a named point in the axis space defined under [Review axes](#review-axes) below. `bugs` is a **single-seat** path (one `solo-reviewer`, no wave, no funnel — see [The `bugs` path](#the-bugs-path-single-seat)); `review` and `audit` are waves. `bugs-sp` is accepted as an alias for `bugs` (it was the experimental name of this path). The legacy mode keywords `low`/`mid`/`high`/`max` (and their aliases `quick`/`std`) still resolve; see [Legacy mode keywords](#legacy-mode-keywords). When none is given, the preset is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `review`.
-   - **Roster cap (optional)**: an integer suffixed directly to the mode keyword — `mid4`, `high6`, `max8` (alias forms `std4` etc.) — sets the `roster` axis directly. It applies to `mid`, `high`, and `max`; on `low` it is ignored (the floor is already exactly two agents). The cap **counts the two floor agents** (so `mid4` = floor + the 2 best-fitting specialists) but **not** the Step 5.6 validators, and it does **not** change the mode's `models` policy or validation policy. Applied in Step 2b.5.
-   - **Per-axis override (optional)**: `roster=<N>`, `models=<low|norm|high>`, `evidence=<strong|norm|any>` and `reach=<narrow|norm|wide>` set an axis directly, overriding whatever the mode implies. `roster=6` and `mid6` mean the same thing; the long form exists so an axis can be set without picking a mode. Later arguments win.
+1. **Preset**: `bugs`, `review`, or `audit` — a named point in the axis space defined under [Review axes](#review-axes) below. `bugs` is a **single-seat** path (one `solo-reviewer`, no wave, no funnel — see [The `bugs` path](#the-bugs-path-single-seat)); `review` and `audit` are waves. When none is given, the preset is selected in Step 2a.5 — interactively when possible, otherwise defaulting to `review`.
+   - **Per-axis override (optional)**: `roster=<N>`, `models=<low|norm|high>`, `evidence=<strong|norm|any>` and `reach=<narrow|norm|wide>` set an axis directly, overriding whatever the preset implies. Later arguments win, so `review roster=6 roster=4` resolves to 4.
+   - **Anything else is not a preset.** An unrecognised leading word is scope or instructions, not a mode — say so rather than guessing. There is exactly one vocabulary: three presets and four axes.
 2. **Spec**: `--spec <path | work-item-ID>` — a specification/plan document, or an ADO work item ID whose Description and Acceptance Criteria serve as the spec. When omitted, spec discovery (Step 1.5) may find one automatically.
 3. **`--report`**: collect session metrics for skill-tuning comparisons — record per-agent usage from every reviewer/validator tool result and append a **Session Metrics** section to the consolidated review file (Step 6). See `@../../conventions/session-report.md` for the exact section format and the truth discipline. Orchestrating skills (`auto-code-review`) pass this through; standalone, the enriched consolidated file is the deliverable.
 4. **PR number**: A pull request number (e.g., `123`, `PR#123`, `#123`) — review that PR instead of local changes
@@ -104,7 +104,7 @@ it tries. Pick the deliverable; the axes follow.
 
 | preset | `roster` | `models` | `evidence` | `reach` | what you get |
 |---|---|---|---|---|---|
-| **`bugs`** | **1** — one `solo-reviewer` seat | seat on session model | self-calibrated (no screen, no gate) | `narrow` | high-confidence defects introduced by the changed lines, from one whole-surface deep pass. Short enough to read completely. `bugs roster=N` (N ≥ 2) runs the legacy four-seat wave instead — see [The `bugs` path](#the-bugs-path-single-seat) |
+| **`bugs`** | **1** — one `solo-reviewer` seat | seat on session model | self-calibrated (no screen, no gate) | `narrow` | high-confidence defects introduced by the changed lines, from one whole-surface deep pass. Short enough to read completely. `bugs roster=N` (N ≥ 2) runs the four-seat wave instead — see [The `bugs` path](#the-bugs-path-single-seat) |
 | **`review`** *(default)* | size-derived | `norm` | `norm` | `norm` | the above plus actionable minor findings — convention drift, stale comments, change-introduced gaps |
 | **`audit`** | all gate-matched | `high` | `any` | `wide` | everything, tiered: pre-existing defects, absent tests and docs, residual risks |
 
@@ -137,7 +137,7 @@ experimental `bugs-sp` preset, which remains an alias.
   never-tier-up rule covers the rest), and no screen or confidence gate runs — the seat self-assigns
   anchors and they are final. **`reach` fully applies**, defaults to `narrow`, and may be overridden
   (`bugs reach=norm`).
-- **`bugs roster=N` with N ≥ 2 runs the legacy wave** — the four-seat roster (floor + gate-matched
+- **`bugs roster=N` with N ≥ 2 runs the WAVE, not a bigger seat** — the four-seat roster (floor + gate-matched
   specialists, capped at N), `models=low`, `reach=narrow` — with **`evidence=norm`**, not `strong`:
   at a roster this small corroboration is scarce, and `strong` demanded a lone reviewer score ≥80
   alone, which is exactly how the wave binned consensus defects (dcc-sk3k). Announce it as
@@ -202,23 +202,6 @@ experimental `bugs-sp` preset, which remains an alias.
    `**Reviewers**: solo-reviewer`, `**Validation**: none (single-seat path) · parked N
    (K without a closed-set reason)`. The Agent Summary table has one row. Step 7 (review history)
    runs as usual.
-
-### Legacy mode keywords
-
-The mode ladder is retained as aliases so existing invocations keep working. They resolve before
-anything else runs:
-
-| legacy | resolves to |
-|---|---|
-| `low` (alias `quick`) | `bugs roster=2 evidence=norm` — plus its own model rule: `broad-reviewer` on the session model, `quick-reviewer` mid-tier, validation skipped |
-| `mid` (alias `std`) | `review` |
-| `high` | `review models=high` |
-| `max` | `audit` |
-| `modeN` (`mid4`, `high6`, …) | the mode above, plus `roster=N` |
-
-**`low` overrides `evidence` back to `norm` deliberately.** With two reviewers corroboration is
-scarce, and `strong` would demand a lone reviewer score ≥80 on its own — which would empty the
-report on the one mode whose whole purpose is fast feedback.
 
 ## Execution Steps
 
@@ -291,7 +274,7 @@ From the diffstat plus a skim of the diff (do not deep-read files for triage), d
 
 #### Step 2a.5: Select the preset (when none was given)
 
-Skip this step entirely when the user gave an explicit preset or legacy mode — an explicit choice is never second-guessed.
+Skip this step entirely when the user gave an explicit preset — an explicit choice is never second-guessed.
 
 First compute the **recommendation** from the Step 2a classification:
 
@@ -310,7 +293,7 @@ Then:
 | Preset | Rule |
 |--------|------|
 | `bugs` (default, roster=1) | Not a wave — the single `solo-reviewer` seat; this step is skipped (see The `bugs` path) |
-| `bugs roster=2` (legacy `low`) | Floor only: `quick-reviewer` + `broad-reviewer` |
+| `bugs roster=2` | Floor only: `quick-reviewer` + `broad-reviewer` |
 | `bugs roster=N≥3` / `review` (default) | Floor + every agent whose dispatch gate matches the changeset, then the `roster` cap |
 | `audit` | Floor + all agents **except** those excluded by a hard negative gate |
 
@@ -336,20 +319,20 @@ Current roster gates (authoritative text lives in each agent's `## Dispatch Gate
 | `decaf-quality:rust-reviewer` | **Hard gate**: Rust files in changeset — **plus** an idiom-surface judgment gate (`unsafe`, panic paths, async hazards, lock discipline, ownership changes, error-context erasure) |
 | `decaf-quality:prior-feedback-reviewer` | **Hard gate**: reviewing a PR AND prior human review threads exist |
 
-**Hard negative gates apply in ALL modes, including `max`.** An agent whose domain is absent from the changeset is never spawned — there is no point running the test-reviewer with no tests in the diff, or a C# persona on a Rust project. `max` opens the judgment gates, not the hard ones.
+**Hard negative gates apply under EVERY preset, including `audit`.** An agent whose domain is absent from the changeset is never spawned — there is no point running the test-reviewer with no tests in the diff, or a C# persona on a Rust project. `audit` opens the judgment gates, not the hard ones.
 
-**The stack reviewers carry both kinds of gate, and the order matters.** The hard gate (does the changeset contain this language?) is checked first and is absolute — `max` cannot spawn `go-reviewer` on a Rust project. The idiom-surface judgment gate is checked second, and only decides whether a diff *in that language* has anything language-specific to review: in `mid`/`high` a Go diff with no goroutines, channels, `defer`, `context`, or aliasing gets no `go-reviewer`, because what is left is ordinary logic the floor already covers. `max` opens that second gate, so its behavior is unchanged — any diff containing the language still gets its stack reviewer. Do not collapse the two into one gate: dropping the hard half would let `max` spawn every stack reviewer on every diff, and dropping the judgment half restores the file-presence firing this split exists to fix.
+**The stack reviewers carry both kinds of gate, and the order matters.** The hard gate (does the changeset contain this language?) is checked first and is absolute — `audit` cannot spawn `go-reviewer` on a Rust project. The idiom-surface judgment gate is checked second, and only decides whether a diff *in that language* has anything language-specific to review: under `review` a Go diff with no goroutines, channels, `defer`, `context`, or aliasing gets no `go-reviewer`, because what is left is ordinary logic the floor already covers. `audit` opens that second gate, so its behavior is unchanged — any diff containing the language still gets its stack reviewer. Do not collapse the two into one gate: dropping the hard half would let `audit` spawn every stack reviewer on every diff, and dropping the judgment half restores the file-presence firing this split exists to fix.
 
 **User override:** explicit user instructions beat gates — "include security" spawns the security-reviewer regardless of triage; "skip knowledge" excludes it.
 
 #### Step 2b.5: Resolve the `roster` axis
 
-Determine `N`, then resolve the roster against it. Under `bugs` without an explicit `roster`, `N` is 1 and this step does not apply (single seat). In `low` mode this step is always a no-op (the roster is already the two-agent floor) — note any cap that was given and move on.
+Determine `N`, then resolve the roster against it. Under `bugs` without an explicit `roster`, `N` is 1 and this step does not apply (single seat). At `roster=2` this step is a no-op — the roster is already the two-agent floor.
 
 **Determining `N`:**
 
 1. An **explicit** `roster=<N>` or `mode<N>` suffix always wins.
-2. Otherwise, in `mid` and `high`, derive a default from the Step 2a executable-line count:
+2. Otherwise, under `review`, derive a default from the Step 2a executable-line count:
 
    | changed executable lines | default `N` | why |
    |---|---|---|
@@ -358,16 +341,16 @@ Determine `N`, then resolve the roster against it. Under `bugs` without an expli
    | > 400 | **uncapped** | specialists become decisive: `adversarial-reviewer`'s drop cost reaches 3.20/run on large diffs against 0.50 on small ones |
 
    Record the derived value and its basis: `roster N=4 (derived: 72 executable lines)`.
-3. In `max`, never derive a default — `max` means every gate-matched agent, and a size-derived cap would contradict it.
+3. Under `audit`, never derive a default — `audit` means every gate-matched agent, and a size-derived cap would contradict it.
 
 **These defaults are a first estimate.** The *shape* is measured — drop cost rises steeply and nearly monotonically with diff size — but the specific numbers are not. Revise them when the presets are measured; do not treat 4/6/uncapped as established.
 
-The cap bounds the **review-wave roster** — the agents launched in Step 3 — at `N`. Validators (Step 5.6) are not counted, and the mode's `models` policy (Step 2d) and validation policy are unchanged: a `mid4` roster is a 4-agent roster reviewed and validated under `mid` rules. Resolve the cap against the roster Step 2b produced:
+The cap bounds the **review-wave roster** — the agents launched in Step 3 — at `N`. Validators (Step 5.6) are not counted, and the preset's `models` policy (Step 2d) and validation policy are unchanged: `review roster=4` is a 4-agent roster reviewed and validated under `review` rules. Resolve the cap against the roster Step 2b produced:
 
 1. **The floor is never dropped.** `quick-reviewer` and `broad-reviewer` always run; they consume two of the `N` slots.
 2. **Explicitly-requested agents are pinned.** Any agent the user named ("include security") is kept ahead of the ranking and consumes a slot. If the floor plus pins already exceed `N`, the pins win — record `roster cap N exceeded by explicitly-requested agents (kept K)` and dispatch those K; skip the ranking.
 3. **`N` ≥ the matched roster size `M`** → the cap drops nothing; record `roster cap N ≥ matched roster M — no agents dropped` and proceed unchanged.
-4. **`N` ≤ 2** → clamp to the floor only; record `roster cap N below floor size — clamped to the 2-agent floor`. (This is still a `mid`/`high`/`max` run — its tiering and validation wave follow the mode, unlike `low`.)
+4. **`N` ≤ 2** → clamp to the floor only; record `roster cap N below floor size — clamped to the 2-agent floor`. The preset's tiering and validation wave still apply: a small roster is not a lighter pipeline, only fewer seats in it.
 5. **Otherwise** → keep the floor (and any pins), fill the remaining `N − kept` slots with the highest-ranked gate-matched specialists, and **drop the rest** — recording each dropped agent under the roster-cap exclusion wording (Step 2c).
 
 **Rank the gate-matched specialists, then keep the top slots.** The order below is *measured*, not intuited — from per-persona drop cost over the 18 archived benchmark runs (`analysis/scripts/roster_yield.py`; method and limits in the roster-axis work item). Refresh it from that data rather than re-deriving it by judgement, which is how the previous ordering went wrong.
@@ -404,11 +387,11 @@ Review team:
 |------|---------|
 | Judgment gate didn't match | `skipped — changes confined to private method internals` |
 | Hard gate failed | `skipped — no test files in changeset (hard gate)` |
-| `low` mode floor-only rule | `not evaluated — low mode runs the floor only` |
+| roster clamped to the floor | `not evaluated — roster resolved to the 2-agent floor` |
 | `roster` dropped it (Step 2b.5) | `dropped — roster N=4 (explicit): ranked below the 2 specialists kept` |
 | `roster` dropped it, derived cap | `dropped — roster N=4 (derived: 72 executable lines): ranked below the 2 specialists kept` |
 
-In `low` mode the specialists' gates are never evaluated; describing such an exclusion as a gate decision ("hard gate not applied") misstates why the agent is absent — its gate may well have matched. Likewise, an agent dropped by the roster cap had its gate **match** — it lost a slot to higher-ranked agents — so its exclusion wording must say "dropped — roster cap", never "skipped". When the cap drops a hard-gate agent whose domain is present (e.g. the stack reviewer on a C# diff), state that the coverage was traded for the cap.
+When the roster resolves to the floor, the specialists' gates are never evaluated; describing such an exclusion as a gate decision ("hard gate not applied") misstates why the agent is absent — its gate may well have matched. Likewise, an agent dropped by the roster cap had its gate **match** — it lost a slot to higher-ranked agents — so its exclusion wording must say "dropped — roster cap", never "skipped". When the cap drops a hard-gate agent whose domain is present (e.g. the stack reviewer on a C# diff), state that the coverage was traded for the cap.
 
 This is the audit trail for the gating: when the roster turns out wrong, the stated reason shows which gate to fix. Include the same list in the report's Agent Selection Rationale section.
 
@@ -426,11 +409,11 @@ Apply the split by the **`models` axis** (mid-tier = the platform's mid-tier mod
 - **`models=low`:** judgment agents inherit the session model; volume **and** verification agents run mid-tier. As of 2026-08-17 this is the same model policy as `norm` — `low` and `norm` differ only through the presets that select them (`bugs` pairs `low` with `evidence=strong` and `reach=narrow`). Accepted for now; the axis gets rearranged if a genuinely cheaper reasoning tier appears.
 - **`models=norm` (the default):** judgment agents inherit the session model; volume agents run mid-tier; verification agents run mid-tier. The pattern-match and consistency findings the volume agents surface are well within the mid-tier's reach, while deep behavioral, design, and security findings stay on the top-tier judgment agents. The trade: a deep cross-file catch that only a volume agent (especially `broad`) would make may be lost to the down-tier.
 - **`models=high` (strict quality):** every agent inherits the session model **except** `quick-reviewer` and `consistency-reviewer` (mid-tier — their lanes are cheap pattern matches and quotable facts) and the verification agents (mid-tier — measurably the right tier for clustering, where the mid tier matches the top tier's accuracy, and adequate for verification).
-- **`low` mode is special-cased**, not a `models` value: `broad-reviewer` inherits the session model and `quick-reviewer` runs mid-tier. With a two-agent roster, broad is the only deep net — down-tiering it would leave `low` with no deep finder at all.
+- **At the two-agent floor, `broad-reviewer` always inherits the session model** whatever `models` says. With only two seats, broad is the only deep net; down-tiering it leaves the wave with no deep finder at all. `quick-reviewer` stays mid-tier — its lane is pattern matching.
 - **Never tier *up*:** an agent is never dispatched on a model more expensive than the session model. If the session is already at or below a tier it would be assigned (e.g. a `sonnet` session for a mid-tier agent, or a `haiku` session for any agent), that agent inherits the session model instead of being forced onto the named tier. Tiering only ever lowers cost, never raises it.
 - **Fallback:** if the harness's Agent tool exposes no `model` parameter, dispatch without overrides — a working review on the session model beats a broken dispatch.
 
-`models` is independent of `roster` (Step 2b.5): `roster` decides *which* agents run, `models` decides *which model* each runs on. A `mid4` roster still applies `mid`'s `models=norm` policy to its four agents.
+`models` is independent of `roster` (Step 2b.5): `roster` decides *which* agents run, `models` decides *which model* each runs on. `review roster=4` still applies `review`'s `models=norm` policy to its four agents.
 
 Note the resolved axis settings — `roster`, `models`, and which agents ran on which tier — in the team announcement and the report header.
 
@@ -587,7 +570,7 @@ Group every reviewer finding into clusters of *one underlying issue* before the 
 about any of them. This is the step that makes Step 5 cheap: deduplication is the largest single
 line item in orchestrator thinking, and it does not need the session model.
 
-1. **Dispatch one clustering agent on the mid tier** (Step 2d — it is not moved by the `models` axis). In `low` mode, cluster inline in the orchestrator instead: with two reviewers there is little to merge, and a sub-agent round-trip costs more latency than the mode's whole premise allows. Under `bugs` (single seat) there is one report and nothing to cluster — skip this step entirely. Give it every
+1. **Dispatch one clustering agent on the mid tier** (Step 2d — it is not moved by the `models` axis). Under `bugs` (single seat) there is one report and nothing to cluster — skip this step entirely. With exactly two reports there is little to merge, so cluster inline in the orchestrator rather than paying a sub-agent round trip. Give it every
    reviewer finding normalized to `{id, agent, severity, anchor, file, line, category, claim}` —
    **reviewer findings only**. Validator output does not exist yet at this point, and would be
    trivially mergeable with what it verifies.
@@ -615,8 +598,8 @@ clustering pass that returns only merged text has destroyed the review's stronge
 Score each cluster once, cheaply, before the orchestrator does any deep reasoning — so its thinking
 is spent on findings that will survive rather than on ones about to be tiered down.
 
-1. **Skip this step** in `low` mode, under `bugs` at roster=1 (no screen exists on the single-seat
-   path — the seat's anchors are final), and when `evidence=any` *and* no cluster is below score 25 — there is
+1. **Skip this step** under `bugs` at roster=1 (no screen exists on the single-seat path — the
+   seat's anchors are final), and when `evidence=any` *and* no cluster is below score 25 — there is
    nothing for it to decide.
 2. **Dispatch one screening agent per cluster, in parallel** (single message, multiple Agent calls,
    `run_in_background: false`), on the **mid tier** (Step 2d — verification agents). Each receives: the cluster's merged claim,
@@ -686,7 +669,9 @@ Independent re-verification of the few primary findings the Step 4.95 screen cou
 
 **Most of this wave has moved to the screen.** Step 4.95 already asked "is this claim real?" of every cluster, cheaply and before consolidation. Re-asking it here of everything would be paying twice for one question — the wave now exists for the cases a per-cluster score genuinely cannot decide.
 
-**Skip this step** in `low` mode (speed is the point — record `Validation: skipped (low mode)` in the report header), under `bugs` at roster=1 (record `Validation: none (single-seat path)`), and when zero primary findings survived.
+**Skip this step** under `bugs` at roster=1 (record `Validation: none (single-seat path)`) and when zero primary findings survived.
+
+**A small roster does not skip validation.** `bugs` earns its skip structurally — one seat, self-calibrated anchors, nothing to cross-check — and it is the fast path. A two-seat *wave* is a different thing: its agents do not calibrate their own anchors, so it produces unscreened claims, and an autonomous fixer must not consume those. Roster size buys fewer seats, never a lighter pipeline.
 
 1. **Select findings — validate only what the screen left open.** From the surviving primary findings, validate:
    - **every Critical** — high stakes; always worth an independent check, even when corroborated and even when the screen scored it high;
@@ -738,7 +723,7 @@ FILENAME=".decaf/code-reviews/CODE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 **Source**: <PR #N — title (platform) [source → target]> | <local changes> | <last commit>
 **Scope**: N files changed, +X/-Y lines
 **Spec**: <path or work item #N (explicit | linked | inferred)> | <none found>
-**Validation**: <N confirmed, M refuted, K uncertain[, W waived (corroborated)][, J unvalidated (over budget)]> | <skipped (low mode)>
+**Validation**: <N confirmed, M refuted, K uncertain[, W waived (corroborated)][, J unvalidated (over budget)]> | <none (single-seat path)>
 
 ## Agent Selection Rationale
 
@@ -931,11 +916,10 @@ Keep this lightweight — match on file path + category only. Skip this step if 
 /decaf-quality:code-review review roster=4              # default deliverable, roster held to 4
 /decaf-quality:code-review review models=high           # default deliverable, session model where it matters
 /decaf-quality:code-review audit reach=norm             # audit's breadth, but no pre-existing hunt
-/decaf-quality:code-review bugs roster=4                # the legacy four-seat wave, if you want corroboration
+/decaf-quality:code-review bugs roster=4                # the four-seat wave behind bugs, if you want corroboration
 /decaf-quality:code-review bugs src/Tools/MyTool.cs     # bugs preset, specific file
 /decaf-quality:code-review audit src/                   # audit preset, directory
 /decaf-quality:code-review review focus on null safety  # default preset with custom instructions
 /decaf-quality:code-review audit #42                    # audit preset, review PR #42
 /decaf-quality:code-review review --spec docs/design.md # default preset with a spec
-/decaf-quality:code-review mid4                         # legacy — resolves to review roster=4
 ```

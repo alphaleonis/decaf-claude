@@ -86,7 +86,9 @@ Runs parallel specialized reviewer agents over a diff — uncommitted changes, a
 /decaf-quality:code-review 42              # review PR #42
 /decaf-quality:code-review --spec docs/design.md
 ```
-Modes `low | mid | high | max` trade roster size and model tier; append a number (`mid4`) to cap the roster.
+Three presets — `bugs` (one deep seat), `review` (default), `audit` (everything, tiered) — over four
+overridable axes: `roster=N`, `models=low|norm|high`, `evidence=strong|norm|any`, `reach=narrow|norm|wide`.
+All four point the same way: less output on the left, more on the right.
 
 ### auto-code-review
 The hands-off loop: it runs [`code-review`](#code-review), triages, fixes via subagent, and re-reviews, iterating until the code stabilizes or the iteration cap is hit. Use it when you want issues *fixed*, not just reported; for manual control over each fix, run `code-review` then [`resolve-code-review`](#resolve-code-review) instead.
