@@ -56,7 +56,10 @@ You **call** these; you do not reimplement them. Each already supports unattende
 3. **You own tracker status, in the main context.** Subagents that batch-dev launches get
    fresh, work-item-unaware contexts and cannot be trusted to update the tracker. So **you**
    `set-status` → `in-progress` before dispatch and `close` after RECONCILE. Never delegate
-   status transitions.
+   status transitions. The same ownership extends to **commits in the shared working tree**:
+   batch-dev's series-lane workers stage while the conductor commits — a dispatched agent
+   cannot be reliably redirected once running, so the irreversible step stays in the main
+   context (worktree lanes commit in their own trees by necessity).
 4. **Tracker is the system of record; `.decaf/auto-deliver/` is a breadcrumb, not a mirror.** At
    each lap re-derive "what's next" from the tracker via `next-ready`; `.decaf/auto-deliver/state.json`
    only resumes the in-flight step.
