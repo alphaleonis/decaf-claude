@@ -32,6 +32,13 @@ You **call** these; you do not reimplement them. Each already supports unattende
 
   @../../conventions/acceptance-criteria.md
 
+- **Subagent dispatch contract** — how a dispatched agent's report gets back (task vs
+  teammate mode) and why named teammates need an explicit delivery clause. Every agent this
+  loop dispatches directly (focused fixes in VERIFY) is **unnamed** — task mode, report as
+  tool result.
+
+  @../../conventions/subagent-briefs.md
+
 - **On-disk state/artifacts** in `.decaf/auto-deliver/` (in the target project, git-tracked).
 
   @artifact-layout.md
@@ -49,7 +56,10 @@ You **call** these; you do not reimplement them. Each already supports unattende
 3. **You own tracker status, in the main context.** Subagents that batch-dev launches get
    fresh, work-item-unaware contexts and cannot be trusted to update the tracker. So **you**
    `set-status` → `in-progress` before dispatch and `close` after RECONCILE. Never delegate
-   status transitions.
+   status transitions. The same ownership extends to **commits in the shared working tree**:
+   batch-dev's series-lane workers stage while the conductor commits — a dispatched agent
+   cannot be reliably redirected once running, so the irreversible step stays in the main
+   context (worktree lanes commit in their own trees by necessity).
 4. **Tracker is the system of record; `.decaf/auto-deliver/` is a breadcrumb, not a mirror.** At
    each lap re-derive "what's next" from the tracker via `next-ready`; `.decaf/auto-deliver/state.json`
    only resumes the in-flight step.
@@ -57,13 +67,20 @@ You **call** these; you do not reimplement them. Each already supports unattende
 ## Setup / resume
 
 1. Resolve the **plan** (root work-item id from the argument) and the **tracker** (the
-   `--tracker` value, else detect per the adapter contract).
+   `--tracker` value, else detect per the adapter contract). The argument may name the plan
+   root **or any single phase/subtree** — every `next-ready` call and the "plan complete"
+   test below are relative to whatever was named.
 2. Resolve the **integration branch** (`--base-branch`, else the repo's default branch). Create
    or check it out; every phase merges here. Do **not** push to or merge into `main` — that
    stays a human decision.
 3. Read `.decaf/auto-deliver/state.json` if it exists: if a `current_phase` + `step` is in flight,
    **resume at that step**; otherwise start a fresh lap at SELECT. Create `.decaf/auto-deliver/`
-   (with its `.gitignore`) if missing, per @artifact-layout.md.
+   (with its `.gitignore`) if missing, per @artifact-layout.md. Then check whether the artifact
+   root is itself ignored by the project (`git check-ignore -q .decaf && echo ignored`): if it is,
+   the layout's durability does not hold — `state.json`, `lessons.md`, and the reflections will be
+   local-only and will not survive a fresh clone or reach another machine. Say so plainly in the
+   run's first report, and do **not** force-add past the project's `.gitignore` (that is a project
+   decision); if the user wants the trail preserved, offer a tracked location instead.
 
 ## The loop
 
@@ -73,8 +90,13 @@ boundary so a crash resumes cleanly.
 ### 1. SELECT
 
 Call `next-ready(plan)` on the tracker. **If it returns nothing → the plan is complete →
-go to STOP.** Otherwise set `current_phase`, write `state.json` (`step: SELECT`), and
-`set-status(current_phase, in-progress)`.
+go to STOP.** If `state.json` carries a `scope` (an operator-restricted subset of the plan),
+`next-ready` may return items outside it — newly filed follow-ups, or work the operator
+deliberately excluded. Take the first ready item **within `scope`**; if ready items outside
+`scope` are ordered ahead of it, **surface them in the report** rather than silently skipping
+or silently adopting them — widening scope is the human's call, exactly as narrowing it is,
+and scope exhausted counts as plan complete. Then set `current_phase`, write `state.json`
+(`step: SELECT`), and `set-status(current_phase, in-progress)`.
 
 ### 2. BREAKDOWN
 
@@ -97,12 +119,20 @@ clusters self-review inline and produce none — batch-dev's Phase 8 names the u
 
 - **`[run]` items** — run each command; compare output to its `expect:` condition.
   - On failure: dispatch a **focused fix** (reuse the batch-dev / dev execution machinery — a
-    scoped `Agent` with a pre-approved prompt), then **re-run the check**. Bounded retry
+    scoped, **unnamed** `Agent` with a pre-approved prompt, per the dispatch contract), then
+    **re-run the check**. Bounded retry
     (default **3** attempts per check); if still failing → **ESCALATE** (you cannot honestly
     call the phase done).
   - **Fix now, in scope.** Do not defer an in-scope gap. Do not narrow the criterion.
-- **`[manual]` items** — verify by subagent inspection, mark **lower-confidence**, and
-  **surface + hold** for human confirmation. These **never block** the loop.
+- **`[manual]` items** — first attempt to construct an execution that settles the criterion.
+  Many criteria are tagged `[manual]` at planning time, before anyone worked out whether they
+  are runnable — and criteria about file-level effects, ordering, exit codes, or refusal
+  messages usually are (`git status --porcelain | wc -l` settles "touches exactly one file").
+  The execution must actually settle the criterion, not approximate it — a weak proxy command
+  is worse than honest inspection. If you execute it, record it as executed and treat it with
+  `[run]` confidence. Only when no execution can settle it: verify by subagent inspection,
+  mark **lower-confidence**, and **surface + hold** for human confirmation. These **never
+  block** the loop.
 - **Out-of-scope discoveries** (real, but not this phase's job) → note them for RECONCILE to
   file as follow-ups; do **not** fix them here and do **not** silently absorb them.
 
