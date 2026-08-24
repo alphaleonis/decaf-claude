@@ -53,7 +53,7 @@ Starting review-fix loop...
 
 ### Step 2: Code Review (Subagent)
 
-Launch a **general-purpose subagent** using the Agent tool:
+Launch a **general-purpose subagent** using the Agent tool — **unnamed** (task mode: its report returns as the tool result; a named agent's final message is discarded — see `@../../conventions/subagent-briefs.md`):
 
 **First iteration** — use the caller's `reviewSpec` and scope:
 
@@ -262,7 +262,7 @@ Otherwise:
 4. **Set `reReviewPreset` — conservative by default, within the caller's preset family.** A re-review asks a different question from the first pass: *what did the fixes break?* — not *what else is wrong with this code?* So it narrows rather than repeating, and it never spends more than the original ask did. Two rules bound every choice below:
 
    - **Roster monotonicity.** A re-review's roster never exceeds `max(3, first-pass resolved roster)` — read the first pass's resolved roster from the first review file's header (the `**Preset**` line, or count the `**Reviewers**` list). Fix-delta *size* never raises the roster: the response to a risky delta is *which* specialists fill the capped slots (gated dispatch and the ranking pick seats to fit the delta), not more of them.
-   - **Escalation needs a named trigger.** Moving above the default rung requires one of: the fix delta touches concurrency/locking, a trust boundary (auth, parsing of external input, secrets), or data mutations; a previous re-review in this loop found a regression; or a fix failed verification and was re-applied. Name the trigger in the report (and, under `--report`, in the ledger). No trigger, no escalation — regardless of how many lines the fixes changed.
+   - **Escalation needs a named trigger.** Moving above the default rung requires one of: the fix delta touches concurrency/locking, a trust boundary (auth, parsing of external input, secrets), or data mutations; a previous re-review in this loop found a regression; a fix failed verification and was re-applied; or the fix delta changes a **documentation surface consumed as a command reference** — an agent-onboarding prompt, a generated help/grammar/cheat surface, a README command table. Bound the last trigger to surfaces that state commands or grammar, not prose at large: where a project directs agents to such a surface to avoid guessing syntax, an incorrect grammar there produces a failing command that the project's own stop-on-error rule turns into a halt, so such a delta carries behavioral risk despite touching no executable line. Name the trigger in the report (and, under `--report`, in the ledger). No trigger, no escalation — regardless of how many lines the fixes changed.
 
    Classify the fix delta (count changed **executable production lines**, excluding docs, comments, test files, generated files; note which triggers, if any, are present), then:
 
