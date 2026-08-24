@@ -53,7 +53,7 @@ Starting review-fix loop...
 
 ### Step 2: Code Review (Subagent)
 
-Launch a **general-purpose subagent** using the Agent tool:
+Launch a **general-purpose subagent** using the Agent tool — **unnamed** (task mode: its report returns as the tool result; a named agent's final message is discarded — see `@../../conventions/subagent-briefs.md`):
 
 **First iteration** — use the caller's `reviewSpec` and scope:
 

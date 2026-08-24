@@ -32,6 +32,13 @@ You **call** these; you do not reimplement them. Each already supports unattende
 
   @../../conventions/acceptance-criteria.md
 
+- **Subagent dispatch contract** — how a dispatched agent's report gets back (task vs
+  teammate mode) and why named teammates need an explicit delivery clause. Every agent this
+  loop dispatches directly (focused fixes in VERIFY) is **unnamed** — task mode, report as
+  tool result.
+
+  @../../conventions/subagent-briefs.md
+
 - **On-disk state/artifacts** in `.decaf/auto-deliver/` (in the target project, git-tracked).
 
   @artifact-layout.md
@@ -97,7 +104,8 @@ clusters self-review inline and produce none — batch-dev's Phase 8 names the u
 
 - **`[run]` items** — run each command; compare output to its `expect:` condition.
   - On failure: dispatch a **focused fix** (reuse the batch-dev / dev execution machinery — a
-    scoped `Agent` with a pre-approved prompt), then **re-run the check**. Bounded retry
+    scoped, **unnamed** `Agent` with a pre-approved prompt, per the dispatch contract), then
+    **re-run the check**. Bounded retry
     (default **3** attempts per check); if still failing → **ESCALATE** (you cannot honestly
     call the phase done).
   - **Fix now, in scope.** Do not defer an in-scope gap. Do not narrow the criterion.
