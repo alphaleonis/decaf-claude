@@ -73,7 +73,12 @@ You **call** these; you do not reimplement them. Each already supports unattende
    stays a human decision.
 3. Read `.decaf/auto-deliver/state.json` if it exists: if a `current_phase` + `step` is in flight,
    **resume at that step**; otherwise start a fresh lap at SELECT. Create `.decaf/auto-deliver/`
-   (with its `.gitignore`) if missing, per @artifact-layout.md.
+   (with its `.gitignore`) if missing, per @artifact-layout.md. Then check whether the artifact
+   root is itself ignored by the project (`git check-ignore -q .decaf && echo ignored`): if it is,
+   the layout's durability does not hold — `state.json`, `lessons.md`, and the reflections will be
+   local-only and will not survive a fresh clone or reach another machine. Say so plainly in the
+   run's first report, and do **not** force-add past the project's `.gitignore` (that is a project
+   decision); if the user wants the trail preserved, offer a tracked location instead.
 
 ## The loop
 
