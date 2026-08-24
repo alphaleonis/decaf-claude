@@ -86,3 +86,9 @@ phases/*/context.log
 Tracking `state.json`, `lessons.md`, and `phases/*/reflection.md` makes a run resumable
 across machines/sessions and leaves a reviewable trail in the project's history; ignoring the
 raw logs keeps that trail signal-dense.
+
+That durability holds only when the **parent** `.decaf/` is trackable. A project may ignore
+`/.decaf/` in its own `.gitignore` — then `git add` refuses everything here and the trail is
+local-only: it survives neither a fresh clone nor a machine switch. The loop's setup detects
+this (`git check-ignore -q .decaf`) and reports it plainly; it never force-adds past a
+project's ignore, because that ignore is a project decision.
