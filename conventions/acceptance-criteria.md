@@ -25,7 +25,7 @@ Each criterion is a checklist item tagged either `[run]` (runnable) or `[manual]
 ### Rules
 
 1. **Prefer `[run]`.** If a criterion *can* be expressed as a command + expected result, write it that way — a robot can run a command and diff output; it can't verify a narrative.
-2. **Tag honestly.** Mark `[manual]` only when there is genuinely no runnable form. Don't dress prose up as runnable.
+2. **Tag honestly.** Mark `[manual]` only when there is genuinely no runnable form. Don't dress prose up as runnable. A `[manual]` tag is a claim that **no command can check the criterion** — the verify step tests that claim by trying to construct an execution before falling back to inspection, so tagging `[manual]` to save effort at planning time buys nothing and costs evidence quality.
 3. **One observable per item.** Each item checks one thing, so a failure points at one gap.
 4. **Self-contained commands.** Prefer commands runnable from the repo root with the project's standard toolchain (test runner, build, linter, a curl against a known local endpoint). State any required setup in the command itself.
 5. **Cover the slice's external behavior**, not implementation detail — the same bar as a good test (test what the feature does, not how).
@@ -51,5 +51,6 @@ Each criterion is a checklist item tagged either `[run]` (runnable) or `[manual]
 ## Who reads it
 
 The `auto-deliver` verify step reads `## Acceptance` (via the adapter `read` op), runs every
-`[run]` item, dispatches focused fixes for failures (fix-now, in-scope), and surfaces
-`[manual]` items for human confirmation without blocking.
+`[run]` item, dispatches focused fixes for failures (fix-now, in-scope), attempts to construct
+an execution for each `[manual]` item (upgrading it to `[run]` confidence when one settles it),
+and surfaces the remaining `[manual]` items for human confirmation without blocking.

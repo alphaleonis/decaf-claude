@@ -124,8 +124,15 @@ clusters self-review inline and produce none — batch-dev's Phase 8 names the u
     (default **3** attempts per check); if still failing → **ESCALATE** (you cannot honestly
     call the phase done).
   - **Fix now, in scope.** Do not defer an in-scope gap. Do not narrow the criterion.
-- **`[manual]` items** — verify by subagent inspection, mark **lower-confidence**, and
-  **surface + hold** for human confirmation. These **never block** the loop.
+- **`[manual]` items** — first attempt to construct an execution that settles the criterion.
+  Many criteria are tagged `[manual]` at planning time, before anyone worked out whether they
+  are runnable — and criteria about file-level effects, ordering, exit codes, or refusal
+  messages usually are (`git status --porcelain | wc -l` settles "touches exactly one file").
+  The execution must actually settle the criterion, not approximate it — a weak proxy command
+  is worse than honest inspection. If you execute it, record it as executed and treat it with
+  `[run]` confidence. Only when no execution can settle it: verify by subagent inspection,
+  mark **lower-confidence**, and **surface + hold** for human confirmation. These **never
+  block** the loop.
 - **Out-of-scope discoveries** (real, but not this phase's job) → note them for RECONCILE to
   file as follow-ups; do **not** fix them here and do **not** silently absorb them.
 
