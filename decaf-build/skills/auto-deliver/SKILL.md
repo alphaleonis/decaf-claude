@@ -67,7 +67,9 @@ You **call** these; you do not reimplement them. Each already supports unattende
 ## Setup / resume
 
 1. Resolve the **plan** (root work-item id from the argument) and the **tracker** (the
-   `--tracker` value, else detect per the adapter contract).
+   `--tracker` value, else detect per the adapter contract). The argument may name the plan
+   root **or any single phase/subtree** — every `next-ready` call and the "plan complete"
+   test below are relative to whatever was named.
 2. Resolve the **integration branch** (`--base-branch`, else the repo's default branch). Create
    or check it out; every phase merges here. Do **not** push to or merge into `main` — that
    stays a human decision.
@@ -88,8 +90,13 @@ boundary so a crash resumes cleanly.
 ### 1. SELECT
 
 Call `next-ready(plan)` on the tracker. **If it returns nothing → the plan is complete →
-go to STOP.** Otherwise set `current_phase`, write `state.json` (`step: SELECT`), and
-`set-status(current_phase, in-progress)`.
+go to STOP.** If `state.json` carries a `scope` (an operator-restricted subset of the plan),
+`next-ready` may return items outside it — newly filed follow-ups, or work the operator
+deliberately excluded. Take the first ready item **within `scope`**; if ready items outside
+`scope` are ordered ahead of it, **surface them in the report** rather than silently skipping
+or silently adopting them — widening scope is the human's call, exactly as narrowing it is,
+and scope exhausted counts as plan complete. Then set `current_phase`, write `state.json`
+(`step: SELECT`), and `set-status(current_phase, in-progress)`.
 
 ### 2. BREAKDOWN
 

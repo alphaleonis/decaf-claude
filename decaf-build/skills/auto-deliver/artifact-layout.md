@@ -35,15 +35,27 @@ mid-step; everything authoritative about completion comes from the tracker.
 
 ```json
 {
-  "plan": "<root work-item id>",
+  "plan": "<root work-item id, or the single phase the run was invoked on>",
   "tracker": "nibs | ado | github | markdown",
   "integration_branch": "<branch the loop merges phases into>",
   "current_phase": "<phase work-item id, or null between phases>",
   "step": "SELECT | BREAKDOWN | EXECUTE | VERIFY | RECONCILE | LEARN | REPLAN | MERGE",
+  "scope": ["<work-item id>", "— optional: operator-restricted subset of the plan"],
+  "review_spec": "<optional: the --review argument, verbatim>",
+  "note": "<optional: free-text handoff for the next session>",
   "started_at": "<ISO8601>",
   "updated_at": "<ISO8601>"
 }
 ```
+
+`scope`, `review_spec`, and `note` are optional. `scope` is the subset of work-item ids the
+operator restricted this run to — SELECT reconciles `next-ready` against it rather than
+silently adopting or skipping out-of-scope items. `review_spec` preserves the `--review`
+argument across resumes so a resumed run reviews at the same rung it started at. `note` is a
+free-text handoff — which task to restart at, what was committed, where follow-ups were
+filed, and why; on a real resume it is often the highest-value field, so write it like a
+message to the next session. Do not add a children/status mirror (e.g. `phase_children`) —
+that is re-derived from the tracker.
 
 On start/resume: read `state.json`; if a `current_phase` + `step` is in flight, resume there;
 otherwise call `next-ready` on the tracker to pick the next phase. The loop rewrites
