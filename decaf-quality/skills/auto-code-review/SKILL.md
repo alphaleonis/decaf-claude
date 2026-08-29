@@ -1,6 +1,6 @@
 ---
 name: auto-code-review
-description: Automated review-fix-recheck loop. Runs code review, triages findings, fixes autonomously via subagent, and re-reviews if substantial changes were made. Iterates until code stabilizes.
+description: Automated review-fix-recheck loop. Runs code review, triages findings, fixes autonomously via subagent, and re-reviews when the fixes warrant it. Iterates until code stabilizes.
 argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--max-iterations N] [--spec <path|work-item-ID>] [--report] [path] [instructions]"
 ---
 
@@ -11,7 +11,7 @@ Automated loop: **review → triage → fix → re-review** until stable.
 - **Step 2** delegates to `/decaf-quality:code-review` via subagent (context isolation)
 - **Step 3** triages findings in the main context using the resolve-code-review auto decision criteria
 - **Step 4** executes the confirmed plan via subagent (context isolation)
-- **Step 5** decides whether to re-review based on change magnitude
+- **Step 5** decides whether to re-review based on what the fix round fixed and the risk of its delta
 
 ## Argument Parsing
 
@@ -32,14 +32,14 @@ Parse `$ARGUMENTS`:
 1. Set `iteration = 1`, `maxIterations` from args (default 3)
 2. Set `reviewSpec` from args (default `review`) — the preset plus any axis overrides, as one verbatim string
 3. Build `codeReviewArgs` — the full argument string to pass to `/code-review` (`reviewSpec` + `--spec` if set + `--report` if set + scope + instructions). The preset is always present, even when defaulted; axis overrides appear only if the caller gave them
-4. Record the initial commit/diff baseline for measuring change magnitude later. **Also establish a recoverable snapshot** before any fix/probe phase mutates the uncommitted tree: `SNAPSHOT=$(git stash create)` — this records a commit object of the current uncommitted state *without* touching the working tree or the stash stack (empty output = tree already clean, so `HEAD` is the restore point). Keep `SNAPSHOT` for the loop; if work is ever lost to a bad revert or probe, restore it with `git checkout <SNAPSHOT> -- <path>` (or `git stash apply <SNAPSHOT>`). Prefer this over auto-committing WIP, so the user keeps control of their commit history.
+4. Record the initial commit/diff baseline (the changeset the first review sees). **Also establish a recoverable snapshot** before any fix/probe phase mutates the uncommitted tree: `SNAPSHOT=$(git stash create)` — this records a commit object of the current uncommitted state *without* touching the working tree or the stash stack (empty output = tree already clean, so `HEAD` is the restore point). Keep `SNAPSHOT` for the loop; if work is ever lost to a bad revert or probe, restore it with `git checkout <SNAPSHOT> -- <path>` (or `git stash apply <SNAPSHOT>`). Prefer this over auto-committing WIP, so the user keeps control of their commit history.
 5. **Detect test infrastructure:**
    - Search for test files: `*.test.*`, `*.spec.*`, `*_test.*`, `*Tests.*`, directories `tests`, `__tests__`, `test`
    - Search for test framework config: `jest.config.*`, `pytest.ini`, `*.csproj` (test SDK), `go.mod`, `Cargo.toml`, etc.
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
 6. **Detect work item tracking system** from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.) — store as `deferSystem`
-7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5.4 delta classification, any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
+7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
 8. Inform the user:
 
 ```
@@ -180,6 +180,8 @@ If no findings have a fix action → skip Step 4, go to **Step 6**.
 
 ### Step 4: Execute Fixes (Subagent)
 
+Capture the round baseline first — Step 5 measures this round's delta against it: `ROUND_SNAPSHOT=$(git stash create)` (empty output = tree is clean; measure against `HEAD` instead).
+
 Launch a **general-purpose subagent** to execute the confirmed plan. Build the subagent prompt with:
 
 1. The review file path (so it can read finding details)
@@ -245,15 +247,22 @@ Report to the user:
 
 After the fix subagent completes:
 
-1. Count how many findings were actually fixed (from subagent report)
+1. Collect `sevFixed` — the severities of the findings actually **fixed** (from the subagent report; skipped, deferred, dismissed, and not-addressing don't count)
 2. Get list of modified files (from subagent report)
-3. Run `git diff --stat` to measure total change magnitude
+3. Measure and classify **this round's fix delta** — `git diff $ROUND_SNAPSHOT` against the Step 4 baseline, never against `HEAD` (that counts the whole changeset under review, not the fixes) and never cumulatively across rounds. Classify it once; the gate below and the preset choice in 5.4 both consume it:
+   - `execLines` / `filesTouched` — changed executable production lines and files, excluding docs, comments, whitespace-only changes, test files, and generated files (`git diff -w --numstat` plus path filters gets most of it; judgment on mixed files)
+   - `triggers` — which of 5.4's named triggers are present: scanned from the delta (concurrency/locking, a trust boundary, data mutations, a command-reference documentation surface) or from loop events (a previous re-review found a regression; a fix failed verification and was re-applied)
 
-**Re-review is warranted if ANY of these are true:**
-- At least **3 findings were fixed** (not skipped/deferred/dismissed)
-- Total **lines changed > 50**
+**Re-review is warranted iff `iteration < maxIterations` AND any of:**
 
-**AND** `iteration < maxIterations`.
+- a **named trigger** is present — risky by kind, size irrelevant
+- any **Critical or High** finding was fixed
+- **two or more Medium** findings were fixed
+- overflow: `execLines > 50` or `filesTouched > 3`
+
+Low and Minor–Consistency fixes never count toward warranting: a round of purely mechanical fixes (spelling, comments, non-command-surface docs, formatting, compiler-verified renames) does not re-review, whatever its raw line count. If the delta cannot be measured (missing snapshot, failed diff), re-review — the gate fails toward review, never silently past it.
+
+The gate runs on units the loop already computes: the severity of what was fixed is a language-independent proxy for how behavioral and entangled the touched code was — which is what predicts regression risk — and the overflow clause only catches the rare low-severity fix round that still rewrote a lot. Its constants (50 executable lines, 3 files) are unmeasured de-minimis bounds, not calibrated values; nothing important hinges on them, and `--report` session data is the instrument for revisiting them.
 
 If re-review is **not** warranted → go to **Step 6**.
 
@@ -264,7 +273,7 @@ Otherwise:
    - **Roster monotonicity.** A re-review's roster never exceeds `max(3, first-pass resolved roster)` — read the first pass's resolved roster from the first review file's header (the `**Preset**` line, or count the `**Reviewers**` list). Fix-delta *size* never raises the roster: the response to a risky delta is *which* specialists fill the capped slots (gated dispatch and the ranking pick seats to fit the delta), not more of them.
    - **Escalation needs a named trigger.** Moving above the default rung requires one of: the fix delta touches concurrency/locking, a trust boundary (auth, parsing of external input, secrets), or data mutations; a previous re-review in this loop found a regression; a fix failed verification and was re-applied; or the fix delta changes a **documentation surface consumed as a command reference** — an agent-onboarding prompt, a generated help/grammar/cheat surface, a README command table. Bound the last trigger to surfaces that state commands or grammar, not prose at large: where a project directs agents to such a surface to avoid guessing syntax, an incorrect grammar there produces a failing command that the project's own stop-on-error rule turns into a halt, so such a delta carries behavioral risk despite touching no executable line. Name the trigger in the report (and, under `--report`, in the ledger). No trigger, no escalation — regardless of how many lines the fixes changed.
 
-   Classify the fix delta (count changed **executable production lines**, excluding docs, comments, test files, generated files; note which triggers, if any, are present), then:
+   Take the delta classification from item 3 (`execLines`, `triggers`), then:
 
    - **Caller ran `bugs`** (the single seat):
      - default — `bugs` scoped to the modified files: the seat again, on a smaller diff. Its self-calibration already drove iteration 1; the re-review is the same mechanism pointed at less code.
@@ -284,7 +293,7 @@ Then:
 - Record this iteration's summary in history
 - Increment `iteration`
 - Set `modifiedFileList` to the files modified by fixes
-- Report: `Substantial changes detected ({X} fixes, {Y} lines changed). Re-reviewing modified files ({reReviewPreset})...`
+- Report: `Re-review warranted ({the clause that fired: the named trigger | Critical/High fixed | 2+ Medium fixed | overflow}). Re-reviewing modified files ({reReviewPreset})...`
 - Go to **Step 2**
 
 ### Step 6: Final Summary
