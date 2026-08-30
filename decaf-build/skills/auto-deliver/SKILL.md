@@ -45,9 +45,24 @@ You **call** these; you do not reimplement them. Each already supports unattende
 
 ## Non-negotiable invariants
 
-1. **No gate-stops.** You never pause for approval, confirmation, or a status check. The
-   only exits are *plan complete* and *escalation* (a real inability to proceed). Pass
-   `--unattended` to every sub-skill so none of them prompts.
+1. **No gate-stops, and no accidental ones.** You never pause for approval, confirmation, or
+   a status check. The only exits are *plan complete* and *escalation* (a real inability to
+   proceed). Pass `--unattended` to every sub-skill so none of them prompts.
+
+   **Ending a turn is stopping, whatever the text says.** A message closing with "starting
+   lap 3 now" and no tool call has not started lap 3 — it has ended the run, and only the
+   human can restart it. So the rule is mechanical, not a matter of intent:
+
+   > **Never end a turn unless the plan is complete, you are escalating, or an agent you
+   > dispatched is still running.** Only that third case wakes you back up.
+
+   Two shapes to catch in yourself, both of which have ended real runs:
+   - **Narrating instead of acting** — "Starting lap N now", "next I'll dispatch…" as the
+     closing sentence. Anything you can announce you can do in the same turn: take the
+     action, then describe it in the past tense.
+   - **Manufacturing a gate** — "Say the word and I'll start it." A phase being risky,
+     user-visible, or larger than the last one is not a reason to hand back; it is the work.
+     The escalation list below is closed.
 2. **Scope is immutable per phase.** During a phase you **fix gaps now, in scope** — never
    silently shrink it. Genuinely out-of-scope discoveries become **follow-ups** (and, if they
    need their own phase, an **injected** phase) — never silent drops. **Only a human cuts
@@ -173,6 +188,13 @@ Ensure the phase's work is integrated onto the **integration branch** (batch-dev
 clusters; you confirm the phase as a whole has landed). Confirm the phase is `closed`/done in
 the tracker. Then **loop back to SELECT immediately** — no pause, no check-in.
 
+**The lap report comes after the next lap is dispatched, never before.** A lap report reads
+like the end of the work, so writing one with nothing running is how this loop dies. Carry
+straight through SELECT → BREAKDOWN → EXECUTE and get the next phase's agent running; *then*
+write the report, in the same turn. It describes finished work while the next phase is already
+in flight, and that agent's completion — not the human — is what wakes you. If the report is
+drafted and nothing is dispatched, you are one message from a dead stop: dispatch first.
+
 ## STOP — plan complete
 
 Reached only when SELECT finds **no ready phase**. Emit a final report:
@@ -197,8 +219,10 @@ Legitimate escalations:
 - `next-ready` keeps returning a phase whose blockers never clear (a dependency cycle or
   no-progress loop);
 - a merge conflict you cannot resolve;
-- a situation that genuinely requires human judgment (notably: scope that ought to be cut —
-  which you may not do yourself).
+- a situation that genuinely requires human judgment — in practice, **scope that ought to be
+  cut**, which you may not do yourself. Not this: a phase that looks risky, ships user-visible
+  behavior, or is bigger than the last one. That is ordinary work, and stopping for it is the
+  manufactured gate invariant 1 forbids.
 
 On escalation, write the in-flight `state.json` and a clear reason to the run report, then
 stop. This is a **failure-stop, resumable** — re-invoking auto-deliver picks up from
