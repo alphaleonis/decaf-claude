@@ -2,11 +2,11 @@
 # dcc-8sou
 version: 1
 title: Comment corrections are always expansions, so review ratchets prose volume up
-status: todo
+status: completed
 type: feature
 priority: high
 created_at: 2026-09-10T20:33:13Z
-updated_at: 2026-09-11T12:11:55Z
+updated_at: 2026-09-11T12:23:06Z
 order: yV
 ---
 
@@ -123,11 +123,50 @@ Design constraints, measured on the same tree (112 blocks >25 lines):
 
 ## Acceptance
 
-- [ ] [run] `grep -c "Remedy direction" decaf-quality/skills/code-review/SKILL.md` — expect: ≥1, and the match sits inside the Base Context Template so every wave seat receives it
-- [ ] [manual] For drifted prose the first remedy offered is deleting the claim; restating it more precisely requires a stated reason the claim must live in code
-- [ ] [manual] A drafted replacement comment may not exceed what it replaces without a stated reason
-- [ ] [run] `grep -l "Remedy direction" decaf-quality/agents/solo-reviewer.md` — expect: a match (the `bugs` seat carries its own brief)
-- [ ] [run] `grep -l KNOWLEDGE_EXCESS decaf-quality/agents/knowledge-reviewer.md conventions/severity.md conventions/code-review-consolidation.md` — expect: all three (persona rule, severity row, consolidation alias)
-- [ ] [manual] The excess rule sits below RULE 0, exempts exported-identifier docs / package docs / generated files, triggers at ~25 lines (~10 inside a function body), and routes narrative to TEMPORAL_CONTAMINATION so the two cannot both fire
-- [ ] [run] Review a `~/code/nibs` changeset touching the 43-line in-body block at `cmd/list.go:327` — expect: a finding proposing deletion or a mechanism, not an expansion
-- [ ] [run] Review a `~/code/nibs` changeset containing a comment the diff falsifies — expect: the fix names deletion of the claim before any rewrite
+- [x] [run] `grep -c "Remedy direction" decaf-quality/skills/code-review/SKILL.md` — expect: ≥1, and the match sits inside the Base Context Template so every wave seat receives it
+- [x] [manual] For drifted prose the first remedy offered is deleting the claim; restating it more precisely requires a stated reason the claim must live in code
+- [x] [manual] A drafted replacement comment may not exceed what it replaces without a stated reason
+- [x] [run] `grep -l "Remedy direction" decaf-quality/agents/solo-reviewer.md` — expect: a match (the `bugs` seat carries its own brief)
+- [x] [run] `grep -l KNOWLEDGE_EXCESS decaf-quality/agents/knowledge-reviewer.md conventions/severity.md conventions/code-review-consolidation.md` — expect: all three (persona rule, severity row, consolidation alias)
+- [x] [manual] The excess rule sits below RULE 0, exempts exported-identifier docs / package docs / generated files, triggers at ~25 lines (~10 inside a function body), and routes narrative to TEMPORAL_CONTAMINATION so the two cannot both fire
+- [x] [run] Review a `~/code/nibs` changeset touching the 43-line in-body block at `cmd/list.go:327` — expect: a finding proposing deletion or a mechanism, not an expansion
+- [x] [run] Review a `~/code/nibs` changeset containing a comment the diff falsifies — expect: the fix names deletion of the claim before any rewrite
+
+## Summary
+
+**Completed 2026-09-11** — Implemented all three priorities.
+
+**Remedy direction** added to the Base Context Template (code-review SKILL.md),
+so every seat in a wave receives it, and separately into solo-reviewer's own
+brief (the `bugs` seat is dispatched with a different template). Three rules:
+offer deletion of a drifted claim first; where the claim is checkable, propose a
+guard or test and delete the sentence; a drafted replacement may not exceed what
+it replaces without stating why.
+
+**KNOWLEDGE_EXCESS** added to knowledge-reviewer as a RULE 2 category (SHOULD,
+below RULE 0) with the measured exemptions — exported-identifier docs, package
+docs, generated files, canonical invariants siblings defer to — and the ~25-line
+trigger (~10 inside a function body), phrased as "should a mechanism carry this?".
+A `<remedy_direction>` gate sits beside the existing pre-flag gates, and two
+verification-checkpoint items enforce both. Severity row in conventions/
+severity.md; new `documentation` category in code-review-consolidation.md.
+
+Beyond the plan: CONS_COMMENT remapped from `naming` to `documentation`, because
+the new category would otherwise contradict consistency-reviewer's stated
+mapping. Side effect is wanted — knowledge-reviewer prose findings previously
+normalized to `other` and consistency-reviewer's to `naming`, so two reviewers
+flagging one drifted comment never deduplicated.
+
+Verified by review run over a fixture diff carrying both a 43-line in-body block
+and a claim the same diff falsifies. KNOWLEDGE_EXCESS fired at SHOULD proposing
+an 11-line block be replaced by a 3-line pointer plus deletion of the two
+litigated alternatives — shorter than what it replaced. The falsified-claim
+findings both named deletion before any rewrite ("delete the sentence — do not
+rewrite it longer"; "in no more lines than it replaces"). The
+TEMPORAL_CONTAMINATION disambiguation held: the run routed "rather than" prose to
+KNOWLEDGE_EXCESS and explicitly declined to double-flag it at MUST, which was the
+severity-inversion risk. A load-bearing comment was correctly exempted.
+
+Caveat: the fixture agent read the edited persona from disk; it was not
+dispatched through the installed plugin, which still carries the previous version
+until reinstall and restart.

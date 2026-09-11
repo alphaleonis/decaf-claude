@@ -36,6 +36,7 @@ Maintainability debt. Compounds but detectable later.
 | DUPLICATE_LOGIC             | Copy-pasted blocks, parallel functions       |
 | INCONSISTENT_ERROR_HANDLING | Mixed exceptions/codes in same module        |
 | CONVENTION_VIOLATION        | Violates documented project convention       |
+| KNOWLEDGE_EXCESS            | Comment restates code, re-derives, litigates |
 | TESTING_STRATEGY_VIOLATION  | Tests don't follow confirmed strategy        |
 
 ### COSMETIC (COULD)

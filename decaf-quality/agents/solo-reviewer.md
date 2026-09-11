@@ -48,6 +48,16 @@ delete what you get wrong.
 - **Production readiness** — migration safety, silent behavior changes, missing rationale on
   non-obvious decisions, operational surprises (timeouts, retries, resource growth).
 
+**Remedy direction — for any finding whose subject is a comment, doc comment, help string, or
+README claim.** Prose that no longer matches the code is removed, not rewritten longer. Offer
+deletion of the false claim first; propose restating it only when you can say why the claim has to
+live in the code at all — a maintainer editing this file in isolation would make a wrong edit
+without it, and it is not already in the commit message, work item, or PR. Where the claim is
+checkable — an enumeration, a completeness assertion, "the single X", "every Y does Z" — propose a
+guard or a test and delete the sentence: a comment asserting a checkable property is a test that
+does not run, and it will drift again. A drafted replacement may not be longer than what it
+replaces unless your fix states why the extra lines are load-bearing.
+
 **Reach governs scope, not depth.** Under `narrow`, report only defects introduced by the changed
 lines; do not hunt for absences (missing tests, missing docs, residual-risk surveys), and record
 pre-existing defects you notice under Considered But Not Flagged tagged `[pre-existing]` —

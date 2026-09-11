@@ -486,6 +486,12 @@ You are READ-ONLY with respect to tracked source: report issues, do not change c
 - To have a probe run — e.g. a revert-probe proving a regression test fails once the fix is removed — **nominate it, do not run it.** Add a `### Probe Requests` section to your report naming: the test (file + test name), the exact production line(s) to remove, and the failure you expect. The orchestrator runs nominated probes after this wave finishes, when it is the only actor touching the tree, and folds the results into consolidation. Meanwhile reason statically and set your confidence from that.
 - Running tests and builds is fine — they write untracked artifacts, not tracked source (see Pre-flight gates below). Read the admissibility rule there before you report what they tell you.
 
+## Remedy direction (all reviewers — every finding whose subject is a comment, doc comment, help string, or README claim)
+Prose that no longer matches the code is removed, not rewritten longer.
+- **Offer deletion of the false claim first.** Propose restating it only when you can say why the claim has to live in the code at all: a maintainer editing this file in isolation would make a wrong edit without it, and it is not already in the commit message, work item, or PR.
+- **Where the claim is checkable — an enumeration, a completeness assertion, "the single X", "every Y does Z" — propose a guard or a test, and delete the sentence.** A comment asserting a checkable property is a test that does not run; it drifted once and will drift again.
+- **A drafted replacement may not be longer than what it replaces** unless your fix states why the extra lines are load-bearing.
+
 ## Changes to Review
 <paste git diff or file content here>
 
