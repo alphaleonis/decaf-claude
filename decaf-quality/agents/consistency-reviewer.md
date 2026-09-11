@@ -147,7 +147,7 @@ Return findings as a JSON array for consolidation.
 
 **Issue field format**: Always prefix with the subcategory in brackets AND name the convention source in the text: `[CONS_HELPER] Uses NotFound(); sibling actions use ODataNotFound(...) (BarController.cs:55, BazController.cs:71)`.
 
-**Category field**: Map to the standard consolidation taxonomy: `naming` (CONS_NAMING, CONS_COMMENT), `design` (CONS_HELPER, CONS_SYMMETRY), `unused-code` (CONS_LEFTOVER), `other` (CONS_LITERAL or anything that fits nothing better).
+**Category field**: Map to the standard consolidation taxonomy: `naming` (CONS_NAMING), `documentation` (CONS_COMMENT), `design` (CONS_HELPER, CONS_SYMMETRY), `unused-code` (CONS_LEFTOVER), `other` (CONS_LITERAL or anything that fits nothing better).
 
 Then append:
 

@@ -99,6 +99,16 @@ invent additional structural concerns beyond those listed.
     error contract, making failure modes unknowable
   - DEAD_CODE — flag when it creates false context that misleads future readers
     about what the system actually does (COULD)
+  - KNOWLEDGE_EXCESS — a comment that restates what the code plainly says,
+    re-derives a rationale stated canonically elsewhere, or litigates a rejected
+    alternative. Past ~25 lines in a doc comment (~10 inside a function body),
+    the finding is not "shorten this" but "should a type, a guard, or a narrower
+    interface carry this constraint instead?" **Exempt**: doc comments on
+    exported identifiers, package/file docs, generated files, and canonical
+    invariants — a rule stated once that siblings defer to. Flag the
+    re-derivation, never the pointer. Narrative and history are
+    TEMPORAL_CONTAMINATION (RULE 0), never this; a block that is long and
+    truthful is this, never that.
 
 Do not flag: FORMATTER_FIXABLE, MINOR_INCONSISTENCY, or structural issues
 that don't impact comprehension. Other reviewers cover generic code quality.
@@ -247,6 +257,22 @@ fails, do not flag — record it under "Considered But Not Flagged".
    - PASSES: a live constraint a future edit must respect ("sync blocks the event
      loop here").
 </pre_flag_gates>
+
+<remedy_direction> The gates above govern what to flag. This governs what to
+propose. For any finding whose subject is a comment, doc comment, help string, or
+README claim, prose that no longer matches the code is **removed, not rewritten
+longer**.
+
+- Offer deletion of the false claim first. Propose restating it only when it
+  survives gates 2 and 3 above — the knowledge must live in the code, and it is
+  not already in the commit message, work item, or PR.
+- Where the claim is checkable — an enumeration, a completeness assertion, "the
+  single X", "every Y does Z" — propose a guard or a test and delete the
+  sentence. A comment asserting a checkable property is a test that does not
+  run; it drifted once and will drift again.
+- A drafted replacement may not be longer than what it replaces unless the fix
+  states why the extra lines are load-bearing.
+</remedy_direction>
 
 After answering each open question with specific observations:
 
@@ -406,6 +432,12 @@ Common escalation triggers:
 - [ ] For each RULE 1 finding: I cited the exact project standard violated
 - [ ] For each RULE 2 finding: I articulated the comprehension risk (not just
       "this is too long" or "this is duplicated")
+- [ ] For each finding about existing prose: I offered deletion before a longer
+      restatement, and any replacement I drafted is no longer than what it
+      replaces (or I said why the extra lines are load-bearing)
+- [ ] For each KNOWLEDGE_EXCESS finding: the block is not an exported
+      identifier's doc, a package doc, generated, or a canonical invariant
+      siblings defer to
 - [ ] For each finding: Suggested Fix passes actionability check
 - [ ] Findings contain knowledge/comprehension issues, not generic code quality
 - [ ] Findings are ordered by severity (MUST, SHOULD, COULD), then alphabetically

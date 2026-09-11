@@ -119,6 +119,7 @@ Standardize categories across agents:
 | `performance` | efficiency, optimization, memory, allocation |
 | `design` | architecture, pattern, coupling, cohesion, SOLID |
 | `naming` | convention, identifier, readability |
+| `documentation` | comment, doc-comment, docs, help-text, DECISION_LOG_MISSING, TEMPORAL_CONTAMINATION, BASELINE_REFERENCE, IK_TRANSFER_FAILURE, KNOWLEDGE_EXCESS, CONS_COMMENT |
 | `type-safety` | casting, type-conversion, generics |
 | `async` | async-await, task, concurrency, threading |
 | `resource-management` | disposal, IDisposable, using-statement |
