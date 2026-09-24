@@ -1,7 +1,7 @@
 ---
 name: auto-dev
 description: Direct development with automated review. Plans implementation, executes via subagent, then auto-reviews. Use for work that isn't test-driven (UI, config, styling, infrastructure, scaffolding).
-argument-hint: "<feature description> [--review <preset> [axis=value ...]] [--max-iterations N] [--spec <path>] [--report]"
+argument-hint: "<feature description> [--review <preset> [axis=value ...]] [--max-iterations N] [--spec <path>] [--report] [--models low|norm|high]"
 ---
 
 # Auto Dev
@@ -26,7 +26,8 @@ Parse `$ARGUMENTS`:
    so a new one works here the day `/code-review` ships it.
 3. **Max review iterations**: `--max-iterations N` (default: 3) — passed to auto-review
 4. **Spec path**: `--spec <path>` — passed to auto-review for spec compliance checking
-5. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). When set, this skill contributes the implementation-phase record: the implementation subagent's harness-reported usage (tokens / tool calls / duration, verbatim from the Agent tool result), changeset stats (files changed, +/− lines, new files), and a one-line scope description.
+5. **`--models low|norm|high`** (default `high`): the model tier for dispatches down the chain, per rule 6 of `../../conventions/subagent-briefs.md`. Passed to auto-review.
+6. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). When set, this skill contributes the implementation-phase record: the implementation subagent's harness-reported usage (tokens / tool calls / duration, verbatim from the Agent tool result) and its model tier, changeset stats (files changed, +/− lines, new files), and a one-line scope description.
 
 ## Execution Steps
 
@@ -90,7 +91,7 @@ Wait for user response. Apply adjustments if any.
 
 ### Step 2: Implementation (Subagent)
 
-Launch a **general-purpose subagent** using the Agent tool to execute the approved plan.
+Launch a **general-purpose subagent** using the Agent tool to execute the approved plan, with no model override under any `--models` value (rule 6 of `../../conventions/subagent-briefs.md`).
 
 **Subagent prompt template:**
 
@@ -146,7 +147,7 @@ If the subagent reports that it could not complete any steps (total failure), as
 Run `/decaf-quality:auto-code-review` using the Skill tool, passing through the review arguments:
 
 ```
-/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} --implementer {implementerAgentId} {--spec specPath if provided} {--report if set}
+/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} --implementer {implementerAgentId} --models {models} {--spec specPath if provided} {--report if set}
 ```
 
 Auto-review will automatically detect the scope from uncommitted changes (which includes everything the implementation subagent produced). With `--report`, the implementation-phase record from Step 2 is in this context — auto-review's session report picks it up for its agent inventory and token accounting.

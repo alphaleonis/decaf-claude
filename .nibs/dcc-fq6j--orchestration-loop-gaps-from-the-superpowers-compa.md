@@ -6,7 +6,7 @@ status: todo
 type: epic
 priority: normal
 created_at: 2026-09-24T17:02:53Z
-updated_at: 2026-09-24T18:09:07Z
+updated_at: 2026-09-24T18:23:56Z
 order: zzzzzy
 ---
 
@@ -22,7 +22,7 @@ decaf already leads on the outer loop (auto-deliver), executable phase acceptanc
 - [ ] #dcc-qdxo — auto-code-review runs unattended without ever asking the user
 - [ ] #dcc-di3q — rounds that get no full re-review still get their fixes verified by a cheap fix-verifier
 - [ ] #dcc-ig50 — repair rounds resume the implementer, with a fresh fixer only where it failed or disputes a finding
-- [ ] #dcc-lw9s — every implementer, fixer and orchestrator dispatch names its model under a stated policy
+- [ ] #dcc-lw9s — a --models flag chooses each build-loop dispatch's model tier (default: today's behavior)
 - [ ] #dcc-vi86 — auto-deliver can stop after N laps so an outer loop restarts it in a fresh process
 - [ ] #dcc-s2a6 — merged parallel clusters get an independent review before the next cluster starts
 
@@ -34,4 +34,4 @@ Out of scope: moving code-review's reviewer fan-out into a `Workflow` script. co
 
 ## Current Focus
 
-Completed dcc-ig50: auto-code-review takes `--implementer <agent-id>`, passed by auto-dev, auto-tdd and batch-dev's series lane. Step 4 resumes that implementer with the repair prompt every round; findings it already failed to fix (fix-verifier NOT ADDRESSED, or re-found by a re-review) and findings it disputes as `not-addressing` go to one fresh fixer run after it, whose verdicts stand. No ID, or a failed send, falls back to a fresh fixer. The `--report` ledger records each round's route with usage. subagent-briefs.md gains rule 5 on resuming a finished agent, from a 2026-09-24 experiment. Verified by four acceptance greps and before/after agent walkthroughs.
+Completed dcc-lw9s: New rule 6 in subagent-briefs.md: two tiers (no override, resolved as today; mid tier, `model: sonnet`), never tier up, set `model` never `name`, and a per-value table for `--models low|norm|high` (default `high`, today's behavior). auto-deliver, batch-dev, auto-dev, auto-tdd and auto-code-review take `--models` and forward it down the chain; each dispatch states its tier; fix-verifier stays mid tier under every value; `--report` records each build dispatch's tier. code-review Step 2d points at rule 6 for the model name. Verified by five acceptance greps and before/after agent walkthroughs.

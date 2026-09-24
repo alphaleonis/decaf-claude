@@ -53,3 +53,29 @@ instruction delivered nothing (0/3); every agent whose brief carried one deliver
    first turn. Resume when the agent's context is the point, as auto-code-review does with
    the implementer for repair rounds. This covers finished agents only; rule 4 governs one
    that is still running.
+6. **Choose each dispatch's model tier: set `model`, never `name`.** A name changes how the
+   report is delivered (rules 1–2); tiering changes only the `model` parameter. Two tiers:
+   - **No override**: pass no `model`. Claude Code resolves it as usual: the agent
+     definition's `model`, then `CLAUDE_CODE_SUBAGENT_MODEL`, then the main conversation's
+     model (the built-in `Explore` type inherits that model, capped at Opus).
+   - **Mid tier**: pass `model: sonnet`. A per-dispatch `model` outranks
+     `CLAUDE_CODE_SUBAGENT_MODEL` unless `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`.
+
+   Never tier up: when the main model is already Sonnet or cheaper, pass no override. When
+   the Agent tool offers no `model` parameter, dispatch without one.
+
+   The build loops (auto-deliver, batch-dev, auto-dev, auto-tdd, auto-code-review) take
+   `--models low|norm|high`, default `high`, and forward it down the chain. It governs
+   their own dispatches only; reviewers take their tier from the `models=` axis inside
+   `--review` (code-review Step 2d), which uses this same mid tier.
+
+   | Dispatch | `high` | `norm` | `low` |
+   |---|---|---|---|
+   | Implementer, worktree lane, team member, workflow agent | no override | no override | no override |
+   | Review orchestrator (auto-code-review Step 2) | no override | no override | no override |
+   | Read-only explorer (batch-dev Phase 2) | no override | mid tier | mid tier |
+   | Fresh fixer (auto-code-review Step 4) | no override | no override | mid tier |
+   | Focused fix (auto-deliver VERIFY) | no override | no override | mid tier |
+   | fix-verifier (auto-code-review Step 5.5) | mid tier | mid tier | mid tier |
+
+   A resumed implementer keeps the model it was first dispatched on.

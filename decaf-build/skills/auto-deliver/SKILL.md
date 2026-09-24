@@ -1,7 +1,7 @@
 ---
 name: auto-deliver
 description: Autonomously drive a whole plan to completion — loop SELECT → BREAKDOWN → EXECUTE → VERIFY → RECONCILE → LEARN → REPLAN → MERGE, one phase at a time, WITHOUT stopping at phase boundaries. Use when you have a phased plan (work items in a tracker) and want it built end-to-end unattended. Stops only when the plan is complete (or it genuinely cannot proceed).
-argument-hint: "<plan reference or root work-item id> [--base-branch <name>] [--review <preset> [axis=value ...]] [--report] [--tracker nibs|ado|github|markdown]"
+argument-hint: "<plan reference or root work-item id> [--base-branch <name>] [--review <preset> [axis=value ...]] [--report] [--tracker nibs|ado|github|markdown] [--models low|norm|high]"
 ---
 
 # Auto-Deliver
@@ -123,7 +123,7 @@ of the phase. JIT: the breakdown is planned against the code earlier phases actu
 `/decaf-build:batch-dev --unattended --tracker <tracker>` scoped to **this phase's feature
 children only**: pass the ids of its children that are not done, taken from `read(current_phase)`.
 Forward `--review` **verbatim** (preset plus any axis overrides — this loop never rewrites it),
-`--base-branch <integration branch>`, and `--report` (if set). batch-dev selects mechanisms, executes, reviews, and merges its clusters
+`--base-branch <integration branch>`, `--models` (default `high`), and `--report` (if set). batch-dev selects mechanisms, executes, reviews, and merges its clusters
 per its own protocol. You do not micromanage it. With `--report`, each **series** nib emits a
 comparison-grade session report to `.decaf/session-reports/` (batch-dev's fan-out/workflow/team
 clusters self-review inline and produce none — batch-dev's Phase 8 names the uncovered clusters).
@@ -134,7 +134,8 @@ clusters self-review inline and produce none — batch-dev's Phase 8 names the u
 
 - **`[run]` items** — run each command; compare output to its `expect:` condition.
   - On failure: dispatch a **focused fix** (reuse the batch-dev / dev execution machinery — a
-    scoped, **unnamed** `Agent` with a pre-approved prompt, per the dispatch contract), then
+    scoped, **unnamed** `Agent` with a pre-approved prompt, per the dispatch contract; mid tier
+    under `--models low`, otherwise no model override, per its rule 6), then
     **re-run the check**. Bounded retry
     (default **3** attempts per check); if still failing → **ESCALATE** (you cannot honestly
     call the phase done).
