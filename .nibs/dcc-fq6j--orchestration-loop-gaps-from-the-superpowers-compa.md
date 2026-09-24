@@ -6,7 +6,7 @@ status: todo
 type: epic
 priority: normal
 created_at: 2026-09-24T17:02:53Z
-updated_at: 2026-09-24T18:29:29Z
+updated_at: 2026-09-24T18:38:51Z
 order: zzzzzy
 ---
 
@@ -34,4 +34,4 @@ Out of scope: moving code-review's reviewer fan-out into a `Workflow` script. co
 
 ## Current Focus
 
-Completed dcc-lw9s: New rule 6 in subagent-briefs.md: two tiers (no override, resolved as today; mid tier, `model: sonnet`), never tier up, set `model` never `name`, and a per-value table for `--models low|norm|high` (default `high`, today's behavior). auto-deliver, batch-dev, auto-dev, auto-tdd and auto-code-review take `--models` and forward it down the chain; each dispatch states its tier; fix-verifier stays mid tier under every value; `--report` records each build dispatch's tier. code-review Step 2d points at rule 6 for the model name. Verified by five acceptance greps and before/after agent walkthroughs.
+Completed dcc-vi86: auto-deliver takes `--laps N` and records how every run ended in `state.json` `exit` (lap-limit | complete | escalated); `scripts/drive.sh` runs one `claude -p` lap per phase and continues or stops on it, never with `--bare`, with optional caps and a no-progress guard; batch-dev runs team and workflow clusters as series when those mechanisms are unavailable (7639889). Verified by six acceptance checks, including the driver's 19-check stub test, and before/after agent walkthroughs. The manual acceptance item, one real headless lap on a scratch plan, was not exercised: closed on the operator's call, with a follow-up bug to be filed if real use shows a problem.
