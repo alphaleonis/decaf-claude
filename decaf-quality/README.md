@@ -95,6 +95,7 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 | `prior-feedback-reviewer` | The diff vs. existing PR threads — unaddressed requests, partial fixes, regressions of prior fixes (PR reviews with prior feedback only) |
 | `solo-reviewer` | The single seat of `bugs` — whole-surface deep pass with inline verification, self-calibrated anchors, closed-set parking reasons; never part of a wave |
 | `finding-validator` | Adversarial re-verification of one consolidated finding (validation wave; not part of the review roster) |
+| `fix-verifier` | Cheap check of one auto-code-review fix round that gets no full re-review — each fixed finding ADDRESSED / NOT ADDRESSED, plus new breakage in the round's delta (auto-code-review Step 5.5 only) |
 | `pr-thread-resolver` | Resolves one PR review thread — verify, fix or decline, draft the reply (resolve-pr-feedback only; never posts) |
 
 The stack reviewers and `data-migration-reviewer`/`spec-compliance-reviewer`/`test-reviewer` carry **hard dispatch gates** — they are never spawned, in any mode, when their domain is absent from the changeset.
