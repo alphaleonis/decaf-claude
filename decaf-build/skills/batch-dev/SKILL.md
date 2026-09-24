@@ -44,17 +44,16 @@ Parse `$ARGUMENTS`:
    followed by any of its axis overrides (`roster=N`, `models=`, `evidence=`, `reach=`), forwarded
    **verbatim** to each nib's review. Quote it when the shell would split it:
    `--review "review roster=6 reach=narrow"`. Not interpreted here, so a new axis works the day
-   `/code-review` ships it. Parallel-cluster workers self-review inline and cannot honor it —
-   say so in the Phase 8 report rather than implying the spec covered every nib.
+   `/code-review` ships it. Parallel-cluster workers self-review inline without it; the Phase 7
+   cluster review applies it to their merged work.
 3. `--max-iterations N` (default `3`) — review iteration cap.
 4. `--base-branch <name>` — override the batch branch name (default derived in Phase 6).
 5. `--tracker <nibs|ado|github|markdown>` — the tracker holding the nibs; `auto-deliver` passes its own. Without it, detect per Prerequisites. Forwarded to each series nib's review (Phase 6a) so deferred findings land in the same tracker.
 6. `--models low|norm|high` (default `high`) — the model tier for this skill's dispatches, per rule 6 of `@../../conventions/subagent-briefs.md`: explorers take the mid tier under `norm` and `low`; implementers, lanes, workflow agents and team members never take an override. Forwarded to each series nib's review (Phase 6a). `auto-deliver` passes its own.
 7. `--report` — produce a comparison-grade session report for skill tuning. Forwarded to each
-   **series** nib's `/decaf-quality:auto-code-review` (Phase 6a), which writes the report folder to
-   `.decaf/session-reports/`. See `@../../conventions/session-report.md`. **Series clusters only** —
-   fan-out/workflow/team clusters self-review inline and cannot emit a standard report (see the
-   caveat in Phase 6a). `auto-deliver` passes this through.
+   series nib's review (Phase 6a) and each parallel cluster's review (Phase 7); each
+   `/decaf-quality:auto-code-review` run writes its report folder to `.decaf/session-reports/`.
+   See `@../../conventions/session-report.md`. `auto-deliver` passes this through.
 
 ---
 
@@ -174,7 +173,7 @@ Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
 
   @../../conventions/subagent-briefs.md
 
-- **Nib status**: `set-status` each nib to `in-progress` **before** launching its worker; `close` it with a one-line summary **after** the worker reports success. Subagents/workflows run fresh and will NOT update nibs — you (the conductor, in the main context) own status updates.
+- **Nib status**: `set-status` each nib to `in-progress` **before** launching its worker; `close` it with a one-line summary **after** its work is committed (Phase 6a step 4 for a series nib, Phase 7 for a parallel cluster). Subagents/workflows run fresh and will NOT update nibs — you (the conductor, in the main context) own status updates.
 - **Commits**: commit the code together with whatever the tracker changed in the working tree: the nib file on nibs, the plan file on Markdown. Azure DevOps and GitHub change nothing locally, so their commits carry code only. On nibs, keep the nib's todo items checked off as work completes. In the shared working tree (Phase 6a) the commit is **yours, never the worker's** — workers stage, you commit. Worktree lanes (6b/6c/6d) must commit in their own worktrees (their work reaches you only through the shared object store); that trade-off is accepted because the batch branch stays untouched until the Phase 7 merge, which you control.
 - **Check-ins**: at each cluster boundary, report what finished and what's next, and pause for the user — especially **before launching any parallel/workflow/team cluster** and **after each integration/merge**.
 - **Verify**: run the build (and tests, for tdd work) after each unit of work; fix breakage before moving on.
@@ -192,7 +191,7 @@ For each nib in the cluster, in order. The batch-level plan already covers the p
    **With `--report`**, the Step-2 implementation-phase record is in this context — hand it to auto-review so its session report has full build-side accounting (same contract as auto-dev/auto-tdd). If a running-app build lock or a trivial change makes the full auto-review impractical, a focused manual review of the diff is an acceptable substitute — note the substitution (and, under `--report`, that no session report was produced for this nib).
 4. Review the staged work — the reported diffstat plus summary; read the full diff when the change is behavioral or the brief changed after dispatch — then commit (code plus any tracker files, per Commits above) and `close` the nib. The commit is the one irreversible step in this lane and it stays with you: a dispatched agent cannot be reliably redirected once running (see Failure handling), so the component holding decision authority holds the commit.
 
-> **`--report` covers series clusters only.** Phases 6b/6c/6d self-review inline in their worktrees (`/decaf-quality:auto-code-review` runs from the main context and cannot be invoked from a worktree), so they emit no standard session report even when `--report` is set. Note the uncovered clusters in the Phase 8 report rather than implying full coverage.
+> **Parallel clusters are reviewed after they merge.** Phases 6b/6c/6d self-review inline in their worktrees, because `/decaf-quality:auto-code-review` runs from the main context and cannot be invoked from a worktree. Their independent review, and its session report under `--report`, happens in Phase 7 once the cluster is merged.
 
 ### Phase 6b — Fan-out parallel subagents
 
@@ -219,7 +218,7 @@ For a cluster best run as a deterministic pipeline (uniform sub-task over many i
 1. Scout the work-list inline first (e.g. the call sites to change), then author a `Workflow` script that pipelines each item through implement → verify (and adversarial-verify if warranted), returning structured per-item results.
 2. Use `isolation: 'worktree'` on workflow agents if they mutate files in parallel. **Same base-branch hazard as 6b**: these worktrees branch from `origin/HEAD`, not the batch branch — capture `BASE_SHA` before launching and have each worktree agent re-anchor onto it (`git reset --hard {BASE_SHA}`) as its first step (see Phase 6b step 3.0).
 3. Set the cluster's nib(s) `in-progress` before launching; the workflow runs in the background and notifies on completion.
-4. On completion, integrate its branch/commits via Phase 7, then commit and `close` the nib(s).
+4. On completion, integrate, review and commit via Phase 7, which closes the nib(s).
 
 ### Phase 6d — Agent team
 
@@ -229,7 +228,7 @@ For an interdependent cluster needing negotiation.
 
 1. Set the cluster nibs `in-progress`.
 2. Spawn named `Agent`s (e.g. a `contract` owner + `consumer` workers), each addressable; coordinate via `SendMessage` as the contract emerges. Named agents are **teammates**: their final message is discarded, so every team-member brief MUST end with the delivery clause from `@../../conventions/subagent-briefs.md` (report back to you via `SendMessage` before ending the turn) — collect each member's report before integrating; an idle notification is not a report. Use worktrees if they mutate overlapping files in parallel; otherwise serialize the shared parts. **If any team member runs with `isolation: "worktree"`, apply the Phase 6b step 3.0 re-anchor** (pass `BASE_SHA`, `git reset --hard {BASE_SHA}` first) — those worktrees also start from `origin/HEAD`, not the batch branch.
-3. Integrate via Phase 7, then commit and `close` the nibs.
+3. Integrate, review and commit via Phase 7, which closes the nibs.
 
 ## Phase 7 — Integrate (merge protocol)
 
@@ -240,7 +239,12 @@ Applies to any cluster that produced separate branches/worktrees (6b/6c/6d). Ser
 3. Merge the cluster's commits into the batch branch **sequentially** — declared-dependency order first, then smallest-diff-first to shrink conflict surface. Merge by branch or by pinned SHA.
 4. **After each merge**, run build (+ tests) so an integration break is attributed to the specific merge that caused it. Fix before the next merge.
 5. **On conflict**: pause at the cluster boundary and surface the conflict to the user. Auto-resolve ONLY trivial/unambiguous cases; never silently force-resolve.
-6. Clean up worktrees/temp branches once merged.
+6. **Review the cluster independently.** Lanes only reviewed their own work, so once every merge in the cluster has passed build and tests, the cluster gets the reviewer a series nib gets:
+   - `git reset --soft batch-{slug}-premerge-{cluster}`. The cluster's merged changes become staged, uncommitted work, which is what `/decaf-quality:auto-code-review` reviews; the tag stays as the recovery point.
+   - Write `.decaf/batch-dev/specs/cluster-{n}.md` holding every cluster item's `read` output under its own heading (an Azure DevOps item's Acceptance Criteria field included), behind Phase 6a's `.gitignore`.
+   - Run `/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} --spec .decaf/batch-dev/specs/cluster-{n}.md --tracker {tracker} --models {models} {--report if set} {--unattended if set}`. No `--implementer`: the cluster has several authors, so repairs go to a fresh fixer.
+   - Commit the cluster once (code plus tracker files, per Commits above), naming every nib in the message, and `close` its nibs. The batch branch gets one commit per parallel cluster, not one per lane.
+7. Clean up worktrees/temp branches once merged.
 
 ## Phase 8 — Report
 
@@ -261,7 +265,7 @@ Applies to any cluster that produced separate branches/worktrees (6b/6c/6d). Ser
 - Run the project's build + tests on the batch branch. **If a running instance of the app locks build outputs** (e.g. a live executable holding its output binaries), close it first — or fall back to building/testing only the affected library/test projects, which avoids producing the locked artifact. Flag that the full build plus any **visual** acceptance criteria need the app closed: purely-visual criteria can't be auto-verified, so leave such nibs `in-progress` until confirmed.
 - Leave the **merge-to-main / push decision to the user** (honors "commit/push only when asked; branch first").
 - Offer follow-up nibs (the contract's `create-followup`) for anything deferred or parked.
-- **With `--report`**: list the session reports written (`.decaf/session-reports/…`, one per series nib) and explicitly name any fan-out/workflow/team clusters that produced none, so coverage isn't overstated.
+- **With `--report`**: list the session reports written (`.decaf/session-reports/…`), one per series nib and one per parallel cluster.
 
 ---
 
@@ -276,7 +280,7 @@ Applies to any cluster that produced separate branches/worktrees (6b/6c/6d). Ser
 ## Notes & caveats
 
 - The conductor stays in the main context; heavy work is isolated in subagents/workflows so the main context isn't exhausted.
-- `/decaf-quality:auto-code-review` runs from the main context and manages its own subagent lifecycle → use it for **series** clusters; for **parallel** clusters each worker reviews its own changes inside its worktree.
+- `/decaf-quality:auto-code-review` runs from the main context and manages its own subagent lifecycle → series nibs get it in Phase 6a; parallel clusters get it once merged, in Phase 7, on top of each worker's own inline review.
 - Workflows cannot pause for the user mid-run — that is exactly why the whole strategy is approved up front (Phase 5 before any launch).
 - Mixed mechanisms add coordination cost: when a background workflow runs while series work proceeds, sequence carefully and integrate at clean boundaries.
 - Keep the batch small enough to supervise. If the queue is large, propose splitting it across multiple `/decaf-build:batch-dev` runs at Phase 1.

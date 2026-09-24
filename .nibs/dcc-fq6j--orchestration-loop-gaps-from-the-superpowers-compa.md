@@ -6,7 +6,7 @@ status: todo
 type: epic
 priority: normal
 created_at: 2026-09-24T17:02:53Z
-updated_at: 2026-09-24T18:38:51Z
+updated_at: 2026-09-24T18:48:48Z
 order: zzzzzy
 ---
 
@@ -34,4 +34,4 @@ Out of scope: moving code-review's reviewer fan-out into a `Workflow` script. co
 
 ## Current Focus
 
-Completed dcc-vi86: auto-deliver takes `--laps N` and records how every run ended in `state.json` `exit` (lap-limit | complete | escalated); `scripts/drive.sh` runs one `claude -p` lap per phase and continues or stops on it, never with `--bare`, with optional caps and a no-progress guard; batch-dev runs team and workflow clusters as series when those mechanisms are unavailable (7639889). Verified by six acceptance checks, including the driver's 19-check stub test, and before/after agent walkthroughs. The manual acceptance item, one real headless lap on a scratch plan, was not exercised: closed on the operator's call, with a follow-up bug to be filed if real use shows a problem.
+Completed dcc-s2a6: batch-dev Phase 7 now reviews each merged parallel cluster independently before the next starts: after the merges pass build and tests it soft-resets to the cluster's pre-merge tag, runs auto-code-review on the staged cluster with a spec file holding every cluster item and the caller's flags, then commits the cluster once and closes its nibs. Parallel clusters now produce session reports, so the series-only caveats in batch-dev and auto-deliver are gone. Verified by four acceptance greps and before/after agent walkthroughs.
