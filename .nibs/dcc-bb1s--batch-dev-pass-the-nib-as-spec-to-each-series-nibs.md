@@ -2,12 +2,12 @@
 # dcc-bb1s
 version: 1
 title: 'batch-dev: pass the nib as --spec to each series nib''s review'
-status: in-progress
+status: completed
 type: task
 priority: normal
 estimate: s
 created_at: 2026-09-24T17:02:59Z
-updated_at: 2026-09-24T17:22:33Z
+updated_at: 2026-09-24T17:27:57Z
 parent: dcc-fq6j
 order: a0
 ---
@@ -28,3 +28,7 @@ superpowers gates every task on spec compliance against an extracted brief. deca
 - `.decaf/batch-dev/.gitignore` containing `*` keeps spec files out of the conductor's commit. Checked in a scratch repo: `git add -A` staged only the code file, and the spec file did not appear in `git status`.
 - code-review's local mode diffs tracked changes only, so the untracked spec file stays out of the reviewed changeset. The `bugs` preset also runs spec discovery, so the spec reaches the reviewer under every preset.
 - Tested with fresh agents reading the skill. Old text: the review invocation carried no `--spec`. New text: Azure DevOps passed `--spec 48213` with no file; nibs, GitHub and Markdown each wrote a spec file holding only their item, created the ignore guard first, and passed the file path.
+
+## Summary
+
+**Completed 2026-09-24** — batch-dev Phase 6a now passes each series item to auto-code-review as `--spec` (441a915). Azure DevOps items pass their ID; every other tracker gets the adapter's `read` output in `.decaf/batch-dev/specs/<item-id>.md`, behind a self-ignoring `.gitignore`. Verified by fresh-agent walkthroughs per tracker and a scratch-repo check of the ignore guard. The manual acceptance item, a real run whose review header shows the spec as explicit, was not exercised: closed on the operator's call, with a follow-up bug to be filed if real use shows it misbehaving.
