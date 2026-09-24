@@ -2,11 +2,11 @@
 # dcc-5dw3
 version: 1
 title: 'sn96 report: correct the ''name the orchestrators'' tuning suggestion (harmful)'
-status: todo
+status: completed
 type: task
 priority: normal
 created_at: 2026-07-15T19:16:21Z
-updated_at: 2026-07-15T19:16:21Z
+updated_at: 2026-09-24T19:02:16Z
 order: zzk
 ---
 
@@ -29,6 +29,10 @@ Left uncorrected, this recommendation keeps pulling future tuning sessions towar
 
 ## Todo
 
-- [ ] Correct process issue 2's tuning suggestion; point at dcc-8yio
-- [ ] Correct the §4 issue-1 post-analysis note crediting dcc-n87o
-- [ ] Reconcile §6's resulting-skill-changes list with the real cause
+- [x] Correct process issue 2's tuning suggestion; point at dcc-8yio
+- [x] Correct the §4 issue-1 post-analysis note crediting dcc-n87o
+- [x] Reconcile §6's resulting-skill-changes list with the real cause
+
+## Summary
+
+**Completed 2026-09-24** — Corrected the nibs-sn96 report on the tuning branch (bb05382, not pushed) with four dated correction notes: issues 1-4 share one cause, a named subagent launching as a teammate under CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 (dcc-8yio); run_in_background: false was never the fix and no longer exists on the Agent tool in Claude Code 2.1.281; naming orchestrators is harmful and cannot be rescued by naming everything, with the teams condition stated; and dcc-8yio, not dcc-n87o, addressed the failures. The same parameter is still mandated in code-review on main, filed as #dcc-3qya.
