@@ -1,7 +1,7 @@
 ---
 name: batch-dev
 description: Orchestrate execution of MULTIPLE nibs in one run. Selects a queue, understands the nibs collectively (including how they fit together), then chooses the best execution mechanism per cluster — single series agent, parallel fan-out, scripted workflow, or agent team — and dispatches with ONE approval gate. Use when the user wants to work several nibs together (in parallel or series) rather than one at a time. Complements /decaf-build:auto-dev and /decaf-build:auto-tdd (which handle a single nib).
-argument-hint: "<nib-id...> | --filter <expr> | --ready [<scope-id>]  [--tracker nibs|ado|github|markdown] [--review <preset> [axis=value ...]] [--max-iterations N] [--base-branch <name>] [--report] [--unattended]"
+argument-hint: "<nib-id...> | --filter <expr> | --ready [<scope-id>]  [--tracker nibs|ado|github|markdown] [--models low|norm|high] [--review <preset> [axis=value ...]] [--max-iterations N] [--base-branch <name>] [--report] [--unattended]"
 ---
 
 # Batch Dev
@@ -49,7 +49,8 @@ Parse `$ARGUMENTS`:
 3. `--max-iterations N` (default `3`) — review iteration cap.
 4. `--base-branch <name>` — override the batch branch name (default derived in Phase 6).
 5. `--tracker <nibs|ado|github|markdown>` — the tracker holding the nibs; `auto-deliver` passes its own. Without it, detect per Prerequisites. Forwarded to each series nib's review (Phase 6a) so deferred findings land in the same tracker.
-6. `--report` — produce a comparison-grade session report for skill tuning. Forwarded to each
+6. `--models low|norm|high` (default `high`) — the model tier for this skill's dispatches, per rule 6 of `@../../conventions/subagent-briefs.md`: explorers take the mid tier under `norm` and `low`; implementers, lanes, workflow agents and team members never take an override. Forwarded to each series nib's review (Phase 6a). `auto-deliver` passes its own.
+7. `--report` — produce a comparison-grade session report for skill tuning. Forwarded to each
    **series** nib's `/decaf-quality:auto-code-review` (Phase 6a), which writes the report folder to
    `.decaf/session-reports/`. See `@../../conventions/session-report.md`. **Series clusters only** —
    fan-out/workflow/team clusters self-review inline and cannot emit a standard report (see the
@@ -86,7 +87,7 @@ Understand every nib **individually and collectively**. This step itself fans ou
 
 1. `read` each nib: body (spec and `## Acceptance`), status, blockers and children.
 2. Take the declared dependencies from each nib's blockers; they are the `blocked_by` edges. When the queue is a plan's, epic's or phase's children, also `read` the parent: its children list gives plan order, and the blockers order the nibs within it.
-3. **Fan out one read-only `Explore` agent per nib** (single message, multiple `Agent` calls so they run concurrently — **unnamed**, per `@../../conventions/subagent-briefs.md`: each summary arrives as the agent's final message, i.e. the tool result; a named agent's final message is discarded). Each returns a structured summary:
+3. **Fan out one read-only `Explore` agent per nib** (single message, multiple `Agent` calls so they run concurrently — mid tier under `--models norm` or `low`, otherwise no model override — **unnamed**, per `@../../conventions/subagent-briefs.md`: each summary arrives as the agent's final message, i.e. the tool result; a named agent's final message is discarded). Each returns a structured summary:
    - `files` — files/areas the nib will likely create or modify
    - `types` — key types/components/modules touched
    - `declared_deps` — the blockers `read` returned
@@ -183,8 +184,8 @@ Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
 For each nib in the cluster, in order. The batch-level plan already covers the per-nib plan, so **do NOT call `/decaf-build:auto-dev` / `/decaf-build:auto-tdd` wholesale** (their interactive Step-1 plan gate would re-prompt and break the unattended run). Instead reuse their **execute + review tail**:
 
 1. `set-status` the nib to `in-progress`.
-2. Launch a **general-purpose `Agent`** — unnamed (task mode: its report returns as the tool result; see the Dispatch contract above) — with the pre-approved-plan prompt pattern (as in `/decaf-build:auto-dev` Step 2 / `/decaf-build:auto-tdd` Step 2 — *"the plan is already approved, do NOT ask for confirmation"*). For `tdd` nibs, instruct a full red-green-refactor loop following the project's test conventions; for `dev` nibs, implement step-by-step verifying the build after each step. Instruct the agent to **stage its work (`git add`) and stop short of committing** — it reports the diffstat and a proposed commit message; the commit is yours (step 4). Record its agent ID from the dispatch result: step 3's review resumes it for repair rounds. **With `--report`**, record this implementation Agent's harness-reported usage from its tool result (tokens / tool calls / duration, verbatim) plus changeset stats (files changed, +/− lines, new files) — this is the nib's implementation-phase record, exactly as `/decaf-build:auto-dev` Step 2 captures.
-3. After it reports, run `/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} --spec {itemSpec} --tracker {tracker} --implementer {workerAgentId} {--report if set} {--unattended if set}` (it auto-detects scope from uncommitted changes and manages its own subagent lifecycle). `{itemSpec}` is this nib as its tracker holds it, so the review checks the change against what the nib asked for:
+2. Launch a **general-purpose `Agent`** — unnamed (task mode: its report returns as the tool result; see the Dispatch contract above) — with the pre-approved-plan prompt pattern (as in `/decaf-build:auto-dev` Step 2 / `/decaf-build:auto-tdd` Step 2 — *"the plan is already approved, do NOT ask for confirmation"*). For `tdd` nibs, instruct a full red-green-refactor loop following the project's test conventions; for `dev` nibs, implement step-by-step verifying the build after each step. Instruct the agent to **stage its work (`git add`) and stop short of committing** — it reports the diffstat and a proposed commit message; the commit is yours (step 4). Record its agent ID from the dispatch result: step 3's review resumes it for repair rounds. **With `--report`**, record this implementation Agent's harness-reported usage from its tool result (tokens / tool calls / duration, verbatim) and its model tier plus changeset stats (files changed, +/− lines, new files) — this is the nib's implementation-phase record, exactly as `/decaf-build:auto-dev` Step 2 captures.
+3. After it reports, run `/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} --spec {itemSpec} --tracker {tracker} --implementer {workerAgentId} --models {models} {--report if set} {--unattended if set}` (it auto-detects scope from uncommitted changes and manages its own subagent lifecycle). `{itemSpec}` is this nib as its tracker holds it, so the review checks the change against what the nib asked for:
    - **Azure DevOps work item** → its ID. code-review reads the Description and Acceptance Criteria itself.
    - **Any other tracker** (nibs, GitHub, Markdown) → a file holding only this item's `read` output per [work-items.md](../../conventions/work-items.md): the title as a heading, then the full body. Write it to `.decaf/batch-dev/specs/<item-id>.md` (a slug of the title where the tracker has no ids). Create `.decaf/batch-dev/.gitignore` containing `*` before the first write, so spec files stay out of the nib's commit.
 

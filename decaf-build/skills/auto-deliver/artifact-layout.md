@@ -42,6 +42,7 @@ mid-step; everything authoritative about completion comes from the tracker.
   "step": "SELECT | BREAKDOWN | EXECUTE | VERIFY | RECONCILE | LEARN | REPLAN | MERGE",
   "scope": ["<work-item id>", "— optional: operator-restricted subset of the plan"],
   "review_spec": "<optional: the --review argument, verbatim>",
+  "models": "<optional: the --models value, when not the default>",
   "note": "<optional: free-text handoff for the next session>",
   "started_at": "<ISO8601>",
   "updated_at": "<ISO8601>"
@@ -51,7 +52,8 @@ mid-step; everything authoritative about completion comes from the tracker.
 `scope`, `review_spec`, and `note` are optional. `scope` is the subset of work-item ids the
 operator restricted this run to — SELECT reconciles `next-ready` against it rather than
 silently adopting or skipping out-of-scope items. `review_spec` preserves the `--review`
-argument across resumes so a resumed run reviews at the same rung it started at. `note` is a
+argument across resumes so a resumed run reviews at the same rung it started at; `models`
+does the same for `--models`. `note` is a
 free-text handoff — which task to restart at, what was committed, where follow-ups were
 filed, and why; on a real resume it is often the highest-value field, so write it like a
 message to the next session. Do not add a children/status mirror (e.g. `phase_children`) —
