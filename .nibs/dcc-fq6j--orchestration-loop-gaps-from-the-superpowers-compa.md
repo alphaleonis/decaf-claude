@@ -6,7 +6,7 @@ status: todo
 type: epic
 priority: normal
 created_at: 2026-09-24T17:02:53Z
-updated_at: 2026-09-24T17:25:54Z
+updated_at: 2026-09-24T17:31:55Z
 order: zzzzzy
 ---
 
@@ -31,3 +31,7 @@ decaf already leads on the outer loop (auto-deliver), executable phase acceptanc
 Touches: decaf-build (`batch-dev`, `auto-deliver`, `auto-dev`, `auto-tdd`) and decaf-quality `auto-code-review`; possibly `conventions/subagent-briefs.md` and `conventions/work-items.md` (the adapter contract may need new operations).
 
 Out of scope: moving code-review's reviewer fan-out into a `Workflow` script. code-review runs inside auto-code-review's Step 2 subagent, and subagents cannot call the Workflow tool. Revisit only if the review ever moves to the main context.
+
+## Current Focus
+
+Completed dcc-qdxo: auto-code-review gains `--unattended`: it never calls AskUserQuestion, keeps the Step 3c plan as built (conflicting options already defer), and with no tracker detected lists deferrals as unfiled in the final summary for the caller to file. batch-dev forwards the flag from Phase 6a and its unattended section no longer lists the review tail as able to pause. Verified by the acceptance greps, an inventory of every ask point, and fresh-agent tests: old text stalled on two questions, new text asked none, attended control still asks both.
