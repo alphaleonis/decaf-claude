@@ -12,7 +12,7 @@ Universal conventions for agents and skills.
 | `structural.md`     | Code quality conventions, testing rules  | QR code review, planner decision audit                  |
 | `refactoring.md`    | Refactoring consolidation rules          | Refactoring skill, merging structural/coherence findings |
 | `temporal.md`       | Timeless present rule for comments       | TW/QR temporal contamination checks, writing comments   |
-| `work-items.md`     | Tracker-agnostic work-item adapter contract (create / next-ready / read / set-status / close / create-followup) per backend | Any skill that creates or operates on work items; the auto-deliver loop |
+| `work-items.md`     | Tracker-agnostic work-item adapter contract (create / next-ready / list-ready / read / set-status / close / append-note / create-followup) per backend | Any skill that creates or operates on work items; batch-dev; the auto-deliver loop |
 | `acceptance-criteria.md` | `## Acceptance` format — runnable checks vs. manual-tagged criteria | draft-spec / draft-plan / breakdown-phase (emit it); auto-deliver verify (read it) |
 | `artifacts.md` | The `.decaf/` root for skill-generated artifacts (reviews, refactor plans, loop state, etc.) | Any skill that writes generated artifacts to the user's project |
 | `session-report.md` | `--report` flag: comparison-grade session reports for skill tuning — data duties per skill + README format | code-review / auto-code-review / auto-tdd / auto-dev when `--report` is passed |
