@@ -2,11 +2,11 @@
 # dcc-jxya
 version: 1
 title: 'adversarial-reviewer fails its first dispatch (p07b: 2/2 stubs, one injection-looking payload)'
-status: todo
+status: deferred
 type: bug
 priority: normal
 created_at: 2026-07-04T18:25:45Z
-updated_at: 2026-07-15T15:42:01Z
+updated_at: 2026-09-24T19:15:04Z
 order: z
 ---
 
@@ -45,8 +45,8 @@ part that most needs scrutiny.
 
 - [ ] Reproduce or rule out (re-run adversarial-reviewer against the p07b-style changeset)
 - [ ] Determine whether the injection-looking iter-2 string is agent-generated or injected input
-- [ ] Decide on a fix: prompt hardening, a dispatch retry/guard, or an input-sanitization step
-- [ ] Watch subsequent session reports for recurrence before treating as settled (sample of one session)
+- [x] Decide on a fix: prompt hardening, a dispatch retry/guard, or an input-sanitization step
+- [x] Watch subsequent session reports for recurrence before treating as settled (sample of one session)
 
 Evidence: `reports/2026-07-04-nibs-p07b-code-review-session/README.md` §4 (flagged there as the
 session's highest-value signal) and `reports/2026-07-04-cross-session-analysis.md` §4.
@@ -62,3 +62,7 @@ Five code-review sessions have run since p07b. The jxya signature — a silent s
 **Reading:** the evidence now leans p07b-local, which is what the last verification item asked to watch for. This does **not** close the nib — the root cause is still `[Unverified]`, there is still no reproduction, and 2-for-2 within a single session remains unexplained. But the case for treating this as a live, general defect has weakened, and both anomalies actually seen since are unrelated (the 529 above; an orchestrator fabricating a report section, 07-14). If the next couple of sessions stay clean, `deferred` (parked) is more honest than carrying it as an open bug.
 
 **Instrumentation note:** `conventions/session-report.md` carries an **Anomalies** field (`dispatch retries, unusable returns, injected-content flags — or "none"`), added in `1d85efe` on 2026-07-04 at 15:10 UTC — about 3h before this nib was filed. Every session since has reported against it, which is why this watch has clean data rather than silence. Keep it as the recurrence signal.
+
+## Summary
+
+**Deferred 2026-09-24** — Deferred 2026-09-24: no recurrence in six sessions since p07b (07-05 x4 clean; 07-14 a server-side 529, a different cause; 07-15 the orchestrator omitted adversarial-reviewer from the wave, and once dispatched it ran normally and returned a Critical finding). The fix question is settled by code-review's return guard (ported to main 2026-08-21): a return with zero tool calls, no report structure, or toggle-like text is a failed dispatch, re-dispatched once, with suspicious strings quoted and never acted on, and a second failure recorded as `dispatch-failed`. The root cause stays unknown and can no longer be established: the p07b transcripts (07-03..07-05) are gone under default retention, and the report shows no sign that p07b's reviewers were named teammates. Reopen if the guard records this signature; the watch needs `--report` sessions to see it.
