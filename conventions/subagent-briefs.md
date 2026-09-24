@@ -46,3 +46,10 @@ instruction delivered nothing (0/3); every agent whose brief carried one deliver
    no interrupt, and task-mode agents have no mailbox at all. If a decision changes after
    dispatch, do not assume a HOLD landed — verify what actually happened (`git status`,
    `git log`, the diff itself) before acting on the new decision.
+5. **A finished agent can be resumed.** `SendMessage` with `to:` its agent ID (or a named
+   agent's name) resumes it from its transcript, context intact. The send returns at once;
+   the agent's reply arrives later as a hand-back, so wait for it as for a fresh background
+   dispatch. Verified 2026-09-24: an unnamed agent resumed this way recalled values from its
+   first turn. Resume when the agent's context is the point, as auto-code-review does with
+   the implementer for repair rounds. This covers finished agents only; rule 4 governs one
+   that is still running.
