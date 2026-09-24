@@ -15,7 +15,7 @@ Parse `$ARGUMENTS` to determine:
    - **Per-axis override (optional)**: `roster=<N>`, `models=<low|norm|high>`, `evidence=<strong|norm|any>` and `reach=<narrow|norm|wide>` set an axis directly, overriding whatever the preset implies. Later arguments win, so `review roster=6 roster=4` resolves to 4.
    - **Anything else is not a preset.** An unrecognized leading word is scope or instructions, not a preset — say so rather than guessing. There is exactly one vocabulary: three presets and four axes.
 2. **Spec**: `--spec <path | work-item-ID>` — a specification/plan document, or an ADO work item ID whose Description and Acceptance Criteria serve as the spec. When omitted, spec discovery (Step 1.5) may find one automatically.
-3. **`--report`**: collect session metrics for skill-tuning comparisons — record per-agent usage from every reviewer/validator tool result and append a **Session Metrics** section to the consolidated review file (Step 6). See `@../../conventions/session-report.md` for the exact section format and the truth discipline. Orchestrating skills (`auto-code-review`) pass this through; standalone, the enriched consolidated file is the deliverable.
+3. **`--report`**: collect session metrics for skill-tuning comparisons — record the per-agent usage the harness reports for every reviewer and validator and append a **Session Metrics** section to the consolidated review file (Step 6). See `@../../conventions/session-report.md` for the exact section format and the truth discipline. Orchestrating skills (`auto-code-review`) pass this through; standalone, the enriched consolidated file is the deliverable.
 4. **PR number**: A pull request number (e.g., `123`, `PR#123`, `#123`) — review that PR instead of local changes
 5. **Scope**: Specific file/directory path, or all uncommitted changes (ignored when PR number is provided)
 6. **Instructions**: Any additional review instructions
@@ -159,7 +159,7 @@ Parsing).
 
 3. **Step 3.0 pre-flight: skip.** The seat is the only actor in the tree and runs its own
    targeted gates; a shared pre-flight would duplicate it.
-4. **Dispatch one Agent call** (`run_in_background: false`, no `name` — the Step 3 dispatch contract and its tripwire apply) with this template instead of the
+4. **Dispatch one Agent call** (no `name` — the Step 3 dispatch contract and its tripwire apply) with this template instead of the
    wave's Base Context Template — the seat's own brief carries its working-tree rules and output
    format, so do not paste the wave's safety block or probe-nomination channel:
 
@@ -428,23 +428,25 @@ Before dispatching, run the project's standard gates **once** (best-effort — d
 
 #### Dispatch
 
-Based on selection, launch agents using the **Agent tool with parallel calls in a single message — every call with `run_in_background: false` and NO `name` parameter**.
+Based on selection, launch agents using the **Agent tool with parallel calls in a single message — every call with NO `name` parameter**.
 
 **CRITICAL — dispatch mode. Read this before writing the calls.**
 
-The Agent tool has two execution models, and `name` is what selects between them:
+With agent teams enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`), the Agent tool has two
+execution models, and `name` is what selects between them. Without agent teams a named agent is
+an ordinary subagent, but dispatching unnamed is correct either way:
 
-| Dispatch | Model | What the tool result is |
-|----------|-------|-------------------------|
-| **No `name`** | Task — a call that returns | The agent's **final message** — the report you consolidate from |
-| **`name` set** | Teammate — an actor with a mailbox | A spawn acknowledgment. The report **never comes back** |
+| Dispatch | Model | What comes back |
+|----------|-------|-----------------|
+| **No `name`** | Task — a call that returns | The agent's **final message** — the report you consolidate from, as the tool result or, for a background call, a hand-back once the agent finishes |
+| **`name` set** (agent teams on) | Teammate — an actor with a mailbox | A spawn acknowledgment. The report **never comes back** |
 
-- **NEVER pass `name` on a review dispatch.** A name is an *address*, and addressability only means anything for a long-lived actor — so asking for one asks for a mailbox instead of a return value. `run_in_background: false` is a parameter of the task model; with `name` set there is no call to block on, so the flag is silently **inert, not overridden**. Verified by controlled experiment: two identical agents, same type, same prompt, both `run_in_background: false` — the unnamed arm returned its answer as the tool result, the named arm returned a spawn ack and its answer was discarded undelivered.
-- All agents in the resolved roster MUST be launched in a single message with multiple Agent tool calls. **Parallelism comes from batching calls into one message, not from backgrounding** — a synchronous wave is already fully parallel.
-- Every call MUST set `run_in_background: false`. A backgrounded wave invites the orchestrator to end its turn to "wait" — but this skill runs inside a subagent, whose final message is its return value, so ending the turn returns a useless result to its caller. Never arm a timer/watcher or end the turn to wait for reviewers.
-- **TRIPWIRE — read the first tool result before writing anything else.** If a dispatch returns `Spawned successfully` / "will receive instructions via mailbox" instead of a report, you are in teammate mode and **no report is coming, for any agent in the wave**. Re-dispatch the whole wave without `name` and say so in your report. Do not wait, do not poll, and do not ask reviewers to resend: an unnamed orchestrator has no address, so their replies bounce off the agent *type* label and land in the main conversation where you cannot see them. Left unchecked this failure is silent — the agents run, do real work, and their reports are destroyed.
-- Reviewers return their report as their **final message** — that final message IS the tool result you consolidate from. Never instruct a reviewer to send its report via SendMessage or to write it to a file. **This contract is only safe on the task path.** In teammate mode a final message has no return channel, so the reviewers who obey it lose their reports while the ones who improvise a SendMessage get through. That inversion — compliance punished, deviation rewarded — is why the tripwire above is not optional.
-- **When `--report` is set**: note the dispatch timestamp, and as each tool result returns, record the agent's harness-reported usage (tokens, tool calls, duration — verbatim; "not reported" if absent) plus its findings count and approximate report size. This data exists only in these tool results — it cannot be recovered later. It feeds the Session Metrics section in Step 6 (`@../../conventions/session-report.md`).
+- **NEVER pass `name` on a review dispatch.** A name is an *address*, and addressability only means anything for a long-lived actor — so asking for one asks for a mailbox instead of a return value. Verified by controlled experiment with agent teams enabled: two identical agents, same type, same prompt, differing only in `name` — the unnamed arm's answer came back, the named arm returned a spawn ack and its answer was discarded undelivered.
+- All agents in the resolved roster MUST be launched in a single message with multiple Agent tool calls. **Parallelism comes from batching calls into one message.**
+- **Consolidate only once every reviewer has reported.** The calls run in the background and each report arrives when its reviewer finishes; the harness keeps you alive while any of them is still running, so there is nothing to poll. Never arm a timer/watcher, and never ask a reviewer to resend.
+- **TRIPWIRE — read what each dispatch returns before writing anything else.** A background launch acknowledgment ("Async agent launched successfully", report to follow) is the normal task path. If a dispatch instead returns `Spawned successfully` / "will receive instructions via mailbox", you are in teammate mode and **no report is coming, for any agent in the wave**. Re-dispatch the whole wave without `name` and say so in your report. Do not wait, do not poll, and do not ask reviewers to resend: an unnamed orchestrator has no address, so their replies bounce off the agent *type* label and land in the main conversation where you cannot see them. Left unchecked this failure is silent — the agents run, do real work, and their reports are destroyed.
+- Reviewers return their report as their **final message** — that final message is what comes back to you and what you consolidate from. Never instruct a reviewer to send its report via SendMessage or to write it to a file. **This contract is only safe on the task path.** In teammate mode a final message has no return channel, so the reviewers who obey it lose their reports while the ones who improvise a SendMessage get through. That inversion — compliance punished, deviation rewarded — is why the tripwire above is not optional.
+- **When `--report` is set**: note the dispatch timestamp, and as each report arrives, record the agent's harness-reported usage (tokens, tool calls, duration — verbatim; "not reported" if absent) plus its findings count and approximate report size. This data exists only in what the harness returns for each agent — it cannot be recovered later. It feeds the Session Metrics section in Step 6 (`@../../conventions/session-report.md`).
 
 #### Agent Prompts
 
@@ -624,7 +626,7 @@ is spent on findings that will survive rather than on ones about to be tiered do
    `screen: skipped (evidence=any)`; the clusters then carry no screen scores, and Step 5.6's
    no-score rule applies to them.
 2. **Dispatch one screening agent per cluster, in parallel** (single message, multiple Agent calls,
-   `run_in_background: false`), on the **mid tier** (Step 2d — verification agents). Each receives: the cluster's merged claim,
+   no `name`), on the **mid tier** (Step 2d — verification agents). Each receives: the cluster's merged claim,
    its finder count and finders' anchors, the diff hunk for the cited location, and the rubric below.
 3. **The rubric — a continuous 0–100 score**, with these as described reference points, not as the
    only permitted values. Give it verbatim:
@@ -705,7 +707,7 @@ Independent re-verification of the few primary findings the Step 4.95 screen cou
 
    **Waive** (already verified) any non-Critical primary the screen scored clear of the bar by more than 15 points, and any already found by **2+ independent finders including at least one specialist, all at anchor 100** — mark it `screened <score>` or `corroborated ×N — validation waived` rather than spending a validator to re-confirm what a score or independent agreement already established. Pre-existing and minor-bucket findings are never validated.
 2. **Budget cap — 15 validators.** If more than 15 findings qualify, validate the highest-severity 15 (Critical first, then High, Medium, Low; ties broken by anchor descending), dropping only from the Medium/Low tail. **Never leave a Critical unvalidated** — if Criticals alone exceed 15, raise the cap to include all of them. Record the unvalidated and waived counts.
-3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Agent calls, every call with `run_in_background: false` and **no `name`** — the same dispatch contract as Step 3, tripwire included; verdicts come back as tool results). When `--report` is set, record each validator's usage from its tool result, same as Step 3 reviewers. Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. **Working-tree safety applies to this wave too** — it is a second parallel wave on one shared tree, so validators are bound by the same read-only rule as Step 3 reviewers; `finding-validator` carries it in its own instructions, so do not paste the Step 3 block in (its `### Probe Requests` markdown channel would contradict the validator's JSON-only output). A validator that can only settle a finding by mutating code returns `uncertain` with a `probe_request` instead (see step 4 below). Model follows Step 2d (validators are verification agents — mid-tier at every `models` value).
+3. **Dispatch one `decaf-quality:finding-validator` per finding, in parallel** (single message, multiple Agent calls, every call with **no `name`** — the same dispatch contract as Step 3, tripwire included; each verdict comes back as the validator's final message). When `--report` is set, record each validator's usage as its verdict arrives, same as Step 3 reviewers. Each validator receives: the full finding (number, title, severity, anchor, file:line, category, issue, fix, finder agents, pre_existing), the diff hunk(s) for the cited file with surrounding context, and relevant PR metadata/instructions. **Working-tree safety applies to this wave too** — it is a second parallel wave on one shared tree, so validators are bound by the same read-only rule as Step 3 reviewers; `finding-validator` carries it in its own instructions, so do not paste the Step 3 block in (its `### Probe Requests` markdown channel would contradict the validator's JSON-only output). A validator that can only settle a finding by mutating code returns `uncertain` with a `probe_request` instead (see step 4 below). Model follows Step 2d (validators are verification agents — mid-tier at every `models` value).
 4. **Process verdicts:**
    - `confirmed` — keep the finding; apply any corrections the validator supplied (line, file, pre_existing reattribution — a reattributed finding moves to Pre-existing Issues)
    - `refuted` — remove from findings; record under Considered But Not Flagged as `refuted by validator: <reason>`

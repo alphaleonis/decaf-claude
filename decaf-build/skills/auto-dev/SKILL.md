@@ -27,7 +27,7 @@ Parse `$ARGUMENTS`:
 3. **Max review iterations**: `--max-iterations N` (default: 3) — passed to auto-review
 4. **Spec path**: `--spec <path>` — passed to auto-review for spec compliance checking
 5. **`--models low|norm|high`** (default `high`): the model tier for dispatches down the chain, per rule 6 of `../../conventions/subagent-briefs.md`. Passed to auto-review.
-6. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). When set, this skill contributes the implementation-phase record: the implementation subagent's harness-reported usage (tokens / tool calls / duration, verbatim from the Agent tool result) and its model tier, changeset stats (files changed, +/− lines, new files), and a one-line scope description.
+6. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). When set, this skill contributes the implementation-phase record: the implementation subagent's harness-reported usage (tokens / tool calls / duration, verbatim as the harness reports them) and its model tier, changeset stats (files changed, +/− lines, new files), and a one-line scope description.
 
 ## Execution Steps
 
@@ -126,7 +126,7 @@ Launch a **general-purpose subagent** using the Agent tool to execute the approv
 > 2. List of all files created or modified
 > 3. Build verification result (pass/fail)
 
-Wait for the subagent to complete. Record results, including its agent ID from the dispatch result: auto-review resumes that agent for repair rounds. With `--report`, also record the subagent's harness-reported usage from the tool result and the changeset stats — this becomes the implementation-phase record for the session report.
+Wait for the subagent to complete. Record results, including its agent ID from the dispatch result: auto-review resumes that agent for repair rounds. With `--report`, also record the subagent's harness-reported usage and the changeset stats — this becomes the implementation-phase record for the session report.
 
 Report to the user:
 

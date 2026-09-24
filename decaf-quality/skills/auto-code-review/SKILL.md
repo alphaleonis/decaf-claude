@@ -43,7 +43,7 @@ Parse `$ARGUMENTS`:
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
 6. **Set `deferSystem`** from `--tracker` when given; otherwise detect the work item tracking system from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.)
-7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (which route ran — resumed implementer, fresh fixer, or both — with each one's usage and model tier, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, each Step 5.5 fix-verifier check (usage, verdict and breakage counts, the branch taken), any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
+7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage as the harness reports it), per fix round (which route ran — resumed implementer, fresh fixer, or both — with each one's usage and model tier, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, each Step 5.5 fix-verifier check (usage, verdict and breakage counts, the branch taken), any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
 8. Inform the user:
 
 ```
@@ -57,7 +57,7 @@ Starting review-fix loop...
 
 ### Step 2: Code Review (Subagent)
 
-Launch a **general-purpose subagent** using the Agent tool — **unnamed** (task mode: its report returns as the tool result; a named agent's final message is discarded — see `@../../conventions/subagent-briefs.md`), with no model override under any `--models` value (rule 6):
+Launch a **general-purpose subagent** using the Agent tool — **unnamed** (task mode: its report comes back to you; a named agent's final message is discarded — see `@../../conventions/subagent-briefs.md`), with no model override under any `--models` value (rule 6):
 
 **First iteration** — use the caller's `reviewSpec` and scope:
 

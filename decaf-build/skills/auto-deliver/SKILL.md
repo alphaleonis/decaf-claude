@@ -34,8 +34,8 @@ You **call** these; you do not reimplement them. Each already supports unattende
 
 - **Subagent dispatch contract** — how a dispatched agent's report gets back (task vs
   teammate mode) and why named teammates need an explicit delivery clause. Every agent this
-  loop dispatches directly (focused fixes in VERIFY) is **unnamed** — task mode, report as
-  tool result.
+  loop dispatches directly (focused fixes in VERIFY) is **unnamed** — task mode, the report comes
+  back to you.
 
   @../../conventions/subagent-briefs.md
 
