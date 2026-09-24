@@ -1,7 +1,7 @@
 ---
 name: batch-dev
 description: Orchestrate execution of MULTIPLE nibs in one run. Selects a queue, understands the nibs collectively (including how they fit together), then chooses the best execution mechanism per cluster — single series agent, parallel fan-out, scripted workflow, or agent team — and dispatches with ONE approval gate. Use when the user wants to work several nibs together (in parallel or series) rather than one at a time. Complements /decaf-build:auto-dev and /decaf-build:auto-tdd (which handle a single nib).
-argument-hint: "<nib-id...> | --filter <expr> | --ready  [--review <preset> [axis=value ...]] [--max-iterations N] [--base-branch <name>] [--report] [--unattended]"
+argument-hint: "<nib-id...> | --filter <expr> | --ready [<scope-id>]  [--tracker nibs|ado|github|markdown] [--review <preset> [axis=value ...]] [--max-iterations N] [--base-branch <name>] [--report] [--unattended]"
 ---
 
 # Batch Dev
@@ -23,7 +23,11 @@ A second hard rule: **when parallel-safety is uncertain, serialize.** Under-para
 
 ## Prerequisites
 
-- This project uses **nibs**. If you are unsure of any `nibs` syntax, run `nibs prime --full` before using it. Do not guess.
+- **A nib is a work item in whatever tracker the project uses** — nibs, Azure DevOps, GitHub Issues or a Markdown plan. Every tracker read and write goes through the adapter contract's operations, never a backend directly:
+
+  @../../conventions/work-items.md
+
+  Use `--tracker` when given. Otherwise detect per the contract: use a single detected tracker without asking; when several or none are detected, ask which to use. Under `--unattended`, never ask — with neither `--tracker` nor a single detected tracker, stop and name the candidates. On nibs, run `nibs prime --full` if unsure of any syntax. Do not guess.
 - Detect the project's build/verify and test commands during Phase 1 (from the project CLAUDE.md, build files, or by asking). Confirm them before relying on them.
 - Parallel fan-out (Phase 6b) uses git worktrees under `.claude/worktrees/` — ensure that path is gitignored so worktree contents are never accidentally committed.
 
@@ -33,8 +37,8 @@ Parse `$ARGUMENTS`:
 
 1. **Queue source** (one of):
    - Bare nib IDs (one or more) — the explicit queue.
-   - `--filter <expr>` — a nibs search/filter expression resolved via `nibs list`/`nibs query`.
-   - `--ready` — all ready/unblocked nibs (`nibs list --json --ready`).
+   - `--filter <expr>` — a query in the tracker's own search syntax, passed through unchanged: nibs → `nibs list` filter flags; Azure DevOps → a WIQL `WHERE` clause; GitHub → a `gh issue list --search` query. A Markdown plan has no search, so refuse `--filter` there and ask for ids.
+   - `--ready [<scope-id>]` — every item the contract's `list-ready` returns for that plan or epic. Without a scope id, a nibs project returns everything ready; other trackers need one, so ask for it (under `--unattended`, stop and say it is missing).
    - If none given, ask the user which nibs to batch.
 2. `--review <preset> [axis=value ...]` (default: `review`) — a `/code-review` preset optionally
    followed by any of its axis overrides (`roster=N`, `models=`, `evidence=`, `reach=`), forwarded
@@ -44,7 +48,8 @@ Parse `$ARGUMENTS`:
    say so in the Phase 8 report rather than implying the spec covered every nib.
 3. `--max-iterations N` (default `3`) — review iteration cap.
 4. `--base-branch <name>` — override the batch branch name (default derived in Phase 6).
-5. `--report` — produce a comparison-grade session report for skill tuning. Forwarded to each
+5. `--tracker <nibs|ado|github|markdown>` — the tracker holding the nibs; `auto-deliver` passes its own. Without it, detect per Prerequisites. Forwarded to each series nib's review (Phase 6a) so deferred findings land in the same tracker.
+6. `--report` — produce a comparison-grade session report for skill tuning. Forwarded to each
    **series** nib's `/decaf-quality:auto-code-review` (Phase 6a), which writes the report folder to
    `.decaf/session-reports/`. See `@../../conventions/session-report.md`. **Series clusters only** —
    fan-out/workflow/team clusters self-review inline and cannot emit a standard report (see the
@@ -60,7 +65,7 @@ Run the phases in order. Phases 1–5 are planning (interactive where noted). Ph
 
 When invoked with `--unattended` (the `auto-deliver` loop passes this), batch-dev runs with **no human gates** — it proceeds on its own best judgment and records what it decided. Suppress exactly these:
 
-- **Phase 1** — queue confirmation, the "include this `in-progress` nib?" question, and the build/test-command confirmation. The caller supplies the queue (phase-scoped) and project context; resolve commands from the project CLAUDE.md / build files without asking.
+- **Phase 1** — queue confirmation, the "include this `in-progress` / `draft` nib?" question, and the build/test-command confirmation. The caller supplies the queue (phase-scoped) and project context; resolve commands from the project CLAUDE.md / build files without asking. Include `in-progress` nibs (a resumed run leaves them so) and skip `draft` nibs; log each.
 - **Phase 3 (Clarify)** — do **not** ask the user. Proceed on the most reasonable assumption for each ambiguity and **log the assumption** (to `.decaf/auto-deliver/` when run under the loop).
 - **Phase 5 (Approve)** — skip the Approve/Adjust/Cancel gate; proceed with the strategy as planned.
 - **Phase 6 check-ins** — no per-cluster pauses; report progress to the run log instead.
@@ -71,7 +76,7 @@ When invoked with `--unattended` (the `auto-deliver` loop passes this), batch-de
 ## Phase 1 — Select
 
 1. Resolve the queue from the arguments. Show the resolved set as a table: `id | type | title | status`.
-2. Drop anything already `completed`/`scrapped`; flag anything `in-progress` (ask whether to include).
+2. Drop anything closed (the contract's `done`, plus a tracker's other closed states, such as nibs `scrapped`). Flag anything `in-progress` or `draft` and ask whether to include it; a `draft` has not been refined, so recommend leaving it out.
 3. Detect project context: language(s), framework, **build command**, **test command** (confirm with the user if ambiguous).
 4. Confirm the resolved queue with the user before proceeding. This is a lightweight confirmation, not the approval gate.
 
@@ -79,12 +84,12 @@ When invoked with `--unattended` (the `auto-deliver` loop passes this), batch-de
 
 Understand every nib **individually and collectively**. This step itself fans out.
 
-1. Pull each nib's full body: `nibs show --json <id> [id...]`.
-2. Pull declared relationships: `nibs links --json <parent-or-each> --rel blocked-by,blocking,children` as relevant; capture `blocked_by` edges. Use `nibs links --rel children --order topo` when the queue is an epic's children.
+1. `read` each nib: body (spec and `## Acceptance`), status, blockers and children.
+2. Take the declared dependencies from each nib's blockers; they are the `blocked_by` edges. When the queue is a plan's, epic's or phase's children, also `read` the parent: its children list gives plan order, and the blockers order the nibs within it.
 3. **Fan out one read-only `Explore` agent per nib** (single message, multiple `Agent` calls so they run concurrently — **unnamed**, per `@../../conventions/subagent-briefs.md`: each summary arrives as the agent's final message, i.e. the tool result; a named agent's final message is discarded). Each returns a structured summary:
    - `files` — files/areas the nib will likely create or modify
    - `types` — key types/components/modules touched
-   - `declared_deps` — blocked_by / blocking from nibs
+   - `declared_deps` — the blockers `read` returned
    - `overlap_candidates` — other nibs in the batch it likely shares files/types with
    - `approach_hint` — does this produce testable logic (→ tdd) or UI/config/scaffolding (→ dev)?
    - `risks` / `unknowns` — anything ambiguous
@@ -168,8 +173,8 @@ Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
 
   @../../conventions/subagent-briefs.md
 
-- **Nib status**: set each nib `in-progress` **before** launching its worker; set it `completed` **after** the worker reports success. Subagents/workflows run fresh and will NOT update nibs — you (the conductor, in the main context) own status updates.
-- **Commits**: commit code **and** the nib file together. Keep the nib's todo items checked off as work completes. In the shared working tree (Phase 6a) the commit is **yours, never the worker's** — workers stage, you commit. Worktree lanes (6b/6c/6d) must commit in their own worktrees (their work reaches you only through the shared object store); that trade-off is accepted because the batch branch stays untouched until the Phase 7 merge, which you control.
+- **Nib status**: `set-status` each nib to `in-progress` **before** launching its worker; `close` it with a one-line summary **after** the worker reports success. Subagents/workflows run fresh and will NOT update nibs — you (the conductor, in the main context) own status updates.
+- **Commits**: commit the code together with whatever the tracker changed in the working tree: the nib file on nibs, the plan file on Markdown. Azure DevOps and GitHub change nothing locally, so their commits carry code only. On nibs, keep the nib's todo items checked off as work completes. In the shared working tree (Phase 6a) the commit is **yours, never the worker's** — workers stage, you commit. Worktree lanes (6b/6c/6d) must commit in their own worktrees (their work reaches you only through the shared object store); that trade-off is accepted because the batch branch stays untouched until the Phase 7 merge, which you control.
 - **Check-ins**: at each cluster boundary, report what finished and what's next, and pause for the user — especially **before launching any parallel/workflow/team cluster** and **after each integration/merge**.
 - **Verify**: run the build (and tests, for tdd work) after each unit of work; fix breakage before moving on.
 
@@ -177,14 +182,14 @@ Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
 
 For each nib in the cluster, in order. The batch-level plan already covers the per-nib plan, so **do NOT call `/decaf-build:auto-dev` / `/decaf-build:auto-tdd` wholesale** (their interactive Step-1 plan gate would re-prompt and break the unattended run). Instead reuse their **execute + review tail**:
 
-1. Set the nib `in-progress`.
+1. `set-status` the nib to `in-progress`.
 2. Launch a **general-purpose `Agent`** — unnamed (task mode: its report returns as the tool result; see the Dispatch contract above) — with the pre-approved-plan prompt pattern (as in `/decaf-build:auto-dev` Step 2 / `/decaf-build:auto-tdd` Step 2 — *"the plan is already approved, do NOT ask for confirmation"*). For `tdd` nibs, instruct a full red-green-refactor loop following the project's test conventions; for `dev` nibs, implement step-by-step verifying the build after each step. Instruct the agent to **stage its work (`git add`) and stop short of committing** — it reports the diffstat and a proposed commit message; the commit is yours (step 4). **With `--report`**, record this implementation Agent's harness-reported usage from its tool result (tokens / tool calls / duration, verbatim) plus changeset stats (files changed, +/− lines, new files) — this is the nib's implementation-phase record, exactly as `/decaf-build:auto-dev` Step 2 captures.
-3. After it reports, run `/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} --spec {itemSpec} {--report if set} {--unattended if set}` (it auto-detects scope from uncommitted changes and manages its own subagent lifecycle). `{itemSpec}` is this nib as its tracker holds it, so the review checks the change against what the nib asked for:
+3. After it reports, run `/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} --spec {itemSpec} --tracker {tracker} {--report if set} {--unattended if set}` (it auto-detects scope from uncommitted changes and manages its own subagent lifecycle). `{itemSpec}` is this nib as its tracker holds it, so the review checks the change against what the nib asked for:
    - **Azure DevOps work item** → its ID. code-review reads the Description and Acceptance Criteria itself.
    - **Any other tracker** (nibs, GitHub, Markdown) → a file holding only this item's `read` output per [work-items.md](../../conventions/work-items.md): the title as a heading, then the full body. Write it to `.decaf/batch-dev/specs/<item-id>.md` (a slug of the title where the tracker has no ids). Create `.decaf/batch-dev/.gitignore` containing `*` before the first write, so spec files stay out of the nib's commit.
 
    **With `--report`**, the Step-2 implementation-phase record is in this context — hand it to auto-review so its session report has full build-side accounting (same contract as auto-dev/auto-tdd). If a running-app build lock or a trivial change makes the full auto-review impractical, a focused manual review of the diff is an acceptable substitute — note the substitution (and, under `--report`, that no session report was produced for this nib).
-4. Review the staged work — the reported diffstat plus summary; read the full diff when the change is behavioral or the brief changed after dispatch — then commit code + nib; set the nib `completed`. The commit is the one irreversible step in this lane and it stays with you: a dispatched agent cannot be reliably redirected once running (see Failure handling), so the component holding decision authority holds the commit.
+4. Review the staged work — the reported diffstat plus summary; read the full diff when the change is behavioral or the brief changed after dispatch — then commit (code plus any tracker files, per Commits above) and `close` the nib. The commit is the one irreversible step in this lane and it stays with you: a dispatched agent cannot be reliably redirected once running (see Failure handling), so the component holding decision authority holds the commit.
 
 > **`--report` covers series clusters only.** Phases 6b/6c/6d self-review inline in their worktrees (`/decaf-quality:auto-code-review` runs from the main context and cannot be invoked from a worktree), so they emit no standard session report even when `--report` is set. Note the uncovered clusters in the Phase 8 report rather than implying full coverage.
 
@@ -199,7 +204,7 @@ Only for a cluster of **provably independent** nibs.
    - **Provision dependencies before building** — a fresh worktree has no installed packages (e.g. `node_modules`), so a plain build can fail its frontend/asset step. If the project has such dependencies, provision them first: symlink/junction the main repo's package directory into the worktree (instant, read-only), or run the project's install command. Skip this entirely when the project has no install step.
    - Implement its nib (tdd/dev per the plan), verify build/tests **inside its worktree**. On Windows, avoid `cd /d` in the Bash tool (it errors); use plain `cd` or the PowerShell tool (its cwd is already the worktree).
    - Self-review its changes inline (focused diff review for correctness + conventions). Do NOT invoke the main-context `/decaf-quality:auto-code-review` from inside a worktree.
-   - **Commit code only** (NOT `.nibs/*.md` — the conductor manages nib status). Committing here is the worktree exception to conductor-owned commits: the lane's work reaches the conductor only through the shared object store. Report: files changed, build/test result, final commit **SHA** (`git rev-parse HEAD`), and branch (`git rev-parse --abbrev-ref HEAD`).
+   - **Commit code only**, never tracker files (the conductor manages nib status). Committing here is the worktree exception to conductor-owned commits: the lane's work reaches the conductor only through the shared object store. Report: files changed, build/test result, final commit **SHA** (`git rev-parse HEAD`), and branch (`git rev-parse --abbrev-ref HEAD`).
 4. Proceed to Phase 7 to merge — by branch or by reported SHA.
 
 > **Worktree mechanics:** `isolation: "worktree"` creates a worktree at `.claude/worktrees/agent-<id>` on a branch `worktree-agent-<id>`, and the agent result reports both the path and branch. **Base branch:** per the Claude Code docs ([worktrees](https://code.claude.com/docs/en/worktrees.md)), the worktree branches from the repository's default branch (`origin/HEAD`) — falling back to local `HEAD` only if no remote is configured — **not** from the parent's current HEAD or the batch branch. It is overridable project-wide via `worktree.baseRef: "head"` in `settings.json`, but the skill must not assume that is set; hence the mandatory re-anchor in step 3.0 above. Once a lane has re-anchored onto `{BASE_SHA}` and committed on top, its committed work persists in the shared object store and the reported branch/SHA merges cleanly in Phase 7 (which re-checks base ancestry first); pinning a stable ref (`git branch batch/{slug}/{id} {sha}`) before cleanup is optional insurance, not required. After merging, prune with `git worktree remove --force <path>` + `git branch -D worktree-agent-<id>`.
@@ -211,7 +216,7 @@ For a cluster best run as a deterministic pipeline (uniform sub-task over many i
 1. Scout the work-list inline first (e.g. the call sites to change), then author a `Workflow` script that pipelines each item through implement → verify (and adversarial-verify if warranted), returning structured per-item results.
 2. Use `isolation: 'worktree'` on workflow agents if they mutate files in parallel. **Same base-branch hazard as 6b**: these worktrees branch from `origin/HEAD`, not the batch branch — capture `BASE_SHA` before launching and have each worktree agent re-anchor onto it (`git reset --hard {BASE_SHA}`) as its first step (see Phase 6b step 3.0).
 3. Set the cluster's nib(s) `in-progress` before launching; the workflow runs in the background and notifies on completion.
-4. On completion, integrate its branch/commits via Phase 7, commit + set nib(s) `completed`.
+4. On completion, integrate its branch/commits via Phase 7, then commit and `close` the nib(s).
 
 ### Phase 6d — Agent team
 
@@ -219,7 +224,7 @@ For an interdependent cluster needing negotiation.
 
 1. Set the cluster nibs `in-progress`.
 2. Spawn named `Agent`s (e.g. a `contract` owner + `consumer` workers), each addressable; coordinate via `SendMessage` as the contract emerges. Named agents are **teammates**: their final message is discarded, so every team-member brief MUST end with the delivery clause from `@../../conventions/subagent-briefs.md` (report back to you via `SendMessage` before ending the turn) — collect each member's report before integrating; an idle notification is not a report. Use worktrees if they mutate overlapping files in parallel; otherwise serialize the shared parts. **If any team member runs with `isolation: "worktree"`, apply the Phase 6b step 3.0 re-anchor** (pass `BASE_SHA`, `git reset --hard {BASE_SHA}` first) — those worktrees also start from `origin/HEAD`, not the batch branch.
-3. Integrate via Phase 7; commit + set nibs `completed`.
+3. Integrate via Phase 7, then commit and `close` the nibs.
 
 ## Phase 7 — Integrate (merge protocol)
 
@@ -250,7 +255,7 @@ Applies to any cluster that produced separate branches/worktrees (6b/6c/6d). Ser
 
 - Run the project's build + tests on the batch branch. **If a running instance of the app locks build outputs** (e.g. a live executable holding its output binaries), close it first — or fall back to building/testing only the affected library/test projects, which avoids producing the locked artifact. Flag that the full build plus any **visual** acceptance criteria need the app closed: purely-visual criteria can't be auto-verified, so leave such nibs `in-progress` until confirmed.
 - Leave the **merge-to-main / push decision to the user** (honors "commit/push only when asked; branch first").
-- Offer follow-up nibs for anything deferred or parked.
+- Offer follow-up nibs (the contract's `create-followup`) for anything deferred or parked.
 - **With `--report`**: list the session reports written (`.decaf/session-reports/…`, one per series nib) and explicitly name any fan-out/workflow/team clusters that produced none, so coverage isn't overstated.
 
 ---
@@ -259,7 +264,7 @@ Applies to any cluster that produced separate branches/worktrees (6b/6c/6d). Ser
 
 - **A dispatched agent cannot be reliably redirected.** `SendMessage` drains at the receiver's next tool round (task-mode agents have no mailbox at all); an agent deep in a long tool call may already have committed by the time a HOLD lands. If a decision changes after dispatch, do not assume the message arrived: verify with `git status` / `git log` and read the actual diff, then decide deliberately between keeping-and-auditing the superseded work and reverting it. An agent's commit message may still carry the framing of the brief it was given — the message is not evidence of which brief it followed.
 - **Skip-and-continue**: a failed nib does not abort the batch.
-- **Park** the failed nib: keep it `in-progress`, append a `## Batch failure note` to its body (what failed, build/test output summary, where it stopped). Never write secrets/log output that could contain credentials into the nib.
+- **Park** the failed nib: keep it `in-progress` and record a `Batch failure note` on it with the contract's `append-note` (what failed, build/test output summary, where it stopped). Never write secrets/log output that could contain credentials into the nib.
 - **Hold dependents**: any nib whose `blocked_by` includes a failed nib is skipped and reported as held.
 - Report all parked/held nibs in Phase 8.
 

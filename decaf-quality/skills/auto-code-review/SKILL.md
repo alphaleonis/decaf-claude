@@ -1,7 +1,7 @@
 ---
 name: auto-code-review
 description: Automated review-fix-recheck loop. Runs code review, triages findings, fixes autonomously via subagent, and re-reviews when the fixes warrant it. Iterates until code stabilizes.
-argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--max-iterations N] [--spec <path|work-item-ID>] [--report] [--unattended] [path] [instructions]"
+argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--max-iterations N] [--spec <path|work-item-ID>] [--report] [--unattended] [--tracker nibs|ado|github|markdown] [path] [instructions]"
 ---
 
 # Auto Code Review
@@ -23,8 +23,9 @@ Parse `$ARGUMENTS`:
 3. **Spec**: `--spec <path | work-item-ID>` — passed through to `/code-review`
 4. **`--report`**: produce a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). Forward `--report` to **every** `/code-review` invocation (first pass and re-reviews), keep the session ledger through the loop (Steps 1–5), and write the report folder in Step 6.5. Callers (`auto-tdd`/`auto-dev`) may pass an implementation-phase record to include.
 5. **`--unattended`**: no human is available to answer (batch-dev passes it under auto-deliver; any headless caller can). The loop never calls `AskUserQuestion`; Steps 3d and 3e say what happens instead.
-6. **Scope**: Specific file/directory path, or all uncommitted changes
-7. **Instructions**: Any remaining text passed through to `/code-review`
+6. **`--tracker <nibs|ado|github|markdown>`**: the tracker to file deferred findings in, from a caller that already knows it (batch-dev passes its own). When given, it is `deferSystem` and Step 1 skips detection.
+7. **Scope**: Specific file/directory path, or all uncommitted changes
+8. **Instructions**: Any remaining text passed through to `/code-review`
 
 ## Execution Steps
 
@@ -39,7 +40,7 @@ Parse `$ARGUMENTS`:
    - Search for test framework config: `jest.config.*`, `pytest.ini`, `*.csproj` (test SDK), `go.mod`, `Cargo.toml`, etc.
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
-6. **Detect work item tracking system** from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.) — store as `deferSystem`
+6. **Set `deferSystem`** from `--tracker` when given; otherwise detect the work item tracking system from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.)
 7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
 8. Inform the user:
 

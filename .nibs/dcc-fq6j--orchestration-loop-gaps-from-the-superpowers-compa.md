@@ -6,7 +6,7 @@ status: todo
 type: epic
 priority: normal
 created_at: 2026-09-24T17:02:53Z
-updated_at: 2026-09-24T17:31:55Z
+updated_at: 2026-09-24T17:53:17Z
 order: zzzzzy
 ---
 
@@ -34,4 +34,4 @@ Out of scope: moving code-review's reviewer fan-out into a `Workflow` script. co
 
 ## Current Focus
 
-Completed dcc-qdxo: auto-code-review gains `--unattended`: it never calls AskUserQuestion, keeps the Step 3c plan as built (conflicting options already defer), and with no tracker detected lists deferrals as unfiled in the final summary for the caller to file. batch-dev forwards the flag from Phase 6a and its unattended section no longer lists the review tail as able to pause. Verified by the acceptance greps, an inventory of every ask point, and fresh-agent tests: old text stalled on two questions, new text asked none, attended control still asks both.
+Completed dcc-u73a: batch-dev now works from any tracker the adapter contract supports. The contract gains `list-ready` and `append-note` in all four backends, and `read` returns children and, per backend, blockers. batch-dev takes `--tracker` (else detects per the contract), reads, orders, sets status, closes, notes failures and files follow-ups through contract operations, treats `--filter` as a tracker-native query (refused on Markdown), and commits only the tracker files that live in the repo. auto-deliver passes `--tracker` and the phase's open child ids from `read`; batch-dev passes `--tracker` to auto-code-review, which uses it as `deferSystem`. Verified by the seven acceptance greps and fresh-agent walkthroughs on Azure DevOps and Markdown against an Azure DevOps baseline.

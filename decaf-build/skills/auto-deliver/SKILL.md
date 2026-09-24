@@ -19,9 +19,9 @@ is the one skill in the suite that self-drives across many phases.
 
 You **call** these; you do not reimplement them. Each already supports unattended operation:
 
-- **Tracker adapter contract** — every work-item read/write goes through the six ops
-  (`create` / `next-ready` / `read` / `set-status` / `close` / `create-followup`). Never
-  touch a backend directly; never assume which backend is in use.
+- **Tracker adapter contract** — every work-item read/write goes through its operations
+  (`create` / `next-ready` / `list-ready` / `read` / `set-status` / `close` / `append-note` /
+  `create-followup`). Never touch a backend directly; never assume which backend is in use.
 
   @../../conventions/work-items.md
 
@@ -120,10 +120,10 @@ of the phase. JIT: the breakdown is planned against the code earlier phases actu
 
 ### 3. EXECUTE
 
-`/decaf-build:batch-dev --unattended` scoped to **this phase's feature children only** (pass
-their ids / a phase-scoped filter), forwarding `--review` **verbatim** (preset plus any axis
-overrides — this loop never rewrites it), `--base-branch <integration branch>`,
-and `--report` (if set). batch-dev selects mechanisms, executes, reviews, and merges its clusters
+`/decaf-build:batch-dev --unattended --tracker <tracker>` scoped to **this phase's feature
+children only**: pass the ids of its children that are not done, taken from `read(current_phase)`.
+Forward `--review` **verbatim** (preset plus any axis overrides — this loop never rewrites it),
+`--base-branch <integration branch>`, and `--report` (if set). batch-dev selects mechanisms, executes, reviews, and merges its clusters
 per its own protocol. You do not micromanage it. With `--report`, each **series** nib emits a
 comparison-grade session report to `.decaf/session-reports/` (batch-dev's fan-out/workflow/team
 clusters self-review inline and produce none — batch-dev's Phase 8 names the uncovered clusters).
