@@ -126,9 +126,8 @@ of the phase. JIT: the breakdown is planned against the code earlier phases actu
 children only**: pass the ids of its children that are not done, taken from `read(current_phase)`.
 Forward `--review` **verbatim** (preset plus any axis overrides — this loop never rewrites it),
 `--base-branch <integration branch>`, `--models` (default `high`), and `--report` (if set). batch-dev selects mechanisms, executes, reviews, and merges its clusters
-per its own protocol. You do not micromanage it. With `--report`, each **series** nib emits a
-comparison-grade session report to `.decaf/session-reports/` (batch-dev's fan-out/workflow/team
-clusters self-review inline and produce none — batch-dev's Phase 8 names the uncovered clusters).
+per its own protocol. You do not micromanage it. With `--report`, each series nib and each
+parallel cluster's review emits a comparison-grade session report to `.decaf/session-reports/`.
 
 ### 4. VERIFY  *(verify-and-fix sub-routine)*
 
@@ -213,8 +212,7 @@ emit a final report:
 - `[manual]` acceptance criteria awaiting human confirmation,
 - accumulated lessons (`.decaf/auto-deliver/lessons.md`),
 - any scope-cut recommendations you surfaced but did not act on,
-- **with `--report`**: the session reports written across all phases (`.decaf/session-reports/`),
-  and any fan-out/workflow/team clusters left uncovered.
+- **with `--report`**: the session reports written across all phases (`.decaf/session-reports/`).
 
 Leave the **merge-to-main / push** decision and **"which plan next"** to the human. Done.
 
