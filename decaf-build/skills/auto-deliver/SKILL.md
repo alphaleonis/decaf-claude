@@ -1,7 +1,7 @@
 ---
 name: auto-deliver
 description: Autonomously drive a whole plan to completion — loop SELECT → BREAKDOWN → EXECUTE → VERIFY → RECONCILE → LEARN → REPLAN → MERGE, one phase at a time, WITHOUT stopping at phase boundaries. Use when you have a phased plan (work items in a tracker) and want it built end-to-end unattended. Stops only when the plan is complete (or it genuinely cannot proceed).
-argument-hint: "<plan reference or root work-item id> [--base-branch <name>] [--review <preset> [axis=value ...]] [--report] [--tracker nibs|ado|github|markdown] [--models low|norm|high]"
+argument-hint: "<plan reference or root work-item id> [--base-branch <name>] [--review <preset> [axis=value ...]] [--report] [--tracker nibs|ado|github|markdown] [--models low|norm|high] [--laps N]"
 ---
 
 # Auto-Deliver
@@ -46,15 +46,16 @@ You **call** these; you do not reimplement them. Each already supports unattende
 ## Non-negotiable invariants
 
 1. **No gate-stops, and no accidental ones.** You never pause for approval, confirmation, or
-   a status check. The only exits are *plan complete* and *escalation* (a real inability to
-   proceed). Pass `--unattended` to every sub-skill so none of them prompts.
+   a status check. The only exits are *plan complete*, *escalation* (a real inability to
+   proceed), and the *lap limit* when the operator passed `--laps N`, which is their bound,
+   never one you choose. Pass `--unattended` to every sub-skill so none of them prompts.
 
    **Ending a turn is stopping, whatever the text says.** A message closing with "starting
    lap 3 now" and no tool call has not started lap 3 — it has ended the run, and only the
    human can restart it. So the rule is mechanical, not a matter of intent:
 
-   > **Never end a turn unless the plan is complete, you are escalating, or an agent you
-   > dispatched is still running.** Only that third case wakes you back up.
+   > **Never end a turn unless the plan is complete, you are escalating, the operator's
+   > `--laps` limit is reached, or an agent you dispatched is still running.** Only that third case wakes you back up.
 
    Two shapes to catch in yourself, both of which have ended real runs:
    - **Narrating instead of acting** — "Starting lap N now", "next I'll dispatch…" as the
@@ -89,7 +90,8 @@ You **call** these; you do not reimplement them. Each already supports unattende
    or check it out; every phase merges here. Do **not** push to or merge into `main` — that
    stays a human decision.
 3. Read `.decaf/auto-deliver/state.json` if it exists: if a `current_phase` + `step` is in flight,
-   **resume at that step**; otherwise start a fresh lap at SELECT. Create `.decaf/auto-deliver/`
+   **resume at that step**; otherwise start a fresh lap at SELECT. Either way, clear `exit`
+   in `state.json`: it records how a run ended, so it stays empty while one is running. Create `.decaf/auto-deliver/`
    (with its `.gitignore`) if missing, per @artifact-layout.md. Then check whether the artifact
    root is itself ignored by the project (`git check-ignore -q .decaf && echo ignored`): if it is,
    the layout's durability does not hold — `state.json`, `lessons.md`, and the reflections will be
@@ -189,6 +191,11 @@ Ensure the phase's work is integrated onto the **integration branch** (batch-dev
 clusters; you confirm the phase as a whole has landed). Confirm the phase is `closed`/done in
 the tracker. Then **loop back to SELECT immediately** — no pause, no check-in.
 
+**With `--laps N`**, count the laps this run has completed. When this MERGE completes lap N,
+write `state.json` with `step: SELECT`, `current_phase: null` and `exit: lap-limit`, write the
+lap report, and end the run; the next process resumes at SELECT. This is the only lap report
+written with nothing dispatched.
+
 **The lap report comes after the next lap is dispatched, never before.** A lap report reads
 like the end of the work, so writing one with nothing running is how this loop dies. Carry
 straight through SELECT → BREAKDOWN → EXECUTE and get the next phase's agent running; *then*
@@ -198,7 +205,8 @@ drafted and nothing is dispatched, you are one message from a dead stop: dispatc
 
 ## STOP — plan complete
 
-Reached only when SELECT finds **no ready phase**. Emit a final report:
+Reached only when SELECT finds **no ready phase**. Set `exit: complete` in `state.json`, then
+emit a final report:
 
 - phases delivered (with their closure summaries),
 - follow-ups filed and any phases injected,
@@ -225,6 +233,14 @@ Legitimate escalations:
   behavior, or is bigger than the last one. That is ordinary work, and stopping for it is the
   manufactured gate invariant 1 forbids.
 
-On escalation, write the in-flight `state.json` and a clear reason to the run report, then
-stop. This is a **failure-stop, resumable** — re-invoking auto-deliver picks up from
+On escalation, write the in-flight `state.json` with `exit: escalated` and a clear reason to
+the run report, then stop. This is a **failure-stop, resumable** — re-invoking auto-deliver picks up from
 `state.json`. It is not a gate-stop, and you must not manufacture one.
+
+## Running headless, one phase per process
+
+`scripts/drive.sh` runs `claude -p "/decaf-build:auto-deliver <plan> --laps 1 …"` in a loop
+from the project root, so every phase starts with a fresh context, and continues or stops on
+`exit`. Run `bash scripts/drive.sh --help` for its options, caps and exit codes;
+`scripts/test-drive.sh` checks its decisions without model calls. A headless run denies
+anything that would prompt, so the project's permission rules must allow what the loop runs.

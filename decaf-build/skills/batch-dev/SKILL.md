@@ -214,6 +214,8 @@ Only for a cluster of **provably independent** nibs.
 
 For a cluster best run as a deterministic pipeline (uniform sub-task over many items).
 
+**Headless or not allowed:** when the `Workflow` tool is unavailable in this session (for example a headless `claude -p` run without a `Workflow` allow rule), run the cluster as a series cluster (Phase 6a) instead and log the fallback.
+
 1. Scout the work-list inline first (e.g. the call sites to change), then author a `Workflow` script that pipelines each item through implement → verify (and adversarial-verify if warranted), returning structured per-item results.
 2. Use `isolation: 'worktree'` on workflow agents if they mutate files in parallel. **Same base-branch hazard as 6b**: these worktrees branch from `origin/HEAD`, not the batch branch — capture `BASE_SHA` before launching and have each worktree agent re-anchor onto it (`git reset --hard {BASE_SHA}`) as its first step (see Phase 6b step 3.0).
 3. Set the cluster's nib(s) `in-progress` before launching; the workflow runs in the background and notifies on completion.
@@ -222,6 +224,8 @@ For a cluster best run as a deterministic pipeline (uniform sub-task over many i
 ### Phase 6d — Agent team
 
 For an interdependent cluster needing negotiation.
+
+**Headless or disabled:** agent teams do not form in headless (`claude -p`) runs and are off unless enabled. When they are unavailable, run the cluster as a series cluster (Phase 6a) in dependency order and log the fallback.
 
 1. Set the cluster nibs `in-progress`.
 2. Spawn named `Agent`s (e.g. a `contract` owner + `consumer` workers), each addressable; coordinate via `SendMessage` as the contract emerges. Named agents are **teammates**: their final message is discarded, so every team-member brief MUST end with the delivery clause from `@../../conventions/subagent-briefs.md` (report back to you via `SendMessage` before ending the turn) — collect each member's report before integrating; an idle notification is not a report. Use worktrees if they mutate overlapping files in parallel; otherwise serialize the shared parts. **If any team member runs with `isolation: "worktree"`, apply the Phase 6b step 3.0 re-anchor** (pass `BASE_SHA`, `git reset --hard {BASE_SHA}` first) — those worktrees also start from `origin/HEAD`, not the batch branch.
