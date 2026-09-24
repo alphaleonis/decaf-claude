@@ -41,7 +41,7 @@ Parse `$ARGUMENTS`:
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
 6. **Set `deferSystem`** from `--tracker` when given; otherwise detect the work item tracking system from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.)
-7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
+7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, each Step 5.5 fix-verifier check (usage, verdict and breakage counts, the branch taken), any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
 8. Inform the user:
 
 ```
@@ -268,7 +268,10 @@ Low and Minor–Consistency fixes never count toward warranting: a round of pure
 
 The gate runs on units the loop already computes: the severity of what was fixed is a language-independent proxy for how behavioral and entangled the touched code was — which is what predicts regression risk — and the overflow clause only catches the rare low-severity fix round that still rewrote a lot. Its constants (50 executable lines, 3 files) are unmeasured de-minimis bounds, not calibrated values; nothing important hinges on them, and `--report` session data is the instrument for revisiting them.
 
-If re-review is **not** warranted → go to **Step 6**.
+If re-review is **not** warranted:
+
+- the round fixed at least one Medium-or-higher finding → go to **Step 5.5** (this covers marginal rounds and any round at the iteration cap)
+- otherwise, a purely mechanical round → go to **Step 6**
 
 Otherwise:
 
@@ -297,8 +300,22 @@ Then:
 - Record this iteration's summary in history
 - Increment `iteration`
 - Set `modifiedFileList` to the files modified by fixes
-- Report: `Re-review warranted ({the clause that fired: the named trigger | Critical/High fixed | 2+ Medium fixed | overflow}). Re-reviewing modified files ({reReviewPreset})...`
+- Report: `Re-review warranted ({the clause that fired: the named trigger | Critical/High fixed | 2+ Medium fixed | overflow | fix-verifier found breakage}). Re-reviewing modified files ({reReviewPreset})...`
 - Go to **Step 2**
+
+### Step 5.5: Verify the Round's Fixes (cheap check)
+
+A round that gets no full re-review still gets its fixes checked. Dispatch one `decaf-quality:fix-verifier` agent — unnamed (task mode, per `@../../conventions/subagent-briefs.md`), on the mid tier code-review uses for verification agents. Give it the review file path, the findings this round fixed (number, title, severity, and the fix subagent's one-line result), the round baseline (`$ROUND_SNAPSHOT`, or `HEAD` when that was empty), and the test command. The check itself does not increment `iteration`.
+
+Act on its report:
+
+| Report | Below the cap (`iteration < maxIterations`) | At the cap |
+|--------|---------------------------------------------|------------|
+| Every finding ADDRESSED, no Medium-or-higher breakage | Go to **Step 6** | Go to **Step 6** |
+| Medium-or-higher breakage | Escalate: set `reReviewPreset` by Step 5.4 as if re-review were warranted, then run the **Then:** block above. Carry any NOT ADDRESSED findings into the next Step 3 plan alongside the re-review's findings | List each as `possible regression` under Unverified at the Cap; go to **Step 6** |
+| NOT ADDRESSED findings, no Medium-or-higher breakage | Increment `iteration` and go to **Step 4** with those findings as the plan, keeping their actions. They were screened and validated when first reported, so they skip Steps 2–3 | List each as `fix not verified` under Unverified at the Cap; go to **Step 6** |
+
+The verifier's breakage claims never reach the fix subagent directly: below the cap they go through a full re-review, whose screen and validation funnel decides what stands. Low breakage and `out_of_scope` observations become awareness items in the final summary.
 
 ### Step 6: Final Summary
 
@@ -320,6 +337,9 @@ Then:
 
 ### Deferred Items
 {List deferred findings with work item references, or "None". Under `--unattended` with no tracker, the unfiled ones appear as `not filed — no tracker detected` with severity, file:line and reason}
+
+### Unverified at the Cap
+{Only when the last round's fix-verifier check left findings open: each as `fix not verified — #N {title}` or `possible regression — {issue} ({file:line}, {severity})`. Omit the section otherwise}
 
 ### Remaining (Skipped / Declined)
 {List skipped and declined findings with reasons, or "None"}
@@ -349,6 +369,7 @@ The report records; cross-session comparison and tuning decisions stay with the 
 - Always use literal Unicode emoji characters (🔴🟠🟡🟢), never `:shortcode:` syntax
 - The first code review uses the user's specified preset (default `review`); all re-reviews narrow **within that preset's family** — `reach=narrow` always, roster never above the first pass's, escalation only on a named trigger per Step 5.4. `bugs` callers re-review with the seat itself; wave callers default to `review roster=4` and drop to `bugs roster=3` from the third pass. Wave re-reviews keep the screen and validation wave
 - Re-reviews scope to only modified files to catch regressions, not re-review unchanged code
+- A round that gets no full re-review but fixed a Medium-or-higher finding, including the last round at the cap, is checked by one `fix-verifier` (Step 5.5); only purely mechanical rounds go unchecked
 - Subagents get fresh context windows — this enables multiple iterations without context exhaustion
 - The main context stays lean: it only reads review files and builds plans
 - If a re-review finds the same issue that was already fixed (regression), treat it as Critical regardless of original severity
