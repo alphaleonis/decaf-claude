@@ -2,12 +2,12 @@
 # dcc-vi86
 version: 1
 title: 'auto-deliver: --laps exit plus a headless driver that restarts it fresh per phase'
-status: in-progress
+status: completed
 type: feature
 priority: normal
 estimate: l
 created_at: 2026-09-24T17:03:06Z
-updated_at: 2026-09-24T18:35:36Z
+updated_at: 2026-09-24T18:38:51Z
 parent: dcc-fq6j
 blocked_by:
     - dcc-qdxo
@@ -48,3 +48,7 @@ auto-deliver runs every phase in one growing context: breakdown, batch-dev, revi
 - `scripts/test-drive.sh` fakes `claude` on `PATH` and passes 19 checks: continue then complete, escalated, stale state, missing `exit`, a failing `claude`, `--max-laps`, bad arguments, and flag forwarding with no `--bare`.
 - Walkthroughs by fresh agents. Old text: `--laps` unknown, invariant 1 forbade a phase-boundary exit, no machine-readable outcome, no headless flags documented, no batch-dev fallback for unavailable mechanisms. New text: all five answered from the skill, the layout, the driver and batch-dev.
 - The manual criterion (a real headless lap) is open. It needs model spend on a scratch plan, and a real run must load this repo's version of the plugin (for example `--plugin-dir`, or a reinstall), because the installed plugin predates `--laps`.
+
+## Summary
+
+**Completed 2026-09-24** — auto-deliver takes `--laps N` and records how every run ended in `state.json` `exit` (lap-limit | complete | escalated); `scripts/drive.sh` runs one `claude -p` lap per phase and continues or stops on it, never with `--bare`, with optional caps and a no-progress guard; batch-dev runs team and workflow clusters as series when those mechanisms are unavailable (7639889). Verified by six acceptance checks, including the driver's 19-check stub test, and before/after agent walkthroughs. The manual acceptance item, one real headless lap on a scratch plan, was not exercised: closed on the operator's call, with a follow-up bug to be filed if real use shows a problem.
