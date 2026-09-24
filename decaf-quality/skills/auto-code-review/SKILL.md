@@ -1,7 +1,7 @@
 ---
 name: auto-code-review
 description: Automated review-fix-recheck loop. Runs code review, triages findings, fixes autonomously via subagent, and re-reviews when the fixes warrant it. Iterates until code stabilizes.
-argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--max-iterations N] [--spec <path|work-item-ID>] [--report] [--unattended] [--tracker nibs|ado|github|markdown] [path] [instructions]"
+argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--max-iterations N] [--spec <path|work-item-ID>] [--report] [--unattended] [--tracker nibs|ado|github|markdown] [--implementer <agent-id>] [path] [instructions]"
 ---
 
 # Auto Code Review
@@ -24,8 +24,9 @@ Parse `$ARGUMENTS`:
 4. **`--report`**: produce a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). Forward `--report` to **every** `/code-review` invocation (first pass and re-reviews), keep the session ledger through the loop (Steps 1–5), and write the report folder in Step 6.5. Callers (`auto-tdd`/`auto-dev`) may pass an implementation-phase record to include.
 5. **`--unattended`**: no human is available to answer (batch-dev passes it under auto-deliver; any headless caller can). The loop never calls `AskUserQuestion`; Steps 3d and 3e say what happens instead.
 6. **`--tracker <nibs|ado|github|markdown>`**: the tracker to file deferred findings in, from a caller that already knows it (batch-dev passes its own). When given, it is `deferSystem` and Step 1 skips detection.
-7. **Scope**: Specific file/directory path, or all uncommitted changes
-8. **Instructions**: Any remaining text passed through to `/code-review`
+7. **`--implementer <agent-id>`**: the agent that implemented the change under review, from a caller that dispatched it (auto-dev, auto-tdd, batch-dev). Step 4 resumes it for repair rounds instead of dispatching a fresh fixer.
+8. **Scope**: Specific file/directory path, or all uncommitted changes
+9. **Instructions**: Any remaining text passed through to `/code-review`
 
 ## Execution Steps
 
@@ -41,7 +42,7 @@ Parse `$ARGUMENTS`:
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
 6. **Set `deferSystem`** from `--tracker` when given; otherwise detect the work item tracking system from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.)
-7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (subagent usage, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, each Step 5.5 fix-verifier check (usage, verdict and breakage counts, the branch taken), any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
+7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage from the Agent tool result), per fix round (which route ran — resumed implementer, fresh fixer, or both — with each one's usage, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, each Step 5.5 fix-verifier check (usage, verdict and breakage counts, the branch taken), any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
 8. Inform the user:
 
 ```
@@ -186,14 +187,21 @@ If no findings have a fix action → skip Step 4, go to **Step 6**.
 
 Capture the round baseline first — Step 5 measures this round's delta against it: `ROUND_SNAPSHOT=$(git stash create)` (empty output = tree is clean; measure against `HEAD` instead).
 
-Launch a **general-purpose subagent** to execute the confirmed plan. Build the subagent prompt with:
+**Route the round.** Two kinds of agent can execute fixes, and a round may use both:
+
+- **Resumed implementer** — when the caller passed `--implementer`, send it the prompt below with `SendMessage` to that agent ID. It wrote the code, so it skips re-orientation. Its reply arrives later as a hand-back, not as the send's result (see `@../../conventions/subagent-briefs.md`). It gets every planned finding except the previously failed ones.
+- **Fresh fixer** — a new general-purpose subagent with the same prompt. It gets the **previously failed** findings (ones fix-verifier marked NOT ADDRESSED, or a re-review found again) and the **disputed** ones (any the resumed implementer reported as `not-addressing`), so an agent that did not write the code re-runs verify-first on them. With no `--implementer`, or when the send errors, the fresh fixer gets everything, as the only route.
+
+Run the resumed implementer first, then at most one fresh fixer; never both at once, since both edit one working tree. A fresh fixer's verdicts stand.
+
+The prompt for either route carries:
 
 1. The review file path (so it can read finding details)
 2. The planned actions table (finding # → action, only actionable items)
 3. Test infrastructure details (test command)
 4. Similar groups (which findings to batch)
 
-**Subagent prompt template:**
+**Prompt template (both routes):**
 
 > You are executing planned fixes for code review findings.
 >
@@ -239,7 +247,7 @@ Launch a **general-purpose subagent** to execute the confirmed plan. Build the s
 > 1. Summary: counts of fixed, fixed (TDD), fixed (batch), fixed (differently), not-addressing, declined, skipped (with reasons)
 > 2. List of all files modified
 
-Wait for the subagent to complete. Record results — `not-addressing` counts as dismissed (with evidence), `declined` counts as skipped (with reason).
+Wait for every route to report. Record results — a fresh fixer's `not-addressing` counts as dismissed (with evidence); a resumed implementer's does not, until the fresh fixer's re-check agrees. `declined` counts as skipped (with reason).
 
 Report to the user:
 ```
@@ -251,7 +259,7 @@ Report to the user:
 
 After the fix subagent completes:
 
-1. Collect `sevFixed` — the severities of the findings actually **fixed** (from the subagent report; skipped, deferred, dismissed, and not-addressing don't count)
+1. Collect `sevFixed` — the severities of the findings actually **fixed** (from the Step 4 reports; skipped, deferred, dismissed, and not-addressing don't count)
 2. Get list of modified files (from subagent report)
 3. Measure and classify **this round's fix delta** — `git diff $ROUND_SNAPSHOT` against the Step 4 baseline, never against `HEAD` (that counts the whole changeset under review, not the fixes) and never cumulatively across rounds. Classify it once; the gate below and the preset choice in 5.4 both consume it:
    - `execLines` / `filesTouched` — changed executable production lines and files, excluding docs, comments, whitespace-only changes, test files, and generated files (`git diff -w --numstat` plus path filters gets most of it; judgment on mixed files)

@@ -125,7 +125,7 @@ Launch a **general-purpose subagent** using the Agent tool to execute the approv
 > 2. List of all files created or modified
 > 3. Build verification result (pass/fail)
 
-Wait for the subagent to complete. Record results. With `--report`, also record the subagent's harness-reported usage from the tool result and the changeset stats — this becomes the implementation-phase record for the session report.
+Wait for the subagent to complete. Record results, including its agent ID from the dispatch result: auto-review resumes that agent for repair rounds. With `--report`, also record the subagent's harness-reported usage from the tool result and the changeset stats — this becomes the implementation-phase record for the session report.
 
 Report to the user:
 
@@ -146,7 +146,7 @@ If the subagent reports that it could not complete any steps (total failure), as
 Run `/decaf-quality:auto-code-review` using the Skill tool, passing through the review arguments:
 
 ```
-/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} {--spec specPath if provided} {--report if set}
+/decaf-quality:auto-code-review {reviewSpec} --max-iterations {maxIterations} --implementer {implementerAgentId} {--spec specPath if provided} {--report if set}
 ```
 
 Auto-review will automatically detect the scope from uncommitted changes (which includes everything the implementation subagent produced). With `--report`, the implementation-phase record from Step 2 is in this context — auto-review's session report picks it up for its agent inventory and token accounting.

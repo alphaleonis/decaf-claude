@@ -6,7 +6,7 @@ status: todo
 type: epic
 priority: normal
 created_at: 2026-09-24T17:02:53Z
-updated_at: 2026-09-24T18:02:42Z
+updated_at: 2026-09-24T18:09:07Z
 order: zzzzzy
 ---
 
@@ -21,7 +21,7 @@ decaf already leads on the outer loop (auto-deliver), executable phase acceptanc
 - [ ] #dcc-u73a — batch-dev works from any tracker through the adapter contract, not only nibs
 - [ ] #dcc-qdxo — auto-code-review runs unattended without ever asking the user
 - [ ] #dcc-di3q — rounds that get no full re-review still get their fixes verified by a cheap fix-verifier
-- [ ] #dcc-ig50 — early repair rounds resume the implementer instead of paying for a fresh fixer
+- [ ] #dcc-ig50 — repair rounds resume the implementer, with a fresh fixer only where it failed or disputes a finding
 - [ ] #dcc-lw9s — every implementer, fixer and orchestrator dispatch names its model under a stated policy
 - [ ] #dcc-vi86 — auto-deliver can stop after N laps so an outer loop restarts it in a fresh process
 - [ ] #dcc-s2a6 — merged parallel clusters get an independent review before the next cluster starts
@@ -34,4 +34,4 @@ Out of scope: moving code-review's reviewer fan-out into a `Workflow` script. co
 
 ## Current Focus
 
-Completed dcc-di3q: New `decaf-quality:fix-verifier` agent: read-only, no subagents, mid tier at dispatch; verdicts each fixed finding ADDRESSED / NOT ADDRESSED and reports new breakage in the round's delta. auto-code-review Step 5 now sends every round that gets no full re-review but fixed a Medium-or-higher finding, including the last round at the cap, to a new Step 5.5; purely mechanical rounds still skip. Below the cap, breakage escalates to a full re-review and NOT ADDRESSED findings go back to the fixer; at the cap both land under Unverified at the Cap. The check does not count as an iteration. Registered in the repo CLAUDE.md, README and decaf-quality README. Verified by five acceptance greps and before/after agent walkthroughs.
+Completed dcc-ig50: auto-code-review takes `--implementer <agent-id>`, passed by auto-dev, auto-tdd and batch-dev's series lane. Step 4 resumes that implementer with the repair prompt every round; findings it already failed to fix (fix-verifier NOT ADDRESSED, or re-found by a re-review) and findings it disputes as `not-addressing` go to one fresh fixer run after it, whose verdicts stand. No ID, or a failed send, falls back to a fresh fixer. The `--report` ledger records each round's route with usage. subagent-briefs.md gains rule 5 on resuming a finished agent, from a 2026-09-24 experiment. Verified by four acceptance greps and before/after agent walkthroughs.
