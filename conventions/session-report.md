@@ -42,7 +42,8 @@ byte-identical to the originals (`cp`, not regeneration).
 
 ### `code-review` — Session Metrics (per wave)
 
-Record at dispatch time from each Agent tool result — this is the **only** context that ever sees
+Record as each agent's result arrives (the Agent tool result, or for a background agent its
+completion notification) — this is the **only** context that ever sees
 the reviewer/validator results, so this data is unrecoverable if not captured here:
 
 ```markdown

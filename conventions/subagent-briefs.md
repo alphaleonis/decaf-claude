@@ -6,23 +6,26 @@ workers, review subagents, focused fixes, agent teams).
 
 ## The two dispatch modes
 
-The `Agent` tool has two execution models, and `name` is what selects between them:
+With agent teams enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`), the `Agent` tool has two
+execution models, and `name` is what selects between them. Without agent teams a named agent is
+an ordinary subagent, but dispatching unnamed is correct either way:
 
-| Dispatch | Model | What the tool result is |
-|----------|-------|-------------------------|
-| **No `name`** | Task — a call that returns | The agent's **final message** — the report |
-| **`name` set** | Teammate — an actor with a mailbox | A spawn acknowledgment. The final message is **discarded** |
+| Dispatch | Model | What comes back |
+|----------|-------|-----------------|
+| **No `name`** | Task — a call that returns | The agent's **final message** — the report: the tool result, or for a background call a hand-back once the agent finishes |
+| **`name` set** (agent teams on) | Teammate — an actor with a mailbox | A spawn acknowledgment. The final message is **discarded** |
 
-Verified by controlled experiment (dcc-8yio): two identical agents, same type, same prompt,
-both `run_in_background: false` — the unnamed arm returned its answer as the tool result;
-the named arm returned a spawn ack and its answer was destroyed undelivered. Field-confirmed
+Verified by controlled experiment (dcc-8yio), with agent teams enabled: two identical agents,
+same type, same prompt, differing only in `name` — the unnamed arm's answer came back; the
+named arm returned a spawn ack and its answer was destroyed undelivered. Field-confirmed
 in a full auto-deliver run: every named agent briefed without an explicit delivery
 instruction delivered nothing (0/3); every agent whose brief carried one delivered (5/5).
 
 ## Rules
 
-1. **Need only a report back? Dispatch unnamed.** The final message is the tool result —
-   delivery is built in. Do **not** instruct a task-mode agent to `SendMessage` its report
+1. **Need only a report back? Dispatch unnamed.** The final message comes back to you, as the
+   tool result or, for a background call, as a hand-back once the agent finishes; delivery is
+   built in, and an agent with background children running stays alive until they report. Do **not** instruct a task-mode agent to `SendMessage` its report
    or write it to a file: on the task path that replaces reliable delivery with a channel
    that may have no receiver (an unnamed caller has no address, so replies bounce).
 2. **Need mid-flight interaction? Name the agent — and add the delivery clause.** A
@@ -34,9 +37,10 @@ instruction delivered nothing (0/3); every agent whose brief carried one deliver
 
    Ending the brief with *"your final message is the return value"* is the task-mode
    contract; on a named agent it loses the report.
-3. **Tripwire — read the first tool result.** If a dispatch you expected a report from
-   returns `Spawned successfully` / "will receive instructions via mailbox", you are in
-   teammate mode and no report is coming on its own. From the **main context** you can
+3. **Tripwire — read what the dispatch returns.** A background launch acknowledgment
+   ("Async agent launched successfully", report to follow) is the normal task path. If a
+   dispatch you expected a report from instead returns `Spawned successfully` / "will receive
+   instructions via mailbox", you are in teammate mode and no report is coming on its own. From the **main context** you can
    recover: `SendMessage` the agent an explicit *"send your full report as the reply to
    this message via SendMessage"* (a bare nudge produces another idle notification, not
    the report). From inside a **subagent** there is no address to reply to — re-dispatch
