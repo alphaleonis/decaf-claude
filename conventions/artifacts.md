@@ -19,6 +19,9 @@ top-level dot-dirs.
 │   └── .resolve-refactor-state.json
 ├── auto-review/                 # auto-code-review loop state
 │   └── state.json
+├── batch-dev/                   # per-item review specs, self-ignoring (never committed)
+│   ├── .gitignore               # `*`
+│   └── specs/<item-id>.md
 ├── architecture-improvements/   # architecture-review candidates + resolve state
 │   ├── CANDIDATES_<ts>.md
 │   └── .handle-state.json
