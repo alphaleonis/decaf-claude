@@ -136,6 +136,13 @@ These are the concrete failure modes seen while driving the loop. Iterations 1 a
 multiple manual `SendMessage` nudges from the main context; iteration 2 — given an explicit
 "actively wait, do not stand by" instruction — completed cleanly in one shot.
 
+*(Corrected 2026-09-24: issues 1–4 are one failure, not four. The reviewers were dispatched with
+a `name`, and with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` set in the operator's settings a named
+subagent launches as a teammate: its final message is not delivered to its spawner, its replies
+reach the main conversation instead, and it emits idle notifications. dcc-8yio verified this with a
+controlled experiment whose only variable was `name`. Premature return, the broken reply topology,
+the idling and the notification noise all follow from it, and issue 5 follows from issue 1.)*
+
 1. **Orchestrator returns prematurely while its reviewers run in the background.**
    In iterations 1 and 3 the general-purpose orchestrator spawned reviewers (background) and then
    *ended its turn* ("Standing by for their results", "I'll consolidate as notifications arrive").
@@ -158,6 +165,10 @@ multiple manual `SendMessage` nudges from the main context; iteration 2 — give
    SKILL.md Step 3); the instruction went stale when the harness made Agent calls
    background-by-default, so "parallel in one message" stopped implying synchronous. Fixed in
    dcc-n87o by requiring `run_in_background: false` and reports-as-final-message.
+   *(Corrected 2026-09-24: `run_in_background: false` was never the fix. The 2026-07-14 session ran
+   clean because its orchestrator happened not to name its agents (dcc-8yio), and as of Claude Code
+   2.1.281 the Agent tool has no `run_in_background` parameter at all. The tuning suggestion above to
+   dispatch reviewers with `run_in_background: false` is withdrawn for the same reason.)*
 
 2. **Broken reply topology: reviewers cannot message their spawner.**
    Reviewers spawned by an orchestrator subagent tried to `SendMessage` their reports back and got
@@ -168,6 +179,15 @@ multiple manual `SendMessage` nudges from the main context; iteration 2 — give
    *Tuning suggestion:* reports should be returned as the reviewer's **final message** (tool result
    to the spawner), never via SendMessage; and/or orchestrators should be spawned with a `name` so
    they are addressable.
+   *(Corrected 2026-09-24: the second half of this suggestion is wrong and harmful; do not name
+   orchestrators or reviewers. Under agent teams, naming is what broke delivery in the first place
+   (see the correction at the top of this section), and naming the orchestrator would also break its
+   return path to its own caller, turning a one-level failure into a two-level one. Naming everything
+   does not rescue it either: the teammate registry has exactly one well-known anchor, the main
+   conversation, so a nested orchestrator can never be the mail hub for its own children, and the
+   decaf skill chain is a tree (batch-dev → auto-code-review → code-review → reviewers). The first
+   half stands: dispatch unnamed and return the report as the final message. Without the teams
+   variable, a named subagent is an ordinary resumable one per Claude Code's docs; not re-tested here.)*
 
 3. **Timer/watcher-armed idling that never fires usefully.**
    The iteration-1 consolidator twice armed a "timer"/"watcher" and stopped, including once when all
@@ -264,3 +284,7 @@ Resulting skill changes (this repo): `dcc-n87o` (synchronous waves via `run_in_b
 reports as final message), `dcc-n7bm` (conservative re-review rosters — first re-review `mid4`/`mid6`
 by fix-delta size and complexity, third-and-later minimal `mid3`), `dcc-6yi4` (fix-round boundary
 self-check + least-invasive-fix preference), `dcc-8tbb` (shared pre-flight gates per wave).
+*(Corrected 2026-09-24: the change that addressed this session's delivery failures is `dcc-8yio`
+(never pass `name` on wave dispatches; tripwire the spawn acknowledgment), not `dcc-n87o`.
+`dcc-n87o`'s `run_in_background: false` requirement was not load-bearing and names a parameter the
+Agent tool no longer has; its reports-as-final-message rule stands.)*
