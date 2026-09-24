@@ -6,7 +6,7 @@ status: todo
 type: epic
 priority: normal
 created_at: 2026-09-24T17:02:53Z
-updated_at: 2026-09-24T18:23:56Z
+updated_at: 2026-09-24T18:29:29Z
 order: zzzzzy
 ---
 
@@ -23,7 +23,7 @@ decaf already leads on the outer loop (auto-deliver), executable phase acceptanc
 - [ ] #dcc-di3q — rounds that get no full re-review still get their fixes verified by a cheap fix-verifier
 - [ ] #dcc-ig50 — repair rounds resume the implementer, with a fresh fixer only where it failed or disputes a finding
 - [ ] #dcc-lw9s — a --models flag chooses each build-loop dispatch's model tier (default: today's behavior)
-- [ ] #dcc-vi86 — auto-deliver can stop after N laps so an outer loop restarts it in a fresh process
+- [ ] #dcc-vi86 — auto-deliver can stop after N laps, and a shipped driver restarts it in a fresh process per phase
 - [ ] #dcc-s2a6 — merged parallel clusters get an independent review before the next cluster starts
 
 ## Scope Boundaries

@@ -59,3 +59,8 @@ skills under `--unattended`, talks to the tracker only through the adapter contr
 [`skills/auto-deliver/artifact-layout.md`](skills/auto-deliver/artifact-layout.md)), and
 fixes in-scope gaps now while filing out-of-scope discoveries as follow-ups. Scope cuts are
 human-only; the loop surfaces the need but never cuts.
+
+To run it headless with a fresh context per phase, use the bundled driver from the target
+project's root: `bash <plugin>/skills/auto-deliver/scripts/drive.sh <plan-id> [--lap-budget USD]
+[--max-laps N]`. It runs one `--laps 1` process per phase and stops on plan completion,
+escalation, a cap, or a run that made no progress; `--help` lists everything.

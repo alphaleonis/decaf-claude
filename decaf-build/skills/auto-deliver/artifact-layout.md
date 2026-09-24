@@ -18,6 +18,7 @@ never disagree with the tracker about completion.
 .decaf/auto-deliver/
 ├── state.json              # current run state — the resume breadcrumb (git-tracked)
 ├── lessons.md              # accumulated lessons from the LEARN step (git-tracked)
+├── drive.log               # one line per headless lap from scripts/drive.sh (gitignored)
 ├── phases/
 │   └── <phase-id>/         # one dir per phase the loop has worked, keyed by tracker id
 │       ├── reflection.md   # per-phase reflection report (git-tracked)
@@ -44,12 +45,14 @@ mid-step; everything authoritative about completion comes from the tracker.
   "review_spec": "<optional: the --review argument, verbatim>",
   "models": "<optional: the --models value, when not the default>",
   "note": "<optional: free-text handoff for the next session>",
+  "exit": "lap-limit | complete | escalated — how the last run ended; empty while one runs",
   "started_at": "<ISO8601>",
   "updated_at": "<ISO8601>"
 }
 ```
 
-`scope`, `review_spec`, and `note` are optional. `scope` is the subset of work-item ids the
+`exit` is written on every exit and cleared when a run starts; `scripts/drive.sh` reads it to
+decide whether to start the next lap. `scope`, `review_spec`, and `note` are optional. `scope` is the subset of work-item ids the
 operator restricted this run to — SELECT reconciles `next-ready` against it rather than
 silently adopting or skipping out-of-scope items. `review_spec` preserves the `--review`
 argument across resumes so a resumed run reviews at the same rung it started at; `models`
@@ -95,6 +98,7 @@ own `.gitignore`:
 # .decaf/auto-deliver/.gitignore
 phases/*/verify.log
 phases/*/context.log
+drive.log
 ```
 
 Tracking `state.json`, `lessons.md`, and `phases/*/reflection.md` makes a run resumable
