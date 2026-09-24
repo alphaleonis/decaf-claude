@@ -1,7 +1,7 @@
 ---
 name: auto-code-review
 description: Automated review-fix-recheck loop. Runs code review, triages findings, fixes autonomously via subagent, and re-reviews when the fixes warrant it. Iterates until code stabilizes.
-argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--max-iterations N] [--spec <path|work-item-ID>] [--report] [path] [instructions]"
+argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--max-iterations N] [--spec <path|work-item-ID>] [--report] [--unattended] [path] [instructions]"
 ---
 
 # Auto Code Review
@@ -22,8 +22,9 @@ Parse `$ARGUMENTS`:
 2. **Max iterations**: `--max-iterations N` (default: 3) — hard cap on review-fix cycles
 3. **Spec**: `--spec <path | work-item-ID>` — passed through to `/code-review`
 4. **`--report`**: produce a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). Forward `--report` to **every** `/code-review` invocation (first pass and re-reviews), keep the session ledger through the loop (Steps 1–5), and write the report folder in Step 6.5. Callers (`auto-tdd`/`auto-dev`) may pass an implementation-phase record to include.
-5. **Scope**: Specific file/directory path, or all uncommitted changes
-6. **Instructions**: Any remaining text passed through to `/code-review`
+5. **`--unattended`**: no human is available to answer (batch-dev passes it under auto-deliver; any headless caller can). The loop never calls `AskUserQuestion`; Steps 3d and 3e say what happens instead.
+6. **Scope**: Specific file/directory path, or all uncommitted changes
+7. **Instructions**: Any remaining text passed through to `/code-review`
 
 ## Execution Steps
 
@@ -148,12 +149,14 @@ Summary by severity and anchor:
 **3d. Handle deferred findings immediately** (in main context, before launching fix subagent):
 - For each finding marked `defer`: create a work item now using `deferSystem`
 - If `deferSystem` was not detected in Step 1 and this is the first defer: ask the user once which system to use, then reuse for all subsequent defers
+- **Under `--unattended` with no `deferSystem`**: do not ask. Leave these findings unfiled and list each under Deferred Items in the final summary as `not filed — no tracker detected`, with severity, file:line and the deferral reason, so the caller can file them
 - Record work item references for the final summary
 
 **3e. Decide whether to ask the user:**
 
 - **Iteration 1**: If ANY finding has genuinely ambiguous options that the decision criteria cannot resolve (e.g., multiple valid fix approaches with no clear winner, a Critical at anchor 50 the user might prefer to fix now), present the plan and ask via a single `AskUserQuestion`. If all findings resolve cleanly → skip questions and proceed.
 - **Iteration > 1**: Never ask. Fully autonomous.
+- **Under `--unattended`**: never ask, in any iteration. The Step 3c plan stands as built; its table already sends findings with conflicting options to `defer`.
 
 **3f. Present the plan** (always, for visibility):
 
@@ -315,7 +318,7 @@ Then:
 **Fixed**: {X} ({Y} via TDD, {Z} differently) | **Not addressing**: {X} | **Skipped**: {X} | **Deferred**: {X} | **Dismissed**: {X}
 
 ### Deferred Items
-{List deferred findings with work item references, or "None"}
+{List deferred findings with work item references, or "None". Under `--unattended` with no tracker, the unfiled ones appear as `not filed — no tracker detected` with severity, file:line and reason}
 
 ### Remaining (Skipped / Declined)
 {List skipped and declined findings with reasons, or "None"}
