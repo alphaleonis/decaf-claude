@@ -47,7 +47,7 @@ Parse `$ARGUMENTS`:
    `/code-review` ships it. Parallel-cluster workers self-review inline without it; the Phase 7
    cluster review applies it to their merged work.
 3. `--max-iterations N` (default `3`) — review iteration cap.
-4. `--base-branch <name>` — override the batch branch name (default derived in Phase 6).
+4. `--base-branch <name>` — the branch to work on instead of a new `batch/{slug}`; reused if it already exists (Phase 6).
 5. `--tracker <nibs|ado|github|markdown>` — the tracker holding the nibs; `auto-deliver` passes its own. Without it, detect per Prerequisites. Forwarded to each series nib's review (Phase 6a) so deferred findings land in the same tracker.
 6. `--models low|norm|high` (default `high`) — the model tier for this skill's dispatches, per rule 6 of `@../../conventions/subagent-briefs.md`: explorers take the mid tier under `norm` and `low`; implementers, lanes, workflow agents and team members never take an override. Forwarded to each series nib's review (Phase 6a). `auto-deliver` passes its own.
 7. `--report` — produce a comparison-grade session report for skill tuning. Forwarded to each
@@ -167,7 +167,7 @@ Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
 
 ### Common rules (apply to every cluster)
 
-- **Batch branch**: before the first cluster, create one branch for the whole run off current HEAD: `git switch -c batch/{slug}` (slug derived from the batch theme or first nib; or `--base-branch`). Never commit straight to `main`. Record the starting branch to return to at the end.
+- **Batch branch**: before the first cluster, get onto one branch for the whole run. With `--base-branch`, use that branch: check it out if it exists (`auto-deliver` passes its integration branch, which does), otherwise create it off current HEAD. Without it, create `batch/{slug}` off current HEAD (`git switch -c batch/{slug}`, slug derived from the batch theme or first nib). Never commit straight to the repo's default branch, and refuse a `--base-branch` that names it. Record the starting branch to return to at the end.
 - **Worktree base ≠ batch branch (critical)**: `isolation: "worktree"` agents do **not** branch from the batch branch or current HEAD — they branch from the repository's default branch (`origin/HEAD`, i.e. `main`) unless the project sets `worktree.baseRef: "head"`. So any parallel/workflow/team cluster (6b/6c/6d) starts from the *wrong* base by default: it misses both the branch the batch was cut from (e.g. `develop`/`integration`) and any prior cluster already merged onto the batch branch. Every worktree-isolated lane MUST re-anchor onto the batch base before working (Phase 6b step 3.0), and Phase 7 MUST verify base ancestry before merging. See the base-branch note in Phase 6b.
 - **Dispatch contract**: how a dispatched agent's report gets back — and how it gets silently lost — depends on whether the `Agent` call passes a `name`. Report-only workers (Phases 2, 6a, 6b, 6c) are dispatched **unnamed** (task mode: the final message comes back as the report); only Phase 6d teammates get names, and every teammate brief must end with the delivery clause. Full rules:
 

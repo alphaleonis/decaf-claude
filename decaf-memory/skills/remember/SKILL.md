@@ -12,7 +12,7 @@ Store a memory in erinra.
 
 Check that `mcp__erinra__store` is available in your tools. If not, tell the user:
 
-> Erinra MCP server is not connected. Run `claude mcp add erinra -- erinra serve -s user` and restart Claude Code.
+> Erinra MCP server is not connected. Run `claude mcp add -s user erinra -- erinra serve --web` and restart Claude Code.
 
 ## Usage
 

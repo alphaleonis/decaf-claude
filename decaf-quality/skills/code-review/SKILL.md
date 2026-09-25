@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Run parallel code review agents and consolidate findings into a unified report
-argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--spec <path>] [--report] [PR#] [path] [instructions]"
+argument-hint: "[bugs|review|audit] [roster=N] [models=low|norm|high] [evidence=strong|norm|any] [reach=narrow|norm|wide] [--spec <path|work-item-ID>] [--report] [PR#] [path] [instructions]"
 ---
 
 # Code Review

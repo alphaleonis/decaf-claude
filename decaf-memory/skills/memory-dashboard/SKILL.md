@@ -12,7 +12,7 @@ Open the erinra memory visualization dashboard.
 The erinra MCP server must be running with `--web` so the dashboard daemon is available. The recommended MCP setup:
 
 ```bash
-claude mcp add erinra -- erinra serve --web -s user
+claude mcp add -s user erinra -- erinra serve --web
 ```
 
 ## Process
@@ -42,7 +42,7 @@ If the command fails, tell the user their MCP server may not be configured with 
 
 ```bash
 claude mcp remove erinra
-claude mcp add erinra -- erinra serve --web -s user
+claude mcp add -s user erinra -- erinra serve --web
 ```
 
 ## Notes
