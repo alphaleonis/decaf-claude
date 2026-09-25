@@ -78,7 +78,7 @@ Decide what and how to build; output is plans, RFCs, and decisions, not code. No
 
 ### `decaf-memory` — Memory
 
-Store and recall knowledge via the [erinra](https://github.com/alphaleonis/erinra) MCP server (`claude mcp add erinra -- erinra serve -s user`); a `SessionStart` hook loads the memory protocol automatically.
+Store and recall knowledge via the [erinra](https://github.com/alphaleonis/erinra) MCP server (`claude mcp add -s user erinra -- erinra serve --web`); a `SessionStart` hook loads the memory protocol automatically.
 
 **Skills** (invoked as `/decaf-memory:skill-name`): `remember` (store), `recall` (hybrid search), `init-memory` (manual context-load fallback), `memory-dashboard` (open the dashboard).
 

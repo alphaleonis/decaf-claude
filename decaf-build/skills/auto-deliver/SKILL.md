@@ -86,9 +86,11 @@ You **call** these; you do not reimplement them. Each already supports unattende
    `--tracker` value, else detect per the adapter contract). The argument may name the plan
    root **or any single phase/subtree** — every `next-ready` call and the "plan complete"
    test below are relative to whatever was named.
-2. Resolve the **integration branch** (`--base-branch`, else the repo's default branch). Create
-   or check it out; every phase merges here. Do **not** push to or merge into `main` — that
-   stays a human decision.
+2. Resolve the **integration branch**: `--base-branch`, else `deliver/<slug>` with the slug
+   derived from the plan reference, so every lap and every resumed process lands on the same
+   branch. Check it out if it exists, otherwise create it off the current HEAD; every phase
+   merges here. Never push to or merge into the repo's default branch — that stays a human
+   decision. If `--base-branch` names the default branch, refuse to start and say why.
 3. Read `.decaf/auto-deliver/state.json` if it exists: if a `current_phase` + `step` is in flight,
    **resume at that step**; otherwise start a fresh lap at SELECT. Either way, clear `exit`
    in `state.json`: it records how a run ended, so it stays empty while one is running. Create `.decaf/auto-deliver/`

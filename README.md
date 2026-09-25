@@ -259,7 +259,7 @@ Orchestrate **multiple** work items (nibs) in one run: understand them collectiv
 plus any of:
 - `--review "<preset> [axis=value …]"` — a [`code-review`](#code-review) preset (`bugs` | `review` | `audit`) plus any of its axis overrides (`roster=`, `models=`, `evidence=`, `reach=`), forwarded as-is to each item's review. Default: `review`.
 - `--max-iterations N` — review iteration cap. Default: 3.
-- `--base-branch <name>` — name of the batch branch. Default: derived by the skill.
+- `--base-branch <name>` — the branch to work on; reused if it exists. Default: a new `batch/{slug}` cut from the current HEAD. It can never be the repo's default branch.
 - `--tracker nibs|ado|github|markdown` — the tracker holding the items. Default: detected.
 - `--models low|norm|high` — model tier for the skill's own dispatches; forwarded to each review. Default: `high`.
 - `--report` — write session reports for skill tuning (one per review, under `.decaf/session-reports/`).
@@ -273,7 +273,7 @@ The autonomous whole-plan loop: `SELECT → BREAKDOWN → EXECUTE → VERIFY →
 ```
 **Arguments**
 - `<plan-id>` — **required**; the plan's root work-item id, or a single phase or subtree to limit the run to.
-- `--base-branch <name>` — the integration branch every phase merges into. Default: the repo's default branch.
+- `--base-branch <name>` — the integration branch every phase merges into; reused if it exists. Default: `deliver/<slug>`, derived from the plan reference and cut from the current HEAD. It can never be the repo's default branch; merging there stays your call.
 - `--review "<preset> [axis=value …]"` — a [`code-review`](#code-review) preset (`bugs` | `review` | `audit`) plus any of its axis overrides, forwarded as-is to [`batch-dev`](#batch-dev), whose default is `review`.
 - `--tracker nibs|ado|github|markdown` — the plan's tracker. Default: detected.
 - `--models low|norm|high` — model tier, forwarded to `batch-dev`. Default: `high`.
@@ -397,7 +397,7 @@ Related: [`breakdown-phase`](#breakdown-phase) decomposes a decision you already
 
 Store and recall knowledge across sessions via the [erinra](https://github.com/alphaleonis/erinra) MCP server (hybrid semantic search). Set it up once:
 ```bash
-claude mcp add erinra -- erinra serve -s user
+claude mcp add -s user erinra -- erinra serve --web
 ```
 A `SessionStart` hook then loads the memory protocol automatically each session.
 

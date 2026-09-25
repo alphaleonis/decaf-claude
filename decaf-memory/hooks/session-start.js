@@ -7,7 +7,7 @@ console.log(`# Erinra Memory Guide
 You have access to **erinra**, a memory MCP server with hybrid semantic search (vector + FTS5 + RRF). The tools are prefixed \`mcp__erinra__\`.
 
 If \`mcp__erinra__context\` is not available in your tools, warn the user:
-"Erinra MCP server is not connected. Memory features are unavailable. To set up erinra, run: \`claude mcp add erinra -- erinra serve -s user\` and restart Claude Code."
+"Erinra MCP server is not connected. Memory features are unavailable. To set up erinra, run: \`claude mcp add -s user erinra -- erinra serve --web\` and restart Claude Code."
 
 ## Available Tools
 
