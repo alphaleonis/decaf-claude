@@ -27,7 +27,7 @@ Originally forked from [everything-claude-code](https://github.com/affaan-m/ever
 
 ## Skills
 
-Skills are invoked as `/<plugin>:<skill>`. Click any skill for details and usage.
+Skills are invoked as `/<plugin>:<skill>`. Click any skill for details, usage, and its full argument list.
 
 **decaf-quality** — improve existing code
 - [`code-review`](#code-review) — parallel multi-agent review of a diff/PR → consolidated findings
@@ -74,6 +74,8 @@ Skills are invoked as `/<plugin>:<skill>`. Click any skill for details and usage
 
 # Skill reference
 
+Each skill lists every argument it accepts. `<angle brackets>` stand for a value you supply, `a` | `b` separates alternatives, and arguments are optional unless marked **required**.
+
 ## decaf-quality
 
 Analyze and improve existing code without changing its behavior. The three core capabilities each follow an **analyze → resolve** pattern (and code review adds an **automate** option on top); reports land under `.decaf/` and nothing is posted to a PR unless you ask.
@@ -86,9 +88,19 @@ Runs parallel specialized reviewer agents over a diff — uncommitted changes, a
 /decaf-quality:code-review 42              # review PR #42
 /decaf-quality:code-review --spec docs/design.md
 ```
-Three presets — `bugs` (one deep seat), `review` (default), `audit` (everything, tiered) — over four
-overridable axes: `roster=N`, `models=low|norm|high`, `evidence=strong|norm|any`, `reach=narrow|norm|wide`.
-All four point the same way: less output on the left, more on the right.
+**Arguments**
+- `bugs` | `review` | `audit` — the preset. `bugs`: high-confidence defects in the changed lines, from one deep `solo-reviewer` seat. `review`: those plus actionable minor findings. `audit`: everything, tiered, including pre-existing defects. Omitted: chosen interactively, falling back to `review`.
+- `roster=N` — how many reviewer personas run. Preset default: `bugs` 1, `review` sized to the change, `audit` every gate-matched reviewer. `bugs roster=N` with N ≥ 2 runs a small wave instead of the single seat.
+- `models=low|norm|high` — model policy per reviewer role. Preset default: `review` `norm`, `audit` `high`.
+- `evidence=strong|norm|any` — how well-evidenced a finding must be to stay a primary finding; weaker ones are tiered down, not dropped. Preset default: `review` `norm`, `audit` `any`.
+- `reach=narrow|norm|wide` — what counts as reportable. `narrow`: defects the changed lines introduce. `norm`: adds code the change touches and change-introduced absences (e.g. a new function with no test). `wide`: adds pre-existing defects and residual risks. Preset default: `bugs` `narrow`, `review` `norm`, `audit` `wide`.
+- `--spec <path|work-item-ID>` — a spec or plan to check compliance against; an ADO work item's description and acceptance criteria also work. Omitted: the skill looks for one itself.
+- `--report` — record per-agent usage and append a Session Metrics section to the report (for skill tuning).
+- `<PR#>` — `123`, `#123` or `PR#123`: review that PR instead of local changes.
+- `<path>` — limit the review to a file or directory. Default: all uncommitted changes. Ignored when a PR is given.
+- `<instructions>` — any other text, passed to the reviewers.
+
+The four axes override whatever the preset sets, and all four point the same way: less output on the left, more on the right. If an argument repeats, the last one wins (`review roster=6 roster=4` → 4). Under the single-seat `bugs` preset, `models` and `evidence` have no effect.
 
 ### auto-code-review
 The hands-off loop: it runs [`code-review`](#code-review), triages, fixes via subagent, and re-reviews, iterating until the code stabilizes or the iteration cap is hit. Use it when you want issues *fixed*, not just reported; for manual control over each fix, run `code-review` then [`resolve-code-review`](#resolve-code-review) instead.
@@ -96,6 +108,19 @@ The hands-off loop: it runs [`code-review`](#code-review), triages, fixes via su
 /decaf-quality:auto-code-review
 /decaf-quality:auto-code-review audit --max-iterations 5
 ```
+**Arguments**
+- `bugs` | `review` | `audit`, plus any `roster=N` / `models=low|norm|high` / `evidence=strong|norm|any` / `reach=narrow|norm|wide` overrides — the review spec, forwarded as-is to [`code-review`](#code-review) for the first pass (see its arguments). Default: `review`. Re-reviews narrow within the same preset family.
+- `--max-iterations N` — cap on review → fix cycles. Default: 3.
+- `--spec <path|work-item-ID>` — passed to `code-review` on the first pass.
+- `--report` — write a comparison-grade session report for skill tuning; forwarded to every review.
+- `--models low|norm|high` — model tier for this skill's own subagents (review orchestrator, fixer, fix verifier). The reviewers take theirs from `models=`. Default: `high`.
+- `--unattended` — no human is available: the loop never asks a question.
+- `--tracker nibs|ado|github|markdown` — where to file deferred findings. Default: detected from the project's CLAUDE.md.
+- `--implementer <agent-id>` — the agent that wrote the change; repair rounds resume it instead of starting a fresh fixer.
+- `<path>` — limit the review to a file or directory. Default: all uncommitted changes.
+- `<instructions>` — any other text, passed through to `code-review`.
+
+`--unattended`, `--tracker` and `--implementer` are normally passed by a calling skill (`batch-dev`, `auto-dev`, `auto-tdd`) rather than typed by hand.
 
 ### resolve-code-review
 Walk the latest [`code-review`](#code-review) report's findings one at a time, deciding a resolution for each — fix (optionally TDD), skip, dismiss, or defer to a work item. Each fix re-verifies the finding first. `auto` resolves autonomously after one upfront confirmation — at which point you're effectively doing what [`auto-code-review`](#auto-code-review) does in one shot.
@@ -103,6 +128,10 @@ Walk the latest [`code-review`](#code-review) report's findings one at a time, d
 /decaf-quality:resolve-code-review
 /decaf-quality:resolve-code-review auto high     # autonomously resolve Critical+High
 ```
+**Arguments** (positional, in this order)
+- `auto` — resolve autonomously after one upfront round of questions. Omitted: interactive, one finding at a time.
+- `high` | `medium` | `all` — severity filter. `high`: Critical + High. `medium`: Critical + High + Medium. `all`: everything. Default: `all`.
+- `<file>` — the review to work from. Default: the latest `.decaf/code-reviews/CODE_REVIEW_*.md`.
 
 ### resolve-pr-feedback
 Walk unresolved PR review threads (Azure DevOps or GitHub) and resolve each — fix, reply, decline with evidence, or escalate. Replies are drafted, batch-approved, signed, and posted with matching thread-status changes. (To *generate* a fresh review of a PR rather than resolve existing threads, use [`code-review`](#code-review) on the PR number.)
@@ -110,6 +139,11 @@ Walk unresolved PR review threads (Azure DevOps or GitHub) and resolve each — 
 /decaf-quality:resolve-pr-feedback               # current branch's PR, interactive
 /decaf-quality:resolve-pr-feedback auto 42       # PR 42, drafts approved before posting
 ```
+**Arguments**
+- `auto` — plan every resolution, confirm once, then resolve the threads in parallel subagents. Omitted: interactive, one thread at a time.
+- `<PR#>` | `<thread-URL>` — a PR number resolves all of its unresolved threads; a thread or comment URL resolves just that thread. Default: the PR for the current branch.
+- `--auto-post` — post replies and thread-status changes without the batched draft approval.
+- `<instructions>` — any other text, used to filter the threads (e.g. "skip the styling ones").
 
 ### coverage-review
 Run the project's coverage tools, assess which uncovered paths actually matter, and suggest targeted tests; report goes to `.decaf/code-reviews/`. Reads a `## Coverage` config from the project's CLAUDE.md. Act on the gaps with [`resolve-coverage-review`](#resolve-coverage-review).
@@ -117,6 +151,10 @@ Run the project's coverage tools, assess which uncovered paths actually matter, 
 /decaf-quality:coverage-review                   # diff mode, changed files
 /decaf-quality:coverage-review full              # whole-project baseline
 ```
+**Arguments**
+- `diff` | `full` — `diff` reviews changed files (uncommitted changes, else the last commit); `full` reviews the whole project. Default: `diff`.
+- `<path>` — further limit the scope to a file or directory.
+- `<instructions>` — any other text, as extra review instructions.
 
 ### resolve-coverage-review
 Walk the gaps found by [`coverage-review`](#coverage-review) one group at a time and write tests — write / skip / dismiss / defer. `auto` writes tests autonomously.
@@ -124,6 +162,10 @@ Walk the gaps found by [`coverage-review`](#coverage-review) one group at a time
 /decaf-quality:resolve-coverage-review
 /decaf-quality:resolve-coverage-review auto high
 ```
+**Arguments** (positional, in this order)
+- `auto` — write tests autonomously. Omitted: interactive, one group at a time.
+- `high` | `medium` | `all` — severity filter. `high`: Critical + High gaps. `medium`: Critical + High + Medium. `all`: everything. Default: `all`.
+- `<file>` — the coverage review to work from. Default: the latest `.decaf/code-reviews/COVERAGE_REVIEW_*.md`.
 
 ### refactor
 Analyze code structure for improvement opportunities and produce a prioritized plan (impact × effort ★ ratings) under `.decaf/refactoring-plans/`. Behavior-preserving — better structure, no behavior change. Apply the plan with [`resolve-refactor`](#resolve-refactor).
@@ -131,6 +173,10 @@ Analyze code structure for improvement opportunities and produce a prioritized p
 /decaf-quality:refactor                          # deep mode, changed files
 /decaf-quality:refactor full                     # whole project (sampled)
 ```
+**Arguments**
+- `quick` | `deep` — `quick` runs the per-file `structural-analyst` only; `deep` adds the cross-file `coherence-analyst`. Default: `deep`.
+- `<scope>` — a file, directory, or glob (`src/**/*.cs`), or `full` for the whole project (sampled to about 30 files). Default: changed files (uncommitted changes, else the last commit).
+- `<instructions>` — any other text, e.g. `focus on error handling`.
 
 ### resolve-refactor
 Walk the plan produced by [`refactor`](#refactor) one opportunity at a time and apply them — apply / apply incrementally / skip / dismiss / defer. `auto` applies autonomously.
@@ -138,6 +184,9 @@ Walk the plan produced by [`refactor`](#refactor) one opportunity at a time and 
 /decaf-quality:resolve-refactor
 /decaf-quality:resolve-refactor auto
 ```
+**Arguments** (positional, in this order)
+- `auto` — apply opportunities autonomously. Omitted: interactive, one opportunity at a time.
+- `<file>` — the plan to work from. Default: the latest `.decaf/refactoring-plans/REFACTOR_PLAN_*.md`.
 
 ### coherence-audit
 Audit a codebase for places where documentation, specs, comments, config, names, or versions disagree with the actual code, then resolve each (update docs / flag code / accept). Unlike the review/refactor pairs, this one *finds and fixes in a single skill*. Good after big changes or before a release.
@@ -145,12 +194,16 @@ Audit a codebase for places where documentation, specs, comments, config, names,
 /decaf-quality:coherence-audit
 /decaf-quality:coherence-audit src/auth          # scope to a path
 ```
+**Arguments**
+- `<path or scope>` — a path or area to limit the audit to (e.g. `src/auth`).
 
 ### diagnose
 Root-cause investigation: gate the problem to one testable statement, generate competing hypotheses, gather evidence to distinguish them, and report the cause. It **diagnoses only** — once you know the cause, fix it directly or hand it to a [`decaf-build`](#decaf-build) skill. For a delegated, self-contained deep dive instead, dispatch the `debugger` agent.
 ```
 /decaf-quality:diagnose "sessions expire immediately on mobile"
 ```
+**Arguments**
+- `<problem or symptom>` — **required**; what's broken, in your own words.
 
 ## decaf-build
 
@@ -161,6 +214,7 @@ Test-driven development — red → green → refactor, one vertical slice (trac
 ```
 /decaf-build:tdd
 ```
+**Arguments:** none.
 
 ### auto-tdd
 Runs a TDD session (plan → red-green-refactor, via subagent) then an automated [`auto-code-review`](#auto-code-review) gate. Use for test-first feature work with a quality bar. For work that isn't naturally test-driven, use [`auto-dev`](#auto-dev); it handles one item, so for several at once reach for [`batch-dev`](#batch-dev).
@@ -168,6 +222,13 @@ Runs a TDD session (plan → red-green-refactor, via subagent) then an automated
 /decaf-build:auto-tdd "add rate limiting to the upload API"
 /decaf-build:auto-tdd "<feature>" --review "review models=high" --max-iterations 3
 ```
+**Arguments**
+- `<feature description>` — **required**; all text that isn't a flag.
+- `--review "<preset> [axis=value …]"` — a [`code-review`](#code-review) preset (`bugs` | `review` | `audit`) plus any of its axis overrides (`roster=`, `models=`, `evidence=`, `reach=`), forwarded as-is to `auto-code-review`. Quote it when it's more than one word. Default: `review`.
+- `--max-iterations N` — cap on review → fix cycles. Default: 3.
+- `--spec <path>` — a spec to check compliance against during review.
+- `--models low|norm|high` — model tier for the subagents dispatched down the chain; forwarded to `auto-code-review`. Default: `high`.
+- `--report` — write a session report for skill tuning, including the implementation phase's usage.
 
 ### auto-dev
 Direct (non-test-first) implementation then an automated [`auto-code-review`](#auto-code-review) gate — for UI, config, scaffolding, infrastructure. Like [`auto-tdd`](#auto-tdd) but without the test-first loop; for many items at once, use [`batch-dev`](#batch-dev).
@@ -175,6 +236,13 @@ Direct (non-test-first) implementation then an automated [`auto-code-review`](#a
 /decaf-build:auto-dev "wire up the settings page layout"
 /decaf-build:auto-dev "<feature>" --spec docs/feature.md
 ```
+**Arguments**
+- `<feature description>` — **required**; all text that isn't a flag.
+- `--review "<preset> [axis=value …]"` — a [`code-review`](#code-review) preset (`bugs` | `review` | `audit`) plus any of its axis overrides (`roster=`, `models=`, `evidence=`, `reach=`), forwarded as-is to `auto-code-review`. Quote it when it's more than one word. Default: `review`.
+- `--max-iterations N` — cap on review → fix cycles. Default: 3.
+- `--spec <path>` — a spec to check compliance against during review.
+- `--models low|norm|high` — model tier for the subagents dispatched down the chain; forwarded to `auto-code-review`. Default: `high`.
+- `--report` — write a session report for skill tuning, including the implementation phase's usage.
 
 ### batch-dev
 Orchestrate **multiple** work items (nibs) in one run: understand them collectively, cluster them, pick the best mechanism per cluster (single series / parallel fan-out / scripted workflow / agent team), and dispatch behind one approval gate. It runs `auto-dev` / `auto-tdd`-style execution per nib; the autonomous driver that calls batch-dev for you, phase by phase, is [`auto-deliver`](#auto-deliver).
@@ -182,6 +250,20 @@ Orchestrate **multiple** work items (nibs) in one run: understand them collectiv
 /decaf-build:batch-dev --ready                   # all ready nibs
 /decaf-build:batch-dev abc1 def2 --review bugs        # specific nibs
 ```
+**Arguments** — one queue source:
+- `<nib-id …>` — one or more work-item ids.
+- `--filter <expr>` — a query in the tracker's own syntax: `nibs list` filter flags, an ADO WIQL `WHERE` clause, or a `gh issue list --search` query. Not available for a Markdown plan.
+- `--ready [<scope-id>]` — every ready item under that plan or epic. A nibs project can omit the scope id to take everything ready; other trackers need one.
+- none of the above — the skill asks which items to batch.
+
+plus any of:
+- `--review "<preset> [axis=value …]"` — a [`code-review`](#code-review) preset (`bugs` | `review` | `audit`) plus any of its axis overrides (`roster=`, `models=`, `evidence=`, `reach=`), forwarded as-is to each item's review. Default: `review`.
+- `--max-iterations N` — review iteration cap. Default: 3.
+- `--base-branch <name>` — name of the batch branch. Default: derived by the skill.
+- `--tracker nibs|ado|github|markdown` — the tracker holding the items. Default: detected.
+- `--models low|norm|high` — model tier for the skill's own dispatches; forwarded to each review. Default: `high`.
+- `--report` — write session reports for skill tuning (one per review, under `.decaf/session-reports/`).
+- `--unattended` — no human gates: no queue confirmation, clarifying questions, approval gate, or check-ins, and no merge-to-main question at the end (the branch is handed back to the caller). `auto-deliver` passes this.
 
 ### auto-deliver
 The autonomous whole-plan loop: `SELECT → BREAKDOWN → EXECUTE → VERIFY → RECONCILE → LEARN → REPLAN → MERGE`, one phase at a time, **without stopping at phase boundaries**. It composes [`breakdown-phase`](#breakdown-phase) → [`batch-dev`](#batch-dev) → [`close-out`](#close-out) (all `--unattended`) over the tracker-adapter contract and stops only at plan completion. Resumable run state lives in `.decaf/auto-deliver/`. Point it at a plan produced by [`draft-plan`](#draft-plan).
@@ -189,6 +271,14 @@ The autonomous whole-plan loop: `SELECT → BREAKDOWN → EXECUTE → VERIFY →
 /decaf-build:auto-deliver <plan-id>
 /decaf-build:auto-deliver <plan-id> --base-branch integration --review audit
 ```
+**Arguments**
+- `<plan-id>` — **required**; the plan's root work-item id, or a single phase or subtree to limit the run to.
+- `--base-branch <name>` — the integration branch every phase merges into. Default: the repo's default branch.
+- `--review "<preset> [axis=value …]"` — a [`code-review`](#code-review) preset (`bugs` | `review` | `audit`) plus any of its axis overrides, forwarded as-is to [`batch-dev`](#batch-dev), whose default is `review`.
+- `--tracker nibs|ado|github|markdown` — the plan's tracker. Default: detected.
+- `--models low|norm|high` — model tier, forwarded to `batch-dev`. Default: `high`.
+- `--report` — collect the session reports from every phase's reviews under `.decaf/session-reports/`.
+- `--laps N` — stop after N laps (one phase each); the next run resumes from `.decaf/auto-deliver/state.json`. Default: run until the plan is complete. [`scripts/drive.sh`](decaf-build/skills/auto-deliver/scripts/drive.sh) uses `--laps 1` to run one phase per headless process.
 
 ## decaf-plan
 
@@ -199,24 +289,29 @@ Dig into an unfamiliar problem or technology from several angles and write up wh
 ```
 /decaf-plan:research "options for replacing our REST API with GraphQL"
 ```
+**Arguments**
+- `<topic or problem description>` — **required**; what to research.
 
 ### draft-spec
 Interview the user and explore the code to write a spec (PRD): *what* to build and *why*, including top-level acceptance criteria. Pulls in [`grill-me`](#grill-me) to pressure-test the decisions; next, turn the spec into a plan with [`draft-plan`](#draft-plan).
 ```
 /decaf-plan:draft-spec
 ```
+**Arguments:** none. The skill interviews you for the problem, and skips that question if you already described it.
 
 ### grill-me
 A relentless, decision-by-decision interview that stress-tests a plan or design until it holds up — walking each branch of the decision tree and resolving dependencies between choices. Used by [`draft-spec`](#draft-spec), or standalone whenever you want to pressure-test thinking.
 ```
 /decaf-plan:grill-me
 ```
+**Arguments:** none.
 
 ### draft-plan
 Turn a spec from [`draft-spec`](#draft-spec) into an ordered, **phased** build plan of vertical slices (tracer bullets) and create the work-item nibs for it, each with a `## Acceptance` section. Then detail each phase with [`breakdown-phase`](#breakdown-phase) — or hand the whole plan to [`auto-deliver`](#auto-deliver).
 ```
 /decaf-plan:draft-plan
 ```
+**Arguments:** none. The spec must already be in the conversation; if it isn't, the skill asks you to paste it or point to the file.
 
 ### breakdown-phase
 Break one phase of a plan into concrete, independently buildable features, each with a done-checklist — run just before starting a phase, against the code earlier phases produced. Build the resulting features (e.g. via [`batch-dev`](#batch-dev)), then close the phase with [`close-out`](#close-out).
@@ -224,6 +319,9 @@ Break one phase of a plan into concrete, independently buildable features, each 
 /decaf-plan:breakdown-phase 2
 /decaf-plan:breakdown-phase <phase-id> --unattended
 ```
+**Arguments**
+- `<phase>` — a phase number or title from the plan in context, a plan file with a phase anchor (`./plans/auth.md#3`), or a work-item id. Omitted or unclear: the skill asks.
+- `--unattended` — no human gates: no disambiguation question, no review-and-iterate step, and new items go to the phase's own tracker. `auto-deliver` passes this.
 
 ### close-out
 Reconcile what was built against what was planned, record decisions and deviations, close the item (a single phase **or** a whole plan), and file follow-ups for deferred work. The follow-ups it files are what [`auto-deliver`](#auto-deliver)'s replan step picks up.
@@ -231,30 +329,39 @@ Reconcile what was built against what was planned, record decisions and deviatio
 /decaf-plan:close-out 3
 /decaf-plan:close-out <plan-id> --unattended
 ```
+**Arguments**
+- `<phase or plan>` — a work-item id, a phase number or title from the plan in context, or a plan-file path (`./plans/auth.md#2`). Omitted or unclear: the skill asks.
+- `--unattended` — no human gates: no disambiguation question, the closure summary is applied without showing it first, and the confirmation goes to the run report. `auto-deliver` passes this.
 
 ### explore-designs
 "Design it twice": generate several radically different designs for a decision — from a single method up to a whole architecture — compare them, and write up the one you choose. Sibling decision tools: [`challenge-decision`](#challenge-decision) (stress-test one stated choice) and [`architecture-review`](#architecture-review) (find improvements in existing structure).
 ```
 /decaf-plan:explore-designs
 ```
+**Arguments:** none.
 
 ### architecture-review
 Explore existing code for structural/testability improvements (deepen shallow modules, untangle coupling) and write up recommendations as **RFCs** — not code changes. Walk its proposals one at a time with [`resolve-architecture-review`](#resolve-architecture-review).
 ```
 /decaf-plan:architecture-review
 ```
+**Arguments:** none.
 
 ### resolve-architecture-review
 Walk the candidates from [`architecture-review`](#architecture-review) one at a time, designing the interface and writing an RFC for each.
 ```
 /decaf-plan:resolve-architecture-review
 ```
+**Arguments**
+- `<file>` — the candidates file to work from. Default: the latest `.decaf/architecture-improvements/CANDIDATES_*.md`.
 
 ### challenge-decision
 Stress-test a decision you're about to make by arguing *against* it — decompose it into claims/assumptions/constraints, verify each, steel-man the strongest case for the opposite, and return a `STAND` / `REVISE` / `ESCALATE` verdict. For architectural choices, tech selection, and trade-offs. Related: [`grill-me`](#grill-me) (interview-style pressure-testing) and [`explore-designs`](#explore-designs) (generate alternatives rather than judge one).
 ```
 /decaf-plan:challenge-decision "use Redis for session storage instead of PostgreSQL"
 ```
+**Arguments**
+- `<decision>` — **required**; the decision to stress-test.
 
 ### capture
 Jot a follow-up idea or task as a work-item draft without interrupting your current work — it picks a sensible parent from context. Works with any tracker in [`work-items.md`](conventions/work-items.md) (nibs, GitHub, Azure DevOps, Markdown).
@@ -264,6 +371,9 @@ Captured items are created as **drafts**, because you gave a one-line note and t
 /decaf-plan:capture "add retry to the upload path"
 /decaf-plan:capture parent:abc1 "tighten the auth error messages"
 ```
+**Arguments**
+- `parent:<id>` — an explicit parent work item (e.g. `parent:proj-a1b2`, `parent:#42`); must come first. Default: picked from in-progress work and the note's topic, else no parent.
+- `<description>` — **required**; the note to capture.
 
 ### refine
 Take one under-specified work item and make it actionable: read the code, resolve the open questions in a short interview, add `## Acceptance`, and promote it `draft` → `todo`. This is the exit for [`capture`](#capture)'s drafts, but works on any open item too vague to start on.
@@ -275,6 +385,12 @@ Acceptance criteria come out honestly tagged: `[run]` where a command can check 
 /decaf-plan:refine dcc-pak3
 /decaf-plan:refine            # picks up the item in conversation context
 ```
+**Arguments**
+- `<work-item-id>` — the item to refine. Default: the item under discussion in the conversation; the skill asks only if that's ambiguous.
+- `--scrap-ok` — if the item turns out to be obsolete or already done, scrap it with the evidence instead of asking.
+
+There is deliberately no `--unattended`: acceptance criteria have to come from a human, not from another round of inference.
+
 Related: [`breakdown-phase`](#breakdown-phase) decomposes a decision you already made; refine establishes whether there is a decision at all.
 
 ## decaf-memory
@@ -290,24 +406,30 @@ Store a memory in erinra for future reference (returns similar existing memories
 ```
 /decaf-memory:remember "we use pnpm, not npm, in this monorepo"
 ```
+**Arguments**
+- `<what to remember>` — the fact, preference, or decision to store. If it's vague, the skill asks what you mean and why it matters.
 
 ### recall
 Search stored memories via hybrid (vector + keyword) search — the counterpart to [`remember`](#remember).
 ```
 /decaf-memory:recall "database migration conventions"
 ```
+**Arguments**
+- `<search query>` — what to search for. Without a query, the skill browses memories instead of searching.
 
 ### init-memory
 Manually load the erinra session context — a fallback for when the automatic `SessionStart` hook didn't fire.
 ```
 /decaf-memory:init-memory
 ```
+**Arguments:** none.
 
 ### memory-dashboard
 Open the erinra memory dashboard in the browser.
 ```
 /decaf-memory:memory-dashboard
 ```
+**Arguments:** none.
 
 ## decaf-protection
 
