@@ -17,9 +17,13 @@ Before diving deep, map the full design space with a breadth-first pass.
 
 **1a. Identify areas.** Read the plan and identify all major areas, subsystems, or concerns that need decisions. An "area" is a cluster of related decisions — e.g., "auth model", "data migration", "API surface", "UI flow", "error handling", "deployment".
 
-**1b. Present the map.** Show the user the areas you've identified:
+**1b. Present the map.** Open with a plain-language summary of what the plan is about — two or three simple sentences on what it sets out to do and why, written for someone who hasn't read it. Then show the areas you've identified:
 
 ```
+## What this plan is about
+
+<two or three simple sentences>
+
 ## Design Space
 
 I see N major areas to explore:
@@ -56,6 +60,12 @@ For each area (in the order agreed with the user, or by priority if not specifie
 2. Exhaust all branches within the area depth-first before moving on
 3. Use judgement — sometimes a lateral question is needed to establish context before diving deeper, but always return to finish the current branch
 4. When the area is fully resolved, update the progress file and move to the next area
+
+### Asking each question
+
+Explain every question in clear, simple language — a one-line question is rarely enough to answer well. Before asking, say what is undecided, why it matters, and what it affects in the plan, so the user can answer without reconstructing the context themselves.
+
+Don't propose an answer unless the user asks for one: the point is to surface the user's own thinking, and a suggestion steers it.
 
 ## Tracking Progress
 

@@ -102,12 +102,26 @@ Write the item you think it should be. Against the code you just read:
 
 ### 5. Interview from the proposal
 
-Show the drafted item, then ask **only** the open questions from step 4. Prefer a concrete
-proposal the user can confirm or correct over an open question they have to compose an
-answer to:
+Present it in this order, in plain language:
 
-> Good: "`RetryPolicy` is used in five sibling paths — three attempts, exponential backoff.
-> Same here? And done = `dotnet test --filter Category=Upload.Retry` passes."
+1. **What the item is about** — two or three simple sentences: what is missing or wrong
+   today, and what is different once this is done. Write it for someone who hasn't seen
+   the item or the code; ids, file paths and jargon belong in the draft, not here.
+2. **The drafted item** from step 4.
+3. **Each open question** from step 4 — **only** those — explained simply:
+   - **The problem** — what is undecided, and why it matters.
+   - **The suggested solution** — what you propose and why, grounded in the evidence from
+     step 2, ending in something the user can confirm or correct.
+
+Prefer a concrete proposal the user can confirm or correct over an open question they have
+to compose an answer to:
+
+> Good:
+> **The problem:** Uploads can fail on a flaky connection, and the item doesn't say
+> whether to try again or how many times.
+> **Suggested solution:** Retry the way the rest of the app already does — three
+> attempts, waiting a little longer each time (`RetryPolicy`, used in five sibling paths).
+> Done = `dotnet test --filter Category=Upload.Retry` passes. Same here?
 >
 > Bad: "How should retry behave on the upload path?"
 

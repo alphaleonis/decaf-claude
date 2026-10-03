@@ -300,7 +300,7 @@ Interview the user and explore the code to write a spec (PRD): *what* to build a
 **Arguments:** none. The skill interviews you for the problem, and skips that question if you already described it.
 
 ### grill-me
-A relentless, decision-by-decision interview that stress-tests a plan or design until it holds up — walking each branch of the decision tree and resolving dependencies between choices. Used by [`draft-spec`](#draft-spec), or standalone whenever you want to pressure-test thinking.
+A relentless, decision-by-decision interview that stress-tests a plan or design until it holds up — walking each branch of the decision tree and resolving dependencies between choices. It opens with a plain-language summary of the plan, and explains each question in simple terms — what is undecided and why it matters — without steering you toward an answer unless you ask. Used by [`draft-spec`](#draft-spec), or standalone whenever you want to pressure-test thinking.
 ```
 /decaf-plan:grill-me
 ```
@@ -378,7 +378,7 @@ Captured items are created as **drafts**, because you gave a one-line note and t
 ### refine
 Take one under-specified work item and make it actionable: read the code, resolve the open questions in a short interview, add `## Acceptance`, and promote it `draft` → `todo`. This is the exit for [`capture`](#capture)'s drafts, but works on any open item too vague to start on.
 
-It reads *first* and interviews from a **proposal** — "`RetryPolicy` is used in five sibling paths, three attempts, exponential; same here?" — rather than from a blank page, so a simple task costs you one question instead of twenty. If the item turns out to be too large it hands off to [`draft-spec`](#draft-spec); if it turns out to hide a real design fork, to [`grill-me`](#grill-me); if the code says it's already done, it proposes scrapping it.
+It reads *first* and interviews from a **proposal** — "`RetryPolicy` is used in five sibling paths, three attempts, exponential; same here?" — rather than from a blank page, so a simple task costs you one question instead of twenty. The interview opens with a plain-language summary of what the item is about, and each question explains the problem and the suggested solution in simple terms. If the item turns out to be too large it hands off to [`draft-spec`](#draft-spec); if it turns out to hide a real design fork, to [`grill-me`](#grill-me); if the code says it's already done, it proposes scrapping it.
 
 Acceptance criteria come out honestly tagged: `[run]` where a command can check it, `[manual]` (with a stated reason) where only a human can. An item that ends up mostly `[manual]` is still *finished* — it just can't be **verified** autonomously, and refine tells you so rather than quietly handing a loop something it can't check.
 ```
