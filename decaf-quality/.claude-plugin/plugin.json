@@ -1,7 +1,23 @@
 {
    "name": "decaf-quality",
-   "description": "Code quality for Claude Code — multi-agent code review, coverage-gap analysis, and refactoring",
+   "description": "Code quality for Claude Code — multi-agent code review, coverage-gap analysis, refactoring, and the comment-writing rules",
    "author": { "name": "Alphaleonis" },
-   "keywords": ["claude-code", "code-review", "coverage", "refactoring", "quality"],
-   "skills": "./skills"
+   "keywords": ["claude-code", "code-review", "coverage", "refactoring", "quality", "comments"],
+   "skills": "./skills",
+   "hooks": {
+      "SessionStart": [
+         {
+            "hooks": [
+               { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/comments-pointer.js" }
+            ]
+         }
+      ],
+      "SubagentStart": [
+         {
+            "hooks": [
+               { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/comments-pointer.js" }
+            ]
+         }
+      ]
+   }
 }

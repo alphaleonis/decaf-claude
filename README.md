@@ -40,6 +40,7 @@ Skills are invoked as `/<plugin>:<skill>`. Click any skill for details, usage, a
 - [`resolve-refactor`](#resolve-refactor) — walk the refactoring plan and apply opportunities
 - [`coherence-audit`](#coherence-audit) — find + fix drift between docs/specs/comments/config and code
 - [`diagnose`](#diagnose) — root-cause investigation via competing hypotheses (diagnoses, never fixes)
+- [`write-comments`](#write-comments) — the rules for code comments, loaded before editing or applied to existing comments
 
 **decaf-build** — create new behavior
 - [`tdd`](#tdd) — red → green → refactor, one vertical slice at a time
@@ -204,6 +205,16 @@ Root-cause investigation: gate the problem to one testable statement, generate c
 ```
 **Arguments**
 - `<problem or symptom>` — **required**; what's broken, in your own words.
+
+### write-comments
+The rules for code comments and doc comments in any language ([`conventions/comments.md`](conventions/comments.md)), followed by the project's own additions from `.decaf/conventions/comments.md` when that file exists: a glossary, a line width, local rules. Without arguments it loads the rules for the work in progress. With a target it rewrites the comments already there, and never touches code. A `SessionStart` and `SubagentStart` hook tells every agent, subagents included, to invoke it before its first edit to a source file. The hook skips the read-only `Explore` and `Plan` agents.
+```
+/decaf-quality:write-comments                    # load the rules before writing code
+/decaf-quality:write-comments src/sync           # rewrite the comments in a path
+/decaf-quality:write-comments diff               # rewrite the comments in the uncommitted changes
+```
+**Arguments**
+- `[target]` — optional; a file, a directory, or `diff`. Without it, the skill only loads the rules.
 
 ## decaf-build
 
@@ -455,8 +466,9 @@ Shared reference files live at repo-root `conventions/` and are pulled into skil
 |------------|---------|
 | `work-items.md` | decaf-plan skills + auto-deliver (tracker-adapter contract) |
 | `acceptance-criteria.md` | the `## Acceptance` format (draft-spec/draft-plan/breakdown-phase; auto-deliver) |
-| `code-review-consolidation.md`, `severity.md`, `intent-markers.md`, `structural.md`, `temporal.md`, `security.md`, `code-quality/`, `coverage-config.md`, `refactoring.md`, `pr-etiquette.md`, `persona-authoring.md` | decaf-quality review/refactor skills + agents |
+| `code-review-consolidation.md`, `severity.md`, `intent-markers.md`, `structural.md`, `security.md`, `code-quality/`, `coverage-config.md`, `refactoring.md`, `pr-etiquette.md`, `persona-authoring.md` | decaf-quality review/refactor skills + agents |
 | `documentation.md` | technical-writer; documentation guidance |
+| `comments.md` | the `write-comments` skill, knowledge-reviewer, technical-writer (rules for code comments; a project adds its own in `.decaf/conventions/comments.md`) |
 
 Generated **artifacts** (review reports, refactor plans, loop state, etc.) are written under a single per-project root, **`.decaf/`** — see [`conventions/artifacts.md`](conventions/artifacts.md).
 

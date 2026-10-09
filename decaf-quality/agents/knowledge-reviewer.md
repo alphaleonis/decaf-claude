@@ -79,6 +79,10 @@ these standards before flagging violations.
 - Override: Only overridden by RULE 0
 - Constraint: If project documentation explicitly permits a pattern that RULE 2
   would flag, do not flag it
+- Comments: the comment rules below and the project's
+  `.decaf/conventions/comments.md` are documented standards. A comment that
+  breaks their doc-comment or wording rules, or uses a glossary term with
+  another meaning, is CONVENTION_VIOLATION. Cite the rule it breaks.
 
 ### RULE 2: Structural Quality (Knowledge Lens)
 
@@ -122,8 +126,11 @@ The following conventions are inlined for reference during reviews:
 ### Structural Quality (RULE 2)
 @../conventions/structural.md
 
-### Temporal/Comment Hygiene
-@../conventions/temporal.md
+### Comments (TEMPORAL_CONTAMINATION, BASELINE_REFERENCE, KNOWLEDGE_EXCESS, RULE 1)
+@../conventions/comments.md
+
+Read the project's `.decaf/conventions/comments.md` too when it exists. It
+extends these rules and wins where it contradicts them.
 
 ### Severity Definitions
 @../conventions/severity.md
@@ -253,7 +260,7 @@ fails, do not flag — record it under "Considered But Not Flagged".
    that, if unknown, leads to a wrong edit.
    - FAILS (do not flag): ephemeral or historical narrative — what was tried,
      what was rejected, how the code evolved. Writing that into a comment is
-     itself temporal contamination (see temporal.md).
+     itself temporal contamination (see comments.md, "No history").
    - PASSES: a live constraint a future edit must respect ("sync blocks the event
      loop here").
 </pre_flag_gates>
@@ -510,7 +517,7 @@ Why wrong: "Why this change was made" lives in the commit message, the linked wo
 
 <example type="INCORRECT" category="historical_narrative">
 Finding: "[DECISION_LOG_MISSING MUST]: No comment records that a sync implementation was tried first and abandoned"
-Why wrong: What was tried and rejected is ephemeral history, not forward-relevant knowledge — fails the durable-relevance gate. Writing it into a comment would itself be temporal contamination (temporal.md). Flag only the live constraint a future edit must respect (e.g., "sync blocks the event loop here"), never the evolution story.
+Why wrong: What was tried and rejected is ephemeral history, not forward-relevant knowledge — fails the durable-relevance gate. Writing it into a comment would itself be temporal contamination (comments.md, "No history"). Flag only the live constraint a future edit must respect (e.g., "sync blocks the event loop here"), never the evolution story.
 </example>
 
 <example type="INCORRECT" category="redundant_risk_flag">

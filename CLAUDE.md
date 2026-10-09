@@ -14,7 +14,7 @@ All five ship from the repo root and are listed in `marketplace.json`. The old `
 
 ### `decaf-quality` — Code Quality
 
-Improve existing code without adding behavior: multi-agent code review, coverage-gap analysis, refactoring, and PR-feedback resolution. Standalone (no outward dependencies). Analysis skills produce findings; matching `resolve-*` skills walk them one at a time.
+Improve existing code without adding behavior: multi-agent code review, coverage-gap analysis, refactoring, and PR-feedback resolution. Standalone (no outward dependencies). Analysis skills produce findings; matching `resolve-*` skills walk them one at a time. Ships a `SessionStart`/`SubagentStart` hook that points every agent that may write code at `write-comments`.
 
 **Skills** (invoked as `/decaf-quality:skill-name`):
 
@@ -30,6 +30,7 @@ Improve existing code without adding behavior: multi-agent code review, coverage
 | `resolve-refactor` | Walk refactoring opportunities — apply / apply incrementally / skip / dismiss / defer |
 | `coherence-audit` | Audit docs/specs/comments/config/names vs. the code; find + resolve inconsistencies |
 | `diagnose` | Root-cause investigation via competing hypotheses + evidence; diagnoses, never fixes |
+| `write-comments` | The comment rules (`conventions/comments.md`) + the project's `.decaf/conventions/comments.md`; loads them, or rewrites a target's comments |
 
 **Agents** (referenced as `decaf-quality:agent-name`):
 
