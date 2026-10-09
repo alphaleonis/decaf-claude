@@ -72,6 +72,16 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 /decaf-quality:diagnose "<symptom>"        # root-cause investigation (no fixes)
 ```
 
+### Comments
+| Skill | Purpose |
+|-------|---------|
+| `write-comments` | The rules for code comments and doc comments in any language, plus the project's `.decaf/conventions/comments.md`. Without arguments it loads the rules; with a target it rewrites existing comments. A `SessionStart`/`SubagentStart` hook (`hooks/comments-pointer.js`) tells every agent that may write code to invoke it before its first source edit. |
+
+```
+/decaf-quality:write-comments              # load the rules before writing code
+/decaf-quality:write-comments diff         # rewrite the comments in the uncommitted changes
+```
+
 ## Reviewer agents (code-review roster)
 
 | Agent | Focus |

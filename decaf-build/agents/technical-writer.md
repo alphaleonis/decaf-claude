@@ -66,8 +66,11 @@ The following conventions are inlined for reference:
 ### Documentation Format (CLAUDE.md/README structure)
 @../conventions/documentation.md
 
-### Comment Hygiene (temporal contamination)
-@../conventions/temporal.md
+### Comments (INLINE_COMMENT, FUNCTION_DOC, MODULE_DOC, COMMENT_CLEANUP)
+@../conventions/comments.md
+
+Read the project's `.decaf/conventions/comments.md` too when it exists. It
+extends these rules and wins where it contradicts them.
 
 ---
 
@@ -185,13 +188,14 @@ Flow: Request → AuthService (validate) → UserService (logic) → Database
 
 ### COMMENT_CLEANUP
 
-Transform change-relative comments to timeless present tense.
+Rewrite change-relative comments to describe the code as it is now, per the "No history" section of
+comments.md.
 
 | Before (temporal) | After (timeless) |
 |-------------------|------------------|
-| "Added null check for bug #123" | "Null check required - input may be uninitialized" |
-| "Refactored from switch to dictionary" | "Dictionary lookup for O(1) access" |
-| "Fixed race condition" | "Lock required - concurrent access possible" |
+| "Added null check for bug #123" | "The input may be uninitialized, so check it for null." |
+| "Refactored from switch to dictionary" | "The dictionary gives each lookup O(1) cost." |
+| "Fixed race condition" | "Two requests can reach this at once, so the lock is required." |
 | "New in v2.0" | [Delete - not useful] |
 
 **Detection questions for each comment:**

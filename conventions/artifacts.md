@@ -25,6 +25,8 @@ top-level dot-dirs.
 ├── architecture-improvements/   # architecture-review candidates + resolve state
 │   ├── CANDIDATES_<ts>.md
 │   └── .handle-state.json
+├── conventions/                 # project additions to the plugin conventions — hand-written, committed
+│   └── comments.md              # glossary, line width, local comment rules (see comments.md)
 ├── grill-me/                    # grill-me running summaries
 │   └── <topic>.md
 ├── session-reports/             # --report session reports (see session-report.md)
@@ -50,8 +52,12 @@ Pick a clear `<domain>` subdir and keep state files inside it.
 
 ## Git-tracking
 
-Each domain decides. The ephemeral review / refactor / coverage / candidate artifacts are
+`.decaf/conventions/` is the exception to "generated": a person writes it, and it is always
+committed, because agents read it as project configuration.
+
+For the rest, each domain decides. The ephemeral review / refactor / coverage / candidate artifacts are
 typically gitignored; the `auto-deliver` loop intentionally **tracks** its durable state
 (`state.json`, `lessons.md`, `phases/*/reflection.md`) and ships its own `.gitignore` for the
-regenerable logs — see its artifact-layout.md. Projects may add `.decaf/` (or specific
-subdirs) to their `.gitignore` as they prefer.
+regenerable logs — see its artifact-layout.md. Projects add the artifact subdirs
+they want ignored to their `.gitignore`, one by one. Ignoring `.decaf/` as a whole would also hide
+`.decaf/conventions/`.
