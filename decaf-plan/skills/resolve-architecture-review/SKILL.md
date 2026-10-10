@@ -26,7 +26,7 @@ Walk through architecture improvement candidates. For each candidate the user ch
 
 ### Batch Mode
 
-1. **TRIAGE BEFORE DESIGN**: Every candidate gets an action from the user (Step B1) before any framing or design work starts.
+1. **TRIAGE BEFORE DESIGN**: Every candidate gets an action from the user (Step B1) before any framing or design work starts. Triage presents one candidate per response, with a plain summary before its question.
 
 2. **DESIGN ONLY WHAT PASSED THE GATE**: Spawn design sub-agents only for candidates the user marked Explore AND whose framing the user approved at the framing gate (Step B2).
 
@@ -275,14 +275,17 @@ Each candidate's exploration artifacts live in `.decaf/architecture-improvements
 
 Candidate phases in `state.batch`: `triaged` → `framed` → `explored` → `resolved`.
 
-**B1. Triage every candidate.**
+**B1. Triage every candidate, one at a time.**
 
-Show all candidates as one compact table: number, cluster name, modules (abbreviated), dependency category. The full details stay in the candidates file; the user can ask for any candidate's details before answering.
+First show all candidates as one compact table: number, cluster name, modules (abbreviated), dependency category. The table gives the user the whole list; the decisions come one by one after it.
 
-Then collect one action per candidate with AskUserQuestion: one question per candidate, up to 4 questions per call, so each call triages 4 candidates. Make as many calls as needed, in candidate order.
+Then walk the candidates in order. Each response covers ONE candidate:
+
+1. **What the candidate is about** — two or three simple sentences, drawn from its entry in the candidates file: what is awkward in the code today, and what gets better once it is deepened. Write it for someone who hasn't read the candidates file; module paths and the dependency category are already in the table.
+2. **One question, about this candidate only:**
 
 ```
-AskUserQuestion with, per candidate:
+AskUserQuestion with:
 - question: "#N [Cluster name] — what should happen with it?"
 - header: "#N"
 - options:
@@ -292,14 +295,23 @@ AskUserQuestion with, per candidate:
   - label: "Defer", description: "Create a work item for later"
 ```
 
-⚠️ **STOP HERE AND WAIT FOR USER RESPONSE** after each call.
+⚠️ **STOP HERE AND WAIT FOR USER RESPONSE.** Never put more than one candidate's question in a call.
+
+> Good summary:
+> Every screen that shows an invoice works out its totals itself, so the three copies have
+> already drifted on how they round. Pulling the calculation into one module gives one place
+> to fix rounding, and lets tests check totals without starting the UI.
+>
+> Bad summary: "Deepen InvoiceTotals — shallow module, in-process dependency."
 
 Free-form "Other" answers: a reason given there marks the candidate dismissed with that reason; "Stop" ends triage — candidates not yet triaged count as unprocessed, and the session continues with the ones already marked Explore.
 
-After triage:
+Record each answer as the user gives it:
 - Handle Skip, Dismiss and Defer exactly as in Step 5c, and record them in `processed` and `actions`.
+- Record an Explore candidate in `state.batch` as `{ "phase": "triaged", "explorationDir": "<path>" }`.
+
+After triage:
 - If any candidate is marked Explore, determine the output target now (as in Step 5g) and store it as `outputTarget`, so the review pass doesn't stop for it.
-- Record each Explore candidate in `state.batch` as `{ "phase": "triaged", "explorationDir": "<path>" }`.
 - If nothing is marked Explore, go to Step 6.
 
 **B2. Framing gate.**
