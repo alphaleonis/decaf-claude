@@ -1,16 +1,22 @@
 ---
 name: resolve-architecture-review
-description: Walk through architecture-review proposals one at a time, designing the interface and writing an RFC for each. Use after architecture-review to turn its candidates into concrete RFCs.
-argument-hint: "[file]"
+description: Walk through architecture-review proposals, designing the interface and writing an RFC for each — one at a time, or with "batch" triage all candidates first, explore the chosen ones together, then review the results. Use after architecture-review to turn its candidates into concrete RFCs.
+argument-hint: "[batch] [file]"
 ---
 
 # Resolve Architecture Review
 
-Walk through architecture improvement candidates one at a time. For each candidate: frame the problem space, design multiple interfaces via parallel sub-agents, let the user pick, and create an RFC.
+Walk through architecture improvement candidates. For each candidate the user chooses to explore: frame the problem space, design multiple interfaces via parallel sub-agents, let the user pick, and create an RFC.
+
+**Two modes:**
+- **Interactive** (default): one candidate at a time — choose an action, explore, pick, RFC, next.
+- **Batch** (`batch` argument): triage every candidate up front, approve all framings at once, explore the chosen candidates together while the user is free, then review the explored candidates one at a time. The user makes the same decisions as in interactive mode, in a different order.
 
 ## Critical Behavior Requirements
 
 **YOU MUST FOLLOW THESE RULES:**
+
+### Interactive Mode (default)
 
 1. **MANDATORY STOP**: You MUST use `AskUserQuestion` to present each candidate and wait for the user's choice BEFORE taking ANY action. Do NOT design interfaces or create RFCs autonomously.
 
@@ -18,15 +24,33 @@ Walk through architecture improvement candidates one at a time. For each candida
 
 3. **NO AUTONOMOUS DESIGN**: Never spawn interface-design sub-agents without explicit user approval via AskUserQuestion response.
 
-4. **STATE TRACKING**: After presenting the summary, write progress state to `.decaf/architecture-improvements/.handle-state.json`. Update this file after each candidate is processed. This enables recovery after context compaction.
+### Batch Mode
+
+1. **TRIAGE BEFORE DESIGN**: Every candidate gets an action from the user (Step B1) before any framing or design work starts.
+
+2. **DESIGN ONLY WHAT PASSED THE GATE**: Spawn design sub-agents only for candidates the user marked Explore AND whose framing the user approved at the framing gate (Step B2).
+
+3. **NO STOPS DURING THE WAVE**: Once the framing gate passes, run the exploration wave (Step B3) to completion without asking the user anything.
+
+4. **ONE AT A TIME IN REVIEW**: The review pass (Step B4) presents one explored candidate per response and waits for the user's pick, exactly like interactive mode.
+
+5. **DESIGNS GO TO DISK**: Design and comparison sub-agents write their output to the exploration directory and return only a short summary. Never pull every candidate's full designs into the conversation at once.
+
+### Both Modes
+
+- **STATE TRACKING**: After presenting the summary, write progress state to `.decaf/architecture-improvements/.handle-state.json`. Update it after each candidate changes state. This enables recovery after context compaction.
 
 ## Argument Parsing
 
-Parse `$ARGUMENTS` to determine the candidates file:
+Parse `$ARGUMENTS`:
 
-**File** (optional):
+**Mode** (positional, optional): `batch` for batch mode; omitted = interactive.
+
+**File** (remaining argument, optional):
 - If a file path is provided: Use that specific file
 - Otherwise: Use the most recent `.decaf/architecture-improvements/CANDIDATES_*.md` file
+
+Examples: `batch`, `batch .decaf/architecture-improvements/CANDIDATES_2026-10-10_14-30-45.md`.
 
 ## Execution Steps
 
@@ -61,8 +85,10 @@ For each candidate, extract:
 ### Step 3: Check for Existing State
 
 Check if `.decaf/architecture-improvements/.handle-state.json` exists:
-- If yes and it references the same candidates file, offer to resume from where we left off
+- If yes and it references the same candidates file, offer to resume from where we left off. Resume in the mode recorded in the state file, regardless of the current argument.
 - If no or different file, start fresh
+
+**Resuming batch mode:** continue from the earliest phase any candidate is still in. A candidate recorded as `framed` whose `comparison.md` already exists in its exploration directory finished exploring before the state was written — treat it as `explored`. A `framed` candidate with only some design files gets its wave rerun from scratch.
 
 ### Step 4: Present Summary and Initialize State
 
@@ -73,8 +99,10 @@ Show the user the overall summary:
 
 **Project language**: [language]
 **Total candidates:** N
+**Mode:** [interactive | batch]
 
-I'll walk through each candidate ONE AT A TIME. For each one, choose an action:
+[interactive] I'll walk through each candidate ONE AT A TIME. For each one, choose an action:
+[batch] First you choose an action for every candidate; then I frame and explore the ones you picked, all together; then we review them one at a time.
 - **Explore** — frame the problem, design interfaces, create an RFC
 - **Skip**, Dismiss, Defer
 ```
@@ -83,13 +111,20 @@ Write initial state to `.decaf/architecture-improvements/.handle-state.json`:
 ```json
 {
   "candidatesFile": ".decaf/architecture-improvements/CANDIDATES_xxx.md",
+  "mode": "interactive|batch",
   "totalCandidates": N,
   "currentIndex": 0,
   "processed": [],
   "actions": { "explored": 0, "skipped": 0, "dismissed": 0, "deferred": 0 },
-  "deferSystem": null
+  "deferSystem": null,
+  "outputTarget": null,
+  "batch": {}
 }
 ```
+
+`batch` stays empty in interactive mode. In batch mode it maps each candidate number to `{ "phase": "...", "explorationDir": "..." }`; see Step B1.
+
+**Batch mode:** go to [Batch Mode Steps](#batch-mode-steps). **Interactive mode:** continue with Step 5.
 
 ### Step 5: Process Each Candidate (MANDATORY STOP POINT)
 
@@ -225,6 +260,94 @@ For deferred candidates, include work item reference: `{ "candidate": N, "action
 
 **5k. Return to 5a for next candidate.** Do NOT batch — present one candidate, wait, process, repeat.
 
+### Batch Mode Steps
+
+Each candidate's exploration artifacts live in `.decaf/architecture-improvements/explorations/<candidates-file-stem>/<N>/` (the stem is the candidates filename without `.md`), so explorations from different review runs don't collide:
+
+```
+<N>/
+├── framing.md       # the Step 5d framing, as approved at the gate
+├── design-1.md      # one per design sub-agent
+├── design-2.md
+├── design-3.md
+└── comparison.md    # prose comparison + recommendation (+ hybrid, if any)
+```
+
+Candidate phases in `state.batch`: `triaged` → `framed` → `explored` → `resolved`.
+
+**B1. Triage every candidate.**
+
+Show all candidates as one compact table: number, cluster name, modules (abbreviated), dependency category. The full details stay in the candidates file; the user can ask for any candidate's details before answering.
+
+Then collect one action per candidate with AskUserQuestion: one question per candidate, up to 4 questions per call, so each call triages 4 candidates. Make as many calls as needed, in candidate order.
+
+```
+AskUserQuestion with, per candidate:
+- question: "#N [Cluster name] — what should happen with it?"
+- header: "#N"
+- options:
+  - label: "Explore", description: "Frame and design it in the exploration wave"
+  - label: "Skip", description: "Leave it, no tracking"
+  - label: "Dismiss", description: "Mark as not worth doing"
+  - label: "Defer", description: "Create a work item for later"
+```
+
+⚠️ **STOP HERE AND WAIT FOR USER RESPONSE** after each call.
+
+Free-form "Other" answers: a reason given there marks the candidate dismissed with that reason; "Stop" ends triage — candidates not yet triaged count as unprocessed, and the session continues with the ones already marked Explore.
+
+After triage:
+- Handle Skip, Dismiss and Defer exactly as in Step 5c, and record them in `processed` and `actions`.
+- If any candidate is marked Explore, determine the output target now (as in Step 5g) and store it as `outputTarget`, so the review pass doesn't stop for it.
+- Record each Explore candidate in `state.batch` as `{ "phase": "triaged", "explorationDir": "<path>" }`.
+- If nothing is marked Explore, go to Step 6.
+
+**B2. Framing gate.**
+
+For each Explore candidate, first verify its source files still exist. A candidate whose code is gone or already deepened is reported to the user with the evidence and offered for dismissal at the gate.
+
+Write the Step 5d framing for each remaining candidate to its `framing.md`, then show all framings together, one section per candidate.
+
+```
+AskUserQuestion with:
+- question: "Launch the exploration wave with these framings?"
+- header: "Framings"
+- options:
+  - label: "Launch", description: "Explore all framed candidates"
+  - label: "Revise...", description: "Reframe or drop some first"
+```
+
+⚠️ **STOP HERE AND WAIT FOR USER RESPONSE.**
+
+On "Revise...", ask which candidates to reframe or drop and what to change, apply it, show only the revised framings, and ask again. A dropped candidate is recorded as skipped (or dismissed, if the user gives a reason). On "Launch", set every framed candidate's phase to `framed`.
+
+**B3. Exploration wave (no stops).**
+
+Process framed candidates in waves of up to 3 candidates. For each candidate in a wave, spawn its 3+ design sub-agents exactly as in Step 5e (radically different constraint axes, chosen for that candidate), all in one message so the whole wave runs concurrently. Add to each brief:
+
+- Write the full design (the six outputs in Step 5e) to `<explorationDir>/design-<k>.md`.
+- Return only a summary of at most 5 lines: the interface's name, its core idea, and its main trade-off.
+
+When a candidate's design sub-agents have all finished, spawn one comparison sub-agent for it. Give it the paths to `framing.md` and the design files, and the instructions from Step 5e for the comparison: compare the designs in prose, give an opinionated recommendation, and propose a hybrid if elements combine well. It writes `<explorationDir>/comparison.md` and returns a one-line recommendation. Then set that candidate's phase to `explored`.
+
+Show one progress line per finished candidate:
+```
+🔬 #N [Cluster name] explored — recommends [design name]. (X of Y explored)
+```
+
+If a design sub-agent fails, rerun it once; if it fails again, proceed with the designs that exist (at least 2) and note the gap in `comparison.md`. With fewer than 2, leave the candidate `framed` and report it in the review pass.
+
+**B4. Review pass (MANDATORY STOP POINT per candidate).**
+
+Walk the `explored` candidates in candidate order, ONE AT A TIME. For each one:
+
+1. Read its `framing.md`, design files and `comparison.md`. Present a short recap of the framing, then the designs sequentially, then the comparison and recommendation.
+2. ⚠️ **STOP HERE AND WAIT FOR USER RESPONSE.** The user picks an interface or accepts the recommendation, as in Step 5f. A free-form answer may instead dismiss or defer the candidate — handle it as in Step 5c.
+3. Draft and create the RFC as in Step 5h, using the stored `outputTarget`.
+4. Set the candidate's phase to `resolved` and record it in `processed` as in Step 5i, then show progress as in Step 5j.
+
+If the user types "Stop", go to Step 6; candidates still `explored` stay listed as remaining, and their exploration files are kept so a resumed session can review them.
+
 ### Step 6: Session Summary
 
 When all candidates are processed or the user stops:
@@ -243,7 +366,7 @@ When all candidates are processed or the user stops:
 - [List of RFCs with their work item references or file paths]
 
 ### Remaining Candidates
-- [List of skipped or unprocessed candidates, if any]
+- [List of skipped or unprocessed candidates, if any — in batch mode, include explored candidates not yet reviewed]
 
 ### Deferred Items
 - [Deferred items with their work item references]
@@ -252,9 +375,11 @@ When all candidates are processed or the user stops:
 - [Dismissed items with reasons, if any]
 ```
 
-Delete `.decaf/architecture-improvements/.handle-state.json` when complete.
+Delete `.decaf/architecture-improvements/.handle-state.json` when complete. If the user stopped with explored candidates not yet reviewed, keep the state file so the session can resume.
 
 ### Step 7: Clean Up
+
+Skip this step if the state file was kept for a resumed session.
 
 Ask whether to delete the candidates file:
 
@@ -267,7 +392,7 @@ AskUserQuestion with:
   - label: "No", description: "Keep it for reference"
 ```
 
-If the user chooses "Yes", delete the candidates file.
+If the user chooses "Yes", delete the candidates file, and in batch mode also its exploration directory `.decaf/architecture-improvements/explorations/<candidates-file-stem>/`. The RFCs already hold the chosen designs.
 
 ## Notes
 

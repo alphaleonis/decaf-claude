@@ -24,6 +24,7 @@ top-level dot-dirs.
 │   └── specs/<item-id>.md, cluster-<n>.md
 ├── architecture-improvements/   # architecture-review candidates + resolve state
 │   ├── CANDIDATES_<ts>.md
+│   ├── explorations/CANDIDATES_<ts>/<N>/  # batch-mode framings, designs, comparison
 │   └── .handle-state.json
 ├── conventions/                 # project additions to the plugin conventions — hand-written, committed
 │   └── comments.md              # glossary, line width, local comment rules (see comments.md)

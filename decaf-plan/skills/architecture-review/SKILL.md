@@ -78,4 +78,5 @@ After saving the candidates file, inform the user:
 Found N deepening opportunities.
 
 Run /decaf-plan:resolve-architecture-review to walk through candidates and create RFCs.
+Add `batch` to triage every candidate first and explore the chosen ones together.
 ```

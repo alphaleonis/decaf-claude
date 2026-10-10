@@ -58,7 +58,7 @@ Skills are invoked as `/<plugin>:<skill>`. Click any skill for details, usage, a
 - [`close-out`](#close-out) — reconcile built vs. planned, close the item, file follow-ups
 - [`explore-designs`](#explore-designs) — "design it twice": generate and compare radical alternatives
 - [`architecture-review`](#architecture-review) — find structural/testability improvements → RFCs
-- [`resolve-architecture-review`](#resolve-architecture-review) — walk those proposals → RFCs
+- [`resolve-architecture-review`](#resolve-architecture-review) — walk those proposals → RFCs (`batch`: triage all, explore together, then review)
 - [`challenge-decision`](#challenge-decision) — argue against a decision → STAND/REVISE/ESCALATE verdict
 - [`capture`](#capture) — jot a follow-up as a work-item draft without breaking flow
 - [`refine`](#refine) — take an under-specified work item to actionable → `todo` + acceptance criteria
@@ -359,11 +359,13 @@ Explore existing code for structural/testability improvements (deepen shallow mo
 **Arguments:** none.
 
 ### resolve-architecture-review
-Walk the candidates from [`architecture-review`](#architecture-review) one at a time, designing the interface and writing an RFC for each.
+Walk the candidates from [`architecture-review`](#architecture-review) one at a time, designing the interface and writing an RFC for each. In `batch` mode you triage every candidate first and approve all framings at once; the chosen candidates are then explored together without stopping, and you review the results one at a time, so you don't wait on each exploration.
 ```
 /decaf-plan:resolve-architecture-review
+/decaf-plan:resolve-architecture-review batch
 ```
 **Arguments**
+- `batch` — triage all candidates, explore the chosen ones together, then review. Default: interactive, one candidate at a time.
 - `<file>` — the candidates file to work from. Default: the latest `.decaf/architecture-improvements/CANDIDATES_*.md`.
 
 ### challenge-decision
