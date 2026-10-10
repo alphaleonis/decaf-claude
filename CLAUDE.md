@@ -155,15 +155,10 @@ decaf-claude/
 After pushing changes to this repo, update the cached marketplace so Claude Code sees the new version:
 
 ```bash
-git -C ~/.claude/plugins/marketplaces/decaf pull
-claude plugin install decaf-quality@decaf
-claude plugin install decaf-build@decaf
-claude plugin install decaf-plan@decaf
-claude plugin install decaf-memory@decaf
-claude plugin install decaf-protection@decaf
+claude plugin marketplace update decaf && claude plugin update decaf-plan@decaf && claude plugin update decaf-quality@decaf && claude plugin update decaf-build@decaf
 ```
 
-Then restart Claude Code to load the updated plugins.
+Add `claude plugin update decaf-memory@decaf` or `decaf-protection@decaf` when a change touches those plugins. Then restart Claude Code to load the updated plugins.
 
 ## Conventions & shared files (symlinks — IMPORTANT)
 
