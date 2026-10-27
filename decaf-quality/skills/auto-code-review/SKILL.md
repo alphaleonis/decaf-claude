@@ -13,6 +13,8 @@ Automated loop: **review → triage → fix → re-review** until stable.
 - **Step 4** executes the confirmed plan via subagent (context isolation)
 - **Step 5** decides whether to re-review based on what the fix round fixed and the risk of its delta
 
+Before you start, read `${CLAUDE_PLUGIN_ROOT}/conventions/subagent-briefs.md` in full. Rule 6 sets the mid tier used by this skill's dispatches, and its other rules govern how you dispatch and hand back.
+
 ## Argument Parsing
 
 Parse `$ARGUMENTS`:
@@ -21,11 +23,11 @@ Parse `$ARGUMENTS`:
    **Always pass a resolved preset explicitly** — the review runs in a subagent, where `/code-review`'s interactive preset selection cannot reach the user. Re-reviews (Step 5) do NOT inherit `reviewSpec` verbatim — they narrow within the caller's preset family and never exceed its roster, per Step 5.4 — and do not forward `--spec` either: compliance was judged on the first pass, and the re-review question is what the fixes broke.
 2. **Max iterations**: `--max-iterations N` (default: 3) — hard cap on review-fix cycles
 3. **Spec**: `--spec <path | work-item-ID>` — passed through to `/code-review`
-4. **`--report`**: produce a comparison-grade session report for skill tuning (`@../../conventions/session-report.md`). Forward `--report` to **every** `/code-review` invocation (first pass and re-reviews), keep the session ledger through the loop (Steps 1–5), and write the report folder in Step 6.5. Callers (`auto-tdd`/`auto-dev`) may pass an implementation-phase record to include.
+4. **`--report`**: produce a comparison-grade session report for skill tuning. When `--report` is set, read `${CLAUDE_PLUGIN_ROOT}/conventions/session-report.md` in full before Step 1. Forward `--report` to **every** `/code-review` invocation (first pass and re-reviews), keep the session ledger through the loop (Steps 1–5), and write the report folder in Step 6.5. Callers (`auto-tdd`/`auto-dev`) may pass an implementation-phase record to include.
 5. **`--unattended`**: no human is available to answer (batch-dev passes it under auto-deliver; any headless caller can). The loop never calls `AskUserQuestion`; Steps 3d and 3e say what happens instead.
 6. **`--tracker <nibs|ado|github|markdown>`**: the tracker to file deferred findings in, from a caller that already knows it (batch-dev passes its own). When given, it is `deferSystem` and Step 1 skips detection.
 7. **`--implementer <agent-id>`**: the agent that implemented the change under review, from a caller that dispatched it (auto-dev, auto-tdd, batch-dev). Step 4 resumes it for repair rounds instead of dispatching a fresh fixer.
-8. **`--models low|norm|high`** (default `high`): the model tier for this skill's own dispatches — review orchestrator, fresh fixer, fix-verifier — per rule 6 of `@../../conventions/subagent-briefs.md`. Callers forward theirs. The reviewers take their tier from the `models=` axis in the review spec, not from this.
+8. **`--models low|norm|high`** (default `high`): the model tier for this skill's own dispatches — review orchestrator, fresh fixer, fix-verifier — per rule 6 of `subagent-briefs.md`. Callers forward theirs. The reviewers take their tier from the `models=` axis in the review spec, not from this.
 9. **Scope**: Specific file/directory path, or all uncommitted changes
 10. **Instructions**: Any remaining text passed through to `/code-review`
 
@@ -43,7 +45,7 @@ Parse `$ARGUMENTS`:
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
 6. **Set `deferSystem`** from `--tracker` when given; otherwise detect the work item tracking system from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.)
-7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage as the harness reports it), per fix round (which route ran — resumed implementer, fresh fixer, or both — with each one's usage and model tier, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, each Step 5.5 fix-verifier check (usage, verdict and breakage counts, the branch taken), any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `@../../conventions/session-report.md`.
+7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage as the harness reports it), per fix round (which route ran — resumed implementer, fresh fixer, or both — with each one's usage and model tier, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, each Step 5.5 fix-verifier check (usage, verdict and breakage counts, the branch taken), any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `session-report.md` for the exact format.
 8. Inform the user:
 
 ```
@@ -57,7 +59,7 @@ Starting review-fix loop...
 
 ### Step 2: Code Review (Subagent)
 
-Launch a **general-purpose subagent** using the Agent tool — **unnamed** (task mode: its report comes back to you; a named agent's final message is discarded — see `@../../conventions/subagent-briefs.md`), with no model override under any `--models` value (rule 6):
+Launch a **general-purpose subagent** using the Agent tool — **unnamed** (task mode: its report comes back to you; a named agent's final message is discarded — see `subagent-briefs.md`), with no model override under any `--models` value (rule 6):
 
 **First iteration** — use the caller's `reviewSpec` and scope:
 
@@ -190,7 +192,7 @@ Capture the round baseline first — Step 5 measures this round's delta against 
 
 **Route the round.** Two kinds of agent can execute fixes, and a round may use both:
 
-- **Resumed implementer** — when the caller passed `--implementer`, send it the prompt below with `SendMessage` to that agent ID. It wrote the code, so it skips re-orientation. Its reply arrives later as a hand-back, not as the send's result (see `@../../conventions/subagent-briefs.md`). It gets every planned finding except the previously failed ones.
+- **Resumed implementer** — when the caller passed `--implementer`, send it the prompt below with `SendMessage` to that agent ID. It wrote the code, so it skips re-orientation. Its reply arrives later as a hand-back, not as the send's result (see `subagent-briefs.md`). It gets every planned finding except the previously failed ones.
 - **Fresh fixer** — a new, **unnamed** general-purpose subagent with the same prompt, on the mid tier under `--models low` and with no model override otherwise (rule 6). It gets the **previously failed** findings (ones fix-verifier marked NOT ADDRESSED, or a re-review found again) and the **disputed** ones (any the resumed implementer reported as `not-addressing`), so an agent that did not write the code re-runs verify-first on them. With no `--implementer`, or when the send errors, the fresh fixer gets everything, as the only route.
 
 Run the resumed implementer first, then at most one fresh fixer; never both at once, since both edit one working tree. A fresh fixer's verdicts stand.
@@ -314,7 +316,7 @@ Then:
 
 ### Step 5.5: Verify the Round's Fixes (cheap check)
 
-A round that gets no full re-review still gets its fixes checked. Dispatch one `decaf-quality:fix-verifier` agent — unnamed (task mode, per `@../../conventions/subagent-briefs.md`), on the mid tier (rule 6) under every `--models` value. Give it the review file path, the findings this round fixed (number, title, severity, and the fix subagent's one-line result), the round baseline (`$ROUND_SNAPSHOT`, or `HEAD` when that was empty), and the test command. The check itself does not increment `iteration`.
+A round that gets no full re-review still gets its fixes checked. Dispatch one `decaf-quality:fix-verifier` agent — unnamed (task mode, per `subagent-briefs.md`), on the mid tier (rule 6) under every `--models` value. Give it the review file path, the findings this round fixed (number, title, severity, and the fix subagent's one-line result), the round baseline (`$ROUND_SNAPSHOT`, or `HEAD` when that was empty), and the test command. The check itself does not increment `iteration`.
 
 Act on its report:
 
@@ -364,7 +366,7 @@ Clean up: delete any `.decaf/auto-review/state.json` if used.
 
 ### Step 6.5: Session Report (only with `--report`)
 
-Assemble the session report from the ledger, per `@../../conventions/session-report.md`:
+Assemble the session report from the ledger, per `session-report.md`:
 
 1. Create `.decaf/session-reports/<YYYY-MM-DD>-<work-item-or-slug>-code-review-session/` (never overwrite — suffix `-2`, `-3`, … on collision).
 2. **Copy** each iteration's consolidated review file into it as `iteration-N-consolidated-review.md` (byte-identical copies via `cp`, not regeneration).

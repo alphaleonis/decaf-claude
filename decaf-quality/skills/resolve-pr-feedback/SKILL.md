@@ -8,9 +8,7 @@ argument-hint: "[auto] [PR# | thread-URL] [--auto-post] [instructions]"
 
 Bring every unresolved review thread on a PR to an honest resolution: implement the requested change, answer the question, or push back with evidence — then reply and update thread status.
 
-**Posting etiquette is binding** — read and follow it:
-
-@../../conventions/pr-etiquette.md
+**Posting etiquette is binding.** Before you start, read `${CLAUDE_PLUGIN_ROOT}/conventions/pr-etiquette.md` in full and follow it.
 
 **Two modes:**
 - **Interactive** (default): walk threads one at a time; the user picks each resolution.

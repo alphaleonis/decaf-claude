@@ -47,10 +47,12 @@ own effort first so theirs is cheap.
 
 ### 1. Identify the item
 
+Read `${CLAUDE_PLUGIN_ROOT}/conventions/acceptance-criteria.md` in full now; its format and rules govern step 4 and the standard below.
+
 The user may give a work item ID, or refer to something in conversation context. If it's
 ambiguous, ask — but only if you genuinely cannot tell.
 
-Read it via the `read` op in @../../conventions/work-items.md.
+Before the first tracker operation, read `${CLAUDE_PLUGIN_ROOT}/conventions/work-items.md` in full, then read the one adapter it names for the detected tracker. Read the item via the `read` op.
 
 **If the item is `completed`/closed:** stop and ask whether they want to reopen it or file
 a follow-up. Do not silently reopen — a closed item may have shipped, and re-specifying it
@@ -96,7 +98,7 @@ Write the item you think it should be. Against the code you just read:
 - **Title** — concrete and specific.
 - **Description** — what to build and why, in terms of end-to-end behavior. Reference the
   patterns and files you found. Preserve the original `## Context`.
-- **`## Acceptance`** — the done-check, per @../../conventions/acceptance-criteria.md.
+- **`## Acceptance`** — the done-check, per the acceptance-criteria convention read in step 1.
 - **Open questions** — the ones the code genuinely could not answer. These become your
   interview, and there should be **few**.
 
@@ -131,7 +133,7 @@ better by amendment.
 
 ### 6. Write it back
 
-Update the item **in place** via the contract's ops (`work-items.md`) — refine improves an
+Update the item **in place** via the contract's ops (read in step 1) — refine improves an
 existing item, it does not create a replacement and it does not spawn children (that's
 `breakdown-phase`). Set the status to `todo` via `set-status` unless triage sent you
 elsewhere.
@@ -152,7 +154,7 @@ autonomously**:
 
 ## Acceptance criteria: the standard
 
-Read @../../conventions/acceptance-criteria.md — the `[run]`/`[manual]` format, and rules
+In the acceptance-criteria convention read in step 1, the `[run]`/`[manual]` format and rules
 1 (prefer `[run]`) and 2 (tag honestly) are the standard refine is held to.
 
 **`[manual]` is allowed.** Some work genuinely cannot be machine-checked — visual and UX

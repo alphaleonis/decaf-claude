@@ -180,7 +180,7 @@ AskUserQuestion with:
   1. **Detect tracking system**: Check project CLAUDE.md for references to tracking systems (Nibs, Azure DevOps, GitHub Issues, TODO comments, etc.)
   2. **First defer**: If no system detected and `deferSystem` is null in state file, ask the user which system to use via AskUserQuestion. Store the choice in state file under `"deferSystem"`.
   3. **Subsequent defers**: Reuse `deferSystem` from state file.
-  4. **Create work item** with candidate details as the body, following @../../conventions/work-items.md
+  4. **Create work item** with candidate details as the body. Before the first tracker operation, read `${CLAUDE_PLUGIN_ROOT}/conventions/work-items.md` in full, then read the one adapter it names for the detected tracker; later work-item steps reuse this read
 - **Explore**: Proceed to Step 5d (deep dive on this candidate)
 - **Other** (free-form): Handle whatever the user describes. If user types "Stop", jump to Step 6.
 
@@ -226,7 +226,7 @@ After comparing, give your own recommendation: which design you think is stronge
 
 **5g. Determine the output target:**
 
-@../../conventions/work-items.md
+Use the work-items contract read in step 5c (read it now if no candidate was deferred).
 
 Detect the available system and confirm with the user.
 
@@ -238,7 +238,7 @@ Draft the RFC using the issue template in the [reference material](../architectu
 - **Title**: descriptive name for the refactor (e.g., "Deepen PaymentProcessing module")
 - **Body**: the RFC content — problem, proposed interface, dependency strategy, testing strategy, implementation recommendations
 
-Show the draft to the user for review, then create using the conventions in `work-items.md`.
+Show the draft to the user for review, then create using the work-items contract.
 
 For markdown output, write to `./plans/<feature-name>-rfc.md`.
 

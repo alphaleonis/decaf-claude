@@ -9,7 +9,7 @@ allowed-tools: Bash(cat:*), Bash(echo:*)
 
 You have been invoked as the `write-comments` skill. The user's arguments are: $ARGUMENTS
 
-**Without arguments**, load the rules below and follow them in every comment you write or edit for
+**Without arguments**, read the rules below and follow them in every comment you write or edit for
 the rest of this task. Don't reply with a summary of the rules. Continue the task you were doing.
 
 **With a target** (a file, a directory, or `diff` for the uncommitted changes), rewrite the comments
@@ -19,7 +19,7 @@ and any comment you deleted outright, so the user can restore it.
 
 ## The rules
 
-@../../conventions/comments.md
+First, read `${CLAUDE_PLUGIN_ROOT}/conventions/comments.md` in full, before you write or edit any comment.
 
 ## This project's overlay
 

@@ -35,6 +35,8 @@ The user provides a reference to a phase or plan:
 
 If unclear, ask the user which phase or plan they want to close.
 
+Before reading a work item, read `${CLAUDE_PLUGIN_ROOT}/conventions/work-items.md` in full, then read the one adapter it names for the detected tracker.
+
 Read the work item or plan section to get:
 - The original description ("what to build")
 - Acceptance criteria
@@ -91,7 +93,7 @@ Present the draft summary before making any changes. The user may want to adjust
 
 ### 5. Update the work item
 
-@../../conventions/work-items.md
+Use the work-items contract from step 1 (read it now if step 1 did not).
 
 **Update the phase/plan work item:**
 - Append the closure summary to the work item body

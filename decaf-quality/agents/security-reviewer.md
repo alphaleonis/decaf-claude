@@ -58,10 +58,6 @@ These 6 categories are owned by quick-reviewer (its SECURITY_PATTERN scope). Do 
 - `SECURITY_RACE_CONDITION` — TOCTOU vulnerabilities
 - `SECURITY_SENSITIVE_EXPOSURE` — PII/secrets in logs/errors
 
-### Scope Awareness Reference
-
-@../conventions/security.md
-
 ---
 
 

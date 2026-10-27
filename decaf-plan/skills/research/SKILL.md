@@ -162,7 +162,7 @@ during research. Group by relevance.
 
 ### 6. Output
 
-@../../conventions/work-items.md
+Before the first tracker operation, read `${CLAUDE_PLUGIN_ROOT}/conventions/work-items.md` in full, then read the one adapter it names for the detected tracker.
 
 Detect the available system and confirm with the user.
 

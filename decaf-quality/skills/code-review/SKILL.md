@@ -15,7 +15,7 @@ Parse `$ARGUMENTS` to determine:
    - **Per-axis override (optional)**: `roster=<N>`, `models=<low|norm|high>`, `evidence=<strong|norm|any>` and `reach=<narrow|norm|wide>` set an axis directly, overriding whatever the preset implies. Later arguments win, so `review roster=6 roster=4` resolves to 4.
    - **Anything else is not a preset.** An unrecognized leading word is scope or instructions, not a preset — say so rather than guessing. There is exactly one vocabulary: three presets and four axes.
 2. **Spec**: `--spec <path | work-item-ID>` — a specification/plan document, or an ADO work item ID whose Description and Acceptance Criteria serve as the spec. When omitted, spec discovery (Step 1.5) may find one automatically.
-3. **`--report`**: collect session metrics for skill-tuning comparisons — record the per-agent usage the harness reports for every reviewer and validator and append a **Session Metrics** section to the consolidated review file (Step 6). See `@../../conventions/session-report.md` for the exact section format and the truth discipline. Orchestrating skills (`auto-code-review`) pass this through; standalone, the enriched consolidated file is the deliverable.
+3. **`--report`**: collect session metrics for skill-tuning comparisons — record the per-agent usage the harness reports for every reviewer and validator and append a **Session Metrics** section to the consolidated review file (Step 6). When `--report` is set, read `${CLAUDE_PLUGIN_ROOT}/conventions/session-report.md` in full before Step 3; it holds the exact section format and the truth discipline. Orchestrating skills (`auto-code-review`) pass this through; standalone, the enriched consolidated file is the deliverable.
 4. **PR number**: A pull request number (e.g., `123`, `PR#123`, `#123`) — review that PR instead of local changes
 5. **Scope**: Specific file/directory path, or all uncommitted changes (ignored when PR number is provided)
 6. **Instructions**: Any additional review instructions
@@ -228,7 +228,7 @@ Detect the hosting platform from context (git remotes, available MCP tools, or p
 
 Include the PR title, description, author, source branch, and **target branch** in the context passed to agents so they can evaluate intent and scope correctly.
 
-**IMPORTANT**: Do NOT post comments, reviews, or status updates to the PR. The review output is a local file only. If the user explicitly asks to post comments to the PR, then and only then may you do so — under the posting rules in `@../../conventions/pr-etiquette.md` (agent-authored comments are signed).
+**IMPORTANT**: Do NOT post comments, reviews, or status updates to the PR. The review output is a local file only. If the user explicitly asks to post comments to the PR, then and only then may you do so — under the posting rules in `${CLAUDE_PLUGIN_ROOT}/conventions/pr-etiquette.md` (agent-authored comments are signed). Before you post any comment, read that file in full.
 
 **Prior feedback**: fetch the PR's review threads (ADO: `repo_list_pull_request_threads` + comments; GitHub: `gh api` review threads). Filter to human, non-system threads. If any exist, record `hasPriorFeedback = true` and keep the filtered threads — the `prior-feedback-reviewer` receives them in its prompt (it does not fetch them itself).
 
@@ -407,7 +407,7 @@ Agents declare `model: inherit` and stay model-agnostic; the orchestrator decide
 - **Verification agents** — the Step 4.95 screeners and the Step 5.6 `finding-validator`s — settle one already-stated claim: is the mechanism real, is it guarded elsewhere, is it cited at the right place. They originate nothing and read one finding's worth of code, but the task is program analysis, not rubric matching — the screener must understand the claimed defect to place it on the 0–100 scale, and the validator's brief is "trace the execution path with concrete values." Their verdicts are the pipeline's only destructive ones (a low screen score tiers a finding down; `refuted` deletes it), which is why this tier never drops below the mid tier.
 - **The Step 4.9 clustering agent is not tiered by policy — it always runs mid.** Measured against the benchmark's committed clustering, mid scores F1 0.87, top 0.86, cheap 0.80. The top tier buys nothing and the cheap tier loses real accuracy, and an under-merged cluster destroys the corroboration signal every later step ranks on. `models` does not move it; only the never-tier-up rule does.
 
-Apply the split by the **`models` axis** (mid-tier = the mid tier of rule 6 in `../../conventions/subagent-briefs.md`, which holds the model name). This is the only place in the skill where model names appear — everywhere else names the axis value. **No agent that reasons about code runs on the cheap tier (`haiku`)** — not reviewers, not screeners, not validators; the cheap tier is reserved for genuinely non-reasoning work such as the Step 1 trivial-PR classifier. (This retires the cheap verification tier of 2026-07-29, which rested on the belief that the reference implementation runs its analogous job on Haiku; the benchmark's model-cutoff table records that it runs its review agents on Sonnet and uses Haiku for helpers only, and the pilot's three wrongly-binned real defects died in the Haiku screen lane.)
+Apply the split by the **`models` axis** (mid-tier = the mid tier of rule 6 in `${CLAUDE_PLUGIN_ROOT}/conventions/subagent-briefs.md`, which holds the model name; read that file in full before you dispatch any agent). This is the only place in the skill where model names appear — everywhere else names the axis value. **No agent that reasons about code runs on the cheap tier (`haiku`)** — not reviewers, not screeners, not validators; the cheap tier is reserved for genuinely non-reasoning work such as the Step 1 trivial-PR classifier. (This retires the cheap verification tier of 2026-07-29, which rested on the belief that the reference implementation runs its analogous job on Haiku; the benchmark's model-cutoff table records that it runs its review agents on Sonnet and uses Haiku for helpers only, and the pilot's three wrongly-binned real defects died in the Haiku screen lane.)
 
 - **`models=low`:** judgment agents inherit the session model; volume **and** verification agents run mid-tier. As of 2026-08-17 this is the same model policy as `norm` — `low` and `norm` differ only through what selects them (only the wave behind `bugs roster=N` selects `low`, pairing it with `evidence=norm` and `reach=narrow`). Accepted for now; the axis gets rearranged if a genuinely cheaper reasoning tier appears.
 - **`models=norm` (the default):** judgment agents inherit the session model; volume agents run mid-tier; verification agents run mid-tier. The pattern-match and consistency findings the volume agents surface are well within the mid-tier's reach, while deep behavioral, design, and security findings stay on the top-tier judgment agents. The trade: a deep cross-file catch that only a volume agent (especially `broad`) would make may be lost to the down-tier.
@@ -446,7 +446,7 @@ an ordinary subagent, but dispatching unnamed is correct either way:
 - **Consolidate only once every reviewer has reported.** The calls run in the background and each report arrives when its reviewer finishes; the harness keeps you alive while any of them is still running, so there is nothing to poll. Never arm a timer/watcher, and never ask a reviewer to resend.
 - **TRIPWIRE — read what each dispatch returns before writing anything else.** A background launch acknowledgment ("Async agent launched successfully", report to follow) is the normal task path. If a dispatch instead returns `Spawned successfully` / "will receive instructions via mailbox", you are in teammate mode and **no report is coming, for any agent in the wave**. Re-dispatch the whole wave without `name` and say so in your report. Do not wait, do not poll, and do not ask reviewers to resend: an unnamed orchestrator has no address, so their replies bounce off the agent *type* label and land in the main conversation where you cannot see them. Left unchecked this failure is silent — the agents run, do real work, and their reports are destroyed.
 - Reviewers return their report as their **final message** — that final message is what comes back to you and what you consolidate from. Never instruct a reviewer to send its report via SendMessage or to write it to a file. **This contract is only safe on the task path.** In teammate mode a final message has no return channel, so the reviewers who obey it lose their reports while the ones who improvise a SendMessage get through. That inversion — compliance punished, deviation rewarded — is why the tripwire above is not optional.
-- **When `--report` is set**: note the dispatch timestamp, and as each report arrives, record the agent's harness-reported usage (tokens, tool calls, duration — verbatim; "not reported" if absent) plus its findings count and approximate report size. This data exists only in what the harness returns for each agent — it cannot be recovered later. It feeds the Session Metrics section in Step 6 (`@../../conventions/session-report.md`).
+- **When `--report` is set**: note the dispatch timestamp, and as each report arrives, record the agent's harness-reported usage (tokens, tool calls, duration — verbatim; "not reported" if absent) plus its findings count and approximate report size. This data exists only in what the harness returns for each agent — it cannot be recovered later. It feeds the Session Metrics section in Step 6 (`${CLAUDE_PLUGIN_ROOT}/conventions/session-report.md`).
 
 #### Agent Prompts
 
@@ -653,10 +653,9 @@ numbers above imply.
 ### Step 5: Consolidate Findings
 
 Under `bugs` (single seat) this step is a **format pass only** — verify sections and numbering,
-apply no gates, never re-tier (see [The `bugs` path](#the-bugs-path-single-seat)). Otherwise, apply
-the consolidation rules:
-
-@../../conventions/code-review-consolidation.md
+apply no gates, never re-tier (see [The `bugs` path](#the-bugs-path-single-seat)). Otherwise, before
+you consolidate, read `${CLAUDE_PLUGIN_ROOT}/conventions/code-review-consolidation.md` in full and apply
+its consolidation rules:
 
 1. **Normalize severities** across agents (MUST → Critical, SHOULD → High, etc.)
 2. **Verify the clustering** from Step 4.9 rather than redoing it — spot-check that same file + line (within 3 lines) + similar category landed together, and split or merge only where it is plainly wrong. Do not re-derive the grouping; that work has already been paid for on a cheaper model
@@ -740,6 +739,8 @@ FILENAME=".decaf/code-reviews/CODE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 **Generate diffstat** from `git diff --stat` output for the reviewed changes. Summarize as file count and total insertions/deletions for the `**Scope**` line in the report header.
 
 **Number all findings** in the report for easy reference.
+
+When `--report` is set, read `${CLAUDE_PLUGIN_ROOT}/conventions/session-report.md` in full before you write the Session Metrics section, if you have not already.
 
 ```markdown
 # Code Review
@@ -884,8 +885,7 @@ gate, with their anchor (e.g., "2 findings suppressed at anchor 50").]
 [ONLY when --report is set. The wave-timing line, the per-agent usage table
 (one row per reviewer AND validator: kind, model tier, tokens, tool calls,
 duration, findings submitted — harness figures verbatim, "not reported" where
-absent), the pre-flight gates record, and the anomalies line ("none" counts).
-Exact format and truth discipline: @../../conventions/session-report.md]
+absent), the pre-flight gates record, and the anomalies line ("none" counts).]
 ```
 
 ### Severity Icons (ALWAYS include in finding headers)

@@ -126,9 +126,7 @@ Wait for all agents to complete. Each agent returns opportunities in JSON format
 
 ### Step 6: Consolidate and Prioritize
 
-Apply the consolidation rules:
-
-@../../conventions/refactoring.md
+Before you consolidate, read `${CLAUDE_PLUGIN_ROOT}/conventions/refactoring.md` in full and apply its consolidation rules:
 
 1. **Normalize categories** across agents using the category mapping
 2. **Deduplicate** opportunities with overlapping files + same category + same root cause

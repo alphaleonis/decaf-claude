@@ -162,15 +162,20 @@ Add `claude plugin update decaf-memory@decaf` or `decaf-protection@decaf` when a
 
 ## Conventions & shared files (symlinks — IMPORTANT)
 
-Installed plugins can only read files **inside their own directory** — on install, Claude Code copies just that plugin's subtree into the plugin cache, so any `@file` reference that climbs out of the plugin root (e.g. `@../../../conventions/x.md`) resolves in this repo but **silently fails once installed**.
+Installed plugins can only read files **inside their own directory** — on install, Claude Code copies just that plugin's subtree into the plugin cache, so a path that climbs out of the plugin root (e.g. `../../../conventions/x.md`) resolves in this repo but **silently fails once installed**.
+
+**A skill or agent reads a file only when its text says to.** As of Claude Code 2.1.311, an `@path.md` line in a `SKILL.md` or an agent file stays plain text and attaches nothing (probed 2026-10-27; the docs describe `@` imports only for `CLAUDE.md`).
 
 Rules when editing skills/agents:
 
-- Reference conventions only by a **plugin-local** path: `@../../conventions/<file>.md` from `skills/<skill>/SKILL.md` (or `@../conventions/<file>.md` from `agents/<agent>.md`). Never write a path that escapes the plugin root.
+- Name each convention in an **explicit read instruction** tied to the step that needs it: "Before step 4, read `${CLAUDE_PLUGIN_ROOT}/conventions/x.md` in full." Read what every run needs at the top of the body, in one parallel batch; make the other reads conditional on the step that uses them.
+- Use the path variables, never a relative path. Claude Code substitutes `${CLAUDE_PLUGIN_ROOT}` (the plugin folder) and `${CLAUDE_SKILL_DIR}` (the skill's own folder) in skill and agent bodies. A plugin agent is not told where its file lives, so `../conventions/x.md` does not resolve there.
+- A rule short enough to state in a line or two may live in the body. Longer text stays in the convention file, so it has one home.
+- `scripts/check-skill-references.sh` fails on any `@path.md` line, any relative `../conventions/` path, and any variable path that names a missing file. Run it after editing a skill or agent.
 - The single canonical copy of each convention lives at **repo-root `conventions/`**. Each plugin's `conventions/` holds **symlinks** into it (`ln -s ../../conventions/<file>.md <plugin>/conventions/<file>.md`). Claude Code dereferences within-marketplace symlinks into the cache on install. Edit the canonical file at the root; do not create a divergent copy inside a plugin.
-- Full rationale and the doc link are in [README.md](README.md#development-sharing-conventions-across-plugins-symlinks).
+- Full rationale and the doc link are in [README.md](README.md#sharing-conventions-across-plugins-symlinks).
 
-Generated **artifacts** (review reports, refactor plans, loop state) go under one per-project root, `.decaf/` — see [`conventions/artifacts.md`](conventions/artifacts.md). Not the same as the shared `@`-referenced convention files above.
+Generated **artifacts** (review reports, refactor plans, loop state) go under one per-project root, `.decaf/` — see [`conventions/artifacts.md`](conventions/artifacts.md). Not the same as the shared convention files above.
 
 ## Working notes
 

@@ -79,7 +79,7 @@ these standards before flagging violations.
 - Override: Only overridden by RULE 0
 - Constraint: If project documentation explicitly permits a pattern that RULE 2
   would flag, do not flag it
-- Comments: the comment rules below and the project's
+- Comments: the rules in `comments.md` and the project's
   `.decaf/conventions/comments.md` are documented standards. A comment that
   breaks their doc-comment or wording rules, or uses a glossary term with
   another meaning, is CONVENTION_VIOLATION. Cite the rule it breaks.
@@ -121,25 +121,17 @@ that don't impact comprehension. Other reviewers cover generic code quality.
 
 ## Convention References
 
-The following conventions are inlined for reference during reviews:
+Before Phase 1, read these in a single parallel batch:
 
-### Structural Quality (RULE 2)
-@../conventions/structural.md
+- `${CLAUDE_PLUGIN_ROOT}/conventions/comments.md` (TEMPORAL_CONTAMINATION, BASELINE_REFERENCE, KNOWLEDGE_EXCESS, RULE 1).
+- `${CLAUDE_PLUGIN_ROOT}/conventions/severity.md`, the severity definitions.
+- The project's `.decaf/conventions/comments.md`, when it exists. It extends the plugin's comments.md and wins where it contradicts it.
 
-### Comments (TEMPORAL_CONTAMINATION, BASELINE_REFERENCE, KNOWLEDGE_EXCESS, RULE 1)
-@../conventions/comments.md
+Read these when the review needs them:
 
-Read the project's `.decaf/conventions/comments.md` too when it exists. It
-extends these rules and wins where it contradicts them.
-
-### Severity Definitions
-@../conventions/severity.md
-
-### Intent Markers
-@../conventions/intent-markers.md
-
-### Documentation Format
-@../conventions/documentation.md
+- When you weigh a structural finding (RULE 2), read `${CLAUDE_PLUGIN_ROOT}/conventions/structural.md` in full.
+- When `:PERF:`, `:UNSAFE:` or `:SCHEMA:` appears in the changed code, read `${CLAUDE_PLUGIN_ROOT}/conventions/intent-markers.md` in full.
+- When the changeset adds or changes a CLAUDE.md or README, or when you judge where knowledge belongs, read `${CLAUDE_PLUGIN_ROOT}/conventions/documentation.md` in full.
 
 ---
 
@@ -260,7 +252,7 @@ fails, do not flag — record it under "Considered But Not Flagged".
    that, if unknown, leads to a wrong edit.
    - FAILS (do not flag): ephemeral or historical narrative — what was tried,
      what was rejected, how the code evolved. Writing that into a comment is
-     itself temporal contamination (see comments.md, "No history").
+     itself temporal contamination (see `${CLAUDE_PLUGIN_ROOT}/conventions/comments.md`, "No history").
    - PASSES: a live constraint a future edit must respect ("sync blocks the event
      loop here").
 </pre_flag_gates>
@@ -340,8 +332,8 @@ cited. Do not flag. </rule1_test_example>
 ## RULE 2 Categories
 
 These are the ONLY structural issues you may flag, and ONLY when they create
-comprehension risk or knowledge loss. See the Structural Quality convention
-reference above for authoritative specification. If a structural issue doesn't
+comprehension risk or knowledge loss. See `${CLAUDE_PLUGIN_ROOT}/conventions/structural.md`
+for authoritative specification. If a structural issue doesn't
 impair a future reader's understanding, it is not your concern.
 
 ---
@@ -517,7 +509,7 @@ Why wrong: "Why this change was made" lives in the commit message, the linked wo
 
 <example type="INCORRECT" category="historical_narrative">
 Finding: "[DECISION_LOG_MISSING MUST]: No comment records that a sync implementation was tried first and abandoned"
-Why wrong: What was tried and rejected is ephemeral history, not forward-relevant knowledge — fails the durable-relevance gate. Writing it into a comment would itself be temporal contamination (comments.md, "No history"). Flag only the live constraint a future edit must respect (e.g., "sync blocks the event loop here"), never the evolution story.
+Why wrong: What was tried and rejected is ephemeral history, not forward-relevant knowledge — fails the durable-relevance gate. Writing it into a comment would itself be temporal contamination (`${CLAUDE_PLUGIN_ROOT}/conventions/comments.md`, "No history"). Flag only the live constraint a future edit must respect (e.g., "sync blocks the event loop here"), never the evolution story.
 </example>
 
 <example type="INCORRECT" category="redundant_risk_flag">

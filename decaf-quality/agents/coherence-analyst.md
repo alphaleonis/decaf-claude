@@ -41,9 +41,10 @@ You are a **refactoring-analysis agent invoked by the `/decaf-quality:refactor` 
 
 ### Quality References
 
-@../conventions/code-quality/coherence.md
+Before Phase 1, read these in a single parallel batch:
 
-@../conventions/code-quality/drift.md
+- `${CLAUDE_PLUGIN_ROOT}/conventions/code-quality/coherence.md` and `${CLAUDE_PLUGIN_ROOT}/conventions/code-quality/drift.md`, the checks Phase 2 applies.
+- `${CLAUDE_PLUGIN_ROOT}/conventions/refactoring.md`, the Impact and Effort definitions Phase 3 uses.
 
 ---
 
@@ -120,8 +121,8 @@ After answering each open question with specific observations:
 - If answer reveals intentional design or acceptable variation → Do not flag
 
 Determine for each opportunity:
-- **Impact**: High / Medium / Low (using definitions from refactoring convention)
-- **Effort**: Small / Medium / Large (using definitions from refactoring convention)
+- **Impact**: High / Medium / Low (using the definitions in `refactoring.md`)
+- **Effort**: Small / Medium / Large (using the definitions in `refactoring.md`)
 - **Files involved**: Complete list of affected files
 
 **Confidence Scoring with Impact Gates:**

@@ -28,7 +28,7 @@ You are a **refactoring-analysis agent invoked by the `/decaf-quality:refactor` 
 | Category | What to Look For |
 |----------|-----------------|
 | `STRUCT_GOD_OBJECT` | Classes with >15 public methods, >10 dependencies, or mixed concerns |
-| `STRUCT_GOD_FUNCTION` | Functions >50 lines, multiple abstraction levels, >3 nesting levels |
+| `STRUCT_GOD_FUNCTION` | Functions >50 lines, multiple abstraction levels, >3 nesting levels; not inherently sequential algorithms or state machines |
 | `STRUCT_COMPOSITION` | Long parameter lists (4+), boolean parameters forking behavior, mixed abstraction levels |
 | `STRUCT_NAMING` | Name-behavior mismatches, implementation details in public names, verbs that lie |
 | `STRUCT_DOMAIN_MODEL` | Domain predicates in raw conditions, magic value comparisons, primitives at API boundaries |
@@ -42,9 +42,10 @@ You are a **refactoring-analysis agent invoked by the `/decaf-quality:refactor` 
 
 ### Quality References
 
-@../conventions/code-quality/baseline.md
+Before Phase 1, read these in a single parallel batch:
 
-@../conventions/structural.md
+- `${CLAUDE_PLUGIN_ROOT}/conventions/code-quality/baseline.md`, the baseline checks Phase 2 applies.
+- `${CLAUDE_PLUGIN_ROOT}/conventions/refactoring.md`, the Impact and Effort definitions Phase 3 uses.
 
 ---
 
@@ -103,8 +104,8 @@ After answering each open question with specific observations:
 ### PHASE 3: IMPACT ASSESSMENT
 
 For each opportunity, determine:
-- **Impact**: High / Medium / Low (using definitions from refactoring convention)
-- **Effort**: Small / Medium / Large (using definitions from refactoring convention)
+- **Impact**: High / Medium / Low (using the definitions in `refactoring.md`)
+- **Effort**: Small / Medium / Large (using the definitions in `refactoring.md`)
 - **Before/after sketch**: Brief code illustration showing current state and improved state
 
 **Confidence Scoring with Impact Gates:**

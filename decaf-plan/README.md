@@ -54,7 +54,7 @@ research  →  draft-spec  →  draft-plan  →  breakdown-phase  →  (build)  
 
 ## Conventions
 
-The work-item skills (`draft-spec`, `draft-plan`, `breakdown-phase`, `close-out`, `grill-me`, `research`, `resolve-architecture-review`) share `conventions/work-items.md`, which describes how to detect and target the available tracker (GitHub Issues, Azure DevOps, Nibs) or fall back to a local Markdown file. It is bundled with the plugin and referenced as `@../../conventions/work-items.md`.
+The work-item skills (`draft-spec`, `draft-plan`, `breakdown-phase`, `close-out`, `grill-me`, `research`, `resolve-architecture-review`) share `conventions/work-items.md`, which describes how to detect and target the available tracker (GitHub Issues, Azure DevOps, Nibs) or fall back to a local Markdown file. It is bundled with the plugin, with one adapter file per tracker beside it, and each skill reads it from `${CLAUDE_PLUGIN_ROOT}/conventions/work-items.md`.
 
 ## Unattended mode
 

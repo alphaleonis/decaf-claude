@@ -43,7 +43,7 @@ This step can run in parallel with steps 2 and 4.
 
 ### 4. Determine the output target
 
-@../../conventions/work-items.md
+Before the first tracker operation, read `${CLAUDE_PLUGIN_ROOT}/conventions/work-items.md` in full, then read the one adapter it names for the detected tracker.
 
 Detect the available system and confirm with the user. This can run in parallel with steps 2 and 3.
 
@@ -97,11 +97,11 @@ Iterate until the user approves the breakdown.
 
 ### 8. Create the plan
 
-Create work items using the target system from step 4 and the conventions in `work-items.md`.
+Create work items using the target system from step 4 and the work-items contract read in step 4.
 
 Each phase work item carries a `## Acceptance` section in its body, in the format below.
 
-@../../conventions/acceptance-criteria.md
+Before writing the `## Acceptance` sections, read `${CLAUDE_PLUGIN_ROOT}/conventions/acceptance-criteria.md` in full.
 
 **Root work item:**
 - **Title**: `Plan: <Feature Name>`

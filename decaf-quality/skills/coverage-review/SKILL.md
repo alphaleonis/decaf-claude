@@ -24,16 +24,16 @@ Parse `$ARGUMENTS` to determine:
 
 ### Step 1: Read Coverage Configuration
 
-Look for a `## Coverage` section in the project's CLAUDE.md. Expected format is documented in:
+Before you look for the configuration, read the Required Fields, Supported Report Formats and Threshold Defaults sections of `${CLAUDE_PLUGIN_ROOT}/conventions/coverage-config.md`. They define the expected format of the `## Coverage` section.
 
-@../../conventions/coverage-config.md
+Look for a `## Coverage` section in the project's CLAUDE.md.
 
-If no `## Coverage` section is found, inform the user with the setup template from the convention file and exit:
+If no `## Coverage` section is found, read the Example Configurations section of `${CLAUDE_PLUGIN_ROOT}/conventions/coverage-config.md`, inform the user with the setup template and exit:
 
 ```
 No coverage configuration found in CLAUDE.md.
 
-Add a ## Coverage section to your project's CLAUDE.md. See conventions/coverage-config.md for format and examples.
+Add a ## Coverage section to your project's CLAUDE.md. See `${CLAUDE_PLUGIN_ROOT}/conventions/coverage-config.md` for format and examples.
 ```
 
 ### Step 2: Determine Scope
@@ -133,7 +133,7 @@ The agent returns a JSON array of findings (severity Critical/High/Medium/Low, a
 
 ### Step 6.5: Apply the Confidence Gate
 
-The agent reports findings at anchor ≥ 50. Apply the same noise floor as `code-review` (the Confidence Gate in `code-review-consolidation.md`), simplified for a single agent — there is no dedup, agreement promotion, or deterministic-claim safety net here:
+The agent reports findings at anchor ≥ 50. Apply the same noise floor as `code-review` (the Confidence Gate in `${CLAUDE_PLUGIN_ROOT}/conventions/code-review-consolidation.md`), simplified for a single agent — there is no dedup, agreement promotion, or deterministic-claim safety net here:
 
 - **Suppress** findings below anchor **75**.
 - **Critical exception:** Critical findings at anchor 50 survive the gate — mark them as anchor 50 in the report.

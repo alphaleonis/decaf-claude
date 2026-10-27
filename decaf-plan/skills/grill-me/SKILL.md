@@ -136,7 +136,7 @@ AskUserQuestion with:
 
 If the user chooses **"Yes"**:
 
-@../../conventions/work-items.md
+Before the first tracker operation, read `${CLAUDE_PLUGIN_ROOT}/conventions/work-items.md` in full, then read the one adapter it names for the detected tracker.
 
 Detect the available tracking system and create one work item per deferred area, with the area description, known context, and open questions as the body. Title format: `Investigate: <area name>`.
 

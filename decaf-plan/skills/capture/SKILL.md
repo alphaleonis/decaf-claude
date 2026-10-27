@@ -24,13 +24,13 @@ This is load-bearing, not cosmetic: `draft` is what keeps unrefined work out of
 from those guesses. Promoting a draft to `todo` is a deliberate human step —
 `/decaf-plan:refine` is the skill that does it.
 
-Create the item through the **`create` operation** in @../../conventions/work-items.md —
-never a backend directly. That file defines `draft` for each backend and how the tag name
-is chosen; read it before creating anything.
+Create the item through the **`create` operation** in the work-items contract —
+never a backend directly. Before creating anything, read `${CLAUDE_PLUGIN_ROOT}/conventions/work-items.md` in full, then read the one adapter it names for the detected tracker. Together they define `draft`
+and how the tag name is chosen.
 
 ## Detect the tracker
 
-Follow the detection order in `work-items.md` (GitHub → Azure DevOps → nibs → Markdown).
+Follow the detection order in the work-items contract (GitHub → Azure DevOps → nibs → Markdown).
 
 Two deviations from the contract's default gating, because this skill is
 minimal-interruption by design:

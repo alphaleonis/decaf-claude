@@ -22,26 +22,20 @@ You **call** these; you do not reimplement them. Each already supports unattende
 - **Tracker adapter contract** — every work-item read/write goes through its operations
   (`create` / `next-ready` / `list-ready` / `read` / `set-status` / `close` / `append-note` /
   `create-followup`). Never touch a backend directly; never assume which backend is in use.
-
-  @../../conventions/work-items.md
+  Read in Setup step 1.
 
 - **`/decaf-plan:breakdown-phase <phase> --unattended`** — phase → feature work items (JIT).
 - **`/decaf-build:batch-dev --unattended`** — execute a phase's features (with review).
 - **`/decaf-plan:close-out <phase> --unattended`** — reconcile + close + file follow-ups.
 - **Acceptance format** — VERIFY parses the `## Acceptance` section the planning skills emit.
-
-  @../../conventions/acceptance-criteria.md
+  Read before Step 4 VERIFY.
 
 - **Subagent dispatch contract** — how a dispatched agent's report gets back (task vs
   teammate mode) and why named teammates need an explicit delivery clause. Every agent this
   loop dispatches directly (focused fixes in VERIFY) is **unnamed** — task mode, the report comes
-  back to you.
+  back to you. Read before the first focused-fix dispatch in VERIFY.
 
-  @../../conventions/subagent-briefs.md
-
-- **On-disk state/artifacts** in `.decaf/auto-deliver/` (in the target project, git-tracked).
-
-  @artifact-layout.md
+- **On-disk state/artifacts** in `.decaf/auto-deliver/` (in the target project, git-tracked). Layout read in Setup step 3.
 
 ## Non-negotiable invariants
 
@@ -82,7 +76,8 @@ You **call** these; you do not reimplement them. Each already supports unattende
 
 ## Setup / resume
 
-1. Resolve the **plan** (root work-item id from the argument) and the **tracker** (the
+1. Before the first tracker operation, read `${CLAUDE_PLUGIN_ROOT}/conventions/work-items.md` in full, then read the one backend
+   adapter it names for the detected tracker. Resolve the **plan** (root work-item id from the argument) and the **tracker** (the
    `--tracker` value, else detect per the adapter contract). The argument may name the plan
    root **or any single phase/subtree** — every `next-ready` call and the "plan complete"
    test below are relative to whatever was named.
@@ -91,10 +86,11 @@ You **call** these; you do not reimplement them. Each already supports unattende
    branch. Check it out if it exists, otherwise create it off the current HEAD; every phase
    merges here. Never push to or merge into the repo's default branch — that stays a human
    decision. If `--base-branch` names the default branch, refuse to start and say why.
-3. Read `.decaf/auto-deliver/state.json` if it exists: if a `current_phase` + `step` is in flight,
+3. Before creating `.decaf/auto-deliver/` or rewriting `state.json`, read `${CLAUDE_SKILL_DIR}/artifact-layout.md`
+   in full. Read `.decaf/auto-deliver/state.json` if it exists: if a `current_phase` + `step` is in flight,
    **resume at that step**; otherwise start a fresh lap at SELECT. Either way, clear `exit`
    in `state.json`: it records how a run ended, so it stays empty while one is running. Create `.decaf/auto-deliver/`
-   (with its `.gitignore`) if missing, per @artifact-layout.md. Then check whether the artifact
+   (with its `.gitignore`) if missing, per that layout. Then check whether the artifact
    root is itself ignored by the project (`git check-ignore -q .decaf && echo ignored`): if it is,
    the layout's durability does not hold — `state.json`, `lessons.md`, and the reflections will be
    local-only and will not survive a fresh clone or reach another machine. Say so plainly in the
@@ -133,10 +129,10 @@ parallel cluster's review emits a comparison-grade session report to `.decaf/ses
 
 ### 4. VERIFY  *(verify-and-fix sub-routine)*
 
-`read(current_phase)` and parse `## Acceptance`. Then:
+Before parsing, read `${CLAUDE_PLUGIN_ROOT}/conventions/acceptance-criteria.md` (only the line format is needed). `read(current_phase)` and parse `## Acceptance`. Then:
 
 - **`[run]` items** — run each command; compare output to its `expect:` condition.
-  - On failure: dispatch a **focused fix** (reuse the batch-dev / dev execution machinery — a
+  - On failure: before the dispatch, read `${CLAUDE_PLUGIN_ROOT}/conventions/subagent-briefs.md` in full (rule 6 defines the mid tier). Dispatch a **focused fix** (reuse the batch-dev / dev execution machinery — a
     scoped, **unnamed** `Agent` with a pre-approved prompt, per the dispatch contract; mid tier
     under `--models low`, otherwise no model override, per its rule 6), then
     **re-run the check**. Bounded retry

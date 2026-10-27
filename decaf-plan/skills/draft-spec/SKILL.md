@@ -29,7 +29,7 @@ Skip this step if the user was already grilled on this topic in the current conv
 
 ### 4. Determine the output target
 
-@../../conventions/work-items.md
+Before the first tracker operation, read `${CLAUDE_PLUGIN_ROOT}/conventions/work-items.md` in full, then read the one adapter it names for the detected tracker.
 
 Detect the available system and confirm with the user.
 
@@ -39,11 +39,11 @@ Draft the PRD using the template below. Adapt the sections to the project type â
 
 The spec includes a top-level `## Acceptance` section â€” the behaviors that mean the feature is built, runnable where possible. (Phase- and feature-level acceptance is refined later by `draft-plan` and `breakdown-phase`.)
 
-@../../conventions/acceptance-criteria.md
+Before writing the `## Acceptance` section, read `${CLAUDE_PLUGIN_ROOT}/conventions/acceptance-criteria.md` in full.
 
 Show the draft to the user for review before creating the work item. Iterate if the user has feedback.
 
-Create the work item using the conventions in `work-items.md`:
+Create the work item using the work-items contract from step 4:
 - **Title**: `PRD: <Feature Name>`
 - **Body**: the PRD content from the template below
 

@@ -47,8 +47,8 @@ top-level dot-dirs.
 ## For skill authors
 
 A skill that emits artifacts writes them to `.decaf/<domain>/…` in the target project. These
-are paths in the **user's project**, written at runtime — not `@file` references into this
-repo, so no symlink is needed (unlike the shared convention files, which are `@`-referenced).
+are paths in the **user's project**, written at runtime. They need no symlink, unlike the shared
+convention files, which each plugin links under its own `conventions/` folder.
 Pick a clear `<domain>` subdir and keep state files inside it.
 
 ## Git-tracking

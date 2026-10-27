@@ -462,11 +462,11 @@ Agents are referenced via the Task tool as `<plugin>:<agent>`; most are dispatch
 
 ## Conventions
 
-Shared reference files live at repo-root `conventions/` and are pulled into skills/agents via `@file` references:
+Shared reference files live at repo-root `conventions/` and skills/agents read them through explicit read instructions (see below):
 
 | Convention | Used by |
 |------------|---------|
-| `work-items.md` | decaf-plan skills + auto-deliver (tracker-adapter contract) |
+| `work-items.md`, `work-items-<tracker>.md` | decaf-plan skills, batch-dev + auto-deliver (tracker-adapter contract, plus one adapter per tracker) |
 | `acceptance-criteria.md` | the `## Acceptance` format (draft-spec/draft-plan/breakdown-phase; auto-deliver) |
 | `code-review-consolidation.md`, `severity.md`, `intent-markers.md`, `structural.md`, `security.md`, `code-quality/`, `coverage-config.md`, `refactoring.md`, `pr-etiquette.md`, `persona-authoring.md` | decaf-quality review/refactor skills + agents |
 | `documentation.md` | technical-writer; documentation guidance |
@@ -476,9 +476,11 @@ Generated **artifacts** (review reports, refactor plans, loop state, etc.) are w
 
 ### Sharing conventions across plugins (symlinks)
 
-**Installed plugins can only read files inside their own directory** — on install, Claude Code copies just the plugin's own subtree into the plugin cache, so a reference that escapes the plugin root (e.g. `@../../../conventions/x.md`) resolves in this repo but silently fails once installed. See [Plugin caching and file resolution](https://code.claude.com/docs/en/plugins-reference#plugin-caching-and-file-resolution).
+**Installed plugins can only read files inside their own directory** — on install, Claude Code copies just the plugin's own subtree into the plugin cache, so a path that escapes the plugin root (e.g. `../../../conventions/x.md`) resolves in this repo but silently fails once installed. See [Plugin caching and file resolution](https://code.claude.com/docs/en/plugins-reference#plugin-caching-and-file-resolution).
 
-The fix is the officially recommended **symlink pattern**: keep one canonical copy of each convention at repo-root `conventions/`, and have each plugin's `conventions/` hold **symlinks** into it (`ln -s ../../conventions/<file>.md <plugin>/conventions/<file>.md`). Git stores symlinks (no duplicated content); on install, Claude Code dereferences within-marketplace symlinks and copies the real content into the cache. Skills reference conventions plugin-locally as `@../../conventions/<file>.md` (or `@../conventions/<file>.md` from an agent) — never a path that climbs out of the plugin. Symlinks require `git config core.symlinks true` (automatic on Linux/macOS/WSL; native Windows needs Developer Mode).
+The fix is the officially recommended **symlink pattern**: keep one canonical copy of each convention at repo-root `conventions/`, and have each plugin's `conventions/` hold **symlinks** into it (`ln -s ../../conventions/<file>.md <plugin>/conventions/<file>.md`). Git stores symlinks (no duplicated content); on install, Claude Code dereferences within-marketplace symlinks and copies the real content into the cache. Symlinks require `git config core.symlinks true` (automatic on Linux/macOS/WSL; native Windows needs Developer Mode).
+
+A skill or agent names each convention in an explicit read instruction on `${CLAUDE_PLUGIN_ROOT}/conventions/<file>.md`, because an `@path.md` line in a `SKILL.md` or agent file attaches nothing (Claude Code 2.1.311). `scripts/check-skill-references.sh` enforces this.
 
 ## License
 

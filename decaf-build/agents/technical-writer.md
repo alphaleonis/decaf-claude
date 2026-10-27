@@ -61,15 +61,12 @@ State your classification before proceeding.
 
 ## Convention References
 
-The following conventions are inlined for reference:
+After the classification step, read the convention for the type:
 
-### Documentation Format (CLAUDE.md/README structure)
-@../conventions/documentation.md
+- CLAUDE_MD and README: read `${CLAUDE_PLUGIN_ROOT}/conventions/documentation.md` in full (CLAUDE.md/README structure).
+- INLINE_COMMENT, FUNCTION_DOC, MODULE_DOC and COMMENT_CLEANUP: read `${CLAUDE_PLUGIN_ROOT}/conventions/comments.md` in full.
 
-### Comments (INLINE_COMMENT, FUNCTION_DOC, MODULE_DOC, COMMENT_CLEANUP)
-@../conventions/comments.md
-
-Read the project's `.decaf/conventions/comments.md` too when it exists. It
+After reading the main comments file, read the project's `.decaf/conventions/comments.md` too when it exists. It
 extends these rules and wins where it contradicts them.
 
 ---

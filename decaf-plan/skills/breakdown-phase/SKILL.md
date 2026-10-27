@@ -54,11 +54,13 @@ Break the phase into features. Each feature should be:
 - **Independently reviewable** — a PR for this feature makes sense on its own
 - **Vertically sliced where possible** — prefer thin end-to-end slices over horizontal layers, but pragmatism wins over dogma (a pure data-model feature is fine if the phase demands it)
 
+Before drafting the acceptance of any feature, read `${CLAUDE_PLUGIN_ROOT}/conventions/acceptance-criteria.md` in full.
+
 For each feature, draft:
 
 - **Title**: Short, descriptive
 - **Description**: What to build — describe the end-to-end behavior, not implementation steps
-- **Acceptance**: a `## Acceptance` section that defines "done" — runnable `[run]` checks where possible, prose tagged `[manual]` otherwise (see acceptance-criteria.md)
+- **Acceptance**: a `## Acceptance` section that defines "done" — runnable `[run]` checks where possible, prose tagged `[manual]` otherwise (format in `${CLAUDE_PLUGIN_ROOT}/conventions/acceptance-criteria.md`)
 - **Dependencies**: Other features in this phase that should be built first (if any)
 
 <feature-guidelines>
@@ -86,7 +88,7 @@ Iterate until the user approves.
 
 ### 5. Determine the output target
 
-@../../conventions/work-items.md
+Before the first tracker operation, read `${CLAUDE_PLUGIN_ROOT}/conventions/work-items.md` in full, then read the one adapter it names for the detected tracker.
 
 Detect the available system and confirm with the user. If the parent phase already exists as a work item, use the same system.
 
@@ -103,7 +105,7 @@ Create one work item per feature as **children of the phase**.
 | Azure DevOps | Epic or Feature | Feature or User Story |
 | Markdown | Section in plan file | Subsection under phase |
 
-@../../conventions/acceptance-criteria.md
+Write each `## Acceptance` section in the format from `${CLAUDE_PLUGIN_ROOT}/conventions/acceptance-criteria.md` (read in step 3).
 
 **Each feature work item contains:**
 - **Title**: `<Feature title>`
