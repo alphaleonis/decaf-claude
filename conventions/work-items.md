@@ -3,13 +3,24 @@
 Shared contract for detecting a work-item tracker and operating on work items through a
 small, **tracker-agnostic** interface. Planning skills (`draft-plan`, `breakdown-phase`,
 `capture`, `close-out`), the `batch-dev` executor and the autonomous `auto-deliver` loop
-call **only the operations defined here** — never a backend directly. Each backend below
+call **only the operations defined here** — never a backend directly. Each backend
 implements every operation, so loop logic never assumes a specific tracker.
 
-Backends, in detection order: **nibs**, **Azure DevOps** (ado), **GitHub** (github),
-**Markdown** (fallback). The contract is **designed to the weakest backend** — where a
-tracker lacks a native capability (notably GitHub dependency ordering), the operation is
-satisfied **by convention** so the loop behaves identically everywhere.
+Backends: **nibs**, **Azure DevOps** (ado), **GitHub** (github), **Markdown** (fallback).
+The contract is **designed to the weakest backend** — where a tracker lacks a native
+capability (notably GitHub dependency ordering), the operation is satisfied **by
+convention** so the loop behaves identically everywhere.
+
+Each backend's operations live in its own adapter file beside this one. Once the tracker is
+known (see [System detection](#system-detection)), read **only** its adapter, before the
+first operation:
+
+| Backend | Adapter |
+|---------|---------|
+| nibs | [work-items-nibs.md](work-items-nibs.md) |
+| Azure DevOps | [work-items-ado.md](work-items-ado.md) |
+| GitHub | [work-items-github.md](work-items-github.md) |
+| Markdown | [work-items-markdown.md](work-items-markdown.md) |
 
 ## The contract
 
@@ -59,15 +70,12 @@ the skill that does it (read the code, resolve the open questions with the user,
 
 Only nibs enforces this natively (`--ready` excludes `draft`). The other three backends
 have no draft state, so `draft` is expressed with a **tag/label/marker** and each
-backend's `next-ready` must filter it out explicitly — see the per-adapter rules below.
+backend's `next-ready` must filter it out explicitly — see its adapter.
 
 **Picking the tag name.** Projects name this differently. Detect an existing convention
 before inventing one: look for a label/tag matching `draft`, `refine`, `needs-refinement`,
 or `triage` (case-insensitive) and reuse it. Only if none exists, fall back to the
-default: **`Draft`** (Azure DevOps tag) / **`status:draft`** (GitHub label, consistent
-with the other `status:*` labels here). On GitHub the fallback label may not exist yet;
-creating it is a repo-visible mutation, so confirm with the user before `gh label create`
-(under `--unattended`, create it and record the fact).
+adapter's default.
 
 ## System detection
 
@@ -90,94 +98,6 @@ DevOps) — these are visible to others. For local targets (nibs, Markdown), cre
 the user can edit after. Under an unattended loop run these gates are suppressed (see each
 skill's `--unattended` behavior); the loop still records what it created in
 `.decaf/auto-deliver/`.
-
----
-
-## Adapter: nibs
-
-Local markdown tracker with native types, hierarchy, dependencies, and a ready filter. Run
-`nibs prime` once per project first — it emits project-specific agent instructions; honor
-them. Types: `milestone`, `epic`, `bug`, `feature`, `task`, `research`.
-
-> **Prose is never inline.** `-d`/`--body` and `close --summary` accept **only** `-`
-> (stdin) or `@FILE` — passing inline text is rejected. Either pipe the body in
-> (`... -d - <<'EOF'`) or write it to a file first and pass `@<path>` / `--body-file`.
-
-- **create** — `nibs new "<title>" --type <type> --status <draft|todo> [--body-file <path> | -d @<path> | -d -] [--parent <id>] [--blocked-by <id> ...] [--priority <p>] [--tag <t> ...]`. Hierarchy by scope: large = `milestone → epic → phase(epic)/task`, small = `epic → task`.
-- **next-ready** — native: `nibs list --ready --parent <plan-id> [--type epic] -q` → take the **first** id (default sort is the sibling order key = plan order). `--ready` already excludes blocked / in-progress / completed / **draft** / deferred, so drafts are filtered natively — no extra work on this backend. Empty output ⇒ no ready phase ⇒ plan complete.
-- **list-ready** — the `next-ready` command, keeping every id it prints instead of the first (omit `--parent` for the whole project). Empty output ⇒ nothing ready.
-- **read** — `nibs get <id>` (document) or `nibs list --parent <id> --view full --json` for structured. Body holds the spec + `## Acceptance`. Blockers: the `blocked_by` field. Children: `nibs rel <id> --rel children --all` (TSV of id, title, status, in sibling order).
-- **set-status** — `nibs set <id> --status <draft|todo|in-progress|completed>`.
-- **close** — `nibs close <id> --summary -` (summary on stdin; marks completed, merges Key Decisions / Current Focus into the parent).
-- **append-note** — `nibs body <id> --append -`, with the note on stdin starting with its own `## <heading>` line.
-- **create-followup** — `nibs new "<title>" --type <task|feature> --parent <plan-or-epic-id> --body-file <path> [--blocked-by <id>]`.
-
-## Adapter: Azure DevOps
-
-Prefer the Azure DevOps MCP tools; fall back to `az boards`. Dependencies use
-Predecessor/Successor links; hierarchy uses Parent/Child.
-
-- **create** — MCP `wit_create_work_item`, or `az boards work-item create --type "<type>" --title "<title>" --description "<body>"`. Link to parent: `az boards work-item relation add --id <child> --relation-type "System.LinkTypes.Hierarchy-Reverse" --target-id <parent>`. Dependencies: relation type `System.LinkTypes.Dependency-Reverse` (predecessor). Hierarchy by scope: large = Feature → User Stories, small = User Story → Tasks. For `draft` status, create in the normal initial state (`New`/`Proposed`) **and** add the draft tag (`System.Tags`) — see below.
-- **next-ready** — WIQL: children of the plan (`System.Parent` = plan, or the target work-item-type tier) with `System.State` in (`New`,`To Do`), **no draft tag** (`AND System.Tags NOT CONTAINS '<draft-tag>'`), **and** no open Predecessor (no incomplete `Dependency-Reverse` link target); order by `Microsoft.VSTS.Common.StackRank` (backlog order). First result = next ready. None ⇒ plan complete.
-- **list-ready** — the `next-ready` WIQL, keeping every result in `StackRank` order instead of the first. None ⇒ nothing ready.
-- **read** — MCP `wit_get_work_item` (or `az boards work-item show --id <id>`); `System.Description` carries spec + `## Acceptance`. Fetch with relations expanded: blockers are its `System.LinkTypes.Dependency-Reverse` (Predecessor) relations, children its `System.LinkTypes.Hierarchy-Forward` relations; read each child's state.
-- **set-status** — update `System.State` to the mapped native state (`az boards work-item update`, as for `close`). `draft` → `todo` is a **tag removal**, not a state change: both map to `New`/`To Do`, so refining a draft means dropping the draft tag.
-- **close** — set `System.State` = `Closed`/`Done` and add the summary as a comment (`wit_add_work_item_comment` / `az boards work-item update`).
-- **append-note** — add the note as a comment whose first line is the heading (`wit_add_work_item_comment` / `az boards work-item update`). A comment leaves `System.Description`, and so the spec `read` returns, untouched.
-- **create-followup** — `create` + link to the plan (Hierarchy) and/or the originating item.
-
-> **Why the tag is load-bearing here.** Out-of-box ADO processes have no draft tier —
-> Agile is New/Active/Resolved/Closed, Scrum is New/Approved/Committed/Done, CMMI is
-> Proposed/Active/Resolved/Closed. The initial state is already what `todo` maps to, so a
-> drafted item is indistinguishable from a ready one *by state alone*, and the `next-ready`
-> WIQL above would select it. The tag is the only thing separating them — which is why
-> `next-ready` must filter on it. If a project runs a **custom process with a real draft /
-> triage state**, prefer that state over the tag and filter `next-ready` on the state instead.
-
-## Adapter: GitHub (weakest backend — `next-ready` by convention)
-
-GitHub Issues has **no native dependency ordering**, so the contract is satisfied by
-convention. The loop must behave identically, so these conventions are mandatory when the
-backend is GitHub:
-
-- **Plan = an epic issue.** Phases are **sub-issues** of it (`gh issue create --parent <epic#>` where supported), else linked by a `Tracked by #<epic>` line + a checklist in the epic body.
-- **Order label** `phase:<n>` (e.g. `phase:1`) on each phase issue establishes plan order.
-- **Cross-phase dependencies** beyond the linear `phase:<n>` order: a `Blocked by #<m>` line in the issue body (machine-readable).
-- **Status labels** `status:todo` / `status:in-progress` / `status:blocked` / `status:draft`; **done = the issue is closed.**
-
-Operations:
-
-- **create** — `gh issue create --title "<title>" --body "<body>" [--parent <epic#>] [--label phase:<n>] [--label status:todo]`. Record dependencies as `Blocked by #<m>` lines in the body. For `draft` status, apply the draft label and **omit `phase:<n>`** — a draft has no place in plan order yet.
-- **next-ready** — among open phase issues of the plan, pick the **lowest `phase:<n>`** whose predecessors are all satisfied: every lower-`n` phase is **closed**, and every `Blocked by #<m>` referenced issue is **closed**. Skip any issue carrying the **draft label**. That issue is next-ready. None open ⇒ plan complete. (`gh issue list --label "phase" --state open --json number,labels,body` then apply the rule.)
-- **list-ready** — apply the `next-ready` rule and keep every qualifying issue, lowest `phase:<n>` first. None ⇒ nothing ready.
-- **read** — `gh issue view <n> --json title,body,labels,state`. Body holds spec + `## Acceptance`. Blockers are the issues named in its `Blocked by #<m>` lines, plus, for a phase issue, every open lower-`phase:<n>` issue. Children are its sub-issues, or, where sub-issues are unavailable, the issues whose body carries `Tracked by #<n>`; order them by `phase:<n>`.
-- **set-status** — swap the `status:*` label (`gh issue edit <n> --add-label status:in-progress --remove-label status:todo`). Refining a draft = swap `status:draft` → `status:todo` and assign a `phase:<n>`.
-- **close** — `gh issue close <n> --comment "<summary>"`.
-- **append-note** — `gh issue comment <n> --body-file -`, with the note on stdin starting with its `## <heading>` line.
-- **create-followup** — `gh issue create` linked to the epic (`--parent`/`Tracked by`), with an appropriate `phase:<n>` or a `followup` label and any `Blocked by #<m>` lines.
-
-> **Draft is doubly safe here, but state it anyway.** A draft carries no `phase:<n>`, and
-> `next-ready` only considers `phase`-labelled issues — so drafts fall out of selection
-> even without the label check. The label check is still required: it keeps the rule true
-> under the contract rather than true by accident, and it survives someone later
-> phase-labelling a draft.
-
-## Adapter: Markdown (fallback)
-
-A single plan file at `./plans/<plan-name>.md`. Phases are `##` sections in plan order;
-features are checklist items; dependencies are stated in prose; status is the checkbox plus
-an optional marker. Everything is by convention; the loop reads/writes the file.
-
-- **create** — append a `## Phase N — <title>` section (or a `- [ ]` feature line) with the body and `## Acceptance` beneath it. Create `./plans/` if missing. For `draft` status, append a `- [?]` item under a `## Drafts` section instead — outside plan order.
-- **next-ready** — the **first** phase section not marked done (`[ ]`/`[~]`) whose listed dependency phases are all `[x]`. Skip `[?]` items and anything under `## Drafts`. None ⇒ plan complete.
-- **list-ready** — every phase section the `next-ready` rule admits, in file order. None ⇒ nothing ready.
-- **read** — read the phase section (spec + `## Acceptance`). Blockers are the items its text names as dependencies; this backend states them in prose, with no machine-readable form. Its children are the `- [ ]`/`[~]`/`[x]` feature items under it, in file order; the checkbox is their status.
-- **set-status** — change the section's checkbox marker (`[ ]` → `[~]` → `[x]`).
-- **close** — mark `[x]` and append a `> Closed: <summary>` line under the section.
-- **append-note** — append a `> <heading>: <text>` line under the item's section or checklist line.
-- **create-followup** — append a new `- [ ]` item under a `## Follow-ups` section (or a new phase), with any dependency noted in prose.
-
----
 
 ## next-ready: the portable rule
 
