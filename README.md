@@ -207,7 +207,7 @@ Root-cause investigation: gate the problem to one testable statement, generate c
 - `<problem or symptom>` — **required**; what's broken, in your own words.
 
 ### write-comments
-The rules for code comments and doc comments in any language ([`conventions/comments.md`](conventions/comments.md)), followed by the project's own additions from `.decaf/conventions/comments.md` when that file exists: a glossary, a line width, local rules. Without arguments it loads the rules for the work in progress. With a target it rewrites the comments already there, and never touches code. A `SessionStart` and `SubagentStart` hook tells every agent, subagents included, to invoke it before its first edit to a source file. The hook skips the read-only `Explore` and `Plan` agents.
+The rules for code comments and doc comments in any language ([`conventions/comments.md`](conventions/comments.md)), followed by the project's own additions from `.decaf/conventions/comments.md` when that file exists: a glossary, a line width, local rules. Without arguments it loads the rules for the work in progress. With a target it rewrites the comments already there, and never touches code. A `SessionStart` and `SubagentStart` hook tells every agent, subagents included, to invoke it before its first edit to a source file. The hook skips the read-only `Explore`, `Plan`, `claude-code-guide` and `statusline-setup` agents.
 ```
 /decaf-quality:write-comments                    # load the rules before writing code
 /decaf-quality:write-comments src/sync           # rewrite the comments in a path
