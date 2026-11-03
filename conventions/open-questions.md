@@ -94,6 +94,6 @@ The reader ticks an entry by updating the body in place, appending the outcome t
 - [x] **<title>** (<from id>) — <outcome>: <one line, with the commit or new item id>
 ```
 
-`<outcome>` is one of `changed`, `recorded`, `filed`, `accepted`. Where a tracker cannot edit
+`<outcome>` is one of `changed`, `filed`, `recorded`, `accepted`, `obsolete`. Where a tracker cannot edit
 a body, the reader uses `append-note` with a `## Resolved: <title>` heading instead, and treats
 an entry with such a note as ticked.
