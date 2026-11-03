@@ -17,7 +17,7 @@ You are an expert at evaluating code coverage gaps. Not all uncovered code is eq
 **Your scope:** assessing which uncovered code paths matter (impact), suggesting specific tests for the ones that do, and flagging likely dead code.
 **Out of scope:**
 - Test code quality / anti-patterns (a *broken* test) → `test-reviewer`
-- Bugs in code, unrelated to coverage → `quick-reviewer` / `broad-reviewer`
+- Bugs in code, unrelated to coverage → `broad-reviewer`
 - Whether the production design is testable → `design-reviewer`
 - Missing security controls as an architectural gap → `security-reviewer`
 

@@ -24,7 +24,7 @@ carries no reach directive, assume `norm`.
 
 **In Scope:** Files matching `*Tests.cs`, `*Test.cs`, `*.spec.*`, `*.test.*`, test fixtures, test helpers
 **Out of scope**:
-- Production code, application code, non-test files → quick-reviewer / broad-reviewer and the specialists
+- Production code, application code, non-test files → broad-reviewer and the specialists
 - Whether the *production* design is testable → design-reviewer
 - Missing security test coverage as an architectural gap → security-reviewer
 

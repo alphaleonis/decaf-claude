@@ -86,8 +86,8 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 
 | Agent | Focus |
 |-------|-------|
-| `quick-reviewer` | Fast generalist — line-level bugs, security patterns, quality, conventions |
-| `broad-reviewer` | Wide generalist — knowledge, reliability, conformance, structure, architecture |
+| `broad-reviewer` | The review floor, in every wave — line-level bugs, security patterns, conformance, knowledge, structure, architecture |
+| `quick-reviewer` | Second generalist, only under `audit` or when named — line-level bugs, security patterns, quality, conventions |
 | `knowledge-reviewer` | Knowledge preservation — undocumented decisions, comprehension risks |
 | `consistency-reviewer` | Sibling-consistency — unwritten-convention drift vs. sibling code: naming, canonical helpers, attribute symmetry, leftovers, comment-code mismatch; every finding quotes its convention source |
 | `design-reviewer` | System-level design — API contracts, boundaries, concurrency, evolution |
@@ -97,7 +97,7 @@ The code-review engine runs parallel specialized reviewer agents over a diff (lo
 | `adversarial-reviewer` | Emergent failure scenarios — assumption violations, composition failures, cascades, abuse cases |
 | `performance-reviewer` | Cost at scale — N+1 queries, hot paths, memory growth, pagination, algorithmic complexity |
 | `data-migration-reviewer` | EF Core/SQL migration safety — drift, data loss, backfills, deploy window, locking, rollback |
-| `dotnet-reviewer` | C#/.NET idiom misuse — async/await, disposal, EF tracking, LINQ, nullability, threading |
+| `dotnet-reviewer` | C#/.NET idiom misuse — async/await, disposal, EF tracking, LINQ, nullability, threading; only under `audit` or when named |
 | `typescript-reviewer` | TS/JS idiom misuse — floating promises, type escapes, coercion, runtime boundaries, event loop |
 | `cpp-reviewer` | C/C++ idiom misuse — lifetimes, ownership, undefined behavior, exception safety, concurrency |
 | `go-reviewer` | Go idiom misuse — goroutines, errors, typed nil, channels, context, defer |

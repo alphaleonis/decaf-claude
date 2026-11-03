@@ -133,7 +133,7 @@ Parsing).
 **Rules:**
 
 - **The roster is exactly one seat**: `decaf-quality:solo-reviewer`, dispatched on the session model
-  (judgment tier). The two-agent floor does not apply — this path replaces the wave rather than
+  (judgment tier). The floor does not apply — this path replaces the wave rather than
   capping it. The seat never appears in wave rosters; its dispatch gate is this preset itself.
 - **`models` and `evidence` are inert here.** The seat always inherits the session model (the
   never-tier-up rule covers the rest), and no screen or confidence gate runs — the seat self-assigns
@@ -296,16 +296,15 @@ Then:
 | Preset | Rule |
 |--------|------|
 | `bugs` (default, roster=1) | Not a wave — the single `solo-reviewer` seat; this step is skipped (see The `bugs` path) |
-| `bugs roster=2` | Floor only: `quick-reviewer` + `broad-reviewer` |
-| `bugs roster=N≥3` / `review` (default) | Floor + every agent whose dispatch gate matches the changeset, then the `roster` cap |
+| `bugs roster=N≥2` / `review` (default) | Floor + every agent whose dispatch gate matches the changeset, then the `roster` cap |
 | `audit` | Floor + all agents **except** those excluded by a hard negative gate |
 
 Current roster gates (authoritative text lives in each agent's `## Dispatch Gate` section — keep this table in sync when adding agents):
 
 | Agent | Gate |
 |-------|------|
-| `decaf-quality:quick-reviewer` | Always — review floor |
 | `decaf-quality:broad-reviewer` | Always — review floor |
+| `decaf-quality:quick-reviewer` | Only under `audit`, or when named explicitly — a second generalist next to `broad-reviewer` |
 | `decaf-quality:knowledge-reviewer` | Any substantive change; skip only purely mechanical diffs |
 | `decaf-quality:consistency-reviewer` | Any substantive change; skip purely mechanical diffs and changes with no sibling code to compare against |
 | `decaf-quality:design-reviewer` | Public API/contract, data model, module boundary, or concurrency surface changes |
@@ -315,7 +314,7 @@ Current roster gates (authoritative text lives in each agent's `## Dispatch Gate
 | `decaf-quality:adversarial-reviewer` | ≥50 changed executable lines, OR high-risk domain (auth, payments, data mutations, external APIs) at any size |
 | `decaf-quality:performance-reviewer` | DB/ORM queries, loops with I/O or allocation, async/concurrent code, data pipelines, or caching logic in the diff |
 | `decaf-quality:data-migration-reviewer` | **Hard gate**: migration artifacts in the diff (EF `Migrations/*.cs`, ModelSnapshot, `.sql` DDL/backfill scripts) |
-| `decaf-quality:dotnet-reviewer` | **Hard gate**: C# files in changeset — **plus** an idiom-surface judgment gate (async/`Task`, disposal, EF Core, deferred LINQ, nullable annotations, threading) |
+| `decaf-quality:dotnet-reviewer` | **Hard gate**: C# files in changeset. Dispatched only under `audit`, or when named explicitly; never under `review` or a `bugs` wave, where it found no finding alone in 71 runs of the code-review corpus |
 | `decaf-quality:typescript-reviewer` | **Hard gate**: TS/JS files in changeset — **plus** an idiom-surface judgment gate (promises, type escape hatches, coercion, unvalidated runtime-boundary data, event-loop blocking, shared mutable state) |
 | `decaf-quality:cpp-reviewer` | **Hard gate**: C/C++ files in changeset — **plus** an idiom-surface judgment gate (lifetime/ownership, RAII, UB constructs, exception safety, concurrency) |
 | `decaf-quality:go-reviewer` | **Hard gate**: Go files in changeset — **plus** an idiom-surface judgment gate (goroutines, channels/`select`, `defer`, `context`, slice/map aliasing, typed-nil interfaces, shared state) |
@@ -324,13 +323,13 @@ Current roster gates (authoritative text lives in each agent's `## Dispatch Gate
 
 **Hard negative gates apply under EVERY preset, including `audit`.** An agent whose domain is absent from the changeset is never spawned — there is no point running the test-reviewer with no tests in the diff, or a C# persona on a Rust project. `audit` opens the judgment gates, not the hard ones.
 
-**The stack reviewers carry both kinds of gate, and the order matters.** The hard gate (does the changeset contain this language?) is checked first and is absolute — `audit` cannot spawn `go-reviewer` on a Rust project. The idiom-surface judgment gate is checked second, and only decides whether a diff *in that language* has anything language-specific to review: under `review` a Go diff with no goroutines, channels, `defer`, `context`, or aliasing gets no `go-reviewer`, because what is left is ordinary logic the floor already covers. `audit` opens that second gate, so its behavior is unchanged — any diff containing the language still gets its stack reviewer. Do not collapse the two into one gate: dropping the hard half would let `audit` spawn every stack reviewer on every diff, and dropping the judgment half restores the file-presence firing this split exists to fix.
+**The stack reviewers carry both kinds of gate, and the order matters.** The hard gate (does the changeset contain this language?) is checked first and is absolute — `audit` cannot spawn `go-reviewer` on a Rust project. The idiom-surface judgment gate is checked second, and only decides whether a diff *in that language* has anything language-specific to review: under `review` a Go diff with no goroutines, channels, `defer`, `context`, or aliasing gets no `go-reviewer`, because what is left is ordinary logic the floor already covers. `audit` opens that second gate, so its behavior is unchanged — any diff containing the language still gets its stack reviewer. Do not collapse the two into one gate: dropping the hard half would let `audit` spawn every stack reviewer on every diff, and dropping the judgment half restores the file-presence firing this split exists to fix. `dotnet-reviewer` is the exception: it has no judgment gate, because outside `audit` it runs only when named.
 
 **User override:** explicit user instructions beat gates — "include security" spawns the security-reviewer regardless of triage; "skip knowledge" excludes it.
 
 #### Step 2b.5: Resolve the `roster` axis
 
-Determine `N`, then resolve the roster against it. Under `bugs` without an explicit `roster`, `N` is 1 and this step does not apply (single seat). At `roster=2` this step is a no-op — the roster is already the two-agent floor.
+Determine `N`, then resolve the roster against it. Under `bugs` without an explicit `roster`, `N` is 1 and this step does not apply (single seat).
 
 **Determining `N`:**
 
@@ -339,36 +338,34 @@ Determine `N`, then resolve the roster against it. Under `bugs` without an expli
 
    | changed executable lines | default `N` | why |
    |---|---|---|
-   | < 100 | **4** | on small changesets almost nothing is load-bearing — measured drop cost is ~0 for most personas, because whatever one finds another finds too |
+   | < 100 | **4** | on small changesets almost nothing is load-bearing — specialists other than `adversarial-reviewer` (0.24) find close to nothing alone, because whatever one finds another finds too |
    | 100 – 400 | **6** | specialists start to carry findings alone |
-   | > 400 | **uncapped** | specialists become decisive: `adversarial-reviewer`'s drop cost reaches 3.20/run on large diffs against 0.50 on small ones |
+   | > 400 | **uncapped** | specialists become decisive: `adversarial-reviewer` finds 0.56 sole primaries per run above 400 added lines against 0.24 below, `security-reviewer` 0.48 against under 0.1 |
 
    Record the derived value and its basis: `roster N=4 (derived: 72 executable lines)`.
 3. Under `audit`, never derive a default — `audit` means every gate-matched agent, and a size-derived cap would contradict it.
 
-**These defaults are a first estimate.** The *shape* is measured — drop cost rises steeply and nearly monotonically with diff size — but the specific numbers are not. Revise them when the presets are measured; do not treat 4/6/uncapped as established.
+**These defaults are a first estimate.** The *shape* is measured — on a local code-review corpus (2026-11-03, current presets, bucketed by added lines because executable lines were not recorded), specialists' sole primaries per run rise steeply with diff size — but the thresholds and caps are not. Revise them when the presets are measured; do not treat 4/6/uncapped as established.
 
 The cap bounds the **review-wave roster** — the agents launched in Step 3 — at `N`. Validators (Step 5.6) are not counted, and the preset's `models` policy (Step 2d) and validation policy are unchanged: `review roster=4` is a 4-agent roster reviewed and validated under `review` rules. Resolve the cap against the roster Step 2b produced:
 
-1. **The floor is never dropped.** `quick-reviewer` and `broad-reviewer` always run; they consume two of the `N` slots.
+1. **The floor is never dropped.** `broad-reviewer` always runs; it consumes one of the `N` slots.
 2. **Explicitly-requested agents are pinned.** Any agent the user named ("include security") is kept ahead of the ranking and consumes a slot. If the floor plus pins already exceed `N`, the pins win — record `roster cap N exceeded by explicitly-requested agents (kept K)` and dispatch those K; skip the ranking.
 3. **`N` ≥ the matched roster size `M`** → the cap drops nothing; record `roster cap N ≥ matched roster M — no agents dropped` and proceed unchanged.
-4. **`N` ≤ 2** → clamp to the floor only; record `roster cap N below floor size — clamped to the 2-agent floor`. The preset's tiering and validation wave still apply: a small roster is not a lighter pipeline, only fewer seats in it.
+4. **`N` = 1** → clamp to the floor only; record `roster cap N=1 — clamped to the floor`. The preset's tiering and validation wave still apply: a small roster is not a lighter pipeline, only fewer seats in it.
 5. **Otherwise** → keep the floor (and any pins), fill the remaining `N − kept` slots with the highest-ranked gate-matched specialists, and **drop the rest** — recording each dropped agent under the roster-cap exclusion wording (Step 2c).
 
-**Rank the gate-matched specialists, then keep the top slots.** The order below is *measured*, not intuited — from per-persona drop cost over the 18 archived benchmark runs (`roster_yield.py`, on the `tuning` branch under `competition/benchmark/analysis/scripts/`; method and limits in the roster-axis work item). Refresh it from that data rather than re-deriving it by judgement, which is how the previous ordering went wrong.
+**Rank the gate-matched specialists, then keep the top slots.** The order below is *measured* on a local code-review corpus (2026-11-03: about 570 `review` and `bugs`-wave reports under the current presets; not published). It ranks by **sole primaries** — Critical to Low findings that only this specialist reported, which dropping it would lose — and counts severity first, because findings are what the cap must protect. Re-rank only from new measurements (`--report` session reports record each agent's findings and spend), never by judgement.
 
-**Drop cost** = substantive clusters only this persona found (weighted double — those are lost outright) plus substantive clusters that would fall below the two-finder corroboration threshold. Corroboration is what consolidation ranks on, so demoting a finding to single-finder is a real cost, not a neutral one.
+1. **`adversarial-reviewer` first.** The most sole Critical/High by volume: 41 in 520 runs (0.08 per run), and 0.41 sole primaries per run.
+2. **Then by sole Critical/High per run**: `security-reviewer` (0.06, 81 runs), `test-reviewer` (0.03, 402 runs), `design-reviewer` (0.01, 149 runs, though 0.38 sole primaries per run).
+3. **Then, by category, the specialists whose gate is the evidence of fit** — `spec-compliance-reviewer` for an `explicit` or `linked` spec, `performance-reviewer`, the stack reviewer for the dominant changed language, `data-migration-reviewer` with migration artifacts, `prior-feedback-reviewer` re-reviewing a PR with prior threads. Their samples are small, or they fire only when their domain is present, so category orders them better than a figure.
+4. **`knowledge-reviewer`.** It finds the most alone (0.89 sole primaries per run, 55 runs), but mostly comments and documents that misstate the code. That lane belongs to `coherence-audit`, so it counts at less than full value here. Two of its nine sole Critical/High were behavior bugs reached through a comment, which keeps it above the last slot.
+5. **`consistency-reviewer` last.** 0.10 sole primaries per run and no sole Critical/High in 42 runs.
 
-1. **`adversarial-reviewer` — rank first among specialists.** The most load-bearing persona measured: 1.85 drop cost per run, 10 sole-found substantive clusters, and rank 1–2 under every leave-one-out jackknife. It previously sat mid-tier and behind `security-reviewer`; that was the largest error in the old ordering.
-2. **Then the other well-sampled personas, by measured drop cost**: `test-reviewer` (0.94), `broad`/floor, `design-reviewer` (0.50). These have ≥12 runs of evidence and their ranks are stable (swing ≤4 under jackknife).
-3. **Then the rarely-dispatched specialists, by categorical fit** — the **stack reviewer** for the dominant changed language; `data-migration-reviewer` with migration artifacts; `prior-feedback-reviewer` re-reviewing a PR with prior threads; `spec-compliance-reviewer` for an `explicit` or `linked` spec; `security-reviewer` on a trust-boundary trigger. **Rank these by category, not by measurement.** Each fires in ≤9 of 18 runs, so its measured figure swings up to 13 ranks under jackknife and cannot order anything — but by construction it only fires when its domain is present, so its *gate* is the evidence of fit.
-   - **Do not promote `security-reviewer` on its measured figure.** It tops the drop-cost table at 2.00/run on **n=3**, the least trustworthy number in it.
-4. **`knowledge-reviewer` and `consistency-reviewer` — rank last under `bugs` and `review`.** Measured drop cost 0.17 and 0.00: they are the two personas whose findings another persona reliably also finds. They are precision-safe and broaden coverage, so they shed first rather than being cut from the gate.
+**Under `audit`, keep `test-reviewer` and `consistency-reviewer` high.** The suggestion tier is part of what `audit` delivers, and these two produce much of it, so ranking `audit` by sole primaries alone would cut the personas it was chosen for. `audit` derives no cap, so this order matters only under an explicit `roster`.
 
-**Under `audit`, rank by drop cost *plus* minor yield instead.** The suggestion tier is part of what `audit` delivers, so a persona that produces it is not shedding material. `consistency-reviewer` moves from last to mid-table on that ordering (0.00 drop cost but 1.6 valid-minor findings per run), and `test-reviewer` rises to first (2.1/run). Ranking `audit` by substantive drop cost alone would cut exactly the personas it was chosen for.
-
-**Hard-gate agents are not exempt from the cap.** A tight enough cap can drop the stack reviewer on a C#-heavy diff or the test-reviewer on a test-bearing diff — a real coverage trade, not a gate decision. Rank such agents by rule 1/2 so they survive unless the cap is severe, and always name the trade in the announcement. If the cap forces dropping a hard-gate agent whose domain dominates the diff, surface it prominently — the user most likely wants a higher `N`.
+**Hard-gate agents are not exempt from the cap.** A tight enough cap can drop the stack reviewer on a TypeScript-heavy diff or the test-reviewer on a test-bearing diff — a real coverage trade, not a gate decision. Rank such agents by rule 1/2 so they survive unless the cap is severe, and always name the trade in the announcement. If the cap forces dropping a hard-gate agent whose domain dominates the diff, surface it prominently — the user most likely wants a higher `N`.
 
 #### Step 2c: Announce the review team
 
@@ -376,7 +373,6 @@ Before launching, state the team with a one-line justification per gated decisio
 
 ```
 Review team:
-- quick-reviewer (always)
 - broad-reviewer (always)
 - knowledge-reviewer — new retry logic embeds behavioral decisions
 - security-reviewer — diff adds an HTTP endpoint handling user input
@@ -390,7 +386,7 @@ Review team:
 |------|---------|
 | Judgment gate didn't match | `skipped — changes confined to private method internals` |
 | Hard gate failed | `skipped — no test files in changeset (hard gate)` |
-| roster clamped to the floor | `not evaluated — roster resolved to the 2-agent floor` |
+| roster clamped to the floor | `not evaluated — roster resolved to the floor` |
 | `roster` dropped it (Step 2b.5) | `dropped — roster N=4 (explicit): ranked below the 2 specialists kept` |
 | `roster` dropped it, derived cap | `dropped — roster N=4 (derived: 72 executable lines): ranked below the 2 specialists kept` |
 
@@ -412,7 +408,7 @@ Apply the split by the **`models` axis** (mid-tier = the mid tier of rule 6 in `
 - **`models=low`:** judgment agents inherit the session model; volume **and** verification agents run mid-tier. As of 2026-08-17 this is the same model policy as `norm` — `low` and `norm` differ only through what selects them (only the wave behind `bugs roster=N` selects `low`, pairing it with `evidence=norm` and `reach=narrow`). Accepted for now; the axis gets rearranged if a genuinely cheaper reasoning tier appears.
 - **`models=norm` (the default):** judgment agents inherit the session model; volume agents run mid-tier; verification agents run mid-tier. The pattern-match and consistency findings the volume agents surface are well within the mid-tier's reach, while deep behavioral, design, and security findings stay on the top-tier judgment agents. The trade: a deep cross-file catch that only a volume agent (especially `broad`) would make may be lost to the down-tier.
 - **`models=high` (strict quality):** every agent inherits the session model **except** `quick-reviewer` and `consistency-reviewer` (mid-tier — their lanes are cheap pattern matches and quotable facts) and the verification agents (mid-tier — measurably the right tier for clustering, where the mid tier matches the top tier's accuracy, and adequate for verification).
-- **At the two-agent floor, `broad-reviewer` always inherits the session model** whatever `models` says. With only two seats, broad is the only deep net; down-tiering it leaves the wave with no deep finder at all. `quick-reviewer` stays mid-tier — its lane is pattern matching.
+- **At `N` ≤ 2, `broad-reviewer` always inherits the session model** whatever `models` says. With at most one specialist beside it, broad is the only seat that reads the whole surface; down-tiering it leaves the wave with no deep generalist.
 - **Never tier *up*:** an agent is never dispatched on a model more expensive than the session model. If the session is already at or below a tier it would be assigned (e.g. a `sonnet` session for a mid-tier agent, or a `haiku` session for any agent), that agent inherits the session model instead of being forced onto the named tier. Tiering only ever lowers cost, never raises it.
 - **Fallback:** if the harness's Agent tool exposes no `model` parameter, dispatch without overrides — a working review on the session model beats a broken dispatch.
 
@@ -446,7 +442,7 @@ an ordinary subagent, but dispatching unnamed is correct either way:
 - **Consolidate only once every reviewer has reported.** The calls run in the background and each report arrives when its reviewer finishes; the harness keeps you alive while any of them is still running, so there is nothing to poll. Never arm a timer/watcher, and never ask a reviewer to resend.
 - **TRIPWIRE — read what each dispatch returns before writing anything else.** A background launch acknowledgment ("Async agent launched successfully", report to follow) is the normal task path. If a dispatch instead returns `Spawned successfully` / "will receive instructions via mailbox", you are in teammate mode and **no report is coming, for any agent in the wave**. Re-dispatch the whole wave without `name` and say so in your report. Do not wait, do not poll, and do not ask reviewers to resend: an unnamed orchestrator has no address, so their replies bounce off the agent *type* label and land in the main conversation where you cannot see them. Left unchecked this failure is silent — the agents run, do real work, and their reports are destroyed.
 - Reviewers return their report as their **final message** — that final message is what comes back to you and what you consolidate from. Never instruct a reviewer to send its report via SendMessage or to write it to a file. **This contract is only safe on the task path.** In teammate mode a final message has no return channel, so the reviewers who obey it lose their reports while the ones who improvise a SendMessage get through. That inversion — compliance punished, deviation rewarded — is why the tripwire above is not optional.
-- **When `--report` is set**: note the dispatch timestamp, and as each report arrives, record the agent's harness-reported usage (tokens, tool calls, duration — verbatim; "not reported" if absent) plus its findings count and approximate report size. This data exists only in what the harness returns for each agent — it cannot be recovered later. It feeds the Session Metrics section in Step 6 (`${CLAUDE_PLUGIN_ROOT}/conventions/session-report.md`).
+- **When `--report` is set**: note the dispatch timestamp, and as each report arrives, record the agent's ID (the `agentId` its result names) and harness-reported usage (final-request tokens, tool calls, duration — verbatim; "not reported" if absent) plus its findings count and approximate report size. This data exists only in what the harness returns for each agent — it cannot be recovered later. It feeds the Session Metrics section in Step 6 (`${CLAUDE_PLUGIN_ROOT}/conventions/session-report.md`).
 
 #### Agent Prompts
 
@@ -509,7 +505,7 @@ Targeted execution (repro probes, race detector, focused test runs) is still enc
 ```
 
 **Agent-Specific Focus:**
-- `decaf-quality:quick-reviewer`: Fast generalist — bugs, logic errors, null safety, security patterns, code quality, convention violations
+- `decaf-quality:quick-reviewer`: Fast generalist — bugs, logic errors, null safety, security patterns, code quality, convention violations (only under `audit` or when named)
 - `decaf-quality:broad-reviewer`: Comprehensive analysis — confidence scoring, knowledge preservation, production reliability, structural quality, architecture
 - `decaf-quality:knowledge-reviewer`: Knowledge preservation (RULE 0), undocumented decisions, implicit assumptions, comprehension risks
 - `decaf-quality:consistency-reviewer`: Sibling-consistency — unwritten-convention drift vs. sibling code (naming, canonical helpers, attribute symmetry, leftovers, comment-code mismatch, duplicated literals); every finding quotes its convention source
@@ -520,7 +516,7 @@ Targeted execution (repro probes, race detector, focused test runs) is still enc
 - `decaf-quality:adversarial-reviewer`: Emergent failure scenarios — assumption violations, composition failures, cascade chains, abuse cases (states its depth tier)
 - `decaf-quality:performance-reviewer`: Cost at scale — N+1 queries, hot-path work, memory growth, missing pagination, algorithmic complexity
 - `decaf-quality:data-migration-reviewer`: Migration safety — schema drift, data loss, backfills, deploy-window breakage, locking, rollback
-- `decaf-quality:dotnet-reviewer`: C#/.NET idiom misuse — async/await, disposal, EF change tracking, LINQ, nullability, threading
+- `decaf-quality:dotnet-reviewer`: C#/.NET idiom misuse — async/await, disposal, EF change tracking, LINQ, nullability, threading (only under `audit` or when named)
 - `decaf-quality:typescript-reviewer`: TS/JS idiom misuse — floating promises, type escape hatches, coercion, runtime boundaries, event loop, mutation
 - `decaf-quality:cpp-reviewer`: C/C++ idiom misuse — lifetimes, ownership, undefined behavior, exception safety, concurrency
 - `decaf-quality:go-reviewer`: Go idiom misuse — goroutines, error discipline, typed nil, channels, context, defer, slice aliasing
@@ -660,7 +656,7 @@ its consolidation rules:
 1. **Normalize severities** across agents (MUST → Critical, SHOULD → High, etc.)
 2. **Verify the clustering** from Step 4.9 rather than redoing it — spot-check that same file + line (within 3 lines) + similar category landed together, and split or merge only where it is plainly wrong. Do not re-derive the grouping; that work has already been paid for on a cheaper model
 3. **Keep the highest severity** among duplicates, noting dissent — a specialist's Critical is never outvoted by lower ratings
-4. **Promote confidence on agreement** (one anchor step when 2+ agents flagged the same finding; agreement between only quick+broad does not promote) — never average
+4. **Promote confidence on agreement** (one anchor step when 2+ agents flagged the same finding; agreement between only the two generalists, `quick-reviewer` and `broad-reviewer`, does not promote) — never average
 5. **Merge descriptions** from multiple finders
 6. **Apply the confidence gate** to anything the Step 4.95 screen did not already tier: suppress findings below anchor 75, except Critical findings at anchor 50; **and except the deterministic-claim safety net** — re-anchor quotable-fact findings (convention/consistency violations, doc-vs-code contradictions, dead contracts, identifier/comment mismatches, `!`/cast-laundered nulls) to 100 so they are kept, not suppressed. Record suppressed counts under Considered But Not Flagged. The screen and this gate must not both demote the same cluster — the screen's decision stands, and this rule exists for clusters it skipped
 7. **Route pre-existing findings by `reach`** (all finders marked `pre_existing`): under `narrow`, drop them to Considered But Not Flagged as `pre-existing, out of reach`; under `norm`, put them in the Pre-existing Issues section — informational, excluded from verdict and Summary counts; under `wide`, promote them to primary findings, counted and verdict-bearing, each labelled `pre-existing` so a reader can tell what the change introduced from what it inherited
@@ -740,7 +736,7 @@ FILENAME=".decaf/code-reviews/CODE_REVIEW_$(date '+%Y-%m-%d_%H-%M-%S').md"
 
 **Number all findings** in the report for easy reference.
 
-When `--report` is set, read `${CLAUDE_PLUGIN_ROOT}/conventions/session-report.md` in full before you write the Session Metrics section, if you have not already.
+When `--report` is set, read `${CLAUDE_PLUGIN_ROOT}/conventions/session-report.md` in full before you write the Session Metrics section, if you have not already. Then run `node ${CLAUDE_PLUGIN_ROOT}/scripts/agent-spend.js <agent IDs>` once, over every agent ID this run recorded, and paste its table verbatim under **Spend**. Without `--report`, never run it.
 
 ```markdown
 # Code Review
@@ -883,9 +879,10 @@ gate, with their anchor (e.g., "2 findings suppressed at anchor 50").]
 
 ## Session Metrics (--report)
 [ONLY when --report is set. The wave-timing line, the per-agent usage table
-(one row per reviewer AND validator: kind, model tier, tokens, tool calls,
-duration, findings submitted — harness figures verbatim, "not reported" where
-absent), the pre-flight gates record, and the anomalies line ("none" counts).]
+(one row per agent dispatched: agent ID, kind, model tier, final request, tool
+calls, duration, findings submitted — harness figures verbatim, "not reported"
+where absent), the Spend table from agent-spend.js verbatim, the pre-flight
+gates record, and the anomalies line ("none" counts).]
 ```
 
 ### Severity Icons (ALWAYS include in finding headers)

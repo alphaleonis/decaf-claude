@@ -27,7 +27,7 @@ Parse `$ARGUMENTS`:
 3. **Max review iterations**: `--max-iterations N` (default: 3) — passed to auto-review
 4. **Spec path**: `--spec <path>` — passed to auto-review for spec compliance checking
 5. **`--models low|norm|high`** (default `high`): the model tier for dispatches down the chain, per rule 6 of `${CLAUDE_PLUGIN_ROOT}/conventions/subagent-briefs.md`. Passed to auto-review.
-6. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning. When set, this skill contributes the implementation-phase record: the implementation subagent's harness-reported usage (tokens / tool calls / duration, verbatim as the harness reports them) and its model tier, changeset stats (files changed, +/− lines, new files), and a one-line scope description.
+6. **`--report`**: passed to auto-review, which produces a comparison-grade session report for skill tuning. When set, this skill contributes the implementation-phase record: the implementation subagent's harness-reported usage (final-request tokens / tool calls / duration, verbatim as the harness reports them), its agent ID and its model tier, changeset stats (files changed, +/− lines, new files), and a one-line scope description.
 
 ## Execution Steps
 

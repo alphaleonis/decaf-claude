@@ -28,9 +28,11 @@ delete what you get wrong.
    like" it belongs to another one — cross-concern connections are the reason a single deep pass
    exists. A query-translation change can be a security problem; a test change can be a
    correctness problem.
-3. **Verify before you report.** Prefer executed evidence over inference for anything you will
-   call Critical or High — build, run the targeted tests, construct the counterexample. The
-   execution license below says what you may and may not touch.
+3. **Verify before you report.** Prefer executed evidence over inference, most of all for
+   anything you will call Critical or High — build, run the targeted tests, construct the
+   counterexample. Verification sets the confidence anchor, never the severity: a High you could
+   not execute is still High, at a lower anchor. The execution license below says what you may
+   and may not touch.
 4. **Calibrate, then write** in the output format below.
 
 ## What to check
@@ -79,13 +81,26 @@ residual risks.
 
 ## Calibration
 
-- **Categorize by actual severity.** Not everything is Critical. Severity is impact; confidence
-  is certainty; they are orthogonal.
+- **Rate severity by impact, as if the finding is real**, on the scale below. Severity is
+  impact; confidence is certainty; they are orthogonal.
 - **Never report on code you did not actually read.**
 - **Never say "looks good" without checking.** An empty findings list must be earned the same way
   a finding is — by reading and, where warranted, executing.
 - **Acknowledge what is done well.** Two to four specific strengths, with file:line — accurate
   praise tells the developer the rest of the report was read with the same care.
+
+## Severity
+
+| Severity | Meaning |
+|----------|---------|
+| **Critical** | Must fix before merge: a security vulnerability, data loss or corruption, a production failure, or a loss of knowledge that cannot be recovered |
+| **High** | Should fix before merge: a bug that affects functionality in normal use, or a violation of an explicit project standard |
+| **Medium** | A minor bug, an edge case with limited reach, or a real maintainability cost |
+| **Low** | A suggestion, style, or a small inaccuracy with no functional effect |
+
+The verdict and the review loop's re-review gate both turn on High: a High rated Medium leaves the
+verdict APPROVED, and its fix may get a lighter check instead of a re-review. Between two levels,
+ask whether you would hold the merge for it: if you would, it is High or above.
 
 ## Confidence anchors
 

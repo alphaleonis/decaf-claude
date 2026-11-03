@@ -61,7 +61,7 @@ When multiple agents report the same issue with different severities, **the high
 
 Always note disagreements in the "Found by" field:
 ```
-**Found by** | security-reviewer (Critical), quick-reviewer (Low - dissenting), design-reviewer (Low - dissenting)
+**Found by** | security-reviewer (Critical), broad-reviewer (Low - dissenting), design-reviewer (Low - dissenting)
 ```
 
 ## Confidence Merging — Agreement Promotion
@@ -72,7 +72,7 @@ Agreement between independent reviewers is evidence that a finding is real. When
 2. **Promote one anchor step** (50 → 75, 75 → 100, 100 stays 100) when 2+ agents flagged the same finding — **unless the only finders are the two generalists**
 3. Never average, and never demote on disagreement
 
-**Generalist exemption:** `quick-reviewer` and `broad-reviewer` deliberately overlap in scope. Agreement between *only* those two is not independent corroboration and does **not** promote. Promotion requires at least one specialist among the finders (knowledge, design, security, test, or spec-compliance reviewer), or two specialists agreeing.
+**Generalist exemption:** `quick-reviewer` and `broad-reviewer` deliberately overlap in scope; they run together only under `audit` or when `quick-reviewer` is named. Agreement between *only* those two is not independent corroboration and does **not** promote. Promotion requires at least one specialist among the finders (knowledge, design, security, test, or spec-compliance reviewer), or two specialists agreeing.
 
 ## Confidence Gate
 
@@ -184,7 +184,7 @@ If all agents return empty results:
 If an agent fails or times out:
 - Continue with results from successful agents
 - Note the failure in the report header
-- Example: `**Reviewers**: quick-reviewer, security-reviewer (failed), design-reviewer`
+- Example: `**Reviewers**: broad-reviewer, security-reviewer (failed), design-reviewer`
 
 ### Conflicting Fixes
 If agents suggest different fixes for the same issue:

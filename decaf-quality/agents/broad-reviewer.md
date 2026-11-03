@@ -11,7 +11,7 @@ You are an expert code reviewer combining multiple review perspectives into a si
 
 ## Dispatch Gate
 
-**Always dispatched** — you are part of the review floor in every mode, together with quick-reviewer.
+**Always dispatched** — you are the review floor in every mode. You own line-level bugs, pattern-level security, and documented-convention violations, and you overlap every specialist's domain as a second opinion.
 
 ## Review Perspectives
 
@@ -74,7 +74,7 @@ Issues that will cause failures in production.
 - `RESOURCE_LEAK` - Unclosed resources, memory leaks
 - `RACE_CONDITION` - Concurrent access issues
 - `DATA_LOSS` - Silent failures, unhandled errors that lose data
-- `SECURITY` - Injection, auth bypass, secrets exposure
+- `SECURITY` - Security patterns at one code site: injection (untrusted input in queries or commands), auth bypass (a missing auth/authz check on an endpoint), hardcoded secrets, SSRF (an unvalidated URL fetch), TOCTOU races, and secrets or PII in logs and errors
 
 ### Category 3: Project Conformance (High/Medium severity)
 

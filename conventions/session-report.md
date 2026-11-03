@@ -34,8 +34,13 @@ byte-identical to the originals (`cp`, not regeneration).
 - Report **harness-reported figures verbatim** — never invent, recompute, or silently round.
 - Label everything not directly measured: `[Estimate]` (with the estimation basis), `[Inference]`,
   `[Unverified]`.
-- It is **[Unverified] whether a subagent's reported token figure includes its own children** —
-  carry this caveat wherever per-subagent figures are summed.
+- The harness's token figure for an agent (`subagent_tokens`, `totalTokens`) counts its **final API
+  request only**, not the run (hooks docs, PostToolUse on the Agent tool). Record it as
+  "Final request", never as the agent's spend or under a plain "Tokens" heading.
+- **Spend** is what an agent's requests used in total, summed from its transcript by the
+  `agent-spend.js` script the skill names. Each agent's figures cover its own requests only, never
+  its children's, so per-agent spend sums without double counting. A resumed agent's spend is
+  cumulative across its resumes; label it so.
 - Missing data is recorded as *missing* ("not reported"), never silently estimated or omitted.
 
 ## Data duties
@@ -44,7 +49,10 @@ byte-identical to the originals (`cp`, not regeneration).
 
 Record as each agent's result arrives (the Agent tool result, or for a background agent its
 completion notification) — this is the **only** context that ever sees
-the reviewer/validator results, so this data is unrecoverable if not captured here:
+the reviewer/validator results, so this data is unrecoverable if not captured here. Record each
+agent's ID too (the `agentId` its result names): the spend lookup needs it. Before writing the
+section, run the skill's `agent-spend.js` once over every agent ID of the wave and paste its table
+verbatim under **Spend**.
 
 ```markdown
 ## Session Metrics (--report)
@@ -52,17 +60,21 @@ the reviewer/validator results, so this data is unrecoverable if not captured he
 **Wave timing**: dispatched HH:MM:SS → last reviewer returned HH:MM:SS → consolidated HH:MM:SS
 → validation done HH:MM:SS → file written HH:MM:SS
 
-| Agent | Kind | Model tier | Tokens | Tool calls | Duration | Findings submitted |
-|-------|------|-----------|--------|-----------|----------|--------------------|
-| quick-reviewer | reviewer | sonnet (mid) | {reported} | {n} | {s} | {n} |
-| … one row per reviewer AND per validator … |
+| Agent | Agent ID | Kind | Model tier | Final request | Tool calls | Duration | Findings submitted |
+|-------|----------|------|-----------|---------------|-----------|----------|--------------------|
+| broad-reviewer | {agentId} | reviewer | sonnet (mid) | {reported} | {n} | {s} | {n} |
+| … one row per agent the wave dispatched: reviewers, screeners, validators … |
+
+**Spend** (`agent-spend.js`, summed from transcripts):
+{the script's table, verbatim}
 
 **Pre-flight gates**: {what ran + results, or "none discoverable"}
 **Anomalies**: {dispatch retries, unusable returns, injected-content flags — or "none"}
 ```
 
-Figures come from the harness's tool-result metadata (e.g. `subagent_tokens`, tool-use count,
-duration). If the harness reports no usage for a call, write "not reported" in that cell.
+Final request, tool calls and duration come from the harness's tool-result metadata. If the
+harness reports no usage for a call, write "not reported" in that cell. A script row of
+`not found` stays as it is: it records missing data.
 
 ### `auto-code-review` — session ledger + assembly
 
@@ -70,8 +82,8 @@ Track through the loop (in-context notes are fine; no state file required):
 
 - **Per iteration**: the resolved review spec (preset + axis overrides, and which gate-matched agents the roster cap dropped), scope,
   verdict, finding counts (by severity + minor), validation stats, the fix-delta classification
-  and chosen `reReviewPreset` (Step 5.4), review-file path, orchestrator-subagent usage.
-- **Per fix round**: subagent usage, counts (fixed / TDD / differently / not-addressing /
+  and chosen `reReviewPreset` (Step 5.4), review-file path, orchestrator-subagent usage and agent ID.
+- **Per fix round**: subagent usage and agent ID, counts (fixed / TDD / differently / not-addressing /
   declined / skipped), files modified.
 - **Triage decisions** in main context: per finding — fix / skip / dismiss / defer (+ work item).
 - **Anomalies**: any resume, nudge, retry, or kill of a subagent; any deviation from the skills'
@@ -83,7 +95,7 @@ At the end (after the final summary), write the report folder per the format bel
 ### `auto-tdd` / `auto-dev` — implementation phase
 
 Provide to `auto-code-review` (same-context invocation makes this trivial): implementation
-subagent usage (tokens / tool calls / duration), changeset stats (files changed, +/− lines, new
+subagent usage (final request / tool calls / duration) and agent ID, changeset stats (files changed, +/− lines, new
 files), and a one-line scope/plan description.
 
 ## README.md format
@@ -104,9 +116,11 @@ logic-heavy, languages, size). Skill chain with the exact invocation arguments.>
 <Table of non-reviewer agents (implementation, orchestrators, fix rounds) with reported usage.>
 
 ## 3. Token usage
-<All harness-reported figures, including the per-reviewer/validator rows from Session Metrics.
-Sub-totals: review-side vs build-side; build:review ratio. Anything still unmeasured, listed as
-such. Carry the children-inclusion caveat.>
+<Spend for every agent: the per-wave Spend tables from each Session Metrics section, plus one
+`agent-spend.js` table over the session's other agents (implementer, orchestrators, fixers,
+fix-verifiers). Sub-totals and the build:review ratio come from Spend; a resumed agent counts once,
+at its cumulative figure. Final-request figures stay in the per-agent tables. Anything still
+unmeasured, listed as such.>
 
 ## 4. Process observations
 <What matched the skills' expected behavior and what deviated, from the anomalies ledger. Mark

@@ -23,7 +23,7 @@ The prompt states the spec's provenance: `explicit` (user-provided), `linked` (w
 
 **Your scope**: Verifying that code faithfully implements what the specification requires.
 **Out of scope**:
-- Line-level bugs, null safety, error handling → quick-reviewer
+- Line-level bugs, null safety, error handling → broad-reviewer
 - Design quality, API contracts, boundary violations → design-reviewer
 - Security gaps, threat modeling → security-reviewer
 - Test quality, test anti-patterns → test-reviewer
@@ -183,7 +183,7 @@ STOP before producing output. Verify each item:
 - [ ] I read the specification document in full
 - [ ] I completed Requirement Extraction before mapping to code
 - [ ] Every finding traces back to a specific requirement from the spec
-- [ ] No findings overlap with quick-reviewer scope (line-level bugs, null safety, error handling)
+- [ ] No findings overlap with broad-reviewer scope (line-level bugs, null safety, error handling)
 - [ ] No findings overlap with design-reviewer scope (API design quality, boundary violations)
 - [ ] No findings overlap with security-reviewer scope (threat modeling, missing controls)
 - [ ] No findings overlap with test-reviewer scope (test quality)

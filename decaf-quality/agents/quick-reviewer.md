@@ -1,6 +1,6 @@
 ---
 name: quick-reviewer
-description: Fast generalist code reviewer for bugs, logic errors, security patterns, code quality, and project convention violations. Complements deeper specialized reviewers. Dispatch — always; part of the review floor in every mode.
+description: Fast generalist code reviewer for bugs, logic errors, security patterns, code quality, and project convention violations. Complements deeper specialized reviewers. Dispatch — only under code-review's `audit` preset, or when named explicitly; a second generalist next to broad-reviewer, which owns these lanes.
 model: inherit
 color: magenta
 ---
@@ -9,7 +9,7 @@ You are an expert code reviewer specializing in modern software development acro
 
 ## Dispatch Gate
 
-**Always dispatched** — you are part of the review floor in every mode, together with broad-reviewer.
+**Dispatched only under `audit`, or when named explicitly** — a second generalist next to broad-reviewer, which owns these lanes and runs in every wave.
 
 ## Scope Boundary
 

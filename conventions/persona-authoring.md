@@ -26,7 +26,7 @@ Frontmatter rules:
 
 2. **`## Dispatch Gate`** — `**Spawn when:**` and `**Do not spawn when:**`. Negative gates matter as much as positive ones: tell the orchestrator not to spawn just because a file extension or filename matched ("judge from diff content"). For domain-absent-means-useless personas, write `**Hard gate:**` — these are enforced under *every* preset, including `audit` (no test-reviewer without tests, no stack persona for another language). State the persona's lean for borderline cases (e.g., security: "when unsure, lean toward spawning").
 
-3. **`## Scope Boundary`** — `**Your scope**:` one line, then `**Out of scope**:` as a list where **every entry names the owning persona** (see the Domain Ownership Matrix below). End with a one-line boundary rule when the line is subtle (e.g., security's "single code pattern → quick-reviewer; missing architectural control → you").
+3. **`## Scope Boundary`** — `**Your scope**:` one line, then `**Out of scope**:` as a list where **every entry names the owning persona** (see the Domain Ownership Matrix below). End with a one-line boundary rule when the line is subtle (e.g., security's "single code pattern → broad-reviewer; missing architectural control → you").
 
 4. **`### In-Scope Categories`** — table of `UPPER_SNAKE` subcategories with what each catches. These become the `[SUBCATEGORY]` prefixes in findings.
 
@@ -71,9 +71,9 @@ The canonical map of review domains to owners. Every persona's out-of-scope list
 
 | Domain | Owner |
 |--------|-------|
-| Line-level bugs (logic, null safety, resource leaks, concurrency patterns) | `quick-reviewer` |
-| Pattern-level security (injection, secrets, auth bypass, SSRF, sensitive exposure) | `quick-reviewer` |
-| Code quality (duplication, error handling) and documented-convention violations (CLAUDE.md or equivalent) | `quick-reviewer` |
+| Line-level bugs (logic, null safety, resource leaks, concurrency patterns) | `broad-reviewer` |
+| Pattern-level security (injection, secrets, auth bypass, SSRF, sensitive exposure) | `broad-reviewer` |
+| Code quality (duplication, error handling) and documented-convention violations (CLAUDE.md or equivalent) | `broad-reviewer` |
 | Sibling-consistency / unwritten-convention drift discovered by comparison: naming/vocabulary, canonical-helper usage, attribute symmetry, leftover scratch code, comment-code mismatches, duplicated literals | `consistency-reviewer` |
 | Knowledge preservation: undocumented decisions, comprehension risks, temporal contamination | `knowledge-reviewer` |
 | System-level design: API contracts, data models, boundaries, concurrency design, evolution, resilience | `design-reviewer` |
@@ -92,11 +92,11 @@ The canonical map of review domains to owners. Every persona's out-of-scope list
 | Re-verification of consolidated findings | `finding-validator` (validation wave only — not a review persona) |
 | Resolution of a single PR review thread | `pr-thread-resolver` (resolve-pr-feedback only — not a review persona) |
 
-**Generalist exception:** `broad-reviewer` deliberately overlaps the whole matrix as a second opinion. It has no exclusive domain and no out-of-scope obligations toward the specialists; consolidation compensates (generalist-only agreement does not promote confidence).
+**Generalist exception:** `broad-reviewer` is the review floor. It owns the three generalist rows above and also overlaps the rest of the matrix as a second opinion, with no out-of-scope obligations toward the specialists. `quick-reviewer` covers the same three rows as a second generalist, dispatched only under `audit` or when named; agreement between only the two generalists does not promote confidence.
 
 Rules:
 
-- **Adding a persona**: claim its domains in this table *first*. If a domain moves (e.g., a future pattern-security persona taking `SECURITY_PATTERN` from quick), carve it out of the previous owner's in-scope categories and update both agents' boundary lists in the same change.
+- **Adding a persona**: claim its domains in this table *first*. If a domain moves (e.g., a future pattern-security persona taking pattern-level security from broad), carve it out of the previous owner's in-scope categories and update both agents' boundary lists in the same change.
 - **Resolving overlap disputes**: the more specific persona owns the domain; the general one adds an out-of-scope entry pointing at it.
 
 ## Integration checklist — adding a persona to the plugin

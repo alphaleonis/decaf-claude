@@ -45,7 +45,7 @@ Parse `$ARGUMENTS`:
    - Identify test command (e.g., `dotnet test`, `go test ./...`, `npm test`, `pytest`, `cargo test`)
    - Record: `testInfra = { available: true/false, framework: "...", testCommand: "..." }`
 6. **Set `deferSystem`** from `--tracker` when given; otherwise detect the work item tracking system from project CLAUDE.md (Azure DevOps, GitHub Issues, Nibs, etc.)
-7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage as the harness reports it), per fix round (which route ran — resumed implementer, fresh fixer, or both — with each one's usage and model tier, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, each Step 5.5 fix-verifier check (usage, verdict and breakage counts, the branch taken), any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `session-report.md` for the exact format.
+7. **If `--report`**: start the session ledger (in-context notes; no state file). Record now: the exact invocation arguments including the resolved `reviewSpec`, the changeset baseline, and the caller's implementation-phase record if provided. Through the loop, record per iteration (the resolved spec + dropped agents, scope, verdict, finding counts, validation stats, review-file path, orchestrator usage as the harness reports it and its agent ID), per fix round (which route ran — resumed implementer, fresh fixer, or both — with each one's usage, agent ID and model tier, action counts, files modified), every main-context triage decision, the Step 5 delta classification and the gate clause that decided re-review, each Step 5.5 fix-verifier check (usage, agent ID, verdict and breakage counts, the branch taken), any escalation trigger, + chosen `reReviewPreset`, and **every anomaly** (resume/nudge/retry/kill/flow deviation — or note "none" at the end). See `session-report.md` for the exact format.
 8. Inform the user:
 
 ```
@@ -295,11 +295,11 @@ Otherwise:
 
    - **Caller ran `bugs`** (the single seat):
      - default — `bugs` scoped to the modified files: the seat again, on a smaller diff. Its self-calibration already drove iteration 1; the re-review is the same mechanism pointed at less code.
-     - a named trigger stands — `bugs roster=3`: the cheap wave (floor + best-fitting specialist, `models=low`, `evidence=norm`, `reach=narrow`), adding corroboration and the screen/validation funnel exactly where the fixer introduced risk. (A caller who explicitly ran the `bugs roster=N` wave re-reviews as `bugs roster=3`, default and triggered alike — the ceiling rule caps it.)
+     - a named trigger stands — `bugs roster=3`: the cheap wave (`broad-reviewer` + the two best-fitting specialists, `models=low`, `evidence=norm`, `reach=narrow`), adding corroboration and the screen/validation funnel exactly where the fixer introduced risk. (A caller who explicitly ran the `bugs roster=N` wave re-reviews as `bugs roster=3`, default and triggered alike — the ceiling rule caps it.)
    - **Caller ran `review` or `audit`** (a wave):
      - default — `review roster=4 reach=narrow`
      - a named trigger stands — `review roster=min(6, first-pass resolved roster) reach=narrow`. There is no uncapped rung: a large or high-risk delta gets at most what the original change got.
-   - **Later re-reviews** (iteration ≥ 3): `bugs` callers keep the rule above; wave callers drop to `bugs roster=3`, scoped to the newest fix round's delta only. By the third pass the changeset's character is known; a minimal pass is regression insurance on the latest fixes, not fresh discovery. (`roster` counts the floor, so `roster=3` = floor + the single best-fitting specialist.)
+   - **Later re-reviews** (iteration ≥ 3): `bugs` callers keep the rule above; wave callers drop to `bugs roster=3`, scoped to the newest fix round's delta only. By the third pass the changeset's character is known; a minimal pass is regression insurance on the latest fixes, not fresh discovery. (`roster` counts the floor, so `roster=3` = `broad-reviewer` + the two best-fitting specialists.)
 
    **`reach=narrow` on every re-review, and it matters more than the roster.** The first pass already reported what the surrounding code is missing; a later pass re-reporting the same absences is noise the triage step has to reject again each round. Narrowing to defects introduced by the fixes is what stops the loop re-litigating its own backlog.
 
@@ -370,8 +370,9 @@ Assemble the session report from the ledger, per `session-report.md`:
 
 1. Create `.decaf/session-reports/<YYYY-MM-DD>-<work-item-or-slug>-code-review-session/` (never overwrite — suffix `-2`, `-3`, … on collision).
 2. **Copy** each iteration's consolidated review file into it as `iteration-N-consolidated-review.md` (byte-identical copies via `cp`, not regeneration).
-3. Write `README.md` in the convention's six-section format: iteration overview, agent inventory, token usage (per-reviewer/validator figures come from each consolidated file's Session Metrics section), process observations (the anomalies ledger — "zero anomalies" is itself a result), timeline, per-agent yield. Apply the truth discipline: harness figures verbatim, `[Estimate]`/`[Inference]`/`[Unverified]` labels, missing data recorded as missing.
-4. Tell the user: `📊 Session report: <path>` after the final summary.
+3. Run `node ${CLAUDE_PLUGIN_ROOT}/scripts/agent-spend.js <agent IDs>` once, over the implementer (`--implementer`), every review orchestrator, fresh fixer and fix-verifier the ledger names. Its table is their spend.
+4. Write `README.md` in the convention's six-section format: iteration overview, agent inventory, token usage (per-reviewer/validator spend comes from each consolidated file's Session Metrics section, the other agents' from step 3), process observations (the anomalies ledger — "zero anomalies" is itself a result), timeline, per-agent yield. Apply the truth discipline: harness figures verbatim, `[Estimate]`/`[Inference]`/`[Unverified]` labels, missing data recorded as missing.
+5. Tell the user: `📊 Session report: <path>` after the final summary.
 
 The report records; cross-session comparison and tuning decisions stay with the operator.
 
