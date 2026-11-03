@@ -62,6 +62,7 @@ Skills are invoked as `/<plugin>:<skill>`. Click any skill for details, usage, a
 - [`challenge-decision`](#challenge-decision) — argue against a decision → STAND/REVISE/ESCALATE verdict
 - [`capture`](#capture) — jot a follow-up as a work-item draft without breaking flow
 - [`refine`](#refine) — take an under-specified work item to actionable → `todo` + acceptance criteria
+- [`resolve-open-questions`](#resolve-open-questions) — walk the open questions an `auto-deliver` run filed, one at a time
 
 **decaf-memory** — remember
 - [`remember`](#remember) — store a memory in erinra
@@ -277,7 +278,7 @@ plus any of:
 - `--unattended` — no human gates: no queue confirmation, clarifying questions, approval gate, or check-ins, and no merge-to-main question at the end (the branch is handed back to the caller). `auto-deliver` passes this.
 
 ### auto-deliver
-The autonomous whole-plan loop: `SELECT → BREAKDOWN → EXECUTE → VERIFY → RECONCILE → LEARN → REPLAN → MERGE`, one phase at a time, **without stopping at phase boundaries**. It composes [`breakdown-phase`](#breakdown-phase) → [`batch-dev`](#batch-dev) → [`close-out`](#close-out) (all `--unattended`) over the tracker-adapter contract and stops only at plan completion. Resumable run state lives in `.decaf/auto-deliver/`. Point it at a plan produced by [`draft-plan`](#draft-plan).
+The autonomous whole-plan loop: `SELECT → BREAKDOWN → EXECUTE → VERIFY → RECONCILE → LEARN → REPLAN → MERGE`, one phase at a time, **without stopping at phase boundaries**. It composes [`breakdown-phase`](#breakdown-phase) → [`batch-dev`](#batch-dev) → [`close-out`](#close-out) (all `--unattended`) over the tracker-adapter contract and stops only at plan completion. Resumable run state lives in `.decaf/auto-deliver/`. What the run leaves for you to decide is filed as one `draft` item, walked with [`resolve-open-questions`](#resolve-open-questions). Point it at a plan produced by [`draft-plan`](#draft-plan).
 ```
 /decaf-build:auto-deliver <plan-id>
 /decaf-build:auto-deliver <plan-id> --base-branch integration --review audit
@@ -406,6 +407,19 @@ There is deliberately no `--unattended`: acceptance criteria have to come from a
 
 Related: [`breakdown-phase`](#breakdown-phase) decomposes a decision you already made; refine establishes whether there is a decision at all.
 
+### resolve-open-questions
+Walk the open questions an [`auto-deliver`](#auto-deliver) run left for you, one per turn. The run records each question in its phase reflection while the evidence is fresh: decisions it could not make, calls it made that you may reverse, and checks only a person can run. When the plan completes, it files them as one `draft` item and names this command on the report's last line. The format is in [`open-questions.md`](conventions/open-questions.md).
+
+Each question is re-checked against the current code, then presented as what happened, a table of options, and a recommendation. Your answer ends it as `changed` (a small fix made now), `filed` (a new item), `recorded`, `accepted` or `obsolete`. The decision is noted on the item the question came from, and the entry is ticked in place. The item's body is the walk's state, so an interrupted walk resumes from the first unticked entry, and the item closes when none are left.
+```
+/decaf-plan:resolve-open-questions dcc-ab12
+/decaf-plan:resolve-open-questions       # finds the open "Open questions:" draft
+```
+**Arguments**
+- `<work-item-id>` — the open-questions item. Default: the one open draft titled `Open questions: …`; the skill asks if there are several.
+
+Like [`refine`](#refine), there is deliberately no `--unattended`: these are the questions the run could not answer alone.
+
 ## decaf-memory
 
 Store and recall knowledge across sessions via the [erinra](https://github.com/alphaleonis/erinra) MCP server (hybrid semantic search). Set it up once:
@@ -468,6 +482,7 @@ Shared reference files live at repo-root `conventions/` and skills/agents read t
 |------------|---------|
 | `work-items.md`, `work-items-<tracker>.md` | decaf-plan skills, batch-dev + auto-deliver (tracker-adapter contract, plus one adapter per tracker) |
 | `acceptance-criteria.md` | the `## Acceptance` format (draft-spec/draft-plan/breakdown-phase; auto-deliver) |
+| `open-questions.md` | what a run leaves for a person to decide (auto-deliver records and files; resolve-open-questions walks) |
 | `code-review-consolidation.md`, `severity.md`, `intent-markers.md`, `structural.md`, `security.md`, `code-quality/`, `coverage-config.md`, `refactoring.md`, `pr-etiquette.md`, `persona-authoring.md` | decaf-quality review/refactor skills + agents |
 | `documentation.md` | technical-writer; documentation guidance |
 | `comments.md` | the `write-comments` skill, knowledge-reviewer, technical-writer (rules for code comments; a project adds its own in `.decaf/conventions/comments.md`) |

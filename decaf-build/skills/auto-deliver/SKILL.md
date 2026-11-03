@@ -29,6 +29,9 @@ You **call** these; you do not reimplement them. Each already supports unattende
 - **`/decaf-plan:close-out <phase> --unattended`** — reconcile + close + file follow-ups.
 - **Acceptance format** — VERIFY parses the `## Acceptance` section the planning skills emit.
   Read before Step 4 VERIFY.
+- **Open-questions format** — what a run leaves for a person to decide: VERIFY, RECONCILE and
+  REPLAN record entries in the phase's `reflection.md`; STOP files them as one `draft` item.
+  Read before Step 4 VERIFY, and at STOP if this process has not read it.
 
 - **Subagent dispatch contract** — how a dispatched agent's report gets back (task vs
   teammate mode) and why named teammates need an explicit delivery clause. Every agent this
@@ -129,7 +132,7 @@ parallel cluster's review emits a comparison-grade session report to `.decaf/ses
 
 ### 4. VERIFY  *(verify-and-fix sub-routine)*
 
-Before parsing, read `${CLAUDE_PLUGIN_ROOT}/conventions/acceptance-criteria.md` (only the line format is needed). `read(current_phase)` and parse `## Acceptance`. Then:
+Before parsing, read `${CLAUDE_PLUGIN_ROOT}/conventions/acceptance-criteria.md` (only the line format is needed) and `${CLAUDE_PLUGIN_ROOT}/conventions/open-questions.md` in full. `read(current_phase)` and parse `## Acceptance`. Then:
 
 - **`[run]` items** — run each command; compare output to its `expect:` condition.
   - On failure: before the dispatch, read `${CLAUDE_PLUGIN_ROOT}/conventions/subagent-briefs.md` in full (rule 6 defines the mid tier). Dispatch a **focused fix** (reuse the batch-dev / dev execution machinery — a
@@ -146,13 +149,14 @@ Before parsing, read `${CLAUDE_PLUGIN_ROOT}/conventions/acceptance-criteria.md` 
   The execution must actually settle the criterion, not approximate it — a weak proxy command
   is worse than honest inspection. If you execute it, record it as executed and treat it with
   `[run]` confidence. Only when no execution can settle it: verify by subagent inspection,
-  mark **lower-confidence**, and **surface + hold** for human confirmation. These **never
-  block** the loop.
+  mark **lower-confidence**, and **hold** it for human confirmation as a `manual-check` open
+  question. These **never block** the loop.
 - **Out-of-scope discoveries** (real, but not this phase's job) → note them for RECONCILE to
   file as follow-ups; do **not** fix them here and do **not** silently absorb them.
 
 Write raw results to `.decaf/auto-deliver/phases/<phase>/verify.log` and begin the phase's
-`reflection.md` (acceptance results, fixes applied, manual items held, deviations).
+`reflection.md` (acceptance results, fixes applied, deviations). Open its `## Open questions`
+section with the held manual items, each a full entry per the open-questions convention.
 
 ### 5. RECONCILE
 
@@ -160,6 +164,11 @@ Write raw results to `.decaf/auto-deliver/phases/<phase>/verify.log` and begin t
 the closure summary, marks the phase done, and files **follow-ups** for deferred / out-of-scope
 work. (close-out files follow-ups; it does **not** reassess future phases — that is REPLAN's
 job, below.) Finish `reflection.md`.
+
+Then go through the closure summary's deviations and decisions, and batch-dev's reports for the
+phase. Add an open-questions entry for each one that meets the convention's bar: a `confirm`
+for a call made that the operator may reverse, a `decision` for a question the phase could not
+settle. Write each entry now, while the evidence is at hand; STOP only gathers them.
 
 ### 6. LEARN
 
@@ -177,8 +186,8 @@ changes:
   **inject** a phase: `create` a work item under the plan, ordered and `blocked-by` set so
   `next-ready` will surface it at the right time.
 - **Never autonomously cut remaining scope.** If a remaining phase now looks unnecessary or
-  wrong, record the recommendation in `reflection.md` and the final report and **leave the
-  phase in place** — scope cuts are human-only.
+  wrong, record the recommendation as a `decision` entry under `reflection.md`'s
+  `## Open questions` and **leave the phase in place** — scope cuts are human-only.
 
 Update `state.json`.
 
@@ -202,17 +211,30 @@ drafted and nothing is dispatched, you are one message from a dead stop: dispatc
 
 ## STOP — plan complete
 
-Reached only when SELECT finds **no ready phase**. Set `exit: complete` in `state.json`, then
-emit a final report:
+Reached only when SELECT finds **no ready phase**. Set `exit: complete` in `state.json`.
+
+**File the open questions.** Read `${CLAUDE_PLUGIN_ROOT}/conventions/open-questions.md` if this
+process has not. Gather every `## Open questions` section not yet marked `(filed: …)` from the
+reflections of this plan's phases: the `phases/<id>/` dirs whose id is among the plan's
+descendants (walk `read` children down from the plan). If any entries exist, `create` the one
+`draft` item the convention describes and mark the gathered sections filed. A run that
+escalates files nothing; the entries wait in the reflections for the run that completes.
+
+Then emit a final report:
 
 - phases delivered (with their closure summaries),
 - follow-ups filed and any phases injected,
-- `[manual]` acceptance criteria awaiting human confirmation,
 - accumulated lessons (`.decaf/auto-deliver/lessons.md`),
-- any scope-cut recommendations you surfaced but did not act on,
-- **with `--report`**: the session reports written across all phases (`.decaf/session-reports/`).
+- **with `--report`**: the session reports written across all phases (`.decaf/session-reports/`),
+- the open-questions item: its id and the count per kind. Do not list the questions here; the
+  item holds them, and a report that repeats them is how they got missed before.
 
-Leave the **merge-to-main / push** decision and **"which plan next"** to the human. Done.
+Leave the **merge-to-main / push** decision and **"which plan next"** to the human. End the
+report with one bold line, the last thing in it:
+
+> **N open questions need your answer: run `/decaf-plan:resolve-open-questions <item id>`.**
+
+or, when nothing was filed, **No open questions.** Done.
 
 ## Escalation — the only non-completion exit
 

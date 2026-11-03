@@ -74,6 +74,7 @@ Decide what and how to build; output is plans, RFCs, and decisions, not code. No
 | `challenge-decision` | Stress-test a decision by arguing against it → STAND/REVISE/ESCALATE verdict |
 | `capture` | Jot a follow-up idea/task as a work-item draft without interrupting current work (created `draft` — excluded from ready work until refined) |
 | `refine` | Take an under-specified work item to actionable — resolve open questions against the code, add `## Acceptance`, promote `draft` → `todo` (the exit for `capture`'s drafts) |
+| `resolve-open-questions` | Walk the open-questions `draft` item an `auto-deliver` run files (format: `conventions/open-questions.md`) — one question per turn: re-check, options, recommendation → changed / filed / recorded / accepted / obsolete |
 
 **Agents** (referenced as `decaf-plan:agent-name`): `architect` — design a feature's architecture end-to-end → implementation blueprint (distinct from `explore-designs` and `architecture-review`).
 

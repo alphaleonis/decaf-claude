@@ -81,8 +81,14 @@ hook (waits on the memory plugin) — **don't over-promote**.
 ### `phases/<phase-id>/reflection.md` — per-phase reflection report
 
 Written during VERIFY/RECONCILE: acceptance results (which `[run]` checks passed/failed and
-the fixes applied), `[manual]` criteria surfaced for human confirmation, deviations,
-decisions made, and follow-ups filed. The durable, reviewable record of the phase.
+the fixes applied), deviations, decisions made, and follow-ups filed. The durable, reviewable
+record of the phase.
+
+Its `## Open questions` section holds what the phase leaves for a person to decide: held
+`[manual]` criteria, calls to confirm, decisions the loop could not make, and scope-cut
+recommendations from REPLAN. Entries follow `conventions/open-questions.md`. STOP gathers the
+sections into one `draft` work item and renames each heading to
+`## Open questions (filed: <item id>)`, so no section is filed twice.
 
 ### `phases/<phase-id>/verify.log`, `context.log` — raw logs
 
