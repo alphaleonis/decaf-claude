@@ -275,7 +275,7 @@ plus any of:
 - `--tracker nibs|ado|github|markdown` — the tracker holding the items. Default: detected.
 - `--models low|norm|high` — model tier for the skill's own dispatches; forwarded to each review. Default: `high`.
 - `--report` — write session reports for skill tuning (one per review, under `.decaf/session-reports/`).
-- `--unattended` — no human gates: no queue confirmation, clarifying questions, approval gate, or check-ins, and no merge-to-main question at the end (the branch is handed back to the caller). `auto-deliver` passes this.
+- `--unattended` — no human gates: no queue confirmation, clarifying questions, approval gate, or stops before parallel clusters, and no merge-to-main question at the end (the branch is handed back to the caller). `auto-deliver` passes this.
 
 ### auto-deliver
 The autonomous whole-plan loop: `SELECT → BREAKDOWN → EXECUTE → VERIFY → RECONCILE → LEARN → REPLAN → MERGE`, one phase at a time, **without stopping at phase boundaries**. It composes [`breakdown-phase`](#breakdown-phase) → [`batch-dev`](#batch-dev) → [`close-out`](#close-out) (all `--unattended`) over the tracker-adapter contract and stops only at plan completion. Resumable run state lives in `.decaf/auto-deliver/`. What the run leaves for you to decide is filed as one `draft` item, walked with [`resolve-open-questions`](#resolve-open-questions). Point it at a plan produced by [`draft-plan`](#draft-plan).

@@ -1,6 +1,6 @@
 ---
 name: batch-dev
-description: Orchestrate execution of MULTIPLE nibs in one run. Selects a queue, understands the nibs collectively (including how they fit together), then chooses the best execution mechanism per cluster — single series agent, parallel fan-out, scripted workflow, or agent team — and dispatches with ONE approval gate. Use when the user wants to work several nibs together (in parallel or series) rather than one at a time. Complements /decaf-build:auto-dev and /decaf-build:auto-tdd (which handle a single nib).
+description: Orchestrate execution of MULTIPLE nibs in one run. Selects a queue, understands the nibs collectively (including how they fit together), then chooses the best execution mechanism per cluster — single series agent, parallel fan-out, scripted workflow, or agent team — and dispatches with ONE approval gate, then runs to the end, stopping only before a parallel, workflow or team cluster and on a merge conflict. Use when the user wants to work several nibs together (in parallel or series) rather than one at a time. Complements /decaf-build:auto-dev and /decaf-build:auto-tdd (which handle a single nib).
 argument-hint: "<nib-id...> | --filter <expr> | --ready [<scope-id>]  [--tracker nibs|ado|github|markdown] [--models low|norm|high] [--review <preset> [axis=value ...]] [--max-iterations N] [--base-branch <name>] [--report] [--unattended]"
 ---
 
@@ -57,7 +57,7 @@ Parse `$ARGUMENTS`:
 
 # Phases
 
-Run the phases in order. Phases 1–5 are planning (interactive where noted). Phase 5 is the single approval gate. Phases 6–8 execute, with check-ins at every cluster boundary.
+Run the phases in order. Phases 1–5 are planning (interactive where noted). Phase 5 is the single approval gate. Phases 6–8 execute without asking, except at the stop points in Phase 6's Common rules.
 
 ## Unattended mode (`--unattended`)
 
@@ -66,7 +66,7 @@ When invoked with `--unattended` (the `auto-deliver` loop passes this), batch-de
 - **Phase 1** — queue confirmation, the "include this `in-progress` / `draft` nib?" question, and the build/test-command confirmation. The caller supplies the queue (phase-scoped) and project context; resolve commands from the project CLAUDE.md / build files without asking. Include `in-progress` nibs (a resumed run leaves them so) and skip `draft` nibs; log each.
 - **Phase 3 (Clarify)** — do **not** ask the user. Proceed on the most reasonable assumption for each ambiguity and **log the assumption** (to `.decaf/auto-deliver/` when run under the loop).
 - **Phase 5 (Approve)** — skip the Approve/Adjust/Cancel gate; proceed with the strategy as planned.
-- **Phase 6 check-ins** — no per-cluster pauses; report progress to the run log instead.
+- **Phase 6 cluster stops** — don't wait before a parallel/workflow/team cluster; report progress to the run log instead.
 - **Phase 8** — no merge-to-main / push decision; hand the integration branch back to the caller per the merge protocol (the loop owns the merge decision).
 
 **Unchanged:** mechanism selection (Phase 4), the merge protocol (Phase 7), failure handling, and the review tail, which receives `--unattended` in Phase 6a so it cannot pause either. The point of `--unattended` is to remove *human pauses*, not to dumb down the strategy. Manual/visual acceptance criteria that can't be auto-verified are left flagged for the loop's verify step — never silently passed. Because there is no Phase-5 approval, the loop's `--unattended` invocation **is** the explicit opt-in for any `workflow`-mechanism cluster; record that choice in the run log.
@@ -123,7 +123,7 @@ Apply the bias-toward-simplicity principle: only escalate beyond "single series 
 - **Declared dependencies** = *correctness* order. Authoritative; never violate. A nib runs only after everything in its `blocked_by` has completed.
 - **Inferred file overlap** = *parallel-safety*. If two nibs overlap (or overlap is uncertain), they must NOT be in the same fan-out/parallel cluster — serialize them.
 
-Produce: clusters, each with its mechanism and member nibs (with approach), and a total order with explicit check-in points.
+Produce: clusters, each with its mechanism and member nibs (with approach), and a total order, with the stop points it reaches (Phase 6 Common rules). A run of only series clusters has none.
 
 ## Phase 5 — Approve (the single gate)
 
@@ -145,7 +145,7 @@ Cluster 3  [workflow]                      — runs after Cluster 2 merges
 
 Batch branch: batch/{slug}
 Order:        C1 -> C2 -> (merge) -> C3
-Check-ins:    after C1 | before C2 launch | after C2 merge | before C3 | final
+Stops:        before C2 launch | before C3 launch   (plus any merge conflict)
 Review:       {reviewSpec}, max {maxIterations} iterations
 ```
 
@@ -171,7 +171,7 @@ Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
 
 - **Nib status**: `set-status` each nib to `in-progress` **before** launching its worker; `close` it with a one-line summary **after** its work is committed (Phase 6a step 4 for a series nib, Phase 7 for a parallel cluster). Subagents/workflows run fresh and will NOT update nibs — you (the conductor, in the main context) own status updates.
 - **Commits**: commit the code together with whatever the tracker changed in the working tree: the nib file on nibs, the plan file on Markdown. Azure DevOps and GitHub change nothing locally, so their commits carry code only. On nibs, keep the nib's todo items checked off as work completes. In the shared working tree (Phase 6a) the commit is **yours, never the worker's** — workers stage, you commit. Worktree lanes (6b/6c/6d) must commit in their own worktrees (their work reaches you only through the shared object store); that trade-off is accepted because the batch branch stays untouched until the Phase 7 merge, which you control.
-- **Check-ins**: at each cluster boundary, report what finished and what's next, and pause for the user — especially **before launching any parallel/workflow/team cluster** and **after each integration/merge**.
+- **Stop points**: after approval, wait for the user only **before launching a parallel/workflow/team cluster** (6b/6c/6d) and **on a merge conflict** (Phase 7 step 5), reporting what finished and what's next. Everywhere else (between nibs, between series clusters, after a clean merge) post a one-line progress note and continue. Add no other stops unless the user asked for one at approval; a failed nib is parked, not a stop (Failure handling).
 - **Verify**: run the build (and tests, for tdd work) after each unit of work; fix breakage before moving on.
 
 ### Phase 6a — Single series agent (the default)
