@@ -46,12 +46,13 @@ replace. Entries live under a `## Open questions` heading in the phase's
 - **What happened:** <what was built or found, and why it is open. Written for someone who
   has not seen the code: what goes wrong, or what stays unknown, under each answer.>
 - **Options:**
-  - A. <option> — <its effect and cost>
+  - A. <the recommended option> — <its effect and cost>
   - B. <option> — <its effect and cost>
-- **Recommendation:** <the option and why, grounded in evidence. Name anything not checked.>
+- **Recommendation:** <why A, grounded in evidence. Name anything not checked.>
 ```
 
-- **`confirm`**: the options are usually "A. keep it" and "B. reverse it", with what reversing costs.
+- **Options**: two to four. The recommended one is always `A`.
+- **`confirm`**: the options are usually keep it and reverse it, with what reversing costs; whichever you recommend is `A`.
 - **`manual-check`**: replace **Options** and **Recommendation** with **How to check:** (the command or steps) and **Passing looks like:** (the observable result).
 
 ## The filed item

@@ -104,32 +104,56 @@ Write the item you think it should be. Against the code you just read:
 
 ### 5. Interview from the proposal
 
-Present it in this order, in plain language:
+Open with, in plain language:
 
 1. **What the item is about** — two or three simple sentences: what is missing or wrong
    today, and what is different once this is done. Write it for someone who hasn't seen
    the item or the code; ids, file paths and jargon belong in the draft, not here.
 2. **The drafted item** from step 4.
-3. **Each open question** from step 4 — **only** those — explained simply:
-   - **The problem** — what is undecided, and why it matters.
-   - **The suggested solution** — what you propose and why, grounded in the evidence from
-     step 2, ending in something the user can confirm or correct.
+3. **The open questions** from step 4 — **only** those — one line each, numbered `Q1`, `Q2`, …
 
-Prefer a concrete proposal the user can confirm or correct over an open question they have
-to compose an answer to:
+Then present `Q1` in the same turn.
+
+**One question per turn.** An answer can change the draft, so a later question answered in
+the same reply may rest on a draft that no longer holds. Present one question, end your
+turn, and wait. After each answer, update the draft, re-check the remaining questions
+against it, and drop any the answer made moot, saying which. Confirm the answer in a line, then
+present the next question in the same turn. If the user asks to see the rest at once,
+present them together; one reply can then answer all of them (`Q2: A, Q3: C`).
+
+Each question, explained simply:
+
+- **The problem** — what is undecided, and why it matters.
+- **The suggested solution** — what you propose and why, grounded in the evidence from
+  step 2.
+- **The options** — two to four, lettered `A`, `B`, …: the suggested solution first and
+  marked `(recommended)`, each with its effect in a phrase. Close with
+  `Or tell me something else.` Letters, not numbers, so an answer like `Q2: A` cannot be
+  misread.
+
+Ask in plain text, not a question box: text written before a question box can be hidden
+while it is open, and the explanation is what the answer rests on.
 
 > Good:
-> **The problem:** Uploads can fail on a flaky connection, and the item doesn't say
+> **Q1 of 2. The problem:** Uploads can fail on a flaky connection, and the item doesn't say
 > whether to try again or how many times.
 > **Suggested solution:** Retry the way the rest of the app already does — three
 > attempts, waiting a little longer each time (`RetryPolicy`, used in five sibling paths).
-> Done = `dotnet test --filter Category=Upload.Retry` passes. Same here?
+> Done = `dotnet test --filter Category=Upload.Retry` passes.
+>
+> A. Retry three times with backoff via `RetryPolicy` (recommended)
+> B. No retry; the caller sees the error at once
+> C. Make the retry count a setting; one more value to document and test
+>
+> Or tell me something else.
 >
 > Bad: "How should retry behave on the upload path?"
+>
+> Also bad: a suggested solution ending in "Same here?", with no alternatives to pick.
 
-Iterate until the user is satisfied. If an answer invalidates your evidence, go back to
-step 2 rather than patching the draft — a proposal built on a wrong assumption doesn't get
-better by amendment.
+When the last question is answered, show the updated draft and iterate until the user is
+satisfied. If an answer invalidates your evidence, go back to step 2 rather than patching
+the draft — a proposal built on a wrong assumption doesn't get better by amendment.
 
 ### 6. Write it back
 

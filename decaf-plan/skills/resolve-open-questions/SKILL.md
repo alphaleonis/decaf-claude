@@ -63,20 +63,21 @@ unknown under each answer. Include what you found in the re-check.>
 
 | Option | Effect | Cost |
 |---|---|---|
-| A. … | … | … |
+| A. … (recommended) | … | … |
 | B. … | … | … |
 
-**My recommendation:** <option and why, grounded in evidence. Name what you did not check.>
+**My recommendation:** <why A, grounded in evidence. Name what you did not check.>
 
-<A or B?>
+<A, B, or something else?>
 ```
 
+- **Options**: two to four, the recommended one first as `A` and marked `(recommended)`, whatever order the entry listed them in.
 - **`confirm`**: say what was decided and why, then offer keep or reverse, with what reversing costs.
 - **`manual-check`**: give **How to check** and **Passing looks like**, then offer four choices:
-  - done and it passed;
-  - done and it failed, which files a bug;
-  - file it to do later;
-  - skip for now.
+  - A. done and it passed;
+  - B. done and it failed, which files a bug;
+  - C. file it to do later;
+  - D. skip for now.
 
 Where the entry's options are weak, or the re-check turned up a better one, improve them.
 The entry is a starting point, not a script.
