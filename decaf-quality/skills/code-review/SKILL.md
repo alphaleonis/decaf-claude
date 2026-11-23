@@ -126,8 +126,7 @@ its cost, and never buries a found defect below an approval — the wave's `evid
 four-seat roster tiered real defects into the Minor bucket on three of five subjects and once
 approved a change with five real defects found. Filtering happens at generation — the `reach` block
 and the seat's own calibration and closed-set parking reasons — not in machinery afterwards. `bugs`
-was decided as the default mechanism on 2026-08-18 (nib `dcc-pjix`); the path was developed under
-the experimental name `bugs-sp`, which is retired — there is exactly one vocabulary (see Argument
+is the default mechanism for that deliverable. There is exactly one vocabulary (see Argument
 Parsing).
 
 **Rules:**
@@ -142,7 +141,7 @@ Parsing).
 - **`bugs roster=N` with N ≥ 2 runs the WAVE, not a bigger seat** — the four-seat roster (floor + gate-matched
   specialists, capped at N), `models=low`, `reach=narrow` — with **`evidence=norm`**, not `strong`:
   at a roster this small corroboration is scarce, and `strong` demanded a lone reviewer score ≥80
-  alone, which is exactly how the wave binned consensus defects (dcc-sk3k). Announce it as
+  alone, which is exactly how the wave binned consensus defects. Announce it as
   `preset bugs — wave (roster=N explicit) · evidence=norm`. This is an override for anyone who wants
   corroboration; it is not the default and not recommended.
 

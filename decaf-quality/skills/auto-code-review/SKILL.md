@@ -303,7 +303,7 @@ Otherwise:
 
    **`reach=narrow` on every re-review, and it matters more than the roster.** The first pass already reported what the surrounding code is missing; a later pass re-reporting the same absences is noise the triage step has to reject again each round. Narrowing to defects introduced by the fixes is what stops the loop re-litigating its own backlog.
 
-   **`evidence` stays `norm` in re-review waves.** At three or four seats corroboration is scarce; `strong` demands a lone reviewer score ≥80 alone, which is exactly how small waves binned consensus defects (dcc-sk3k).
+   **`evidence` stays `norm` in re-review waves.** At three or four seats corroboration is scarce; `strong` demands a lone reviewer score ≥80 alone, which is exactly how small waves binned consensus defects.
 
    **Never inherit `audit` into a re-review.** If the first pass ran `audit` — the case where pre-existing defects are promoted to primary and get fixed — later passes still narrow. Otherwise every iteration re-surfaces the whole backlog and the loop cannot converge.
 

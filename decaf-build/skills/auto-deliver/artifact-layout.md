@@ -2,9 +2,8 @@
 
 The on-disk home for `auto-deliver` loop state and artifacts, created in the **target
 project root** when the loop runs (not in this plugin repo). It is the `auto-deliver` subdir
-of the shared `.decaf/` artifact root (see `conventions/artifacts.md`). Per the design
-(`dcc-c7gu`): loop **state and artifacts** live on disk here; **work items** live in the
-tracker. This directory holds documents and logs, never tickets.
+of the shared `.decaf/` artifact root (see `conventions/artifacts.md`). Loop
+**state and artifacts** live on disk here; **work items** live in the tracker. This directory holds documents and logs, never tickets.
 
 The tracker remains the **system of record** for what's done — there is **no local
 mirror** of work items. `.decaf/auto-deliver/` records only the loop's own run state and the

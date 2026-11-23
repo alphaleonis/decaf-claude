@@ -15,7 +15,7 @@ an ordinary subagent, but dispatching unnamed is correct either way:
 | **No `name`** | Task — a call that returns | The agent's **final message** — the report: the tool result, or for a background call a hand-back once the agent finishes |
 | **`name` set** (agent teams on) | Teammate — an actor with a mailbox | A spawn acknowledgment. The final message is **discarded** |
 
-Verified by controlled experiment (dcc-8yio), with agent teams enabled: two identical agents,
+Verified by controlled experiment, with agent teams enabled: two identical agents,
 same type, same prompt, differing only in `name` — the unnamed arm's answer came back; the
 named arm returned a spawn ack and its answer was destroyed undelivered. Field-confirmed
 in a full auto-deliver run: every named agent briefed without an explicit delivery
