@@ -7,7 +7,7 @@ type: feature
 tags:
     - code-review
 created_at: 2026-11-03T20:16:35Z
-updated_at: 2026-11-03T20:24:06Z
+updated_at: 2026-11-24T13:36:58Z
 parent: dcc-b578
 order: "n"
 ---
@@ -44,3 +44,9 @@ Cost today: a would-be High arrives as Medium, so the verdict reads APPROVED and
 - [x] [run] `grep -n -i 'High.*normal use' decaf-quality/agents/solo-reviewer.md` — expect: one match, in a severity definition
 - [x] [run] `scripts/check-skill-references.sh` — expect: exit 0
 - [ ] [manual] Over the next several `bugs` reviews, the seat's High share is clearly above the corpus's 4%, with no rise in refuted or dismissed findings. Reason: needs real reviews over time.
+
+## Measurement (2026-11-24)
+
+High share, first half of the manual check: 280 single-seat `bugs` reports from 2026-11-04 on (dotlens-mcp 122, lotsen 88, nibs 48, bibbla 22) total C 0 / H 59 / M 242 / L 244, a 10.8% High share against the corpus's 4% (Medium 44% vs 23%, Low 45% vs 73%). Seat reports were told from wave reports by whether the `**Preset**` line says "wave". dotlens-mcp is not in the corpus.
+
+Refuted or dismissed, second half: not measurable from disk. Seat reports carry no validation wave, so none has a refuted count; only 2 session reports (`--report`) were written since 2026-11-04, and no resolve-state files. Settling it needs a few seat reviews run with `--report`, compared with the corpus's 1 dismissed / 2 refuted over 105 sessions.

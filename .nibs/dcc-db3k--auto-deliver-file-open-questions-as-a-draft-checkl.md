@@ -2,10 +2,10 @@
 # dcc-db3k
 version: 1
 title: 'auto-deliver: file open questions as a draft checklist nib, walked by resolve-open-questions'
-status: in-progress
+status: completed
 type: feature
 created_at: 2026-11-03T08:41:12Z
-updated_at: 2026-11-03T08:43:59Z
+updated_at: 2026-11-24T13:36:58Z
 order: zzzzzzzw
 ---
 
@@ -35,3 +35,7 @@ Seen in lotsen (session 2855a60a, 2026-11-03): a 30-feature run ended with ~12 o
 - [run] `test -L decaf-build/conventions/open-questions.md && test -L decaf-plan/conventions/open-questions.md` — expect: exit 0
 - [run] `grep -c "resolve-open-questions" README.md CLAUDE.md` — expect: each count ≥ 1
 - [manual] The next auto-deliver run ends with one draft open-questions item and a bold line naming the resolve command — needs a real plan run to observe.
+
+## Summary
+
+**Completed 2026-11-24** — The manual check held in practice: since 2026-11-06, completed auto-deliver runs filed nine open-questions items, one per run (bibbla: bibl-hdbz, bibl-vmgq, bibl-mein, bibl-w9l7, bibl-mrhq; dotlens-mcp: dotlens-0vlu, dotlens-ln2o, dotlens-e1ur, dotlens-embu), all since walked and completed. The bold closing line of the final report lives only in session output and was not checked from disk.

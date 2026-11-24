@@ -2,10 +2,10 @@
 # dcc-s612
 version: 1
 title: Measure review yield, outcome, token cost and runtime across the collected code-review corpus
-status: in-progress
+status: completed
 type: research
 created_at: 2026-11-02T14:40:59Z
-updated_at: 2026-11-03T20:27:18Z
+updated_at: 2026-11-24T13:36:58Z
 order: zzzzzzzw
 ---
 
@@ -58,11 +58,15 @@ Known limits of the data:
 - [x] [run] `python3 -I code-review-reports/analysis/extract.py --check` — expect: exit 0; every file with a `Tokens` table or prose token figures has a non-zero token total, and every file the parser skipped is listed with a reason
 - [x] [run] `grep -c -E '^## ' code-review-reports/analysis/ANALYSIS.md` — expect: 9 or more
 - [x] [run] `grep -c -E 'dcc-2a8i|2026-07-04-cross-session' code-review-reports/analysis/ANALYSIS.md` — expect: 2 or more, with each name matched at least once
-- [ ] [manual] Each recommendation cites the figures it rests on, states its effect on findings, tokens and runtime, and states how it relates to the prior measurement it touches. Reason: whether an argument follows from its evidence is a judgment call.
-- [ ] [manual] The orchestrator token question is answered with the reports used as evidence. Reason: the answer may be "cannot be determined", which only a reader can accept or reject.
+- [x] [manual] Each recommendation cites the figures it rests on, states its effect on findings, tokens and runtime, and states how it relates to the prior measurement it touches. Reason: whether an argument follows from its evidence is a judgment call.
+- [x] [manual] The orchestrator token question is answered with the reports used as evidence. Reason: the answer may be "cannot be determined", which only a reader can accept or reject.
 
 ## Follow-up
 Follow-up work from the analysis and the operator walk-through on 2026-11-03 is under epic dcc-b578: dcc-k163, dcc-zsxg, dcc-zkwo, dcc-ysx8, dcc-6rza, dcc-lwo7.
 
 ## Corpus removed before merge
 The corpus, the extraction and analysis scripts, ANALYSIS.md and the severity re-rating files were removed before the merge to main, because the collected reports may hold confidential material. They survive only in the local `analysis` branch history; the paths below no longer resolve on main.
+
+## Summary
+
+**Completed 2026-11-24** — Analysis delivered on the local analysis branch and walked through by the operator on 2026-11-03; its recommendations became epic dcc-b578. The operator accepted the two judgment criteria on 2026-11-24. The corpus and ANALYSIS.md were removed before the merge to main and survive only in that branch's history.

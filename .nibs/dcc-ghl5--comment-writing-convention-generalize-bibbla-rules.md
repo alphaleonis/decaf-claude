@@ -2,10 +2,10 @@
 # dcc-ghl5
 version: 1
 title: 'Comment-writing convention: generalize bibbla rules, write-comments skill, pointer hooks'
-status: in-progress
+status: completed
 type: feature
 created_at: 2026-10-09T21:03:07Z
-updated_at: 2026-10-09T21:10:27Z
+updated_at: 2026-11-24T13:38:38Z
 order: zzzzzzs
 ---
 
@@ -31,4 +31,8 @@ Generalize the comment-writing rules from bibbla's `.claude/conventions/comments
 - [x] Reduce bibbla's file to an overlay at `.decaf/conventions/comments.md`
 - [x] README / CLAUDE.md entries
 
-- [ ] After push + plugin reinstall: verify the skill's overlay injection runs without a permission abort, and that a general-purpose subagent receives the SubagentStart pointer
+- [x] After push + plugin reinstall: verify the skill's overlay injection runs without a permission abort, and that a general-purpose subagent receives the SubagentStart pointer
+
+## Summary
+
+**Completed 2026-11-24** — Final check passed on 2026-11-24. The write-comments overlay injection ran with no permission prompt; in a project with no overlay it printed "This project has no overlay.". A general-purpose subagent dispatched as a probe received the pointer verbatim as SubagentStart hook context and listed decaf-quality:write-comments among its skills. The backstop draft dcc-642p was scrapped as unneeded.
