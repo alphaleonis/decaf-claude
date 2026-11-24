@@ -21,7 +21,7 @@ top-level dot-dirs.
 │   └── state.json
 ├── batch-dev/                   # per-item review specs, self-ignoring (never committed)
 │   ├── .gitignore               # `*`
-│   └── specs/<item-id>.md, cluster-<n>.md
+│   └── specs/<item-id>.md, cluster-<n>.md, group-<n>.md
 ├── architecture-improvements/   # architecture-review candidates + resolve state
 │   ├── CANDIDATES_<ts>.md
 │   ├── explorations/CANDIDATES_<ts>/<N>/  # batch-mode framings, designs, comparison

@@ -1,7 +1,7 @@
 ---
 name: batch-dev
 description: Orchestrate execution of MULTIPLE nibs in one run. Selects a queue, understands the nibs collectively (including how they fit together), then chooses the best execution mechanism per cluster — single series agent, parallel fan-out, scripted workflow, or agent team — and dispatches with ONE approval gate, then runs to the end, stopping only before a parallel, workflow or team cluster and on a merge conflict. Use when the user wants to work several nibs together (in parallel or series) rather than one at a time. Complements /decaf-build:auto-dev and /decaf-build:auto-tdd (which handle a single nib).
-argument-hint: "<nib-id...> | --filter <expr> | --ready [<scope-id>]  [--tracker nibs|ado|github|markdown] [--models low|norm|high] [--review <preset> [axis=value ...]] [--max-iterations N] [--base-branch <name>] [--report] [--unattended]"
+argument-hint: "<nib-id...> | --filter <expr> | --ready [<scope-id>]  [--tracker nibs|ado|github|markdown] [--models low|norm|high] [--review <preset> [axis=value ...]] [--max-iterations N] [--base-branch <name>] [--no-group] [--report] [--unattended]"
 ---
 
 # Batch Dev
@@ -40,18 +40,21 @@ Parse `$ARGUMENTS`:
    - If none given, ask the user which nibs to batch.
 2. `--review <preset> [axis=value ...]` (default: `review`) — a `/code-review` preset optionally
    followed by any of its axis overrides (`roster=N`, `models=`, `evidence=`, `reach=`), forwarded
-   **verbatim** to each nib's review. Quote it when the shell would split it:
+   **verbatim** to every review this skill runs. Quote it when the shell would split it:
    `--review "review roster=6 reach=narrow"`. Not interpreted here, so a new axis works the day
    `/code-review` ships it. Parallel-cluster workers self-review inline without it; the Phase 7
    cluster review applies it to their merged work.
 3. `--max-iterations N` (default `3`) — review iteration cap.
 4. `--base-branch <name>` — the branch to work on instead of a new `batch/{slug}`; reused if it already exists (Phase 6).
-5. `--tracker <nibs|ado|github|markdown>` — the tracker holding the nibs; `auto-deliver` passes its own. Without it, detect per Prerequisites. Forwarded to each series nib's review (Phase 6a) so deferred findings land in the same tracker.
-6. `--models low|norm|high` (default `high`) — the model tier for this skill's dispatches, per rule 6 of `${CLAUDE_PLUGIN_ROOT}/conventions/subagent-briefs.md`: explorers take the mid tier under `norm` and `low`; implementers, lanes, workflow agents and team members never take an override. Forwarded to each series nib's review (Phase 6a). `auto-deliver` passes its own.
+5. `--tracker <nibs|ado|github|markdown>` — the tracker holding the nibs; `auto-deliver` passes its own. Without it, detect per Prerequisites. Forwarded to each Phase 6a review so deferred findings land in the same tracker.
+6. `--models low|norm|high` (default `high`) — the model tier for this skill's dispatches, per rule 6 of `${CLAUDE_PLUGIN_ROOT}/conventions/subagent-briefs.md`: explorers take the mid tier under `norm` and `low`; implementers, lanes, workflow agents and team members never take an override. Forwarded to each Phase 6a review. `auto-deliver` passes its own.
 7. `--report` — produce a comparison-grade session report for skill tuning. Forwarded to each
-   series nib's review (Phase 6a) and each parallel cluster's review (Phase 7); each
+   Phase 6a review (a series nib's or a review group's) and each parallel cluster's review (Phase 7); each
    `/decaf-quality:auto-code-review` run writes its report folder to `.decaf/session-reports/`.
    `auto-deliver` passes this through.
+8. `--no-group` — form no review groups (Phase 4d): every series nib gets its own build/test and
+   review. Grouping is on by default, and under `--unattended` this flag is the only way to turn it
+   off. `auto-deliver` passes it through.
 
 ---
 
@@ -69,7 +72,7 @@ When invoked with `--unattended` (the `auto-deliver` loop passes this), batch-de
 - **Phase 6 cluster stops** — don't wait before a parallel/workflow/team cluster; report progress to the run log instead.
 - **Phase 8** — no merge-to-main / push decision; hand the integration branch back to the caller per the merge protocol (the loop owns the merge decision).
 
-**Unchanged:** mechanism selection (Phase 4), the merge protocol (Phase 7), failure handling, and the review tail, which receives `--unattended` in Phase 6a so it cannot pause either. The point of `--unattended` is to remove *human pauses*, not to dumb down the strategy. Manual/visual acceptance criteria that can't be auto-verified are left flagged for the loop's verify step — never silently passed. Because there is no Phase-5 approval, the loop's `--unattended` invocation **is** the explicit opt-in for any `workflow`-mechanism cluster; record that choice in the run log.
+**Unchanged:** mechanism selection and review grouping (Phase 4; `--no-group` turns grouping off), the merge protocol (Phase 7), failure handling, and the review tail, which receives `--unattended` in Phase 6a so it cannot pause either. The point of `--unattended` is to remove *human pauses*, not to dumb down the strategy. Manual/visual acceptance criteria that can't be auto-verified are left flagged for the loop's verify step — never silently passed. Because there is no Phase-5 approval, the loop's `--unattended` invocation **is** the explicit opt-in for any `workflow`-mechanism cluster; record that choice in the run log.
 
 ## Phase 1 — Select
 
@@ -123,7 +126,13 @@ Apply the bias-toward-simplicity principle: only escalate beyond "single series 
 - **Declared dependencies** = *correctness* order. Authoritative; never violate. A nib runs only after everything in its `blocked_by` has completed.
 - **Inferred file overlap** = *parallel-safety*. If two nibs overlap (or overlap is uncertain), they must NOT be in the same fan-out/parallel cluster — serialize them.
 
-Produce: clusters, each with its mechanism and member nibs (with approach), and a total order, with the stop points it reaches (Phase 6 Common rules). A run of only series clusters has none.
+### 4d. Form review groups (series clusters)
+
+Skip under `--no-group`. Every review run and every full build/test has a fixed cost, however small the change, so a run of small series nibs can share them. Within each series cluster, combine **consecutive** nibs (in the 4c order) into a **review group** when each qualifies: its Phase 2 summary shows a small, contained change and lists no open `risks`/`unknowns`. Overlap is not required, so stray fixes from unrelated areas group too. tdd and dev nibs can share a group. A group has at least two nibs.
+
+Size is a judgment, not a number. Close a group when its members together span more separate areas than one reviewer can hold at once, or when the next nib's estimate is borderline small. A group runs Phase 6a's group path: one implementer, one full build/test, one review.
+
+Produce: clusters, each with its mechanism and member nibs (with approach), any review groups with their estimated file count, and a total order, with the stop points it reaches (Phase 6 Common rules). A run of only series clusters has none.
 
 ## Phase 5 — Approve (the single gate)
 
@@ -135,6 +144,9 @@ Print the strategy as a rich textual plan:
 Cluster 1  [series, sequential]
   1. {id}  {title}            approach: {tdd|dev}
   2. {id}  {title}            approach: {dev}   (blocked-by {id})
+  Review group G1 — ~{n} files, one build/test, one review
+    3. {id}  {title}          approach: {tdd}
+    4. {id}  {title}          approach: {dev}
 
 Cluster 2  [fan-out parallel, worktrees]   — independent of Cluster 1
   - {id}  {title}             approach: {tdd}
@@ -152,7 +164,7 @@ Review:       {reviewSpec}, max {maxIterations} iterations
 Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
 
 - **Approve** → proceed to Phase 6.
-- **Adjust** → the user describes changes in free-form prose (drop/add a nib, re-cluster, change a cluster's mechanism, change a nib's approach, reorder, change parallelism degree). Apply them, re-present the plan **once**, and ask again.
+- **Adjust** → the user describes changes in free-form prose (drop/add a nib, re-cluster, change a cluster's mechanism, change a nib's approach, split or dissolve a review group, reorder, change parallelism degree). Apply them, re-present the plan **once**, and ask again.
 - **Cancel** → stop; leave all nibs unchanged.
 
 **The approved plan naming a `workflow` cluster IS the user's explicit opt-in to run a `Workflow` for that cluster.** Do not launch any workflow before this approval.
@@ -169,14 +181,14 @@ Then ask via `AskUserQuestion` (a single gate): **Approve / Adjust / Cancel.**
 - **Worktree base ≠ batch branch (critical)**: `isolation: "worktree"` agents do **not** branch from the batch branch or current HEAD — they branch from the repository's default branch (`origin/HEAD`, i.e. `main`) unless the project sets `worktree.baseRef: "head"`. So any parallel/workflow/team cluster (6b/6c/6d) starts from the *wrong* base by default: it misses both the branch the batch was cut from (e.g. `develop`/`integration`) and any prior cluster already merged onto the batch branch. Every worktree-isolated lane MUST re-anchor onto the batch base before working (Phase 6b step 3.0), and Phase 7 MUST verify base ancestry before merging. See the base-branch note in Phase 6b.
 - **Dispatch contract**: how a dispatched agent's report gets back — and how it gets silently lost — depends on whether the `Agent` call passes a `name`. Report-only workers (Phases 2, 6a, 6b, 6c) are dispatched **unnamed** (task mode: the final message comes back as the report); only Phase 6d teammates get names, and every teammate brief must end with the delivery clause. Full rules: `${CLAUDE_PLUGIN_ROOT}/conventions/subagent-briefs.md`, read in Phase 2 step 3.
 
-- **Nib status**: `set-status` each nib to `in-progress` **before** launching its worker; `close` it with a one-line summary **after** its work is committed (Phase 6a step 4 for a series nib, Phase 7 for a parallel cluster). Subagents/workflows run fresh and will NOT update nibs — you (the conductor, in the main context) own status updates.
+- **Nib status**: `set-status` each nib to `in-progress` **before** launching its worker; `close` it with a one-line summary **after** its work is committed (Phase 6a step 4 for a series nib, group-path step 5 for a review group, Phase 7 for a parallel cluster). Subagents/workflows run fresh and will NOT update nibs — you (the conductor, in the main context) own status updates.
 - **Commits**: commit the code together with whatever the tracker changed in the working tree: the nib file on nibs, the plan file on Markdown. Azure DevOps and GitHub change nothing locally, so their commits carry code only. On nibs, keep the nib's todo items checked off as work completes. In the shared working tree (Phase 6a) the commit is **yours, never the worker's** — workers stage, you commit. Worktree lanes (6b/6c/6d) must commit in their own worktrees (their work reaches you only through the shared object store); that trade-off is accepted because the batch branch stays untouched until the Phase 7 merge, which you control.
 - **Stop points**: after approval, wait for the user only **before launching a parallel/workflow/team cluster** (6b/6c/6d) and **on a merge conflict** (Phase 7 step 5), reporting what finished and what's next. Everywhere else (between nibs, between series clusters, after a clean merge) post a one-line progress note and continue. Add no other stops unless the user asked for one at approval; a failed nib is parked, not a stop (Failure handling).
-- **Verify**: run the build (and tests, for tdd work) after each unit of work; fix breakage before moving on.
+- **Verify**: run the build (and tests, for tdd work) after each unit of work, where a review group is one unit; fix breakage before moving on.
 
 ### Phase 6a — Single series agent (the default)
 
-For each nib in the cluster, in order. The batch-level plan already covers the per-nib plan, so **do NOT call `/decaf-build:auto-dev` / `/decaf-build:auto-tdd` wholesale** (their interactive Step-1 plan gate would re-prompt and break the unattended run). Instead reuse their **execute + review tail**:
+For each nib in the cluster, in order; a review group (Phase 4d) takes the [group path](#review-group-path) instead. The batch-level plan already covers the per-nib plan, so **do NOT call `/decaf-build:auto-dev` / `/decaf-build:auto-tdd` wholesale** (their interactive Step-1 plan gate would re-prompt and break the unattended run). Instead reuse their **execute + review tail**:
 
 1. `set-status` the nib to `in-progress`.
 2. Launch a **general-purpose `Agent`** — unnamed (task mode: its report comes back to you; see the Dispatch contract above) — with the pre-approved-plan prompt pattern (as in `/decaf-build:auto-dev` Step 2 / `/decaf-build:auto-tdd` Step 2 — *"the plan is already approved, do NOT ask for confirmation"*). For `tdd` nibs, instruct a full red-green-refactor loop following the project's test conventions; for `dev` nibs, implement step-by-step verifying the build after each step. Instruct the agent to **stage its work (`git add`) and stop short of committing** — it reports the diffstat and a proposed commit message; the commit is yours (step 4). Record its agent ID from the dispatch result: step 3's review resumes it for repair rounds. **With `--report`**, record this implementation Agent's harness-reported usage (final-request tokens / tool calls / duration, verbatim), its agent ID and its model tier plus changeset stats (files changed, +/− lines, new files) — this is the nib's implementation-phase record, exactly as `/decaf-build:auto-dev` Step 2 captures.
@@ -186,6 +198,16 @@ For each nib in the cluster, in order. The batch-level plan already covers the p
 
    **With `--report`**, the Step-2 implementation-phase record is in this context — hand it to auto-review so its session report has full build-side accounting (same contract as auto-dev/auto-tdd). If a running-app build lock or a trivial change makes the full auto-review impractical, a focused manual review of the diff is an acceptable substitute — note the substitution (and, under `--report`, that no session report was produced for this nib).
 4. Review the staged work — the reported diffstat plus summary; read the full diff when the change is behavioral or the brief changed after dispatch — then commit (code plus any tracker files, per Commits above) and `close` the nib. The commit is the one irreversible step in this lane and it stays with you: a dispatched agent cannot be reliably redirected once running (see Failure handling), so the component holding decision authority holds the commit.
+
+#### Review group path
+
+For a review group (Phase 4d). Dispatch and commit ownership are as in steps 1–4, but one implementer carries the whole group, and the full build/test and the review run once, after the last nib. Each nib still gets its own commit.
+
+1. With the batch branch clean, tag the group start: `git tag batch-{slug}-group-{n}`. `set-status` every group nib to `in-progress`.
+2. **One nib per turn.** Dispatch one general-purpose `Agent`, unnamed, with step 2's pre-approved-plan pattern: every group nib listed for context, and the first nib to implement now. A `tdd` nib runs its red-green loop on its own targeted tests only. The agent runs no full build or test suite, stages the nib's work and reports. Commit the nib (code plus tracker files), record the commit SHA, then resume the same agent with `SendMessage` to its agent ID for the next nib (rule 5 of `${CLAUDE_PLUGIN_ROOT}/conventions/subagent-briefs.md`). **With `--report`**, record its usage over every turn as the group's implementation-phase record.
+3. **Build and test once.** After the last nib's commit, resume the agent to run the full build and tests, fix any breakage and stage the fixes without committing.
+4. **Review once.** `git reset --soft batch-{slug}-group-{n}` turns the whole group, step 3's fixes included, into the uncommitted change auto-code-review reviews; the tag stays as the recovery point. Write `.decaf/batch-dev/specs/group-{n}.md` holding every group nib's `read` output under its own heading, behind step 3's `.gitignore`. Run step 3's auto-code-review with `--spec` set to that file and `--implementer` set to the group's agent.
+5. **Keep the per-nib commits.** Stage what the review left, then `git reset --soft <last nib commit>`: HEAD returns to the last nib commit and only the build and review fixes stay staged. `close` the group's nibs that landed (parked ones stay `in-progress`), then commit the fixes with the tracker files, naming every nib. The batch branch gets one commit per nib plus this one.
 
 > **Parallel clusters are reviewed after they merge.** Phases 6b/6c/6d self-review inline in their worktrees, because `/decaf-quality:auto-code-review` runs from the main context and cannot be invoked from a worktree. Their independent review, and its session report under `--report`, happens in Phase 7 once the cluster is merged.
 
@@ -261,7 +283,7 @@ Applies to any cluster that produced separate branches/worktrees (6b/6c/6d). Ser
 - Run the project's build + tests on the batch branch. **If a running instance of the app locks build outputs** (e.g. a live executable holding its output binaries), close it first — or fall back to building/testing only the affected library/test projects, which avoids producing the locked artifact. Flag that the full build plus any **visual** acceptance criteria need the app closed: purely-visual criteria can't be auto-verified, so leave such nibs `in-progress` until confirmed.
 - Leave the **merge-to-main / push decision to the user** (honors "commit/push only when asked; branch first").
 - Offer follow-up nibs (the contract's `create-followup`) for anything deferred or parked.
-- **With `--report`**: list the session reports written (`.decaf/session-reports/…`), one per series nib and one per parallel cluster.
+- **With `--report`**: list the session reports written (`.decaf/session-reports/…`), one per series nib or review group and one per parallel cluster.
 
 ---
 
@@ -271,12 +293,16 @@ Applies to any cluster that produced separate branches/worktrees (6b/6c/6d). Ser
 - **Skip-and-continue**: a failed nib does not abort the batch.
 - **Park** the failed nib: keep it `in-progress` and record a `Batch failure note` on it with the contract's `append-note` (what failed, build/test output summary, where it stopped). Never write secrets/log output that could contain credentials into the nib.
 - **Hold dependents**: any nib whose `blocked_by` includes a failed nib is skipped and reported as held.
+- **In a review group**, park only the stuck nib and its group dependents; the rest of the group lands:
+  - The implementer cannot finish a nib: commit nothing for it. Save its staged work with `git stash push -m "parked {id}"`, name the stash in the failure note, and continue with the next nib that does not depend on it.
+  - The group build/test breaks and the implementer cannot fix it: stash its fix attempts, then build and test each nib commit in order in a temporary worktree (`git worktree add`, with dependencies provisioned as in Phase 6b) to find the first failing one. `git revert` that commit and those of later group nibs that depend on it, newest first, then re-run the build/test.
+  - The review cannot settle a nib (its findings stay open at the iteration cap): after group-path step 5, revert that nib's commit and its group dependents' the same way. Treat a revert that conflicts like a merge conflict (Phase 7 step 5).
 - Report all parked/held nibs in Phase 8.
 
 ## Notes & caveats
 
 - The conductor stays in the main context; heavy work is isolated in subagents/workflows so the main context isn't exhausted.
-- `/decaf-quality:auto-code-review` runs from the main context and manages its own subagent lifecycle → series nibs get it in Phase 6a; parallel clusters get it once merged, in Phase 7, on top of each worker's own inline review.
+- `/decaf-quality:auto-code-review` runs from the main context and manages its own subagent lifecycle → series nibs and review groups get it in Phase 6a; parallel clusters get it once merged, in Phase 7, on top of each worker's own inline review.
 - Workflows cannot pause for the user mid-run — that is exactly why the whole strategy is approved up front (Phase 5 before any launch).
 - Mixed mechanisms add coordination cost: when a background workflow runs while series work proceeds, sequence carefully and integrate at clean boundaries.
 - Keep the batch small enough to supervise. If the queue is large, propose splitting it across multiple `/decaf-build:batch-dev` runs at Phase 1.

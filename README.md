@@ -257,7 +257,7 @@ Direct (non-test-first) implementation then an automated [`auto-code-review`](#a
 - `--report` — write a session report for skill tuning, including the implementation phase's usage.
 
 ### batch-dev
-Orchestrate **multiple** work items (nibs) in one run: understand them collectively, cluster them, pick the best mechanism per cluster (single series / parallel fan-out / scripted workflow / agent team), and dispatch behind one approval gate. It runs `auto-dev` / `auto-tdd`-style execution per nib; the autonomous driver that calls batch-dev for you, phase by phase, is [`auto-deliver`](#auto-deliver).
+Orchestrate **multiple** work items (nibs) in one run: understand them collectively, cluster them, pick the best mechanism per cluster (single series / parallel fan-out / scripted workflow / agent team), and dispatch behind one approval gate. It runs `auto-dev` / `auto-tdd`-style execution per nib, except that consecutive small series nibs form a *review group*: one implementer, one commit per nib, then one full build/test and one review for the group; the autonomous driver that calls batch-dev for you, phase by phase, is [`auto-deliver`](#auto-deliver).
 ```
 /decaf-build:batch-dev --ready                   # all ready nibs
 /decaf-build:batch-dev abc1 def2 --review bugs        # specific nibs
@@ -269,10 +269,11 @@ Orchestrate **multiple** work items (nibs) in one run: understand them collectiv
 - none of the above — the skill asks which items to batch.
 
 plus any of:
-- `--review "<preset> [axis=value …]"` — a [`code-review`](#code-review) preset (`bugs` | `review` | `audit`) plus any of its axis overrides (`roster=`, `models=`, `evidence=`, `reach=`), forwarded as-is to each item's review. Default: `review`.
+- `--review "<preset> [axis=value …]"` — a [`code-review`](#code-review) preset (`bugs` | `review` | `audit`) plus any of its axis overrides (`roster=`, `models=`, `evidence=`, `reach=`), forwarded as-is to every review it runs. Default: `review`.
 - `--max-iterations N` — review iteration cap. Default: 3.
 - `--base-branch <name>` — the branch to work on; reused if it exists. Default: a new `batch/{slug}` cut from the current HEAD. It can never be the repo's default branch.
 - `--tracker nibs|ado|github|markdown` — the tracker holding the items. Default: detected.
+- `--no-group` — form no review groups; every series item gets its own build/test and review.
 - `--models low|norm|high` — model tier for the skill's own dispatches; forwarded to each review. Default: `high`.
 - `--report` — write session reports for skill tuning (one per review, under `.decaf/session-reports/`).
 - `--unattended` — no human gates: no queue confirmation, clarifying questions, approval gate, or stops before parallel clusters, and no merge-to-main question at the end (the branch is handed back to the caller). `auto-deliver` passes this.
@@ -289,6 +290,7 @@ The autonomous whole-plan loop: `SELECT → BREAKDOWN → EXECUTE → VERIFY →
 - `--review "<preset> [axis=value …]"` — a [`code-review`](#code-review) preset (`bugs` | `review` | `audit`) plus any of its axis overrides, forwarded as-is to [`batch-dev`](#batch-dev), whose default is `review`.
 - `--tracker nibs|ado|github|markdown` — the plan's tracker. Default: detected.
 - `--models low|norm|high` — model tier, forwarded to `batch-dev`. Default: `high`.
+- `--no-group` — forwarded to `batch-dev`: no review groups, so every series item gets its own build/test and review.
 - `--report` — collect the session reports from every phase's reviews under `.decaf/session-reports/`.
 - `--laps N` — stop after N laps (one phase each); the next run resumes from `.decaf/auto-deliver/state.json`. Default: run until the plan is complete. [`scripts/drive.sh`](decaf-build/skills/auto-deliver/scripts/drive.sh) uses `--laps 1` to run one phase per headless process.
 
