@@ -1,6 +1,6 @@
 ---
 name: resolve-architecture-review
-description: Walk through architecture-review proposals, designing the interface and writing an RFC for each — one at a time, or with "batch" triage all candidates first, explore the chosen ones together, then review the results. Use after architecture-review to turn its candidates into concrete RFCs.
+description: Walk through architecture-review proposals, designing the interface and writing an RFC for each — one at a time, or with "batch" triage all candidates first, explore the chosen ones together, then review the results. An "Explore all" choice at the start skips the per-candidate action question. Use after architecture-review to turn its candidates into concrete RFCs.
 argument-hint: "[batch] [file]"
 ---
 
@@ -12,21 +12,23 @@ Walk through architecture improvement candidates. For each candidate the user ch
 - **Interactive** (default): one candidate at a time — choose an action, explore, pick, RFC, next.
 - **Batch** (`batch` argument): triage every candidate up front, approve all framings at once, explore the chosen candidates together while the user is free, then review the explored candidates one at a time. The user makes the same decisions as in interactive mode, in a different order.
 
+In either mode the user can choose **Explore all** at the start (Step 4b): every candidate is explored, and no action question is asked per candidate.
+
 ## Critical Behavior Requirements
 
 **YOU MUST FOLLOW THESE RULES:**
 
 ### Interactive Mode (default)
 
-1. **MANDATORY STOP**: You MUST use `AskUserQuestion` to present each candidate and wait for the user's choice BEFORE taking ANY action. Do NOT design interfaces or create RFCs autonomously.
+1. **MANDATORY STOP**: You MUST use `AskUserQuestion` to present each candidate and wait for the user's choice BEFORE taking ANY action — unless the user chose Explore all in Step 4b; then each candidate goes straight to framing, and the stop is the interface pick (Step 5f). Do NOT create RFCs autonomously.
 
 2. **ONE AT A TIME**: Process candidates ONE AT A TIME. Never batch multiple candidates together. Never present more than one candidate per response.
 
-3. **NO AUTONOMOUS DESIGN**: Never spawn interface-design sub-agents without explicit user approval via AskUserQuestion response.
+3. **NO AUTONOMOUS DESIGN**: Never spawn interface-design sub-agents without explicit user approval via AskUserQuestion response. Explore all in Step 4b is that approval for every candidate.
 
 ### Batch Mode
 
-1. **TRIAGE BEFORE DESIGN**: Every candidate gets an action from the user (Step B1) before any framing or design work starts. Triage presents one candidate per response, with a plain summary before its question.
+1. **TRIAGE BEFORE DESIGN**: Every candidate gets an action from the user (Step B1), or Explore from the Explore all answer in Step 4b, before any framing or design work starts. Triage presents one candidate per response, with a plain summary before its question.
 
 2. **DESIGN ONLY WHAT PASSED THE GATE**: Spawn design sub-agents only for candidates the user marked Explore AND whose framing the user approved at the framing gate (Step B2).
 
@@ -85,7 +87,7 @@ For each candidate, extract:
 ### Step 3: Check for Existing State
 
 Check if `.decaf/architecture-improvements/.handle-state.json` exists:
-- If yes and it references the same candidates file, offer to resume from where we left off. Resume in the mode recorded in the state file, regardless of the current argument.
+- If yes and it references the same candidates file, offer to resume from where we left off. Resume in the mode and with the Explore all choice recorded in the state file, regardless of the current argument.
 - If no or different file, start fresh
 
 **Resuming batch mode:** continue from the earliest phase any candidate is still in. A candidate recorded as `framed` whose `comparison.md` already exists in its exploration directory finished exploring before the state was written — treat it as `explored`. A `framed` candidate with only some design files gets its wave rerun from scratch.
@@ -112,6 +114,7 @@ Write initial state to `.decaf/architecture-improvements/.handle-state.json`:
 {
   "candidatesFile": ".decaf/architecture-improvements/CANDIDATES_xxx.md",
   "mode": "interactive|batch",
+  "exploreAll": false,
   "totalCandidates": N,
   "currentIndex": 0,
   "processed": [],
@@ -124,11 +127,26 @@ Write initial state to `.decaf/architecture-improvements/.handle-state.json`:
 
 `batch` stays empty in interactive mode. In batch mode it maps each candidate number to `{ "phase": "...", "explorationDir": "..." }`; see Step B1.
 
+**4b. Explore all, or choose each.** Skip this question when there is only one candidate.
+
+```
+AskUserQuestion with:
+- question: "Explore all N candidates, or choose an action for each?"
+- header: "Start"
+- options:
+  - label: "Explore all", description: "Explore every candidate, with no action question per candidate"
+  - label: "Choose each", description: "Ask Explore, Skip, Dismiss or Defer for each candidate"
+```
+
+⚠️ **STOP HERE AND WAIT FOR USER RESPONSE.** Record the answer as `exploreAll` in the state file.
+
 **Batch mode:** go to [Batch Mode Steps](#batch-mode-steps). **Interactive mode:** continue with Step 5.
 
 ### Step 5: Process Each Candidate (MANDATORY STOP POINT)
 
 For each candidate:
+
+With `exploreAll`, skip 5b and 5c: present the candidate (5a), then go straight to 5d.
 
 **5a. Present the candidate:**
 ```
@@ -222,13 +240,15 @@ After comparing, give your own recommendation: which design you think is stronge
 
 **5f. User picks an interface:**
 
-⚠️ **STOP HERE AND WAIT FOR USER RESPONSE.** The user picks an interface or accepts the recommendation.
+⚠️ **STOP HERE AND WAIT FOR USER RESPONSE.** The user picks an interface or accepts the recommendation. A free-form answer may instead skip, dismiss or defer the candidate, or stop the session — handle it as in Step 5c.
 
 **5g. Determine the output target:**
 
+If `outputTarget` is already set in the state file, reuse it and go to 5h.
+
 Use the work-items contract read in step 5c (read it now if no candidate was deferred).
 
-Detect the available system and confirm with the user.
+Detect the available system, confirm it with the user, and store it as `outputTarget`.
 
 **5h. Create refactor RFC:**
 
@@ -278,6 +298,8 @@ Candidate phases in `state.batch`: `triaged` → `framed` → `explored` → `re
 **B1. Triage every candidate, one at a time.**
 
 First show all candidates as one compact table: number, cluster name, modules (abbreviated), dependency category. The table gives the user the whole list; the decisions come one by one after it.
+
+With `exploreAll`, show the table, record every candidate as Explore (below) without asking, and continue with "After triage".
 
 Then walk the candidates in order. Each response covers ONE candidate:
 

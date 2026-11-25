@@ -362,7 +362,7 @@ Explore existing code for structural/testability improvements (deepen shallow mo
 **Arguments:** none.
 
 ### resolve-architecture-review
-Walk the candidates from [`architecture-review`](#architecture-review) one at a time, designing the interface and writing an RFC for each. In `batch` mode you triage every candidate first and approve all framings at once; the chosen candidates are then explored together without stopping, and you review the results one at a time, so you don't wait on each exploration.
+Walk the candidates from [`architecture-review`](#architecture-review) one at a time, designing the interface and writing an RFC for each. In `batch` mode you triage every candidate first and approve all framings at once; the chosen candidates are then explored together without stopping, and you review the results one at a time, so you don't wait on each exploration. In either mode you can choose **Explore all** at the start, which skips the per-candidate action question.
 ```
 /decaf-plan:resolve-architecture-review
 /decaf-plan:resolve-architecture-review batch
